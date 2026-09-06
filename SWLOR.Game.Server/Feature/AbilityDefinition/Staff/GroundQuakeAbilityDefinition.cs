@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 new WeaponAbilityProfile
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
+                    ConvertsRequiredTargetStatusEffect = true,
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 6
                 });
@@ -75,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 new WeaponAbilityProfile
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
+                    ConvertsRequiredTargetStatusEffect = true,
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 6
                 });

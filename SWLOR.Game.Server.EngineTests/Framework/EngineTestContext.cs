@@ -107,6 +107,24 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             return creature;
         }
 
+        public async Task ExecuteInCreatureContextAsync(uint creature, Action action)
+        {
+            var executed = false;
+            Exception failure = null;
+            AssignCommand(creature, () =>
+            {
+                if (_cancellation.IsCancellationRequested)
+                    return;
+
+                executed = true;
+                try { action(); }
+                catch (Exception ex) { failure = ex; }
+            });
+            await WaitUntilAsync(() => executed, 3f, "the creature's assigned script context to execute");
+            if (failure != null)
+                throw failure;
+        }
+
         /// <summary>
         /// Registers an object for automatic destruction when the test completes.
         /// </summary>

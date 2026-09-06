@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -139,7 +140,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         /// <summary>Pulls the struck target adjacent to the caster.</summary>
         public static Action<uint, uint> PullOnHit()
         {
-            return (activator, target) => AssignCommand(target, () => ActionJumpToObject(activator));
+            return (activator, target) =>
+            {
+                if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
+                    GetArea(activator) != GetArea(target) ||
+                    Stat.GetStatAdjustment(target, StatType.ForcedMovementImmunity) > 0)
+                    return;
+
+                var center = GetPosition(activator);
+                var currentOffset = GetPosition(target) - center;
+                var destination = CreaturePlugin.ComputeSafeLocation(target, center, currentOffset.Length());
+                // The native search returns its input on failure. Never place a target
+                // inside the caster or move it farther away when no closer spot is free.
+                if (destination == center || (destination - center).LengthSquared() >= currentOffset.LengthSquared())
+                    return;
+
+                // Knockdown blocks queued jumps, so apply the collision-checked pull immediately.
+                ObjectPlugin.SetPosition(target, destination);
+            };
         }
 
         /// <summary>
@@ -168,17 +186,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         /// Arcs a reduced-damage strike from the struck target to up to <paramref name="maxArcs"/> other
         /// hostiles within <paramref name="radius"/>, applying <paramref name="arcStatus"/>.
         /// </summary>
-        public static Action<uint, uint> ChainOnHit(InnateAbilityProfile profile, int maxArcs, float radius, int arcDamage, Type arcStatus, int arcDuration, CombatDamageType damageType)
+        public static Action<uint, uint> ChainOnHit(InnateAbilityProfile profile, int maxArcs, float radius, int arcDamage, Type arcStatus, int arcDuration, CombatDamageType damageType, bool oncePerCast = false)
         {
             return (activator, target) =>
             {
-                foreach (var arc in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius, maxArcs, predicate: c => c != target))
+                var sequence = oncePerCast ? Ability.GetAbilityImpactSequence(activator) : null;
+                if (sequence != null && !sequence.HasRemainingChainArcs(maxArcs))
+                    return;
+
+                foreach (var arc in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius,
+                             sequence == null ? maxArcs : 0, predicate: c => c != target))
                 {
+                    if (sequence != null && !sequence.TryConsumeChainArc(arc, maxArcs))
+                        continue;
+
                     Ability.ApplyCombatImpact(
                         activator, arc, GetLocation(arc),
-                        ResolveSkillType(activator, profile), arcDamage, arcDuration, arcStatus, false,
+                        ResolveSkillType(activator, profile), ScaleForMimicryPotency(activator, profile, arcDamage), arcDuration, arcStatus, false,
                         damageType: damageType, playImpactAnimation: false,
                         useNPCStatScaling: ShouldUseNPCStatScaling(activator));
+
+                    if (sequence != null && !sequence.HasRemainingChainArcs(maxArcs))
+                        break;
                 }
             };
         }

@@ -884,7 +884,7 @@ foreach ($key in $abilityFileIndex.Keys) {
     $abilityBaseNameIndex[(Get-SanitizedName $key)] = $true
 }
 
-$statusApplicationVerb = "(?:inflict(?:s|ed|ing)?|appl(?:y|ies|ied)|grant(?:s|ed|ing)?|gain(?:s|ed|ing)?|become(?:s)?|suffer(?:s|ed|ing)?|attempt(?:s|ed|ing)?\s+to\s+inflict)"
+$statusApplicationVerb = "(?:inflict(?:s|ed|ing)?|appl(?:y|ies|ied)|grant(?:s|ed|ing)?|gain(?:s|ed|ing)?|become(?:s)?(?!\s+immune\b)|suffer(?:s|ed|ing)?|attempt(?:s|ed|ing)?\s+to\s+inflict)"
 $statusChecks = @(
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}-\s*\d+\s+Poison Resistance\b"; Enum = "PoisonResistancePenalty" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bPoison\b(?!\s+(?:Damage|Resistance))"; Enum = "Poison" },

@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected sealed class WeaponAbilityProfile
         {
+            private readonly string _modifierSource = $"ability:{Guid.NewGuid()}";
+
             public sealed class StatusSpreadSnapshot
             {
                 private readonly Dictionary<uint, (bool Bleeding, bool Sundered)> _sourceStatuses = new();
@@ -120,6 +122,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int RestoreStaminaOnHit { get; init; }
             public int RestoreFPOnHit { get; init; }
             public int RestoreStaminaAfterImpact { get; init; }
+            public int RestoreStaminaIfMinimumTargetsHit { get; init; }
+            public int StaminaRestoreMinimumTargets { get; init; }
             public int RestoreFPAfterImpact { get; init; }
             public int RestoreStaminaIfAllHitsLand { get; init; }
             public int RestoreFPIfAllHitsLand { get; init; }
@@ -173,6 +177,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public SkillType TemporaryAreaAbilityFragmentationSkillType { get; init; }
             public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
             public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
+            public int TemporaryAreaAbilityPulseDamage { get; init; }
+            public int TemporaryAreaAbilityPulseRadiusMeters { get; init; }
+            public int TemporaryAreaAbilityUsedFPRestore { get; init; }
+            public int TemporaryAreaAbilityUsedAttackDeflection { get; init; }
+            public int TemporaryAreaAbilityUsedAttackDeflectionDurationSeconds { get; init; }
             public int TemporaryAreaAbilityMinTargetsResourceRestoreThreshold { get; init; }
             public int TemporaryAreaAbilityFPRestore { get; init; }
             public int TemporaryAreaAbilityMinTargetsBuffThreshold { get; init; }
@@ -208,6 +217,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int ConditionalStatusDurationSeconds { get; init; }
             public int ConditionalStatusAfterDeflectionWindowSeconds { get; init; }
             public Type RequiredTargetStatusEffectForConditionalStatus { get; init; }
+            public bool ConvertsRequiredTargetStatusEffect { get; init; }
             public StatusEffectCategory RequiredTargetStatusCategoryForConditionalStatus { get; init; }
             public bool RequireRecentGuardedHitForConditionalStatus { get; init; }
             public bool RequireRecentGuardedAllyHitForConditionalStatus { get; init; }
@@ -264,7 +274,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (ExtraDamageIfHighResources != 0 &&
                     HighResourceExtraDamageThresholdPercent > 0 &&
-                    Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, HighResourceExtraDamageThresholdPercent))
+                    Combat.IsCurrentFPAndStaminaAbovePercent(activator, HighResourceExtraDamageThresholdPercent))
                 {
                     bonus += ExtraDamageIfHighResources;
                 }
@@ -601,6 +611,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 };
             }
 
+            public void RestoreResourcesForTargetCount(uint activator, AbilityImpactSummary summary)
+            {
+                if (RestoreStaminaIfMinimumTargetsHit > 0 && StaminaRestoreMinimumTargets > 0 &&
+                    (summary?.ImpactedTargetCount ?? 0) >= StaminaRestoreMinimumTargets)
+                {
+                    Stat.RestoreStamina(activator, RestoreStaminaIfMinimumTargetsHit);
+                }
+            }
+
             public void AfterImpact(
                 uint activator,
                 int totalDamage,
@@ -627,7 +646,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (totalDamage <= 0)
+                {
+                    if ((summary?.ImpactedTargetCount ?? 0) > 0)
+                        ApplyLandedImpactModifiers(activator);
                     return;
+                }
 
                 if (HealPercentOfDamage > 0)
                 {
@@ -679,6 +702,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
+                ApplyLandedImpactModifiers(activator);
+            }
+
+            private void ApplyLandedImpactModifiers(uint activator)
+            {
+                ApplyNearbyPartyStatus(activator);
+                ApplySelfImmunity(activator);
                 if (!ApplySelfModifiersOnHostileActivation)
                     ApplySelfModifiers(activator);
                 ApplyTemporaryDefeatedEnemyModifiers(activator);
@@ -789,7 +819,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
 
                 if (SelfStatResourceAboveThresholdPercent > 0 &&
-                    !Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
+                    !Combat.IsCurrentFPAndStaminaAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
                 {
                     return;
                 }
@@ -816,6 +846,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (SelfRangedDeflection != 0)
                     Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
                 ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
+            }
+
+            private void ReplaceTemporaryPayload(uint activator, int durationSeconds, params (StatType Stat, int Amount)[] stats)
+            {
+                if (durationSeconds <= 0 || !stats.Any(stat => stat.Amount != 0))
+                    return;
+
+                foreach (var (stat, amount) in stats)
+                    TemporaryStatModifier.Replace(activator, stat, amount, durationSeconds, _modifierSource);
             }
 
             private static void ReplaceTemporary(uint activator, StatType statType, int amount, int durationSeconds)
@@ -849,12 +888,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(activator, StatType.HostileAbilityFPRestore, TemporaryHostileAbilityFPRestore, duration);
                 ReplaceTemporary(activator, StatType.HostileAbilityStaminaRestore, TemporaryHostileAbilityStaminaRestore, duration);
-                ReplaceTemporary(activator, StatType.HighFPAndStaminaAbilityDamageBonus, TemporaryHighFPAndStaminaAbilityDamageBonus, duration);
-                ReplaceTemporary(
-                    activator,
-                    StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent,
-                    TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent,
-                    duration);
+                ReplaceTemporaryPayload(activator, duration,
+                    (StatType.HighFPAndStaminaAbilityDamageBonus, TemporaryHighFPAndStaminaAbilityDamageBonus),
+                    (StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent));
                 ReplaceTemporary(
                     activator,
                     StatType.FrenzySlashHasteRefreshDurationSeconds,
@@ -896,6 +932,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         $"GeneratedWeaponAbility:{StatType.AreaAbilityFragmentationSkillType}");
                 }
                 ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
+                ReplaceTemporaryPayload(activator, duration,
+                    (StatType.AreaAbilityPulseDamage, TemporaryAreaAbilityPulseDamage),
+                    (StatType.AreaAbilityPulseRadiusMeters, TemporaryAreaAbilityPulseRadiusMeters),
+                    (StatType.AreaAbilityUsedFPRestore, TemporaryAreaAbilityUsedFPRestore),
+                    (StatType.AreaAbilityUsedAttackDeflection, TemporaryAreaAbilityUsedAttackDeflection),
+                    (StatType.AreaAbilityUsedAttackDeflectionDurationSeconds, TemporaryAreaAbilityUsedAttackDeflectionDurationSeconds));
                 ReplaceTemporary(
                     activator,
                     StatType.AreaAbilityFragmentationDurationSeconds,
@@ -1095,7 +1137,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     target,
                     ConditionalTargetStatusEffect,
                     ConditionalTargetStatusDurationSeconds,
-                    damageType);
+                    damageType,
+                    ConvertsRequiredTargetStatusEffect ? RequiredTargetStatusEffectForConditionalStatus : null);
             }
 
             private void ApplyTargetTemporaryModifiers(uint target)
@@ -1517,7 +1560,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                                 afterImpactAction: summary =>
                                 {
-                                    if (summary.ImpactedTargetCount > 0)
+                                    profile.RestoreResourcesForTargetCount(activator, summary);
+                                    // Instant impacts apply these modifiers in AfterImpact below.
+                                    if (profile.TelegraphDuration > 0f && summary.ImpactedTargetCount > 0)
                                         profile.AfterActivation(activator, skill);
                                 },
                                 maxTargets: profile.MaximumAreaTargets,
@@ -1591,6 +1636,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             successfulHitCount++;
                     }
 
+                    profile.RestoreResourcesForTargetCount(activator, Ability.GetActiveAbilityImpactSummary(activator));
                     profile.AfterImpact(activator, totalDamage, successfulHitCount, Ability.GetActiveAbilityImpactSummary(activator));
                 })
                 .BreaksStealth();

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -22,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already knocked down.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Knockdown)
+            return Stat.GetStatAdjustment(creature, StatType.KnockdownImmunity) > 0 ||
+                   Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Knockdown)
                 ? "Target is temporarily immune to knockdown."
                 : string.Empty;
         }

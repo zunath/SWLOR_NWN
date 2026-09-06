@@ -112,6 +112,20 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 _effectsBySourceType[statusEffect.SourceType].Remove(statusEffect);
         }
 
+        /// <summary>Consumes one stat payload while retaining each effect's other bonuses and lifetime.</summary>
+        public void ConsumeStat(StatType type)
+        {
+            foreach (var effect in GetAllEffects())
+            {
+                if (!effect.StatGroup.Stats.TryGetValue(type, out var value) || value == 0)
+                    continue;
+
+                Remove(effect);
+                effect.StatGroup.Stats[type] = 0;
+                Add(effect);
+            }
+        }
+
         private void RecomputeNonAdditiveStat(StatType type)
         {
             var combined = 0;
@@ -122,6 +136,42 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             }
 
             StatGroup.Stats[type] = combined;
+        }
+
+        public IReadOnlyList<StatAdjustmentSource> GetStatSources(StatType payloadStat)
+        {
+            List<StatAdjustmentSource> sources = null;
+            foreach (var effect in _allActiveEffects)
+            {
+                if (effect.IsFlaggedForRemoval ||
+                    !effect.StatGroup.Stats.TryGetValue(payloadStat, out var value) || value == 0)
+                    continue;
+
+                // Refreshes preserve the trigger's cap. Independently stackable effects
+                // retain separate caps according to their declared stacking policy.
+                var contributor = effect.StackingType switch
+                {
+                    StatusEffectStackType.UnlimitedStacking => effect.Id,
+                    StatusEffectStackType.StackFromMultipleSources => effect.Source.ToString(),
+                    _ => string.Empty
+                };
+                sources ??= new List<StatAdjustmentSource>();
+                sources.Add(new StatAdjustmentSource($"status:{effect.GetType().FullName}:{contributor}", effect.StatGroup.Stats));
+            }
+
+            // Snapshot only the matching sources before callers can apply or remove effects.
+            return sources == null ? Array.Empty<StatAdjustmentSource>() : sources;
+        }
+
+        public bool HasAnyActiveEffect(IReadOnlySet<Type> effectTypes)
+        {
+            foreach (var effect in _allActiveEffects)
+            {
+                if (!effect.IsFlaggedForRemoval && effectTypes.Contains(effect.GetType()))
+                    return true;
+            }
+
+            return false;
         }
 
         public HashSet<IStatusEffect> GetAllEffects()

@@ -43,9 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
-                    TemporaryAreaAbilityFragmentationDamage = 8,
-                    TemporaryAreaAbilityFragmentationDurationSeconds = 30,
-                    TemporaryAreaAbilityFragmentationPulseSeconds = 3,
+                    TemporaryAreaAbilityPulseDamage = 8,
+                    TemporaryAreaAbilityPulseRadiusMeters = 5,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45
                 });
 

@@ -977,35 +977,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void AddHighResourceAbilityDamageStats(Action<string, string, string> addStat)
         {
-            var flatBonus = Stat.GetStatAdjustment(
-                _target,
-                StatType.HighFPAndStaminaAbilityDamageBonus);
-            var flatThreshold = Stat.GetStatAdjustment(
-                _target,
-                StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent);
-            if (flatBonus > 0 && flatThreshold > 0)
+            AddConditionalDamage(StatType.HighFPAndStaminaAbilityDamageBonus,
+                StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, " DMG");
+            AddConditionalDamage(StatType.HighFPAndStaminaAbilityDamagePercentAdjustment,
+                StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, "% DMG");
+
+            void AddConditionalDamage(StatType payload, StatType thresholdStat, string units)
             {
-                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, flatThreshold);
-                addStat(
-                    "High-Resource Ability DMG",
-                    active ? $"Active (+{flatBonus} DMG)" : $"Inactive ({flatThreshold}% required)",
-                    $"Combined conditional bonus: hostile combat abilities gain +{flatBonus} DMG while FP and STM are both at least {flatThreshold}%.");
+                foreach (var group in Stat.GetStatSources(_target, payload)
+                             .Where(source => source[payload] > 0 && source[thresholdStat] > 0)
+                             .GroupBy(source => source[thresholdStat]).OrderBy(group => group.Key))
+                {
+                    var threshold = group.Key;
+                    var bonus = group.Sum(source => source[payload]);
+                    var active = Combat.IsCurrentFPAndStaminaAbovePercent(_target, threshold);
+                    addStat($"Ability DMG above {threshold}% FP/STM",
+                        active ? $"Active (+{bonus}{units})" : $"Inactive ({threshold}% required)",
+                        $"Hostile combat abilities gain +{bonus}{units} while FP and STM are both above {threshold}%.");
+                }
             }
 
-            var percentBonus = Stat.GetStatAdjustment(
-                _target,
-                StatType.HighFPAndStaminaAbilityDamagePercentAdjustment);
-            var percentThreshold = Stat.GetStatAdjustment(
-                _target,
-                StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent);
-            if (percentBonus > 0 && percentThreshold > 0)
-            {
-                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, percentThreshold);
-                addStat(
-                    "Balanced Attunement",
-                    active ? $"Active (+{percentBonus}% DMG)" : $"Inactive ({percentThreshold}% required)",
-                    $"Hostile combat abilities deal +{percentBonus}% damage while FP and STM are both at least {percentThreshold}%.");
-            }
         }
 
         private (AbilityType DamageAbility, AbilityType AccuracyAbilityOverride, SkillType Skill, uint AccuracyWeapon) GetPrimaryCombatProfile()

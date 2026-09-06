@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatService;
+using System.Linq;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service.AIService
 {
@@ -25,13 +26,15 @@ namespace SWLOR.Game.Server.Service.AIService
         }
 
         /// <summary>
-        /// Scores a defensive self-buff only while the creature is in combat and its active rank is
-        /// below the rank supplied by the ability.
+        /// Scores a self-buff using the same replacement relationships as status application.
+        /// The ability supplies its effect definition; AI has no ability-specific rank markers.
         /// </summary>
-        public static AIScoreCalculation SelfStatBelow(StatType activeRankStat, int requiredRank, int abilityLevel)
+        public static AIScoreCalculation SelfBuff<T>(int abilityLevel) where T : IStatusEffect, new()
         {
+            var effect = new T();
+            var redundantEffects = effect.MorePowerfulEffectTypes.Append(typeof(T)).ToHashSet();
             return context => context.CurrentEnmityTarget != OBJECT_INVALID &&
-                              Stat.GetStatAdjustment(context.Self, activeRankStat) < requiredRank
+                              !StatusEffect.HasAnyActiveEffect(context.Self, redundantEffects)
                 ? AIScoreBand.Defensive + abilityLevel
                 : 0;
         }

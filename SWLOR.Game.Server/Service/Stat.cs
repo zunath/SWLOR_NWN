@@ -2087,6 +2087,33 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        {
+            var perks = Perk.GetStatSources(creature, payloadStat);
+            var effects = StatusEffect.GetStatSources(creature, payloadStat);
+            var temporary = TemporaryStatModifier.GetStatSources(creature, payloadStat);
+            var traits = Mimicry.GetStatSources(creature, payloadStat);
+            var count = perks.Count + effects.Count + temporary.Count + traits.Count;
+            if (count == 0) return Array.Empty<StatAdjustmentSource>();
+            if (count == perks.Count) return perks;
+            if (count == effects.Count) return effects;
+            if (count == temporary.Count) return temporary;
+            if (count == traits.Count) return traits;
+
+            var sources = new StatAdjustmentSource[count];
+            CopyStatSources(perks, sources, 0);
+            CopyStatSources(effects, sources, perks.Count);
+            CopyStatSources(temporary, sources, perks.Count + effects.Count);
+            CopyStatSources(traits, sources, perks.Count + effects.Count + temporary.Count);
+            return sources;
+        }
+
+        private static void CopyStatSources(IReadOnlyList<StatAdjustmentSource> source, StatAdjustmentSource[] destination, int offset)
+        {
+            for (var index = 0; index < source.Count; index++)
+                destination[offset + index] = source[index];
+        }
+
         public static int GetStatAdjustment(uint creature, StatType stat)
         {
             var persistentAdjustment = GetStatAdjustmentExcludingTemporaryModifiers(creature, stat);
@@ -2097,7 +2124,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetStatAdjustmentExcludingTemporaryModifiers(uint creature, StatType stat)
         {
-            var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
+            var statusAdjustment = StatusEffect.GetStatAdjustment(creature, stat);
             var perkAdjustment = Perk.GetStatBonus(creature, stat);
             var mimicryTraitAdjustment = Mimicry.GetStatBonus(creature, stat);
 

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
@@ -603,7 +604,11 @@ namespace SWLOR.Game.Server.Service
 
                         PlayVoiceChat(VoiceChat.Pain1, oObject);
                         var duration = Resistance.CalculateResistedTicks(oObject, ResistanceType.Mobility, d6());
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), oObject, duration);
+                        if (GetIsObjectValid(oObject) && duration > 0f &&
+                            Stat.GetStatAdjustment(oObject, StatType.KnockdownImmunity) <= 0)
+                        {
+                            ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), oObject, duration);
+                        }
                     }
                 }
                 oObject = GetNextObjectInShape(Shape.Sphere, fRange, lLocation, false, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable);

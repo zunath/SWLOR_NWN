@@ -49,7 +49,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var recipients = new[] { ctx.SpawnCreature("nw_rat001", -recipientOffset), ctx.SpawnCreature("nw_rat001", recipientOffset) };
             var enemies = sources.Concat(recipients).ToArray();
             await ctx.WaitFrameAsync();
-            SetCommandable(false, caster);
+            SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(caster, GetPositionFromLocation(ctx.GetArenaLocation()));
+            for (var index = 0; index < 2; index++)
+            {
+                var direction = index == 0 ? -1 : 1;
+                SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(sources[index], GetPositionFromLocation(ctx.GetArenaLocation(direction * sourceOffset)));
+                SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(recipients[index], GetPositionFromLocation(ctx.GetArenaLocation(direction * recipientOffset)));
+            }
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), caster, 120f);
             if (testsHitProc)
                 TemporaryStatModifier.Add(caster, procStat, 100, 120f);
             foreach (var enemy in enemies)
@@ -83,7 +90,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Ability.BeginAbilityImpact(caster, ability);
                     try
                     {
-                        ability.ImpactAction(caster, sources[0], rank, GetLocation(sources[0]));
+                        await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, sources[0], rank, GetLocation(sources[0])));
                     }
                     finally
                     {

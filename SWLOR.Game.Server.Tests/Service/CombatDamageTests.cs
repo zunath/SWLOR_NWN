@@ -215,7 +215,7 @@ public class CombatDamageTests
         var getSurcharge = ExtractMethod(combatSource, "private static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment");
         var refundSurcharge = ExtractMethod(combatSource, "public static int RefundCriticalRangedAbilityStaminaCost");
         var trackStaminaCost = ExtractMethod(combatSource, "private static void TrackAbilityStaminaCost");
-        var resourceThreshold = ExtractMethod(combatSource, "public static bool IsCurrentFPAndStaminaAtOrAbovePercent");
+        var resourceThreshold = ExtractMethod(combatSource, "public static bool IsCurrentFPAndStaminaAbovePercent");
 
         endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
         endAbilityImpact.Should().Contain("Combat.RefundCriticalRangedAbilityStaminaCost");
@@ -1028,8 +1028,11 @@ public class CombatDamageTests
 
         var unbreakableBeast = new UnbreakableBeast1StatusEffect();
         unbreakableBeast.PersistsOnLogout.Should().BeFalse();
-        unbreakableBeast.StatGroup.Stats[StatType.MindResistance].Should().Be(Resistance.MaximumResistance);
-        unbreakableBeast.StatGroup.Stats[StatType.MobilityResistance].Should().Be(Resistance.MaximumResistance);
+        unbreakableBeast.StatGroup.Stats[StatType.MindResistance].Should().Be(0);
+        unbreakableBeast.StatGroup.Stats[StatType.MobilityResistance].Should().Be(0);
+        unbreakableBeast.StatGroup.Stats[StatType.KnockdownImmunity].Should().Be(1);
+        unbreakableBeast.StatGroup.Stats[StatType.DazeImmunity].Should().Be(1);
+        unbreakableBeast.StatGroup.Stats[StatType.ForcedMovementImmunity].Should().Be(1);
 
         var holdTheLine = new HoldTheLine1StatusEffect();
         holdTheLine.PersistsOnLogout.Should().BeFalse();

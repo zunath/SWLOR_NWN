@@ -323,7 +323,7 @@ public class CrossSkillPerkInteractionSafetyTests
                 60,
                 70)
             .Should().Be(70,
-                "Balanced Current and Infinite Conduit must use the strictest active threshold, not add to 130%");
+                "repeated contributions to the same threshold must not add their percentages");
 
         var activeEffects = new CreatureStatusEffect();
         var lowerThreshold = new MaximumThresholdStatusEffect(60);

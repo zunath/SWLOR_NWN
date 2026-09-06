@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
-                    RestoreStaminaOnHit = 4
+                    RestoreStaminaIfMinimumTargetsHit = 4,
+                    StaminaRestoreMinimumTargets = 3
                 });
 
             ConfigureWeaponAbility(
@@ -72,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
-                    RestoreStaminaOnHit = 6
+                    RestoreStaminaIfMinimumTargetsHit = 6,
+                    StaminaRestoreMinimumTargets = 3
                 });
 
             return builder.Build();

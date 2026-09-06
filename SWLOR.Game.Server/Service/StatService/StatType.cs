@@ -797,58 +797,46 @@ namespace SWLOR.Game.Server.Service.StatService
         AreaAbilityBuffDurationSeconds = 143,
 
         /// <summary>
-        /// Minimum number of impacted targets required for a twin blade area ability to gain haste.
+        /// Minimum number of impacted targets required for an area ability to gain haste.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeAreaAbilityMinTargetsHasteThreshold = 144,
+        AreaAbilityHasteStackMinimumTargets = 144,
 
         /// <summary>
-        /// Temporary percent attack delay reduction gained per twin blade area ability haste stack.
+        /// Temporary percent attack delay reduction gained per area ability haste stack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityHastePercentAdjustment = 145,
+        AreaAbilityHastePerStack = 145,
 
         /// <summary>
-        /// Duration in seconds for TwinBladeAreaAbilityHastePercentAdjustment stacks.
+        /// Duration in seconds for AreaAbilityHastePerStack stacks.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeAreaAbilityHasteDurationSeconds = 146,
+        AreaAbilityHasteStackDurationSeconds = 146,
 
         /// <summary>
-        /// Maximum total temporary attack delay reduction allowed from TwinBladeAreaAbilityHastePercentAdjustment stacks.
+        /// Maximum total temporary attack delay reduction allowed from AreaAbilityHastePerStack stacks.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityHastePercentMax = 147,
+        AreaAbilityHasteStackMaximumPercent = 147,
 
         /// <summary>
-        /// Flat Stamina restored per impacted target by twin blade area abilities.
+        /// Flat Stamina restored per impacted target by area abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityStaminaRestorePerTarget = 148,
+        AreaHitStaminaRestorePerTarget = 148,
 
         /// <summary>
-        /// Maximum Stamina restored by TwinBladeAreaAbilityStaminaRestorePerTarget.
+        /// Maximum Stamina restored by AreaHitStaminaRestorePerTarget.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityStaminaRestoreMax = 149,
+        AreaHitStaminaRestoreMaximum = 149,
 
         /// <summary>
         /// Percent chance for twin blade area abilities to use SWLOR's standard critical rating.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TwinBladeAreaAbilityCriticalRatePercentAdjustment = 150,
-
-        /// <summary>
-        /// Flat Stamina restored when a twin blade single-target ability is used, subject to cooldown.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeSingleTargetAbilityStaminaRestore = 151,
-
-        /// <summary>
-        /// Cooldown in seconds for TwinBladeSingleTargetAbilityStaminaRestore.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeSingleTargetAbilityStaminaRestoreCooldownSeconds = 152,
 
         /// <summary>
         /// Percent chance, after taking damage from a recent target, to make the next ability activation delay zero.
@@ -861,30 +849,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         DamageTakenRecentTargetWindowSeconds = 157,
-
-        /// <summary>
-        /// Flat Stamina restored for each twin blade area haste stack successfully gained.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityStaminaRestoreOnHasteStack = 158,
-
-        /// <summary>
-        /// Flat Stamina restored per impacted target by twin blade area abilities when the cooldown-gated restore trigger succeeds.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityCooldownStaminaRestorePerTarget = 159,
-
-        /// <summary>
-        /// Maximum Stamina restored by TwinBladeAreaAbilityCooldownStaminaRestorePerTarget.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityCooldownStaminaRestoreMax = 160,
-
-        /// <summary>
-        /// Cooldown in seconds for TwinBladeAreaAbilityCooldownStaminaRestorePerTarget.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeAreaAbilityCooldownStaminaRestoreCooldownSeconds = 161,
 
         /// <summary>
         /// HP threshold percent that must be crossed before granting a no-Stamina-cost ability charge.
@@ -3126,12 +3090,6 @@ namespace SWLOR.Game.Server.Service.StatService
         TwinBladeDuelistReversalCut = 548,
 
         /// <summary>
-        /// Enables Cyclone area abilities to apply Sweeping Advance.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeCycloneSweepingAdvance = 549,
-
-        /// <summary>
         /// Evasive Combat rank applied by Vibroknife Shadow evasive abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -3286,30 +3244,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         TwinBladeDuelistReversalCutWindowSeconds = 576,
-
-        /// <summary>
-        /// Minimum targets hit required for Sweeping Advance.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeCycloneSweepingAdvanceMinimumTargets = 577,
-
-        /// <summary>
-        /// Stamina restored by Sweeping Advance.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeCycloneSweepingAdvanceStaminaRestore = 578,
-
-        /// <summary>
-        /// Haste percent granted by Sweeping Advance.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeCycloneSweepingAdvanceHastePercent = 579,
-
-        /// <summary>
-        /// Duration in seconds for Sweeping Advance.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeCycloneSweepingAdvanceDurationSeconds = 580,
 
         /// <summary>
         /// Damage added by Conduit Flare.
@@ -6071,10 +6005,6 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AbilityActivationIdleCriticalDamagePercentAdjustment = 1052,
 
-        /// <summary>Current active rank of Bolster Attack.</summary>
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
-        BolsterAttackRank = 1053,
-
         /// <summary>
         /// Flat Stamina cost charged after a hostile ranged weapon ability resolves without
         /// any critical hits.
@@ -6085,6 +6015,50 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>SkillType whose area abilities apply fragmentation; Invalid allows any skill.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AreaAbilityFragmentationSkillType = 1055,
+
+        /// <summary>Physical damage pulsed once around the first target hit by a hostile area ability.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityPulseDamage = 1056,
+
+        /// <summary>Radius in meters of the pulse around the first successful area-ability target.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AreaAbilityPulseRadiusMeters = 1057,
+
+        /// <summary>Percent damage adjustment for hostile area abilities across skills.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityDamagePercentAdjustment = 1060,
+
+        /// <summary>Percent damage adjustment for auto-attacks and single-target hostile abilities.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SingleTargetDamagePercentAdjustment = 1061,
+
+        /// <summary>Ranged Deflection granted after using a hostile area ability, even if it misses.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
+        AreaAbilityUsedAttackDeflection = 1062,
+
+        /// <summary>Duration of deflection granted after using an area ability.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AreaAbilityUsedAttackDeflectionDurationSeconds = 1063,
+
+        /// <summary>FP restored after using a hostile area ability.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityUsedFPRestore = 1064,
+
+        /// <summary>Prevents hostile forced relocation, such as pulls.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ForcedMovementImmunity = 1067,
+
+        /// <summary>Prevents Knockdown independently of Mobility Resistance.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KnockdownImmunity = 1068,
+
+        /// <summary>Prevents Dazed independently of Mind Resistance.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        DazeImmunity = 1069,
+
+        /// <summary>Grants a haste stack for each target at or beyond the threshold instead of one per cast.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AreaAbilityHasteStacksPerAdditionalTarget = 1070,
 
     }
 

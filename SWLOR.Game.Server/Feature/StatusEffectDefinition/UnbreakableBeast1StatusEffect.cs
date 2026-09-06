@@ -15,8 +15,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public UnbreakableBeast1StatusEffect()
         {
             StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -25;
-            StatGroup.Stats[StatType.MindResistance] = 100;
-            StatGroup.Stats[StatType.MobilityResistance] = 100;
+            StatGroup.Stats[StatType.KnockdownImmunity] = 1;
+            StatGroup.Stats[StatType.DazeImmunity] = 1;
+            StatGroup.Stats[StatType.ForcedMovementImmunity] = 1;
         }
     }
 }

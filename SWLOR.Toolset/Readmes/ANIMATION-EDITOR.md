@@ -23,6 +23,63 @@ The editor opens in a guided layout with **Start**, **Pose**, and **Use in game*
 Enable **Advanced** whenever you need raw joints, exact transforms, IK, retargeting, MDL exchange,
 or other target models. Switching layouts preserves the animation and its undo history.
 
+## Bible animation drafts
+
+The first nine image references on the Bible's **Animations** tab have editable drafts in
+`design/animations/drafts/vibroblade/`. Open `preview.html` in your normal browser to choose a
+motion, play it slowly, orbit the mannequin, and jump to its main poses. Its accessory proxies
+show the intended blade and shield directions; check the final equipment in NWN.
+
+In the toolset, choose **Open project** and open any of the nine `.swlanim` files. These drafts
+use the native male humanoid `a_ba` rig, have a ready pose at both ends, and remain editable.
+All nine are installed into the `a_ba` and `a_fa` humanoid supermodel chains in `sw_cr_creature`.
+Their installed editable copies are in `design/animations/`. The images establish the main
+pose; wind-up, recovery, and durations are authored interpretations for review. The shield
+barriers, hit effects, blood, targets, and gameplay outcomes pictured in the references are
+not part of the skeletal clips. Covering Strike uses a small returning body offset and a hop;
+actual character travel requires separate gameplay support.
+
+After rebuilding C# and deploying `sw_cr_creature.hak` to the server and client, use the existing
+Shield Bash, Shield Wall, Covering Strike, Invincible, Riot Blade, Rending Strike, and Savage Cleave
+perks. Every rank references its generated `AuthoredAnimation` clip. Shield Bash and Riot Blade
+replace native melee swings while readied and restore them after consumption/cancellation;
+they do not enqueue another animation at impact. Other clips play once at activation, or loop
+for a longer cast/channel. Damage, costs, cooldowns, and movement rules are unchanged.
+
+`/animtest ShieldBash` previews a clip on your character; `/animtest` lists all names. This debug
+command is available to administrators and everyone on a test server. Hacking Blade and Carve
+have no current ability definitions, so their clips are installed and previewable but have no
+combat binding. They are not substituted for unrelated abilities.
+
+To update an installed draft from the command line, close the toolset and run this against an
+isolated checkout with the complete HAK source chain available:
+
+```powershell
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install . design/animations/drafts/vibroblade/ShieldBash.swlanim a_ba a_fa
+```
+
+The command uses the editor's validated installation transaction, then the HAK and C# builds
+must be deployed again. Review both the parent repository and HAK submodule changes.
+
+`manifest.json` records each Bible row, image link, interpretation, key poses, and validation
+hash. `design/animations/recipes/vibroblade.json` preserves the authored pose controls so Codex
+can make repeatable changes such as a stronger lunge or a faster cut. It does not call an
+external AI service. Keep manual edits in **Save as** copies before regenerating the originals.
+
+Regenerate with a local copy of the HAK source model (substitute your actual path):
+
+```powershell
+dotnet build tools/SWLOR.AnimationDrafts/SWLOR.AnimationDrafts.csproj -p:RunPostBuildEvent=Never
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate C:/Projects/SWLOR_NWN/SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/recipes/vibroblade.json design/animations/drafts/vibroblade --overwrite
+```
+
+The generator checks joint reach, foot clearance, a matching start/end pose, project loading,
+and native MDL exchange before writing outputs. `AnimationDraftAssetTests` also checks planted
+feet during interpolation and correspondence with the Bible references. Recipe vectors use
+native metres (`+Y` forward, `+Z` up); `chest`, `hips`, and `shield` use degrees in the order
+forward lean, yaw, side bend. Each beat overrides the corresponding ready pose, and the
+generator solves limb positions at 20 frames per second with smooth timing between beats.
+
 ## Advanced authoring
 
 1. Enter a mounted NWN model resref (for example `a_ba`) and choose **Load rig**, or choose

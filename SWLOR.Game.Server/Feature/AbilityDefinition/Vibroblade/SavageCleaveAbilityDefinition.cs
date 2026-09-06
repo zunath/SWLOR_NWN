@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.AnimationService;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
-                .UsesAnimation(Animation.Whirlwind)
+                .UsesAnimation(AuthoredAnimation.SavageCleave)
                 .HasRecastDelay(RecastGroup.SavageCleave, 24f)
                 .SkillType(SkillType.Vibroblade)
                 .HasImpactAction((activator, target, effectivePerkLevel, targetLocation) =>

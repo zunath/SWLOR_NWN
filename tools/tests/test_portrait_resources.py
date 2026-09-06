@@ -94,10 +94,28 @@ class PortraitConversionCorpusTests(unittest.TestCase):
         self.assertFalse([p.name for p in resources.root.iterdir() if p.suffix.lower() == '.tga'])
         actual_dds = {p.name.lower() for p in resources.root.iterdir() if p.suffix.lower() == '.dds'}
         recorded_dds = {r['output'].lower() for r in resources.conversions.values()}
-        self.assertSetEqual(actual_dds, recorded_dds)
+        with (haks / 'portrait_size_repairs.csv').open(newline='', encoding='utf-8') as stream:
+            repairs = list(csv.DictReader(stream))
+        self.assertEqual(len(repairs), 10)
+        repair_names = {row['file'] for row in repairs}
+        self.assertEqual(len(repair_names), 10)
+        self.assertFalse(repair_names & recorded_dds)
+        self.assertSetEqual(actual_dds, recorded_dds | repair_names)
         self.assertFalse([name for name in actual_dds if Path(name).stem.endswith('h')])
         actual_txi = {p.name.lower() for p in resources.root.iterdir() if p.suffix.lower() == '.txi'}
-        self.assertSetEqual(actual_txi, {str(Path(name).with_suffix('.txi')) for name in recorded_dds})
+        self.assertSetEqual(actual_txi, {str(Path(name).with_suffix('.txi')) for name in recorded_dds | repair_names})
+        for row in repairs:
+            with self.subTest(repair=row['file']):
+                data = resources.path(row['file']).read_bytes()
+                self.assertEqual(sha(data), row['sha256'])
+                self.assertEqual(data[:4], b'DDS ')
+                self.assertEqual(data[84:88], b'DXT1')
+                width, height = int(row['width']), int(row['height'])
+                self.assertEqual(struct.unpack_from('<II', data, 12), (height, width))
+                self.assertEqual(len(data), 128 + ((width + 3) // 4) * ((height + 3) // 4) * 8)
+                self.assertEqual(struct.unpack_from('<I', data, 28)[0], 1)
+                self.assertTrue(struct.unpack_from('<I', data, 8)[0] & 0x20000)
+                self.assertEqual(resources.path(row['file']).with_suffix('.txi').read_bytes(), b'mipmap 0\n')
         for row in resources.conversions.values():
             with self.subTest(portrait=row['file']):
                 self.assertFalse(resources.path(row['file']).exists())

@@ -1,0 +1,1882 @@
+{
+  "workbook": "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx",
+  "model": "a_ba",
+  "readyShield": {
+    "root": [
+      0,
+      0,
+      1.05
+    ],
+    "chest": [
+      4,
+      -8,
+      0
+    ],
+    "hips": [
+      0,
+      -3,
+      0
+    ],
+    "leftHand": [
+      -0.3,
+      0.38,
+      1.38
+    ],
+    "rightHand": [
+      0.44,
+      0.06,
+      1.08
+    ],
+    "blade": [
+      0.35,
+      0.75,
+      -0.24
+    ],
+    "leftFoot": [
+      -0.4,
+      0.24,
+      0.14
+    ],
+    "rightFoot": [
+      0.4,
+      -0.26,
+      0.14
+    ],
+    "shield": [
+      0,
+      -8,
+      0
+    ]
+  },
+  "readyBlade": {
+    "root": [
+      0,
+      0,
+      1.04
+    ],
+    "chest": [
+      5,
+      8,
+      0
+    ],
+    "hips": [
+      0,
+      2,
+      0
+    ],
+    "leftHand": [
+      -0.43,
+      -0.14,
+      1.2
+    ],
+    "rightHand": [
+      0.4,
+      0.27,
+      1.22
+    ],
+    "blade": [
+      0.3,
+      0.7,
+      0.35
+    ],
+    "leftFoot": [
+      -0.4,
+      0.26,
+      0.14
+    ],
+    "rightFoot": [
+      0.4,
+      -0.26,
+      0.14
+    ],
+    "shield": [
+      0,
+      0,
+      0
+    ]
+  },
+  "motions": [
+    {
+      "id": "ShieldBash",
+      "name": "Shield Bash",
+      "bibleRow": 2,
+      "reference": "https://chatgpt.com/s/m_6a3fdd47b8f88191a44d7c29b566f837",
+      "observation": "A broad stance, forward left-hand shield impact, and a low right-hand blade.",
+      "interpretation": "Short recoil into the shield side, a fast forward jab, then recovery. Both feet stay planted. The impact burst is a separate VFX.",
+      "shield": true,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.18,
+          "label": "Draw back",
+          "pose": {
+            "root": [
+              0.02,
+              -0.035,
+              1.03
+            ],
+            "chest": [
+              1,
+              8,
+              0
+            ],
+            "leftHand": [
+              -0.34,
+              0.22,
+              1.39
+            ],
+            "shield": [
+              0,
+              4,
+              0
+            ]
+          }
+        },
+        {
+          "time": 0.34,
+          "label": "Drive",
+          "pose": {
+            "root": [
+              -0.06,
+              0.075,
+              1
+            ],
+            "chest": [
+              12,
+              -16,
+              0
+            ],
+            "hips": [
+              0,
+              -8,
+              0
+            ],
+            "leftHand": [
+              -0.33,
+              0.64,
+              1.41
+            ],
+            "rightHand": [
+              0.43,
+              -0.13,
+              1.01
+            ],
+            "blade": [
+              0.5,
+              0.3,
+              -0.5
+            ],
+            "shield": [
+              0,
+              -14,
+              0
+            ]
+          }
+        },
+        {
+          "time": 0.42,
+          "label": "Impact",
+          "pose": {
+            "root": [
+              -0.08,
+              0.11,
+              1
+            ],
+            "chest": [
+              14,
+              -18,
+              -2
+            ],
+            "hips": [
+              0,
+              -9,
+              0
+            ],
+            "leftHand": [
+              -0.34,
+              0.72,
+              1.42
+            ],
+            "rightHand": [
+              0.4,
+              -0.15,
+              0.99
+            ],
+            "blade": [
+              0.5,
+              0.3,
+              -0.5
+            ],
+            "shield": [
+              0,
+              -15,
+              0
+            ]
+          }
+        },
+        {
+          "time": 0.53,
+          "label": "Recoil",
+          "pose": {
+            "root": [
+              -0.055,
+              0.075,
+              1.01
+            ],
+            "chest": [
+              9,
+              -14,
+              0
+            ],
+            "leftHand": [
+              -0.32,
+              0.58,
+              1.4
+            ],
+            "rightHand": [
+              0.43,
+              -0.07,
+              1.04
+            ],
+            "shield": [
+              0,
+              -12,
+              0
+            ]
+          }
+        },
+        {
+          "time": 0.8,
+          "label": "Regain guard",
+          "pose": {
+            "leftHand": [
+              -0.3,
+              0.41,
+              1.38
+            ]
+          }
+        },
+        {
+          "time": 1,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "ShieldWall",
+      "name": "Shield Wall",
+      "bibleRow": 3,
+      "reference": "https://chatgpt.com/s/m_6a3fdd84a41c8191ab3fcad9d97786f7",
+      "observation": "The shield is extended at shoulder height over a wide defensive stance; the blade stays low.",
+      "interpretation": "Raise and brace the shield, hold the protective posture with a small weight shift, then lower to guard. The pictured barrier and allies are separate scene elements.",
+      "shield": true,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.2,
+          "label": "Set stance",
+          "pose": {
+            "root": [
+              -0.02,
+              0,
+              1.01
+            ],
+            "chest": [
+              6,
+              -10,
+              0
+            ],
+            "leftHand": [
+              -0.31,
+              0.45,
+              1.42
+            ],
+            "rightHand": [
+              0.45,
+              0.03,
+              1
+            ],
+            "blade": [
+              0.5,
+              0.45,
+              -0.6
+            ]
+          }
+        },
+        {
+          "time": 0.42,
+          "label": "Raise shield",
+          "pose": {
+            "root": [
+              -0.03,
+              0.03,
+              1
+            ],
+            "chest": [
+              7,
+              -13,
+              0
+            ],
+            "hips": [
+              0,
+              -6,
+              0
+            ],
+            "leftHand": [
+              -0.32,
+              0.64,
+              1.45
+            ],
+            "rightHand": [
+              0.45,
+              -0.02,
+              0.99
+            ],
+            "blade": [
+              0.6,
+              0.3,
+              -0.6
+            ],
+            "shield": [
+              0,
+              -10,
+              0
+            ]
+          }
+        },
+        {
+          "time": 1,
+          "label": "Hold",
+          "pose": {
+            "root": [
+              -0.035,
+              0.03,
+              0.995
+            ],
+            "chest": [
+              7,
+              -13,
+              0
+            ],
+            "hips": [
+              0,
+              -6,
+              0
+            ],
+            "leftHand": [
+              -0.32,
+              0.64,
+              1.45
+            ],
+            "rightHand": [
+              0.45,
+              -0.02,
+              0.99
+            ],
+            "blade": [
+              0.6,
+              0.3,
+              -0.6
+            ],
+            "shield": [
+              0,
+              -10,
+              0
+            ]
+          }
+        },
+        {
+          "time": 1.55,
+          "label": "Brace",
+          "pose": {
+            "root": [
+              -0.025,
+              0.04,
+              1
+            ],
+            "chest": [
+              8,
+              -13,
+              0
+            ],
+            "hips": [
+              0,
+              -6,
+              0
+            ],
+            "leftHand": [
+              -0.32,
+              0.64,
+              1.45
+            ],
+            "rightHand": [
+              0.45,
+              -0.02,
+              0.99
+            ],
+            "blade": [
+              0.6,
+              0.3,
+              -0.6
+            ],
+            "shield": [
+              0,
+              -10,
+              0
+            ]
+          }
+        },
+        {
+          "time": 1.8,
+          "label": "Lower",
+          "pose": {
+            "root": [
+              -0.01,
+              0.01,
+              1.02
+            ],
+            "chest": [
+              5,
+              -9,
+              0
+            ],
+            "leftHand": [
+              -0.3,
+              0.45,
+              1.4
+            ]
+          }
+        },
+        {
+          "time": 2.1,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "CoveringStrike",
+      "name": "Covering Strike",
+      "bibleRow": 4,
+      "reference": "https://chatgpt.com/s/m_6a3fde0e8a34819181290c21cdf5dc91",
+      "observation": "A low airborne lunge leads with the left shield while the blade trails behind the right side.",
+      "interpretation": "A compact hop-lunge with a lifted lead knee, shield-led contact, landing, and a recovery step. The small body offset returns to origin; actual travel is not implemented.",
+      "shield": true,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.2,
+          "label": "Crouch",
+          "pose": {
+            "root": [
+              0,
+              -0.04,
+              0.96
+            ],
+            "chest": [
+              15,
+              -10,
+              0
+            ],
+            "leftHand": [
+              -0.31,
+              0.42,
+              1.32
+            ],
+            "rightHand": [
+              0.43,
+              -0.15,
+              1.14
+            ],
+            "blade": [
+              0.85,
+              -0.35,
+              -0.1
+            ]
+          }
+        },
+        {
+          "time": 0.36,
+          "label": "Launch",
+          "pose": {
+            "root": [
+              -0.02,
+              0.07,
+              1.01
+            ],
+            "chest": [
+              22,
+              -15,
+              0
+            ],
+            "leftHand": [
+              -0.32,
+              0.66,
+              1.39
+            ],
+            "rightHand": [
+              0.43,
+              -0.15,
+              1.19
+            ],
+            "blade": [
+              0.85,
+              -0.4,
+              -0.1
+            ],
+            "leftFoot": [
+              -0.31,
+              0.4,
+              0.33
+            ],
+            "rightFoot": [
+              0.34,
+              -0.26,
+              0.17
+            ]
+          }
+        },
+        {
+          "time": 0.48,
+          "label": "Lunge",
+          "pose": {
+            "root": [
+              -0.02,
+              0.17,
+              1.04
+            ],
+            "chest": [
+              23,
+              -15,
+              0
+            ],
+            "leftHand": [
+              -0.32,
+              0.76,
+              1.43
+            ],
+            "rightHand": [
+              0.44,
+              -0.09,
+              1.21
+            ],
+            "blade": [
+              0.9,
+              -0.4,
+              -0.1
+            ],
+            "leftFoot": [
+              -0.31,
+              0.48,
+              0.3
+            ],
+            "rightFoot": [
+              0.34,
+              -0.24,
+              0.23
+            ]
+          }
+        },
+        {
+          "time": 0.62,
+          "label": "Land",
+          "pose": {
+            "root": [
+              -0.03,
+              0.15,
+              0.96
+            ],
+            "chest": [
+              17,
+              -12,
+              0
+            ],
+            "leftHand": [
+              -0.3,
+              0.67,
+              1.36
+            ],
+            "rightHand": [
+              0.43,
+              -0.08,
+              1.11
+            ],
+            "blade": [
+              0.8,
+              -0.3,
+              -0.2
+            ],
+            "leftFoot": [
+              -0.31,
+              0.48,
+              0.14
+            ],
+            "rightFoot": [
+              0.34,
+              -0.24,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.84,
+          "label": "Recover",
+          "pose": {
+            "root": [
+              -0.02,
+              0.06,
+              1.01
+            ],
+            "chest": [
+              8,
+              -10,
+              0
+            ],
+            "leftHand": [
+              -0.3,
+              0.48,
+              1.38
+            ],
+            "leftFoot": [
+              -0.31,
+              0.48,
+              0.14
+            ],
+            "rightFoot": [
+              0.34,
+              -0.26,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 1.04,
+          "label": "Step back",
+          "pose": {
+            "leftFoot": [
+              -0.33,
+              0.35,
+              0.25
+            ]
+          }
+        },
+        {
+          "time": 1.24,
+          "label": "Settle",
+          "pose": {}
+        },
+        {
+          "time": 1.4,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "Invincible",
+      "name": "Invincible",
+      "bibleRow": 5,
+      "reference": "https://chatgpt.com/s/m_6a3fde75a0d48191afd875e8ee2478e4",
+      "observation": "An upright, symmetrical defensive stance keeps the shield close and the blade angled down.",
+      "interpretation": "Settle firmly into a low guard, lift the chest, and brace against two subtle impacts. The protective sphere belongs to VFX; this clip supplies the body gesture.",
+      "shield": true,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.22,
+          "label": "Set guard",
+          "pose": {
+            "root": [
+              0,
+              0,
+              0.98
+            ],
+            "chest": [
+              0,
+              -3,
+              0
+            ],
+            "hips": [
+              0,
+              0,
+              0
+            ],
+            "leftHand": [
+              -0.31,
+              0.33,
+              1.34
+            ],
+            "rightHand": [
+              0.48,
+              0.02,
+              0.98
+            ],
+            "blade": [
+              0.65,
+              0.35,
+              -0.6
+            ],
+            "shield": [
+              0,
+              -4,
+              0
+            ]
+          }
+        },
+        {
+          "time": 0.48,
+          "label": "Brace",
+          "pose": {
+            "root": [
+              0,
+              0.01,
+              1.015
+            ],
+            "chest": [
+              -3,
+              -2,
+              0
+            ],
+            "hips": [
+              0,
+              0,
+              0
+            ],
+            "leftHand": [
+              -0.31,
+              0.38,
+              1.41
+            ],
+            "rightHand": [
+              0.48,
+              0.02,
+              1
+            ],
+            "blade": [
+              0.65,
+              0.35,
+              -0.6
+            ],
+            "shield": [
+              0,
+              -4,
+              0
+            ]
+          }
+        },
+        {
+          "time": 0.72,
+          "label": "Absorb",
+          "pose": {
+            "root": [
+              0,
+              -0.015,
+              0.995
+            ],
+            "chest": [
+              0,
+              -4,
+              0
+            ],
+            "hips": [
+              0,
+              0,
+              0
+            ],
+            "leftHand": [
+              -0.31,
+              0.35,
+              1.38
+            ],
+            "rightHand": [
+              0.48,
+              0.02,
+              0.99
+            ],
+            "blade": [
+              0.65,
+              0.35,
+              -0.6
+            ],
+            "shield": [
+              0,
+              -4,
+              0
+            ]
+          }
+        },
+        {
+          "time": 1.03,
+          "label": "Stand firm",
+          "pose": {
+            "root": [
+              0,
+              0.01,
+              1.015
+            ],
+            "chest": [
+              -3,
+              -2,
+              0
+            ],
+            "hips": [
+              0,
+              0,
+              0
+            ],
+            "leftHand": [
+              -0.31,
+              0.38,
+              1.41
+            ],
+            "rightHand": [
+              0.48,
+              0.02,
+              1
+            ],
+            "blade": [
+              0.65,
+              0.35,
+              -0.6
+            ],
+            "shield": [
+              0,
+              -4,
+              0
+            ]
+          }
+        },
+        {
+          "time": 1.38,
+          "label": "Release",
+          "pose": {
+            "root": [
+              0,
+              0,
+              1.02
+            ],
+            "chest": [
+              1,
+              -5,
+              0
+            ],
+            "leftHand": [
+              -0.3,
+              0.36,
+              1.39
+            ]
+          }
+        },
+        {
+          "time": 1.7,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "HackingBlade",
+      "name": "Hacking Blade",
+      "bibleRow": 6,
+      "reference": "https://chatgpt.com/s/m_6a3fdf2b35f88191abf0bba312b2fa2e",
+      "observation": "The blade finishes a descending diagonal cut in front of a forward-weighted stance; the empty left arm counterbalances.",
+      "interpretation": "Raise the blade over the right shoulder and drive a heavy diagonal cut downward, with a low follow-through and deliberate recovery.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.26,
+          "label": "Wind up",
+          "pose": {
+            "root": [
+              0,
+              -0.025,
+              1.06
+            ],
+            "chest": [
+              0,
+              -23,
+              -4
+            ],
+            "hips": [
+              0,
+              -9,
+              0
+            ],
+            "rightHand": [
+              0.46,
+              -0.16,
+              1.81
+            ],
+            "leftHand": [
+              -0.43,
+              -0.17,
+              1.23
+            ],
+            "blade": [
+              0.12,
+              0.3,
+              0.95
+            ]
+          }
+        },
+        {
+          "time": 0.4,
+          "label": "Descend",
+          "pose": {
+            "root": [
+              0.025,
+              0.055,
+              1.01
+            ],
+            "chest": [
+              9,
+              5,
+              0
+            ],
+            "hips": [
+              0,
+              2,
+              0
+            ],
+            "rightHand": [
+              0.43,
+              0.41,
+              1.54
+            ],
+            "leftHand": [
+              -0.44,
+              -0.15,
+              1.23
+            ],
+            "blade": [
+              0.4,
+              0.88,
+              0.05
+            ]
+          }
+        },
+        {
+          "time": 0.52,
+          "label": "Impact",
+          "pose": {
+            "root": [
+              0.04,
+              0.11,
+              0.98
+            ],
+            "chest": [
+              13,
+              22,
+              1
+            ],
+            "hips": [
+              0,
+              9,
+              0
+            ],
+            "rightHand": [
+              0.2,
+              0.745,
+              1.09
+            ],
+            "leftHand": [
+              -0.42,
+              -0.22,
+              1.24
+            ],
+            "blade": [
+              0.12,
+              0.6,
+              -0.8
+            ]
+          }
+        },
+        {
+          "time": 0.65,
+          "label": "Follow through",
+          "pose": {
+            "root": [
+              0.025,
+              0.09,
+              0.985
+            ],
+            "chest": [
+              13,
+              35,
+              1
+            ],
+            "hips": [
+              0,
+              12,
+              0
+            ],
+            "rightHand": [
+              -0.12,
+              0.43,
+              1
+            ],
+            "leftHand": [
+              -0.43,
+              -0.24,
+              1.25
+            ],
+            "blade": [
+              -0.7,
+              0.42,
+              -0.5
+            ]
+          }
+        },
+        {
+          "time": 0.9,
+          "label": "Recover",
+          "pose": {
+            "chest": [
+              5,
+              18,
+              0
+            ],
+            "rightHand": [
+              0.16,
+              0.35,
+              1.08
+            ],
+            "blade": [
+              -0.2,
+              0.7,
+              0.25
+            ]
+          }
+        },
+        {
+          "time": 1.2,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "RiotBlade",
+      "name": "Riot Blade",
+      "bibleRow": 7,
+      "reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
+      "observation": "A direct right-hand cut extends toward one target with a compact arc and a braced front leg.",
+      "interpretation": "A fast shoulder draw, sharp forward cut, and short cross-body follow-through. Its shorter timing distinguishes it from the heavier strikes.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.15,
+          "label": "Draw",
+          "pose": {
+            "root": [
+              0,
+              -0.02,
+              1.04
+            ],
+            "chest": [
+              4,
+              -18,
+              0
+            ],
+            "hips": [
+              0,
+              -7,
+              0
+            ],
+            "rightHand": [
+              0.49,
+              0.02,
+              1.4
+            ],
+            "blade": [
+              0.8,
+              -0.25,
+              0.5
+            ]
+          }
+        },
+        {
+          "time": 0.29,
+          "label": "Cut",
+          "pose": {
+            "root": [
+              0.02,
+              0.06,
+              1.015
+            ],
+            "chest": [
+              10,
+              12,
+              0
+            ],
+            "hips": [
+              0,
+              6,
+              0
+            ],
+            "rightHand": [
+              0.31,
+              0.64,
+              1.36
+            ],
+            "blade": [
+              0.55,
+              0.8,
+              -0.1
+            ],
+            "leftHand": [
+              -0.43,
+              -0.2,
+              1.21
+            ]
+          }
+        },
+        {
+          "time": 0.35,
+          "label": "Impact",
+          "pose": {
+            "root": [
+              0.03,
+              0.1,
+              1
+            ],
+            "chest": [
+              11,
+              24,
+              0
+            ],
+            "hips": [
+              0,
+              10,
+              0
+            ],
+            "rightHand": [
+              0.16,
+              0.765,
+              1.29
+            ],
+            "blade": [
+              0.3,
+              0.95,
+              -0.08
+            ],
+            "leftHand": [
+              -0.43,
+              -0.22,
+              1.21
+            ]
+          }
+        },
+        {
+          "time": 0.46,
+          "label": "Follow through",
+          "pose": {
+            "root": [
+              0.02,
+              0.07,
+              1.01
+            ],
+            "chest": [
+              9,
+              35,
+              0
+            ],
+            "hips": [
+              0,
+              12,
+              0
+            ],
+            "rightHand": [
+              -0.09,
+              0.6,
+              1.19
+            ],
+            "blade": [
+              -0.8,
+              0.5,
+              -0.2
+            ],
+            "leftHand": [
+              -0.43,
+              -0.21,
+              1.23
+            ]
+          }
+        },
+        {
+          "time": 0.66,
+          "label": "Recover",
+          "pose": {
+            "rightHand": [
+              0.18,
+              0.37,
+              1.2
+            ],
+            "blade": [
+              -0.15,
+              0.9,
+              0.2
+            ]
+          }
+        },
+        {
+          "time": 0.9,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "RendingStrike",
+      "name": "Rending Strike",
+      "bibleRow": 8,
+      "reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
+      "observation": "A heavy cut crosses upward through the target's lower torso, with the left arm held back.",
+      "interpretation": "Draw low on the right, transfer weight into a rising diagonal cut, and finish across the body before resetting.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.28,
+          "label": "Low draw",
+          "pose": {
+            "root": [
+              0,
+              -0.02,
+              1
+            ],
+            "chest": [
+              8,
+              -25,
+              -3
+            ],
+            "hips": [
+              0,
+              -9,
+              0
+            ],
+            "rightHand": [
+              0.53,
+              -0.08,
+              0.98
+            ],
+            "blade": [
+              0.5,
+              -0.4,
+              -0.8
+            ],
+            "leftHand": [
+              -0.45,
+              -0.13,
+              1.24
+            ]
+          }
+        },
+        {
+          "time": 0.48,
+          "label": "Drive up",
+          "pose": {
+            "root": [
+              0.03,
+              0.075,
+              0.975
+            ],
+            "chest": [
+              14,
+              9,
+              0
+            ],
+            "hips": [
+              0,
+              4,
+              0
+            ],
+            "rightHand": [
+              0.35,
+              0.48,
+              1.1
+            ],
+            "blade": [
+              0.4,
+              0.88,
+              -0.12
+            ],
+            "leftHand": [
+              -0.44,
+              -0.19,
+              1.28
+            ]
+          }
+        },
+        {
+          "time": 0.62,
+          "label": "Impact",
+          "pose": {
+            "root": [
+              0.035,
+              0.11,
+              0.985
+            ],
+            "chest": [
+              12,
+              25,
+              1
+            ],
+            "hips": [
+              0,
+              10,
+              0
+            ],
+            "rightHand": [
+              0.13,
+              0.775,
+              1.28
+            ],
+            "blade": [
+              0.02,
+              0.82,
+              0.58
+            ],
+            "leftHand": [
+              -0.44,
+              -0.21,
+              1.29
+            ]
+          }
+        },
+        {
+          "time": 0.78,
+          "label": "Rise through",
+          "pose": {
+            "root": [
+              0.015,
+              0.075,
+              1.02
+            ],
+            "chest": [
+              7,
+              40,
+              1
+            ],
+            "hips": [
+              0,
+              13,
+              0
+            ],
+            "rightHand": [
+              -0.1,
+              0.63,
+              1.49
+            ],
+            "blade": [
+              -0.5,
+              0.5,
+              0.7
+            ],
+            "leftHand": [
+              -0.44,
+              -0.2,
+              1.29
+            ]
+          }
+        },
+        {
+          "time": 1.05,
+          "label": "Recover",
+          "pose": {
+            "chest": [
+              5,
+              15,
+              0
+            ],
+            "rightHand": [
+              0.11,
+              0.4,
+              1.41
+            ],
+            "blade": [
+              -0.1,
+              0.55,
+              0.8
+            ]
+          }
+        },
+        {
+          "time": 1.38,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "SavageCleave",
+      "name": "Savage Cleave",
+      "bibleRow": 9,
+      "reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
+      "observation": "A low, broad stance drives a waist-height sweep through a wide frontal arc. The free arm extends for balance.",
+      "interpretation": "A large right-side wind-up becomes a broad horizontal sweep, with hips and chest rotating together. Both feet remain planted through the frontal sweep.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.32,
+          "label": "Wide draw",
+          "pose": {
+            "root": [
+              0,
+              -0.02,
+              0.96
+            ],
+            "chest": [
+              13,
+              -38,
+              0
+            ],
+            "hips": [
+              0,
+              -15,
+              0
+            ],
+            "rightHand": [
+              0.61,
+              -0.08,
+              1.22
+            ],
+            "blade": [
+              0.85,
+              -0.5,
+              0.02
+            ],
+            "leftHand": [
+              -0.55,
+              0.01,
+              1.35
+            ]
+          }
+        },
+        {
+          "time": 0.49,
+          "label": "Sweep right",
+          "pose": {
+            "root": [
+              0.015,
+              0.05,
+              0.95
+            ],
+            "chest": [
+              14,
+              -8,
+              0
+            ],
+            "hips": [
+              0,
+              -3,
+              0
+            ],
+            "rightHand": [
+              0.51,
+              0.53,
+              1.15
+            ],
+            "blade": [
+              0.8,
+              0.6,
+              0
+            ],
+            "leftHand": [
+              -0.58,
+              -0.07,
+              1.35
+            ]
+          }
+        },
+        {
+          "time": 0.63,
+          "label": "Front arc",
+          "pose": {
+            "root": [
+              0.02,
+              0.075,
+              0.95
+            ],
+            "chest": [
+              14,
+              25,
+              0
+            ],
+            "hips": [
+              0,
+              11,
+              0
+            ],
+            "rightHand": [
+              0.18,
+              0.765,
+              1.16
+            ],
+            "blade": [
+              0.35,
+              0.94,
+              0
+            ],
+            "leftHand": [
+              -0.58,
+              -0.13,
+              1.35
+            ]
+          }
+        },
+        {
+          "time": 0.8,
+          "label": "Sweep left",
+          "pose": {
+            "root": [
+              0,
+              0.05,
+              0.97
+            ],
+            "chest": [
+              11,
+              61,
+              0
+            ],
+            "hips": [
+              0,
+              23,
+              0
+            ],
+            "rightHand": [
+              -0.39,
+              0.44,
+              1.18
+            ],
+            "blade": [
+              -0.88,
+              0.46,
+              0.01
+            ],
+            "leftHand": [
+              -0.57,
+              -0.19,
+              1.37
+            ]
+          }
+        },
+        {
+          "time": 0.96,
+          "label": "Follow through",
+          "pose": {
+            "root": [
+              -0.02,
+              0.01,
+              1
+            ],
+            "chest": [
+              8,
+              69,
+              0
+            ],
+            "hips": [
+              0,
+              24,
+              0
+            ],
+            "rightHand": [
+              -0.46,
+              0.28,
+              1.2
+            ],
+            "blade": [
+              -0.99,
+              -0.05,
+              0.06
+            ],
+            "leftHand": [
+              -0.53,
+              -0.21,
+              1.35
+            ]
+          }
+        },
+        {
+          "time": 1.19,
+          "label": "Recover",
+          "pose": {
+            "chest": [
+              5,
+              22,
+              0
+            ],
+            "rightHand": [
+              0,
+              0.39,
+              1.3
+            ],
+            "blade": [
+              -0.25,
+              0.8,
+              0.3
+            ]
+          }
+        },
+        {
+          "time": 1.55,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    },
+    {
+      "id": "Carve",
+      "name": "Carve",
+      "bibleRow": 10,
+      "reference": "https://chatgpt.com/s/m_6a3fdf5024348191ba38c0965f358b0d",
+      "observation": "The extended blade cuts deeply across the front of the target and rises toward the upper torso.",
+      "interpretation": "Load the blade near the right hip, extend into a long rising carve, briefly hold the extended line, and recover under control.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Ready",
+          "pose": {}
+        },
+        {
+          "time": 0.24,
+          "label": "Load",
+          "pose": {
+            "root": [
+              0,
+              -0.025,
+              1
+            ],
+            "chest": [
+              8,
+              -19,
+              -2
+            ],
+            "hips": [
+              0,
+              -7,
+              0
+            ],
+            "rightHand": [
+              0.49,
+              0,
+              0.99
+            ],
+            "blade": [
+              0.9,
+              -0.15,
+              -0.4
+            ]
+          }
+        },
+        {
+          "time": 0.41,
+          "label": "Draw across",
+          "pose": {
+            "root": [
+              0.025,
+              0.08,
+              0.98
+            ],
+            "chest": [
+              15,
+              8,
+              0
+            ],
+            "hips": [
+              0,
+              3,
+              0
+            ],
+            "rightHand": [
+              0.35,
+              0.49,
+              1.15
+            ],
+            "blade": [
+              0.55,
+              0.8,
+              0.2
+            ],
+            "leftHand": [
+              -0.41,
+              -0.24,
+              1.24
+            ]
+          }
+        },
+        {
+          "time": 0.55,
+          "label": "Carve",
+          "pose": {
+            "root": [
+              0.03,
+              0.13,
+              0.99
+            ],
+            "chest": [
+              15,
+              23,
+              0
+            ],
+            "hips": [
+              0,
+              9,
+              0
+            ],
+            "rightHand": [
+              0.17,
+              0.81,
+              1.32
+            ],
+            "blade": [
+              0.27,
+              0.81,
+              0.52
+            ],
+            "leftHand": [
+              -0.4,
+              -0.25,
+              1.26
+            ]
+          }
+        },
+        {
+          "time": 0.63,
+          "label": "Extend",
+          "pose": {
+            "root": [
+              0.03,
+              0.13,
+              1
+            ],
+            "chest": [
+              13,
+              27,
+              0
+            ],
+            "hips": [
+              0,
+              11,
+              0
+            ],
+            "rightHand": [
+              0.1,
+              0.82,
+              1.36
+            ],
+            "blade": [
+              0.15,
+              0.8,
+              0.58
+            ],
+            "leftHand": [
+              -0.4,
+              -0.25,
+              1.27
+            ]
+          }
+        },
+        {
+          "time": 0.79,
+          "label": "Finish high",
+          "pose": {
+            "root": [
+              0.005,
+              0.075,
+              1.03
+            ],
+            "chest": [
+              7,
+              38,
+              0
+            ],
+            "hips": [
+              0,
+              13,
+              0
+            ],
+            "rightHand": [
+              -0.09,
+              0.59,
+              1.53
+            ],
+            "blade": [
+              -0.5,
+              0.5,
+              0.7
+            ],
+            "leftHand": [
+              -0.42,
+              -0.23,
+              1.29
+            ]
+          }
+        },
+        {
+          "time": 1.02,
+          "label": "Recover",
+          "pose": {
+            "chest": [
+              5,
+              15,
+              0
+            ],
+            "rightHand": [
+              0.1,
+              0.41,
+              1.42
+            ],
+            "blade": [
+              -0.1,
+              0.6,
+              0.8
+            ]
+          }
+        },
+        {
+          "time": 1.35,
+          "label": "Ready",
+          "pose": {}
+        }
+      ]
+    }
+  ]
+}

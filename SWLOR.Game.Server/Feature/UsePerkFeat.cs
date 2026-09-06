@@ -508,6 +508,13 @@ namespace SWLOR.Game.Server.Feature
                 /// </summary>
                 void PlayActivationAnimation(float animationLength)
                 {
+                    if (ability.AuthoredAnimation != null)
+                    {
+                        NamedAnimation.Queue(activator, ability.AuthoredAnimation,
+                            Math.Max(ability.AuthoredAnimation.Duration, animationLength));
+                        return;
+                    }
+
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;
 
@@ -854,6 +861,8 @@ namespace SWLOR.Game.Server.Feature
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
             SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
             SuppressQueuedAbilityFeedback(activator);
+
+            QueuedAttackAnimation.Begin(activator, ability.QueuedAttackAnimation);
 
             ApplyRequirementEffects(activator, ability);
 
@@ -1229,6 +1238,7 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Combat.CompleteAbilityStaminaCostContext(activator, abilityDetail);
+                QueuedAttackAnimation.Stop(activator);
                 DeleteLocalString(activator, ActiveAbilityIdName);
                 DeleteLocalInt(activator, ActiveAbilityFeatIdName);
                 DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
@@ -1261,6 +1271,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
         [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);
@@ -1272,6 +1283,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to clear</param>
         private static void ClearQueuedAbility(uint player)
         {
+            QueuedAttackAnimation.Stop(player);
             Combat.ClearQueuedWeaponAbilityActivationBonuses(player);
             Combat.ClearQueuedWeaponAbilityAttemptBonuses(player);
             var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);

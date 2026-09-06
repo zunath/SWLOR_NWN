@@ -30869,7 +30869,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 0
+          "value": 3901
         },
         "Race": {
           "type": "byte",

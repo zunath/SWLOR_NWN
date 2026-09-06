@@ -1,0 +1,432 @@
+{
+  "Version": 1,
+  "Workbook": "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx",
+  "Sheet": "Animations",
+  "Model": "a_ba",
+  "ModelSha256": "c2616c0bf1beede09dab47e582fa352c0906cfd203efd701081c57ea575a84d8",
+  "RecipeSha256": "9ed43027b66bc7f04d12f7cd49079ba8ec5e19e00f4215b5430520537c9cd1a3",
+  "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
+  "Animations": [
+    {
+      "Id": "ShieldBash",
+      "Name": "Shield Bash",
+      "BibleRow": 2,
+      "Reference": "https://chatgpt.com/s/m_6a3fdd47b8f88191a44d7c29b566f837",
+      "Observation": "A broad stance, forward left-hand shield impact, and a low right-hand blade.",
+      "Interpretation": "Short recoil into the shield side, a fast forward jab, then recovery. Both feet stay planted. The impact burst is a separate VFX.",
+      "Status": "Draft: visual review required",
+      "Project": "ShieldBash.swlanim",
+      "Duration": 1,
+      "Keyframes": 25,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.3841858E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.18,
+          "Label": "Draw back"
+        },
+        {
+          "Time": 0.34,
+          "Label": "Drive"
+        },
+        {
+          "Time": 0.42,
+          "Label": "Impact"
+        },
+        {
+          "Time": 0.53,
+          "Label": "Recoil"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Regain guard"
+        },
+        {
+          "Time": 1,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "bba5acb6f7a6f415e6293ad17f537900b6fba1cc06c8108bd54c6c4b5b639383"
+    },
+    {
+      "Id": "ShieldWall",
+      "Name": "Shield Wall",
+      "BibleRow": 3,
+      "Reference": "https://chatgpt.com/s/m_6a3fdd84a41c8191ab3fcad9d97786f7",
+      "Observation": "The shield is extended at shoulder height over a wide defensive stance; the blade stays low.",
+      "Interpretation": "Raise and brace the shield, hold the protective posture with a small weight shift, then lower to guard. The pictured barrier and allies are separate scene elements.",
+      "Status": "Draft: visual review required",
+      "Project": "ShieldWall.swlanim",
+      "Duration": 2.1,
+      "Keyframes": 44,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.6656008E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Set stance"
+        },
+        {
+          "Time": 0.42,
+          "Label": "Raise shield"
+        },
+        {
+          "Time": 1,
+          "Label": "Hold"
+        },
+        {
+          "Time": 1.55,
+          "Label": "Brace"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Lower"
+        },
+        {
+          "Time": 2.1,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "b386a894e23d6e91d8d56a6ae2e0b1988621f631dad99de09e9182ff85aed7a0"
+    },
+    {
+      "Id": "CoveringStrike",
+      "Name": "Covering Strike",
+      "BibleRow": 4,
+      "Reference": "https://chatgpt.com/s/m_6a3fde0e8a34819181290c21cdf5dc91",
+      "Observation": "A low airborne lunge leads with the left shield while the blade trails behind the right side.",
+      "Interpretation": "A compact hop-lunge with a lifted lead knee, shield-led contact, landing, and a recovery step. The small body offset returns to origin; actual travel is not implemented.",
+      "Status": "Draft: visual review required",
+      "Project": "CoveringStrike.swlanim",
+      "Duration": 1.4,
+      "Keyframes": 35,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.3848931E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.2,
+          "Label": "Crouch"
+        },
+        {
+          "Time": 0.36,
+          "Label": "Launch"
+        },
+        {
+          "Time": 0.48,
+          "Label": "Lunge"
+        },
+        {
+          "Time": 0.62,
+          "Label": "Land"
+        },
+        {
+          "Time": 0.84,
+          "Label": "Recover"
+        },
+        {
+          "Time": 1.04,
+          "Label": "Step back"
+        },
+        {
+          "Time": 1.24,
+          "Label": "Settle"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "d7f7ef14c29d6127bfd0d997ef19af1f64240b7797039a6adadac18fd40fa859"
+    },
+    {
+      "Id": "Invincible",
+      "Name": "Invincible",
+      "BibleRow": 5,
+      "Reference": "https://chatgpt.com/s/m_6a3fde75a0d48191afd875e8ee2478e4",
+      "Observation": "An upright, symmetrical defensive stance keeps the shield close and the blade angled down.",
+      "Interpretation": "Settle firmly into a low guard, lift the chest, and brace against two subtle impacts. The protective sphere belongs to VFX; this clip supplies the body gesture.",
+      "Status": "Draft: visual review required",
+      "Project": "Invincible.swlanim",
+      "Duration": 1.7,
+      "Keyframes": 40,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.22,
+          "Label": "Set guard"
+        },
+        {
+          "Time": 0.48,
+          "Label": "Brace"
+        },
+        {
+          "Time": 0.72,
+          "Label": "Absorb"
+        },
+        {
+          "Time": 1.03,
+          "Label": "Stand firm"
+        },
+        {
+          "Time": 1.38,
+          "Label": "Release"
+        },
+        {
+          "Time": 1.7,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "27c2b01112833044d81d30040a19076ef91902b1689628fdff805354bfe0376f"
+    },
+    {
+      "Id": "HackingBlade",
+      "Name": "Hacking Blade",
+      "BibleRow": 6,
+      "Reference": "https://chatgpt.com/s/m_6a3fdf2b35f88191abf0bba312b2fa2e",
+      "Observation": "The blade finishes a descending diagonal cut in front of a forward-weighted stance; the empty left arm counterbalances.",
+      "Interpretation": "Raise the blade over the right shoulder and drive a heavy diagonal cut downward, with a low follow-through and deliberate recovery.",
+      "Status": "Draft: visual review required",
+      "Project": "HackingBlade.swlanim",
+      "Duration": 1.2,
+      "Keyframes": 27,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.7814908E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.26,
+          "Label": "Wind up"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Descend"
+        },
+        {
+          "Time": 0.52,
+          "Label": "Impact"
+        },
+        {
+          "Time": 0.65,
+          "Label": "Follow through"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Recover"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "b38e3cde3c01e0245f8fef33fd09259968506c6a67ca95cc4b22f5c2590e3122"
+    },
+    {
+      "Id": "RiotBlade",
+      "Name": "Riot Blade",
+      "BibleRow": 7,
+      "Reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
+      "Observation": "A direct right-hand cut extends toward one target with a compact arc and a braced front leg.",
+      "Interpretation": "A fast shoulder draw, sharp forward cut, and short cross-body follow-through. Its shorter timing distinguishes it from the heavier strikes.",
+      "Status": "Draft: visual review required",
+      "Project": "RiotBlade.swlanim",
+      "Duration": 0.9,
+      "Keyframes": 22,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.6697626E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.15,
+          "Label": "Draw"
+        },
+        {
+          "Time": 0.29,
+          "Label": "Cut"
+        },
+        {
+          "Time": 0.35,
+          "Label": "Impact"
+        },
+        {
+          "Time": 0.46,
+          "Label": "Follow through"
+        },
+        {
+          "Time": 0.66,
+          "Label": "Recover"
+        },
+        {
+          "Time": 0.9,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "ba6190fabde3a0b5d457f94671d427d3879acce8487b82dd988364dcf4d9c5fb"
+    },
+    {
+      "Id": "RendingStrike",
+      "Name": "Rending Strike",
+      "BibleRow": 8,
+      "Reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
+      "Observation": "A heavy cut crosses upward through the target\u0027s lower torso, with the left arm held back.",
+      "Interpretation": "Draw low on the right, transfer weight into a rising diagonal cut, and finish across the body before resetting.",
+      "Status": "Draft: visual review required",
+      "Project": "RendingStrike.swlanim",
+      "Duration": 1.38,
+      "Keyframes": 33,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.5680197E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.28,
+          "Label": "Low draw"
+        },
+        {
+          "Time": 0.48,
+          "Label": "Drive up"
+        },
+        {
+          "Time": 0.62,
+          "Label": "Impact"
+        },
+        {
+          "Time": 0.78,
+          "Label": "Rise through"
+        },
+        {
+          "Time": 1.05,
+          "Label": "Recover"
+        },
+        {
+          "Time": 1.38,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "20befb49962c57b16b3c1888a187b49a70e0955d31b01e093f7a2b6ad23bb32c"
+    },
+    {
+      "Id": "SavageCleave",
+      "Name": "Savage Cleave",
+      "BibleRow": 9,
+      "Reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
+      "Observation": "A low, broad stance drives a waist-height sweep through a wide frontal arc. The free arm extends for balance.",
+      "Interpretation": "A large right-side wind-up becomes a broad horizontal sweep, with hips and chest rotating together. Both feet remain planted through the frontal sweep.",
+      "Status": "Draft: visual review required",
+      "Project": "SavageCleave.swlanim",
+      "Duration": 1.55,
+      "Keyframes": 37,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.8154915E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.32,
+          "Label": "Wide draw"
+        },
+        {
+          "Time": 0.49,
+          "Label": "Sweep right"
+        },
+        {
+          "Time": 0.63,
+          "Label": "Front arc"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Sweep left"
+        },
+        {
+          "Time": 0.96,
+          "Label": "Follow through"
+        },
+        {
+          "Time": 1.19,
+          "Label": "Recover"
+        },
+        {
+          "Time": 1.55,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "77dfdef2a7d9acacd77a598111a16def416b7aee0055c1f0e981a8b02d87050d"
+    },
+    {
+      "Id": "Carve",
+      "Name": "Carve",
+      "BibleRow": 10,
+      "Reference": "https://chatgpt.com/s/m_6a3fdf5024348191ba38c0965f358b0d",
+      "Observation": "The extended blade cuts deeply across the front of the target and rises toward the upper torso.",
+      "Interpretation": "Load the blade near the right hip, extend into a long rising carve, briefly hold the extended line, and recover under control.",
+      "Status": "Draft: visual review required",
+      "Project": "Carve.swlanim",
+      "Duration": 1.35,
+      "Keyframes": 33,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4620758E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Ready"
+        },
+        {
+          "Time": 0.24,
+          "Label": "Load"
+        },
+        {
+          "Time": 0.41,
+          "Label": "Draw across"
+        },
+        {
+          "Time": 0.55,
+          "Label": "Carve"
+        },
+        {
+          "Time": 0.63,
+          "Label": "Extend"
+        },
+        {
+          "Time": 0.79,
+          "Label": "Finish high"
+        },
+        {
+          "Time": 1.02,
+          "Label": "Recover"
+        },
+        {
+          "Time": 1.35,
+          "Label": "Ready"
+        }
+      ],
+      "ProjectSha256": "244f3283b7076ea4ad749401d6efecd6d3d15914f66bb2d5ef9f3371d8a943ca"
+    }
+  ]
+}

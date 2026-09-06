@@ -1,0 +1,87 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
+using SWLOR.Game.Server.Feature.ChatCommandDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+public class AuthoredCombatAnimationTests
+{
+    [TestCase(typeof(ShieldBashAbilityDefinition), "ShieldBash", true)]
+    [TestCase(typeof(RiotBladeAbilityDefinition), "RiotBlade", true)]
+    [TestCase(typeof(ShieldWallAbilityDefinition), "ShieldWall", false)]
+    [TestCase(typeof(CoveringStrikeAbilityDefinition), "CoveringStrike", false)]
+    [TestCase(typeof(InvincibleAbilityDefinition), "Invincible", false)]
+    [TestCase(typeof(RendingStrikeAbilityDefinition), "RendingStrike", false)]
+    [TestCase(typeof(SavageCleaveAbilityDefinition), "SavageCleave", false)]
+    public void EveryRankUsesItsInstalledClipAtTheCorrectCombatStage(Type definition, string name, bool queued)
+    {
+        var clip = AnimationPreviewChatCommand.Clips[name];
+        var abilities = ((IAbilityListDefinition)Activator.CreateInstance(definition)!).BuildAbilities();
+        abilities.Should().NotBeEmpty();
+        foreach (var ability in abilities.Values)
+        {
+            (queued ? ability.QueuedAttackAnimation : ability.AuthoredAnimation).Should().BeSameAs(clip);
+            ability.ActivationType.Should().Be(queued ? AbilityActivationType.Weapon : AbilityActivationType.Casted);
+            ability.ImpactAnimationType.Should().Be(Animation.Invalid, "a landed or area hit must not start another swing");
+        }
+    }
+
+    [Test]
+    public void NativeAnimationAndOverwriteCallsReplaceAuthoredActivationMetadata()
+    {
+        var builder = new AbilityBuilder().Create(FeatType.ShieldWall1, SWLOR.Game.Server.Service.PerkService.PerkType.ShieldWall);
+        builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimation(Animation.LoopingPause);
+        builder.Build().Values.Single().AuthoredAnimation.Should().BeNull();
+        builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimationOverwrite("pause2");
+        builder.Build().Values.Single().AuthoredAnimation.Should().BeNull();
+    }
+
+    [Test]
+    public void QueuedSwingsRestoreOnConsumptionAndIgnoreSupersededTimeouts()
+    {
+        var runtime = new Runtime(); var playback = new QueuedAttackAnimationPlayback(runtime);
+        var first = playback.Begin(1, AuthoredAnimation.ShieldBash);
+        var second = playback.Begin(1, AuthoredAnimation.RiotBlade);
+        playback.Complete(1, first); runtime.Timeouts[0]();
+        runtime.Maps.Values.Should().OnlyContain(value => value == AuthoredAnimation.RiotBlade.Name);
+        runtime.Maps.Keys.Should().NotContain(key => key.Contains("ready") || key.Contains("parry") || key == "throwr");
+        playback.Complete(1, second);
+        runtime.Maps.Values.Should().OnlyContain(value => value == "");
+        runtime.Token.Should().BeEmpty();
+    }
+
+    [Test]
+    public void InterruptedQueueStillRestoresItsSwingKeys()
+    {
+        var runtime = new Runtime(); var playback = new QueuedAttackAnimationPlayback(runtime);
+        playback.Begin(1, AuthoredAnimation.ShieldBash);
+        runtime.Timeouts.Single()();
+        runtime.Maps.Values.Should().OnlyContain(value => value == "");
+        runtime.Token.Should().BeEmpty();
+    }
+
+    [Test]
+    public void PreviewIncludesAllNineClipsIncludingTheTwoWithoutCurrentPerks()
+    {
+        AnimationPreviewChatCommand.Clips.Count.Should().Be(9);
+        AnimationPreviewChatCommand.Clips["HackingBlade"].Should().BeSameAs(AuthoredAnimation.HackingBlade);
+        AnimationPreviewChatCommand.Clips["Carve"].Should().BeSameAs(AuthoredAnimation.Carve);
+    }
+
+    private sealed class Runtime : INamedAnimationRuntime
+    {
+        public string Token = "";
+        public Dictionary<string, string> Maps = new();
+        public List<Action> Timeouts = new();
+        public bool IsValid(uint creature) => true;
+        public string GetToken(uint creature) => Token;
+        public void SetToken(uint creature, string token) => Token = token;
+        public void Replace(uint creature, string source, string replacement) => Maps[source] = replacement;
+        public void Schedule(float seconds, Action callback) => Timeouts.Add(callback);
+    }
+}

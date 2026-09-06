@@ -33,6 +33,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
+        public AnimationService.AnimationClip AuthoredAnimation { get; set; }
+        public AnimationService.AnimationClip QueuedAttackAnimation { get; set; }
         public string AnimationSourceAnimationName { get; set; }
         public string AnimationReplacementAnimationName { get; set; }
         public float AnimationRestoreDelaySeconds { get; set; }

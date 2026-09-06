@@ -1,0 +1,83 @@
+[
+  {
+    "Name": "ShieldBash",
+    "AnimationName": "sw_shieldbas",
+    "Duration": 1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "ShieldWall",
+    "AnimationName": "sw_shieldwal",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "CoveringStrike",
+    "AnimationName": "sw_coverings",
+    "Duration": 1.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "Invincible",
+    "AnimationName": "sw_invincibl",
+    "Duration": 1.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "HackingBlade",
+    "AnimationName": "sw_hackingbl",
+    "Duration": 1.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "RiotBlade",
+    "AnimationName": "sw_riotblade",
+    "Duration": 0.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "RendingStrike",
+    "AnimationName": "sw_rendingst",
+    "Duration": 1.38,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "SavageCleave",
+    "AnimationName": "sw_savagecle",
+    "Duration": 1.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "Carve",
+    "AnimationName": "sw_carve",
+    "Duration": 1.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  }
+]

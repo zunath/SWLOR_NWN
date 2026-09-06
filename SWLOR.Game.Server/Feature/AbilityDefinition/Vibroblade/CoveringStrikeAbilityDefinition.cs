@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -11,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
     public class CoveringStrikeAbilityDefinition : IAbilityListDefinition
     {
-        private const string ReplacementAnimationName = "Covering_Strike";
         private const float Radius = 5f;
         private const int DurationSeconds = 30;
 
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
-                .UsesImpactAnimationOverwrite(ReplacementAnimationName)
+                .UsesAnimation(AuthoredAnimation.CoveringStrike)
                 .HasRecastDelay(RecastGroup.CoveringStrike, 30f)
                 .SkillType(SkillType.Vibroblade)
                 .HasImpactAction((activator, target, effectivePerkLevel, targetLocation) =>

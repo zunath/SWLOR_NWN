@@ -428,7 +428,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                     var bytes = await File.ReadAllBytesAsync(path);
                     var reloaded = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
                     _model = await ResolvePreviewModel(reloaded); Project = reloaded;
-                    _diskBytes = bytes; _saved = Project.Serialize(); _undo.Clear(); _redo.Clear(); _calibration = null; Changed(rebuildRows: true); return false;
+                    _diskBytes = bytes; _saved = Project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; Changed(rebuildRows: true); return false;
                 }
             }
             var serialized = Project.Serialize(); var data = Encoding.UTF8.GetBytes(serialized);
@@ -473,6 +473,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     [RelayCommand] private void LockCalibration()
     {
         if (!CanEdit()) return;
+        _calibration = null; _calibrationMap = null;
         try
         {
             if (_source == null) throw new InvalidDataException("Load a glTF source first.");

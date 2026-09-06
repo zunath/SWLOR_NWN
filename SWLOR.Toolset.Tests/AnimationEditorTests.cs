@@ -124,11 +124,12 @@ public class AnimationEditorTests
         AnimationRig.World(rig.Joints, result)[4].Translation.Length().Should().BeApproximately(2, 1e-4f);
     }
 
-    private string Gltf(string interpolation = "LINEAR", bool badView = false)
+    private string Gltf(string interpolation = "LINEAR", bool badView = false, float duration = 1)
     {
         var floats = interpolation == "CUBICSPLINE"
             ? new float[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 }
             : new float[] { 0, 1, 0, 0, 0, 1, 0, 0 };
+        floats[1] = duration;
         var bytes = floats.SelectMany(BitConverter.GetBytes).ToArray();
         var data = new
         {
@@ -197,6 +198,20 @@ public class AnimationEditorTests
         baked.Keys[^1].Time.Should().Be(600);
         baked.Sample(600)[1].Position.X.Should().BeApproximately(1, 1e-5f);
         baked.Sample(300.01f)[1].Position.X.Should().BeApproximately(300.01f / 600, 1e-5f);
+    }
+    [Test] public void BakeBudgetsSourceSamplingEvenForASmallTargetRig()
+    {
+        var path = Gltf(duration: 600); var json = JsonNode.Parse(File.ReadAllText(path))!;
+        for (var i = 2; i < 256; i++) json["nodes"]!.AsArray().Add(new JsonObject { ["name"] = "Bone" + i });
+        File.WriteAllText(path, json.ToJsonString());
+        var source = GltfAnimationSource.Load(path); var rig = Rig();
+        var calibration = new AnimationRetarget(rig, rig.Sample(0), source, 0, 0, [new("rootdummy", "Root")]);
+        var track = source.Animations[0].Tracks[0]; var saved = track.Values[1]; track.Values[1] = new(float.NaN);
+        Action overBudget = () => calibration.Bake(source, 0, 30, 1);
+        overBudget.Should().Throw<InvalidDataException>().WithMessage("*source and target transform budget*lower bake rate*");
+        track.Values[1] = saved;
+        var baked = calibration.Bake(source, 0, 1, 1);
+        baked.Keys.Should().HaveCount(601); baked.Sample(600)[1].Position.X.Should().BeApproximately(1, 1e-5f);
     }
     private static AnimationProject DenseRig()
     {
@@ -434,6 +449,25 @@ public class AnimationEditorTests
         vm.Project.Keys.Should().HaveCount(31);
         vm.ApproveApplicationClose(); vm.OnClose();
     }
+    [AvaloniaTest] public async Task FailedRelockCannotReuseThePreviousCalibration()
+    {
+        var path = Gltf(); var json = JsonNode.Parse(File.ReadAllText(path))!;
+        json["nodes"]!.AsArray().Add(new JsonObject { ["name"] = "Hand" });
+        File.WriteAllText(path, json.ToJsonString());
+        foreach (var invalidMapping in new[] { "", "Hand" })
+        {
+            var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+            vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path); await vm.LoadSourceCommand.ExecuteAsync(null);
+            var row = vm.Mappings.Single(m => m.Target == "rootdummy"); row.Source = "Root";
+            vm.LockCalibrationCommand.Execute(null); vm.Status.Should().Contain("Calibration locked");
+            row.Source = invalidMapping; vm.LockCalibrationCommand.Execute(null);
+            vm.Status.Should().Contain(invalidMapping == "" ? "Map at least one" : "ambiguous");
+            var before = vm.Project.Serialize(); await vm.BakeCommand.ExecuteAsync(null);
+            vm.Status.Should().Contain("Lock calibration"); vm.Project.Serialize().Should().Be(before);
+            row.Source = "Root"; vm.LockCalibrationCommand.Execute(null); await vm.BakeCommand.ExecuteAsync(null);
+            vm.Project.Keys.Should().HaveCount(31); vm.ApproveApplicationClose(); vm.OnClose();
+        }
+    }
     [AvaloniaTest] public async Task RejectedDragAtKeyLimitKeepsUndoSaveAndCloseUsable()
     {
         var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: DenseRig());
@@ -509,6 +543,19 @@ public class AnimationEditorTests
         vm.PositionX = 1; (await vm.TrySaveAsync()).Should().BeFalse();
         vm.Project.ModelName.Should().Be("other"); vm.PreviewScene.Should().BeNull(); vm.IsDirty.Should().BeFalse();
         vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task ExternalReloadDiscardsPosesCopiedFromThePreviousRig()
+    {
+        var path = Path.Combine(_folder, "project.swlanim");
+        var vm = new AnimationEditorDocumentViewModel(new Prompts { ExternalChoice = ExternalChangeChoice.Reload },
+            new OutputLogService(), initial: Rig());
+        vm.PickSavePath = (_, _) => Task.FromResult<string?>(path);
+        vm.PositionX = .5m; vm.CopyPoseCommand.Execute(null); (await vm.TrySaveAsync()).Should().BeTrue();
+        var changed = Rig(); changed.Joints[4] = changed.Joints[4] with { Name = "foot", Parent = 1 };
+        File.WriteAllText(path, changed.Serialize()); vm.PositionX = 1;
+        (await vm.TrySaveAsync()).Should().BeFalse(); vm.Project.Joints[4].Name.Should().Be("foot");
+        vm.PastePoseCommand.Execute(null);
+        vm.Project.Keys.Should().BeEmpty(); vm.IsDirty.Should().BeFalse(); vm.OnClose().Should().BeTrue();
     }
     [AvaloniaTest] public async Task ExternalReloadRetainsAttachedPreviewWhenMountedModelCannotBeUsed()
     {

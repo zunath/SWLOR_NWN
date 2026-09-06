@@ -49,7 +49,8 @@ of the mapped animation root, while unmapped joints retain the calibration pose.
 skeleton keeps its original proportions during calibration. Single-key glTF poses bake as one
 held key in a one-second clip, matching static MDL import behavior. Save/load bone
 maps as JSON; lock calibration again after changing the matching pose or map, using undo/redo,
-or switching clips. Bake results remain editable
+or switching clips. A bake may evaluate at most two million combined source/target joint samples;
+use a lower frame rate or a shorter source clip for larger rigs. Bake results remain editable
 and undoable. Morph-target weights do not move the skeleton and are not retargeted.
 
 ## Install and use from C#

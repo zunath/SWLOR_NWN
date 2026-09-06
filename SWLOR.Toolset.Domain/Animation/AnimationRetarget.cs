@@ -51,7 +51,8 @@ public sealed class AnimationRetarget
         var frames = source.Animations[clip].Duration == 0 ? 0 : (int)Math.Ceiling(result.Duration * framesPerSecond);
         if (frames + 1 > AnimationProject.MaxKeyframes)
             throw new InvalidDataException($"Bake exceeds {AnimationProject.MaxKeyframes:N0} keyframes. Choose a lower bake rate.");
-        if ((long)(frames + 1) * result.Joints.Count > 2_000_000) throw new InvalidDataException("Choose a lower bake rate for this animation.");
+        if ((long)(frames + 1) * (result.Joints.Count + source.Joints.Count) > 2_000_000)
+            throw new InvalidDataException("Bake exceeds the source and target transform budget. Choose a shorter clip or a lower bake rate.");
         var root = result.Joints.FindIndex(j => j.Name.Equals(result.AnimationRoot, StringComparison.OrdinalIgnoreCase));
         for (var frame = 0; frame <= frames; frame++)
         {

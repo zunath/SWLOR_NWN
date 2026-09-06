@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.AnimationDrafts;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
@@ -26,6 +27,29 @@ public class AnimationDraftAssetTests
         }
     }
     private static string Folder => Path.Combine(Root, "design", "animations", "drafts", "vibroblade");
+
+    [Test]
+    public void TwoBeatOneShotsAreRejectedBeforePosing()
+    {
+        var motion = new Motion("TwoBeat", "Two beat", 0, "", "", "", false,
+            [new Beat(0, "Start", new()), new Beat(1, "Finish", new())], "");
+        Action bake = () => MotionAuthor.Bake(null!, [], null!, motion);
+        bake.Should().Throw<InvalidDataException>().WithMessage("*at least three beats*");
+    }
+
+    [Test]
+    public void TwoBeatClosedChannelsRemainSupported()
+    {
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
+            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var channel = recipe.Motions.Single(m => m.Id == "ShieldWall");
+        var motion = channel with { Beats = [channel.Beats[0], channel.Beats[0] with { Time = 1 }] };
+        var rig = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "ShieldWall.swlanim")));
+        var project = MotionAuthor.Bake(rig, rig.Sample(0), recipe, motion);
+        project.Duration.Should().Be(1);
+        project.Keys.Should().HaveCountGreaterThan(2);
+        project.Sample(0).Should().Equal(project.Sample(1));
+    }
 
     [TestCase("a_ba")]
     [TestCase("a_fa")]

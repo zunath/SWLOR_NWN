@@ -1,6 +1,8 @@
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Serilog;
+using Serilog.Events;
 using SWLOR.AnimationDrafts;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
@@ -98,8 +100,10 @@ if (args.Length < 4 || args[0] != "generate" || args.Skip(4).Any(a => a != "--ov
     return 1;
 }
 
+using var logger = new LoggerConfiguration().WriteTo.Console(standardErrorFromLevel: LogEventLevel.Verbose).CreateLogger();
 try
 {
+    logger.Information("Generating animation drafts from {RecipePath} with model {ModelPath}", args[2], args[1]);
     var modelBytes = File.ReadAllBytes(args[1]);
     var model = new MdlReader().Parse(modelBytes);
     var rig = AnimationProject.FromModel(model);
@@ -166,11 +170,13 @@ try
             if (File.Exists(Path.Combine(output, file))) throw new IOException($"Already exists: {file}. Choose another folder or use --overwrite.");
     Directory.CreateDirectory(output);
     foreach (var (file, contents) in files) File.WriteAllText(Path.Combine(output, file), contents);
+    logger.Information("Generated {MotionCount} animation drafts in {OutputDirectory}", recipe.Motions.Length, output);
     Console.WriteLine($"Wrote {recipe.Motions.Length} editable drafts and preview to {output}");
     return 0;
 }
 catch (Exception ex)
 {
+    logger.Error(ex, "Animation generation failed for {RecipePath}", args[2]);
     Console.Error.WriteLine(ex.Message);
     return 1;
 }

@@ -19,6 +19,8 @@ internal static class MotionAuthor
     public static AnimationProject Bake(AnimationProject rig, PosedNode[] neutral, Recipe recipe, Motion motion)
     {
         var beats = motion.Beats;
+        if (!motion.Loop && beats.Length < 3)
+            throw new InvalidDataException($"{motion.Id}: non-looping motions require at least three beats for entry and release.");
         if (beats.Length < 2 || beats[0].Time != 0 || beats[^1].Time is <= 0 or > 10 ||
             beats.Zip(beats.Skip(1)).Any(p => !float.IsFinite(p.Second.Time) || p.Second.Time <= p.First.Time))
             throw new InvalidDataException($"{motion.Id}: beats must increase from zero to a duration of at most ten seconds.");

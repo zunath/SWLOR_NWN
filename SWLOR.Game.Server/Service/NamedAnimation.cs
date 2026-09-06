@@ -45,7 +45,7 @@ public static class NamedAnimation
         // GetCurrentAction returns Invalid for the internal scripted-animation action. Do not
         // cancel movement or combat that may itself have interrupted a channel.
         if (cancelQueuedAnimation && GetCurrentAction(creature) == ActionType.Invalid)
-            AssignCommand(creature, () => ClearAllActions());
+            ClearAllActions(oObject: creature);
         Playback.Stop(creature);
     }
 

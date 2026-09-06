@@ -1390,7 +1390,13 @@ try {
                 if ($null -eq $cell) {
                     throw "Cell '$cellReference' was not found on sheet '$sheetName'."
                 }
-                Set-InlineCellText -Cell $cell -Value ([string]$change.Values[$field]) -Namespace $namespace
+                $value = $change.Values[$field]
+                if ($value -is [int] -or $value -is [double] -or $value -is [decimal]) {
+                    Set-NumericCellValue -Cell $cell -Value ([double]$value) -Namespace $namespace
+                }
+                else {
+                    Set-InlineCellText -Cell $cell -Value ([string]$value) -Namespace $namespace
+                }
             }
         }
 

@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(Hasten1StatusEffect) },
                     ExpectsRecast = true,
-                    Notes = "Restores more STM than it costs, so no stamina dip remains observable. The real cost and net recovery are asserted by the dedicated Snap Rush resource regression.",
+                    CostAssertionWaiverReason = "Restores more STM than it costs in the same engine tick, so no stamina dip remains observable. The real cost and net recovery are asserted by SnapRushResourceRecovery.",
                 },
 
                 // StimCanisterTechniqueAbilityDefinition - MimicryUtility ally buff; applies

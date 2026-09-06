@@ -371,15 +371,16 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     {
         try
         {
-            if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(project.ModelName + ".mdl"), out var resource) != true)
-                return _model != null && _model.Name.Equals(project.ModelName, StringComparison.OrdinalIgnoreCase) &&
-                    MatchesPreviewRig(project, AnimationProject.FromModel(_model)) ? _model : null;
-            var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
-            if (MatchesPreviewRig(project, AnimationProject.FromModel(model))) return model;
-            _log.AppendLine("Animation preview unavailable: the mounted model does not match the saved rig.");
+            if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(project.ModelName + ".mdl"), out var resource) == true)
+            {
+                var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
+                if (MatchesPreviewRig(project, AnimationProject.FromModel(model))) return model;
+                _log.AppendLine("Mounted animation preview skipped: the model does not match the saved rig.");
+            }
         }
-        catch (Exception ex) { _log.AppendLine("Animation preview unavailable: " + ex.GetBaseException().Message); }
-        return null;
+        catch (Exception ex) { _log.AppendLine("Mounted animation preview skipped: " + ex.GetBaseException().Message); }
+        return _model != null && _model.Name.Equals(project.ModelName, StringComparison.OrdinalIgnoreCase) &&
+            MatchesPreviewRig(project, AnimationProject.FromModel(_model)) ? _model : null;
     }
     [RelayCommand] private async Task ImportMdl() => await Run(async () =>
     {

@@ -510,6 +510,32 @@ public class AnimationEditorTests
         vm.Project.ModelName.Should().Be("other"); vm.PreviewScene.Should().BeNull(); vm.IsDirty.Should().BeFalse();
         vm.OnClose().Should().BeTrue();
     }
+    [AvaloniaTest] public async Task ExternalReloadRetainsAttachedPreviewWhenMountedModelCannotBeUsed()
+    {
+        var modelPath = InstallFixture(); var original = File.ReadAllText(modelPath);
+        var projectPath = Path.Combine(_folder, "project.swlanim");
+        foreach (var mounted in new[] { original.Replace("parent lower", "parent upper"),
+                     original.Replace("node dummy hand", "node dummy hand\nscale 2"), "invalid model data" })
+        {
+            var archive = Path.Combine(_folder, Guid.NewGuid().ToString("N") + ".hak");
+            ResourceIndexTests.WriteSingleResourceHak(archive, "hero", "mdl", Encoding.UTF8.GetBytes(mounted));
+            var resources = new ResourceIndex(null, [new("models", archive)]);
+            await resources.InitializationTask;
+            var vm = new AnimationEditorDocumentViewModel(new Prompts { ExternalChoice = ExternalChangeChoice.Reload },
+                new OutputLogService(), resources, initial: Rig());
+            vm.PickOpenPath = (_, _) => Task.FromResult<string?>(modelPath);
+            vm.PickSavePath = (_, _) => Task.FromResult<string?>(projectPath);
+            await vm.AttachPreviewCommand.ExecuteAsync(null);
+            vm.SetPreviewVisible(true); vm.PreviewScene.Should().NotBeNull();
+            (await vm.TrySaveAsync()).Should().BeTrue();
+            var changed = vm.Project.Clone(); changed.Name = "OtherPose";
+            File.WriteAllText(projectPath, changed.Serialize());
+            vm.PositionX = .5m; (await vm.TrySaveAsync()).Should().BeFalse();
+            vm.Project.Name.Should().Be("OtherPose");
+            vm.PreviewScene.Should().NotBeNull("the compatible attached model must survive mounted validation or parsing failures");
+            vm.IsDirty.Should().BeFalse(); vm.OnClose().Should().BeTrue();
+        }
+    }
     [AvaloniaTest] public async Task PreviewAttachmentRequiresMatchingParentsAndRestTransforms()
     {
         var modelPath = InstallFixture(); var original = File.ReadAllText(modelPath);

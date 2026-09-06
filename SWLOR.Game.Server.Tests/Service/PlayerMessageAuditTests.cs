@@ -24,17 +24,19 @@ public class PlayerMessageAuditTests
         var root = FindRepositoryRoot();
         using var audit = JsonDocument.Parse(File.ReadAllText(Path.Combine(root,
             "SWLOR.Game.Server", "Readmes", "PlayerMessageAudit.json")));
-        var reviewed = audit.RootElement.EnumerateArray().Select(row =>
-            row.GetProperty("File").GetString() + "|" +
-            row.GetProperty("Call").GetString()?.Replace("\r\n", "\n")).ToArray();
-        var current = new List<string>();
+        var reviewed = audit.RootElement.EnumerateArray().Select(row => new MessageAuditEntry(
+            row.GetProperty("File").GetString(),
+            row.GetProperty("Member").GetString(),
+            row.GetProperty("Delivery").GetString(),
+            row.GetProperty("Call").GetString()?.Replace("\r\n", "\n"))).ToArray();
+        var current = new List<MessageAuditEntry>();
         foreach (var file in Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories))
         {
             var relative = Path.GetRelativePath(root, file).Replace('\\', '/');
             if (relative.Contains("/obj/") || relative.Contains("/bin/"))
                 continue;
             foreach (var call in ReadCalls(file).Where(call => MessageMethods.Contains(MethodName(call))))
-                current.Add(relative + "|" + call.ToString().Replace("\r\n", "\n"));
+                current.Add(BuildAuditEntry(relative, call));
         }
 
         current.Should().BeEquivalentTo(reviewed,
@@ -58,6 +60,41 @@ public class PlayerMessageAuditTests
                 call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == "SendStatusEffectFailure"))
             .Select(call => Path.GetFileName(file) + ": " + call)).ToArray();
         bypasses.Should().BeEmpty("automatic ticks/procs must be silent in Production");
+    }
+
+    private sealed record MessageAuditEntry(string File, string Member, string Delivery, string Call);
+
+    private static MessageAuditEntry BuildAuditEntry(string file, InvocationExpressionSyntax call)
+    {
+        var name = MethodName(call);
+        var member = call.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault()?.Identifier.ValueText ?? string.Empty;
+        var delivery = name switch
+        {
+            "SendDiagnosticToPlayer" or "ShowDiagnosticFloatingText" or "SendDiagnosticNearby" or "SendResourceRestored"
+                => "Testing only",
+            "SendWarningToPlayer" => "Rate limited in Production",
+            _ => call.Ancestors().OfType<IfStatementSyntax>()
+                .Any(statement => statement.Condition.ToString() == "PlayerFeedback.DiagnosticsEnabled")
+                ? "Testing only"
+                : "Retained"
+        };
+        if ((file is "SWLOR.Game.Server/Service/PlayerFeedback.cs" or "SWLOR.Game.Server/Service/Messaging.cs" or
+            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Service/Gui.cs") &&
+            !name.Contains("Diagnostic", StringComparison.OrdinalIgnoreCase))
+            delivery = "Shared transport; policy at caller";
+
+        return new MessageAuditEntry(file, member, delivery, call.ToString().Replace("\r\n", "\n"));
+    }
+
+    [Test]
+    public void SkillCapWarnings_ShareOneProductionLimitAcrossSkillsAndOutcomes()
+    {
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Skill.cs");
+        var warnings = ReadCalls(file).Where(call => MethodName(call) == "SendWarningToPlayer").ToArray();
+        warnings.Should().HaveCount(2);
+        warnings.Select(call => call.ArgumentList.Arguments[1].Expression.ToString())
+            .Should().OnlyContain(key => key == "\"SKILL_CAP\"",
+                "the same global cap condition must not produce a burst of warnings when one kill awards several skills");
     }
 
     [Test]

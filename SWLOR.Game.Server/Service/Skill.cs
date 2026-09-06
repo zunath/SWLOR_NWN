@@ -186,6 +186,8 @@ namespace SWLOR.Game.Server.Service
                 }).Select(s => s.Key).ToList();
 
             // If player is at the skill cap and no skills are available for decay, exit early.
+            // Share the warning limit across skills and overflow: one kill can award several skills,
+            // but they are blocked by the same total-rank cap and require the same unlock action.
             if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
             {
                 PlayerFeedback.SendWarningToPlayer(player, "SKILL_CAP", ColorToken.Red($"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP."));

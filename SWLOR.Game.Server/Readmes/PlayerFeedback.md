@@ -29,7 +29,7 @@ the cutoff is repetitive detail rather than information players need to react.
 | `QuestObjectives` | Every-kill/every-item remaining counters. Requirement completion is retained. |
 | `Mimicry` | Automatic analyzer observations. Permanent technique learning and rate-limited failure warnings are retained. |
 | `Fishing`, `Weather` | Nearby casting announcements, per-catch bait counts, ambient weather chatter. Catch/failure/depletion and lightning damage warnings are retained. |
-| `SpeederItemDefinition`, `Property` | Duplicate overhead text where the same event already gives a log message. |
+| `SpeederItemDefinition` | Duplicate overhead text where the same event already gives a log message. |
 | `ScavengePoint` | Roll/DC arithmetic; Production gets only the short success/failure result. |
 
 Restoration reports the **actual positive amount gained** after caps and FP
@@ -57,6 +57,12 @@ popup instead of duplicating that restoration in the generic log.
 | Player commands and inspections, GUI validation, DM/admin tools | User-requested output. Production administration must remain usable. |
 | Restart notices, migration/refund notices, server errors | Operational warnings and persistent data changes. |
 
+Property-load failures use one private log message in every environment; there
+is no duplicate diagnostic popup. The shared skill-cap warning limit is intentional:
+one kill can award several skills, but the total-rank cap and remedy are the same.
+Separate limits by skill or blocked/overflow outcome would allow repeated warnings
+for that single condition.
+
 The global NWScript APIs are not disabled: they also deliver essential messages.
 Each routine call site explicitly routes through `PlayerFeedback`, or has a
 local diagnostic guard for native attack strings. New messages must be reviewed
@@ -78,7 +84,8 @@ above gives the reasons for each family.
 
 After reviewing a message change, refresh the inventory from the repository root
 with `pwsh -File tools/ExportPlayerMessageAudit.ps1`. `PlayerMessageAuditTests`
-checks inventory coverage, prevents raw message calls in repetitive combat/status
+checks each invocation's file, containing method, delivery policy, and call text
+(line numbers are informational), prevents raw message calls in repetitive combat/status
 paths, and verifies that all custom native attack strings are diagnostic-gated.
 `PlayerFeedbackTests` covers environment recognition, positive-only restoration
 formatting, and warning interval boundaries. Existing gameplay regressions still

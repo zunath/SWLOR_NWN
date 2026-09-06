@@ -1,5 +1,6 @@
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
@@ -53,8 +54,35 @@ public class PlayerMessageAuditTests
 
         var bypasses = files.SelectMany(file => ReadCalls(file)
             .Where(call => MethodName(call) is "SendMessageToPC" or "FloatingTextStringOnCreature" or "SendMessageNearbyToPlayers")
+            .Where(call => !(Path.GetFileName(file) == "StatusEffect.cs" &&
+                call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == "SendStatusEffectFailure"))
             .Select(call => Path.GetFileName(file) + ": " + call)).ToArray();
         bypasses.Should().BeEmpty("automatic ticks/procs must be silent in Production");
+    }
+
+    [Test]
+    public void StatusValidationFailures_RemainVisibleInProduction()
+    {
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "StatusEffect.cs");
+        var failureCalls = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
+            .First().Identifier.ValueText == "SendStatusEffectFailure").ToArray();
+        failureCalls.Should().Contain(call => MethodName(call) == "SendMessageToPC");
+        failureCalls.Should().NotContain(call => MethodName(call) == "SendDiagnosticToPlayer");
+    }
+
+    [TestCase("Feature/NaturalRegeneration.cs", 4)]
+    [TestCase("Feature/StatusEffectDefinition/RestStatusEffect.cs", 2)]
+    public void RegenerationAndRest_ExplicitlySuppressResourceFeedback(string relative, int expectedCalls)
+    {
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", relative);
+        var restores = ReadCalls(file).Where(call => MethodName(call) is "RestoreFP" or "RestoreStamina").ToArray();
+        restores.Should().HaveCount(expectedCalls);
+        foreach (var restore in restores)
+        {
+            restore.ArgumentList.Arguments.Should().Contain(argument =>
+                argument.NameColon != null && argument.NameColon.Name.Identifier.ValueText == "sendFeedback" &&
+                argument.Expression.IsKind(SyntaxKind.FalseLiteralExpression));
+        }
     }
 
     [Test]

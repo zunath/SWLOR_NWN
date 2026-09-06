@@ -789,7 +789,7 @@ namespace SWLOR.Game.Server.Service
                 ? source
                 : creature;
 
-            PlayerFeedback.SendDiagnosticToPlayer(recipient, message);
+            SendMessageToPC(recipient, message);
         }
 
         private static void ReapplyNWNEffects(uint creature, CreatureStatusEffect effects)

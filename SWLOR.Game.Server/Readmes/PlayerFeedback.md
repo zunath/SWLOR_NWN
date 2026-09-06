@@ -15,7 +15,7 @@ work; the policy gates message delivery only.
 | Source | Messages |
 | --- | --- |
 | `Stat` | Actual STM/FP restoration amounts from abilities, consumables, status ticks, and passive triggers. |
-| `StatusEffect`, `GuardedStatusEffect` | Application, expiry, guarding links, duration-resistance details, repeated resistance and status-application diagnostics. |
+| `StatusEffect`, `GuardedStatusEffect` | Application, expiry, guarding links, duration-resistance details, and repeated resistance diagnostics. |
 | `Combat`, weapon ability base | Proc names, bonus damage/accuracy/critical-rate numbers, stack changes, readiness popups, guard/critical-ward reports, resource-drain popups, reflection/critical/temporary-HP detail. Status icons still indicate readiness and active effects. |
 | `ResolveAttackRoll` | Custom attack-roll/hit-rate, critical-immunity, and deflection feedback strings. NWN's own damage notifications are unchanged. |
 | `Ability`, `UsePerkFeat` | Supplemental per-target ability hit/miss results and nearby cast/queue announcements. |
@@ -37,7 +37,7 @@ popup instead of duplicating that restoration in the generic log.
 
 | Family | Reason |
 | --- | --- |
-| Validation errors, insufficient resources, bad targets, denied access, missing content | The player needs to know why their attempted action failed. |
+| Validation errors, rejected status applications, insufficient resources, bad targets, denied access, missing content | The player needs to know why their attempted action failed, including an incompatible or stronger existing status. |
 | Interrupted casts, expired/cancelled queued abilities, empty-target casts | Private feedback to the actor explains the failure. No nearby broadcast. Silent dequeue callers only produce diagnostic output. |
 | Paralysis preventing action | Private warning limited to once every 5 seconds in Production. |
 | Skill cap blocking XP | Actionable warning limited to once per minute in Production, shared across blocked/overflow XP attempts. Testing shows every occurrence. |

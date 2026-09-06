@@ -5148,8 +5148,8 @@
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 792,
     "Member": "SendStatusEffectFailure",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(recipient, message)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(recipient, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",

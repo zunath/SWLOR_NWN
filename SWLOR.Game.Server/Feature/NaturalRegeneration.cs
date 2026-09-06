@@ -67,10 +67,10 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
 
             if (fpRestore > 0)
-                Stat.RestoreFP(player, fpRestore, dbPlayer);
+                Stat.RestoreFP(player, fpRestore, dbPlayer, sendFeedback: false);
 
             if (staminaRestore > 0)
-                Stat.RestoreStamina(player, staminaRestore, dbPlayer);
+                Stat.RestoreStamina(player, staminaRestore, dbPlayer, sendFeedback: false);
         }
     }
 }

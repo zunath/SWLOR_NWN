@@ -169,9 +169,14 @@ available clips and are explicitly recorded; they never retain the old unsafe
 robe-as-body inheritance path. Regeneration retains validated roots, empty
 attachments and animation parents for retired phenotypes so saved creatures
 keep their complete dependency chain. Retired bridge names remain reserved.
+Bridge identities include the generated hierarchy, bind transforms and animation
+controllers, so removing one member of a shared family cannot overwrite tracks
+still used by a retained root. Legacy names are reused only after their compiled
+content is validated against the complete generated source.
 
 The manifest includes `CompileModels.py`, `GenerateTintMapAssets.py`, the stock
-robe importer/inventory, `parts_robe.2da` and `tintmap.2da` as required inputs.
+robe importer/inventory, `parts_robe.2da`, `tintmap.2da` and `hakbuilder.json`
+as required inputs.
 Python, JSON and 2DA hashes normalize line
 endings for Windows/Linux checkouts; compiled models remain byte-exact.
 Generation compares the stock inventory against the installed game's selectable
@@ -179,7 +184,10 @@ models before producing outputs. Allocation reserves existing body, attachment
 and animation-bridge resrefs as well as phenotype rows, and verifies prior path
 and hash ownership before replacing or retaining generated resources. Source
 model bytes and generator/catalog input hashes are checked again immediately
-before applying compiled outputs; changed inputs require a new generation. The palette
+before applying compiled outputs; changed inputs require a new generation.
+The manifest records those captured hashes, never later versions read during
+output copying. Audits also verify each tracked model remains the active HAK
+resource and reject new overrides of stock dependencies. The palette
 audit validates the entire atlas, including its TGA header, against the
 authoritative source checksum.
 

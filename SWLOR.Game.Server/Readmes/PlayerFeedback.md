@@ -10,6 +10,11 @@ target, and nearby players. There is no participant fallback for status messages
 Resource changes, status icons, abilities, rewards, and server audit logs still
 work; the policy gates message delivery only.
 
+Useful gameplay state changes remain visible: ability queueing, readying,
+interruption, and queued-ability expiry/cancellation inform the actor and nearby
+players in every environment. Combat-related text is not automatically diagnostic;
+the cutoff is repetitive detail rather than information players need to react.
+
 ## Suppressed in Production
 
 | Source | Messages |
@@ -18,7 +23,7 @@ work; the policy gates message delivery only.
 | `StatusEffect`, `GuardedStatusEffect` | Application, expiry, guarding links, duration-resistance details, and repeated resistance diagnostics. |
 | `Combat`, weapon ability base | Proc names, bonus damage/accuracy/critical-rate numbers, stack changes, readiness popups, guard/critical-ward reports, resource-drain popups, reflection/critical/temporary-HP detail. Status icons still indicate readiness and active effects. |
 | `ResolveAttackRoll` | Custom attack-roll/hit-rate, critical-immunity, and deflection feedback strings. NWN's own damage notifications are unchanged. |
-| `Ability`, `UsePerkFeat` | Supplemental per-target ability hit/miss results and nearby cast/queue announcements. |
+| `Ability` | Supplemental per-target ability hit/miss results. |
 | `Space`, ship module definitions | Per-shot hit/miss/damage chatter, repair and capacitor restoration amounts, E-War/repair-field announcements. Ship resource displays still update. |
 | `Skill`, `BeastMastery`, `Guild`, `Faction`, `RoleplayXP` | Incremental skill/beast/RP XP, partial debt repayment, guild/faction point changes, faction-standing increments and repeated cap notices. |
 | `QuestObjectives` | Every-kill/every-item remaining counters. Requirement completion is retained. |
@@ -38,7 +43,8 @@ popup instead of duplicating that restoration in the generic log.
 | Family | Reason |
 | --- | --- |
 | Validation errors, rejected status applications, insufficient resources, bad targets, denied access, missing content | The player needs to know why their attempted action failed, including an incompatible or stronger existing status. |
-| Interrupted casts, expired/cancelled queued abilities, empty-target casts | Private feedback to the actor explains the failure. No nearby broadcast. Silent dequeue callers only produce diagnostic output. |
+| Ability queueing/readying, interrupted casts, expired/cancelled queued abilities | Useful state changes go to the actor and nearby players in Production and Testing. The actor receives the nearby notice once. Existing activation-message flags and silent dequeue callers are respected. |
+| Empty-target casts | Private feedback to the actor explains the failure. |
 | Paralysis preventing action | Private warning limited to once every 5 seconds in Production. |
 | Skill cap blocking XP | Actionable warning limited to once per minute in Production, shared across blocked/overflow XP attempts. Testing shows every occurrence. |
 | Mimicry rank gates and failed learning attempts | Private warnings explain the required rank or retry. Each failure reason is limited to once per technique per minute in Production, across NPCs. Testing shows every occurrence. |
@@ -95,6 +101,10 @@ In-game acceptance checks:
 5. Check invalid targets, insufficient resources, interruption, access denial,
    explicit commands, and transactions. Keep their actionable response. Repeated
    blocked XP should produce at most one cap warning per minute in Production.
+6. Queue/ready an ability, interrupt a cast, and let a queued weapon ability expire
+   in Production. The actor and nearby players should see each state change,
+   including `XYZ no longer has weapon ability ABC readied.` once per recipient.
+   Silent cleanup and stale expiry timers must not announce a readiness change.
 
 Native delivery/rendering needs these live checks; automated tests do not replace
 an in-game test session.

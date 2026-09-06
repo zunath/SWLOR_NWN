@@ -3294,39 +3294,39 @@
     "Line": 166,
     "Member": "InterruptAbilityActivation",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, \"Your ability has been interrupted.\")"
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 363,
+    "Line": 365,
     "Member": "TryUseAbility",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                            activator,\n                            receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 379,
-    "Member": "TryUseAbility",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 386,
-    "Member": "TryUseAbility",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name}.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
-    "Line": 891,
-    "Member": "DequeueWeaponAbility",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(target, $\"Your weapon ability {abilityDetail.Name} is no longer queued.\")"
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                            activator,\n                            receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
+    "Line": 381,
+    "Member": "TryUseAbility",
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
+    "Line": 388,
+    "Member": "TryUseAbility",
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                activator,\n                                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
     "Line": 893,
+    "Member": "DequeueWeaponAbility",
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                    target,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/UsePerkFeat.cs",
+    "Line": 897,
     "Member": "DequeueWeaponAbility",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendDiagnosticToPlayer(target, $\"Your weapon ability {abilityDetail.Name} is no longer queued.\")"

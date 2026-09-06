@@ -113,6 +113,26 @@ public class PlayerMessageAuditTests
         }
     }
 
+    [TestCase("TryUseAbility", 3)]
+    [TestCase("InterruptAbilityActivation", 1)]
+    [TestCase("DequeueWeaponAbility", 1)]
+    public void AbilityStateChanges_RemainVisibleToNearbyPlayers(string member, int expectedMessages)
+    {
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
+        var calls = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
+            .First().Identifier.ValueText == member).ToArray();
+        var messages = calls.Where(call => MethodName(call) == "SendMessageNearbyToPlayers").ToArray();
+        messages.Should().HaveCount(expectedMessages, "readiness and interruption are useful gameplay state changes");
+        foreach (var message in messages)
+        {
+            message.ToString().Should().Contain("PlayerName.GetDisplayName(receiver,");
+            message.Ancestors().OfType<IfStatementSyntax>().Should()
+                .NotContain(statement => statement.Condition.ToString().Contains("DiagnosticsEnabled"));
+        }
+        calls.Should().NotContain(call => MethodName(call) == "SendMessageToPC",
+            "the nearby helper already includes the actor, so a second private message would duplicate the notice");
+    }
+
     private static IEnumerable<InvocationExpressionSyntax> ReadCalls(string file) =>
         CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>();
 

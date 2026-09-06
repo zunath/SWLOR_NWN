@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service
 {
     /// <summary>
     /// Routine player feedback is silent in Production. Only actionable failures,
-    /// warnings, explicit command responses, and milestones use the normal message APIs.
+    /// warnings, gameplay state changes, explicit command responses, and milestones use the normal message APIs.
     /// </summary>
     public static class PlayerFeedback
     {

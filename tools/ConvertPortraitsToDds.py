@@ -12,7 +12,7 @@ import struct
 import subprocess
 import tempfile
 
-from PIL import Image
+from PIL import Image, ImageStat
 from portrait_tga import decode
 
 
@@ -34,6 +34,17 @@ def convert(source, destination, scratch):
         pixels = pixels.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
     if data[17] & 16:
         pixels = pixels.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+    rgb = pixels.convert('RGB')
+    grid = bytearray()
+    for y in range(8):
+        for x in range(8):
+            cell = rgb.crop((x * image.width // 8, y * image.height // 8,
+                             (x + 1) * image.width // 8, (y + 1) * image.height // 8))
+            grid.extend(int(value) // (cell.width * cell.height)
+                        for value in ImageStat.Stat(cell).sum)
+    # NWN samples standard DDS in bottom-up order. Its portrait loader and
+    # toolset reverse these stored rows to recover the original visual facing.
+    pixels = pixels.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
     png = scratch / (source.stem + '.png')
     pixels.save(png)
     target = destination / (source.stem + '.dds')
@@ -58,7 +69,8 @@ def convert(source, destination, scratch):
             raise ValueError(f'DDS introduced transparency: {source.name}')
     return dict(file=source.name, source_sha256=digest(data), output=target.name,
                 output_sha256=digest(header), width=image.width, height=image.height,
-                format=fmt, source_bytes=len(data), output_bytes=len(header))
+                format=fmt, source_bytes=len(data), output_bytes=len(header),
+                source_rgb_grid=grid.hex())
 
 
 def main():

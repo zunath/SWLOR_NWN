@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
-                    PlayerFeedback.SendDiagnosticNearby(
+                    Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} activates their E-War device and begins to draw fire.");
                 });

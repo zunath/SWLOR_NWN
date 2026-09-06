@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                PlayerFeedback.SendDiagnosticToPlayer(player, $"{dbBeast.Name} earned {xp} XP.");
+                SendMessageToPC(player, $"{dbBeast.Name} earned {xp} XP.");
             }
 
             while (dbBeast.XP >= requiredXP)

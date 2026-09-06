@@ -1,117 +1,91 @@
 # Player message policy
 
-`SWLOR_ENVIRONMENT` in `swlor.env` controls optional messages. `Testing`/`Test`
-and explicit `Development`/`Dev` enable them. `Production`/`Prod`, missing values,
-and unrecognized values suppress them. Matching is case insensitive. Restart the
-server after changing the setting; application settings are cached at startup.
+Gameplay feedback stays enabled in Production. A message is not diagnostic just
+because it happens often: damage, hit/miss results, mitigation, status changes,
+readiness, resource loss, and progression tell players what happened and what to
+do next. Their existing recipients, ranges, and message flags are preserved.
 
-Production suppresses routine messages **for everyone**, including the actor,
-target, and nearby players. There is no participant fallback for status messages.
-Resource changes, status icons, abilities, rewards, and server audit logs still
-work; the policy gates message delivery only.
-
-Useful gameplay state changes remain visible: ability queueing, readying,
-interruption, and queued-ability expiry/cancellation inform the actor and nearby
-players in every environment. Combat-related text is not automatically diagnostic;
-the cutoff is repetitive detail rather than information players need to react.
-
-## Suppressed in Production
-
-| Source | Messages |
-| --- | --- |
-| `Stat` | Actual STM/FP restoration amounts from abilities, consumables, status ticks, and passive triggers. |
-| `StatusEffect`, `GuardedStatusEffect` | Application, expiry, guarding links, duration-resistance details, and repeated resistance diagnostics. |
-| `Combat`, weapon ability base | Proc names, bonus damage/accuracy/critical-rate numbers, stack changes, readiness popups, guard/critical-ward reports, resource-drain popups, reflection/critical/temporary-HP detail. Status icons still indicate readiness and active effects. |
-| `ResolveAttackRoll` | Custom attack-roll/hit-rate, critical-immunity, and deflection feedback strings. NWN's own damage notifications are unchanged. |
-| `Ability` | Supplemental per-target ability hit/miss results. |
-| `Space`, ship module definitions | Per-shot hit/miss/damage chatter, repair and capacitor restoration amounts, E-War/repair-field announcements. Ship resource displays still update. |
-| `Skill`, `BeastMastery`, `Guild`, `Faction`, `RoleplayXP` | Incremental skill/beast/RP XP, partial debt repayment, guild/faction point changes, faction-standing increments and repeated cap notices. |
-| `QuestObjectives` | Every-kill/every-item remaining counters. Requirement completion is retained. |
-| `Mimicry` | Automatic analyzer observations. Permanent technique learning and rate-limited failure warnings are retained. |
-| `Fishing`, `Weather` | Nearby casting announcements, per-catch bait counts, ambient weather chatter. Catch/failure/depletion and lightning damage warnings are retained. |
-| `SpeederItemDefinition` | Duplicate overhead text where the same event already gives a log message. |
-| `ScavengePoint` | Roll/DC arithmetic; Production gets only the short success/failure result. |
-
-Restoration reports the **actual positive amount gained** after caps and FP
-modifiers, for example `Restored 3 STM.`. Zero gains are silent. It is private to
-the receiving player, never a nearby broadcast. Natural regeneration and rest
-remain silent even in Testing. Double Shot uses its existing named diagnostic
-popup instead of duplicating that restoration in the generic log.
+`SWLOR_ENVIRONMENT` in `swlor.env` controls only the optional messages listed
+below. `Testing`/`Test` and explicit `Development`/`Dev` enable them.
+`Production`/`Prod`, missing values, and unrecognized values suppress them.
+Matching is case insensitive. Restart after changing the setting; application
+settings are cached at startup. Gameplay and server audit logs are unaffected.
 
 ## Retained in Production
 
-| Family | Reason |
+| Source | Feedback retained |
 | --- | --- |
-| Validation errors, rejected status applications, insufficient resources, bad targets, denied access, missing content | The player needs to know why their attempted action failed, including an incompatible or stronger existing status. |
-| Ability queueing/readying, interrupted casts, expired/cancelled queued abilities | Useful state changes go to the actor and nearby players in Production and Testing. The actor receives the nearby notice once. Existing activation-message flags and silent dequeue callers are respected. |
-| Empty-target casts | Private feedback to the actor explains the failure. |
-| Paralysis preventing action | Private warning limited to once every 5 seconds in Production. |
-| Skill cap blocking XP | Actionable warning limited to once per minute in Production, shared across blocked/overflow XP attempts. Testing shows every occurrence. |
-| Mimicry rank gates and failed learning attempts | Private warnings explain the required rank or retry. Each failure reason is limited to once per technique per minute in Production, across NPCs. Testing shows every occurrence. |
-| Level/rank increases, ability points, new techniques/recipes, achievements, fully cleared XP debt | Discrete milestones or new player options, not repeated increments. |
-| Quest acceptance, requirement/stage completion, quest completion, cancellations, deliveries, key items, explicit reward payouts | The player needs to act on or know the result. Intermediate automatic quest counters are suppressed. |
-| Craft/research/incubation/harvest/fishing/scavenge results | Confirm an explicit interaction, job state, failure, or depleted resource. |
-| Item use, bank/market/property/civic transactions, costs/refunds, permissions, destructive-action warnings | Confirm persistent actions and explain consequences. |
-| Travel boarding/missed boarding/arrival, safe-rest zones, detected traps, forced stealth exit, dismounts, ship destruction | Actionable environmental state or loss of control; not routine combat telemetry. |
-| Chat/tells, HoloCom/HoloNet, dice/emotes, NPC/dialogue/encounter text, area descriptions | Intentional communication, authored content, or encounter cues. |
-| Player commands and inspections, GUI validation, DM/admin tools | User-requested output. Production administration must remain usable. |
-| Restart notices, migration/refund notices, server errors | Operational warnings and persistent data changes. |
+| `Space`, all ship modules | Ship and direct-hull damage amounts, hit/miss results, hull/shield/capacitor restoration, repair fields, and E-War activation. |
+| `ResolveAttackRoll`, `Ability`, `Combat` | Attack and ability outcomes, critical hits/immunity, Guard and Critical Ward mitigation, deflection/reflection, temporary-HP damage, resource drains, and readiness/stack/recharge information. |
+| `StatusEffect`, `GuardedStatusEffect` | Status application, expiry, resistance, duration changes, application failures, and guarding relationships. Existing per-effect message opt-outs remain respected. |
+| `UsePerkFeat` | Queue, ready, interruption, and expiry/cancellation notices. Nearby delivery includes the actor once. Stale timers and silent cleanup do not produce Production notices. |
+| `Skill`, `BeastMastery`, `Guild`, `Faction`, `RoleplayXP` | XP and point gains/losses, debt repayment, standings, level/rank changes, and unlocks. |
+| `QuestObjectives` and quests | Item/kill progress counters, requirement/stage completion, rewards, acceptance, and cancellation. |
+| `Mimicry` | Analyzer observations, rank requirements, failed decoding/retry instructions, and successful learning. Existing witness tracking prevents duplicate observations of the same technique from one NPC. |
+| Fishing, scavenging, weather | Casts, catches/failures, bait remaining, skill-check results and rolls, authored weather text, and hazards. |
+| Other player surfaces | Validation, transactions, travel, crafting/research results, chat/dialogue, commands, GUI responses, staff tools, and operational warnings retain their existing delivery. |
 
-Property-load failures use one private log message in every environment; there
-is no duplicate diagnostic popup. The shared skill-cap warning limit is intentional:
-one kill can award several skills, but the total-rank cap and remedy are the same.
-Separate limits by skill or blocked/overflow outcome would allow repeated warnings
-for that single condition.
+## Optional messages enabled only in Testing/Development
 
-The global NWScript APIs are not disabled: they also deliver essential messages.
-Each routine call site explicitly routes through `PlayerFeedback`, or has a
-local diagnostic guard for native attack strings. New messages must be reviewed
-by trigger and frequency, not by their color or whether they are combat related.
+| Source | Optional detail | What Production still receives |
+| --- | --- | --- |
+| `Stat`, weapon ability restoration | Actual positive STM/FP restoration amounts, including Double Shot's named restoration popup. | Resource values update normally. All ship restoration messages remain enabled. |
+| Weapon ability base | Supplemental flanking/idle/behind damage adjustments and conditional critical-rate calculation popups. | Ability outcomes, final damage, status extension, and consumed setup messages. |
+| `Combat` | High Noon critical-damage percentage, automatic attack-cycle critical-rate percentage, and Overwatch accuracy arithmetic. | Actual attack results/damage and the Overwatch activation popup. |
+| `Combat` | Duplicate overhead versions of Guard, Critical Ward, Pinning Fire, and First Strike messages. | The corresponding combat log message, including mitigation amounts and First Strike readiness/stacks/recharge details. |
+| Speeder dismount | Duplicate overhead dismount popup. | The existing dismount log message. |
+| Explicitly silent queued-ability cleanup | Debug confirmation of internal queue cleanup. | Requested expiry/cancellation announcements remain enabled. |
 
-## Call-site inventory and validation
+STM/FP restoration reports the actual positive gain after caps and FP modifiers,
+for example `Restored 3 STM.`. It is private to the recipient. Zero gain, natural
+regeneration (including low-resource interval restoration), and resting remain
+silent even in Testing. Double Shot uses its named popup without a duplicate
+generic restoration message.
 
-[PlayerMessageAudit.json](PlayerMessageAudit.json) records each message invocation
-with its file, line, containing method, delivery policy, and complete call text.
-It includes `SendMessageToPC`, `FloatingTextStringOnCreature`, nearby broadcasts,
-native `SendFeedbackString`/`SendFeedbackMessage`, chat transport, speech, screen
-text, and the diagnostic wrappers. It excludes comments and method declarations.
-This is an audit of source call sites, not a measured runtime message rate.
+Property-load failures use one private log message in every environment.
+There is no duplicate diagnostic popup.
 
-`Retained` means the call's existing trigger/validation still applies, such as a
-quest counter reaching zero; it does not imply that all calls in that subsystem
-are retained. Shared transport records defer to the caller's policy. The table
-above gives the reasons for each family.
+## Repeated warnings
 
-After reviewing a message change, refresh the inventory from the repository root
-with `pwsh -File tools/ExportPlayerMessageAudit.ps1`. `PlayerMessageAuditTests`
-checks each invocation's file, containing method, delivery policy, and call text
-(line numbers are informational), prevents raw message calls in repetitive combat/status
-paths, and verifies that all custom native attack strings are diagnostic-gated.
-`PlayerFeedbackTests` covers environment recognition, positive-only restoration
-formatting, and warning interval boundaries. Existing gameplay regressions still
-verify the underlying combat behavior.
+Warnings remain visible in Production, with only repeated copies limited:
+
+- Paralysis preventing action: once per five seconds for the affected player.
+- Skill cap: once per minute across skills and blocked/overflow outcomes. A kill
+  can award several skills, but the total-rank cap and unlock remedy are the same.
+- Mimicry rank gates and failed decoding: once per technique/failure reason per
+  minute across NPCs. Testing shows every occurrence of these warnings.
+
+## Audit and validation
+
+[PlayerMessageAudit.json](PlayerMessageAudit.json) records every player-message
+invocation with its file, line, containing method, delivery policy, and call text.
+It covers native messages, floating text, nearby broadcasts, chat, speech, screen
+text, and the optional-feedback helpers. It excludes declarations and comments.
+This is a source audit, not a measured runtime message rate.
+
+After reviewing a message change, regenerate it from the repository root with
+`pwsh -NoProfile -File tools/ExportPlayerMessageAudit.ps1`. The tests compare File,
+Member, Delivery, and Call; Line is informational. Shared transport entries defer
+to their callers. Regression tests protect Production delivery of ship modules,
+damage, status/progression messages, native attack results, and combat readiness.
 
 In-game acceptance checks:
 
-1. In Testing, restore STM/FP below the cap and near the cap, including an FP
-   modifier, an ally restore, a passive restore, and an ability tick. Check the
-   logged amount against the actual resource change. Zero gain, natural regen,
-   and resting should produce no restoration message.
-2. Repeat in Production. Neither the recipient nor bystanders should see the
-   restoration, proc/readiness, status lifecycle, or detailed combat messages.
-   Resources, status icons, damage, and ability behavior must still update.
-3. Gain skill/beast XP, partial debt repayment, faction/guild points, and quest
-   progress in Production. Routine increments should be silent; level-ups,
-   cleared debt, and quest completion should still appear.
-4. Exercise ship attacks/repairs and passive analyzer observations in both modes.
-   Testing shows diagnostics; Production does not.
-5. Check invalid targets, insufficient resources, interruption, access denial,
-   explicit commands, and transactions. Keep their actionable response. Repeated
-   blocked XP should produce at most one cap warning per minute in Production.
-6. Queue/ready an ability, interrupt a cast, and let a queued weapon ability expire
-   in Production. The actor and nearby players should see each state change,
-   including `XYZ no longer has weapon ability ABC readied.` once per recipient.
-   Silent cleanup and stale expiry timers must not announce a readiness change.
+1. In Production, exercise ship weapons, direct hull damage, repairs, capacitor
+   restoration, repair fields, and E-War. Their existing messages must appear.
+2. Check ground hits/misses, criticals, mitigation/deflection, temporary HP,
+   status application/expiry/resistance, guarding, resource drains, and readiness.
+   Keep the gameplay messages; omit only the listed supplemental/duplicate text.
+3. Verify XP, quest item/kill progress, faction/guild changes, and analyzer
+   observations in Production. These must remain visible.
+4. Queue/ready/interruption/expiry notices must reach the actor and nearby players
+   once, including `XYZ no longer has weapon ability ABC readied.`. Stale expiry
+   timers and silent cleanup must not announce a false change.
+5. Restore STM/FP below and near caps in Testing, including FP modifiers, ally
+   restores, and ability ticks. Check the reported gain. Repeat in Production:
+   the optional amount message must be absent while resources still update.
+6. Confirm natural regeneration, rest, and zero gains stay silent in both modes.
+   Repeated warning limits must not hide the first actionable warning.
 
-Native delivery/rendering needs these live checks; automated tests do not replace
-an in-game test session.
+Native delivery/rendering still needs live testing; automated checks do not
+replace an in-game session.

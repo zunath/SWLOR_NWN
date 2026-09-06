@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PlayerFeedback.SendDiagnosticToPlayer(player, ColorToken.Cyan($"Your combat analyzer records {techniqueDetail.Name}..."));
+            SendMessageToPC(player, ColorToken.Cyan($"Your combat analyzer records {techniqueDetail.Name}..."));
         }
 
         /// <summary>

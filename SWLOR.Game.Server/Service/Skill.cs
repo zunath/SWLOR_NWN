@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.XPDebt == 0)
                     SendMessageToPC(player, "Your XP debt has been cleared.");
                 else
-                    PlayerFeedback.SendDiagnosticToPlayer(player, $"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})");
+                    SendMessageToPC(player, $"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})");
             }
 
             if (xp <= 0)
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PlayerFeedback.SendDiagnosticToPlayer(player, $"You earned {details.Name} skill experience. ({xp})");
+            SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
             pcSkill.XP += xp;
             // Skill is at cap. No additional XP can be acquired.
             if (pcSkill.Rank >= details.MaxRank)

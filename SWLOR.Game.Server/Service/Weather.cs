@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Service
                 else if (nWind < 8) sMessage = climate.CloudyText;
                 else sMessage = climate.WindyText;
 
-                PlayerFeedback.SendDiagnosticToPlayer(oCreature, sMessage);
+                SendMessageToPC(oCreature, sMessage);
             }
         }
 

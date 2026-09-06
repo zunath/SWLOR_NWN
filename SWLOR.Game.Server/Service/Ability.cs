@@ -2462,7 +2462,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
-            PlayerFeedback.SendDiagnosticNearby(
+            Messaging.SendMessageNearbyToPlayers(
                 target,
                 receiver => Combat.BuildAbilityCombatLogMessage(
                     receiver,

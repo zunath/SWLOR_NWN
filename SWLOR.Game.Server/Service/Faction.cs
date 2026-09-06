@@ -90,11 +90,11 @@ namespace SWLOR.Game.Server.Service
             {
                 if (cantGoHigher)
                 {
-                    PlayerFeedback.SendDiagnosticToPlayer(player, $"Your standing with {factionDetail.Name} cannot possibly go higher!");
+                    SendMessageToPC(player, $"Your standing with {factionDetail.Name} cannot possibly go higher!");
                 }
                 else
                 {
-                    PlayerFeedback.SendDiagnosticToPlayer(player, $"Your standing with {factionDetail.Name} improves.");
+                    SendMessageToPC(player, $"Your standing with {factionDetail.Name} improves.");
                 }
 
             }
@@ -102,11 +102,11 @@ namespace SWLOR.Game.Server.Service
             {
                 if (cantGoLower)
                 {
-                    PlayerFeedback.SendDiagnosticToPlayer(player, $"Your standing with {factionDetail.Name} cannot possibly go lower!");
+                    SendMessageToPC(player, $"Your standing with {factionDetail.Name} cannot possibly go lower!");
                 }
                 else
                 {
-                    PlayerFeedback.SendDiagnosticToPlayer(player, $"Your standing with {factionDetail.Name} decreases.");
+                    SendMessageToPC(player, $"Your standing with {factionDetail.Name} decreases.");
                 }
             }
 
@@ -142,11 +142,11 @@ namespace SWLOR.Game.Server.Service
 
             if (adjustBy > 0)
             {
-                PlayerFeedback.SendDiagnosticToPlayer(player, $"You gained {adjustBy} points with the {factionDetail.Name} faction.");
+                SendMessageToPC(player, $"You gained {adjustBy} points with the {factionDetail.Name} faction.");
             }
             else
             {
-                PlayerFeedback.SendDiagnosticToPlayer(player, $"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.");
+                SendMessageToPC(player, $"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.");
             }
 
         }

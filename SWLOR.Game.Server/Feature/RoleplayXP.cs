@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.UnallocatedXP += xp;
                 DB.Set(dbPlayer);
 
-                PlayerFeedback.SendDiagnosticToPlayer(player, $"You gained {xp} roleplay XP.");
+                SendMessageToPC(player, $"You gained {xp} roleplay XP.");
             }
         }
 

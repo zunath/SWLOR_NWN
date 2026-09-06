@@ -938,7 +938,7 @@ public class CombatDamageTests
         lowHPGuardTrigger.Should().Contain("new GuardianReflexesStatusEffect(guardChance)");
         lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
         lowHPGuardTrigger.Should().Contain("TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown)");
-        lowHPGuardTrigger.Should().Contain("PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false);");
+        lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false);");
         lowHPGuardTrigger.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), guardRecipient);");
     }
 

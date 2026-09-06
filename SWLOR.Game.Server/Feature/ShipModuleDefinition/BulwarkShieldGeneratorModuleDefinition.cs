@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    PlayerFeedback.SendDiagnosticNearby(
+                    Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);

@@ -1541,7 +1541,7 @@ public class GeneratedWeaponPerkBehaviorTests
         firstStrikeSource.Should().Contain("ability?.IsHostileAbility != true");
         firstStrikeSource.Should().NotContain("SkillType.",
             "the Bible grants First Strike to any hostile combat ability, including cross-skill abilities");
-        firstStrikeSource.Should().Contain("PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback);");
+        firstStrikeSource.Should().Contain("SendMessageToPC(attacker, feedback);");
         firstStrikeSource.Should().Contain("Count = 0");
         firstStrikeSource.Should().Contain("LastHit = DateTime.MinValue");
         firstStrikeSource.Should().Contain("First Strike ready: Attacker={Attacker}");

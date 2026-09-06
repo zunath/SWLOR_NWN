@@ -3,8 +3,9 @@ using SWLOR.Game.Server.Enumeration;
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Routine player feedback is silent in Production. Only actionable failures,
-    /// warnings, gameplay state changes, explicit command responses, and milestones use the normal message APIs.
+    /// Optional calculations and tester feedback can be hidden in Production.
+    /// Gameplay outcomes, state changes, progression, and errors use the normal message APIs,
+    /// even when they occur frequently. Frequency alone does not make a message diagnostic.
     /// </summary>
     public static class PlayerFeedback
     {
@@ -28,17 +29,6 @@ namespace SWLOR.Game.Server.Service
         {
             if (DiagnosticsEnabled)
                 FloatingTextStringOnCreature(message, creature, displayToFaction);
-        }
-
-        public static void SendDiagnosticNearby(uint creature, Messaging.BuildMessageDelegate buildMessage, float range = 10f)
-        {
-            if (DiagnosticsEnabled)
-                Messaging.SendMessageNearbyToPlayers(creature, buildMessage, range);
-        }
-
-        public static void SendDiagnosticNearby(uint creature, string message, float range = 10f)
-        {
-            SendDiagnosticNearby(creature, _ => message, range);
         }
 
         /// <summary>

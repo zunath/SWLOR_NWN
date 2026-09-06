@@ -531,7 +531,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (Resistance.HasImmunity(creature, resistanceType))
                     {
-                        PlayerFeedback.SendDiagnosticToPlayer(source, "Your ability was resisted.");
+                        SendMessageToPC(source, "Your ability was resisted.");
                         return false;
                     }
 
@@ -548,7 +548,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!isPermanent && durationTicks <= 0)
             {
-                PlayerFeedback.SendDiagnosticToPlayer(source, "Your ability was resisted.");
+                SendMessageToPC(source, "Your ability was resisted.");
                 return false;
             }
 
@@ -643,12 +643,12 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
                 (GetIsPC(source) || GetIsDM(source)))
             {
-                PlayerFeedback.SendDiagnosticToPlayer(source, durationResistanceMessage);
+                SendMessageToPC(source, durationResistanceMessage);
             }
 
             if (statusEffect.SendsApplicationMessage)
             {
-                PlayerFeedback.SendDiagnosticNearby(creature, receiver =>
+                Messaging.SendMessageNearbyToPlayers(creature, receiver =>
                 {
                     var name = PlayerName.GetDisplayName(receiver, creature);
                     var effectName = statusEffect.Name;
@@ -1155,7 +1155,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (Resistance.HasImmunity(creature, resistanceType))
                     {
-                        PlayerFeedback.SendDiagnosticToPlayer(source, "Your ability was resisted.");
+                        SendMessageToPC(source, "Your ability was resisted.");
                         continue;
                     }
 
@@ -1164,7 +1164,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (ticks <= 0)
                 {
-                    PlayerFeedback.SendDiagnosticToPlayer(source, "Your ability was resisted.");
+                    SendMessageToPC(source, "Your ability was resisted.");
                     continue;
                 }
 
@@ -1691,7 +1691,7 @@ namespace SWLOR.Game.Server.Service
                 IsLastInstanceOfType(creatureEffects, statusEffect))
             {
                 var effectName = statusEffect.Name;
-                PlayerFeedback.SendDiagnosticNearby(creature,
+                Messaging.SendMessageNearbyToPlayers(creature,
                     receiver => $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.");
             }
 

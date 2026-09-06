@@ -15,7 +15,7 @@ public class PlayerMessageAuditTests
         "SendMessageToPCByStrRef", "SendMessageToAllPCs", "SendMessageNearbyToPlayers",
         "SendFeedbackString", "SendFeedbackMessage", "SendMessage", "PostString",
         "SpeakString", "ActionSpeakString", "SendDiagnosticToPlayer", "ShowDiagnosticFloatingText",
-        "SendDiagnosticNearby", "SendResourceRestored", "SendWarningToPlayer"
+        "SendResourceRestored", "SendWarningToPlayer"
     };
 
     [Test]
@@ -44,22 +44,46 @@ public class PlayerMessageAuditTests
     }
 
     [Test]
-    public void RepetitiveCombatAndStatusPaths_CannotBypassTheDiagnosticPolicy()
+    public void GameplayOutcomes_CannotBeHiddenBehindDiagnostics()
     {
         var root = FindRepositoryRoot();
-        var files = new[] { "Service/Combat.cs", "Service/StatusEffect.cs", "Service/Faction.cs",
+        var files = new[] { "Service/Space.cs", "Service/Ability.cs", "Service/StatusEffect.cs",
+            "Service/Faction.cs", "Service/Guild.cs", "Service/Skill.cs", "Service/BeastMastery.cs",
+            "Service/QuestService/QuestObjectives.cs", "Feature/RoleplayXP.cs", "Service/Mimicry.cs",
+            "Service/Fishing.cs", "Service/Weather.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
-        // Mining depletion is a completion/failure notice, not a routine ship-combat tick.
-        files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs")
-            .Where(file => !file.EndsWith("MiningLaserModuleDefinition.cs") && !file.EndsWith("StripMinerModuleDefinition.cs")));
+        files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs"));
 
-        var bypasses = files.SelectMany(file => ReadCalls(file)
-            .Where(call => MethodName(call) is "SendMessageToPC" or "FloatingTextStringOnCreature" or "SendMessageNearbyToPlayers")
-            .Where(call => !(Path.GetFileName(file) == "StatusEffect.cs" &&
-                call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == "SendStatusEffectFailure"))
+        var hiddenOutcomes = files.SelectMany(file => ReadCalls(file)
+            .Where(call => MessageMethods.Contains(MethodName(call)) && UsesDiagnostics(call))
             .Select(call => Path.GetFileName(file) + ": " + call)).ToArray();
-        bypasses.Should().BeEmpty("automatic ticks/procs must be silent in Production");
+        hiddenOutcomes.Should().BeEmpty("combat, ship modules, status changes, and progression are gameplay feedback even when frequent");
+    }
+
+    [TestCase("SendGuardedHitFeedback", 2)]
+    [TestCase("SendIncomingCriticalHitDowngradeFeedback", 2)]
+    [TestCase("ApplyRangedDeflectionReflection", 1)]
+    [TestCase("SendAbilityCriticalHitFeedback", 1)]
+    [TestCase("SendTemporaryHitPointDamageFeedback", 1)]
+    [TestCase("RefreshIdleReadiness", 2)]
+    [TestCase("ApplyLowHPGuardEffect", 1)]
+    [TestCase("ApplyGuardedHitNextSkillAbilityEffects", 1)]
+    [TestCase("ApplyGuardedHitNextAttackEffects", 1)]
+    [TestCase("EnsureFirstHostileAbilityHitState", 1)]
+    [TestCase("ApplyFirstHostileAbilityHitCount", 1)]
+    [TestCase("ReportFirstStrikeCombatEntry", 1)]
+    [TestCase("ReadySameTargetPressure", 1)]
+    [TestCase("ApplyStatusAppliedTargetStaminaDrain", 1)]
+    public void CombatOutcomesAndReadiness_RetainTheirProductionMessages(string member, int expectedMessages)
+    {
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Combat.cs");
+        var messages = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
+                .First().Identifier.ValueText == member &&
+            MethodName(call) is "SendMessageToPC" or "FloatingTextStringOnCreature" or "SendMessageNearbyToPlayers")
+            .ToArray();
+        messages.Should().HaveCount(expectedMessages, "optional detail must not replace the actual combat outcome or readiness notice");
+        messages.Should().NotContain(call => UsesDiagnostics(call));
     }
 
     private sealed record MessageAuditEntry(string File, string Member, string Delivery, string Call);
@@ -70,7 +94,7 @@ public class PlayerMessageAuditTests
         var member = call.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault()?.Identifier.ValueText ?? string.Empty;
         var delivery = name switch
         {
-            "SendDiagnosticToPlayer" or "ShowDiagnosticFloatingText" or "SendDiagnosticNearby" or "SendResourceRestored"
+            "SendDiagnosticToPlayer" or "ShowDiagnosticFloatingText" or "SendResourceRestored"
                 => "Testing only",
             "SendWarningToPlayer" => "Rate limited in Production",
             _ => call.Ancestors().OfType<IfStatementSyntax>()
@@ -123,7 +147,7 @@ public class PlayerMessageAuditTests
     }
 
     [Test]
-    public void MimicryFailures_RemainRateLimitedAndObservationsRemainDiagnostic()
+    public void MimicryFailures_RemainRateLimitedAndObservationsRemainVisible()
     {
         var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Mimicry.cs");
         var calls = ReadCalls(file).ToArray();
@@ -133,20 +157,19 @@ public class PlayerMessageAuditTests
         failures.Should().Contain(call => call.ArgumentList.Arguments[1].ToString().Contains("MIMICRY_DECODE_"));
         foreach (var failure in failures)
             failure.ArgumentList.Arguments.Should().Contain(argument => argument.ToString() == "intervalSeconds: 60");
-        calls.Should().Contain(call => MethodName(call) == "SendDiagnosticToPlayer" &&
+        calls.Should().Contain(call => MethodName(call) == "SendMessageToPC" &&
             call.ToString().Contains("Your combat analyzer records"));
     }
 
     [Test]
-    public void NativeAttackFeedback_IsGuardedForEveryCustomMessage()
+    public void NativeAttackFeedback_RemainsVisibleInProduction()
     {
         var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
         var calls = ReadCalls(file).Where(call => MethodName(call) == "SendFeedbackString").ToArray();
         calls.Should().HaveCount(5);
         foreach (var call in calls)
         {
-            call.Ancestors().OfType<IfStatementSyntax>().Should()
-                .Contain(statement => statement.Condition.ToString() == "PlayerFeedback.DiagnosticsEnabled");
+            UsesDiagnostics(call).Should().BeFalse("hit/miss, immunity, and deflection are combat outcomes");
         }
     }
 
@@ -172,6 +195,11 @@ public class PlayerMessageAuditTests
 
     private static IEnumerable<InvocationExpressionSyntax> ReadCalls(string file) =>
         CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>();
+
+    private static bool UsesDiagnostics(InvocationExpressionSyntax call) =>
+        MethodName(call).Contains("Diagnostic", StringComparison.Ordinal) ||
+        call.Ancestors().OfType<IfStatementSyntax>().Any(statement => statement.Condition.ToString().Contains("DiagnosticsEnabled")) ||
+        call.Ancestors().OfType<ConditionalExpressionSyntax>().Any(expression => expression.Condition.ToString().Contains("DiagnosticsEnabled"));
 
     private static string MethodName(InvocationExpressionSyntax call) => call.Expression switch
     {

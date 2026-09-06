@@ -79,9 +79,7 @@ namespace SWLOR.Game.Server.Feature
 
                 if (roll + GetAbilityModifier(AbilityType.Perception, user) >= dc)
                 {
-                    FloatingTextStringOnCreature(ColorToken.SkillCheck(PlayerFeedback.DiagnosticsEnabled
-                        ? $"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})"
-                        : "Search *success*."), user, false);
+                    FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})"), user, false);
 
                     var item = lootTable.GetRandomItem(treasureHunterLevel);
                     var quantity = Random.Next(item.MaxQuantity) + 1;
@@ -98,9 +96,7 @@ namespace SWLOR.Game.Server.Feature
                 }
                 else
                 {
-                    FloatingTextStringOnCreature(ColorToken.SkillCheck(PlayerFeedback.DiagnosticsEnabled
-                        ? $"Search *failure*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs DC: {dc})"
-                        : "Search *failure*."), user, false);
+                    FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *failure*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs DC: {dc})"), user, false);
                     xp = deltaXP / 4;
                 }
 

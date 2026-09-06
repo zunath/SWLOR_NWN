@@ -539,7 +539,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (extendedCount > 0 && GetIsPC(activator))
                 {
                     var statusLabel = extendedCount == 1 ? "status" : "statuses";
-                    PlayerFeedback.ShowDiagnosticFloatingText(
+                    FloatingTextStringOnCreature(
                         ColorToken.Combat($"Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s"),
                         activator,
                         false);
@@ -568,7 +568,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (consumed)
                 {
-                    PlayerFeedback.SendDiagnosticToPlayer(activator, "You consume your Venom and Infection setup.");
+                    SendMessageToPC(activator, "You consume your Venom and Infection setup.");
                 }
             }
 

@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Service
             PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
 
             Activity.SetBusy(player, ActivityStatusType.Fishing);
-            PlayerFeedback.SendDiagnosticNearby(
+            Messaging.SendMessageNearbyToPlayers(
                 player,
                 receiver => $"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.");
 
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, $"You landed a {fish.Name}!");
             }
 
-            PlayerFeedback.SendDiagnosticToPlayer(player, $"Bait Remaining: {remainingBait}x {baitName}");
+            SendMessageToPC(player, $"Bait Remaining: {remainingBait}x {baitName}");
 
             // Handle fishing point exhaustion
             var remainingAttempts = GetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable) - 1;

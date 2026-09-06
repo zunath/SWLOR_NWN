@@ -1731,7 +1731,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            PlayerFeedback.SendDiagnosticNearby(
+            Messaging.SendMessageNearbyToPlayers(
                 attacker,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.");
 
@@ -1802,7 +1802,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            PlayerFeedback.SendDiagnosticNearby(
+            Messaging.SendMessageNearbyToPlayers(
                 attacker,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.");
 

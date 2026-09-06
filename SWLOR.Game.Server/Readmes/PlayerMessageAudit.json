@@ -87,15 +87,15 @@
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs",
     "Line": 542,
     "Member": "BeforeSuccessfulImpactRiders",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                        ColorToken.Combat($\"Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s\"),\n                        activator,\n                        false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                        ColorToken.Combat($\"Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s\"),\n                        activator,\n                        false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs",
     "Line": 571,
     "Member": "ConsumeSourceStatusEffects",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(activator, \"You consume your Venom and Infection setup.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, \"You consume your Venom and Infection setup.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs",
@@ -2768,8 +2768,8 @@
     "File": "SWLOR.Game.Server/Feature/RoleplayXP.cs",
     "Line": 76,
     "Member": "ProcessPlayerRoleplayXP",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"You gained {xp} roleplay XP.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You gained {xp} roleplay XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
@@ -2797,14 +2797,14 @@
     "Line": 82,
     "Member": "OnOpened",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck(PlayerFeedback.DiagnosticsEnabled\n                        ? $\"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})\"\n                        : \"Search *success*.\"), user, false)"
+    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck($\"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})\"), user, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 101,
+    "Line": 99,
     "Member": "OnOpened",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck(PlayerFeedback.DiagnosticsEnabled\n                        ? $\"Search *failure*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs DC: {dc})\"\n                        : \"Search *failure*.\"), user, false)"
+    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck($\"Search *failure*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs DC: {dc})\"), user, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ServerTasks.cs",
@@ -2824,64 +2824,64 @@
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/AssaultConcussionMissileModuleDefinition.cs",
     "Line": 56,
     "Member": "PerformAttack",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BeamCannonModuleDefinition.cs",
     "Line": 94,
     "Member": "BeamCannon",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BulwarkShieldGeneratorModuleDefinition.cs",
     "Line": 90,
     "Member": "BulwarkShieldGenerator",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapitalEwarModuleDefinition.cs",
     "Line": 71,
     "Member": "CapitalEWarModule",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} activates their E-War device and begins to draw fire.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} activates their E-War device and begins to draw fire.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CombatLaserModuleDefinition.cs",
     "Line": 94,
     "Member": "CombatLaser",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        target,\n                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                        60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        target,\n                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                        60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullRepairerModuleDefinition.cs",
     "Line": 68,
     "Member": "HullRepairer",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} hull HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} hull HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
     "Line": 85,
     "Member": "HypermatterInjector",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} capacitor charge to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} capacitor charge to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/IonCannonModuleDefinition.cs",
     "Line": 120,
     "Member": "IonCannon",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        target,\n                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                        60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        target,\n                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                        60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/LaserCannonBatteryModuleDefinition.cs",
     "Line": 102,
     "Member": "LaserCannonBattery",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                                        nearbyTarget,\n                                        receiver => Combat.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),\n                                        60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                        nearbyTarget,\n                                        receiver => Combat.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),\n                                        60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
@@ -2901,43 +2901,43 @@
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
     "Line": 60,
     "Member": "PerformAttack",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ProtonBombModuleDefinition.cs",
     "Line": 56,
     "Member": "PerformAttack",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/QuadLaserCannonModuleDefinition.cs",
     "Line": 112,
     "Member": "QuadLaserCannon",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                            target,\n                            receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                            60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                            target,\n                            receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                            60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/RepairFieldGeneratorModuleDefinition.cs",
     "Line": 86,
     "Member": "RepairFieldGenerator",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} armor HP to nearby ships.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} armor HP to nearby ships.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldRepairerModuleDefinition.cs",
     "Line": 68,
     "Member": "ShieldRepairer",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} shield HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} shield HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/StormCannonModuleDefinition.cs",
     "Line": 126,
     "Member": "StormCannon",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/StripMinerModuleDefinition.cs",
@@ -2950,8 +2950,8 @@
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TurbolaserModuleDefinition.cs",
     "Line": 112,
     "Member": "Turbolaser",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SlicingTerminal.cs",
@@ -3237,15 +3237,15 @@
     "File": "SWLOR.Game.Server/Feature/StatusEffectDefinition/GuardedStatusEffect.cs",
     "Line": 190,
     "Member": "SendGuardingMessages",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(guarded, ColorToken.Combat($\"{sourceName} is guarding you.\"))"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(guarded, ColorToken.Combat($\"{sourceName} is guarding you.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/StatusEffectDefinition/GuardedStatusEffect.cs",
     "Line": 196,
     "Member": "SendGuardingMessages",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(source, ColorToken.Combat($\"You are guarding {guardedName}.\"))"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, ColorToken.Combat($\"You are guarding {guardedName}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/StatusEffectDefinition/StealthStatusEffect.cs",
@@ -3340,37 +3340,37 @@
   },
   {
     "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 334,
+    "Line": 332,
     "Member": "OnResolveAttackRoll",
-    "Delivery": "Testing only",
+    "Delivery": "Retained",
     "Call": "attacker.SendFeedbackString(new CExoString($\"{defenderName} is immune to critical hits!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 431,
+    "Line": 426,
     "Member": "OnResolveAttackRoll",
-    "Delivery": "Testing only",
+    "Delivery": "Retained",
     "Call": "attacker.SendFeedbackString(new CExoString(attackerMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 432,
+    "Line": 427,
     "Member": "OnResolveAttackRoll",
-    "Delivery": "Testing only",
+    "Delivery": "Retained",
     "Call": "defender.SendFeedbackString(new CExoString(defenderMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 566,
+    "Line": 558,
     "Member": "CheckDeflection",
-    "Delivery": "Testing only",
+    "Delivery": "Retained",
     "Call": "attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)))"
   },
   {
     "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 567,
+    "Line": 559,
     "Member": "CheckDeflection",
-    "Delivery": "Testing only",
+    "Delivery": "Retained",
     "Call": "defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)))"
   },
   {
@@ -3398,8 +3398,8 @@
     "File": "SWLOR.Game.Server/Service/Ability.cs",
     "Line": 2465,
     "Member": "SendCombatImpactResultMessage",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
@@ -3440,8 +3440,8 @@
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
     "Line": 196,
     "Member": "GiveBeastXP",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"{dbBeast.Name} earned {xp} XP.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{dbBeast.Name} earned {xp} XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
@@ -3559,22 +3559,22 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 1981,
     "Member": "ApplyCriticalHitEffects",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Weak Points\"), attacker, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 2176,
     "Member": "ApplyNonCriticalAbilityEffects",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 3006,
     "Member": "ApplyLowHPGuardEffect",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3587,8 +3587,8 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 3616,
     "Member": "SendGuardedHitFeedback",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(defender, feedback)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(defender, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3601,15 +3601,15 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 3623,
     "Member": "SendGuardedHitFeedback",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 3642,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(defender, feedback)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(defender, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3622,50 +3622,50 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 3651,
     "Member": "SendIncomingCriticalHitDowngradeFeedback",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 3781,
     "Member": "ApplyGuardedHitRetaliationPulse",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 3964,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 4630,
     "Member": "ApplyRangedRepeatedTargetDamageModifier",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 4739,
     "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 4771,
     "Member": "ReadySameTargetPressure",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 6267,
     "Member": "ApplyAutoAttackSuppressionStack",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat(\"Pinning Fire: Suppression applied.\"))"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(attacker, ColorToken.Combat(\"Pinning Fire: Suppression applied.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3678,8 +3678,8 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 6563,
     "Member": "ApplyFirstHostileAbilityHitCount",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3692,8 +3692,8 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 6605,
     "Member": "EnsureFirstHostileAbilityHitState",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3706,29 +3706,29 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 6632,
     "Member": "ReportFirstStrikeCombatEntry",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(\n                attacker,\n                ColorToken.Combat($\"First Strike is recharging ({remainingSeconds} seconds remaining).\"))"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(\n                attacker,\n                ColorToken.Combat($\"First Strike is recharging ({remainingSeconds} seconds remaining).\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 7373,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 7578,
     "Member": "ApplyRangedDeflectionReflection",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 8131,
     "Member": "ApplyGuardedHitNextAttackEffects",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3741,36 +3741,36 @@
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 8457,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Overwatch\"), attacker, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Overwatch\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 10567,
     "Member": "RefreshIdleReadiness",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Opening Attack Ready\"), creature, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Opening Attack Ready\"), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 10581,
     "Member": "RefreshIdleReadiness",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Idle Skill Ability Ready\"), creature, false)"
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Idle Skill Ability Ready\"), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 11523,
     "Member": "SendAbilityCriticalHitFeedback",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                defender,\n                observer => BuildAbilityCriticalHitCombatLogMessage(\n                    observer,\n                    attacker,\n                    defender,\n                    abilityName),\n                60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildAbilityCriticalHitCombatLogMessage(\n                    observer,\n                    attacker,\n                    defender,\n                    abilityName),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 11556,
     "Member": "SendTemporaryHitPointDamageFeedback",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -3944,43 +3944,43 @@
     "File": "SWLOR.Game.Server/Service/Faction.cs",
     "Line": 93,
     "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"Your standing with {factionDetail.Name} cannot possibly go higher!\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} cannot possibly go higher!\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Faction.cs",
     "Line": 97,
     "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"Your standing with {factionDetail.Name} improves.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} improves.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Faction.cs",
     "Line": 105,
     "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"Your standing with {factionDetail.Name} cannot possibly go lower!\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} cannot possibly go lower!\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Faction.cs",
     "Line": 109,
     "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"Your standing with {factionDetail.Name} decreases.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} decreases.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Faction.cs",
     "Line": 145,
     "Member": "AdjustPlayerFactionPoints",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"You gained {adjustBy} points with the {factionDetail.Name} faction.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You gained {adjustBy} points with the {factionDetail.Name} faction.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Faction.cs",
     "Line": 149,
     "Member": "AdjustPlayerFactionPoints",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
@@ -4035,8 +4035,8 @@
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
     "Line": 303,
     "Member": "ClickFishingPoint",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                player,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                player,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
@@ -4112,8 +4112,8 @@
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
     "Line": 429,
     "Member": "FinishFishing",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"Bait Remaining: {remainingBait}x {baitName}\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Bait Remaining: {remainingBait}x {baitName}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
@@ -4140,8 +4140,8 @@
     "File": "SWLOR.Game.Server/Service/Guild.cs",
     "Line": 105,
     "Member": "GiveGuildPoints",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"You earned {amount} {detail.Name} guild points\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Guild.cs",
@@ -4315,8 +4315,8 @@
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
     "Line": 333,
     "Member": "TryRecordWitness",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, ColorToken.Cyan($\"Your combat analyzer records {techniqueDetail.Name}...\"))"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Your combat analyzer records {techniqueDetail.Name}...\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
@@ -4355,42 +4355,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 24,
+    "Line": 25,
     "Member": "SendDiagnosticToPlayer",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 30,
+    "Line": 31,
     "Member": "ShowDiagnosticFloatingText",
     "Delivery": "Shared transport; policy at caller",
     "Call": "FloatingTextStringOnCreature(message, creature, displayToFaction)"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 36,
-    "Member": "SendDiagnosticNearby",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "Messaging.SendMessageNearbyToPlayers(creature, buildMessage, range)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 41,
-    "Member": "SendDiagnosticNearby",
-    "Delivery": "Testing only",
-    "Call": "SendDiagnosticNearby(creature, _ => message, range)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 60,
+    "Line": 50,
     "Member": "SendWarningToPlayer",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 79,
+    "Line": 69,
     "Member": "SendResourceRestored",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(creature, ColorToken.Combat(BuildResourceRestoredMessage(restored, resource)))"
@@ -4831,31 +4817,17 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
-    "Line": 101,
+    "Line": 100,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, statusMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
-    "Line": 103,
-    "Member": "Advance",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, statusMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
-    "Line": 184,
+    "Line": 180,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, statusMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
-    "Line": 186,
-    "Member": "Advance",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, statusMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestRewards.cs",
@@ -4931,8 +4903,8 @@
     "File": "SWLOR.Game.Server/Service/Skill.cs",
     "Line": 161,
     "Member": "GiveSkillXP",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
@@ -4945,8 +4917,8 @@
     "File": "SWLOR.Game.Server/Service/Skill.cs",
     "Line": 197,
     "Member": "GiveSkillXP",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, $\"You earned {details.Name} skill experience. ({xp})\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
@@ -5071,15 +5043,15 @@
     "File": "SWLOR.Game.Server/Service/Space.cs",
     "Line": 1734,
     "Member": "ApplyShipDamage",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                attacker,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                attacker,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
     "Line": 1805,
     "Member": "ApplyHullDamage",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(\n                attacker,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                attacker,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
@@ -5113,29 +5085,29 @@
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 534,
     "Member": "ApplyStatusEffectInternal",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(source, \"Your ability was resisted.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 551,
     "Member": "ApplyStatusEffectInternal",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(source, \"Your ability was resisted.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 646,
     "Member": "ApplyStatusEffectInternal",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(source, durationResistanceMessage)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 651,
     "Member": "ApplyStatusEffectInternal",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(creature, receiver =>\n                {\n                    var name = PlayerName.GetDisplayName(receiver, creature);\n                    var effectName = statusEffect.Name;\n                    var applicationMessage = $\"{name} receives the effect of {effectName}\";\n                    if (GetIsObjectValid(source) && source != creature)\n                    {\n                        var sourceName = PlayerName.GetDisplayName(receiver, source);\n                        if (!string.IsNullOrWhiteSpace(sourceName))\n                        {\n                            applicationMessage = $\"{applicationMessage} from {sourceName}\";\n                        }\n                    }\n\n                    return applicationMessage;\n                })"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(creature, receiver =>\n                {\n                    var name = PlayerName.GetDisplayName(receiver, creature);\n                    var effectName = statusEffect.Name;\n                    var applicationMessage = $\"{name} receives the effect of {effectName}\";\n                    if (GetIsObjectValid(source) && source != creature)\n                    {\n                        var sourceName = PlayerName.GetDisplayName(receiver, source);\n                        if (!string.IsNullOrWhiteSpace(sourceName))\n                        {\n                            applicationMessage = $\"{applicationMessage} from {sourceName}\";\n                        }\n                    }\n\n                    return applicationMessage;\n                })"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
@@ -5148,22 +5120,22 @@
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 1158,
     "Member": "RefreshStatusEffectDuration",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(source, \"Your ability was resisted.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 1167,
     "Member": "RefreshStatusEffectDuration",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(source, \"Your ability was resisted.\")"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/StatusEffect.cs",
     "Line": 1694,
     "Member": "RemoveStatusEffectInstance",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticNearby(creature,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.\")"
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(creature,\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
@@ -5274,8 +5246,8 @@
     "File": "SWLOR.Game.Server/Service/Weather.cs",
     "Line": 462,
     "Member": "DoWeatherEffects",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(oCreature, sMessage)"
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(oCreature, sMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",

@@ -5,7 +5,7 @@ $ErrorActionPreference = 'Stop'
 Add-Type -Path (Join-Path $PSHOME 'Microsoft.CodeAnalysis.dll')
 Add-Type -Path (Join-Path $PSHOME 'Microsoft.CodeAnalysis.CSharp.dll')
 $repo = (Get-Location).Path
-$sinks = @('SendMessageToPC', 'FloatingTextStringOnCreature', 'FloatingTextStrRefOnCreature', 'SendMessageToPCByStrRef', 'SendMessageToAllPCs', 'SendMessageNearbyToPlayers', 'SendFeedbackString', 'SendFeedbackMessage', 'SendMessage', 'PostString', 'SpeakString', 'ActionSpeakString', 'SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendDiagnosticNearby', 'SendResourceRestored', 'SendWarningToPlayer')
+$sinks = @('SendMessageToPC', 'FloatingTextStringOnCreature', 'FloatingTextStrRefOnCreature', 'SendMessageToPCByStrRef', 'SendMessageToAllPCs', 'SendMessageNearbyToPlayers', 'SendFeedbackString', 'SendFeedbackMessage', 'SendMessage', 'PostString', 'SpeakString', 'ActionSpeakString', 'SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendResourceRestored', 'SendWarningToPlayer')
 $rows = foreach ($file in (rg --files SWLOR.Game.Server -g '*.cs' | Sort-Object)) {
     $tree = [Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree]::ParseText([IO.File]::ReadAllText((Join-Path $repo $file)))
     $root = [Microsoft.CodeAnalysis.CSharp.CSharpExtensions]::GetCompilationUnitRoot($tree, [Threading.CancellationToken]::None)
@@ -16,7 +16,7 @@ $rows = foreach ($file in (rg --files SWLOR.Game.Server -g '*.cs' | Sort-Object)
         $ancestors = @($node.Ancestors($false))
         $member = $ancestors | Where-Object { $_ -is [Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax] } | Select-Object -First 1
         $delivery = 'Retained'
-        if ($name -in @('SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendDiagnosticNearby', 'SendResourceRestored')) { $delivery = 'Testing only' }
+        if ($name -in @('SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendResourceRestored')) { $delivery = 'Testing only' }
         elseif ($name -eq 'SendWarningToPlayer') { $delivery = 'Rate limited in Production' }
         elseif ($ancestors | Where-Object { $_ -is [Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax] -and $_.Condition.ToString() -eq 'PlayerFeedback.DiagnosticsEnabled' }) { $delivery = 'Testing only' }
         if ($file -match 'Service[\\/](PlayerFeedback|Messaging|Communication|Gui)\.cs$' -and $name -notlike '*Diagnostic*') { $delivery = 'Shared transport; policy at caller' }

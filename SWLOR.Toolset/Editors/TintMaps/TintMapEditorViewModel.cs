@@ -432,9 +432,12 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
         public void ReloadCatalog(TintMapCatalog? catalog)
         {
+            CancelPendingItemColorCarry();
             _catalog = catalog;
             Reload();
         }
+
+        public void CancelPendingItemColorCarry() => _pendingItemColorCarry = null;
     }
 
 }

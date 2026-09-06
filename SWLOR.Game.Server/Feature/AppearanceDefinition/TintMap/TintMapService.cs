@@ -1353,9 +1353,21 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             DelayCommand(RefreshDelaySeconds, () =>
             {
+                if (!GetIsObjectValid(creature))
+                    return;
+
+                // Ordinary equips can transfer a robe to a body without its model.
+                // Recover before resolving dyes, then replicate the cosmetic field
+                // change without invoking another equipment lifecycle.
+                var armor = GetItemInSlot(InventorySlot.Chest, creature);
+                var recoveredRobe = GetIsObjectValid(armor) &&
+                    RobeAppearance.RemoveUnavailableRobe(creature, armor);
                 CarryStoredEquipmentCustomColors(creature);
                 CarryStoredCreatureCustomColors(creature);
-                ApplyCurrentColors(creature);
+                if (recoveredRobe)
+                    EquippedItemAppearance.Refresh(creature, armor);
+                else
+                    ApplyCurrentColors(creature);
             });
         }
 

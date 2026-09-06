@@ -178,6 +178,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, creature, () =>
                 {
                     EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
+                    // Exercise the exact queued path used by ordinary equip events,
+                    // without opening the editor or directly refreshing the item.
+                    TintMapService.QueueRefresh(creature);
+                });
+                await ctx.DelaySecondsAsync(0.5f);
+                ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                    "The ordinary equip refresh recovers a robe unavailable for this wearer.");
+                await AssertSettledAsync(ctx, before, observation, $"queued recovery of missing robe {missing}");
+
+                var femaleItem = GetItemInSlot(InventorySlot.Chest, female);
+                await AssignedAsync(ctx, female, () =>
+                {
+                    EquippedItemAppearance.Set(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
+                    TintMapService.QueueRefresh(female);
+                });
+                await ctx.DelaySecondsAsync(0.5f);
+                ctx.AssertEqual(missing, GetItemAppearance(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                    "The same queue preserves the robe on a supported wearer.");
+
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
                     var editor = BindEditor(creature);
                     ctx.AssertEqual(0, editor.RobeSelection, "Opening the editor recovers a missing saved robe.");
                     ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
@@ -208,7 +230,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             await AssertSettledAsync(ctx, before, observation, "missing robe outfit recovery");
             ctx.SetResultDetail($"Validated {maleStyles.Count} male and {femaleStyles.Count} female robe choices; " +
-                "male 19/24 recovered through the editor and outfit application, stale choices rejected, arrows retained actual model IDs, " +
+                "male 19/24 recovered through the equip refresh queue, editor and outfit application; the queue preserved female 19/24. Stale choices rejected, arrows retained actual model IDs, " +
                 "same equipped item and gameplay snapshot retained with zero observed equipment events. Client rendering still needs visual confirmation.");
         }
 

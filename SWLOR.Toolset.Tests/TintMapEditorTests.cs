@@ -1819,6 +1819,70 @@ namespace SWLOR.Toolset.Tests
                 .Should().BeFalse();
         }
 
+        [AvaloniaTest]
+        [TestCase(false)]
+        [TestCase(true)]
+        public void ResourceReloadDiscardsAnInterruptedItemColorCarry(bool reloadCatalog)
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var item = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti, "tint_reload", "Interrupted Tint Carry")).Root;
+            var variables = new ItemValueStore(item).Locals;
+            using var secondStarted = new ManualResetEventSlim();
+            using var releaseSecond = new ManualResetEventSlim();
+            var calls = 0;
+            using var editor = new ItemEditorViewModel(
+                item, "tint_reload", (_, mutation) => { mutation(); return true; },
+                resolveModel: (_, _) =>
+                {
+                    var call = Interlocked.Increment(ref calls);
+                    if (call == 1)
+                        return ItemOwnedModelWith("helm_004");
+                    if (call == 2)
+                    {
+                        secondStarted.Set();
+                        releaseSecond.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
+                    }
+                    return ItemOwnedModelWith(call == 3 ? "helm_005" : "helm_053");
+                },
+                tintMapCatalog: catalog);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+            editor.TintMapEditor!.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color =
+                Color.FromRgb(12, 34, 56);
+            var oldKey = TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1);
+            var originalStored = variables.GetInt(oldKey);
+            try
+            {
+                editor.PreviewFemale = true;
+                Dispatcher.UIThread.RunJobs();
+                secondStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+                if (reloadCatalog)
+                    editor.ReloadTintMapCatalog(catalog);
+                editor.ReloadGameResources();
+                Dispatcher.UIThread.RunJobs();
+            }
+            finally
+            {
+                releaseSecond.Set();
+            }
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+            var currentKey = TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1);
+            editor.TintMapEditor.Colors.Single(row => row.Key == currentKey).IsCustom.Should().BeFalse();
+            editor.TintMapEditor.Colors.Single(row => row.Key == currentKey).Color = Color.FromRgb(90, 80, 70);
+
+            editor.PreviewFemale = false;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            var replacementKey = TintMapVariable.GetName("helm_053", TintMapLayerType.Cloth1);
+            TintMapColor.TryFromStoredValue(variables.GetInt(replacementKey)!.Value, out var carried).Should().BeTrue();
+            carried.Should().Be(new TintMapColor(90, 80, 70),
+                "a later model edit must carry the post-reload color, not the abandoned snapshot");
+            variables.GetInt(oldKey).Should().Be(originalStored,
+                "a later edit must not clean up material keys captured before the resource reload");
+        }
+
         [Test]
         public void ItemModelReplacementDoesNotGuessBetweenDifferentColorsForOneLayer()
         {

@@ -805,6 +805,7 @@ namespace SWLOR.Toolset.Editors.Items
             if (_disposed)
                 return;
 
+            TintMapEditor?.CancelPendingItemColorCarry();
             _previewModelGeneration++;
             _pendingModelSignature = null;
             _cachedModel = null;

@@ -195,6 +195,8 @@ public class PortraitDdsCorpusTests
         string? Resolve(int id) => id == 1 ? "example_" : null;
         var images = "lmst".Select(size => "po_example_" + size).ToHashSet();
         Assert.That(MissingPortraitSizes(1, null, Resolve, images.Contains), Is.Empty);
+        Assert.That(MissingPortraitSizes(1, "****", Resolve, images.Contains), Is.Empty);
+        Assert.That(MissingPortraitSizes(65535, "****", Resolve, images.Contains), Is.EqualTo("lmst"));
         Assert.That(MissingPortraitSizes(0, null, Resolve, images.Contains), Is.EqualTo("lmst"));
         Assert.That(MissingPortraitSizes(65535, null, Resolve, images.Contains), Is.EqualTo("lmst"));
         Assert.That(MissingPortraitSizes(1, "po_absent_", Resolve, images.Contains), Is.EqualTo("lmst"));
@@ -211,7 +213,7 @@ public class PortraitDdsCorpusTests
     private static string MissingPortraitSizes(int id, string? explicitResref,
         Func<int, string?> resolve, Func<string, bool> hasImage)
     {
-        var baseResref = string.IsNullOrWhiteSpace(explicitResref)
+        var baseResref = string.IsNullOrWhiteSpace(explicitResref) || explicitResref == "****"
             ? resolve(id) is { Length: > 0 } value && value != "****" ? "po_" + value : null
             : explicitResref;
         // Huge is intentionally absent; NWN:EE falls back to Large.

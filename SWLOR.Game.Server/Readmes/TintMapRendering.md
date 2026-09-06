@@ -163,6 +163,17 @@ vertex attributes before any generated resource is installed. Run
 `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRobe*.py"` for focused
 regressions, and run the complete generator for corpus validation.
 
+The legacy model compiler adds inverse local translations without composing
+their rotations. A rotated skin beneath a translated parent therefore receives
+incorrect inverse bone translations; robe 116 was displaced by roughly 1.7m
+on human bodies. Compilation corrects a mesh only when every used binding
+matches that compiler calculation, using `inverse(boneWorld) * meshWorld`.
+Unrelated authored inverse bindings remain intact. The repair covers all 40
+source variants of robe 116 and their generated RGB roots. Regression coverage
+includes an actual compiled rotated mesh, its skinned vertex positions, and a
+scan of the complete robe catalog; preserving old inverse-bind bytes alone is
+not sufficient to prove correct placement.
+
 `animation_bridges` in `RobeRgbModels.json` preserves stable shared parent names.
 The manifest records generator/source/output hashes, pose coverage, and any
 missing animation-source fallback. Missing authored parents use the body's

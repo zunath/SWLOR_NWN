@@ -3,10 +3,11 @@ import random
 import struct
 import sys
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from portrait_tga import decode, encode, flip_horizontal, normalized_metadata
+from portrait_tga import MAX_DECODED_BYTES, decode, encode, flip_horizontal, normalized_metadata
 
 
 def tga(width, height, pixels, depth=24, kind=2, descriptor=0, trailer=b""):
@@ -24,6 +25,35 @@ def reflect(pixels, width, height, bpp):
 
 
 class PortraitTgaTests(unittest.TestCase):
+    def test_oversized_headers_fail_before_pixel_allocation(self):
+        for kind in (2, 10):
+            for width, height in ((65535, 65535), (128, 257)):
+                with self.subTest(kind=kind, width=width, height=height):
+                    data = tga(width, height, b"", depth=32, kind=kind)
+                    with patch("portrait_tga.bytearray", create=True) as allocate:
+                        with self.assertRaisesRegex(ValueError, "decoded size"):
+                            decode(data)
+                        allocate.assert_not_called()
+
+    def test_maximum_retained_portrait_decodes_raw_and_rle(self):
+        pixels = b"abcd" * (128 * 256)
+        self.assertEqual(len(pixels), MAX_DECODED_BYTES)
+        for kind, payload in ((2, pixels), (10, b"\xffabcd" * 256)):
+            with self.subTest(kind=kind):
+                self.assertEqual(decode(tga(128, 256, payload, depth=32,
+                                            kind=kind)).pixels, pixels)
+
+    def test_retained_corpus_fits_decoded_size_limit(self):
+        root = Path(__file__).resolve().parents[2] / "SWLOR_Haks" / "sw_portrait"
+        portraits = list(root.glob("*.tga"))
+        self.assertTrue(portraits, "Portrait corpus is required")
+        for portrait in portraits:
+            with portrait.open("rb") as source:
+                header = source.read(18)
+            width, height, depth = struct.unpack_from("<HHB", header, 12)
+            with self.subTest(portrait=portrait.name):
+                self.assertLessEqual(width * height * (depth // 8), MAX_DECODED_BYTES)
+
     def test_uncompressed_all_origins_and_alpha_are_exact(self):
         for depth in (24, 32):
             for origin in (0, 16, 32, 48):

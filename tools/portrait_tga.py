@@ -11,6 +11,10 @@ from dataclasses import dataclass
 import struct
 
 
+# Largest retained portrait: 128 x 256 pixels with four color/alpha bytes.
+MAX_DECODED_BYTES = 128 * 256 * 4
+
+
 @dataclass(frozen=True)
 class TgaImage:
     width: int
@@ -40,6 +44,8 @@ def decode(data: bytes) -> TgaImage:
         raise ValueError("Truncated TGA image ID")
     cursor = start
     expected = width * height * bpp
+    if expected > MAX_DECODED_BYTES:
+        raise ValueError("TGA decoded size exceeds retained portrait limit")
     if image_type == 2:
         cursor += expected
         if cursor > len(data):

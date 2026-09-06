@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
@@ -16,6 +18,35 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private const int StartingFP = 50;
         private const int StartingStamina = 50;
+
+        [EngineTest("Innate interrupt cancels a pending cast without relying on Daze", Category = "Ability", TimeoutSeconds = 30f)]
+        public static async Task InnateInterruptCancelsPendingCast(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            ctx.SetNPCResources(npc, StartingFP, StartingStamina);
+            var fpBefore = Stat.GetCurrentFP(npc);
+
+            // Exercise the same callback used by Bellow without applying Daze, which could
+            // otherwise mask failure to cancel the server's delayed activation.
+            var helper = typeof(UsePerkFeat).Assembly.GetType(
+                "SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbility", true);
+            var interrupt = (Action<uint, uint>)helper.GetMethod(
+                "InterruptOnHit", BindingFlags.Public | BindingFlags.Static).Invoke(null, null);
+
+            await ctx.ExecuteInCreatureContextAsync(npc, () =>
+            {
+                ctx.Assert(UsePerkFeat.TryUseAbility(npc, npc, FeatType.Renewal1, GetLocation(npc)),
+                    "Renewal must start successfully before testing interruption.");
+                interrupt(npc, npc);
+            });
+
+            await ctx.DelaySecondsAsync(2f);
+            ctx.Assert(!StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc),
+                "An interrupted cast must not apply its delayed impact.");
+            ctx.Assert(Stat.GetCurrentFP(npc) == fpBefore,
+                "An interrupted cast must not spend its impact-time resource cost.");
+        }
 
         [EngineTest("Renewal I activation spends FP and applies its regeneration status effect", Category = "Ability", TimeoutSeconds = 30f)]
         public static async Task RenewalActivationSpendsFPAndAppliesStatusEffect(EngineTestContext ctx)

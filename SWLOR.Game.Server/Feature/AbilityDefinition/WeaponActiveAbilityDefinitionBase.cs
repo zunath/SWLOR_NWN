@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     bonus += ExtraDamageIfBesideOrBehind;
                     if (GetIsPC(activator))
                     {
-                        FloatingTextStringOnCreature(
+                        PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"Flanking +{ExtraDamageIfBesideOrBehind} DMG"),
                             activator,
                             false);
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         : ExtraDamageIfIdle;
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(ExtraDamageIfIdleFeedbackLabel))
                     {
-                        FloatingTextStringOnCreature(
+                        PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"{ExtraDamageIfIdleFeedbackLabel} +{ExtraDamageIfIdle} DMG"),
                             activator,
                             false);
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     bonus += ExtraDamageIfBehind;
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(ExtraDamageIfBehindFeedbackLabel))
                     {
-                        FloatingTextStringOnCreature(
+                        PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"{ExtraDamageIfBehindFeedbackLabel} +{ExtraDamageIfBehind} DMG"),
                             activator,
                             false);
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         : CriticalRateIfIdle;
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfIdleFeedbackLabel))
                     {
-                        FloatingTextStringOnCreature(
+                        PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"{CriticalRateIfIdleFeedbackLabel} +{CriticalRateIfIdle}% Critical Rate"),
                             activator,
                             false);
@@ -417,7 +417,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     adjustment += CriticalRateIfNotRecentTarget;
                     if (!string.IsNullOrWhiteSpace(CriticalRateIfNotRecentTargetFeedbackLabel))
                     {
-                        FloatingTextStringOnCreature(
+                        PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"{CriticalRateIfNotRecentTargetFeedbackLabel} +{CriticalRateIfNotRecentTarget}% Critical Rate"),
                             activator,
                             false);
@@ -664,12 +664,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Stat.RestoreStamina(activator, RestoreStaminaAfterImpact);
                 if (RestoreStaminaIfAnyCriticalHit > 0 && (summary?.CriticalHitCount ?? 0) > 0)
                 {
-                    var restored = Stat.RestoreStamina(activator, RestoreStaminaIfAnyCriticalHit);
+                    var restored = Stat.RestoreStamina(activator, RestoreStaminaIfAnyCriticalHit,
+                        sendFeedback: string.IsNullOrWhiteSpace(RestoreStaminaIfAnyCriticalHitFeedbackLabel));
                     if (restored > 0 &&
                         GetIsPC(activator) &&
                         !string.IsNullOrWhiteSpace(RestoreStaminaIfAnyCriticalHitFeedbackLabel))
                     {
-                        FloatingTextStringOnCreature(
+                        PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"{RestoreStaminaIfAnyCriticalHitFeedbackLabel} restored {restored} STM"),
                             activator,
                             false);
@@ -728,7 +729,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         CriticalRateIfIdle);
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfIdleFeedbackLabel))
                     {
-                        FloatingTextStringOnCreature(
+                        PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"{CriticalRateIfIdleFeedbackLabel} +{CriticalRateIfIdle}% Critical Rate"),
                             activator,
                             false);

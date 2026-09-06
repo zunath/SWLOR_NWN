@@ -131,10 +131,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             };
         }
 
-        /// <summary>Interrupts the struck target's current action.</summary>
+        /// <summary>Interrupts the struck target's current action and pending cast or channel.</summary>
         public static Action<uint, uint> InterruptOnHit()
         {
-            return (_, target) => AssignCommand(target, () => ClearAllActions());
+            return (_, target) =>
+            {
+                AssignCommand(target, () => ClearAllActions());
+                UsePerkFeat.InterruptAbilityActivation(target);
+            };
         }
 
         /// <summary>Pulls the struck target adjacent to the caster.</summary>
@@ -221,15 +225,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         {
             return target =>
             {
-                if (!GetIsObjectValid(target) || GetMaxHitPoints(target) <= 0)
+                if (!GetIsObjectValid(target))
                     return 0;
 
-                var missingFraction = 1f - (float)GetCurrentHitPoints(target) / GetMaxHitPoints(target);
-                if (missingFraction <= 0f)
-                    return 0;
-
-                return (int)(maxPercentBonus * missingFraction);
+                return CalculateMissingHpBonus(GetCurrentHitPoints(target), GetMaxHitPoints(target), maxPercentBonus);
             };
+        }
+
+        private static int CalculateMissingHpBonus(int currentHp, int maxHp, int maxPercentBonus)
+        {
+            if (maxHp <= 0 || maxPercentBonus <= 0)
+                return 0;
+
+            // Integer arithmetic preserves exact percentage boundaries (e.g. 20% missing = +7%).
+            // Clamp unconscious targets so missing HP never grants more than the advertised cap.
+            var missingHp = maxHp - Math.Clamp(currentHp, 0, maxHp);
+            return (int)((long)maxPercentBonus * missingHp / maxHp);
         }
 
         /// <summary>

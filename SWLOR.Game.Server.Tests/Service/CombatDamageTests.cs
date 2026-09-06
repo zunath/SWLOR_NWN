@@ -910,7 +910,7 @@ public class CombatDamageTests
         combatSource.Should().Contain("TryUseStatTrigger(");
         combatSource.Should().Contain("TimeSpan.FromMilliseconds(cooldownMilliseconds)");
         combatSource.Should().Contain("public static void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender)");
-        combatSource.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Critical Ward\"), defender, false);");
+        combatSource.Should().Contain("PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Critical Ward\"), defender, false);");
 
         abilitySource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
         abilitySource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);");

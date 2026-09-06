@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "damagePercentAdjustment (MissingHpRamp) is a conditional bonus on top of the unconditional base hit; not asserted.",
+                    Notes = "Per-target missing-HP damage scaling is verified by FinalLineEngineTests against identical rolls with the bonus disabled.",
                 },
 
                 // FinalSuppressionTechniqueAbilityDefinition - line AoE, 0 base damage, unconditional Stunned.

@@ -584,7 +584,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Recursive function which checks if player has moved since starting the casting.
-            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, List<string> activationTelegraphIds, uint resumeAttackTarget)
+            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, bool repeat = true)
             {
                 if (!GetIsPC(activator)) return;
 
@@ -602,7 +602,8 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
 
-                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphIds, resumeAttackTarget));
+                if (repeat)
+                    DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition));
             }
 
             /// <summary>
@@ -776,7 +777,8 @@ namespace SWLOR.Game.Server.Feature
                 TelegraphIds = activationTelegraphIds,
                 ResumeAttackTarget = resumeAttackTarget
             };
-            CheckForActivationInterruption(activationId, position, activationTelegraphIds, resumeAttackTarget);
+            if (activationDelay > 0f)
+                CheckForActivationInterruption(activationId, position);
 
             var executeImpact = ability.ActivationAction == null
                 ? true
@@ -818,8 +820,17 @@ namespace SWLOR.Game.Server.Feature
             }
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(
-                activationId, recastDelay, resumeAttackTarget, activationTelegraphIds, activationAreaTelegraphs));
+            DelayCommand(activationDelay, () =>
+            {
+                // A short cast can finish before the periodic movement check. Recheck at
+                // completion before spending resources or applying impact; instant abilities
+                // have no stationary casting period.
+                if (activationDelay > 0f)
+                    CheckForActivationInterruption(activationId, position, repeat: false);
+
+                CompleteActivation(
+                    activationId, recastDelay, resumeAttackTarget, activationTelegraphIds, activationAreaTelegraphs);
+            });
         }
 
         /// <summary>
@@ -888,13 +899,13 @@ namespace SWLOR.Game.Server.Feature
             var abilityDetail = Ability.GetAbilityDetail(featType);
             ClearQueuedAbility(target);
 
-            // Notify the activator and nearby players
-            SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
-
+            // Readiness changes inform the actor and nearby players. The nearby helper includes the actor once.
             if (sendMessage)
                 Messaging.SendMessageNearbyToPlayers(
                     target,
                     receiver => $"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.");
+            else
+                PlayerFeedback.SendDiagnosticToPlayer(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
         }
 
         public static bool HasQueuedWeaponAbility(uint activator)

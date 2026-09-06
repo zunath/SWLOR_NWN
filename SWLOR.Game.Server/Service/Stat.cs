@@ -328,8 +328,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of FP to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
+        /// <param name="sendFeedback">Whether to report the actual gain in diagnostic environments. Disable for natural regeneration and rest.</param>
         /// <returns>The amount of FP actually restored after modifiers and the maximum-FP cap.</returns>
-        public static int RestoreFP(uint creature, int amount, Player dbPlayer = null)
+        public static int RestoreFP(uint creature, int amount, Player dbPlayer = null, bool sendFeedback = true)
         {
             if (amount <= 0) return 0;
 
@@ -367,6 +368,9 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_fp_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyFPRestoredEffects(creature);
+
+            if (sendFeedback)
+                PlayerFeedback.SendResourceRestored(creature, restored, "FP");
 
             return restored;
         }
@@ -416,8 +420,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of Stamina to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
+        /// <param name="sendFeedback">Whether to report the actual gain in diagnostic environments. Disable for natural regeneration and rest.</param>
         /// <returns>The amount of Stamina actually restored after the maximum-Stamina cap.</returns>
-        public static int RestoreStamina(uint creature, int amount, Player dbPlayer = null)
+        public static int RestoreStamina(uint creature, int amount, Player dbPlayer = null, bool sendFeedback = true)
         {
             if (amount <= 0) return 0;
 
@@ -452,6 +457,9 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_stm_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyStaminaRestoredEffects(creature);
+
+            if (sendFeedback)
+                PlayerFeedback.SendResourceRestored(creature, restored, "STM");
 
             return restored;
         }

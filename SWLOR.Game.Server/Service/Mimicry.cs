@@ -319,14 +319,14 @@ namespace SWLOR.Game.Server.Service
 
             // Witnessing a technique above the player's current skill is still recorded (the learn roll re-checks the
             // gate at the creature's death, in case the player's rank crosses the floor first),
-            // but the feedback makes clear it cannot be learned yet and what rank it needs.
+            // Explain the skill gate, but limit repeated warnings about the same technique across NPCs.
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
             var requiredSkillRank = techniqueDetail.MimicrySkillRequirement;
 
             if (skillRank < requiredSkillRank)
             {
-                SendMessageToPC(player, ColorToken.Gray(
-                    $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})"));
+                PlayerFeedback.SendWarningToPlayer(player, "MIMICRY_RANK_" + (int)techniqueFeat, ColorToken.Gray(
+                    $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})"), intervalSeconds: 60);
                 return;
             }
 
@@ -424,11 +424,10 @@ namespace SWLOR.Game.Server.Service
 
                 if (Random.D100(1) > chance)
                 {
-                    // Give explicit feedback on a failed roll so a miss is distinguishable from
-                    // "no roll happened". The witness entry for this creature is cleared on its
-                    // death, so the player must analyze the technique again on another creature.
-                    SendMessageToPC(player, ColorToken.Orange(
-                        $"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry."));
+                    // Explain the retry, limiting repeat failures for the same technique across NPCs.
+                    // The witness entry is cleared on death, so another creature must be analyzed.
+                    PlayerFeedback.SendWarningToPlayer(player, "MIMICRY_DECODE_" + (int)feat, ColorToken.Orange(
+                        $"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry."), intervalSeconds: 60);
                     continue;
                 }
 

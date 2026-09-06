@@ -99,6 +99,34 @@ public class CombatBibleSelectiveCorrectionTests
         }
     }
 
+    [Test]
+    public async Task MimicryCostCorrections_PreserveNumericCellsOnRepeatedRuns()
+    {
+        var workbook = CopyBibleToTemporaryFile();
+        try
+        {
+            var characterStatsBefore = ReadSheetXml(workbook, "Character Stats");
+            for (var run = 0; run < 2; run++)
+            {
+                var result = await RunCorrection(workbook, new[] { "Finishing Drive", "Snap Rush", "Inner Ring Flurry" });
+                result.ExitCode.Should().Be(0, result.Error);
+                var sheet = XDocument.Parse(ReadSheetXml(workbook, "Mimicry"));
+                foreach (var (reference, value) in new[] { ("L81", "5"), ("L96", "4"), ("R88", "2") })
+                {
+                    var cell = sheet.Descendants(SpreadsheetNs + "c").Single(c => (string)c.Attribute("r") == reference);
+                    ((string)cell.Attribute("t")).Should().BeNull("stamina and slots must remain numeric after replaying corrections");
+                    cell.Element(SpreadsheetNs + "v")!.Value.Should().Be(value);
+                }
+                ReadSheetXml(workbook, "Character Stats").Should().Be(characterStatsBefore,
+                    "perk corrections must preserve unrelated formula cells and their cached values");
+            }
+        }
+        finally
+        {
+            File.Delete(workbook);
+        }
+    }
+
     private static string CopyBibleToTemporaryFile()
     {
         var root = FindRepositoryRoot();

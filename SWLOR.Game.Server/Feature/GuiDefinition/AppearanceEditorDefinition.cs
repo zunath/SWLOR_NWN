@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -11,19 +12,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        private const float MainColorChannelButtonSize = 72f;
-        private const float PartColorChannelButtonSize = 16f;
+        private const float MainColorChannelRowHeight = 99f;
+        private const float PartColorChannelButtonSize = 20f;
+        private const float PaletteButtonSize = 18f;
+        private const float PaletteWidth = 308f;
+        private const float PaletteHeight = 246f;
+        private const float PaletteGridHeight = 218f;
+        private const float CategoryWidth = 200f;
+        private const float PartCategoryListHeight = 450f;
+        private const float PartListHeight = 280f;
+        private const float ArmorPartDropdownWidth = 96f;
+        private const float ArmorPartEditorHeight = 112f;
+        private const float ArmorPartsHeight = 840f;
+
+        // All expanding spans are resolved by the client. This tree is shared by every
+        // window size; resizing must not require new layouts or binding replay.
+        public static GuiGroup<AppearanceEditorViewModel> BuildEditorPanel(string partialName)
+        {
+            var definition = new AppearanceEditorDefinition();
+            var panel = new GuiGroup<AppearanceEditorViewModel>().SetShowBorder(false);
+            switch (partialName)
+            {
+                case AppearanceEditorViewModel.EditorMainPartial: definition.BuildMainEditor(panel); break;
+                case AppearanceEditorViewModel.EditorArmorPartial: definition.BuildArmorEditor(panel); break;
+                case AppearanceEditorViewModel.SettingsPartial: definition.BuildSettings(panel); break;
+                default: throw new ArgumentOutOfRangeException(nameof(partialName), partialName, "Unknown appearance editor panel.");
+            }
+            return panel;
+        }
 
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.AppearanceEditor)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 476.57895f, 600f)
+                .SetInitialGeometry(0, 0, 590f, 740f)
                 .SetTitle("Appearance Editor")
                 .BindOnClosed(model => model.OnCloseWindow())
-
-                .DefinePartialView(AppearanceEditorViewModel.EditorHeaderPartial, BuildEditorHeader)
 
                 .DefinePartialView(AppearanceEditorViewModel.EditorMainPartial, BuildMainEditor)
 
@@ -41,80 +66,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     BuildColorPalette(partial, "gui_pal_armor01");
                 })
 
-                .AddColumn(BuildNavigation);
+                .AddStandardLayout(layout =>
+                {
+                    layout.SetTabPanelHeight(84f);
+                    layout.AddTabRow(BuildNavigation);
+                    layout.AddTabRow(BuildEquipmentSelection);
+                    layout.SetContentPartialElement(AppearanceEditorViewModel.MainPartialElement);
+                });
 
             return _builder.Build();
         }
 
-        private void BuildNavigation(GuiColumn<AppearanceEditorViewModel> col)
+        private void BuildNavigation(GuiRow<AppearanceEditorViewModel> row)
         {
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddToggleButton()
-                    .SetText("Appearance")
-                    .SetHeight(32f)
-                    .BindIsToggled(model => model.IsAppearanceSelected)
-                    .BindOnClicked(model => model.OnSelectAppearance());
-
-                row.AddToggleButton()
-                    .SetText("Equipment")
-                    .SetHeight(32f)
-                    .BindIsToggled(model => model.IsEquipmentSelected)
-                    .BindOnClicked(model => model.OnSelectEquipment());
-
-                row.AddToggleButton()
-                    .SetText("Settings")
-                    .SetHeight(32f)
-                    .BindIsToggled(model => model.IsSettingsSelected)
-                    .BindOnClicked(model => model.OnSelectSettings())
-                    .BindIsVisible(model => model.IsSettingsVisible);
-
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddPartialView(AppearanceEditorViewModel.MainPartialElement);
-            });
+            row.SetHeight(28f);
+            row.AddSpacer();
+            row.AddToggles()
+                .AddOption("Appearance")
+                .AddOption("Equipment")
+                .BindSelectedValue(model => model.EditorTabToggleValue)
+                .SetWidth(300f)
+                .SetHeight(28f);
+            row.AddToggles()
+                .AddOption("Settings")
+                .BindSelectedValue(model => model.SettingsTabToggleValue)
+                .BindIsVisible(model => model.IsSettingsVisible)
+                .SetWidth(150f)
+                .SetHeight(28f);
+            row.AddSpacer();
         }
 
-        private void BuildEditorHeader(GuiGroup<AppearanceEditorViewModel> partial)
+        private void BuildEquipmentSelection(GuiRow<AppearanceEditorViewModel> row)
         {
-            partial.AddColumn(col =>
-            {
-                col.AddRow(row =>
-                {
-                    row.BindIsVisible(model => model.IsEquipmentSelected);
-
-                    row.AddSpacer();
-
-                    row.AddComboBox()
-                        .AddOption("Armor", 0)
-                        .AddOption("Helmet", 1)
-                        .AddOption("Cloak", 2)
-                        .AddOption("Weapon (Main)", 3)
-                        .AddOption("Weapon (Off)", 4)
-                        .BindSelectedIndex(model => model.SelectedItemTypeIndex);
-
-                    row.AddButton()
-                        .SetText("Outfits")
-                        .SetHeight(32f)
-                        .BindOnClicked(model => model.OnClickOutfits());
-
-                    row.AddSpacer();
-                });
-
-                col.AddRow(row =>
-                {
-                    row.AddPartialView(AppearanceEditorViewModel.EditorPartialElement);
-                });
-            });
+            row.BindIsVisible(model => model.IsEquipmentSelected);
+            row.AddSpacer();
+            row.AddComboBox()
+                .AddOption("Armor", 0)
+                .AddOption("Helmet", 1)
+                .AddOption("Cloak", 2)
+                .AddOption("Weapon (Main)", 3)
+                .AddOption("Weapon (Off)", 4)
+                .BindSelectedIndex(model => model.SelectedItemTypeIndex)
+                .SetWidth(240f)
+                .SetHeight(32f);
+            row.AddButton()
+                .SetText("Outfits")
+                .SetWidth(140f)
+                .SetHeight(32f)
+                .BindOnClicked(model => model.OnClickOutfits());
+            row.AddSpacer();
         }
 
         private void BuildMainEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
+            // Each side owns its vertical scrolling while the client gives the detail
+            // group the width remaining beside the category rail.
+            partial.SetScrollbars(NuiScrollbars.None);
             partial.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -131,183 +138,208 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.BindIsVisible(model => model.HasItemEquipped);
 
-                    row.AddColumn(col2 =>
+                    row.AddGroup(panel =>
                     {
-                        col2.AddRow(row2 =>
+                        panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
+                        panel.AddColumn(col2 =>
                         {
-                            row2.AddList(template =>
+                            col2.AddRow(row2 =>
                             {
-                                template.AddCell(cell =>
+                                row2.SetHeight(162f);
+                                row2.AddList(template =>
                                 {
-                                    cell.AddToggleButton()
-                                        .BindText(model => model.ColorCategoryOptions)
-                                        .BindIsToggled(model => model.ColorCategorySelected)
-                                        .BindOnClicked(model => model.OnSelectColorCategory());
-                                });
-                            })
-                                .BindRowCount(model => model.ColorCategoryOptions);
-                        });
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .SetId("ae_color_category")
+                                            .BindText(model => model.ColorCategoryOptions)
+                                            .BindIsToggled(model => model.ColorCategorySelected)
+                                            .BindOnClicked(model => model.OnSelectColorCategory());
+                                    });
+                                })
+                                    .BindRowCount(model => model.ColorCategoryOptions)
+                                    .SetHeight(154f);
+                            });
 
-                        col2.AddRow(row2 =>
-                        {
-                            row2.AddList(template =>
+                            col2.AddRow(row2 =>
                             {
-                                template.AddCell(cell =>
+                                row2.SetHeight(PartCategoryListHeight + 8f);
+                                row2.AddList(template =>
                                 {
-                                    cell.AddToggleButton()
-                                        .BindText(model => model.PartCategoryOptions)
-                                        .BindIsToggled(model => model.PartCategorySelected)
-                                        .BindOnClicked(model => model.OnSelectPartCategory());
-                                });
-                            })
-                                .BindRowCount(model => model.PartCategoryOptions);
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .SetId("ae_part_category")
+                                            .BindText(model => model.PartCategoryOptions)
+                                            .BindIsToggled(model => model.PartCategorySelected)
+                                            .BindOnClicked(model => model.OnSelectPartCategory());
+                                    });
+                                })
+                                    .BindRowCount(model => model.PartCategoryOptions)
+                                    .SetHeight(PartCategoryListHeight);
+                            });
+
+                            col2.AddRow(row2 => row2.AddSpacer());
+
                         });
+                    }).SetWidth(CategoryWidth);
 
-                    });
-
-
-                    row.AddColumn(col2 =>
+                    row.AddGroup(panel =>
                     {
-                        col2.AddRow(row2 =>
+                        panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
+                        panel.AddColumn(col2 =>
                         {
-                            row2.AddImage()
-                                .BindResref(model => model.ColorSheetResref)
-                                .SetHeight(176f)
-                                .SetWidth(256f)
-                                .SetVerticalAlign(NuiVerticalAlign.Top)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetAspect(NuiAspect.ExactScaled)
-                                .BindOnMouseDown(model => model.OnSelectColor())
-                                .BindIsVisible(model => model.IsColorPickerVisible);
-                        });
-
-                        col2.AddRow(row2 =>
-                        {
-                            row2.AddList(template =>
+                            col2.AddRow(row2 =>
                             {
-                                template.AddCell(cell =>
+                                row2.AddGroup(palette => BuildColorPalette(palette, showTarget: false))
+                                    .SetId("ae_color_palette")
+                                    .BindIsVisible(model => model.IsColorPickerVisible);
+
+                                // A fixed palette alone pulls the group's private layout back
+                                // to its width. Give this row a place to absorb extra space.
+                                row2.AddSpacer();
+                            });
+
+                            BuildCustomTintEditor(col2);
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddList(template =>
                                 {
-                                    cell.AddToggleButton()
-                                        .BindText(model => model.PartOptions)
-                                        .BindIsToggled(model => model.PartSelected)
-                                        .BindOnClicked(model => model.OnSelectPart());
-                                });
-                            })
-                                .BindRowCount(model => model.PartOptions)
-                                .SetWidth(256f);
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .SetId("ae_part_select")
+                                            .BindText(model => model.PartOptions)
+                                            .BindIsToggled(model => model.PartSelected)
+                                            .BindOnClicked(model => model.OnSelectPart());
+                                    });
+                                })
+                                    .BindRowCount(model => model.PartOptions)
+                                    .SetHeight(PartListHeight);
+                            });
+
+                            col2.AddRow(row2 =>
+                            {
+                                // Dimensions on the buttons would also disable their
+                                // native equal-width sharing. Size their shared row instead.
+                                row2.SetHeight(40f);
+                                row2.AddButton()
+                                    .SetId("ae_previous_part")
+                                    .SetText("Previous Part")
+                                    .BindOnClicked(model => model.OnPreviousPart());
+
+                                row2.AddButton()
+                                    .SetId("ae_next_part")
+                                    .SetText("Next Part")
+                                    .BindOnClicked(model => model.OnNextPart());
+                            });
+
                         });
-
-                        col2.AddRow(row2 =>
-                        {
-                            row2.AddButton()
-                                .SetText("Previous Part")
-                                .SetHeight(32f)
-                                .SetWidth(128f)
-                                .BindOnClicked(model => model.OnPreviousPart());
-
-                            row2.AddButton()
-                                .SetText("Next Part")
-                                .SetHeight(32f)
-                                .SetWidth(128f)
-                                .BindOnClicked(model => model.OnNextPart());
-                        });
-
                     });
                 });
             });
         }
 
+        private void BuildCustomTintEditor(GuiColumn<AppearanceEditorViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
+
+                row.AddColorPicker()
+                    .SetId("ae_tint_picker")
+                    .BindSelectedColor(model => model.SelectedTintColor)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
+                    .BindOnMouseUp(model => model.OnMouseUpTintPicker())
+                    .SetHeight(128f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
+                row.AddSpacer();
+
+                row.AddLabel()
+                    .SetText("R")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintRed)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddLabel()
+                    .SetText("G")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintGreen)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddLabel()
+                    .SetText("B")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintBlue)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddSpacer();
+            });
+        }
+
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
+            partial.SetScrollbars(NuiScrollbars.Auto);
             void BuildMainColorChannels(GuiColumn<AppearanceEditorViewModel> col)
             {
                 col.AddRow(row =>
                 {
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetText("Leather")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetText("Cloth")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetText("Metal")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Top);
+                    row.SetHeight(28f).SetMargin(0f);
+                    foreach (var label in new[] { "Leather", "Cloth", "Metal" })
+                    {
+                        row.AddLabel()
+                            .SetText(label)
+                            .SetMargin(0f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                    }
                 });
 
                 col.AddRow(row =>
                 {
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalLeather1Region,
-                        MainColorChannelButtonSize,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather1));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalCloth1Region,
-                        MainColorChannelButtonSize,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_armor01",
-                        model => model.GlobalMetal1Region,
-                        MainColorChannelButtonSize,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal1),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal1));
+                    row.SetHeight(MainColorChannelRowHeight).SetMargin(0f);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalLeather1Region, AppearanceArmorColor.Leather1);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalCloth1Region, AppearanceArmorColor.Cloth1);
+                    CreateGlobalColorSwatch(row, "gui_pal_armor01", model => model.GlobalMetal1Region, AppearanceArmorColor.Metal1);
                 });
                 col.AddRow(row =>
                 {
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalLeather2Region,
-                        MainColorChannelButtonSize,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather2));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalCloth2Region,
-                        MainColorChannelButtonSize,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth2),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth2));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_armor01",
-                        model => model.GlobalMetal2Region,
-                        MainColorChannelButtonSize,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal2));
-                });
-                col.AddRow(row =>
-                {
-                    row.AddSpacer()
-                        .SetHeight(32f);
+                    row.SetHeight(MainColorChannelRowHeight).SetMargin(0f);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalLeather2Region, AppearanceArmorColor.Leather2);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalCloth2Region, AppearanceArmorColor.Cloth2);
+                    CreateGlobalColorSwatch(row, "gui_pal_armor01", model => model.GlobalMetal2Region, AppearanceArmorColor.Metal2);
                 });
             }
 
             void CreatePartEditor(
-                GuiColumn<AppearanceEditorViewModel> col,
+                GuiColumn<AppearanceEditorViewModel> stack,
                 string partName,
                 AppearanceArmor partType,
                 AppearanceEditorViewModel.ColorTarget colorTarget,
@@ -320,119 +352,126 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 Expression<Func<AppearanceEditorViewModel, GuiRectangle>> metal1RegionBinding,
                 Expression<Func<AppearanceEditorViewModel, GuiRectangle>> metal2RegionBinding)
             {
-                col.AddRow(row =>
+                stack.AddRow(partRow => partRow.AddColumn(col =>
                 {
-                    row.AddLabel()
-                        .SetText(partName)
-                        .SetHeight(PartColorChannelButtonSize)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Middle);
-                });
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText(partName)
+                            .SetHeight(PartColorChannelButtonSize)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                    });
 
-                col.AddRow(row =>
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .SetId("ae_previous_" + partType)
+                            .SetText("<")
+                            .SetHeight(24f)
+                            .SetWidth(24f)
+                            .SetMargin(0f)
+                            .BindOnClicked(model => model.OnClickAdjustArmorPart(partType, -1));
+
+                        row.AddComboBox()
+                            .SetWidth(ArmorPartDropdownWidth)
+                            .SetHeight(24f)
+                            .SetMargin(0f)
+                            .BindOptions(optionsBinding)
+                            .BindSelectedIndex(selectionBinding);
+
+                        row.AddButton()
+                            .SetId("ae_next_" + partType)
+                            .SetText(">")
+                            .SetHeight(24f)
+                            .SetWidth(24f)
+                            .SetMargin(0f)
+                            .BindOnClicked(model => model.OnClickAdjustArmorPart(partType, 1));
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        CreateFilledButton(
+                            row,
+                            "gui_pal_tattoo",
+                            leather1RegionBinding,
+                            PartColorChannelButtonSize,
+                            2f,
+                            model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather1),
+                            model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather1));
+                        CreateFilledButton(
+                            row,
+                            "gui_pal_tattoo",
+                            cloth1RegionBinding,
+                            PartColorChannelButtonSize,
+                            2f,
+                            model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth1),
+                            model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth1));
+                        CreateFilledButton(
+                            row,
+                            "gui_pal_armor01",
+                            metal1RegionBinding,
+                            PartColorChannelButtonSize,
+                            2f,
+                            model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal1),
+                            model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal1));
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        CreateFilledButton(
+                            row,
+                            "gui_pal_tattoo",
+                            leather2RegionBinding,
+                            PartColorChannelButtonSize,
+                            2f,
+                            model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather2),
+                            model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather2));
+                        CreateFilledButton(
+                            row,
+                            "gui_pal_tattoo",
+                            cloth2RegionBinding,
+                            PartColorChannelButtonSize,
+                            2f,
+                            model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth2),
+                            model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth2));
+                        CreateFilledButton(
+                            row,
+                            "gui_pal_armor01",
+                            metal2RegionBinding,
+                            PartColorChannelButtonSize,
+                            2f,
+                            model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal2),
+                            model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal2));
+                        row.AddSpacer();
+                    });
+                }).SetHeight(ArmorPartEditorHeight));
+            }
+
+            void AddPartColumn(GuiRow<AppearanceEditorViewModel> row, Action<GuiColumn<AppearanceEditorViewModel>> build)
+            {
+                row.AddGroup(group =>
                 {
-                    row.AddButton()
-                        .SetText("<")
-                        .SetHeight(24f)
-                        .SetWidth(24f)
-                        .SetMargin(0f)
-                        .BindOnClicked(model => model.OnClickAdjustArmorPart(partType, -1));
-
-                    row.AddComboBox()
-                        .SetHeight(24f)
-                        .SetWidth(100f)
-                        .SetMargin(0f)
-                        .BindOptions(optionsBinding)
-                        .BindSelectedIndex(selectionBinding);
-
-                    row.AddButton()
-                        .SetText(">")
-                        .SetHeight(24f)
-                        .SetWidth(24f)
-                        .SetMargin(0f)
-                        .BindOnClicked(model => model.OnClickAdjustArmorPart(partType, 1));
-                });
-
-                col.AddRow(row =>
-                {
-                    row.AddSpacer();
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        leather1RegionBinding,
-                        PartColorChannelButtonSize,
-                        2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather1),
-                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather1));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        cloth1RegionBinding,
-                        PartColorChannelButtonSize,
-                        2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth1),
-                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth1));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_armor01",
-                        metal1RegionBinding,
-                        PartColorChannelButtonSize,
-                        2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal1),
-                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal1));
-                    row.AddSpacer();
-                });
-
-                col.AddRow(row =>
-                {
-                    row.AddSpacer();
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        leather2RegionBinding,
-                        PartColorChannelButtonSize,
-                        2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather2),
-                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather2));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        cloth2RegionBinding,
-                        PartColorChannelButtonSize,
-                        2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth2),
-                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth2));
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_armor01",
-                        metal2RegionBinding,
-                        PartColorChannelButtonSize,
-                        2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal2),
-                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal2));
-                    row.AddSpacer();
+                    group.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
+                    group.AddColumn(build);
                 });
             }
 
             void CreateGap(GuiRow<AppearanceEditorViewModel> mainRow)
             {
-                mainRow.AddColumn(col =>
-                {
-                    for (var x = 1; x <= 7; x++)
-                    {
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer()
-                                .SetWidth(6f)
-                                .SetHeight(6f);
-                        });
-                    }
-                });
+                // Gutters must stay narrow while the three editor columns expand.
+                mainRow.AddSpacer().SetWidth(6f);
             }
 
             void BuildParts(GuiRow<AppearanceEditorViewModel> mainRow)
             {
-                mainRow.AddColumn(col =>
+                // Any explicit dimension on a child disables native equal spacing in
+                // both axes. Bound the row's height so all three groups share its width.
+                mainRow.SetHeight(ArmorPartsHeight);
+                AddPartColumn(mainRow, col =>
                 {
                     CreatePartEditor(
                         col,
@@ -529,7 +568,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 CreateGap(mainRow);
 
-                mainRow.AddColumn(col =>
+                AddPartColumn(mainRow, col =>
                 {
                     CreatePartEditor(
                         col,
@@ -613,7 +652,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 CreateGap(mainRow);
 
-                mainRow.AddColumn(col =>
+                AddPartColumn(mainRow, col =>
                 {
                     CreatePartEditor(
                         col,
@@ -716,6 +755,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     mainCol.AddRow(row =>
                     {
                         row.AddButton()
+                            .SetId("ae_copy_right")
                             .SetText("Copy to Right -->")
                             .BindIsEnabled(model => model.IsCopyEnabled)
                             .BindOnClicked(model => model.OnClickCopyToRight());
@@ -735,6 +775,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     mainCol.AddRow(row =>
                     {
                         row.AddButton()
+                            .SetId("ae_copy_left")
                             .SetText("<-- Copy to Left")
                             .BindIsEnabled(model => model.IsCopyEnabled)
                             .BindOnClicked(model => model.OnClickCopyToLeft());
@@ -742,7 +783,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
             }
 
-            partial.AddColumn(mainCol  =>
+            partial.AddColumn(mainCol =>
             {
                 mainCol.AddRow(row =>
                 {
@@ -757,43 +798,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 mainCol.AddRow(mainRow =>
                 {
                     mainRow.BindIsVisible(model => model.HasItemEquipped);
-                    mainRow.AddGroup(group =>
+                    mainRow.AddColumn(col =>
                     {
-                        group.SetShowBorder(false);
-                        group.AddColumn(col =>
+                        col.AddRow(row =>
                         {
-                            col.AddRow(row =>
+                            row.AddPartialView(AppearanceEditorViewModel.ArmorColorElement)
+                                .SetWidth(PaletteWidth)
+                                .SetHeight(PaletteHeight);
+                            row.AddGroup(channels =>
                             {
-                                row.AddLabel()
-                                    .SetText(" ")
-                                    .SetHeight(20f)
-                                    .SetWidth(MainColorChannelButtonSize);
+                                channels.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
+                                channels.AddColumn(BuildMainColorChannels);
                             });
+                        });
 
-                            col.AddRow(row =>
-                            {
-                                row.AddColumn(col2 =>
-                                {
-                                    col2.AddRow(row2 =>
-                                    {
-                                        row2.AddPartialView(AppearanceEditorViewModel.ArmorColorElement);
-                                    });
-                                });
+                        BuildCustomTintEditor(col);
 
-                                row.AddColumn(BuildMainColorChannels);
-                            });
+                        col.AddRow(row =>
+                        {
+                            BuildParts(row);
+                        });
 
-                            col.AddRow(row =>
-                            {
-                                BuildParts(row);
-                                row.AddSpacer();
-                            });
-
-                            col.AddRow(row =>
-                            {
-                                BuildFooter(row);
-                                row.AddSpacer();
-                            });
+                        col.AddRow(row =>
+                        {
+                            BuildFooter(row);
                         });
                     });
                 });
@@ -801,7 +829,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void CreateFilledButton(
+        private void CreateGlobalColorSwatch(
+            GuiRow<AppearanceEditorViewModel> row,
+            string texture,
+            Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding,
+            AppearanceArmorColor channel)
+        {
+            // The cell shares the available width; the image and its native glow
+            // share square bounds. Give the image the full cell width; only the
+            // vertical spacer absorbs unused space when a narrow cell limits its size.
+            row.AddGroup(cell =>
+            {
+                cell.SetShowBorder(false).SetScrollbars(NuiScrollbars.None)
+                    .SetMargin(0f).SetPadding(0f);
+                cell.AddColumn(column =>
+                {
+                    column.AddRow(imageRow =>
+                    {
+                        imageRow.SetMargin(0f);
+                        imageRow.AddImage()
+                            .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
+                            .SetResref(texture)
+                            .BindRegion(regionBinding)
+                            .SetAspect(NuiAspect.Stretch)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .BindIsEncouraged(ColorSelectionBinding(regionBinding))
+                            .SetAspectRatio(1f)
+                            .SetMargin(2f)
+                            // The client clips the fill to the image's responsive square.
+                            // Using the row's maximum extent covers every size without
+                            // publishing geometry or imposing a progress bar's default height.
+                            .AddDrawList(list => list.SetIsConstrainedToTargetBounds(true)
+                                .AddPolyLine(fill => fill
+                                    .BindIsEnabled(ColorSwatchBinding<bool>(regionBinding, "Custom"))
+                                    .BindColor(ColorSwatchBinding<GuiColor>(regionBinding, "Tint"))
+                                    .SetIsFilled(true)
+                                    .AddPoint(0f, 0f)
+                                    .AddPoint(MainColorChannelRowHeight, 0f)
+                                    .AddPoint(MainColorChannelRowHeight, MainColorChannelRowHeight)
+                                    .AddPoint(0f, MainColorChannelRowHeight)))
+                            .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));
+                    });
+                    column.AddRow(space => space.AddSpacer());
+                });
+            });
+        }
+
+        private GuiButton<AppearanceEditorViewModel> CreateFilledButton(
             GuiExpandableComponent<AppearanceEditorViewModel> component,
             string texture,
             Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBind,
@@ -809,19 +884,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             float drawOffset,
             Expression<Func<AppearanceEditorViewModel, Action>> onClickBind,
             Expression<Func<AppearanceEditorViewModel, Action>> onClickClearColor,
-            GuiRectangle staticRegion = null)
+            GuiRectangle staticRegion = null,
+            Expression<Func<AppearanceEditorViewModel, string>> textureBinding = null)
         {
-            component.AddButton()
+            var button = component.AddButton()
                 .SetText("")
                 .SetWidth(buttonSize)
                 .SetHeight(buttonSize)
                 .SetMargin(0f)
-                .SetIsEncouraged(true)
                 .AddDrawList(drawList =>
                 {
                     drawList.AddImage(image =>
                     {
-                        image.SetResref(texture);
+                        if (textureBinding != null)
+                            image.BindResref(textureBinding);
+                        else
+                            image.SetResref(texture);
                         image.SetPosition(drawOffset, drawOffset, buttonSize - drawOffset * 2f, buttonSize - drawOffset * 2f);
                         image.SetAspect(NuiAspect.Stretch);
                         image.SetHorizontalAlign(NuiHorizontalAlign.Left);
@@ -836,16 +914,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             image.SetDrawTextureRegion(staticRegion);
                         }
                     });
+                    if (regionBind != null)
+                    {
+                        // NUI has one draw_list per widget. Keep the preset image
+                        // and RGB overlay together so neither replaces the other.
+                        drawList.AddPolyLine(fill => fill
+                            .BindIsEnabled(ColorSwatchBinding<bool>(regionBind, "Custom"))
+                            .BindColor(ColorSwatchBinding<GuiColor>(regionBind, "Tint"))
+                            .SetIsFilled(true)
+                            .AddPoint(drawOffset, drawOffset)
+                            .AddPoint(buttonSize - drawOffset, drawOffset)
+                            .AddPoint(buttonSize - drawOffset, buttonSize - drawOffset)
+                            .AddPoint(drawOffset, buttonSize - drawOffset));
+                    }
                 })
-                .BindOnClicked(onClickBind)
-                .BindOnMouseDown(onClickClearColor);
+                .BindOnClicked(onClickBind);
+            if (onClickClearColor != null)
+                button.BindOnMouseDown(onClickClearColor);
+            if (regionBind != null)
+            {
+                button.SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBind));
+                button.BindIsEncouraged(ColorSelectionBinding(regionBind));
+            }
+            return button;
+        }
+
+        private static Expression<Func<AppearanceEditorViewModel, bool>> ColorSelectionBinding(
+            Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding)
+        {
+            var propertyName = AppearanceEditorViewModel.GetColorSelectionPropertyName(
+                GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding));
+            return Expression.Lambda<Func<AppearanceEditorViewModel, bool>>(
+                Expression.Property(regionBinding.Parameters[0], propertyName), regionBinding.Parameters);
+        }
+
+        private static Expression<Func<AppearanceEditorViewModel, T>> ColorSwatchBinding<T>(
+            Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding, string suffix)
+        {
+            var name = GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding);
+            return Expression.Lambda<Func<AppearanceEditorViewModel, T>>(
+                Expression.Property(regionBinding.Parameters[0], name[..^"Region".Length] + suffix),
+                regionBinding.Parameters);
         }
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)
         {
+            partial.SetScrollbars(NuiScrollbars.Y);
             partial.AddColumn(col =>
             {
-
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
@@ -870,12 +986,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
 
                     row.AddButton()
+                        .SetId("ae_height_increase")
                         .SetText("Increase Height")
                         .SetHeight(32f)
                         .SetWidth(128f)
                         .BindOnClicked(model => model.OnIncreaseAppearanceScale());
 
                     row.AddButton()
+                        .SetId("ae_height_decrease")
                         .SetText("Decrease Height")
                         .SetHeight(32f)
                         .SetWidth(128f)
@@ -888,6 +1006,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddSpacer();
                     row.AddButton()
+                        .SetId("ae_settings_save")
                         .SetText("Save")
                         .SetHeight(32f)
                         .BindOnClicked(model => model.OnClickSaveSettings());
@@ -896,27 +1015,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void BuildColorPalette(GuiGroup<AppearanceEditorViewModel> group, string texture)
+        private void BuildColorPalette(GuiGroup<AppearanceEditorViewModel> group, string texture = null, bool showTarget = true)
         {
+            group.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
+            group.SetWidth(PaletteWidth);
+            group.SetHeight(showTarget ? PaletteHeight : PaletteGridHeight);
             group.AddColumn(col =>
             {
-                col.AddRow(row =>
+                if (showTarget)
                 {
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .BindText(model => model.ColorTargetText)
-                        .BindIsVisible(model => model.IsEquipmentSelected);
-                });
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetHeight(20f)
+                            .BindText(model => model.ColorTargetText)
+                            .BindIsVisible(model => model.IsEquipmentSelected);
+                    });
+                }
 
-                const int UIColorsPerRow = 20;
-                const int ColorTotalCount = 176;
-                const int RowCount = 1 + ColorTotalCount / UIColorsPerRow;
+                const int UIColorsPerRow = 16;
+                const int ColorTotalCount = TintMapMaterialRegistry.PaletteColorCount;
+                const int RowCount = (ColorTotalCount + UIColorsPerRow - 1) / UIColorsPerRow;
 
                 for (var y = 0; y < RowCount; ++y)
                 {
                     var yCopy = y;
                     col.AddRow(uiRow =>
                     {
+                        uiRow.SetHeight(PaletteButtonSize);
+                        uiRow.SetMargin(0f);
                         for (var x = 0; x < UIColorsPerRow; ++x)
                         {
                             var paletteIndex = yCopy * UIColorsPerRow + x;
@@ -936,11 +1063,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 uiRow,
                                 texture,
                                 null,
-                                PartColorChannelButtonSize,
+                                PaletteButtonSize,
                                 2f,
                                 model => model.OnClickColorPalette(paletteIndex),
-                                model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1),
-                                region);
+                                null,
+                                region,
+                                textureBinding: texture == null ? model => model.ColorSheetResref : null)
+                                .SetId("ae_palette_" + paletteIndex);
                         }
                     });
                 }

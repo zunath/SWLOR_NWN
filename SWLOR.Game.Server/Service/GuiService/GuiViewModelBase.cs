@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Properties;
@@ -29,6 +30,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected int WindowToken { get; private set; }
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
+        private readonly Dictionary<string, int> _partialViewGenerations = new();
+        private int _bindingGeneration;
 
         protected abstract void Initialize(TPayload initialPayload);
 
@@ -158,6 +161,20 @@ namespace SWLOR.Game.Server.Service.GuiService
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
+        /// Publishes the current binding values after replacement controls have been created.
+        /// Uses the cached values without invoking property setters or their editing actions.
+        /// </summary>
+        protected void RepublishBindings()
+        {
+            var propertyNames = _propertyValues
+                .Where(property => property.Value.Value != null)
+                .Select(property => property.Key)
+                .ToArray();
+            foreach (var propertyName in propertyNames)
+                OnPropertyChanged(propertyName);
+        }
+
+        /// <summary>
         /// Notifies subscribers of changes.
         /// </summary>
         /// <param name="propertyName">The name of the property to notify about.</param>
@@ -232,6 +249,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             GuiPayloadBase payload,
             uint tetherObject)
         {
+            _bindingGeneration++;
             Player = player;
             WindowToken = windowToken;
             WindowType = type;
@@ -443,17 +461,32 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// the data the partial will display). Runs twice - once per apply -
         /// matching the existing RestoreSelectedTabPartial behavior.
         /// </param>
+        /// <param name="onAfterApply">
+        /// Optional callback run after each replacement layout is applied, including the
+        /// deferred apply. Use this to restore child partials and publish their bindings.
+        /// </param>
         /// <remarks>
         /// Public rather than protected: orchestrator helpers like GuiTabGroup
         /// live outside the ViewModel's own type hierarchy and need to call
         /// this from the outside, the same way ChangePartialView already is.
         /// </remarks>
-        public void SwapNestedPartialView(string elementId, string partialName, Action onBeforeApply = null)
+        public void SwapNestedPartialView(string elementId, string partialName, Action onBeforeApply = null,
+            Action onAfterApply = null)
         {
+            _partialViewGenerations.TryGetValue(elementId, out var previousGeneration);
+            var generation = previousGeneration + 1;
+            _partialViewGenerations[elementId] = generation;
+            var bindingGeneration = _bindingGeneration;
+            var windowToken = WindowToken;
+
             void Apply()
             {
+                if (bindingGeneration != _bindingGeneration || windowToken != WindowToken ||
+                    _partialViewGenerations[elementId] != generation)
+                    return;
                 onBeforeApply?.Invoke();
                 ChangePartialView(elementId, partialName);
+                onAfterApply?.Invoke();
             }
 
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");

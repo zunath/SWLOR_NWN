@@ -14,6 +14,7 @@ namespace SWLOR.Toolset.Domain.Gff
     {
         private readonly List<KeyValuePair<string, JsonGffField>> _entries = new();
         private readonly Dictionary<string, int> _indexByName = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, object> _fieldMutationTargets = new(StringComparer.Ordinal);
 
         /// <summary>Raw number token of this struct's "__struct_id" member, if present.</summary>
         public byte[]? RawStructId { get; internal set; }
@@ -67,6 +68,16 @@ namespace SWLOR.Toolset.Domain.Gff
         public bool Contains(string name)
         {
             return _indexByName.ContainsKey(name);
+        }
+
+        internal object GetFieldMutationTarget(string name)
+        {
+            if (_fieldMutationTargets.TryGetValue(name, out var target))
+                return target;
+
+            target = new object();
+            _fieldMutationTargets[name] = target;
+            return target;
         }
 
         /// <summary>Appends a parsed field, preserving document order. Used by the reader.</summary>

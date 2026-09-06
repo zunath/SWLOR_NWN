@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
-        /// Binds a list of points to the poly line.
+        /// Binds alternating X/Y floats to the poly line, e.g. [x0, y0, x1, y1].
         /// </summary>
         /// <typeparam name="TProperty">The property of the view model.</typeparam>
         /// <param name="expression">Expression to target the property.</param>
@@ -159,7 +159,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             {
                 foreach (var point in Points)
                 {
-                    points = JsonArrayInsert(points, point.ToJson());
+                    // Unlike the other drawing primitives, NuiDrawListPolyLine
+                    // requires a flat Float[] rather than an array of NuiVec objects.
+                    points = JsonArrayInsert(points, JsonFloat(point.X));
+                    points = JsonArrayInsert(points, JsonFloat(point.Y));
                 }
             }
 

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -13,6 +14,7 @@ using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Items;
+using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Toolset.Viewport;
 using SWLOR.Toolset.Workspace;
 
@@ -62,6 +64,10 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureLootViewModel Loot { get; }
         public CreatureBodyPartsViewModel BodyParts { get; }
         public CreatureEquipmentSlotsViewModel EquipmentSlots { get; }
+        [ObservableProperty]
+        private TintMapEditorViewModel? _tintMapEditor;
+
+        public bool HasTintMapEditor => TintMapEditor != null;
         public VarTableSectionViewModel Variables { get; }
         public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
         public bool HasAppearanceGallery => AppearanceGallery != null;
@@ -172,7 +178,10 @@ namespace SWLOR.Toolset.Editors.Creatures
                 Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
             Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
             Func<int, string?>? abilityIcon = null,
-            OutputLogService? log = null)
+            OutputLogService? log = null,
+            TintMapCatalog? tintMapCatalog = null,
+            Func<IDocumentEdit?>? captureCoalesceOrigin = null,
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -197,7 +206,23 @@ namespace SWLOR.Toolset.Editors.Creatures
             Loot = new CreatureLootViewModel(
                 _store, RunEdit, openDefinition: openLootDefinition, resolveItemName: resolveItemName);
             BodyParts = new CreatureBodyPartsViewModel(
-                _store, RunEdit, appearance, armorParts, colorPalettes, OnBodyPartChanged);
+                _store,
+                RunEdit,
+                appearance,
+                armorParts,
+                colorPalettes,
+                OnBodyPartChanged,
+                OnTintColorChanged,
+                captureCoalesceOrigin,
+                runCoalescedEdit);
+            if (tintMapCatalog != null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    tintMapCatalog,
+                    colorChanged: OnTintColorChanged);
+            }
             EquipmentSlots = new CreatureEquipmentSlotsViewModel(
                 _store,
                 Equipment,
@@ -468,6 +493,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void OnDirectValueChanged()
         {
             BodyParts.Reload();
+            ReconcileBodySectionAvailability();
             EnsureSelectedAppearanceSectionLoaded();
             UpdateWarnings();
             if (_referenceWarningsRequested)
@@ -485,6 +511,15 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void OnBodyPartChanged()
         {
             QueuePreviewSceneUpdate();
+        }
+
+        private void OnTintColorChanged()
+        {
+            var model = PreviewScene?.Instances.FirstOrDefault()?.Model;
+            if (model != null)
+                ApplyPreviewScene(model);
+            else
+                QueuePreviewSceneUpdate();
         }
 
         private string CurrentAppearanceKey() =>
@@ -731,7 +766,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
             var generation = ++_previewModelGeneration;
             IsModelPreviewLoading = true;
-            ApplyPreviewScene(null);
+            ApplyPreviewScene(null, preserveTintRowsWhenEmpty: true);
 
             // The resolver never observes a partially applied edit, and no worker touches the
             // live document while undo/redo or another field mutation is in progress.
@@ -774,8 +809,17 @@ namespace SWLOR.Toolset.Editors.Creatures
             });
         }
 
-        private void ApplyPreviewScene(RenderModel? model)
+        private void ApplyPreviewScene(RenderModel? model, bool preserveTintRowsWhenEmpty = false)
         {
+            if (model != null || !preserveTintRowsWhenEmpty)
+            {
+                TintMapEditor?.Reload(
+                    model,
+                    includeItemOwnedMaterials: false,
+                    includeCreatureLayersFromItemOwnedMaterials: true);
+                BodyParts.SetTintMapRows(TintMapEditor?.Colors);
+                ReconcileBodySectionAvailability();
+            }
             PublishAnimations(model);
             PreviewScene = model == null
                 ? null
@@ -796,12 +840,34 @@ namespace SWLOR.Toolset.Editors.Creatures
                             // The default model-preview camera sits on the -Y side while creature
                             // fronts are authored toward +Y, so turn the model around to greet the user.
                             Orientation = new Vector2(-1f, 0f),
-                            Model = model
+                            LayerColorIndices = CurrentLayerColors(model),
+                            Model = model,
+                            TintMapOverrides = TintMapOverrides.Read(_store.Locals)
                         }
                     },
                     Diagnostics = new AreaSceneDiagnostics()
                 };
             OnPropertyChanged(nameof(PreviewScene));
+        }
+
+        /// <summary>
+        /// Publishes the creature's current semantic palette colors on the scene instance. The
+        /// retained model is an immutable geometry snapshot, so its palette dictionary still
+        /// contains the values from the last model build. Reusing that dictionary made a color
+        /// selection appear only after an unrelated body-part edit forced the model to rebuild.
+        /// </summary>
+        private IReadOnlyDictionary<int, int> CurrentLayerColors(RenderModel model)
+        {
+            var colors = model.LayerColorIndices.ToDictionary(pair => pair.Key, pair => pair.Value);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Skin] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Skin") ?? 0);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Hair] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Hair") ?? 0);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Tattoo1] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Tattoo1") ?? 0);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Tattoo2] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Tattoo2") ?? 0);
+            return colors;
         }
 
         private void PublishAnimations(RenderModel? model)
@@ -928,13 +994,14 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (SelectedAppearanceSectionIndex != 2)
                 return;
 
-            if (!BodyParts.IsDynamic)
-            {
-                SelectedAppearanceSectionIndex = 0;
-                return;
-            }
+            if (BodyParts.HasEditableContent)
+                _ = BodyParts.EnsureLoadedAsync();
+        }
 
-            _ = BodyParts.EnsureLoadedAsync();
+        private void ReconcileBodySectionAvailability()
+        {
+            if (!BodyParts.HasEditableContent && SelectedAppearanceSectionIndex == 2)
+                SelectedAppearanceSectionIndex = 0;
         }
 
         /// <summary>
@@ -983,6 +1050,34 @@ namespace SWLOR.Toolset.Editors.Creatures
             AppearanceGallery?.ReloadPreviews();
             UpdatePreviewScene();
         }
+
+        public void ReloadTintMapCatalog(TintMapCatalog? catalog)
+        {
+            if (catalog == null)
+            {
+                TintMapEditor = null;
+                BodyParts.SetTintMapRows(null);
+                ReconcileBodySectionAvailability();
+                return;
+            }
+
+            if (TintMapEditor == null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    catalog,
+                    colorChanged: OnTintColorChanged);
+                UpdatePreviewScene();
+                return;
+            }
+
+            TintMapEditor.ReloadCatalog(catalog);
+            UpdatePreviewScene();
+        }
+
+        partial void OnTintMapEditorChanged(TintMapEditorViewModel? value) =>
+            OnPropertyChanged(nameof(HasTintMapEditor));
 
         private void NotifySummary()
         {

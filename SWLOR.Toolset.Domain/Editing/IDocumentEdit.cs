@@ -16,4 +16,9 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>A short human-readable description for undo/redo menus and logging.</summary>
         string Describe();
     }
+
+    internal interface IDocumentEditTargetProvider
+    {
+        IEnumerable<object> GetMutationTargets();
+    }
 }

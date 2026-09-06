@@ -40,6 +40,9 @@ services:
         environment:
             - SWLOR_ENGINE_TESTS_ENABLED=true
             - SWLOR_ENVIRONMENT=test
+            # Match the deployed renderer's wildcard material transport even when
+            # a developer's older test home predates this required setting.
+            - NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true
             # Pin the database to THIS compose file's disposable tmpfs redis service.
             # A deployment server home's swlor.env may point NWNX_REDIS_HOST at a
             # shared or production Redis - without this override, DB.Load would

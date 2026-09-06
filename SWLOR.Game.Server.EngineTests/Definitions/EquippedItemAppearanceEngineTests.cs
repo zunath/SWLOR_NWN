@@ -1,0 +1,712 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using ItemPlugin = SWLOR.NWN.API.NWNX.ItemPlugin;
+
+namespace SWLOR.Game.Server.EngineTests.Definitions
+{
+    public static class EquippedItemAppearanceEngineTests
+    {
+        private const string ItemMarker = "ENGINE_TEST_COSMETIC_ITEM";
+        private const string QueuedAbilityMarker = "ACTIVE_ABILITY_ID";
+        private static EventObservation _observation;
+
+        // These are real production-dispatch observers, loaded only with the engine-test
+        // assembly. They never signal an event or skip an equip on behalf of a test.
+        [NWNEventHandler(ScriptName.OnValidateItemEquipBefore)]
+        public static void ObserveValidateBefore() => Record(ScriptName.OnValidateItemEquipBefore, OBJECT_SELF);
+        [NWNEventHandler(ScriptName.OnValidateItemEquipAfter)]
+        public static void ObserveValidateAfter() => Record(ScriptName.OnValidateItemEquipAfter, OBJECT_SELF);
+        [NWNEventHandler(ScriptName.OnItemEquipValidateBefore)]
+        public static void ObserveEquipBefore() => Record(ScriptName.OnItemEquipValidateBefore, OBJECT_SELF);
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        public static void ObserveEquipAfter() => Record(ScriptName.OnItemEquipValidateAfter, OBJECT_SELF);
+        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
+        public static void ObserveUnequipBefore() => Record(ScriptName.OnItemUnequipBefore, OBJECT_SELF);
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void ObserveUnequipAfter() => Record(ScriptName.OnItemUnequipAfter, OBJECT_SELF);
+        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        public static void ObserveValidatedEquip() => Record(ScriptName.OnSWLORItemEquipValidBefore, OBJECT_SELF);
+        [NWNEventHandler(ScriptName.OnModuleEquip)]
+        public static void ObserveModuleEquip() => Record(ScriptName.OnModuleEquip, GetPCItemLastEquippedBy());
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
+        public static void ObserveModuleUnequip() => Record(ScriptName.OnModuleUnequip, GetPCItemLastUnequippedBy());
+
+        [EngineTest("Equipped armor cosmetic edits preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static async Task ArmorEditsNeverReequip(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            var item = GetItemInSlot(InventorySlot.Chest, creature);
+            using var observation = new EventObservation(creature);
+            var genuineEvents = await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
+            uint template = OBJECT_INVALID;
+            await AssignedAsync(ctx, creature, () =>
+            {
+                template = CopyItem(item, creature, true);
+                ctx.Assert(GetIsObjectValid(template), "The outfit template must be a separate inventory item.");
+                // A template is deliberately mechanically different. Only its cosmetic
+                // fields may reach the equipped item through ApplyOutfit.
+                ItemPlugin.SetWeight(template, 941);
+                SetLocalInt(template, ItemMarker, 999);
+                AddItemProperty(DurationType.Permanent, ItemPropertyACBonus(5), template);
+                for (var part = 0; part < (int)AppearanceArmor.Num; ++part)
+                    EquippedItemAppearance.Set(template, ItemAppearanceType.ArmorModel, part,
+                        part == (int)AppearanceArmor.Robe ? 0 : 1);
+                for (var index = 0; index < 120; ++index)
+                    EquippedItemAppearance.Set(template, ItemAppearanceType.ArmorColor, index, 20 + index % 100);
+                for (var part = 0; part < (int)AppearanceArmor.Num; ++part)
+                for (var channel = 0; channel < 6; ++channel)
+                    SetLocalInt(template, ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                        (AppearanceArmor)part, (AppearanceArmorColor)channel), 1);
+                SetLocalInt(template, TintMapVariable.GetName("engine_cosmetic", TintMapLayerType.Cloth1), 18);
+                SeedGameplaySentinels(ctx, creature, item);
+            });
+            await ctx.DelaySecondsAsync(0.5f);
+            var before = Snapshot(creature, item, InventorySlot.Chest);
+            var templateBefore = ItemPlugin.GetEntireItemAppearance(template);
+            observation.Reset();
+
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var editor = BindEditor(creature);
+                var torso = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso) == 2 ? 1 : 2;
+                InvokeModify(editor, (int)AppearanceArmor.Torso, torso);
+                ctx.AssertEqual(torso, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso),
+                    "The production editor changes the existing item's torso");
+            });
+            await AssertSettledAsync(ctx, before, observation, "editor torso change");
+
+            await AssignedAsync(ctx, creature, () =>
+            {
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, 2);
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorColor,
+                    ArmorColorIndexCalculator.CalculatePerPart(AppearanceArmor.LeftFoot, AppearanceArmorColor.Cloth1), 77);
+                SetLocalInt(item, ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    AppearanceArmor.LeftFoot, AppearanceArmorColor.Cloth1), 1);
+                BindEditor(creature).OnClickCopyToRight()();
+                AssertMirrored(ctx, item, true, "copy left to right");
+            });
+            await AssertSettledAsync(ctx, before, observation, "copy left to right");
+
+            await AssignedAsync(ctx, creature, () =>
+            {
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, 3);
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorColor,
+                    ArmorColorIndexCalculator.CalculatePerPart(AppearanceArmor.RightFoot, AppearanceArmorColor.Cloth1), 66);
+                BindEditor(creature).OnClickCopyToLeft()();
+                AssertMirrored(ctx, item, false, "copy right to left");
+            });
+            await AssertSettledAsync(ctx, before, observation, "copy right to left");
+
+            await AssignedAsync(ctx, creature, () =>
+            {
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
+                var editor = BindEditor(creature);
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                ctx.Assert(editor.IsCustomTintEditable, "RGB safety fixture has a tintable armor material.");
+                editor.SelectedTintColor = new GuiColor(205, 228, 197);
+                editor.OnMouseUpTintPicker()();
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.SelectedTintColor = new GuiColor(1, 17, 91);
+                editor.OnMouseUpTintPicker()();
+                var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(part =>
+                    part.ArmorPart == AppearanceArmor.LeftForearm && part.Material.Layers.Contains(TintMapLayerType.Leather2));
+                TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref,
+                    TintMapLayerType.Leather2, new TintMapColor(1, 17, 91));
+            });
+            await AssertSettledAsync(ctx, before, observation, "global and per-part RGB edits");
+
+            await AssignedAsync(ctx, creature, () =>
+            {
+                EquippedItemAppearance.ApplyOutfit(creature, item, template);
+                for (var part = 0; part < (int)AppearanceArmor.Num; ++part)
+                    ctx.AssertEqual(GetItemAppearance(template, ItemAppearanceType.ArmorModel, part),
+                        GetItemAppearance(item, ItemAppearanceType.ArmorModel, part), $"Outfit model {part}");
+                for (var index = 0; index < 120; ++index)
+                    ctx.AssertEqual(GetItemAppearance(template, ItemAppearanceType.ArmorColor, index),
+                        GetItemAppearance(item, ItemAppearanceType.ArmorColor, index), $"Outfit dye {index}");
+                for (var part = 0; part < (int)AppearanceArmor.Num; ++part)
+                for (var channel = 0; channel < 6; ++channel)
+                    ctx.AssertEqual(1, GetLocalInt(item, ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                        (AppearanceArmor)part, (AppearanceArmorColor)channel)), $"Outfit override marker {part}/{channel}");
+                ctx.AssertEqual(18, GetLocalInt(item, TintMapVariable.GetName("engine_cosmetic", TintMapLayerType.Cloth1)),
+                    "Outfit copies stored material tint state");
+                ctx.AssertEqual(templateBefore, ItemPlugin.GetEntireItemAppearance(template), "The template remains unchanged");
+            });
+            await AssertSettledAsync(ctx, before, observation, "outfit application");
+            ctx.SetResultDetail("Native torso edits, both seven-part side copies, global/part RGB edits, and all19 outfit models/120 dyes retained the same equipped item, item properties/locals, armor class/weight, NPC resources, skin properties, and queued-ability marker. Zero observed equipment events after settling. Genuine lifecycle control: " + genuineEvents + ". NPC fixture does not prove PC-only module event delivery or client visual rendering.");
+        }
+
+        [EngineTest("Tint robe RGB swaps preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static Task RobeRgbNeverReequips(EngineTestContext ctx) => VerifyRobeRgbNeverReequips(ctx, false);
+
+        [EngineTest("Tint robe RGB male swaps preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static Task MaleRobeRgbNeverReequips(EngineTestContext ctx) => VerifyRobeRgbNeverReequips(ctx, true);
+
+        [EngineTest("Armor side copies commit pending RGB text and picker colors", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task CopySidesCommitsPendingColors(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            var item = GetItemInSlot(InventorySlot.Chest, creature);
+            using var observation = new EventObservation(creature);
+            await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
+            await AssignedAsync(ctx, creature, () =>
+            {
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                foreach (var part in new[] { AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm })
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)part, 6);
+                EquippedItemAppearance.Refresh(creature, item);
+                SeedGameplaySentinels(ctx, creature, item);
+            });
+            await ctx.DelaySecondsAsync(0.5f);
+            var before = Snapshot(creature, item, InventorySlot.Chest);
+            observation.Reset();
+
+            foreach (var copyToRight in new[] { true, false })
+            foreach (var typed in new[] { true, false })
+            {
+                var expected = typed ? new TintMapColor(205, 228, 197) : new TintMapColor(37, 121, 209);
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    var editor = BindEditor(creature);
+                    editor.OnClickColorTarget(copyToRight ? AppearanceEditorViewModel.ColorTarget.LeftForearm :
+                        AppearanceEditorViewModel.ColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
+                    ctx.Assert(editor.IsCustomTintEditable, "The source forearm has a custom Leather2 channel.");
+                    editor.SelectedTintColor = new GuiColor(1, 17, 91);
+                    editor.OnMouseUpTintPicker()();
+                    if (typed)
+                    {
+                        editor.CustomTintRed = expected.Red.ToString();
+                        editor.CustomTintGreen = expected.Green.ToString();
+                        editor.CustomTintBlue = expected.Blue.ToString();
+                    }
+                    else
+                        editor.SelectedTintColor = new GuiColor(expected.Red, expected.Green, expected.Blue);
+
+                    if (copyToRight)
+                        editor.OnClickCopyToRight()();
+                    else
+                        editor.OnClickCopyToLeft()();
+                    AssertForearmColors("copy commits the pending source value");
+                    // Replay the delayed handlers after copying; neither may restore an older color.
+                    editor.OnMouseUpTintPicker()();
+                    typeof(AppearanceEditorViewModel).GetMethod("CommitCustomTintComponents",
+                        BindingFlags.Instance | BindingFlags.NonPublic).Invoke(editor, null);
+                    AssertForearmColors("late callbacks preserve both copied colors");
+                });
+                await AssertSettledAsync(ctx, before, observation, $"copy {(copyToRight ? "right" : "left")} {(typed ? "text" : "picker")}");
+                AssertForearmColors("settled copy retains both colors");
+
+                void AssertForearmColors(string stage)
+                {
+                    foreach (var part in new[] { AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm })
+                    {
+                        var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
+                            selection.ArmorPart == part && selection.Material.Layers.Contains(TintMapLayerType.Leather2));
+                        ctx.AssertEqual(expected, TintMapService.GetEffectiveDisplayColor(creature, selection, TintMapLayerType.Leather2),
+                            $"{part}: {stage}");
+                        TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Leather2, expected);
+                    }
+                }
+            }
+            ctx.SetResultDetail("Both copy directions commit queued RGB text and picker samples before reading source colors; late callbacks retain both sides. Native RGB, item identity and gameplay snapshots pass with zero extra equipment events. Client events/timer replay are synthesized.");
+        }
+
+        [EngineTest("Robe choices exclude missing body models and recover armor without equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static async Task MissingRobeModels(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx, "colonisthuman2");
+            var item = GetItemInSlot(InventorySlot.Chest, creature);
+            var female = await SpawnCivilianAsync(ctx);
+            var configured = new GeneralArmorAppearanceDefinition().Robe;
+            var maleStyles = RobeAppearance.GetAvailableStyles(creature, configured);
+            var femaleStyles = RobeAppearance.GetAvailableStyles(female, configured);
+            ctx.Assert(!maleStyles.Contains(19) && !maleStyles.Contains(24), "Male robes 19/24 have no model.");
+            ctx.Assert(femaleStyles.Contains(19) && femaleStyles.Contains(24), "Female robes 19/24 remain available.");
+            using var observation = new EventObservation(creature);
+            await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
+            await AssignedAsync(ctx, creature, () => SeedGameplaySentinels(ctx, creature, item));
+            await ctx.DelaySecondsAsync(0.5f);
+            var before = Snapshot(creature, item, InventorySlot.Chest);
+            observation.Reset();
+
+            foreach (var missing in new[] { 19, 24 })
+            {
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
+                    // Exercise the exact queued path used by ordinary equip events,
+                    // without opening the editor or directly refreshing the item.
+                    TintMapService.QueueRefresh(creature);
+                });
+                await ctx.DelaySecondsAsync(0.5f);
+                ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                    "The ordinary equip refresh recovers a robe unavailable for this wearer.");
+                await AssertSettledAsync(ctx, before, observation, $"queued recovery of missing robe {missing}");
+
+                var femaleItem = GetItemInSlot(InventorySlot.Chest, female);
+                await AssignedAsync(ctx, female, () =>
+                {
+                    EquippedItemAppearance.Set(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
+                    TintMapService.QueueRefresh(female);
+                });
+                await ctx.DelaySecondsAsync(0.5f);
+                ctx.AssertEqual(missing, GetItemAppearance(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                    "The same queue preserves the robe on a supported wearer.");
+
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
+                    var editor = BindEditor(creature);
+                    ctx.AssertEqual(0, editor.RobeSelection, "Opening the editor recovers a missing saved robe.");
+                    ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                        "The equipped armor no longer hides body parts for a missing robe.");
+                    ctx.Assert(editor.RobeOptions.All(option => maleStyles.Contains(option.Value)),
+                        "Every displayed option has a model for this wearer.");
+                    editor.RobeSelection = 24;
+                    editor.OnClickAdjustArmorPart(AppearanceArmor.Robe, 0)();
+                    ctx.AssertEqual(0, editor.RobeSelection, "A stale unavailable choice is rejected.");
+                    editor.RobeSelection = 17;
+                    editor.OnClickAdjustArmorPart(AppearanceArmor.Robe, 1)();
+                    var expected = maleStyles.First(style => style > 17);
+                    ctx.AssertEqual(expected, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                        "Next skips unavailable IDs and applies the displayed model value.");
+                });
+                await AssertSettledAsync(ctx, before, observation, $"recover missing robe {missing} and skip unavailable choices");
+            }
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var template = CopyItem(item, creature, true);
+                EquippedItemAppearance.Set(template, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 24);
+                EquippedItemAppearance.ApplyOutfit(creature, item, template);
+                ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                    "A saved outfit cannot reintroduce a missing body model.");
+                ctx.AssertEqual(24, GetItemAppearance(template, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
+                    "The saved outfit retains its valid female style.");
+                DestroyObject(template);
+            });
+            await AssertSettledAsync(ctx, before, observation, "missing robe outfit recovery");
+            ctx.SetResultDetail($"Validated {maleStyles.Count} male and {femaleStyles.Count} female robe choices; " +
+                "male 19/24 recovered through the equip refresh queue, editor and outfit application; the queue preserved female 19/24. Stale choices rejected, arrows retained actual model IDs, " +
+                "same equipped item and gameplay snapshot retained with zero observed equipment events. Client rendering still needs visual confirmation.");
+        }
+
+        private static async Task VerifyRobeRgbNeverReequips(EngineTestContext ctx, bool male)
+        {
+            var creature = await SpawnCivilianAsync(ctx, male ? "colonisthuman2" : "civilian");
+            if (male)
+                await AssignedAsync(ctx, creature, () => EquippedItemAppearance.Set(
+                    GetItemInSlot(InventorySlot.Chest, creature), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 187));
+            var item = GetItemInSlot(InventorySlot.Chest, creature);
+            using var observation = new EventObservation(creature);
+            await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
+            await AssignedAsync(ctx, creature, () => SeedGameplaySentinels(ctx, creature, item));
+            await ctx.DelaySecondsAsync(0.5f);
+            var before = Snapshot(creature, item, InventorySlot.Chest);
+            var originalAppearance = ItemPlugin.GetEntireItemAppearance(item);
+            observation.Reset();
+            var requested = new TintMapColor(205, 228, 197);
+            var layers = new[] { TintMapLayerType.Cloth1, TintMapLayerType.Cloth2,
+                TintMapLayerType.Leather1, TintMapLayerType.Leather2 };
+            var generatedPhenotype = 0;
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var initialRobe = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
+                    selection.ArmorPart == AppearanceArmor.Robe);
+                ctx.Assert(RobeModelRenderer.SupportsRgb(initialRobe), $"Catalog must support {initialRobe.ModelResref}; table has {Get2DARowCount("roberender")} rows.");
+                foreach (var layer in layers)
+                    TintMapService.SetGlobalItemCustomColor(creature,
+                        TintMapModelResolver.GetCurrentSelections(creature), layer, requested, item);
+                generatedPhenotype = (int)GetPhenoType(creature);
+                ctx.Assert(generatedPhenotype >= 34 && generatedPhenotype <= 255, $"Generated phenotype fits the native byte; actual {generatedPhenotype}.");
+                ctx.Assert(generatedPhenotype > 99, "Exercise a generated ID beyond NWScript's hard-coded limit.");
+                var nativeCreature = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(creature);
+                ctx.AssertEqual((byte)generatedPhenotype, nativeCreature.m_cAppearance.m_nPhenoType,
+                    "Replicated appearance agrees with the native stats phenotype.");
+                ctx.AssertEqual(0, RobeModelRenderer.GetBasePhenotype(creature), "Logical body type stays normal.");
+                ctx.Assert(RobeAppearance.GetAvailableStyles(creature, new[] { 0, 187 }).SequenceEqual(new[] { 0, 187 }),
+                    "Robe choices use the original body while an RGB phenotype is active.");
+                ctx.AssertEqual(originalAppearance, ItemPlugin.GetEntireItemAppearance(item), "RGB does not rewrite any armor field.");
+                var robe = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
+                    selection.ArmorPart == AppearanceArmor.Robe);
+                ctx.AssertEqual(male ? "pmh0_robe187" : "pfh0_robe187", robe.ModelResref, "Canonical robe identity survives projection.");
+                foreach (var layer in layers)
+                    TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, layer, requested);
+                var partColor = new TintMapColor(1, 17, 91);
+                TintMapService.SetColor(creature, robe, TintMapLayerType.Cloth1, partColor);
+                TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, partColor);
+                TintMapService.ResetColorToInheritance(creature, robe, TintMapLayerType.Cloth1);
+                TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, requested);
+            });
+            await AssertSettledAsync(ctx, before, observation, "all robe layers and per-part RGB inheritance");
+            // Repeat transitions so cumulative stat/effect application cannot hide
+            // behind a single successful swap. Include custom coat animations and
+            // the robes reported with detached hands, plus the native fallback.
+            var robeIds = male
+                ? new[] { 0, 1, 3, 7, 187, 227, 230, 236, 250, 252, 227, 230, 236, 250, 252, 0, 187 }
+                : new[] { 0, 1, 3, 7, 187, 230, 236, 250, 252, 230, 236, 250, 252, 0, 187 };
+            foreach (var robeId in robeIds)
+            {
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, robeId);
+                    TintMapService.ApplyCurrentColors(creature);
+                    if (robeId > 1)
+                    {
+                        var robeSelection = TintMapModelResolver.GetCurrentSelections(creature)
+                            .FirstOrDefault(selection => selection.ArmorPart == AppearanceArmor.Robe);
+                        ctx.Assert(robeSelection != null, $"Robe {robeId} must resolve a tint material for this body.");
+                        TintMapService.SetGlobalItemCustomColor(creature,
+                            TintMapModelResolver.GetCurrentSelections(creature),
+                            robeSelection.Material.Layers.First(), requested, item);
+                    }
+                    if (robeId is 0 or 1)
+                        ctx.AssertEqual(0, (int)GetPhenoType(creature),
+                            "No robe or an unregistered robe restores the normal root.");
+                    else if (robeId == 187)
+                        ctx.AssertEqual(generatedPhenotype, (int)GetPhenoType(creature), "Restoring the robe reuses its stable root.");
+                    else
+                        ctx.Assert((int)GetPhenoType(creature) >= 34 && (int)GetPhenoType(creature) != generatedPhenotype,
+                            $"Robe {robeId} selects its own geometry; actual phenotype {(int)GetPhenoType(creature)}.");
+                    if (robeId > 1)
+                    {
+                        var selections = TintMapModelResolver.GetCurrentSelections(creature);
+                        var custom = new TintMapColor(100, 7, 180);
+                        TintMapService.SetGlobalItemCustomColor(creature, selections, TintMapLayerType.Cloth1, custom, item);
+                        foreach (var selection in selections.Where(part => part.ArmorPart == AppearanceArmor.Robe &&
+                                     part.Material.Layers.Contains(TintMapLayerType.Cloth1)))
+                        {
+                            TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
+                            TintMapService.SetColor(creature, selection, TintMapLayerType.Cloth1, requested);
+                            TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, requested);
+                            TintMapService.ResetColorToInheritance(creature, selection, TintMapLayerType.Cloth1);
+                            TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
+                        }
+                    }
+                });
+                await AssertSettledAsync(ctx, before, observation, $"robe model {robeId}");
+            }
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var editor = BindEditor(creature);
+                foreach (var channel in new[] { AppearanceArmorColor.Cloth1, AppearanceArmorColor.Cloth2,
+                             AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2,
+                             AppearanceArmorColor.Metal1, AppearanceArmorColor.Metal2 })
+                {
+                    editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                    editor.OnClickColorPalette(77)();
+                }
+                ctx.AssertEqual(0, (int)GetPhenoType(creature), "Removing the final RGB override restores the native robe path.");
+            });
+            await AssertSettledAsync(ctx, before, observation, "return to native presets");
+            ctx.SetResultDetail($"{(male ? "Male" : "Female")} body: four exact robe RGB channels; repeated swaps through {string.Join(", ", robeIds)}; global/per-part inheritance; and preset reset preserved item identity, gameplay sentinels, and zero equipment events. Genuine equip/unequip events were observed before the test. Client walking/sitting is verified separately.");
+        }
+
+        [EngineTest("Equipped weapon model and color edits preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 45f)]
+        public static async Task WeaponEditsNeverReequip(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            var weapon = await ctx.EquipItemAsync(creature, "nw_wswls001", InventorySlot.RightHand);
+            await ctx.DelaySecondsAsync(0.5f);
+            using var observation = new EventObservation(creature);
+            var genuineEvents = await VerifyGenuineEquipmentEventsAsync(ctx, creature, weapon, InventorySlot.RightHand, observation);
+            await AssignedAsync(ctx, creature, () =>
+            {
+                // Use a registered model/color combination on all three parts, so the
+                // editor's public-appearance eligibility check is part of the exercise.
+                for (var index = 0; index < 3; ++index)
+                {
+                    EquippedItemAppearance.Set(weapon, ItemAppearanceType.WeaponModel, index, 1);
+                    EquippedItemAppearance.Set(weapon, ItemAppearanceType.WeaponColor, index, 1);
+                }
+                SeedGameplaySentinels(ctx, creature, weapon);
+            });
+            var before = Snapshot(creature, weapon, InventorySlot.RightHand);
+            observation.Reset();
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var editor = BindEditor(creature);
+                editor.SelectedItemTypeIndex = 3;
+                ctx.Assert(editor.HasItemEquipped, "The native fixture weapon passes the editor's appearance eligibility checks.");
+                for (var index = 0; index < 3; ++index)
+                {
+                    InvokeModify(editor, index, 202, 2);
+                    ctx.AssertEqual(2, GetItemAppearance(weapon, ItemAppearanceType.WeaponModel, index), $"Weapon model {index}");
+                    ctx.AssertEqual(2, GetItemAppearance(weapon, ItemAppearanceType.WeaponColor, index), $"Weapon color {index}");
+                }
+                EquippedItemAppearance.Set(weapon, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top, 3);
+                EquippedItemAppearance.Set(weapon, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top, 3);
+                EquippedItemAppearance.Refresh(creature, weapon);
+                ctx.AssertEqual(3, GetItemAppearance(weapon, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top),
+                    "Direct batch refresh keeps the edited weapon model");
+                ctx.AssertEqual(3, GetItemAppearance(weapon, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top),
+                    "Direct batch refresh keeps the edited weapon color");
+            });
+            await AssertSettledAsync(ctx, before, observation, "three weapon parts, colors, and explicit visual refresh");
+            ctx.SetResultDetail("Production editor changed all three weapon model/color pairs and directly refreshed a later batch on the same equipped weapon. Native item/gameplay snapshots and queued-ability marker stayed identical, with zero observed equipment events. Genuine lifecycle control: " + genuineEvents + ". NPC fixture excludes PC database and client visual rendering.");
+        }
+
+        [EngineTest("Helmet cloak and off-hand shield cosmetic edits preserve every equipped item", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static async Task SimpleModelSlotsNeverReequip(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            var cases = new[]
+            {
+                (Slot: InventorySlot.Head, Page: 1, Resref: "advent_helmet", Type: BaseItem.Helmet, Initial: 1, Edited: 2, Batch: 3),
+                (Slot: InventorySlot.Cloak, Page: 2, Resref: "advent_cloak", Type: BaseItem.Cloak, Initial: 1, Edited: 2, Batch: 3),
+                (Slot: InventorySlot.LeftHand, Page: 4, Resref: "byysk_shield002", Type: BaseItem.LargeShield, Initial: 11, Edited: 12, Batch: 13)
+            };
+            var items = new Dictionary<InventorySlot, uint>();
+            foreach (var test in cases)
+            {
+                var item = await ctx.EquipItemAsync(creature, test.Resref, test.Slot);
+                items.Add(test.Slot, item);
+                ctx.AssertEqual(test.Type, GetBaseItemType(item), $"{test.Slot}: fixture uses a registered base item");
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    SetItemCursedFlag(item, false);
+                    SetPlotFlag(item, false);
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.SimpleModel, -1, test.Initial);
+                });
+            }
+            await ctx.DelaySecondsAsync(0.5f);
+            using var observation = new EventObservation(creature);
+            var genuineEvents = new List<string>();
+            foreach (var test in cases)
+                genuineEvents.Add(test.Slot + ": " + await VerifyGenuineEquipmentEventsAsync(
+                    ctx, creature, items[test.Slot], test.Slot, observation));
+            await AssignedAsync(ctx, creature, () =>
+            {
+                foreach (var item in items.Values)
+                    SeedGameplaySentinels(ctx, creature, item);
+            });
+            await ctx.DelaySecondsAsync(0.5f);
+            var before = cases.Select(test => Snapshot(creature, items[test.Slot], test.Slot)).ToArray();
+            var chestBefore = Snapshot(creature, GetItemInSlot(InventorySlot.Chest, creature), InventorySlot.Chest);
+            observation.Reset();
+
+            foreach (var test in cases)
+            {
+                var item = items[test.Slot];
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    var editor = BindEditor(creature);
+                    editor.SelectedItemTypeIndex = test.Page;
+                    ctx.Assert(editor.HasItemEquipped, $"{test.Slot}: fixture passes editor eligibility.");
+                    // Helmet/cloak dispatch uses the ignored armor-part index; the
+                    // registered simple shield uses the production simple-weapon path.
+                    InvokeModify(editor, test.Slot == InventorySlot.LeftHand ? (int)ItemAppearanceType.SimpleModel : -1, test.Edited);
+                    ctx.AssertEqual(test.Edited, GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1),
+                        $"{test.Slot}: the actual editor changes the simple model");
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.SimpleModel, -1, test.Batch);
+                    if (test.Slot is InventorySlot.Head or InventorySlot.Cloak)
+                        EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Cloth1, 77);
+                    EquippedItemAppearance.Refresh(creature, item);
+                    ctx.AssertEqual(test.Batch, GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1),
+                        $"{test.Slot}: direct batched visual refresh retains the simple model");
+                    if (test.Slot is InventorySlot.Head or InventorySlot.Cloak)
+                        ctx.AssertEqual(77, GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Cloth1),
+                            $"{test.Slot}: direct color write persists on the same item");
+                });
+                foreach (var snapshot in before)
+                    await AssertSettledAsync(ctx, snapshot, observation, $"{test.Slot} edit retains {snapshot.Slot}");
+                await AssertSettledAsync(ctx, chestBefore, observation, $"{test.Slot} edit retains the equipped armor");
+            }
+            ctx.SetResultDetail("Native editor and Set/Refresh paths changed registered helmet, cloak, and left-hand simple-shield models; helmet/cloak dyes also changed. All three equipped objects and the chest retained their identity, IPs/locals, AC/weight, resource and queued-state snapshots, with zero lifecycle callbacks. Genuine controls: " + string.Join("; ", genuineEvents) + ". NPC fixture excludes PC-only module delivery and client rendering.");
+        }
+
+        private static async Task<string> VerifyGenuineEquipmentEventsAsync(EngineTestContext ctx, uint creature, uint item,
+            InventorySlot slot, EventObservation observation)
+        {
+            observation.Reset();
+            await AssignedAsync(ctx, creature, () =>
+            {
+                ClearAllActions();
+                ActionUnequipItem(item);
+            });
+            await ctx.WaitUntilAsync(() => GetItemInSlot(slot, creature) != item, 10f, "a genuine unequip to empty the slot");
+            await ctx.DelaySecondsAsync(0.2f);
+            await AssignedAsync(ctx, creature, () =>
+            {
+                SetLocalString(creature, QueuedAbilityMarker, "genuine-equip-must-clear");
+                ClearAllActions();
+                ActionEquipItem(item, slot);
+            });
+            await ctx.WaitUntilAsync(() => GetItemInSlot(slot, creature) == item, 10f, "a genuine equip to restore the same item");
+            await ctx.DelaySecondsAsync(0.5f);
+            foreach (var script in new[] { ScriptName.OnItemEquipValidateBefore, ScriptName.OnItemEquipValidateAfter,
+                         ScriptName.OnItemUnequipBefore, ScriptName.OnItemUnequipAfter, ScriptName.OnSWLORItemEquipValidBefore })
+                ctx.AssertEqual(1, observation.Counts[script], $"Genuine lifecycle must dispatch {script} exactly once");
+            ctx.AssertEqual(string.Empty, GetLocalString(creature, QueuedAbilityMarker),
+                "The real equip still clears queued ability state through the production handler");
+            return string.Join(", ", observation.Counts.Select(pair => $"{pair.Key}={pair.Value}"));
+        }
+
+        private static void SeedGameplaySentinels(EngineTestContext ctx, uint creature, uint item)
+        {
+            SetLocalInt(item, ItemMarker, 731);
+            SetLocalString(item, ItemMarker, "retain item-local state");
+            SetLocalObject(item, ItemMarker, creature);
+            AddItemProperty(DurationType.Permanent, TagItemProperty(ItemPropertyACBonus(2), ItemMarker), item);
+            ctx.SuppressNPCNaturalRegen(creature);
+            ctx.SetNPCResources(creature, 60, 70);
+            SetCurrentHitPoints(creature, Math.Max(1, GetMaxHitPoints(creature) - 1));
+            SetLocalString(creature, QueuedAbilityMarker, "cosmetic-edit-must-retain");
+            SetLocalInt(creature, "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL", 2);
+        }
+
+        private sealed record GameplaySnapshot(uint Creature, uint Item, InventorySlot Slot, string UUID,
+            int Weight, int ArmorClass, int BaseArmorClass, int CreatureArmorClass, int[] Resources,
+            string[] Properties, string[] SkinProperties, int StackSize, bool Identified, int LocalInt,
+            string LocalString, uint LocalObject, string QueuedAbility, int QueuedLevel);
+
+        private static GameplaySnapshot Snapshot(uint creature, uint item, InventorySlot slot) => new(
+            creature, item, slot, GetObjectUUID(item), GetWeight(item), GetItemACValue(item), ItemPlugin.GetBaseArmorClass(item),
+            GetAC(creature), new[] { GetCurrentHitPoints(creature), GetMaxHitPoints(creature), Stat.GetCurrentFP(creature),
+                Stat.GetMaxFP(creature), Stat.GetCurrentStamina(creature), Stat.GetMaxStamina(creature) },
+            Properties(item), Properties(GetItemInSlot(InventorySlot.CreatureArmor, creature)), GetItemStackSize(item),
+            GetIdentified(item), GetLocalInt(item, ItemMarker), GetLocalString(item, ItemMarker), GetLocalObject(item, ItemMarker),
+            GetLocalString(creature, QueuedAbilityMarker), GetLocalInt(creature, "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL"));
+
+        private static async Task AssertSettledAsync(EngineTestContext ctx, GameplaySnapshot before,
+            EventObservation observation, string stage)
+        {
+            // The previous replacement implementation queued destruction/equip and tint
+            // carry. Observe beyond a frame so deferred lifecycle work cannot evade this test.
+            await ctx.DelaySecondsAsync(0.75f);
+            ctx.Assert(GetIsObjectValid(before.Item), $"{stage}: the original item remains valid.");
+            ctx.AssertEqual(before.Item, GetItemInSlot(before.Slot, before.Creature), $"{stage}: same item in the same slot");
+            ctx.AssertEqual(before.Creature, GetItemPossessor(before.Item), $"{stage}: same possessor");
+            var after = Snapshot(before.Creature, before.Item, before.Slot);
+            ctx.Assert(before.Resources.SequenceEqual(after.Resources), $"{stage}: current and maximum HP/FP/Stamina unchanged.");
+            ctx.Assert(before.Properties.SequenceEqual(after.Properties), $"{stage}: item properties unchanged.");
+            ctx.Assert(before.SkinProperties.SequenceEqual(after.SkinProperties), $"{stage}: native stat-skin properties unchanged.");
+            // Records compare arrays by identity, so compare the remaining scalar state
+            // after substituting the already-checked snapshot arrays.
+            ctx.AssertEqual(before, after with { Resources = before.Resources, Properties = before.Properties,
+                SkinProperties = before.SkinProperties }, $"{stage}: identity, AC, weight, inventory, locals, and queued state");
+            foreach (var pair in observation.Counts)
+                ctx.AssertEqual(0, pair.Value, $"{stage}: cosmetic edits must not dispatch {pair.Key}");
+        }
+
+        private static string[] Properties(uint item)
+        {
+            var result = new List<string>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                result.Add($"{GetItemPropertyType(ip)}:{GetItemPropertySubType(ip)}:{GetItemPropertyCostTable(ip)}:" +
+                    $"{GetItemPropertyCostTableValue(ip)}:{GetItemPropertyParam1(ip)}:{GetItemPropertyParam1Value(ip)}:" +
+                    $"{GetItemPropertyDurationType(ip)}:{GetItemPropertyTag(ip)}");
+            return result.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+        }
+
+        private static void AssertMirrored(EngineTestContext ctx, uint item, bool copyToRight, string stage)
+        {
+            foreach (var (left, right) in new[] { (AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder),
+                         (AppearanceArmor.LeftBicep, AppearanceArmor.RightBicep), (AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm),
+                         (AppearanceArmor.LeftHand, AppearanceArmor.RightHand), (AppearanceArmor.LeftThigh, AppearanceArmor.RightThigh),
+                         (AppearanceArmor.LeftShin, AppearanceArmor.RightShin), (AppearanceArmor.LeftFoot, AppearanceArmor.RightFoot) })
+            {
+                ctx.AssertEqual(GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)left),
+                    GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)right), $"{stage}: {left}/{right} models");
+                for (var channel = 0; channel < 6; ++channel)
+                {
+                    var source = copyToRight ? left : right;
+                    var destination = copyToRight ? right : left;
+                    var color = GetItemAppearance(item, ItemAppearanceType.ArmorColor,
+                        ArmorColorIndexCalculator.CalculatePerPart(source, (AppearanceArmorColor)channel));
+                    var isExplicit = ArmorColorIndexCalculator.ShouldUsePerPartColor(color, GetLocalInt(item,
+                        ArmorColorIndexCalculator.GetPerPartOverrideVariableName(source, (AppearanceArmorColor)channel)) > 0);
+                    ctx.AssertEqual(isExplicit ? color : 255, GetItemAppearance(item, ItemAppearanceType.ArmorColor,
+                            ArmorColorIndexCalculator.CalculatePerPart(destination, (AppearanceArmorColor)channel)),
+                        $"{stage}: {left}/{right} dye {channel} preserves explicit color or inheritance");
+                    ctx.AssertEqual(isExplicit ? 1 : 0, GetLocalInt(item,
+                        ArmorColorIndexCalculator.GetPerPartOverrideVariableName(destination, (AppearanceArmorColor)channel)),
+                        $"{stage}: destination override marker {channel}");
+                }
+            }
+        }
+
+        private static async Task<uint> SpawnCivilianAsync(EngineTestContext ctx, string blueprint = "civilian")
+        {
+            var creature = ctx.SpawnCreature(blueprint);
+            await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, creature)), 10f, "the civilian outfit equip");
+            await ctx.DelaySecondsAsync(0.5f);
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var item = GetItemInSlot(InventorySlot.Chest, creature);
+                SetItemCursedFlag(item, false);
+                SetPlotFlag(item, false);
+            });
+            return creature;
+        }
+
+        private static AppearanceEditorViewModel BindEditor(uint creature)
+        {
+            var geometry = new GuiRectangle(0, 0, 1200, 900);
+            var editor = new AppearanceEditorViewModel { Geometry = geometry };
+            editor.Bind(OBJECT_INVALID, 0, geometry, GuiWindowType.AppearanceEditor, new AppearanceEditorPayload(creature), OBJECT_INVALID);
+            editor.OnSelectEquipment()();
+            return editor;
+        }
+
+        private static void InvokeModify(AppearanceEditorViewModel editor, int index, int model, int color = -1) =>
+            typeof(AppearanceEditorViewModel).GetMethod("ModifyItemPart", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(editor, new object[] { index, model, color });
+
+        private static async Task AssignedAsync(EngineTestContext ctx, uint creature, Action action)
+        {
+            var completed = false;
+            Exception failure = null;
+            AssignCommand(creature, () =>
+            {
+                try { action(); }
+                catch (Exception exception) { failure = exception; }
+                finally { completed = true; }
+            });
+            await ctx.WaitUntilAsync(() => completed, 5f, "the assigned equipped-item action");
+            if (failure != null)
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
+        }
+
+        private static void Record(string script, uint creature)
+        {
+            if (_observation?.Creature == creature)
+                ++_observation.Counts[script];
+        }
+
+        private sealed class EventObservation : IDisposable
+        {
+            public uint Creature { get; }
+            public Dictionary<string, int> Counts { get; } = new[] { ScriptName.OnValidateItemEquipBefore,
+                ScriptName.OnValidateItemEquipAfter, ScriptName.OnItemEquipValidateBefore, ScriptName.OnItemEquipValidateAfter,
+                ScriptName.OnItemUnequipBefore, ScriptName.OnItemUnequipAfter, ScriptName.OnSWLORItemEquipValidBefore,
+                ScriptName.OnModuleEquip, ScriptName.OnModuleUnequip }.ToDictionary(script => script, _ => 0);
+
+            public EventObservation(uint creature)
+            {
+                if (_observation != null) throw new InvalidOperationException("Equipment observation is already active.");
+                Creature = creature;
+                _observation = this;
+            }
+
+            public void Reset()
+            {
+                foreach (var script in Counts.Keys.ToArray()) Counts[script] = 0;
+            }
+
+            public void Dispose() => _observation = null;
+        }
+    }
+}

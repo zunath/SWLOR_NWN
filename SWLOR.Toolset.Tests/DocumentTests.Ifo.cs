@@ -23,9 +23,13 @@ namespace SWLOR.Toolset.Tests
             document.AreaList.Should().HaveCountGreaterThanOrEqualTo(438);
             document.AreaResRefs[0].Should().Be("anchor_entreenor");
             document.AreaResRefs[1].Should().Be("anchor_entreesud");
-            document.HakList.Should().HaveCount(113);
+            document.HakList.Should().HaveCount(117);
             document.HakNames[0].Should().Be("sw_2da");
             document.HakNames[1].Should().Be("sw_ability");
+            document.HakNames.Should().Contain("sw_tint_mtr");
+            document.HakNames.Should().Contain("sw_tint0");
+            document.HakNames.Should().Contain("sw_tint1");
+            document.HakNames.Should().Contain("sw_tint2");
         }
 
         [Test]

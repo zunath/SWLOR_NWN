@@ -1,9 +1,14 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Avalonia.Media;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Items;
+using SWLOR.Toolset.Editors.TintMaps;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {
@@ -12,15 +17,21 @@ namespace SWLOR.Toolset.Editors.Creatures
     {
         private readonly Domain.Editors.Creatures.CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<IDocumentEdit?>? _captureCoalesceOrigin;
+        private readonly Func<IDocumentEdit, string, Action, bool>? _runCoalescedEdit;
         private readonly Func<int, AppearanceRow?> _appearance;
         private readonly ArmorPartCatalog? _parts;
         private readonly ArmorDyeSwatchService? _colorPalettes;
         private readonly Action _changed;
+        private readonly Action _colorChanged;
         private int _generation;
         private bool _loaded;
         private bool _partCatalogReady = true;
         private Task? _loadTask;
         private bool _loadingMirror;
+        private IReadOnlyList<TintMapColorRowViewModel> _tintRows =
+            Array.Empty<TintMapColorRowViewModel>();
+        private IDocumentEdit? _pendingTintCarryOrigin;
 
         private static readonly IReadOnlyList<LimbDefinition> LimbDefinitions = new[]
         {
@@ -37,7 +48,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public ObservableCollection<ItemFieldCellViewModel> Structure { get; } = new();
         public ObservableCollection<BodyPartPairViewModel> Limbs { get; } = new();
-        public ObservableCollection<ItemDyeCellViewModel> Colors { get; } = new();
+        public ObservableCollection<CreatureBodyColorViewModel> Colors { get; } = new();
 
         [ObservableProperty]
         private bool _isLoading;
@@ -53,6 +64,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public bool IsDynamic => string.Equals(CurrentAppearance?.ModelType, "P", StringComparison.OrdinalIgnoreCase);
         public bool IsFullBody => !IsDynamic;
+        public bool HasEditableContent => IsDynamic || _tintRows.Count > 0;
         public string ModelSummary => CurrentAppearance == null
             ? "The selected model is not available in the loaded game data."
             : IsDynamic
@@ -73,18 +85,25 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<int, AppearanceRow?> appearance,
             ArmorPartCatalog? parts,
             ArmorDyeSwatchService? colorPalettes,
-            Action changed)
+            Action changed,
+            Action? colorChanged = null,
+            Func<IDocumentEdit?>? captureCoalesceOrigin = null,
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
         {
             _store = store;
             _runEdit = runEdit;
+            _captureCoalesceOrigin = captureCoalesceOrigin;
+            _runCoalescedEdit = runCoalescedEdit;
             _appearance = appearance;
             _parts = parts;
             _colorPalettes = colorPalettes;
             _changed = changed;
+            _colorChanged = colorChanged ?? changed;
         }
 
         public void Reload()
         {
+            _pendingTintCarryOrigin = null;
             // Never infer that mirroring was requested merely because values match. If an undo or
             // external reload makes explicitly mirrored values diverge, return to independent mode.
             if (MirrorRightFromLeft && !StoredPairsMatch())
@@ -108,6 +127,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             OnPropertyChanged(nameof(IsLoaded));
             OnPropertyChanged(nameof(IsDynamic));
             OnPropertyChanged(nameof(IsFullBody));
+            OnPropertyChanged(nameof(HasEditableContent));
             OnPropertyChanged(nameof(ModelSummary));
             OnPropertyChanged(nameof(FullBodyDetails));
         }
@@ -172,33 +192,233 @@ namespace SWLOR.Toolset.Editors.Creatures
             Structure.Clear();
             Limbs.Clear();
             Colors.Clear();
-            if (!IsDynamic)
+            if (IsDynamic)
+            {
+                Structure.Add(Single("Head", "Appearance_Head", "head"));
+                Structure.Add(Single("Neck", "BodyPart_Neck", "neck"));
+                Structure.Add(Single("Torso", "BodyPart_Torso", "chest"));
+                Structure.Add(Single("Belt", "BodyPart_Belt", "belt", allowsNone: true));
+                Structure.Add(Single("Pelvis", "BodyPart_Pelvis", "pelvis"));
+
+                foreach (var definition in LimbDefinitions)
+                    Limbs.Add(Pair(definition));
+            }
+
+            // Full-body appearances cannot change segmented geometry, but tint-map channels on
+            // their model still use the same preset/custom semantic color controls.
+            BuildColors();
+        }
+
+        public void SetTintMapRows(IEnumerable<TintMapColorRowViewModel>? rows)
+        {
+            var next = rows?.ToList() ?? new List<TintMapColorRowViewModel>();
+            var changed = !_tintRows.Select(row => row.Key)
+                .SequenceEqual(next.Select(row => row.Key), StringComparer.Ordinal);
+            var carriedColors = changed
+                ? CaptureSemanticCustomColors(_tintRows)
+                : new Dictionary<TintMapLayerType, Color>();
+            var carryOrigin = changed ? _pendingTintCarryOrigin : null;
+            if (changed)
+                _pendingTintCarryOrigin = null;
+            _tintRows = next;
+            if (changed)
+                CarrySemanticCustomColors(next, carriedColors, carryOrigin);
+            OnPropertyChanged(nameof(HasEditableContent));
+
+            if (!_loaded)
                 return;
 
-            Structure.Add(Single("Head", "Appearance_Head", "head"));
-            Structure.Add(Single("Neck", "BodyPart_Neck", "neck"));
-            Structure.Add(Single("Torso", "BodyPart_Torso", "chest"));
-            Structure.Add(Single("Belt", "BodyPart_Belt", "belt", allowsNone: true));
-            Structure.Add(Single("Pelvis", "BodyPart_Pelvis", "pelvis"));
+            if (changed)
+                BuildColors();
+            else
+                ReloadColors();
+        }
 
-            foreach (var definition in LimbDefinitions)
-                Limbs.Add(Pair(definition));
-
-            foreach (var (field, label, palette) in new[]
-                     {
-                         ("Color_Skin", "Skin", ArmorDyeSwatchService.DyeMaterial.Skin),
-                         ("Color_Hair", "Hair", ArmorDyeSwatchService.DyeMaterial.Hair),
-                         ("Color_Tattoo1", "Body Color 1", ArmorDyeSwatchService.DyeMaterial.Tattoo),
-                         ("Color_Tattoo2", "Body Color 2", ArmorDyeSwatchService.DyeMaterial.Tattoo)
-                     })
+        private void BuildColors()
+        {
+            Colors.Clear();
+            var definitions = new (string Field, string Label,
+                ArmorDyeSwatchService.DyeMaterial Palette, TintMapLayerType Layer)[]
             {
-                Colors.Add(new ItemDyeCellViewModel(
-                    label,
-                    () => Read(field),
-                    value => Write(label, value, field),
-                    _colorPalettes?.GetPaletteColors(palette) ?? Array.Empty<(byte, byte, byte)>(),
-                    allowsNumericFallback: false));
+                ("Color_Skin", "Skin", ArmorDyeSwatchService.DyeMaterial.Skin, TintMapLayerType.Skin),
+                ("Color_Hair", "Hair", ArmorDyeSwatchService.DyeMaterial.Hair, TintMapLayerType.Hair),
+                ("Color_Tattoo1", "Body Color 1", ArmorDyeSwatchService.DyeMaterial.Tattoo, TintMapLayerType.Tattoo1),
+                ("Color_Tattoo2", "Body Color 2", ArmorDyeSwatchService.DyeMaterial.Tattoo, TintMapLayerType.Tattoo2)
+            };
+
+            foreach (var definition in definitions)
+            {
+                var tintRows = _tintRows.Where(row => row.Layer == definition.Layer).ToList();
+                if (IsFullBody && tintRows.Count == 0)
+                    continue;
+
+                Func<Color?>? readCustom = tintRows.Count == 0
+                    ? null
+                    : () => ReadCustomColor(tintRows);
+                Func<Color, bool>? writeCustom = tintRows.Count == 0
+                    ? null
+                    : color => WriteCustomColor(
+                        definition.Label, color, definition.Layer, tintRows);
+                var palette = new ItemDyeCellViewModel(
+                    definition.Label,
+                    () => Read(definition.Field),
+                    value => WriteStandardColor(
+                        definition.Label, value, definition.Field, definition.Layer),
+                    _colorPalettes?.GetPaletteColors(definition.Palette) ??
+                    Array.Empty<(byte, byte, byte)>(),
+                    allowsNumericFallback: false,
+                    readCustom: readCustom,
+                    writeCustom: writeCustom);
+                Colors.Add(new CreatureBodyColorViewModel(
+                    palette,
+                    tintRows));
             }
+        }
+
+        private static Color? ReadCustomColor(
+            IReadOnlyCollection<TintMapColorRowViewModel> tintRows)
+        {
+            var custom = tintRows.Where(row => row.IsCustom)
+                .Select(row => row.Color)
+                .Distinct()
+                .ToList();
+            return custom.Count == 1 && tintRows.All(row => row.IsCustom)
+                ? custom[0]
+                : null;
+        }
+
+        private Dictionary<TintMapLayerType, Color> CaptureSemanticCustomColors(
+            IReadOnlyCollection<TintMapColorRowViewModel> tintRows)
+        {
+            var colors = new Dictionary<TintMapLayerType, Color>();
+            foreach (var group in tintRows
+                         .Where(row => TintMapVariable.IsCreatureColorLayer(row.Layer))
+                         .GroupBy(row => row.Layer))
+            {
+                var custom = ReadCustomColor(group.ToList());
+                if (!custom.HasValue)
+                    continue;
+
+                colors[group.Key] = custom.Value;
+            }
+
+            return colors;
+        }
+
+        private void CarrySemanticCustomColors(
+            IReadOnlyCollection<TintMapColorRowViewModel> tintRows,
+            IReadOnlyDictionary<TintMapLayerType, Color> colors,
+            IDocumentEdit? originEdit)
+        {
+            var applicable = colors
+                .Where(entry => tintRows.Any(row => row.Layer == entry.Key))
+                .ToList();
+            if (applicable.Count == 0)
+                return;
+
+            var description = "Carry custom body colors to replacement models";
+            var mutation = () =>
+            {
+                foreach (var (layer, color) in applicable)
+                {
+                    var saved = new TintMapColor(color.R, color.G, color.B).ToStoredValue();
+                    foreach (var variableName in GetSemanticVariableKeys(layer, tintRows))
+                        _store.Locals.SetInt(variableName, saved);
+                }
+            };
+            var applied = originEdit != null && _runCoalescedEdit != null
+                ? _runCoalescedEdit(originEdit, description, mutation)
+                : _runEdit(description, mutation);
+            if (!applied)
+                return;
+
+            foreach (var row in tintRows)
+                row.Reload();
+        }
+
+        private IReadOnlyCollection<string> GetSemanticVariableKeys(
+            TintMapLayerType layer,
+            IEnumerable<TintMapColorRowViewModel> tintRows)
+        {
+            var keys = _store.Locals
+                .Where(entry =>
+                    entry.Type == VarTable.TypeInt &&
+                    TintMapVariable.TryGetLayer(entry.Name, out var variableLayer) &&
+                    variableLayer == layer)
+                .Select(entry => entry.Name)
+                .ToHashSet(StringComparer.Ordinal);
+            foreach (var row in tintRows.Where(row => row.Layer == layer))
+                keys.Add(row.Key);
+
+            return keys;
+        }
+
+        private bool WriteStandardColor(
+            string label,
+            int value,
+            string field,
+            TintMapLayerType layer)
+        {
+            var applied = _runEdit($"Change {label} preset", () =>
+            {
+                WriteFields(value, field);
+                foreach (var variableName in GetSemanticVariableKeys(layer, _tintRows))
+                    _store.Locals.Remove(variableName);
+                _store.Locals.Remove(TintMapVariable.GetCreatureColorStateName(layer));
+            });
+            if (!applied)
+                return false;
+
+            CaptureInterveningTintCarryOrigin();
+            ReloadColors();
+            _colorChanged();
+            return true;
+        }
+
+        private bool WriteCustomColor(
+            string label,
+            Color color,
+            TintMapLayerType layer,
+            IReadOnlyList<TintMapColorRowViewModel> tintRows)
+        {
+            if (tintRows.Count == 0)
+                return false;
+
+            var tint = new TintMapColor(color.R, color.G, color.B).ToStoredValue();
+            var applied = _runEdit(
+                $"Set {label} custom tint to #{color.R:X2}{color.G:X2}{color.B:X2}",
+                () =>
+                {
+                    _store.Locals.SetInt(
+                        TintMapVariable.GetCreatureColorStateName(layer),
+                        tint);
+                    foreach (var variableName in GetSemanticVariableKeys(layer, tintRows))
+                        _store.Locals.SetInt(variableName, tint);
+                });
+            if (!applied)
+                return false;
+
+            CaptureInterveningTintCarryOrigin();
+            ReloadColors();
+            _colorChanged();
+            return true;
+        }
+
+        /// <summary>
+        /// A semantic tint edit made while a body-part model is rebuilding is newer than the part
+        /// selection. Coalesce the derived material-key carry with that tint transaction so its Undo
+        /// removes both the old- and replacement-material values together.
+        /// </summary>
+        private void CaptureInterveningTintCarryOrigin()
+        {
+            if (_pendingTintCarryOrigin != null)
+                _pendingTintCarryOrigin = _captureCoalesceOrigin?.Invoke();
+        }
+
+        private void ReloadColors()
+        {
+            foreach (var color in Colors)
+                color.Reload();
         }
 
         private ItemFieldCellViewModel Single(
@@ -236,7 +456,10 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             var applied = _runEdit($"Change {label}", () => WriteFields(value, fields));
             if (applied)
+            {
+                _pendingTintCarryOrigin = _captureCoalesceOrigin?.Invoke();
                 _changed();
+            }
             return applied;
         }
 
@@ -283,6 +506,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return;
             }
 
+            _pendingTintCarryOrigin = _captureCoalesceOrigin?.Invoke();
             _changed();
             ReloadPairs();
         }

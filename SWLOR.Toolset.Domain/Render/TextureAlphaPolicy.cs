@@ -29,6 +29,13 @@ namespace SWLOR.Toolset.Domain.Render
         public const float PunchThroughCutoff = 0.5f;
 
         /// <summary>
+        /// Alpha values at or below this are treated as genuinely transparent. Aurora also stores
+        /// grayscale reflectivity/specular masks in TGA alpha channels; those masks can contain lots
+        /// of values below the render cutoff without containing any transparent pixels at all.
+        /// </summary>
+        public const byte TransparentAlphaMaximum = 8;
+
+        /// <summary>
         /// How much of a texture must be transparent before it is treated as cut-out. A threshold
         /// rather than "any transparent texel at all", so a compression artefact at a block edge or a
         /// single stray pixel cannot start punching holes in a solid surface.
@@ -54,7 +61,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             for (var i = 0; i < texels; i++)
             {
-                if (image.Pixels[i * 4 + 3] >= 128)
+                if (image.Pixels[i * 4 + 3] > TransparentAlphaMaximum)
                     continue;
 
                 if (++transparent > threshold)

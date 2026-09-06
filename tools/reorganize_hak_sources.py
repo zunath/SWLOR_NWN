@@ -73,7 +73,6 @@ TILE_HAKS = {
     "mb012": "sw_t_ravforest",
     "nac01": "sw_t_duct",
     "net01": "sw_t_virtunet",
-    "ptw01": "sw_t_wiztower",
     "shp02": "sw_t_starship",
     "sjm01": "sw_t_metalint",
     "srt04": "sw_t_shadowrun",
@@ -84,7 +83,6 @@ TILE_HAKS = {
     "tcn01": "sw_t_cityext",
     "tdc01": "sw_t_crypt",
     "tde01": "sw_t_dungeon",
-    "tdg02": "sw_t_table",
     "tdm01": "sw_t_mine",
     "tdr01": "sw_t_ruin",
     "tds01": "sw_t_sewer",
@@ -318,6 +316,10 @@ TARGET_HAKS = [
     "sw_item",
     "sw_weapon",
     *TILE_HAKS.values(),
+    "sw_tint_mtr",
+    "sw_tint0",
+    "sw_tint1",
+    "sw_tint2",
 ]
 
 OLD_SOURCE_HAKS = {
@@ -1166,7 +1168,8 @@ def validate_targets() -> None:
     if len(TARGET_HAKS) != len(set(TARGET_HAKS)):
         duplicates = [hak for hak, count in Counter(TARGET_HAKS).items() if count > 1]
         raise RuntimeError(f"Duplicate target haks: {duplicates}")
-    missing_tiles = sorted(set(TILE_HAKS) - {path.stem.lower() for path in HAK_ROOT.rglob("*.set")})
+    available_tiles = {path.stem.lower() for path in HAK_ROOT.rglob("*.set")}
+    missing_tiles = sorted(set(TILE_HAKS) - available_tiles)
     if missing_tiles:
         raise RuntimeError(f"Tilesets in mapping but no .set file found: {missing_tiles}")
 

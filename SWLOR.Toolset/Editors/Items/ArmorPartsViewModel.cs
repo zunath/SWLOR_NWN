@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.Gff;
@@ -25,6 +26,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Action? _appearanceChanged;
         private readonly ArmorDyeSwatchService? _dyes;
         private readonly ArmorPartCatalog? _partModels;
+        private readonly Func<TintMapLayerType, int?>? _inferLegacyGlobalTint;
         private readonly List<ItemFieldCellViewModel> _allCells = new();
         private readonly List<ItemDyeCellViewModel> _dyeCells = new();
         private readonly List<BodyPartPairViewModel> _pairBindings = new();
@@ -70,13 +72,15 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, Action, bool> runEdit,
             Action? appearanceChanged = null,
             ArmorDyeSwatchService? dyes = null,
-            ArmorPartCatalog? partModels = null)
+            ArmorPartCatalog? partModels = null,
+            Func<TintMapLayerType, int?>? inferLegacyGlobalTint = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _appearanceChanged = appearanceChanged;
             _dyes = dyes;
             _partModels = partModels;
+            _inferLegacyGlobalTint = inferLegacyGlobalTint;
 
             _mirrorRightFromLeft = DetectMirror();
 
@@ -94,12 +98,18 @@ namespace SWLOR.Toolset.Editors.Items
             (LeftShin, RightShin) = Cells(CreatePair(ItemAppearanceFieldNames.Shin, "shinl", "shinr"));
             (LeftFoot, RightFoot) = Cells(CreatePair(ItemAppearanceFieldNames.Foot, "footl", "footr"));
 
-            Cloth1 = CreateDye("Cloth 1", ItemAppearanceFieldNames.Cloth1Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
-            Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color, ArmorDyeSwatchService.DyeMaterial.Cloth);
-            Leather1 = CreateDye("Leather 1", ItemAppearanceFieldNames.Leather1Color, ArmorDyeSwatchService.DyeMaterial.Leather);
-            Leather2 = CreateDye("Leather 2", ItemAppearanceFieldNames.Leather2Color, ArmorDyeSwatchService.DyeMaterial.Leather);
-            Metal1 = CreateDye("Metal 1", ItemAppearanceFieldNames.Metal1Color, ArmorDyeSwatchService.DyeMaterial.Metal1);
-            Metal2 = CreateDye("Metal 2", ItemAppearanceFieldNames.Metal2Color, ArmorDyeSwatchService.DyeMaterial.Metal2);
+            Cloth1 = CreateDye("Cloth 1", ItemAppearanceFieldNames.Cloth1Color,
+                ArmorDyeSwatchService.DyeMaterial.Cloth, TintMapLayerType.Cloth1);
+            Cloth2 = CreateDye("Cloth 2", ItemAppearanceFieldNames.Cloth2Color,
+                ArmorDyeSwatchService.DyeMaterial.Cloth, TintMapLayerType.Cloth2);
+            Leather1 = CreateDye("Leather 1", ItemAppearanceFieldNames.Leather1Color,
+                ArmorDyeSwatchService.DyeMaterial.Leather, TintMapLayerType.Leather1);
+            Leather2 = CreateDye("Leather 2", ItemAppearanceFieldNames.Leather2Color,
+                ArmorDyeSwatchService.DyeMaterial.Leather, TintMapLayerType.Leather2);
+            Metal1 = CreateDye("Metal 1", ItemAppearanceFieldNames.Metal1Color,
+                ArmorDyeSwatchService.DyeMaterial.Metal1, TintMapLayerType.Metal1);
+            Metal2 = CreateDye("Metal 2", ItemAppearanceFieldNames.Metal2Color,
+                ArmorDyeSwatchService.DyeMaterial.Metal2, TintMapLayerType.Metal2);
 
             _allCells.AddRange(new[]
             {
@@ -271,13 +281,74 @@ namespace SWLOR.Toolset.Editors.Items
             return ArmorPartCatalog.WithNone(numbers);
         }
 
-        private ItemDyeCellViewModel CreateDye(string label, string field, ArmorDyeSwatchService.DyeMaterial material) =>
+        private ItemDyeCellViewModel CreateDye(
+            string label,
+            string field,
+            ArmorDyeSwatchService.DyeMaterial material,
+            TintMapLayerType layer) =>
             new(
                 label,
                 () => (int?)_store.GetInteger(BehaviorFieldStorage.Field, field),
                 value => Apply(
-                    label, () => _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value)),
-                _dyes?.GetPaletteColors(material) ?? Array.Empty<(byte, byte, byte)>());
+                    label, () =>
+                    {
+                        _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value);
+                        ClearGlobalCustomTint(layer);
+                    }),
+                _dyes?.GetPaletteColors(material) ?? Array.Empty<(byte, byte, byte)>(),
+                hasExternalOverride: () => HasTintOverride(layer));
+
+        private bool HasTintOverride(TintMapLayerType layer)
+        {
+            return GetTintVariableKeys(layer).Count > 0 ||
+                   _store.Locals.GetInt(TintMapVariable.GetItemGlobalColorStateName(layer)) != null ||
+                   _store.Locals.GetInt(TintMapVariable.GetItemGlobalInheritanceStateName(layer)) != null;
+        }
+
+        /// <summary>
+        /// Restores the selected global dye channel to its palette value without discarding an
+        /// independently customized material in the same channel. The explicit global-intent
+        /// marker identifies which material overrides were written by the previous global custom
+        /// color. Older blueprints have no marker, so a complete uniform set of custom values is
+        /// the only legacy state that is safe to interpret as one global color.
+        /// </summary>
+        private void ClearGlobalCustomTint(TintMapLayerType layer)
+        {
+            var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
+            var usesExplicitInheritance = _store.Locals.GetInt(inheritanceStateVariable) != null;
+            var savedGlobalColor = _store.Locals.GetInt(stateVariable);
+            var tintVariableKeys = GetTintVariableKeys(layer);
+            int? globalColor = savedGlobalColor.HasValue &&
+                               TintMapColor.TryFromStoredValue(savedGlobalColor.Value, out _)
+                ? savedGlobalColor.Value
+                : null;
+
+            // Material keys alone cannot prove item-wide intent: one robe can have several
+            // profiles. Without resolved active parts, preserve markerless overrides.
+            globalColor ??= _inferLegacyGlobalTint?.Invoke(layer);
+
+            if (globalColor.HasValue && !usesExplicitInheritance)
+            {
+                foreach (var key in tintVariableKeys)
+                {
+                    if (_store.Locals.GetInt(key) == globalColor)
+                        _store.Locals.Remove(key);
+                }
+            }
+
+            _store.Locals.Remove(stateVariable);
+            _store.Locals.Remove(inheritanceStateVariable);
+        }
+
+        private IReadOnlyList<string> GetTintVariableKeys(TintMapLayerType layer) =>
+            _store.Locals
+                .Where(entry =>
+                    entry.Type == SWLOR.Toolset.Domain.Documents.VarTable.TypeInt &&
+                    TintMapVariable.TryGetLayer(entry.Name, out var variableLayer) &&
+                    variableLayer == layer)
+                .Select(entry => entry.Name)
+                .ToList();
 
         /// <summary>
         /// Builds a mirrored pair. The left cell's write closure decides at write time - not at

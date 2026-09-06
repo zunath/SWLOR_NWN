@@ -239,6 +239,46 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Build_InstanceTintOverridesUseEmbeddedPlacementSnapshot()
+        {
+            var (are, git) = LoadArea("coxxian_hq");
+            var instance = git.Creatures[0];
+            var instanceVariables = new VarTable(instance);
+            instanceVariables.SetInt("TM_instance_2", 77);
+            var index = BuildHakOnlyIndex();
+
+            var scene = AreaSceneBuilder.Build(
+                are,
+                git,
+                new TilesetCatalog(index),
+                new TileModelCache(index));
+
+            var marker = scene.Instances
+                .First(entry => entry.Kind == InstanceMarkerKind.Creature);
+            marker.TintMapOverrides.Should().BeEquivalentTo(
+                new Dictionary<string, int> { ["TM_instance_2"] = 77 },
+                "placed objects render the blueprint snapshot embedded in their GIT instance");
+        }
+
+        [Test]
+        public void Build_InstancesWithoutEmbeddedTintOverridesRemainUntinted()
+        {
+            var (are, git) = LoadArea("coxxian_hq");
+            var index = BuildHakOnlyIndex();
+
+            var scene = AreaSceneBuilder.Build(
+                are,
+                git,
+                new TilesetCatalog(index),
+                new TileModelCache(index));
+
+            scene.Instances
+                .Where(marker => marker.Kind == InstanceMarkerKind.Creature)
+                .Should().OnlyContain(marker => marker.TintMapOverrides.Count == 0,
+                    "a later blueprint edit is not authoritative until instances are explicitly synchronized");
+        }
+
+        [Test]
         public void Build_AnchorEntreenorArea_TriggerMarkerCarriesGeometryPolygon()
         {
             var (are, git) = LoadArea("anchor_entreenor");

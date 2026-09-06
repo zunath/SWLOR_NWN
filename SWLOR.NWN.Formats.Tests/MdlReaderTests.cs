@@ -32,6 +32,7 @@ public sealed class MdlReaderTests
         WriteUInt32(bytes, mesh + 16, 1);
         WriteUInt32(bytes, mesh + 108, 1);
         WriteFixed(bytes, mesh + 120, 64, "panel_texture");
+        WriteFixed(bytes, mesh + 312, 64, "panel_material");
         WriteUInt32(bytes, mesh + 376, 0x8000_0007);
         WriteUInt32(bytes, mesh + 440, 32);
         WriteInt32(bytes, mesh + 444, 0);
@@ -72,6 +73,7 @@ public sealed class MdlReaderTests
         parsed.Render.Should().BeTrue();
         parsed.TileFade.Should().Be(unchecked((int)0x8000_0007));
         parsed.Bitmap.Should().Be("panel_texture");
+        parsed.MaterialName.Should().Be("panel_material");
         parsed.Vertices.Should().Equal(Vector3.Zero, Vector3.UnitX, Vector3.UnitY);
         parsed.TextureCoordinates.Should().Equal(Vector2.Zero, Vector2.UnitX, Vector2.UnitY);
         parsed.Normals.Should().OnlyContain(normal => normal == Vector3.UnitZ);
@@ -331,6 +333,7 @@ public sealed class MdlReaderTests
                        render 1
                        tilefade 3
                        bitmap panel_texture
+                       materialname panel_material
                        verts 3
                          0 0 0
                          1 0 0
@@ -361,6 +364,7 @@ public sealed class MdlReaderTests
         mesh.Render.Should().BeTrue();
         mesh.TileFade.Should().Be(3);
         mesh.Bitmap.Should().Be("panel_texture");
+        mesh.MaterialName.Should().Be("panel_material");
         mesh.Position.Should().Be(new Vector3(1, 2, 3));
         mesh.Orientation.Z.Should().BeApproximately(MathF.Sqrt(0.5f), 0.0001f);
         mesh.Orientation.W.Should().BeApproximately(MathF.Sqrt(0.5f), 0.0001f);

@@ -275,7 +275,7 @@
               </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Body" IsVisible="{Binding BodyParts.IsDynamic}">
+            <TabItem Header="Body" IsVisible="{Binding BodyParts.HasEditableContent}">
               <ScrollViewer>
                 <Border Classes="card" Padding="12" Margin="14,10">
                   <StackPanel Spacing="6">
@@ -285,7 +285,7 @@
                     <TextBlock Text="{Binding BodyParts.ModelSummary}" Classes="dim" TextWrapping="Wrap" />
                     <TextBlock Text="{Binding BodyParts.FullBodyDetails}" Classes="mono"
                                IsVisible="{Binding BodyParts.IsFullBody}" />
-                    <Grid ColumnDefinitions="*,230" ColumnSpacing="18"
+                    <Grid ColumnDefinitions="*,330" ColumnSpacing="18"
                           IsVisible="{Binding BodyParts.IsDynamic}">
                       <StackPanel Grid.Column="0">
                         <TextBlock Text="Structure" Classes="section" Margin="0,6" />
@@ -315,15 +315,28 @@
 
                       <StackPanel Grid.Column="1">
                         <TextBlock Text="Colors" Classes="section" Margin="0,6" />
-                        <ItemsControl ItemsSource="{Binding BodyParts.Colors}">
+                          <ItemsControl ItemsSource="{Binding BodyParts.Colors}">
                           <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="items:ItemDyeCellViewModel">
-                              <items:PaletteColorPickerView />
+                            <DataTemplate DataType="creatures:CreatureBodyColorViewModel">
+                              <items:PaletteColorPickerView DataContext="{Binding Palette}"
+                                                            Margin="0,2,0,8" />
                             </DataTemplate>
                           </ItemsControl.ItemTemplate>
                         </ItemsControl>
                       </StackPanel>
                     </Grid>
+
+                    <StackPanel Spacing="8" IsVisible="{Binding BodyParts.IsFullBody}">
+                      <TextBlock Text="Colors" Classes="section" Margin="0,6,0,0" />
+                      <ItemsControl ItemsSource="{Binding BodyParts.Colors}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate DataType="creatures:CreatureBodyColorViewModel">
+                            <items:PaletteColorPickerView DataContext="{Binding Palette}"
+                                                          Margin="0,2,0,8" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </StackPanel>
                   </StackPanel>
                 </Border>
               </ScrollViewer>

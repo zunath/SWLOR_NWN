@@ -1,13 +1,27 @@
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render
 {
+    public readonly record struct MtrAlphaSource(string TextureName, bool UsesRedChannel)
+    {
+        /// <summary>
+        /// The runtime tint shader discards texture1 alpha below 0.2 and texture9 red below 0.3.
+        /// Preview renderers must use the same source-specific cutoff or translucent edge pixels
+        /// disappear differently in the toolset than they do in game.
+        /// </summary>
+        public float Cutoff => UsesRedChannel ? 0.3f : 0.2f;
+
+        public byte ByteCutoff => (byte)Math.Ceiling(Cutoff * byte.MaxValue);
+    }
+
     /// <summary>
     /// Minimal parse of an NWN:EE MTR (material) file: plain-text lines declaring
-    /// <c>textureN</c> slots, a <c>renderhint</c>, and <c>customshaderXXX</c> overrides. <c>//</c>
-    /// starts a comment (to end of line); everything else is ignored.
+    /// <c>textureN</c> slots, a <c>renderhint</c>, <c>customshaderXXX</c> overrides, and named
+    /// <c>parameter</c> values. <c>//</c> starts a comment (to end of line); everything else is
+    /// ignored.
     /// </summary>
     public sealed class MtrMaterial
     {
@@ -20,14 +34,57 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyDictionary<string, string> CustomShaders { get; init; } =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>Named values from <c>parameter TYPE NAME VALUE...</c> declarations.</summary>
+        public IReadOnlyDictionary<string, string> Parameters { get; init; } =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary>The declared texture for <paramref name="slot"/> (default: <c>texture0</c>, the diffuse map), or null.</summary>
         public string? GetTexture(int slot = 0) => Textures.TryGetValue(slot, out var texture) ? texture : null;
+
+        /// <summary>
+        /// Returns the texture and channel selected by an enabled <c>useTextureNAlpha</c>
+        /// parameter, or null. The tint shader treats texture9 as a red-channel cutout mask;
+        /// normal-map texture1 stores its cutout in alpha.
+        /// </summary>
+        public MtrAlphaSource? GetAlphaSource()
+        {
+            const string prefix = "useTexture";
+            const string suffix = "Alpha";
+            foreach (var (name, rawValue) in Parameters)
+            {
+                if (!name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+                    !name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var enabledText = rawValue.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+                    .FirstOrDefault();
+                if (!float.TryParse(enabledText, NumberStyles.Float, CultureInfo.InvariantCulture, out var enabled) ||
+                    enabled <= 0f)
+                {
+                    continue;
+                }
+
+                var slotText = name.Substring(prefix.Length, name.Length - prefix.Length - suffix.Length);
+                if (!int.TryParse(slotText, NumberStyles.None, CultureInfo.InvariantCulture, out var slot))
+                    continue;
+
+                var texture = GetTexture(slot);
+                if (!string.IsNullOrWhiteSpace(texture))
+                    return new MtrAlphaSource(texture, UsesRedChannel: slot == 9);
+            }
+
+            return null;
+        }
+
+        public string? GetAlphaTexture() => GetAlphaSource()?.TextureName;
     }
 
     /// <summary>
     /// Parses MTR (NWN:EE material) resources and resolves the effective diffuse texture name
     /// for a mesh's bitmap/material name. This deliberately small parser does not attempt to model
-    /// render hints, custom shaders, or parameters beyond exposing them as raw data for later
+    /// render hints, custom shaders, or parameters beyond exposing their declarations for later
     /// packages to consume.
     /// </summary>
     public static class MaterialResolver
@@ -40,6 +97,7 @@ namespace SWLOR.Toolset.Domain.Render
             string? renderHint = null;
             var textures = new Dictionary<int, string>();
             var customShaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var rawLine in text.Split('\n'))
             {
@@ -78,6 +136,14 @@ namespace SWLOR.Toolset.Domain.Render
                     continue;
                 }
 
+                if (key.Equals("parameter", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = value.Split(WhitespaceChars, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 3)
+                        parameters[parts[1]] = string.Join(' ', parts.Skip(2));
+                    continue;
+                }
+
                 // Unknown keys ignored.
             }
 
@@ -85,7 +151,8 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 RenderHint = renderHint,
                 Textures = textures,
-                CustomShaders = customShaders
+                CustomShaders = customShaders,
+                Parameters = parameters
             };
         }
 
@@ -96,12 +163,15 @@ namespace SWLOR.Toolset.Domain.Render
         /// unchanged (the common case - most meshes reference a texture directly, with no
         /// material override).
         /// </summary>
-        public static string ResolveDiffuseTextureName(ResourceIndex index, string textureOrMaterialName)
+        public static string ResolveDiffuseTextureName(
+            ResourceIndex index,
+            string textureOrMaterialName,
+            bool resolveMaterial = true)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return textureOrMaterialName;
 
-            var material = TryParseMaterial(index, textureOrMaterialName);
+            var material = resolveMaterial ? TryParseMaterial(index, textureOrMaterialName) : null;
             if (material == null)
                 return textureOrMaterialName;
 
@@ -119,12 +189,15 @@ namespace SWLOR.Toolset.Domain.Render
         /// <c>&lt;diffuse&gt;_n</c> is the normal map, <c>&lt;diffuse&gt;_s</c> the specular map
         /// and <c>&lt;diffuse&gt;_r</c> the roughness map, when such a resource exists.
         /// </summary>
-        public static MaterialMaps ResolveMaterialMaps(ResourceIndex index, string textureOrMaterialName)
+        public static MaterialMaps ResolveMaterialMaps(
+            ResourceIndex index,
+            string textureOrMaterialName,
+            bool resolveMaterial = true)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return new MaterialMaps { Diffuse = textureOrMaterialName };
 
-            var material = TryParseMaterial(index, textureOrMaterialName);
+            var material = resolveMaterial ? TryParseMaterial(index, textureOrMaterialName) : null;
             if (material != null)
             {
                 return new MaterialMaps
@@ -145,7 +218,8 @@ namespace SWLOR.Toolset.Domain.Render
             };
         }
 
-        private static MtrMaterial? TryParseMaterial(ResourceIndex index, string materialName)
+        /// <summary>Returns the parsed MTR resource, or null when the name has no material.</summary>
+        public static MtrMaterial? TryParseMaterial(ResourceIndex index, string materialName)
         {
             var identity = new ResourceIdentity(materialName, ResourceIdentity.TypeFromExtension("mtr"));
             if (!index.TryLookup(identity, out var handle))

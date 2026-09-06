@@ -182,6 +182,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
         private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
         private Tlk.TlkEditorDocumentViewModel? _tlkEditor;
+        private Animation.AnimationEditorDocumentViewModel? _animationEditor;
         private Tlk.TlkEditorLoadingDocumentViewModel? _tlkEditorLoading;
         private bool _tlkEditorOpening;
         private uint? _pendingTlkStrRef;
@@ -542,9 +543,24 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Opens the repository's SWLOR custom TLK as one docked document. Loading and the complete
-        /// reference scan stay off the UI thread; repeat requests activate the
-        /// singleton and may navigate it to a custom StrRef.
+        /// Opens or activates the native animation authoring document.
+        /// </summary>
+        public void OpenAnimationEditor()
+        {
+            if (_animationEditor != null) { _factory.ActivateDocument(_animationEditor); return; }
+            var editor = new Animation.AnimationEditorDocumentViewModel(
+                _prompts, _log, _resourceIndex,
+                _tlkEditorSource?.RepositoryRoot ?? Path.GetDirectoryName(_workspaceContext.Workspace?.ModuleRoot),
+                _mutationLock);
+            editor.Closed += _ => _animationEditor = null;
+            editor.CloseRequested += _ => _factory.CloseDocument(editor);
+            _animationEditor = editor;
+            _factory.OpenDocument(editor);
+        }
+
+        /// <summary>
+        /// Opens the repository's custom TLK as one docked document, loading and scanning off the UI thread.
+        /// Repeat requests activate the singleton and may navigate it to a custom StrRef.
         /// </summary>
         public async Task OpenTlkEditorAsync(uint? strRef = null)
         {
@@ -1659,6 +1675,8 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> SaveAllAsync()
         {
+            if (_animationEditor?.IsDirty == true && !await _animationEditor.TrySaveAsync().ConfigureAwait(true))
+                return false;
             if (_tlkEditor != null &&
                 !await _tlkEditor.TrySaveAsync().ConfigureAwait(true))
             {
@@ -1762,6 +1780,11 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> TryPrepareApplicationCloseAsync()
         {
+            if (_animationEditor?.IsBusy == true)
+            {
+                _log.AppendLine("Wait for the Animation Editor operation to finish before closing.");
+                return false;
+            }
             if (_tlkEditorOpening)
             {
                 _log.AppendLine("Wait for the TLK Editor reference index to finish loading before closing.");
@@ -1774,7 +1797,7 @@ namespace SWLOR.Toolset.Editors
             if (_tlkEditor != null)
                 await _tlkEditor.WaitForActiveOperationAsync().ConfigureAwait(true);
 
-            if (_tlkEditor?.IsDirty != true &&
+            if (_animationEditor?.IsDirty != true && _tlkEditor?.IsDirty != true &&
                 _moduleProperties?.IsDirty != true &&
                 !_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
@@ -1797,6 +1820,7 @@ namespace SWLOR.Toolset.Editors
             if (choice != UnsavedChangesChoice.Discard)
                 return false;
 
+            _animationEditor?.ApproveApplicationClose();
             _tlkEditor?.ApproveApplicationClose();
             _moduleProperties?.ApproveApplicationClose();
 

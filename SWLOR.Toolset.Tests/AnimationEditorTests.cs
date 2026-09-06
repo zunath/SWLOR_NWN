@@ -1,0 +1,327 @@
+using System.Globalization;
+using System.Numerics;
+using System.Text;
+using System.Text.Json;
+using Avalonia.Controls;
+using Avalonia.Headless.NUnit;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.NWN.Formats.Mdl;
+using SWLOR.Toolset.Domain.Animation;
+using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Editors.Animation;
+using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Workspace;
+
+namespace SWLOR.Toolset.Tests;
+
+public class AnimationEditorTests
+{
+    private string _folder = null!;
+    [SetUp] public void Setup() { _folder = Path.Combine(Path.GetTempPath(), "swlor-animation-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(_folder); }
+    [TearDown] public void Teardown() { Directory.Delete(_folder, true); }
+    private static AnimationProject Rig() => new()
+    {
+        Name = "Wave", ModelName = "hero", AnimationRoot = "rootdummy",
+        Joints =
+        [
+            new("hero", -1, new(Vector3.Zero, Quaternion.Identity, 1)),
+            new("rootdummy", 0, new(Vector3.Zero, Quaternion.Identity, 1)),
+            new("upper", 1, new(Vector3.Zero, Quaternion.Identity, 1)),
+            new("lower", 2, new(Vector3.UnitX, Quaternion.Identity, 1)),
+            new("hand", 3, new(Vector3.UnitX, Quaternion.Identity, 1))
+        ]
+    };
+    private string Write(string relative, string text)
+    {
+        var path = Path.Combine(_folder, relative); Directory.CreateDirectory(Path.GetDirectoryName(path)!); File.WriteAllText(path, text); return path;
+    }
+
+    [Test] public void ProjectAndMdlRoundTripPreservePosesEventsAndCulture()
+    {
+        var rig = Rig(); var first = rig.Sample(0); var last = rig.Sample(0);
+        last[2] = last[2] with { Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI / 2), Position = new(.25f, 0, 0) };
+        rig.SetKey(0, first); rig.SetKey(1, last); rig.Events.Add(new(.4f, "cast"));
+        var old = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("fr-FR");
+            var copy = AnimationProject.Deserialize(rig.Serialize());
+            var mdl = AnimationMdl.Export(copy); mdl.Should().Contain("event 0.4");
+            var imported = AnimationMdl.Import(mdl, Rig());
+            imported.Events.Should().Equal(rig.Events);
+            for (var i = 0; i <= 20; i++)
+            {
+                var a = rig.Sample(i / 20f); var b = imported.Sample(i / 20f);
+                for (var j = 0; j < a.Length; j++)
+                {
+                    Vector3.Distance(a[j].Position, b[j].Position).Should().BeLessThan(1e-5f);
+                    Math.Abs(Quaternion.Dot(a[j].Orientation, b[j].Orientation)).Should().BeApproximately(1, 1e-5f);
+                }
+            }
+        }
+        finally { CultureInfo.CurrentCulture = old; }
+    }
+    [Test] public void MdlImportRejectsUnsupportedControllersRatherThanDroppingThem()
+    {
+        var block = AnimationMdl.Export(Rig()).Replace("  endnode", "    alphakey 1\n      0 0.5\n  endnode");
+        Action act = () => AnimationMdl.Import(block, Rig()); act.Should().Throw<InvalidDataException>().WithMessage("*Unsupported*");
+    }
+    [Test] public void StaticAnimationValuesOverrideTheRigBindPose()
+    {
+        var block = "newanim Pose hero\nlength 1\nnode dummy hand\nparent lower\nposition 0 0 0\norientation 0 0 1 0.5\nendnode\ndoneanim Pose hero\n";
+        var pose = AnimationMdl.Import(block, Rig()).Sample(.5f);
+        pose[4].Position.Should().Be(Vector3.Zero);
+        Math.Abs(Quaternion.Dot(pose[4].Orientation, Quaternion.CreateFromAxisAngle(Vector3.UnitZ, .5f))).Should().BeApproximately(1, 1e-5f);
+    }
+    [Test] public void MovingTheBodyAnchorsTheHandPositionAndOrientation()
+    {
+        var rig = Rig(); rig.Joints[4] = rig.Joints[4] with { Name = "rhand_g" };
+        var pose = rig.Sample(0); var original = AnimationRig.World(rig.Joints, pose)[4];
+        var changed = AnimationRig.SetJoint(rig.Joints, pose, 1,
+            pose[1] with { Position = new(.3f, 0, 0), Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, .3f) }, true);
+        var result = AnimationRig.World(rig.Joints, changed)[4];
+        Vector3.Distance(original.Translation, result.Translation).Should().BeLessThan(1e-4f);
+        Matrix4x4.Decompose(original, out _, out var a, out _); Matrix4x4.Decompose(result, out _, out var b, out _);
+        Math.Abs(Quaternion.Dot(a, b)).Should().BeApproximately(1, 1e-5f);
+    }
+    [Test] public void MdlImportRejectsOutOfRangeAndDuplicateTimes()
+    {
+        var rig = Rig(); rig.SetKey(0, rig.Sample(0)); rig.SetKey(1, rig.Sample(0));
+        var text = AnimationMdl.Export(rig).Replace("length 1", "length 0.5");
+        Action act = () => AnimationMdl.Import(text, Rig()); act.Should().Throw<InvalidDataException>();
+        text = AnimationMdl.Export(rig).Replace("      1 ", "      0 ");
+        act.Should().Throw<InvalidDataException>();
+    }
+    [Test] public void MdlImportRejectsConflictingControllersAndHierarchy()
+    {
+        var text = AnimationMdl.Export(Rig());
+        Action duplicate = () => AnimationMdl.Import(text.Replace("    positionkey", "    position 0 0 0\n    positionkey"), Rig());
+        duplicate.Should().Throw<InvalidDataException>().WithMessage("*Duplicate*");
+        Action parent = () => AnimationMdl.Import(text.Replace("parent lower", "parent rootdummy"), Rig());
+        parent.Should().Throw<InvalidDataException>().WithMessage("*hierarchy*");
+    }
+    [Test] public void IkReachesTargetAndPreservesLengthsAndHandWorldOrientation()
+    {
+        var rig = Rig(); var pose = rig.Sample(0);
+        pose[1] = pose[1] with { Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, .3f) };
+        var before = AnimationRig.World(rig.Joints, pose);
+        var target = new Vector3(1.2f, .8f, .3f);
+        var solved = AnimationRig.SolveLimb(rig.Joints, pose, 4, target, new(0, 0, 2));
+        var world = AnimationRig.World(rig.Joints, solved);
+        Vector3.Distance(world[4].Translation, target).Should().BeLessThan(1e-4f);
+        Vector3.Distance(world[2].Translation, world[3].Translation).Should().BeApproximately(1, 1e-5f);
+        Vector3.Distance(world[3].Translation, world[4].Translation).Should().BeApproximately(1, 1e-5f);
+        Matrix4x4.Decompose(before[4], out _, out var a, out _); Matrix4x4.Decompose(world[4], out _, out var b, out _);
+        Math.Abs(Quaternion.Dot(a, b)).Should().BeApproximately(1, 1e-5f);
+    }
+    [Test] public void IkClampsUnreachableTargetWithoutNaNs()
+    {
+        var rig = Rig(); var result = AnimationRig.SolveLimb(rig.Joints, rig.Sample(0), 4, new(100, 0, 0), Vector3.UnitX);
+        foreach (var pose in result) AnimationProject.ValidatePose(pose);
+        AnimationRig.World(rig.Joints, result)[4].Translation.Length().Should().BeApproximately(2, 1e-4f);
+    }
+
+    private string Gltf(string interpolation = "LINEAR", bool badView = false)
+    {
+        var floats = interpolation == "CUBICSPLINE"
+            ? new float[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 }
+            : new float[] { 0, 1, 0, 0, 0, 1, 0, 0 };
+        var bytes = floats.SelectMany(BitConverter.GetBytes).ToArray();
+        var data = new
+        {
+            asset = new { version = "2.0" },
+            buffers = new[] { new { byteLength = bytes.Length, uri = "data:application/octet-stream;base64," + Convert.ToBase64String(bytes) } },
+            bufferViews = new[] { new { buffer = 0, byteOffset = 0, byteLength = 8 }, new { buffer = 0, byteOffset = 8, byteLength = badView ? 4 : bytes.Length - 8 } },
+            accessors = new object[] { new { bufferView = 0, componentType = 5126, count = 2, type = "SCALAR" },
+                new { bufferView = 1, componentType = 5126, count = interpolation == "CUBICSPLINE" ? 6 : 2, type = "VEC3" } },
+            nodes = new object[] { new { name = "Root", children = new[] { 1 } }, new { name = "Hand", translation = new[] { 0, 1, 0 } } },
+            animations = new[] { new { name = "Step", samplers = new[] { new { input = 0, output = 1, interpolation } },
+                channels = new[] { new { sampler = 0, target = new { node = 0, path = "translation" } } } } }
+        };
+        return Write("source.gltf", JsonSerializer.Serialize(data));
+    }
+    [TestCase("LINEAR", .5f)] [TestCase("STEP", 0f)] [TestCase("CUBICSPLINE", .5f)]
+    public void GltfSamplesInterpolationAndConvertsYUpToZUp(string interpolation, float x)
+    {
+        var source = GltfAnimationSource.Load(Gltf(interpolation)); var pose = source.Sample(0, .5f);
+        pose[0].Translation.X.Should().BeApproximately(x, 1e-5f);
+        pose[1].Translation.Z.Should().BeApproximately(1, 1e-5f);
+    }
+    [Test] public void GltfRejectsAccessorEscapingItsView()
+    {
+        var path = Gltf(badView: true); Action act = () => GltfAnimationSource.Load(path); act.Should().Throw<InvalidDataException>();
+    }
+    [Test] public void RetargetPreservesCalibrationAndScalesRootDisplacement()
+    {
+        var source = GltfAnimationSource.Load(Gltf()); var rig = Rig(); var pose = rig.Sample(0);
+        pose[1] = pose[1] with { Position = new(0, 0, 1), Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitX, 2.4f) };
+        var retarget = new AnimationRetarget(rig, pose, source, 0, 0, [new("rootdummy", "Root")]);
+        var baked = retarget.Bake(source, 0, 30, 2);
+        baked.Keys.Should().HaveCount(31);
+        baked.Sample(1)[1].Position.Should().Be(new Vector3(2, 0, 1));
+        Math.Abs(Quaternion.Dot(baked.Sample(0)[1].Orientation, pose[1].Orientation)).Should().BeApproximately(1, 1e-5f);
+    }
+
+    private string InstallFixture()
+    {
+        Write("Build/hakbuilder.json", "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/sw_cr_creature\"}]}");
+        Write("SWLOR.NWN.API/NWScript/Enum/Animation.cs", "enum Animation { Existing = 21, Reserved = 22 }");
+        return Write("SWLOR_Haks/sw_cr_creature/hero.mdl", """
+            # preserve this comment and geometry
+            newmodel hero
+            setsupermodel hero NULL
+            setanimationscale 1
+            beginmodelgeom hero
+            node dummy hero
+              parent NULL
+            endnode
+            node dummy rootdummy
+              parent hero
+            endnode
+            node dummy upper
+              parent rootdummy
+            endnode
+            node dummy lower
+              parent upper
+              position 1 0 0
+            endnode
+            node dummy hand
+              parent lower
+              position 1 0 0
+            endnode
+            endmodelgeom hero
+            donemodel hero
+            """);
+    }
+    [Test] public void InstallUsesNamesPreservesGeometryAndSupportsMoreClipsAndUpdates()
+    {
+        var target = InstallFixture(); var original = File.ReadAllText(target);
+        var project = Rig(); var plan = AnimationInstall.Prepare(_folder, project, [target]);
+        plan.AnimationName.Should().Be("sw_wave"); plan.CodeExample.Should().Be("NamedAnimation.Queue(creature, AuthoredAnimation.Wave);");
+        plan.Apply();
+        File.ReadAllText(target).Should().Be(original.Replace("setsupermodel hero NULL", "setsupermodel hero an_hero"));
+        var overlay = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
+        var installed = new MdlReader().Parse(File.ReadAllBytes(overlay));
+        installed.Animations.Select(a => a.Name).Should().Equal("sw_wave", "sw_wave_in", "sw_wave_out");
+        AnimationProject.FromModel(installed).Joints.Select(j => j.Name).Should().Equal("an_hero", "rootdummy", "upper", "lower", "hand");
+        project.Name = "Point";
+        var second = AnimationInstall.Prepare(_folder, project, [target]); second.AnimationName.Should().Be("sw_point"); second.Apply();
+        var targetBytes = File.ReadAllBytes(target);
+        project.Name = "Wave"; project.Duration = 2;
+        var update = AnimationInstall.Prepare(_folder, project, [target]); update.AnimationName.Should().Be("sw_wave"); update.Apply();
+        var model = new MdlReader().Parse(File.ReadAllBytes(overlay)); model.Animations.Should().HaveCount(6);
+        model.Animations.Single(a => a.Name == "sw_wave").Length.Should().Be(2);
+        File.ReadAllBytes(target).Should().Equal(targetBytes);
+    }
+    [Test] public void InstallationRefusesConcurrentEditsWithoutWritingAnyOutputs()
+    {
+        var target = InstallFixture(); var plan = AnimationInstall.Prepare(_folder, Rig(), [target]);
+        File.AppendAllText(target, "\n# external edit");
+        Action act = plan.Apply; act.Should().Throw<IOException>();
+        File.Exists(Path.Combine(_folder, "design/animations/registry.json")).Should().BeFalse();
+        File.ReadAllText(target).Should().EndWith("# external edit");
+    }
+    [Test] public void BinarySupermodelPatchChangesOnlyItsFixedHeaderField()
+    {
+        var original = Enumerable.Range(0, 1000).Select(i => (byte)i).ToArray(); Array.Clear(original, 0, 4);
+        var patched = AnimationInstall.PatchSupermodel(original, "hero", "an_hero");
+        patched[..180].Should().Equal(original[..180]); patched[244..].Should().Equal(original[244..]);
+        Encoding.ASCII.GetString(patched, 180, 64).TrimEnd('\0').Should().Be("an_hero");
+    }
+    [Test] public void RealNwnRigRoundTripsAndRetainsAllBinaryGeometry()
+    {
+        var corpus = Environment.GetEnvironmentVariable("SWLOR_ANIMATION_CORPUS");
+        if (string.IsNullOrWhiteSpace(corpus)) Assert.Ignore("Set SWLOR_ANIMATION_CORPUS to a local HAK source root for model corpus verification.");
+        foreach (var name in new[] { "a_ba", "a_fa" })
+        {
+            var file = Directory.EnumerateFiles(corpus!, name + ".mdl", SearchOption.AllDirectories).First();
+            var data = File.ReadAllBytes(file); var model = new MdlReader().Parse(data);
+            var rig = AnimationProject.FromModel(model); rig.Name = "CorpusPose";
+            var imported = AnimationMdl.Import(AnimationMdl.Export(rig), rig);
+            var expected = rig.Sample(0); var actual = imported.Sample(0);
+            for (var i = 0; i < expected.Length; i++)
+            {
+                Vector3.Distance(expected[i].Position, actual[i].Position).Should().BeLessThan(1e-5f);
+                Math.Abs(Quaternion.Dot(expected[i].Orientation, actual[i].Orientation)).Should().BeApproximately(1, 1e-5f);
+            }
+            var patched = AnimationInstall.PatchSupermodel(data, model.Name, "an_" + name);
+            new MdlReader().Parse(patched).GetMeshNodes().Count().Should().Be(model.GetMeshNodes().Count());
+            patched[244..].Should().Equal(data[244..]);
+        }
+    }
+    [Test] public void RealNwnModelsAcceptAnInstalledOverlayWithoutLosingTheirSkeletons()
+    {
+        var corpus = Environment.GetEnvironmentVariable("SWLOR_ANIMATION_CORPUS");
+        if (string.IsNullOrWhiteSpace(corpus)) Assert.Ignore("Set SWLOR_ANIMATION_CORPUS for real installation verification.");
+        var sources = Directory.EnumerateFiles(corpus!, "*.mdl", SearchOption.AllDirectories)
+            .GroupBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key!, g => g.First(), StringComparer.OrdinalIgnoreCase);
+        Write("Build/hakbuilder.json", "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"}]}");
+        var copied = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        string CopyChain(string name)
+        {
+            var destination = Path.Combine(_folder, "SWLOR_Haks/models", name + ".mdl");
+            if (!copied.Add(name)) return destination;
+            Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+            File.Copy(sources[name + ".mdl"], destination);
+            var model = new MdlReader().Parse(File.ReadAllBytes(destination));
+            if (!string.IsNullOrEmpty(model.SuperModel) && !model.SuperModel.Equals("NULL", StringComparison.OrdinalIgnoreCase)) CopyChain(model.SuperModel);
+            return destination;
+        }
+        foreach (var name in new[] { "a_ba", "a_fa" })
+        {
+            var target = CopyChain(name); var original = File.ReadAllBytes(target);
+            var project = AnimationProject.FromModel(new MdlReader().Parse(original)); project.Name = name == "a_ba" ? "MalePose" : "FemalePose";
+            AnimationInstall.Prepare(_folder, project, [target]).Apply();
+            var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_" + name + ".mdl")));
+            var rig = AnimationProject.FromModel(overlay);
+            rig.Joints.Skip(1).Select(j => (j.Name, j.Parent)).Should().Equal(project.Joints.Skip(1).Select(j => (j.Name, j.Parent)));
+            overlay.Animations.Should().HaveCount(3);
+            File.ReadAllBytes(target)[244..].Should().Equal(original[244..]);
+        }
+    }
+    [Test] public void InstallationRejectsTargetsOutsideConfiguredSources()
+    {
+        var target = InstallFixture(); var other = Write("outside.mdl", File.ReadAllText(target));
+        Action act = () => AnimationInstall.Prepare(_folder, Rig(), [other]); act.Should().Throw<InvalidDataException>();
+    }
+    [Test] public void InstallationRejectsSameNamesWithDifferentParentage()
+    {
+        var target = InstallFixture();
+        File.WriteAllText(target, File.ReadAllText(target).Replace("parent lower", "parent rootdummy"));
+        Action act = () => AnimationInstall.Prepare(_folder, Rig(), [target]);
+        act.Should().Throw<InvalidDataException>().WithMessage("*hierarchy*");
+    }
+
+    [AvaloniaTest] public void ViewLoadsAndEditsUndoRedoThroughTheDocumentContract()
+    {
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        var view = new AnimationEditorDocumentView { DataContext = vm };
+        var window = new Window { Content = view, Width = 1280, Height = 900 };
+        window.Show(); window.UpdateLayout();
+        ViewLocator.ResolveViewType(vm.GetType()).Should().Be(typeof(AnimationEditorDocumentView));
+        view.FindControl<AnimationRigControl>("Rig").Should().NotBeNull();
+        vm.SelectedJoint = 4; vm.PositionZ = .25m; vm.IsDirty.Should().BeTrue();
+        vm.Undo(); vm.PositionZ.Should().Be(0); vm.IsDirty.Should().BeFalse();
+        vm.Redo(); vm.PositionZ.Should().Be(.25m);
+        vm.ApproveApplicationClose(); vm.OnClose().Should().BeTrue();
+        window.Close();
+    }
+    [AvaloniaTest] public async Task SaveProtectsExternalChangesAndCancelledCloseKeepsDocumentOpen()
+    {
+        var prompts = new Prompts(); var vm = new AnimationEditorDocumentViewModel(prompts, new OutputLogService(), initial: Rig());
+        var path = Path.Combine(_folder, "wave.swlanim"); vm.PickSavePath = (_, _) => Task.FromResult<string?>(path);
+        vm.PositionX = .5m; (await vm.TrySaveAsync()).Should().BeTrue(); vm.IsDirty.Should().BeFalse();
+        File.AppendAllText(path, "\n "); var external = File.ReadAllBytes(path);
+        vm.PositionX = 1; (await vm.TrySaveAsync()).Should().BeFalse(); File.ReadAllBytes(path).Should().Equal(external);
+        vm.OnClose().Should().BeFalse(); vm.IsDirty.Should().BeTrue();
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
+    private sealed class Prompts : IEditorPromptService
+    {
+        public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) => Task.FromResult(ExternalChangeChoice.Cancel);
+        public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) => Task.FromResult(UnsavedChangesChoice.Cancel);
+        public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) => Task.FromResult(false);
+        public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) => Task.FromResult<string?>(null);
+    }
+}

@@ -100,7 +100,10 @@ namespace SWLOR.Toolset.Services
         /// deletion already owns the workspace. This closes the gap between a caller checking
         /// <see cref="IsLocked"/> and publishing its own deletion state.
         /// </summary>
-        public IDisposable? TryBeginResourceDeletion()
+        public IDisposable? TryBeginResourceDeletion() => TryBeginResourceWrite();
+
+        /// <summary>Reserves the workspace for a multi-file editor write, excluding builds and other writers.</summary>
+        public IDisposable? TryBeginResourceWrite()
         {
             lock (_stateGate)
             {

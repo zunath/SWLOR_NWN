@@ -530,6 +530,35 @@ public class AnimationEditorTests
         older.Animations.Single(a => a.Name == "sw_clip800").Length.Should().Be(2);
     }
 
+    [Test] public void NewBanksForRigsSharingANamePrefixRemainDistinctWithinOnePlan()
+    {
+        Write("Build/hakbuilder.json", "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"}]}");
+        var targets = new List<string>();
+        foreach (var name in new[] { "humanoid_one", "humanoid_two" })
+        {
+            var rig = Rig(); rig.ModelName = name; rig.Joints[0] = rig.Joints[0] with { Name = name };
+            var bank = "an_" + name;
+            targets.Add(Write("SWLOR_Haks/models/" + name + ".mdl", $"newmodel {name}\nsetsupermodel {name} {bank}\n" + AnimationMdl.ExportGeometry(rig) + $"donemodel {name}\n"));
+            rig.ModelName = bank; rig.Joints[0] = rig.Joints[0] with { Name = bank };
+            var clips = string.Concat(Enumerable.Range(0, AnimationInstall.ClipsPerBank * 3)
+                .Select(i => $"newanim old{i} {bank}\nlength 1\ndoneanim old{i} {bank}\n"));
+            Write("SWLOR_Haks/models/" + bank + ".mdl", $"# SWLOR authored animations for {name}\nnewmodel {bank}\nsetsupermodel {bank} NULL\n" +
+                AnimationMdl.ExportGeometry(rig) + clips + $"donemodel {bank}\n");
+        }
+        Write("design/animations/registry.json", JsonSerializer.Serialize(new[] {
+            new AnimationRegistration("Existing", "sw_existing", 1, targets.Select(t => Path.GetRelativePath(_folder, t).Replace('\\', '/')).ToArray()) }));
+        var plan = AnimationInstall.Prepare(_folder, Rig(), targets); plan.Apply();
+        var newBanks = plan.Changes.Where(c => Path.GetFileName(c.Path).StartsWith("ab_", StringComparison.Ordinal)).ToArray();
+        newBanks.Should().HaveCount(2);
+        newBanks.Select(c => Path.GetFileName(c.Path)).Should().OnlyHaveUniqueItems();
+        foreach (var target in targets)
+        {
+            var rootBank = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_" + Path.GetFileName(target))));
+            var bank = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, rootBank.SuperModel + ".mdl")));
+            bank.Animations.Should().HaveCount(3);
+        }
+    }
+
     [Test] public void InstallationRejectsTargetsOutsideConfiguredSources()
     {
         var target = InstallFixture(); var other = Write("outside.mdl", File.ReadAllText(target));

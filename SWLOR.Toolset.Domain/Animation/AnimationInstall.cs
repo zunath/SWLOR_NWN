@@ -245,7 +245,7 @@ public static class AnimationInstall
                     {
                         if (number > 999) throw new InvalidDataException("No free animation bank names remain for this target.");
                         overlayName = prefix + (number++).ToString("D3", System.Globalization.CultureInfo.InvariantCulture);
-                    } while (Resolve(overlayName) != null);
+                    } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
                     overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
                     existingOverlay = null;
                 }

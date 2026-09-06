@@ -4308,8 +4308,8 @@
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
     "Line": 328,
     "Member": "TryRecordWitness",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, ColorToken.Gray(\n                    $\"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})\"))"
+    "Delivery": "Rate limited in Production",
+    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"MIMICRY_RANK_\" + (int)techniqueFeat, ColorToken.Gray(\n                    $\"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})\"), intervalSeconds: 60)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
@@ -4320,28 +4320,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 430,
+    "Line": 429,
     "Member": "TryLearnTechniques",
-    "Delivery": "Testing only",
-    "Call": "PlayerFeedback.SendDiagnosticToPlayer(player, ColorToken.Orange(\n                        $\"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry.\"))"
+    "Delivery": "Rate limited in Production",
+    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"MIMICRY_DECODE_\" + (int)feat, ColorToken.Orange(\n                        $\"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry.\"), intervalSeconds: 60)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 448,
+    "Line": 447,
     "Member": "TryLearnTechniques",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You learned the technique: {detail.Name}!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 673,
+    "Line": 672,
     "Member": "EquipTechnique",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Mimicry.cs",
-    "Line": 696,
+    "Line": 695,
     "Member": "UnequipTechnique",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"

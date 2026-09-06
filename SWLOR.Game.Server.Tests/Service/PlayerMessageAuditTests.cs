@@ -86,6 +86,21 @@ public class PlayerMessageAuditTests
     }
 
     [Test]
+    public void MimicryFailures_RemainRateLimitedAndObservationsRemainDiagnostic()
+    {
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Mimicry.cs");
+        var calls = ReadCalls(file).ToArray();
+        var failures = calls.Where(call => MethodName(call) == "SendWarningToPlayer").ToArray();
+        failures.Should().HaveCount(2);
+        failures.Should().Contain(call => call.ArgumentList.Arguments[1].ToString().Contains("MIMICRY_RANK_"));
+        failures.Should().Contain(call => call.ArgumentList.Arguments[1].ToString().Contains("MIMICRY_DECODE_"));
+        foreach (var failure in failures)
+            failure.ArgumentList.Arguments.Should().Contain(argument => argument.ToString() == "intervalSeconds: 60");
+        calls.Should().Contain(call => MethodName(call) == "SendDiagnosticToPlayer" &&
+            call.ToString().Contains("Your combat analyzer records"));
+    }
+
+    [Test]
     public void NativeAttackFeedback_IsGuardedForEveryCustomMessage()
     {
         var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");

@@ -22,7 +22,7 @@ work; the policy gates message delivery only.
 | `Space`, ship module definitions | Per-shot hit/miss/damage chatter, repair and capacitor restoration amounts, E-War/repair-field announcements. Ship resource displays still update. |
 | `Skill`, `BeastMastery`, `Guild`, `Faction`, `RoleplayXP` | Incremental skill/beast/RP XP, partial debt repayment, guild/faction point changes, faction-standing increments and repeated cap notices. |
 | `QuestObjectives` | Every-kill/every-item remaining counters. Requirement completion is retained. |
-| `Mimicry` | Automatic analyzer observations, repeated skill-gate and failed-learn-roll diagnostics. Permanent technique learning is retained. |
+| `Mimicry` | Automatic analyzer observations. Permanent technique learning and rate-limited failure warnings are retained. |
 | `Fishing`, `Weather` | Nearby casting announcements, per-catch bait counts, ambient weather chatter. Catch/failure/depletion and lightning damage warnings are retained. |
 | `SpeederItemDefinition`, `Property` | Duplicate overhead text where the same event already gives a log message. |
 | `ScavengePoint` | Roll/DC arithmetic; Production gets only the short success/failure result. |
@@ -41,6 +41,7 @@ popup instead of duplicating that restoration in the generic log.
 | Interrupted casts, expired/cancelled queued abilities, empty-target casts | Private feedback to the actor explains the failure. No nearby broadcast. Silent dequeue callers only produce diagnostic output. |
 | Paralysis preventing action | Private warning limited to once every 5 seconds in Production. |
 | Skill cap blocking XP | Actionable warning limited to once per minute in Production, shared across blocked/overflow XP attempts. Testing shows every occurrence. |
+| Mimicry rank gates and failed learning attempts | Private warnings explain the required rank or retry. Each failure reason is limited to once per technique per minute in Production, across NPCs. Testing shows every occurrence. |
 | Level/rank increases, ability points, new techniques/recipes, achievements, fully cleared XP debt | Discrete milestones or new player options, not repeated increments. |
 | Quest acceptance, requirement/stage completion, quest completion, cancellations, deliveries, key items, explicit reward payouts | The player needs to act on or know the result. Intermediate automatic quest counters are suppressed. |
 | Craft/research/incubation/harvest/fishing/scavenge results | Confirm an explicit interaction, job state, failure, or depleted resource. |

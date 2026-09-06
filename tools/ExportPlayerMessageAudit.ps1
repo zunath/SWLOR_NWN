@@ -1,6 +1,9 @@
 #requires -Version 7.0
 # Export syntax-level message call sites after reviewing their Production policy.
 $ErrorActionPreference = 'Stop'
+# PowerShell ships Roslyn for Add-Type, but the parser must also be available in a fresh session.
+Add-Type -Path (Join-Path $PSHOME 'Microsoft.CodeAnalysis.dll')
+Add-Type -Path (Join-Path $PSHOME 'Microsoft.CodeAnalysis.CSharp.dll')
 $repo = (Get-Location).Path
 $sinks = @('SendMessageToPC', 'FloatingTextStringOnCreature', 'FloatingTextStrRefOnCreature', 'SendMessageToPCByStrRef', 'SendMessageToAllPCs', 'SendMessageNearbyToPlayers', 'SendFeedbackString', 'SendFeedbackMessage', 'SendMessage', 'PostString', 'SpeakString', 'ActionSpeakString', 'SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendDiagnosticNearby', 'SendResourceRestored', 'SendWarningToPlayer')
 $rows = foreach ($file in (rg --files SWLOR.Game.Server -g '*.cs' | Sort-Object)) {

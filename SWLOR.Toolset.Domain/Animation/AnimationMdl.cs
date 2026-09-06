@@ -139,7 +139,7 @@ public static class AnimationMdl
                     break;
                 case "positionkey": case "orientationkey": case "scalekey":
                     Need(parts, 2);
-                    if (!node || !int.TryParse(parts[1], out count) || count < 0 || count > 18001)
+                    if (!node || !int.TryParse(parts[1], out count) || count < 0 || count > AnimationProject.MaxKeyframes)
                         throw new InvalidDataException("Invalid transform track.");
                     prior = -1; width = op == "positionkey" ? 4 : op == "orientationkey" ? 5 : 2; break;
                 case "endnode":
@@ -161,11 +161,12 @@ public static class AnimationMdl
         var bind = rig.Joints.ToDictionary(j => j.Name, j => new MdlNode
             { Name = j.Name, Position = j.Rest.Position, Orientation = j.Rest.Orientation, Scale = j.Rest.Scale }, StringComparer.OrdinalIgnoreCase);
         times.Add(project.Duration);
-        if ((long)times.Count * rig.Joints.Count > 2_000_000) throw new InvalidDataException("Animation contains too many sampled transforms.");
+        if (times.Count > AnimationProject.MaxKeyframes || (long)times.Count * rig.Joints.Count > 2_000_000)
+            throw new InvalidDataException("Animation contains too many sampled transforms.");
         foreach (var time in times)
         {
             var sampled = MdlAnimationPose.Sample(animation, time, bind);
-            project.SetKey(time, rig.Joints.Select(j => sampled.TryGetValue(j.Name, out var pose) ? pose : j.Rest).ToArray());
+            project.Keys.Add(new(time, rig.Joints.Select(j => sampled.TryGetValue(j.Name, out var pose) ? pose : j.Rest).ToArray()));
         }
         project.Validate();
         return project;

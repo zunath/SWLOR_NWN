@@ -13,6 +13,7 @@ public sealed record AnimationCue(float Time, string Name);
 /// <summary>Portable authoring data. Coordinates are native NWN coordinates (Z up, metres).</summary>
 public sealed class AnimationProject
 {
+    public const int MaxKeyframes = 18001;
     public int Version { get; set; } = 1;
     public string Name { get; set; } = "NewAnimation";
     public string ModelName { get; set; } = "pmh0";
@@ -52,7 +53,7 @@ public sealed class AnimationProject
         if (!float.IsFinite(Duration) || Duration <= 0 || Duration > 600 ||
             !float.IsFinite(Transition) || Transition < 0 || Transition > 600)
             throw new InvalidDataException("Duration must be between 0 and 600 seconds; transition cannot be negative.");
-        if (Joints == null || Joints.Count is < 1 or > 512 || Keys == null || Keys.Count > 18001 ||
+        if (Joints == null || Joints.Count is < 1 or > 512 || Keys == null || Keys.Count > MaxKeyframes ||
             Events == null || Events.Count > 4096 || (long)Keys.Count * Joints.Count > 2_000_000)
             throw new InvalidDataException("Animation exceeds the supported joint/keyframe limits.");
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -102,8 +103,14 @@ public sealed class AnimationProject
         if (!float.IsFinite(time)) throw new ArgumentOutOfRangeException(nameof(time));
         if (Keys.Count == 0) return Joints.Select(j => j.Rest).ToArray();
         if (time <= Keys[0].Time) return (PosedNode[])Keys[0].Pose.Clone();
-        var right = Keys.FindIndex(key => key.Time >= time);
-        if (right < 0) return (PosedNode[])Keys[^1].Pose.Clone();
+        var low = 0; var high = Keys.Count;
+        while (low < high)
+        {
+            var middle = low + (high - low) / 2;
+            if (Keys[middle].Time < time) low = middle + 1; else high = middle;
+        }
+        var right = low;
+        if (right == Keys.Count) return (PosedNode[])Keys[^1].Pose.Clone();
         var a = Keys[right - 1]; var b = Keys[right];
         var t = (time - a.Time) / (b.Time - a.Time);
         return a.Pose.Select((pose, i) => new PosedNode(

@@ -193,6 +193,7 @@ public sealed class GltfAnimationSource
 
     public Matrix4x4[] Sample(int animation, float time)
     {
+        if (!float.IsFinite(time)) throw new ArgumentOutOfRangeException(nameof(time));
         var positions = Joints.Select(j => j.Position).ToArray();
         var rotations = Joints.Select(j => j.Rotation).ToArray();
         var scales = Joints.Select(j => j.Scale).ToArray();
@@ -227,9 +228,10 @@ public sealed class GltfAnimationSource
         var cubic = track.Interpolation == "CUBICSPLINE";
         Vector4 Value(int i) => track.Values[cubic ? i * 3 + 1 : i];
         if (time <= track.Times[0]) return Value(0);
-        var right = Array.FindIndex(track.Times, t => t >= time);
-        if (right < 0) return Value(track.Times.Length - 1);
-        if (time == track.Times[right]) return Value(right);
+        var right = Array.BinarySearch(track.Times, time);
+        if (right >= 0) return Value(right);
+        right = ~right;
+        if (right == track.Times.Length) return Value(track.Times.Length - 1);
         var left = right - 1; var dt = track.Times[right] - track.Times[left];
         var t = (time - track.Times[left]) / dt;
         if (track.Interpolation == "STEP") return Value(left);

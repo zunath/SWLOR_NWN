@@ -50,6 +50,8 @@ public sealed class AnimationRetarget
         result.Duration = source.Animations[clip].Duration;
         if (result.Duration <= 0) throw new InvalidDataException("Source animation has no duration.");
         var frames = (int)Math.Ceiling(result.Duration * framesPerSecond);
+        if (frames + 1 > AnimationProject.MaxKeyframes)
+            throw new InvalidDataException($"Bake exceeds {AnimationProject.MaxKeyframes:N0} keyframes. Choose a lower bake rate.");
         if ((long)(frames + 1) * result.Joints.Count > 2_000_000) throw new InvalidDataException("Choose a lower bake rate for this animation.");
         var root = result.Joints.FindIndex(j => j.Name == result.AnimationRoot);
         for (var frame = 0; frame <= frames; frame++)
@@ -77,7 +79,11 @@ public sealed class AnimationRetarget
                 }
                 world[i] = AnimationRig.Local(pose[i]) * parentWorld;
             }
-            result.SetKey(time, pose);
+            // Baking already produces ascending times and fresh pose arrays. Append directly;
+            // interactive SetKey searches and sorts the timeline and would make dense bakes quadratic.
+            var key = new AnimationKey(time, pose);
+            if (result.Keys.Count > 0 && result.Keys[^1].Time == time) result.Keys[^1] = key;
+            else result.Keys.Add(key);
         }
         result.Validate();
         return result;

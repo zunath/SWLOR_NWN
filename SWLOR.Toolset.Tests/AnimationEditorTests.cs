@@ -163,6 +163,38 @@ public class AnimationEditorTests
         baked.Sample(1)[1].Position.Should().Be(new Vector3(2, 0, 1));
         Math.Abs(Quaternion.Dot(baked.Sample(0)[1].Orientation, pose[1].Orientation)).Should().BeApproximately(1, 1e-5f);
     }
+    [TestCase("LINEAR")] [TestCase("STEP")] [TestCase("CUBICSPLINE")]
+    public void GltfIndexedSamplingPreservesExactKeysEndpointsAndInteriorSamples(string interpolation)
+    {
+        var source = GltfAnimationSource.Load(Gltf(interpolation));
+        source.Sample(0, -1)[0].Translation.X.Should().Be(0);
+        source.Sample(0, 0)[0].Translation.X.Should().Be(0);
+        source.Sample(0, 1)[0].Translation.X.Should().Be(1);
+        source.Sample(0, 2)[0].Translation.X.Should().Be(1);
+        var expected = interpolation == "STEP" ? 0 : interpolation == "CUBICSPLINE" ? .84375f : .75f;
+        source.Sample(0, .75f)[0].Translation.X.Should().BeApproximately(expected, 1e-5f);
+    }
+    [Test] public void LongBakeRejectsTheKeyLimitBeforeSamplingAndSupportsTheMaximumValidRate()
+    {
+        var path = Gltf(); var json = JsonNode.Parse(File.ReadAllText(path))!;
+        var uri = json["buffers"]![0]!["uri"]!.GetValue<string>();
+        var bytes = Convert.FromBase64String(uri[(uri.IndexOf(',') + 1)..]);
+        BitConverter.GetBytes(600f).CopyTo(bytes, 4);
+        json["buffers"]![0]!["uri"] = "data:application/octet-stream;base64," + Convert.ToBase64String(bytes);
+        File.WriteAllText(path, json.ToJsonString());
+        var source = GltfAnimationSource.Load(path); var rig = Rig();
+        var calibration = new AnimationRetarget(rig, rig.Sample(0), source, 0, 0, [new("rootdummy", "Root")]);
+        // A non-finite transform would fail if a rejected bake entered the sampling loop.
+        var track = source.Animations[0].Tracks[0]; var saved = track.Values[1]; track.Values[1] = new(float.NaN);
+        Action tooManyKeys = () => calibration.Bake(source, 0, 60, 1);
+        tooManyKeys.Should().Throw<InvalidDataException>().WithMessage("*keyframes*lower bake rate*");
+        track.Values[1] = saved;
+        var baked = calibration.Bake(source, 0, 30, 1);
+        baked.Keys.Should().HaveCount(AnimationProject.MaxKeyframes);
+        baked.Keys[^1].Time.Should().Be(600);
+        baked.Sample(600)[1].Position.X.Should().BeApproximately(1, 1e-5f);
+        baked.Sample(300.01f)[1].Position.X.Should().BeApproximately(300.01f / 600, 1e-5f);
+    }
 
     private string InstallFixture()
     {

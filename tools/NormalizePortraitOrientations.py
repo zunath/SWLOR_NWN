@@ -85,6 +85,13 @@ def main():
         if digest(corrected) != row['corrected_sha256']:
             raise ValueError(f'Correction does not match reviewed output: {name}')
         pending.append((path, original, corrected))
+    # A hard termination can leave a recovery file. Detect every collision
+    # before replacing any image; preserve the file for explicit inspection.
+    for path, _, _ in pending:
+        temporary = path.with_suffix('.tga.portrait-tmp')
+        if temporary.exists() or temporary.is_symlink():
+            raise ValueError(f'Existing temporary file: {temporary}. '
+                             'Inspect and remove it before retrying; no portraits were changed.')
     for path, original, corrected in pending:
         if path.read_bytes() != original:
             raise ValueError(f'Image changed after preflight: {path.name}')

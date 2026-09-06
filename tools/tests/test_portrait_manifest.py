@@ -42,6 +42,9 @@ class PortraitManifestTests(unittest.TestCase):
                                   original_sha256=sha(self.original),
                                   corrected_sha256=sha(self.corrected),
                                   canonical_sha256=sha(self.original)))
+        # Manifest tests deliberately change filenames/casing. Assertions must
+        # still inspect the exact paths setup created on case-sensitive hosts.
+        self.original_paths = tuple(self.root / row['file'] for row in self.rows)
 
     def write_manifest(self, rows):
         with self.manifest.open('w', newline='', encoding='utf-8') as stream:
@@ -55,8 +58,8 @@ class PortraitManifestTests(unittest.TestCase):
                               capture_output=True, text=True, timeout=30)
 
     def assert_originals_untouched(self):
-        for row in self.rows:
-            self.assertEqual((self.root / row['file']).read_bytes(), self.original)
+        for path in self.original_paths:
+            self.assertEqual(path.read_bytes(), self.original)
 
     def test_empty_and_truncated_manifests_fail_before_any_write(self):
         for count in (0, 1, 255):
@@ -87,6 +90,22 @@ class PortraitManifestTests(unittest.TestCase):
         self.assertEqual(second.returncode, 0, second.stderr)
         self.assertIn('applied 0 lossless flips', second.stdout)
         self.assertEqual(self.run_cli().returncode, 0)
+
+    def test_stale_temporary_file_rejects_entire_batch_before_writes(self):
+        self.write_manifest(self.rows)
+        stale = (self.root / self.rows[-1]['file']).with_suffix('.tga.portrait-tmp')
+        stale.write_bytes(b'recovery data from an interrupted run')
+        for _ in range(2):
+            result = self.run_cli('--apply')
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('Existing temporary file', result.stderr)
+            self.assertIn('no portraits were changed', result.stderr)
+            self.assert_originals_untouched()
+            self.assertEqual(stale.read_bytes(), b'recovery data from an interrupted run')
+        stale.unlink()
+        result = self.run_cli('--apply')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('applied 256 lossless flips', result.stdout)
 
     def use_pending_canonical(self):
         # Put the self-canonical target last so dependents preflight first.

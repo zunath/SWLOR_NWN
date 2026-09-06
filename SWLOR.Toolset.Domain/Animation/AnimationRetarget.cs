@@ -47,9 +47,8 @@ public sealed class AnimationRetarget
             !_sourceParents.SequenceEqual(source.Joints.Select(j => j.Parent)))
             throw new InvalidDataException("Source skeleton changed. Lock calibration again.");
         var result = _rig.Clone(); result.Keys.Clear(); result.Events.Clear();
-        result.Duration = source.Animations[clip].Duration;
-        if (result.Duration <= 0) throw new InvalidDataException("Source animation has no duration.");
-        var frames = (int)Math.Ceiling(result.Duration * framesPerSecond);
+        result.Duration = source.GetPlaybackDuration(clip);
+        var frames = source.Animations[clip].Duration == 0 ? 0 : (int)Math.Ceiling(result.Duration * framesPerSecond);
         if (frames + 1 > AnimationProject.MaxKeyframes)
             throw new InvalidDataException($"Bake exceeds {AnimationProject.MaxKeyframes:N0} keyframes. Choose a lower bake rate.");
         if ((long)(frames + 1) * result.Joints.Count > 2_000_000) throw new InvalidDataException("Choose a lower bake rate for this animation.");

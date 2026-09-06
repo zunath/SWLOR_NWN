@@ -16,6 +16,9 @@ public sealed class GltfAnimationSource
     public IReadOnlyList<SourceAnimation> Animations { get; private init; } = [];
     private int[] Order { get; init; } = [];
 
+    /// <summary>A single-key glTF pose has zero source duration; hold it for one editable second.</summary>
+    public float GetPlaybackDuration(int animation) => Animations[animation].Duration > 0 ? Animations[animation].Duration : 1f;
+
     public static GltfAnimationSource Load(string path)
     {
         var bytes = ReadBounded(path);

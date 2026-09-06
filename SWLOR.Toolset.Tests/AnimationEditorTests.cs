@@ -258,6 +258,8 @@ public class AnimationEditorTests
         var installed = new MdlReader().Parse(File.ReadAllBytes(overlay));
         installed.Animations.Select(a => a.Name).Should().Equal("sw_wave", "sw_wave_in", "sw_wave_out");
         AnimationProject.FromModel(installed).Joints.Select(j => j.Name).Should().Equal("an_hero", "rootdummy", "upper", "lower", "hand");
+        // A Windows Git checkout can normalize generated text to CRLF between editor sessions.
+        File.WriteAllText(overlay, File.ReadAllText(overlay).Replace("\r\n", "\n").Replace("\n", "\r\n"));
         project.Name = "Point";
         var second = AnimationInstall.Prepare(_folder, project, [target]); second.AnimationName.Should().Be("sw_point"); second.Apply();
         var targetBytes = File.ReadAllBytes(target);
@@ -274,6 +276,30 @@ public class AnimationEditorTests
         Action act = plan.Apply; act.Should().Throw<IOException>();
         File.Exists(Path.Combine(_folder, "design/animations/registry.json")).Should().BeFalse();
         File.ReadAllText(target).Should().EndWith("# external edit");
+    }
+    [Test] public void InstallationRechecksInputsAfterStagingBeforePublishingAnyOutput()
+    {
+        var input = Write("config.json", "original"); var output = Write("output.mdl", "existing model");
+        var inputs = new ChangingInputs(() => File.WriteAllText(input, "external change")) { [input] = File.ReadAllBytes(input) };
+        var plan = new AnimationInstallPlan
+        {
+            AnimationName = "sw_wave", ConstantName = "Wave", Inputs = inputs,
+            Changes = [new(output, File.ReadAllBytes(output), Encoding.ASCII.GetBytes("new model"))]
+        };
+        Action apply = plan.Apply; apply.Should().Throw<IOException>().WithMessage("*changed after*preview*");
+        File.ReadAllText(output).Should().Be("existing model");
+        File.ReadAllText(input).Should().Be("external change");
+        Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
+    }
+    private sealed class ChangingInputs(Action afterFirstRead) : Dictionary<string, byte[]>, IEnumerable<KeyValuePair<string, byte[]>>
+    {
+        private int _reads;
+        IEnumerator<KeyValuePair<string, byte[]>> IEnumerable<KeyValuePair<string, byte[]>>.GetEnumerator()
+        {
+            using var entries = base.GetEnumerator();
+            while (entries.MoveNext()) yield return entries.Current;
+            if (_reads++ == 0) afterFirstRead();
+        }
     }
     [Test] public void BinarySupermodelPatchChangesOnlyItsFixedHeaderField()
     {
@@ -467,9 +493,63 @@ public class AnimationEditorTests
         vm.TargetPaths.Should().BeEmpty(); vm.Project.ModelName.Should().Be("hero");
         vm.OnClose().Should().BeTrue();
     }
+    [AvaloniaTest] public async Task ExternalReloadRetainsOnlyAMatchingPreviewModel()
+    {
+        var modelPath = InstallFixture(); var projectPath = Path.Combine(_folder, "project.swlanim");
+        var vm = new AnimationEditorDocumentViewModel(new Prompts { ExternalChoice = ExternalChangeChoice.Reload }, new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(modelPath);
+        vm.PickSavePath = (_, _) => Task.FromResult<string?>(projectPath);
+        await vm.LoadRigFileCommand.ExecuteAsync(null); vm.SetPreviewVisible(true); vm.PreviewScene.Should().NotBeNull();
+        (await vm.TrySaveAsync()).Should().BeTrue();
+        var changed = vm.Project.Clone(); changed.Name = "OtherPose"; File.WriteAllText(projectPath, changed.Serialize());
+        vm.PositionX = .5m; (await vm.TrySaveAsync()).Should().BeFalse();
+        vm.PreviewScene.Should().NotBeNull("a matching local model can survive a pose-only reload");
+        changed.ModelName = "other"; changed.Joints[0] = changed.Joints[0] with { Name = "other" };
+        File.WriteAllText(projectPath, changed.Serialize());
+        vm.PositionX = 1; (await vm.TrySaveAsync()).Should().BeFalse();
+        vm.Project.ModelName.Should().Be("other"); vm.PreviewScene.Should().BeNull(); vm.IsDirty.Should().BeFalse();
+        vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task PreviewAttachmentRequiresMatchingParentsAndRestTransforms()
+    {
+        var modelPath = InstallFixture(); var original = File.ReadAllText(modelPath);
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(modelPath); vm.SetPreviewVisible(true);
+        foreach (var invalid in new[] { original.Replace("parent lower", "parent upper"), original.Replace("node dummy hand", "node dummy hand\nscale 2") })
+        {
+            File.WriteAllText(modelPath, invalid); await vm.AttachPreviewCommand.ExecuteAsync(null);
+            vm.PreviewScene.Should().BeNull(); vm.Status.Should().Contain("hierarchy");
+        }
+        File.WriteAllText(modelPath, original); await vm.AttachPreviewCommand.ExecuteAsync(null);
+        vm.PreviewScene.Should().NotBeNull(); vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task RootMotionScaleDoesNotDistortTheCalibrationSkeleton()
+    {
+        var path = Gltf(); var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path); await vm.LoadSourceCommand.ExecuteAsync(null); vm.Playhead = .5;
+        var positions = vm.SourcePositions(); vm.RootScale = 100;
+        vm.SourcePositions().Should().Equal(positions);
+        Vector3.Distance(positions[0], positions[1]).Should().BeApproximately(1, 1e-5f);
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
+    [AvaloniaTest] public async Task StaticGltfPoseBakesAsOneHeldKeyForOneSecond()
+    {
+        var path = Gltf(); var json = JsonNode.Parse(File.ReadAllText(path))!;
+        json["accessors"]![0]!["count"] = 1; json["accessors"]![1]!["count"] = 1;
+        File.WriteAllText(path, json.ToJsonString());
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path); await vm.LoadSourceCommand.ExecuteAsync(null);
+        vm.Duration.Should().Be(1); vm.Mappings.Single(m => m.Target == "rootdummy").Source = "Root";
+        vm.PositionX = .5m; var reference = vm.Pose[0].Position;
+        vm.LockCalibrationCommand.Execute(null); await vm.BakeCommand.ExecuteAsync(null);
+        vm.Project.Keys.Should().HaveCount(1); vm.Project.Duration.Should().Be(1);
+        vm.Project.Sample(.75f)[0].Position.Should().Be(reference);
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
     private sealed class Prompts : IEditorPromptService
     {
-        public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) => Task.FromResult(ExternalChangeChoice.Cancel);
+        public ExternalChangeChoice ExternalChoice { get; init; } = ExternalChangeChoice.Cancel;
+        public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) => Task.FromResult(ExternalChoice);
         public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) => Task.FromResult(UnsavedChangesChoice.Cancel);
         public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) => Task.FromResult(false);
         public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) => Task.FromResult<string?>(null);

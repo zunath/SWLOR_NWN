@@ -99,7 +99,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                 Status = "Source clip changed. Lock calibration before baking this clip.";
             }
             _sourceClip = clip;
-            if (_source != null && CanEdit()) Duration = (decimal)Math.Max(.001f, _source.Animations[_sourceClip].Duration);
+            if (_source != null && CanEdit()) Duration = (decimal)_source.GetPlaybackDuration(_sourceClip);
             OnPropertyChanged(); PoseChanged?.Invoke();
         }
     }
@@ -338,8 +338,8 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var path = await OpenPath("Attach matching preview model", ["*.mdl"]); if (path == null) return;
         var model = await Task.Run(() => new MdlReader().Parse(File.ReadAllBytes(path)));
         var rig = AnimationProject.FromModel(model);
-        if (!rig.Joints.Select(j => j.Name).SequenceEqual(Project.Joints.Select(j => j.Name), StringComparer.OrdinalIgnoreCase))
-            throw new InvalidDataException("The preview model must match this project's rig.");
+        if (!MatchesPreviewRig(Project, rig))
+            throw new InvalidDataException("The preview model must match this project's joint names, hierarchy, and rest transforms.");
         _model = model; RefreshPreview(); Status = "Preview model attached; animation keys are unchanged.";
     });
     private void LoadModel(MdlModel model)
@@ -356,12 +356,31 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (path == null || !await ConfirmReplace()) return;
         var bytes = await File.ReadAllBytesAsync(path);
         var project = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
-        _model = null;
-        if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(project.ModelName + ".mdl"), out var resource) == true)
-            _model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
+        _model = await ResolvePreviewModel(project);
         Project = project; _path = path; _diskBytes = bytes; _saved = project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null;
         Changed(rebuildRows: true); Status = "Animation project opened.";
     });
+    private static bool MatchesPreviewRig(AnimationProject project, AnimationProject rig) =>
+        project.Joints.Count == rig.Joints.Count && project.Joints.Zip(rig.Joints).All(pair =>
+            pair.First.Name.Equals(pair.Second.Name, StringComparison.OrdinalIgnoreCase) && pair.First.Parent == pair.Second.Parent &&
+            Vector3.Distance(pair.First.Rest.Position, pair.Second.Rest.Position) < 1e-5f &&
+            Math.Abs(pair.First.Rest.Scale - pair.Second.Rest.Scale) < 1e-5f &&
+            Math.Abs(Quaternion.Dot(Quaternion.Normalize(pair.First.Rest.Orientation), Quaternion.Normalize(pair.Second.Rest.Orientation))) > .99999f);
+
+    private async Task<MdlModel?> ResolvePreviewModel(AnimationProject project)
+    {
+        try
+        {
+            if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(project.ModelName + ".mdl"), out var resource) != true)
+                return _model != null && _model.Name.Equals(project.ModelName, StringComparison.OrdinalIgnoreCase) &&
+                    MatchesPreviewRig(project, AnimationProject.FromModel(_model)) ? _model : null;
+            var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
+            if (MatchesPreviewRig(project, AnimationProject.FromModel(model))) return model;
+            _log.AppendLine("Animation preview unavailable: the mounted model does not match the saved rig.");
+        }
+        catch (Exception ex) { _log.AppendLine("Animation preview unavailable: " + ex.GetBaseException().Message); }
+        return null;
+    }
     [RelayCommand] private async Task ImportMdl() => await Run(async () =>
     {
         var path = await OpenPath("Import one MDL animation block", ["*.txt", "*.mdl"]);
@@ -405,7 +424,9 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                 if (choice == ExternalChangeChoice.Cancel) return false;
                 if (choice == ExternalChangeChoice.Reload)
                 {
-                    var bytes = await File.ReadAllBytesAsync(path); Project = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
+                    var bytes = await File.ReadAllBytesAsync(path);
+                    var reloaded = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
+                    _model = await ResolvePreviewModel(reloaded); Project = reloaded;
                     _diskBytes = bytes; _saved = Project.Serialize(); _undo.Clear(); _redo.Clear(); _calibration = null; Changed(rebuildRows: true); return false;
                 }
             }
@@ -435,7 +456,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         SourceClips.Clear(); foreach (var clip in _source.Animations) SourceClips.Add(clip.Name);
         SourceClip = 0; OnPropertyChanged(nameof(SourceClip)); _calibration = null;
         var resized = Project.Clone();
-        var duration = Math.Max(.001f, _source.Animations[0].Duration); var ratio = duration / resized.Duration;
+        var duration = _source.GetPlaybackDuration(0); var ratio = duration / resized.Duration;
         resized.Keys = resized.Keys.Select(k => k with { Time = Math.Min(duration, k.Time * ratio) }).ToList();
         resized.Events = resized.Events.Select(cue => cue with { Time = Math.Min(duration, cue.Time * ratio) }).ToList();
         resized.Duration = duration; Replace(resized);
@@ -443,7 +464,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     });
     public Vector3[] SourcePositions()
     {
-        try { return _source == null ? [] : _source.Sample(SourceClip, _playhead).Select(m => m.Translation * (float)RootScale).ToArray(); }
+        try { return _source == null ? [] : _source.Sample(SourceClip, _playhead).Select(m => m.Translation).ToArray(); }
         catch (InvalidDataException ex) { Status = ex.Message; return []; }
     }
     public IReadOnlyList<SourceJoint> SourceJoints => _source?.Joints ?? [];

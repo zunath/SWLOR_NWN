@@ -45,7 +45,9 @@ Map each NWN joint to a source bone. The source skeleton appears in red. Scrub t
 frame and pose the NWN rig to match it, then choose **Lock**. Calibration captures orientation
 offsets in world space, so differently oriented source bones do not require Euler corrections.
 **Bake** writes the source motion onto the normal NWN timeline. Root scale affects displacement
-of the mapped animation root, while unmapped joints retain the calibration pose. Save/load bone
+of the mapped animation root, while unmapped joints retain the calibration pose. The source
+skeleton keeps its original proportions during calibration. Single-key glTF poses bake as one
+held key in a one-second clip, matching static MDL import behavior. Save/load bone
 maps as JSON; lock calibration again after changing the matching pose or map, using undo/redo,
 or switching clips. Bake results remain editable
 and undoable. Morph-target weights do not move the skeleton and are not retargeted.
@@ -71,7 +73,8 @@ should expose the animation.
 - `design/animations/<Name>.swlanim` stores editable authoring data.
 - `SWLOR.NWN.API/NWScript/Enum/AuthoredAnimation.cs` supplies typed `AnimationClip` references.
 
-Input files are checked again after confirmation. Writes are staged and roll back on failure.
+Input files are checked again after confirmation and after staging, before publishing any output.
+Writes are staged and roll back on failure.
 The editor reserves the workspace during application of the installation transaction.
 Target proportions and inherited animation scale are accounted for in the generated tracks.
 The installed project becomes the document's saved project, and mounted HAK resources are refreshed.

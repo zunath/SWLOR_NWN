@@ -21,9 +21,7 @@ public sealed class AnimationInstallPlan
     public void Apply()
     {
         // The caller holds the module mutation lock. Every input is checked again after confirmation.
-        foreach (var input in Inputs)
-            if (!File.Exists(input.Key) || !File.ReadAllBytes(input.Key).AsSpan().SequenceEqual(input.Value))
-                throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
+        VerifyInputs();
         foreach (var change in Changes) Verify(change);
         var staged = new Dictionary<string, string>();
         var applied = new List<AnimationFileChange>();
@@ -36,6 +34,7 @@ public sealed class AnimationInstallPlan
                 staged.Add(change.Path, temporary);
                 File.WriteAllBytes(temporary, change.After);
             }
+            VerifyInputs();
             foreach (var change in Changes)
             {
                 Verify(change);
@@ -63,6 +62,13 @@ public sealed class AnimationInstallPlan
         {
             foreach (var file in staged.Values) if (File.Exists(file)) File.Delete(file);
         }
+    }
+
+    private void VerifyInputs()
+    {
+        foreach (var input in Inputs)
+            if (!File.Exists(input.Key) || !File.ReadAllBytes(input.Key).AsSpan().SequenceEqual(input.Value))
+                throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
     }
 
     private static void Verify(AnimationFileChange change)
@@ -244,7 +250,8 @@ public static class AnimationInstall
             if (existingOverlay != null)
             {
                 overlay = Encoding.ASCII.GetString(Read(existingOverlay));
-                if (!overlay.StartsWith($"# SWLOR authored animations for {model.Name}\n", StringComparison.Ordinal))
+                var header = $"# SWLOR authored animations for {model.Name}";
+                if (!overlay.StartsWith(header + "\n", StringComparison.Ordinal) && !overlay.StartsWith(header + "\r\n", StringComparison.Ordinal))
                     throw new InvalidDataException("Existing overlay is not an authored animation source.");
                 if (registration != null)
                 {

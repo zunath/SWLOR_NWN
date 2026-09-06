@@ -92,7 +92,13 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         get => _sourceClip;
         set
         {
-            _sourceClip = Math.Clamp(value, 0, Math.Max(0, SourceClips.Count - 1));
+            var clip = Math.Clamp(value, 0, Math.Max(0, SourceClips.Count - 1));
+            if (_sourceClip != clip)
+            {
+                _calibration = null;
+                Status = "Source clip changed. Lock calibration before baking this clip.";
+            }
+            _sourceClip = clip;
             if (_source != null && CanEdit()) Duration = (decimal)Math.Max(.001f, _source.Animations[_sourceClip].Duration);
             OnPropertyChanged(); PoseChanged?.Invoke();
         }

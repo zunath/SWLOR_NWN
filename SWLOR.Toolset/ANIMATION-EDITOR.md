@@ -44,7 +44,7 @@ frame and pose the NWN rig to match it, then choose **Lock**. Calibration captur
 offsets in world space, so differently oriented source bones do not require Euler corrections.
 **Bake** writes the source motion onto the normal NWN timeline. Root scale affects displacement
 of the mapped animation root, while unmapped joints retain the calibration pose. Save/load bone
-maps as JSON; lock calibration again after loading or changing a map. Bake results remain editable
+maps as JSON; lock calibration again after loading or changing a map or switching clips. Bake results remain editable
 and undoable. Morph-target weights do not move the skeleton and are not retargeted.
 
 ## Install and use from C#

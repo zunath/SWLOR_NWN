@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using FluentAssertions;
@@ -292,6 +293,19 @@ public class AnimationEditorTests
         Action act = () => AnimationInstall.Prepare(_folder, Rig(), [target]);
         act.Should().Throw<InvalidDataException>().WithMessage("*hierarchy*");
     }
+    [Test] public void InstallationPreservesTargetRestScaleAndAppliesAuthoredScaleDelta()
+    {
+        var target = InstallFixture();
+        File.WriteAllText(target, File.ReadAllText(target).Replace("node dummy hand", "node dummy hand\nscale 2"));
+        var project = Rig();
+        project.Joints[4] = project.Joints[4] with { Rest = project.Joints[4].Rest with { Scale = .5f } };
+        var pose = project.Sample(0); pose[4] = pose[4] with { Scale = .75f }; project.SetKey(0, pose);
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var model = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")));
+        var sampled = MdlAnimationPose.Sample(model.Animations.Single(a => a.Name == "sw_wave"), 0);
+        sampled["hand"].Scale.Should().Be(3);
+        AnimationProject.FromModel(model).Joints.Single(j => j.Name == "hand").Rest.Scale.Should().Be(2);
+    }
 
     [AvaloniaTest] public void ViewLoadsAndEditsUndoRedoThroughTheDocumentContract()
     {
@@ -315,6 +329,25 @@ public class AnimationEditorTests
         File.AppendAllText(path, "\n "); var external = File.ReadAllBytes(path);
         vm.PositionX = 1; (await vm.TrySaveAsync()).Should().BeFalse(); File.ReadAllBytes(path).Should().Equal(external);
         vm.OnClose().Should().BeFalse(); vm.IsDirty.Should().BeTrue();
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
+    [AvaloniaTest] public async Task SwitchingSourceClipsRequiresFreshCalibrationBeforeBake()
+    {
+        var path = Gltf();
+        var json = JsonNode.Parse(File.ReadAllText(path))!;
+        var clips = json["animations"]!.AsArray(); var second = clips[0]!.DeepClone(); second["name"] = "Second"; clips.Add(second);
+        File.WriteAllText(path, json.ToJsonString());
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.LoadSourceCommand.ExecuteAsync(null);
+        vm.Mappings.Single(m => m.Target == "rootdummy").Source = "Root";
+        vm.LockCalibrationCommand.Execute(null);
+        vm.SourceClip = 1;
+        await vm.BakeCommand.ExecuteAsync(null);
+        vm.Project.Keys.Should().BeEmpty(); vm.Status.Should().Contain("Lock calibration");
+        vm.LockCalibrationCommand.Execute(null);
+        await vm.BakeCommand.ExecuteAsync(null);
+        vm.Project.Keys.Should().HaveCount(31);
         vm.ApproveApplicationClose(); vm.OnClose();
     }
     private sealed class Prompts : IEditorPromptService

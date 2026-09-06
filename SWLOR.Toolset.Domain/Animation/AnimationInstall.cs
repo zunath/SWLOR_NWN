@@ -188,7 +188,8 @@ public static class AnimationInstall
                     key.Pose[jointIndex] = value with
                     {
                         Position = (targetJoint.Rest.Position + value.Position - sourceJoint.Rest.Position) / model.Scale,
-                        Orientation = Quaternion.Normalize(value.Orientation * Quaternion.Inverse(sourceJoint.Rest.Orientation) * targetJoint.Rest.Orientation)
+                        Orientation = Quaternion.Normalize(value.Orientation * Quaternion.Inverse(sourceJoint.Rest.Orientation) * targetJoint.Rest.Orientation),
+                        Scale = targetJoint.Rest.Scale * value.Scale / sourceJoint.Rest.Scale
                     };
                 }
             }

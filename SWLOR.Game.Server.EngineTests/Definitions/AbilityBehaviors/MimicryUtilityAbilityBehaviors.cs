@@ -108,10 +108,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Feat = FeatType.SnapRushTechnique,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(Hasten1StatusEffect) },
-                    ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    ImpactRefundsCosts = true,
-                    Notes = "ConfigureSelfStatus's additionalAction refunds 6 STM (Stat.RestoreStamina) in the impact window, so only the net stamina dip is observable.",
+                    CostAssertionWaiverReason = "Restores more STM than it costs in the same engine tick, so no stamina dip remains observable. The real cost and net recovery are asserted by SnapRushResourceRecovery.",
                 },
 
                 // StimCanisterTechniqueAbilityDefinition - MimicryUtility ally buff; applies

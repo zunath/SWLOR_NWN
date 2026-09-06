@@ -22,11 +22,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SnapRush, 30f)
-                .RequirementStamina(10)
+                .RequirementStamina(4)
                 .MimicryTechnique(FeatType.SnapRush, 46, 3)
                 .MimicryUtility();
 
-            ConfigureSelfStatus(ability, typeof(Hasten1StatusEffect), 15f, 0, additionalAction: a => Stat.RestoreStamina(a, 6));
+            ConfigureSelfStatus(ability, typeof(Hasten1StatusEffect), 15f, 0, additionalAction: a => Stat.RestoreStamina(a, 10));
 
             return _builder.Build();
         }

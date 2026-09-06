@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.InnerCircleBind,
-                1.3f,
+                0.25f,
                 24f,
                 9,
                 0,

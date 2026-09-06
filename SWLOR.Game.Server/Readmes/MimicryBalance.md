@@ -57,6 +57,13 @@ Each technique has an individual Mimicry requirement ordered by its earliest pla
 
 Cooldowns are banded by payload strength and shape (stronger and area techniques recast slower), replacing the ad-hoc creature values inherited during generation.
 
+Individual utility and close-range techniques have exceptions to these starting bands:
+
+- Holdfast Slam, Inner Circle Pounce, and Inner Ring Flurry reach one target within 6m and cast in 0.5 seconds. Their former 3m reach and 1.3-second cast combined melee exposure with a slow delivery, without a stronger payload to compensate. They retain their 9 STM cost and 24-second cooldown.
+- Inner Ring Flurry occupies 2 slots. Its successful-hit refund is 4 STM, leaving a base net cost of 5 STM; it is a single-target Bleed tool, not a stamina generator. Its Bleed potency is unchanged.
+- Finishing Drive costs 5 STM per stack and recasts in 5 seconds. Three casts spend 15 STM over 10 seconds to reach +24% technique damage. Its 3-slot commitment and 30-second refreshed duration remain the constraints on sustained amplification.
+- Snap Rush spends 4 STM and restores 10 STM, a base net recovery of 6 STM when below the resource cap, alongside +15% Haste for 15 seconds. Its 3-slot cost and 30-second cooldown limit that recovery; it still requires enough STM to activate.
+
 ### Non-damage actives (the majority)
 
 **37 of the 64 combat actives deal no direct damage.** They span control, debuffs, resource disruption, threat, ally support, self-buffs, and reactive defenses. Their power is the fixed effect itself, so it is balanced through Stamina cost, cooldown, area, and duration rather than a damage number. None declares a damage-scaling attribute (`Primary Stat = None`). The three stances are counted separately. No fear effects are used anywhere in the pool.
@@ -134,6 +141,20 @@ The signature payload band contains 30 combat actives and 3 stances. Eleven comb
 | Merciless Angle | Bleed/Hemorrhage setup and detonation |
 | Rupturing Quake | Self-centered damage, 6-second Knockdown, and 30-second Sunder |
 | Scorching Breath | Cone damage with Burn and Weakened |
+
+Final Line calculates its bonus separately for each target when the line hits, using that
+target's HP before damage: `floor(35 * missing HP / maximum HP)`, capped at 35%.
+The extra damage is `ceil(normal rolled damage * bonus / 100)`. At 100%, 80%, 50%,
+25%, and 1% remaining HP, the bonuses are respectively 0%, 7%, 17%, 26%, and 34%.
+This bonus applies to Final Line's own hit; it is not a persistent damage boost on
+later auto-attacks. Exposed is its separate 30-second status effect.
+
+`FinalLineTests` covers health boundaries, the full integer HP range for several HP
+budgets, clamping, damage rounding, and changing health between hits.
+`FinalLineEngineTests` compares the actual technique's damage with its bonus enabled
+and disabled using identical random seeds, two targets with different health, and
+repeated casts including healing back to full. It also checks that both targets
+receive Exposed.
 
 | Non-damage technique | Distinct role |
 |---|---|

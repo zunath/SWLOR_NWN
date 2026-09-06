@@ -50,17 +50,29 @@ def main():
         raise ValueError(f'Incomplete correction manifest: expected '
                          f'{EXPECTED_CORRECTION_COUNT} rows, found {len(rows)}')
     pending = []
-    seen = set()
+    targets = {}
     for row in rows:
         name = row['file']
-        if Path(name).name != name or name.lower() in seen:
+        if Path(name).name != name or name.lower() in targets:
             raise ValueError(f'Unsafe or duplicate manifest filename: {name}')
-        seen.add(name.lower())
+        if Path(row['canonical']).name != row['canonical']:
+            raise ValueError(f'Unsafe canonical filename: {row["canonical"]}')
+        targets[name.lower()] = row
+    for row in rows:
+        name = row['file']
         path = args.portraits/name
         original = path.read_bytes()
         actual = digest(original)
         canonical = args.portraits/row['canonical']
-        if digest(canonical.read_bytes()) != row['canonical_sha256']:
+        canonical_actual = digest(canonical.read_bytes())
+        canonical_target = targets.get(row['canonical'].lower())
+        # A retained canonical can itself be in this repair batch. Accept its
+        # original bytes only during replay when its reviewed output is the
+        # required reference. Its own row still undergoes full preflight below.
+        pending_canonical = (args.apply and canonical_target is not None
+                             and canonical_actual == canonical_target['original_sha256']
+                             and canonical_target['corrected_sha256'] == row['canonical_sha256'])
+        if canonical_actual != row['canonical_sha256'] and not pending_canonical:
             raise ValueError(f'Canonical portrait changed: {canonical.name}')
         if actual == row['corrected_sha256']:
             continue

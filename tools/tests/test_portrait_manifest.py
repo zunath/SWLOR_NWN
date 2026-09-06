@@ -31,14 +31,14 @@ class PortraitManifestTests(unittest.TestCase):
         header[16] = 24
         self.original = bytes(header) + b'abcdef'
         self.corrected = flip_horizontal(self.original)
-        (self.root / 'reference_h.tga').write_bytes(self.original)
+        (self.root / 'reference_l.tga').write_bytes(self.original)
         self.rows = []
         # The published repair batch contains 256 targets. This fixture tests
         # the CLI contract independently of its expected-count constant.
         for index in range(256):
             name = f'portrait{index}_m.tga'
             (self.root / name).write_bytes(self.original)
-            self.rows.append(dict(file=name, canonical='reference_h.tga',
+            self.rows.append(dict(file=name, canonical='reference_l.tga',
                                   original_sha256=sha(self.original),
                                   corrected_sha256=sha(self.corrected),
                                   canonical_sha256=sha(self.original)))
@@ -87,6 +87,73 @@ class PortraitManifestTests(unittest.TestCase):
         self.assertEqual(second.returncode, 0, second.stderr)
         self.assertIn('applied 0 lossless flips', second.stdout)
         self.assertEqual(self.run_cli().returncode, 0)
+
+    def use_pending_canonical(self):
+        # Put the self-canonical target last so dependents preflight first.
+        self.rows[-1]['file'] = 'reference_l.tga'
+        for row in self.rows:
+            row['canonical_sha256'] = sha(self.corrected)
+        self.write_manifest(self.rows)
+
+    def test_pending_self_canonical_applies_and_verifies_idempotently(self):
+        self.use_pending_canonical()
+        self.assertNotEqual(self.run_cli().returncode, 0)
+        self.assert_originals_untouched()
+        result = self.run_cli('--apply')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('applied 256 lossless flips', result.stdout)
+        for row in self.rows:
+            self.assertEqual((self.root / row['file']).read_bytes(), self.corrected)
+        result = self.run_cli('--apply')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('applied 0 lossless flips', result.stdout)
+        self.assertEqual(self.run_cli().returncode, 0)
+
+    def test_corrected_dependents_accept_pending_canonical_on_apply(self):
+        self.use_pending_canonical()
+        for row in self.rows[:128]:
+            (self.root / row['file']).write_bytes(self.corrected)
+        result = self.run_cli('--apply')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('applied 128 lossless flips', result.stdout)
+        self.assertEqual(self.run_cli().returncode, 0)
+
+    def test_tampered_pending_canonical_fails_before_any_write(self):
+        self.use_pending_canonical()
+        # Queue other repairs before encountering the tampered canonical.
+        for row in self.rows[:-1]:
+            row['canonical'] = 'untouched_l.tga'
+            row['canonical_sha256'] = sha(self.original)
+        (self.root / 'untouched_l.tga').write_bytes(self.original)
+        (self.root / 'reference_l.tga').write_bytes(b'tampered')
+        self.write_manifest(self.rows)
+        result = self.run_cli('--apply')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Canonical portrait changed', result.stderr)
+        for row in self.rows[:-1]:
+            self.assertEqual((self.root / row['file']).read_bytes(), self.original)
+        self.assertEqual((self.root / 'reference_l.tga').read_bytes(), b'tampered')
+
+    def test_duplicate_targets_fail_before_image_preflight(self):
+        self.rows[-1]['file'] = self.rows[0]['file'].upper()
+        # This missing reference would fail first without up-front validation.
+        (self.root / 'reference_l.tga').unlink()
+        self.write_manifest(self.rows)
+        result = self.run_cli('--apply')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Unsafe or duplicate manifest filename', result.stderr)
+        self.assert_originals_untouched()
+
+    def test_pending_canonical_output_is_validated_before_any_write(self):
+        self.use_pending_canonical()
+        self.rows[-1]['corrected_sha256'] = '0' * 64
+        for row in self.rows:
+            row['canonical_sha256'] = '0' * 64
+        self.write_manifest(self.rows)
+        result = self.run_cli('--apply')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Correction does not match reviewed output', result.stderr)
+        self.assert_originals_untouched()
 
 
 if __name__ == '__main__':

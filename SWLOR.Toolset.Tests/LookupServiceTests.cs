@@ -141,15 +141,17 @@ namespace SWLOR.Toolset.Tests
             variants.Large.Should().Be("po_hu_f_sf81_l");
             variants.Huge.Should().Be("po_hu_f_sf81_h");
 
-            // All five variants ship as loose .tga files in sw_t_portrait's hak (sw_portrait),
-            // confirming the naming convention actually matches real shipped resources.
+            // Huge is intentionally omitted: NWN:EE 8193.35+ falls back to Large.
+            // The remaining variants still use the normal portrait naming convention.
             var tgaType = ResourceIdentity.TypeFromExtension("tga");
-            foreach (var resref in new[] { variants.Tiny, variants.Small, variants.Medium, variants.Large, variants.Huge })
+            foreach (var resref in new[] { variants.Tiny, variants.Small, variants.Medium, variants.Large })
             {
                 index.TryLookup(new ResourceIdentity(resref, tgaType), out var handle)
                     .Should().BeTrue($"{resref}.tga should ship in the sw_portrait hak");
                 handle.GetBytes().Should().NotBeEmpty();
             }
+            index.TryLookup(new ResourceIdentity(variants.Huge, tgaType), out _)
+                .Should().BeFalse("Huge portrait resources are omitted to reduce hak size");
         }
 
         [Test]

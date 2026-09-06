@@ -24,11 +24,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
-                .HasRecastDelay(RecastGroup.FinishingDrive, 10f)
+                .HasRecastDelay(RecastGroup.FinishingDrive, 5f)
                 .MimicryTechnique(FeatType.FinishingDrive, 48, 3)
                 .MimicryUtility()
                 .HasActivationDelay(0f)
-                .RequirementStamina(10)
+                .RequirementStamina(5)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .HasImpactAction((activator, target, level, location) =>

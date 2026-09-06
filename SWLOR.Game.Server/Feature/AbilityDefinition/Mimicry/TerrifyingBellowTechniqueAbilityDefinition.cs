@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TerrifyingBellow,
-                1.0f,
+                0.25f,
                 30f,
                 10,
                 0,

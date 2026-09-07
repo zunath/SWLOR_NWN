@@ -26,7 +26,7 @@ public class AnimationDraftAssetTests
             return path?.FullName ?? throw new DirectoryNotFoundException("Repository root not found.");
         }
     }
-    private static string Folder => Path.Combine(Root, "design", "animations", "projects", "vibroblade");
+    private static string Folder => Path.Combine(Root, "design", "animations", "vibroblade");
 
     [Test]
     public void TwoBeatOneShotsAreRejectedBeforePosing()
@@ -86,7 +86,7 @@ public class AnimationDraftAssetTests
                 Vector3.Distance(exitPose[joint.Name].Position * target.Scale, expected.Position).Should().BeLessThan(.0001f);
                 Math.Abs(Quaternion.Dot(exitPose[joint.Name].Orientation, expected.Orientation)).Should().BeGreaterThan(.9999f);
             }
-            entry.ProjectPath.Should().Be("design/animations/projects/vibroblade/" + name + ".swlanim");
+            entry.ProjectPath.Should().Be("design/animations/vibroblade/" + name + ".swlanim");
         }
     }
 

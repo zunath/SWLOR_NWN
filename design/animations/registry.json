@@ -7,7 +7,7 @@
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/projects/vibroblade/Invincible.swlanim"
+    "ProjectPath": "design/animations/vibroblade/Invincible.swlanim"
   },
   {
     "Name": "RiotBlade",
@@ -17,7 +17,7 @@
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/projects/vibroblade/RiotBlade.swlanim"
+    "ProjectPath": "design/animations/vibroblade/RiotBlade.swlanim"
   },
   {
     "Name": "ShieldBash",
@@ -27,7 +27,7 @@
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/projects/vibroblade/ShieldBash.swlanim"
+    "ProjectPath": "design/animations/vibroblade/ShieldBash.swlanim"
   },
   {
     "Name": "ShieldWall",
@@ -37,7 +37,7 @@
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/projects/vibroblade/ShieldWall.swlanim"
+    "ProjectPath": "design/animations/vibroblade/ShieldWall.swlanim"
   },
   {
     "Name": "RendingStrike",
@@ -47,7 +47,7 @@
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/projects/vibroblade/RendingStrike.swlanim"
+    "ProjectPath": "design/animations/vibroblade/RendingStrike.swlanim"
   },
   {
     "Name": "SavageCleave",
@@ -57,7 +57,7 @@
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/projects/vibroblade/SavageCleave.swlanim"
+    "ProjectPath": "design/animations/vibroblade/SavageCleave.swlanim"
   },
   {
     "Name": "CoveringStrike",
@@ -67,6 +67,6 @@
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/projects/vibroblade/CoveringStrike.swlanim"
+    "ProjectPath": "design/animations/vibroblade/CoveringStrike.swlanim"
   }
 ]

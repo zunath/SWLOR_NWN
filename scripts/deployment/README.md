@@ -37,20 +37,21 @@ The deployment:
    failure never stops the game server.
 5. Removes obsolete HAKs, verifies the exact configured HAK set, the TLK,
    module, .NET output, manifest, and free space before server downtime.
-6. If no runtime payload changed, records the commit and leaves the live
-   Compose stack untouched. Otherwise it ensures every required Compose image
-   exists, then pre-stages and checksum-verifies only the affected server
-   artifact groups while the live server remains online.
+6. Treats a configured server-image change as a runtime change. It pulls the
+   authoritative versioned image from Docker Hub before downtime, then
+   pre-stages and checksum-verifies only the affected server artifact groups
+   while the live server remains online. Other missing Compose images are
+   pulled separately.
 7. Runs `docker compose down`, updates `NWN_NWSYNCHASH` when needed, and
    atomically moves the affected pre-staged directories into the server tree.
    The NWSync raw directories remain untouched and populated.
 8. Requires `Server: Module loaded` within five minutes, rejects any crash
    marker or container restart, and then requires 120 seconds of stability
    after bringing the complete Compose project back up.
-9. Retains the previous live artifacts and `swlor.env` in the deployment cache
+9. Retains the previous live artifacts, `swlor.env`, and server-image identity
    until that health check passes. A failed cutover automatically restores
-   them and starts the prior stack. A successful cutover removes that rollback
-   set and prunes only dangling Docker images.
+   them and starts the prior image. A successful cutover records the new image,
+   removes the rollback set, and prunes only dangling Docker images.
 
 The NWSync and server HAK/TLK/module paths must be separate ordinary
 directories, not symlinks or bind mounts. The deployer refuses to proceed
@@ -73,6 +74,48 @@ The NWSync `data` store is append-only in this workflow. It is not
 automatically pruned because doing so safely depends on the installed
 `nwsync_prune` version and the manifests that must remain available to
 players. Review its help and disk usage separately before enabling pruning.
+
+## Authoritative server image
+
+The game server uses the versioned Docker Hub image configured by
+`SERVER_IMAGE`. Deployment hosts never build this image. The deployer applies
+an internal Compose override so the host configuration is authoritative,
+pulls the configured tag before downtime, and treats an image change as a
+cutover even when HAK, module, NWSync, and .NET outputs are unchanged. If the
+new image fails its health check, rollback starts the previously running image.
+
+`.github/workflows/publish-nwn-server-image.yml` is the sole supported
+publisher. It accepts only a manual request whose original and triggering
+actor are both `zunath`, builds `linux/amd64` from
+`SWLOR.Game.Server/Docker/Dockerfile`, and refuses to overwrite an existing
+versioned tag. Configure these GitHub Actions repository secrets once:
+
+- `DOCKERHUB_USERNAME`: the Docker Hub account that owns `zunath/nwn-dotnet`
+- `DOCKERHUB_TOKEN`: a Docker Hub access token with read/write permission
+
+The workflow must exist on the repository's default branch before GitHub shows
+its **Run workflow** button. Select the source branch containing the Dockerfile
+to publish. Publish the new image before changing a deployment host to its tag.
+
+For an existing host, update both its preserved configuration and its working
+Compose file once. This keeps direct/manual Compose commands aligned with the
+deployer's override:
+
+```bash
+source /etc/swlor-deploy.conf
+NEW_SERVER_IMAGE=zunath/nwn-dotnet:8193.37.17-1
+
+sed -i \
+  "s#^SERVER_IMAGE=.*#SERVER_IMAGE=$NEW_SERVER_IMAGE#" \
+  /etc/swlor-deploy.conf
+
+sed -i \
+  "s#image: *zunath/nwn-dotnet:.*#image: $NEW_SERVER_IMAGE#" \
+  "$COMPOSE_FILE"
+
+grep '^SERVER_IMAGE=' /etc/swlor-deploy.conf
+grep -n 'image: *zunath/nwn-dotnet:' "$COMPOSE_FILE"
+```
 
 ## Initial source checkout
 
@@ -307,8 +350,8 @@ never enables the polling timer.
 # Intentionally rebuild the currently active commit:
 /usr/local/sbin/swlor-deploy --force
 
-# Display recorded commits, NWSync/server manifest hashes, path separation,
-# containers, and free space:
+# Display recorded commits and images, NWSync/server manifest hashes, path
+# separation, containers, and free space:
 /usr/local/sbin/swlor-deploy --status
 
 # Follow the durable deployment log:
@@ -402,6 +445,8 @@ source /etc/swlor-deploy.conf
 
 cat "$STATE_ROOT/active-commit"
 cat "$STATE_ROOT/previous-commit"
+cat "$STATE_ROOT/active-server-image"
+cat "$STATE_ROOT/previous-server-image"
 cat "$NWSYNC_ROOT/latest"
 grep "^${NWSYNC_HASH_VARIABLE}=" "$SERVER_ENV_FILE"
 docker compose \

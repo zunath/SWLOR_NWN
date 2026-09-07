@@ -43,6 +43,8 @@ MODULE_NAME="Star Wars LOR v2.mod"
 HAKS_SUBMODULE_PATH=SWLOR_Haks
 
 SERVER_SERVICE=swlor-server
+# This versioned image is published once by the owner-only GitHub workflow.
+# The deployer pulls it from Docker Hub and never builds it on the host.
 SERVER_IMAGE=zunath/nwn-dotnet:8193.37.17-1
 # Keep this stable so Compose reuses the host's existing named volumes.
 # Change it in the production host configuration if production uses another

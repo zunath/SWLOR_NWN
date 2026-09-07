@@ -58,6 +58,7 @@ SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
 SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
 NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
+COMPOSE_IMAGE_OVERRIDE_FILE="$STATE_ROOT/server-image.override.yml"
 REQUIRED_TWEAK_VARIABLE="NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL"
 REQUIRED_TWEAK_VALUE="true"
 HEALTH_FATAL_LOG_PATTERN="${HEALTH_FATAL_LOG_PATTERN:-buffer overflow|Fatal error|has crashed|Segmentation fault}"
@@ -92,8 +93,8 @@ Usage: swlor-deploy [--if-changed | --force | --status]
   --if-changed  Deploy only when GIT_REMOTE/BRANCH differs from the last
                 successfully started commit. This is the default.
   --force       Rebuild and redeploy even when the commit is already active.
-  --status      Display recorded commits, the active NWSync manifest, Compose
-                state, and free space without changing anything.
+  --status      Display recorded commits and images, the active NWSync
+                manifest, Compose state, and free space without changes.
 EOF
 }
 
@@ -186,7 +187,8 @@ printf '' |
 
 for absolute_path in \
     "$SOURCE_ROOT" "$NWSYNC_ROOT" "$SERVER_ROOT" "$COMPOSE_FILE" \
-    "$STATE_ROOT" "$CACHE_ROOT" "$NWSYNC_BUILD_SCRIPT" \
+    "$STATE_ROOT" "$CACHE_ROOT" "$COMPOSE_IMAGE_OVERRIDE_FILE" \
+    "$NWSYNC_BUILD_SCRIPT" \
     "$NWSYNC_HAK_ROOT" "$NWSYNC_TLK_ROOT" "$NWSYNC_MODULE_ROOT" \
     "$SERVER_HAK_ROOT" "$SERVER_TLK_ROOT" "$SERVER_MODULE_ROOT" \
     "$SERVER_DOTNET_ROOT" "$SERVER_ENV_FILE"
@@ -203,6 +205,8 @@ done
     die "GIT_REMOTE contains unsupported characters: $GIT_REMOTE"
 [[ "$SERVER_SERVICE" =~ ^[A-Za-z0-9._-]+$ ]] ||
     die "SERVER_SERVICE contains unsupported characters: $SERVER_SERVICE"
+[[ "$SERVER_IMAGE" =~ ^[A-Za-z0-9._/@:-]+$ ]] ||
+    die "SERVER_IMAGE contains unsupported characters: $SERVER_IMAGE"
 [[ "$HAKS_SUBMODULE_PATH" =~ ^[A-Za-z0-9._/-]+$ ]] ||
     die "HAKS_SUBMODULE_PATH contains unsupported characters."
 if [[ -n "$COMPOSE_PROJECT_NAME" &&
@@ -215,17 +219,26 @@ fi
 
 install -d -o root -g root -m 0750 "$STATE_ROOT" "$CACHE_ROOT"
 
+compose_image_override_temporary="$STATE_ROOT/.server-image.override.yml.$$"
+printf 'services:\n  %s:\n    image: ${SWLOR_DEPLOY_SERVER_IMAGE:?SWLOR_DEPLOY_SERVER_IMAGE is required}\n' \
+    "$SERVER_SERVICE" > "$compose_image_override_temporary"
+chown root:root "$compose_image_override_temporary"
+chmod 0640 "$compose_image_override_temporary"
+mv -f "$compose_image_override_temporary" "$COMPOSE_IMAGE_OVERRIDE_FILE"
+
 compose()
 {
     local compose_arguments=(
         docker compose
         --project-directory "$SERVER_ROOT"
         --file "$COMPOSE_FILE"
+        --file "$COMPOSE_IMAGE_OVERRIDE_FILE"
     )
     if [[ -n "$COMPOSE_PROJECT_NAME" ]]; then
         compose_arguments+=(--project-name "$COMPOSE_PROJECT_NAME")
     fi
-    "${compose_arguments[@]}" "$@"
+    SWLOR_DEPLOY_SERVER_IMAGE="${COMPOSE_SERVER_IMAGE_OVERRIDE:-$SERVER_IMAGE}" \
+        "${compose_arguments[@]}" "$@"
 }
 
 available_bytes()
@@ -547,12 +560,25 @@ show_status()
 {
     local active_commit
     local previous_commit
+    local active_server_image
+    local previous_server_image
+    local running_server_container
+    local running_server_image
     local active_manifest
     local configured_manifest
     local github_dispatch_run
 
     active_commit="$(state_value active-commit)"
     previous_commit="$(state_value previous-commit)"
+    active_server_image="$(state_value active-server-image)"
+    previous_server_image="$(state_value previous-server-image)"
+    running_server_container="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null || true)"
+    running_server_image=
+    if [[ -n "$running_server_container" ]]; then
+        running_server_image="$(
+            docker inspect --format '{{.Config.Image}}' "$running_server_container"
+        )"
+    fi
     github_dispatch_run="$(state_value github-dispatch-run)"
     if [[ -s "$NWSYNC_ROOT/latest" ]]; then
         active_manifest="$(tr -d '\r\n' < "$NWSYNC_ROOT/latest")"
@@ -568,6 +594,10 @@ show_status()
     printf 'Branch:           %s/%s\n' "$GIT_REMOTE" "$BRANCH"
     printf 'Active commit:    %s\n' "${active_commit:-not recorded}"
     printf 'Previous commit:  %s\n' "${previous_commit:-not recorded}"
+    printf 'Desired image:    %s\n' "$SERVER_IMAGE"
+    printf 'Active image:     %s\n' "${active_server_image:-not recorded}"
+    printf 'Previous image:   %s\n' "${previous_server_image:-not recorded}"
+    printf 'Running image:    %s\n' "${running_server_image:-not running}"
     printf 'GitHub request:   %s\n' "${github_dispatch_run:-not recorded}"
     printf 'NWSync root:      %s\n' "$NWSYNC_ROOT"
     printf 'NWSync manifest:  %s\n' "$active_manifest"
@@ -594,6 +624,12 @@ fi
 [[ -d "$NWSYNC_ROOT" ]] || die "NWSync root does not exist: $NWSYNC_ROOT"
 [[ -d "$SERVER_ROOT" ]] || die "Server root does not exist: $SERVER_ROOT"
 [[ -f "$COMPOSE_FILE" ]] || die "Compose file does not exist: $COMPOSE_FILE"
+resolved_server_image="$(
+    compose config --format json |
+        jq -er --arg service "$SERVER_SERVICE" '.services[$service].image'
+)" || die "Unable to resolve $SERVER_SERVICE from the Compose configuration."
+[[ "$resolved_server_image" == "$SERVER_IMAGE" ]] ||
+    die "Compose resolved $SERVER_SERVICE to '$resolved_server_image'; expected '$SERVER_IMAGE'."
 [[ -f "$SERVER_ENV_FILE" && ! -L "$SERVER_ENV_FILE" ]] ||
     die "Server environment file does not exist or is a symlink: $SERVER_ENV_FILE"
 [[ -x "$NWSYNC_BUILD_SCRIPT" ]] ||
@@ -733,10 +769,24 @@ fi
 
 target_commit="$(git -C "$SOURCE_ROOT" rev-parse HEAD)"
 active_commit="$(state_value active-commit)"
+active_server_image="$(state_value active-server-image)"
+active_server_container="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null || true)"
+if [[ -n "$active_server_container" ]]; then
+    active_server_image="$(
+        docker inspect --format '{{.Config.Image}}' "$active_server_container"
+    )"
+fi
+server_image_changed=0
+if [[ "$active_server_image" != "$SERVER_IMAGE" ]]; then
+    server_image_changed=1
+    log "Server image will change from '${active_server_image:-not recorded}' to '$SERVER_IMAGE'."
+fi
 if [[ "$MODE" == if-changed &&
-      "$active_commit" == "$target_commit" &&
-      "$server_env_migration_required" == 0 ]]
+       "$active_commit" == "$target_commit" &&
+       "$server_env_migration_required" == 0 &&
+       "$server_image_changed" == 0 ]]
 then
+    record_state active-server-image "$SERVER_IMAGE"
     log "Commit $target_commit is already active; nothing to deploy."
     exit 0
 fi
@@ -878,6 +928,8 @@ log "Build plan: HAK/TLK=$(
     (( nwsync_inputs_changed == 1 )) && printf generate || printf reuse
 ), .NET=$(
     (( dotnet_inputs_changed == 1 )) && printf build || printf reuse
+), image=$(
+    (( server_image_changed == 1 )) && printf pull || printf reuse
 )."
 
 haks_root="$SOURCE_ROOT/$HAKS_SUBMODULE_PATH"
@@ -969,9 +1021,12 @@ preserve_work_directory=0
 rollback_cutover()
 {
     local rollback_started_at
+    local rollback_server_image="${active_server_image:-$SERVER_IMAGE}"
 
-    log "Restoring the pre-deployment server files and manifest hash."
-    compose down --timeout "$STOP_TIMEOUT_SECONDS" || return 1
+    log "Restoring the pre-deployment server files, manifest hash, and image $rollback_server_image."
+    docker image inspect "$rollback_server_image" >/dev/null 2>&1 || return 1
+    COMPOSE_SERVER_IMAGE_OVERRIDE="$rollback_server_image" \
+        compose down --timeout "$STOP_TIMEOUT_SECONDS" || return 1
 
     restore_directory \
         "$rollback_directory/hak" \
@@ -1010,8 +1065,10 @@ rollback_cutover()
     fi
 
     rollback_started_at="$(timestamp)"
-    compose up -d || return 1
-    wait_for_server_health "$rollback_started_at"
+    COMPOSE_SERVER_IMAGE_OVERRIDE="$rollback_server_image" \
+        compose up -d || return 1
+    COMPOSE_SERVER_IMAGE_OVERRIDE="$rollback_server_image" \
+        wait_for_server_health "$rollback_started_at"
 }
 
 cleanup_on_exit()
@@ -1336,7 +1393,8 @@ if (( haks_inputs_changed == 1 ||
       module_inputs_changed == 1 ||
       dotnet_payload_changed == 1 ||
       manifest_changed == 1 ||
-      server_env_migration_required == 1 ))
+      server_env_migration_required == 1 ||
+      server_image_changed == 1 ))
 then
     runtime_payload_changed=1
 fi
@@ -1344,6 +1402,7 @@ fi
 if (( runtime_payload_changed == 0 )); then
     record_state active-commit "$target_commit"
     record_state active-manifest "$manifest_id"
+    record_state active-server-image "$SERVER_IMAGE"
     record_state neverwinter-tool-key "$neverwinter_tool_key"
     record_state nwsync-build-script-sha "$nwsync_build_script_sha"
     record_state deployed-at "$(timestamp)"
@@ -1353,10 +1412,8 @@ if (( runtime_payload_changed == 0 )); then
     exit 0
 fi
 
-if ! docker image inspect "$SERVER_IMAGE" >/dev/null 2>&1; then
-    log "Building the missing server container image before downtime."
-    compose build "$SERVER_SERVICE"
-fi
+log "Pulling authoritative server container image $SERVER_IMAGE before downtime."
+docker pull "$SERVER_IMAGE"
 while IFS= read -r compose_image; do
     [[ -n "$compose_image" ]] || continue
     if ! docker image inspect "$compose_image" >/dev/null 2>&1; then
@@ -1478,8 +1535,12 @@ fi
 if [[ -n "$previous_manifest" ]]; then
     record_state previous-manifest "$previous_manifest"
 fi
+if (( server_image_changed == 1 )) && [[ -n "$active_server_image" ]]; then
+    record_state previous-server-image "$active_server_image"
+fi
 record_state active-commit "$target_commit"
 record_state active-manifest "$manifest_id"
+record_state active-server-image "$SERVER_IMAGE"
 record_state neverwinter-tool-key "$neverwinter_tool_key"
 record_state nwsync-build-script-sha "$nwsync_build_script_sha"
 record_state deployed-at "$(timestamp)"

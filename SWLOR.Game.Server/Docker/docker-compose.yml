@@ -25,7 +25,7 @@ services:
         build:
           context: .
           dockerfile: Dockerfile
-        image: zunath/nwn-dotnet:8193.37.15-2
+        image: zunath/nwn-dotnet:8193.37.17-1
         env_file: ./swlor.env
         links:
             - "redis:redis"

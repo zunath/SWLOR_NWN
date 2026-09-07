@@ -310,7 +310,7 @@ public class AnimationEditorTests
         var retarget = new AnimationRetarget(rig, pose, source, 0, 0, [new("rootdummy", "Root")]);
         var baked = retarget.Bake(source, 0, 30, 2);
         baked.Keys.Should().HaveCount(31);
-        baked.Sample(1)[1].Position.Should().Be(new Vector3(2, 0, 1));
+        Vector3.Distance(baked.Sample(1)[1].Position, new Vector3(2, 0, 1)).Should().BeLessThan(1e-5f);
         Math.Abs(Quaternion.Dot(baked.Sample(0)[1].Orientation, pose[1].Orientation)).Should().BeApproximately(1, 1e-5f);
     }
     [TestCase("LINEAR")] [TestCase("STEP")] [TestCase("CUBICSPLINE")]

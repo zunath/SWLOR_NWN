@@ -778,6 +778,27 @@ public class AnimationEditorTests
         vm.OnClose().Should().BeFalse(); vm.IsDirty.Should().BeTrue();
         vm.ApproveApplicationClose(); vm.OnClose();
     }
+    [AvaloniaTest] public async Task SaveDoesNotAcceptAnExternalEditMadeWhileOverwriteIsBeingConfirmed()
+    {
+        var latest = Rig().Serialize() + "\n  ";
+        var prompts = new Prompts
+        {
+            ExternalChoice = ExternalChangeChoice.Overwrite,
+            OnExternalChange = path => File.WriteAllText(path, latest)
+        };
+        var vm = new AnimationEditorDocumentViewModel(prompts, new OutputLogService(), initial: Rig());
+        var path = Path.Combine(_folder, "concurrent-save.swlanim");
+        vm.PickSavePath = (_, _) => Task.FromResult<string?>(path);
+        vm.PositionX = .5m;
+        (await vm.TrySaveAsync()).Should().BeTrue();
+        File.AppendAllText(path, "\n ");
+        vm.PositionX = 1;
+        (await vm.TrySaveAsync()).Should().BeFalse();
+        File.ReadAllText(path).Should().Be(latest, "confirming one version must not silently accept a newer external edit");
+        vm.Status.Should().Contain("changed while saving");
+        vm.IsDirty.Should().BeTrue();
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
     [AvaloniaTest] public async Task SwitchingSourceClipsRequiresFreshCalibrationBeforeBake()
     {
         var path = Gltf();
@@ -1034,7 +1055,12 @@ public class AnimationEditorTests
     {
         public ExternalChangeChoice ExternalChoice { get; init; } = ExternalChangeChoice.Cancel;
         public UnsavedChangesChoice CloseChoice { get; init; } = UnsavedChangesChoice.Cancel;
-        public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) => Task.FromResult(ExternalChoice);
+        public Action<string>? OnExternalChange { get; init; }
+        public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath)
+        {
+            OnExternalChange?.Invoke(filePath);
+            return Task.FromResult(ExternalChoice);
+        }
         public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) => Task.FromResult(CloseChoice);
         public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) => Task.FromResult(false);
         public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) => Task.FromResult<string?>(null);

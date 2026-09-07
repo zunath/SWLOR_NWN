@@ -438,7 +438,8 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         try
         {
             ModuleMutationLock.ThrowIfModuleLocked();
-            if (checkExternal && (_diskBytes == null || !File.Exists(path) || !(await AnimationProject.ReadFileBytesAsync(path)).AsSpan().SequenceEqual(_diskBytes)))
+            var acceptedBytes = File.Exists(path) ? await AnimationProject.ReadFileBytesAsync(path) : null;
+            if (checkExternal && (_diskBytes == null || acceptedBytes == null || !acceptedBytes.AsSpan().SequenceEqual(_diskBytes)))
             {
                 var choice = await _prompts.ConfirmExternalChangeAsync(path);
                 if (choice == ExternalChangeChoice.Cancel) return false;
@@ -453,7 +454,6 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                 }
             }
             var serialized = Project.Serialize(); var data = Encoding.UTF8.GetBytes(serialized);
-            var acceptedBytes = File.Exists(path) ? await AnimationProject.ReadFileBytesAsync(path) : null;
             var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {

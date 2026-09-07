@@ -5,9 +5,9 @@ public static class AuthoredAnimation
 {
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip CoveringStrike = new("sw_coverings", 1.39999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Invincible = new("sw_invincibl", 1.70000005f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RendingStrike = new("sw_rendingst", 1.38f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RendingStrike = new("sw_rendingst", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RiotBlade = new("sw_riotblade", 0.899999976f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip SavageCleave = new("sw_savagecle", 1.54999995f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip SavageCleave = new("sw_savagecle", 1.12f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShieldBash = new("sw_shieldbas", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShieldWall = new("sw_shieldwal", 2.0999999f);
 }

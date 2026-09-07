@@ -1289,10 +1289,10 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Clears the queued ability of a player.
+        /// Clears queued ability state and animation replacements, including after death.
         /// </summary>
         /// <param name="player">The player to clear</param>
-        private static void ClearQueuedAbility(uint player)
+        public static void ClearQueuedAbility(uint player)
         {
             QueuedAttackAnimation.Stop(player);
             Combat.ClearQueuedWeaponAbilityActivationBonuses(player);

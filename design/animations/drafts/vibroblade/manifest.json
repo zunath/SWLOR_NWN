@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "06031335e7f29f080666f5fcd4c721e11df209489c88bf70ba8dd37dd9ff62ce",
+  "RecipeSha256": "4ae45dbf70a01d6805b2c17a00e6ecb37aea20d6581d04e366b8cfa3dcbceb89",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -103,13 +103,13 @@
       "BibleRow": 4,
       "Reference": "https://chatgpt.com/s/m_6a3fde0e8a34819181290c21cdf5dc91",
       "Observation": "A low airborne lunge leads with the left shield while the blade trails behind the right side.",
-      "Interpretation": "A planted shield guard covers a direct sword thrust. Chamber beside the ribs, drive the point forward, withdraw along the same line, and settle without hopping or sweeping through the shield.",
+      "Interpretation": "A planted shield guard covers a direct sword thrust. The wrist aims from the forearm neutral grip without rolling over, then withdraws along the same line and settles.",
       "Status": "Draft: visual review required",
       "Project": "CoveringStrike.swlanim",
       "Duration": 1.4,
       "Keyframes": 34,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.7013717E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5288108E-07,
       "Beats": [
         {
           "Time": 0,
@@ -148,7 +148,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "7502e15bcf1b1f6d269d321f325f6b9d9ee641ecdddb6793738af86f5a3e8d83"
+      "ProjectSha256": "6cddd56f96861e27197d26a311b69d9b9f87da045b65a75a4efbd74239f22bf8"
     },
     {
       "Id": "Invincible",
@@ -250,48 +250,48 @@
       "BibleRow": 8,
       "Reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
       "Observation": "A heavy cut crosses upward through the target\u0027s lower torso, with the left arm held back.",
-      "Interpretation": "A deliberate low chamber powers a rising diagonal cut through the target. Weight rises with the sword, the blade continues through contact, then returns outside the shield to guard.",
+      "Interpretation": "A quick rising diagonal from a low chamber. Keep the blade moving through contact, then recover outside the shield without a second strike.",
       "Status": "Draft: visual review required",
       "Project": "RendingStrike.swlanim",
-      "Duration": 1.38,
-      "Keyframes": 35,
+      "Duration": 1,
+      "Keyframes": 27,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.1900145E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6749555E-07,
       "Beats": [
         {
           "Time": 0,
           "Label": "Ready"
         },
         {
-          "Time": 0.28,
+          "Time": 0.2029,
           "Label": "Low draw"
         },
         {
-          "Time": 0.46,
+          "Time": 0.33333,
           "Label": "Drive up"
         },
         {
-          "Time": 0.62,
+          "Time": 0.44928,
           "Label": "Impact"
         },
         {
-          "Time": 0.77,
+          "Time": 0.55797,
           "Label": "Rise through"
         },
         {
-          "Time": 0.98,
+          "Time": 0.71014,
           "Label": "Recover"
         },
         {
-          "Time": 1.16,
+          "Time": 0.84058,
           "Label": "Guard"
         },
         {
-          "Time": 1.38,
+          "Time": 1,
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "990cda10af85578bb6329f7d24a841422e560f368281fd85d8165fcd9dcd3361"
+      "ProjectSha256": "9978bddc8ffdb8d2ac939f4e3ca92ef4a067824ecf8fc391ae164aaf88131077"
     },
     {
       "Id": "SavageCleave",
@@ -299,52 +299,52 @@
       "BibleRow": 9,
       "Reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
       "Observation": "A low, broad stance drives a waist-height sweep through a wide frontal arc. The free arm extends for balance.",
-      "Interpretation": "A weighty waist-high sweep winds to the right, accelerates through the frontal arc, and decelerates on the left. The pelvis leads the shoulders through contact; a separate low recovery keeps the blade from reversing through the same cut.",
+      "Interpretation": "A brisk horizontal sweep at waist height, distinct from the rising Rending Strike. The pelvis leads the chest through the frontal arc; a low recovery returns to guard without another strike.",
       "Status": "Draft: visual review required",
       "Project": "SavageCleave.swlanim",
-      "Duration": 1.55,
-      "Keyframes": 39,
+      "Duration": 1.12,
+      "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5680197E-07,
+      "MdlRoundTripMaximumErrorMetres": 3.7527562E-07,
       "Beats": [
         {
           "Time": 0,
           "Label": "Ready"
         },
         {
-          "Time": 0.32,
+          "Time": 0.23123,
           "Label": "Wide draw"
         },
         {
-          "Time": 0.49,
+          "Time": 0.35406,
           "Label": "Sweep right"
         },
         {
-          "Time": 0.63,
+          "Time": 0.45523,
           "Label": "Front arc"
         },
         {
-          "Time": 0.76,
+          "Time": 0.54916,
           "Label": "Sweep left"
         },
         {
-          "Time": 0.88,
+          "Time": 0.63587,
           "Label": "Follow through"
         },
         {
-          "Time": 1.12,
+          "Time": 0.80929,
           "Label": "Low return"
         },
         {
-          "Time": 1.32,
+          "Time": 0.95381,
           "Label": "Guard"
         },
         {
-          "Time": 1.55,
+          "Time": 1.12,
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "59dca67d98700cea973803d11f116349ab68a2456d9d0b4d227feb2a0e3715b1"
+      "ProjectSha256": "37c4924178f71350d847af5fd2718e636dcd80107611dc6d6a470af5ee68e427"
     }
   ]
 }

@@ -13,7 +13,7 @@ public class NamedAnimationPlaybackTests
     [Test] public void PreviewStopDoesNotCancelANewerAbilityAndReleasesOnlyOnce()
     {
         var runtime = new Runtime(); var released = new List<uint>();
-        var playback = new NamedAnimationPlayback(runtime, released.Add);
+        var playback = new NamedAnimationPlayback(runtime, (creature, _) => released.Add(creature));
         var preview = playback.Begin(1, new AnimationClip("sw_preview", 2), 2);
         playback.IsCurrent(1, preview).Should().BeTrue();
         var ability = playback.Begin(1, new AnimationClip("sw_ability", 3), 3);
@@ -29,7 +29,7 @@ public class NamedAnimationPlaybackTests
     [Test] public void CompletionAndInterruptionReleaseThePoseOnlyForTheOwnedPlayback()
     {
         var runtime = new Runtime(); var released = new List<uint>();
-        var playback = new NamedAnimationPlayback(runtime, released.Add);
+        var playback = new NamedAnimationPlayback(runtime, (creature, _) => released.Add(creature));
         var first = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
         var second = playback.Begin(1, new AnimationClip("sw_point", 3), 3);
         playback.Complete(1, first); runtime.Callbacks[0]();
@@ -51,6 +51,9 @@ public class NamedAnimationPlaybackTests
         runtime.Replacements["custom1lp"].Should().Be("sw_wave");
         runtime.Replacements["custom1end"].Should().Be("sw_wave_out");
         playback.Complete(1, token);
+        runtime.Replacements["custom1end"].Should().Be("sw_wave_out", "the authored exit must remain mapped while leaving the emote");
+        runtime.Delays[^1].Should().Be(NamedAnimationPlayback.ExitGraceSeconds);
+        runtime.Callbacks[^1]();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
         runtime.Token.Should().BeEmpty();
     }
@@ -62,13 +65,14 @@ public class NamedAnimationPlaybackTests
         playback.Complete(1, first); runtime.Callbacks[0]();
         runtime.Replacements["custom1lp"].Should().Be("sw_point");
         runtime.Token.Should().Be(second);
-        runtime.Callbacks[1](); runtime.Token.Should().BeEmpty();
+        runtime.Callbacks[1](); runtime.Callbacks[^1](); runtime.Token.Should().BeEmpty();
     }
     [Test] public void AnInterruptedQueueStillRestoresAllMappingsViaTimeout()
     {
         var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
         playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
         runtime.Callbacks[0]();
+        runtime.Callbacks[^1]();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
         runtime.Token.Should().BeEmpty();
     }
@@ -78,6 +82,7 @@ public class NamedAnimationPlaybackTests
         playback.Begin(1, new AnimationClip("sw_wave", 2), .5f, completeAtDuration: true);
         runtime.Delays.Should().Equal(1.5f, .5f);
         runtime.Callbacks[1]();
+        runtime.Callbacks[^1]();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
         runtime.Token.Should().BeEmpty();
         playback.Begin(1, new AnimationClip("sw_point", 3), 3, completeAtDuration: true);
@@ -91,6 +96,48 @@ public class NamedAnimationPlaybackTests
         runtime.Token = "new object token";
         runtime.Callbacks[0](); runtime.Token.Should().Be("new object token");
         runtime.Valid = false; playback.Stop(1); runtime.Token.Should().Be("new object token");
+    }
+    [Test] public void DeferredExitKeepsAuthoredPhasesAndCannotResetANewerAnimation()
+    {
+        var runtime = new Runtime(); var queued = new List<Action>(); var exits = new List<string>();
+        var playback = new NamedAnimationPlayback(runtime, (_, stillOwnsExit) => queued.Add(() =>
+        {
+            if (stillOwnsExit()) exits.Add(runtime.Replacements[NamedAnimationPlayback.EndSource]);
+        }));
+        var first = playback.Begin(1, new AnimationClip("sw_first", 1), 1);
+        playback.Complete(1, first);
+        var oldRestore = runtime.Callbacks[^1];
+        playback.IsCurrent(1, first).Should().BeFalse();
+        runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_first");
+        var second = playback.Begin(1, new AnimationClip("sw_second", 1), 1);
+        queued[0](); oldRestore();
+        exits.Should().BeEmpty("an old deferred idle command must not interrupt the new clip");
+        runtime.Replacements[NamedAnimationPlayback.EndSource].Should().Be("sw_second_out");
+        playback.StopIfCurrent(1, second).Should().BeTrue();
+        playback.StopIfCurrent(1, second).Should().BeFalse("ending playback must release only once");
+        queued[1]();
+        exits.Should().Equal(new[] { "sw_second_out" }, "leaving the emote must use the authored exit, not the pointing gesture");
+        runtime.Callbacks[^1]();
+        queued[1]();
+        exits.Should().HaveCount(1);
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+    }
+    [TestCase(false)] [TestCase(true)]
+    public void DeathClearsActiveOrEndingMappingsWithoutARecoveryAfterRevival(bool alreadyEnding)
+    {
+        var runtime = new Runtime(); var exits = new List<Func<bool>>();
+        var playback = new NamedAnimationPlayback(runtime, (_, ownsExit) => exits.Add(ownsExit));
+        var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        if (alreadyEnding) playback.Complete(1, token);
+        playback.ClearOnDeath(1);
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        runtime.Token.Should().BeEmpty();
+        exits.Should().OnlyContain(ownsExit => !ownsExit());
+        playback.Begin(1, new AnimationClip("sw_revived", 1), 1);
+        runtime.Callbacks[0]();
+        if (alreadyEnding) runtime.Callbacks[1]();
+        runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_revived");
     }
     [Test] public void SchedulingFailureRestoresMappingsImmediately()
     {

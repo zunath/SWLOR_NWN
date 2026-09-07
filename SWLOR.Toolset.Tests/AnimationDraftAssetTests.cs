@@ -174,12 +174,15 @@ public class AnimationDraftAssetTests
         Vector3.TransformNormal(Vector3.UnitY, impact).Z.Should().BeGreaterThan(.9f);
     }
 
-    [TestCase("CoveringStrike", .48f)]
-    [TestCase("RiotBlade", .35f)]
-    [TestCase("RendingStrike", .62f)]
-    [TestCase("SavageCleave", .63f)]
-    public void SwordStrikesContinueThroughContactWithoutStoppingOrReversing(string name, float contact)
+    [TestCase("CoveringStrike", "Lunge")]
+    [TestCase("RiotBlade", "Impact")]
+    [TestCase("RendingStrike", "Impact")]
+    [TestCase("SavageCleave", "Front arc")]
+    public void SwordStrikesContinueThroughContactWithoutStoppingOrReversing(string name, string contactLabel)
     {
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
+            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var contact = recipe.Motions.Single(m => m.Id == name).Beats.Single(b => b.Label == contactLabel).Time;
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
         var hand = project.Joints.FindIndex(j => j.Name == "rhand");
         Vector3 At(float t) => AnimationRig.World(project.Joints, project.Sample(t))[hand].Translation;
@@ -188,6 +191,37 @@ public class AnimationDraftAssetTests
         incoming.Length().Should().BeGreaterThan(.3f, "the weapon must still be travelling into contact");
         outgoing.Length().Should().BeGreaterThan(.3f, "contact is part of a continuous strike, not a held pose");
         Vector3.Dot(Vector3.Normalize(incoming), Vector3.Normalize(outgoing)).Should().BeGreaterThan(.75f);
+    }
+
+    [Test]
+    public void CoveringStrikeRetainsALimitedContinuousWristBend()
+    {
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "CoveringStrike.swlanim")));
+        var hand = project.Joints.FindIndex(j => j.Name == "rhand_g");
+        var rest = project.Joints[hand].Rest.Orientation;
+        var previous = project.Sample(0)[hand].Orientation;
+        float Angle(Quaternion a, Quaternion b) => 2 * MathF.Acos(Math.Clamp(Math.Abs(Quaternion.Dot(a, b)), 0, 1)) * 180 / MathF.PI;
+        for (var t = 0f; t <= project.Duration; t += 1f / 120)
+        {
+            var rotation = project.Sample(t)[hand].Orientation;
+            Angle(rest, rotation).Should().BeLessThan(65, "the forearm should carry roll rather than folding the wrist over");
+            Angle(previous, rotation).Should().BeLessThan(5, "the thrust and recovery must not flip the wrist between frames");
+            previous = rotation;
+        }
+    }
+
+    [Test]
+    public void FasterRendingStrikeAndSavageCleaveRetainDifferentCutDirections()
+    {
+        var rising = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "RendingStrike.swlanim")));
+        var sweeping = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "SavageCleave.swlanim")));
+        rising.Duration.Should().Be(1f); sweeping.Duration.Should().Be(1.12f);
+        Vector3 Tip(AnimationProject p, float t) => Vector3.Transform(new(0, .8f, 0),
+            AnimationRig.World(p.Joints, p.Sample(t))[p.Joints.FindIndex(j => j.Name == "rhand")]);
+        (Tip(rising, .56f).Z - Tip(rising, .20f).Z).Should().BeGreaterThan(.7f);
+        var sweep = Enumerable.Range(0, 21).Select(i => Tip(sweeping, .23f + i * .02f)).ToArray();
+        (sweep.Max(p => p.Z) - sweep.Min(p => p.Z)).Should().BeLessThan(.2f);
+        (sweep.Max(p => p.X) - sweep.Min(p => p.X)).Should().BeGreaterThan(1f);
     }
 
     [TestCase("a_ba")]

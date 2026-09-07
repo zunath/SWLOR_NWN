@@ -240,9 +240,11 @@ Do not independently replace that same carrier while the helper owns it. Ordinar
 requests during a named clip share that temporary mapping. A module-owned timeout restores the
 mapping if a cleared action queue drops its cleanup action. Per-creature tokens prevent older
 callbacks from clearing newer playback or touching a reused object handle.
-Cleanup also releases the pose on an idle, living creature. Interrupting an authored channel
-releases its mapping immediately; movement and combat that interrupted it retain their own actions.
-Death releases the mapping before player subdual/revival and creature death animation handling.
+Cleanup also releases the pose on an idle, living creature. The authored exit remains mapped for
+half a second while NWN leaves the emote, preventing the carrier's original pointing gesture from
+appearing after the clip. Deferred idle and cleanup callbacks recheck ownership so they cannot
+interrupt a newer clip. Movement and combat retain their own actions.
+Death clears named and queued attack mappings before player subdual/revival and creature death handling.
 Exit poses sample the target's inherited idle, including rigs with an empty local idle clip.
 
 This does not consume additional engine custom slots. SWLOR already assigns the 70 custom slots

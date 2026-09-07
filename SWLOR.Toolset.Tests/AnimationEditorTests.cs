@@ -314,6 +314,31 @@ public class AnimationEditorTests
         AnimationInstall.Prepare(_folder, project, [target]).AnimationName.Should().Be(second.AnimationName);
     }
 
+    [TestCase(14)] [TestCase(15)] [TestCase(16)]
+    public void FullLengthTargetNamesAllocateDistinctBanksAndReuseThemOnUpdate(int length)
+    {
+        var original = InstallFixture(); var source = File.ReadAllText(original);
+        var names = new[] { "humanoid" + new string('a', length - 8), "humanoid" + new string('b', length - 8) };
+        var targets = names.Select(name => Write("SWLOR_Haks/sw_cr_creature/" + name + ".mdl", source.Replace("hero", name))).ToArray();
+        var collision = Write("SWLOR_Haks/sw_cr_creature/an_humanoid_0001.mdl", source.Replace("hero", "an_humanoid_0001"));
+        var before = File.ReadAllBytes(collision);
+        var project = Rig();
+        AnimationInstall.Prepare(_folder, project, targets).Apply();
+        var banks = targets.Select(path => new MdlReader().Parse(File.ReadAllBytes(path)).SuperModel).ToArray();
+        banks.Should().OnlyHaveUniqueItems().And.OnlyContain(name => name.Length <= 16);
+        banks.Should().NotContain("an_humanoid_0001");
+        File.ReadAllBytes(collision).Should().Equal(before);
+        File.Delete(collision);
+        project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, targets).Apply();
+        targets.Select(path => new MdlReader().Parse(File.ReadAllBytes(path)).SuperModel).Should().Equal(banks);
+        foreach (var bank in banks)
+        {
+            var model = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(original)!, bank + ".mdl")));
+            model.Animations.Single(animation => animation.Name == "sw_wave").Length.Should().Be(2);
+        }
+    }
+
     private string InstallFixture()
     {
         Write("Build/hakbuilder.json", "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/sw_cr_creature\"}]}");
@@ -397,6 +422,51 @@ public class AnimationEditorTests
         vm.Status.Should().Contain("MDL exceeds 64 MB");
         vm.Project.Should().BeSameAs(original); vm.IsDirty.Should().BeFalse();
         vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task OversizedLooseRigAndPreviewKeepTheCurrentDocument()
+    {
+        var path = Path.Combine(_folder, "oversized.mdl");
+        using (var stream = File.Create(path)) stream.SetLength((long)AnimationMdl.MaximumFileBytes + 1);
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        var original = vm.Project;
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.Status.Should().Contain("Rig model exceeds 64 MB"); vm.Project.Should().BeSameAs(original);
+        await vm.AttachPreviewCommand.ExecuteAsync(null);
+        vm.Status.Should().Contain("Preview model exceeds 64 MB"); vm.Project.Should().BeSameAs(original);
+        vm.IsDirty.Should().BeFalse(); vm.OnClose().Should().BeTrue();
+    }
+    [Test] public async Task BoundedSourceReadsRejectOversizedFilesAndAcceptTheExactLimit()
+    {
+        var path = Write("bounded.bin", "12345");
+        Action sync = () => AnimationSourceFile.ReadBytes(path, 4, "Source");
+        Func<Task> asyncRead = () => AnimationSourceFile.ReadBytesAsync(path, 4, "Source");
+        sync.Should().Throw<InvalidDataException>();
+        await asyncRead.Should().ThrowAsync<InvalidDataException>();
+        AnimationSourceFile.ReadBytes(path, 5, "Source").Should().Equal(Encoding.UTF8.GetBytes("12345"));
+        (await AnimationSourceFile.ReadBytesAsync(path, 5, "Source")).Should().Equal(Encoding.UTF8.GetBytes("12345"));
+        var gltf = Path.Combine(_folder, "oversized.gltf");
+        using (var stream = File.Create(gltf)) stream.SetLength(128L * 1024 * 1024 + 1);
+        Action load = () => GltfAnimationSource.Load(gltf);
+        load.Should().Throw<InvalidDataException>().WithMessage("*128 MB*");
+    }
+    [Test] public void InstallationRejectsOversizedInputsAndChecksSnapshotsWithoutAllocatingTheChangedFile()
+    {
+        var target = InstallFixture(); var original = File.ReadAllBytes(target);
+        var plan = AnimationInstall.Prepare(_folder, Rig(), [target]);
+        AnimationSourceFile.Matches(target, original).Should().BeTrue();
+        using (var stream = File.Open(target, FileMode.Truncate)) stream.SetLength(AnimationMdl.MaximumFileBytes + 1L);
+        AnimationSourceFile.Matches(target, original).Should().BeFalse();
+        Action apply = plan.Apply;
+        apply.Should().Throw<IOException>().WithMessage("*changed after*");
+        Action prepare = () => AnimationInstall.Prepare(_folder, Rig(), [target]);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*64 MB*");
+        File.Exists(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")).Should().BeFalse();
+        var larger = Enumerable.Range(0, 20_000).Select(i => (byte)i).ToArray();
+        File.WriteAllBytes(target, larger);
+        AnimationSourceFile.Matches(target, larger).Should().BeTrue();
+        larger[16_385] ^= 1;
+        AnimationSourceFile.Matches(target, larger).Should().BeFalse();
     }
     [TestCase(false)] [TestCase(true)]
     public async Task MdlFileImportPreservesBomEncodedTransforms(bool unicode)

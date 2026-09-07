@@ -12,19 +12,8 @@ public static class AnimationMdl
     public const int MaximumFileBytes = 64 * 1024 * 1024;
 
     /// <summary>Bounds the source file before allocating or decoding its animation text.</summary>
-    public static async Task<AnimationProject> ImportFileAsync(string path, AnimationProject rig)
-    {
-        await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read,
-            4096, FileOptions.Asynchronous | FileOptions.SequentialScan);
-        if (stream.Length > MaximumFileBytes)
-            throw new InvalidDataException("Animation MDL exceeds 64 MB.");
-        var bytes = new byte[checked((int)stream.Length)];
-        await stream.ReadExactlyAsync(bytes);
-        if (stream.ReadByte() != -1)
-            throw new IOException("The animation MDL changed while reading.");
-        using var reader = new StreamReader(new MemoryStream(bytes), Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
-        return Import(await reader.ReadToEndAsync(), rig);
-    }
+    public static async Task<AnimationProject> ImportFileAsync(string path, AnimationProject rig) =>
+        Import(await AnimationSourceFile.ReadTextAsync(path, MaximumFileBytes, "Animation MDL"), rig);
 
     public static string ExportGeometry(AnimationProject rig)
     {

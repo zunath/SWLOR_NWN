@@ -79,12 +79,14 @@ public class AuthoredCombatAnimationTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
         root.Should().NotBeNull();
         var death = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Death.cs"));
-        var stop = death.IndexOf("NamedAnimation.Stop(player);", StringComparison.Ordinal);
+        var stop = death.IndexOf("NamedAnimation.ClearOnDeath(player);", StringComparison.Ordinal);
         stop.Should().BeGreaterThan(death.IndexOf("var player = GetLastPlayerDied();", StringComparison.Ordinal));
         stop.Should().BeLessThan(death.IndexOf("EffectResurrection()", StringComparison.Ordinal),
             "subdual revives the same object immediately, so its old custom mappings must already be gone");
         var npc = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "CreatureDeathAnimation.cs"));
-        npc.Should().Contain("NamedAnimation.Stop(creature);");
+        npc.Should().Contain("NamedAnimation.ClearOnDeath(creature);").And.Contain("UsePerkFeat.ClearQueuedAbility(creature);");
+        var clearQueue = death.IndexOf("UsePerkFeat.ClearQueuedAbility(player);", StringComparison.Ordinal);
+        clearQueue.Should().BeGreaterThan(stop).And.BeLessThan(death.IndexOf("EffectResurrection()", StringComparison.Ordinal));
     }
 
     private sealed class Runtime : INamedAnimationRuntime

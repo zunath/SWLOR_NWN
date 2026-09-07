@@ -54,18 +54,8 @@ public sealed class AnimationProject
     }
 
     /// <summary>Reads a project through a bounded file handle before allocating its text representation.</summary>
-    public static async Task<byte[]> ReadFileBytesAsync(string path)
-    {
-        await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read,
-            4096, FileOptions.Asynchronous | FileOptions.SequentialScan);
-        if (stream.Length > MaximumFileBytes)
-            throw new InvalidDataException("Animation project exceeds 64 MB.");
-        var bytes = new byte[checked((int)stream.Length)];
-        await stream.ReadExactlyAsync(bytes);
-        if (stream.ReadByte() != -1)
-            throw new IOException("The animation project changed while reading.");
-        return bytes;
-    }
+    public static Task<byte[]> ReadFileBytesAsync(string path) =>
+        AnimationSourceFile.ReadBytesAsync(path, MaximumFileBytes, "Animation project");
 
     public AnimationProject Clone() => Deserialize(Serialize());
 

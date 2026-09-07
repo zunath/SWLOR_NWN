@@ -11,7 +11,7 @@ internal sealed record Recipe(string Workbook, string Model, JsonObject ReadyShi
     public static readonly JsonSerializerOptions Json = new() { PropertyNameCaseInsensitive = true, WriteIndented = true };
 }
 internal sealed record Motion(string Id, string Name, int BibleRow, string Reference, string Observation,
-    string Interpretation, bool Shield, Beat[] Beats, string AbilityDefinition, bool Loop = false);
+    string Interpretation, bool Shield, Beat[] Beats, string AbilityDefinition, bool Loop = false, bool NaturalGrip = false);
 internal sealed record Beat(float Time, string Label, JsonObject Pose, bool Through = false);
 
 internal static class MotionAuthor
@@ -36,7 +36,7 @@ internal static class MotionAuthor
             while (segment < beats.Length - 2 && time > beats[segment + 1].Time) segment++;
             var fraction = Math.Clamp((time - beats[segment].Time) / (beats[segment + 1].Time - beats[segment].Time), 0, 1);
             var p = Pose.Interpolate(poses, beats, segment, fraction);
-            var pose = PoseRig(rig, p, motion.Id, time);
+            var pose = PoseRig(rig, p, motion.Id, time, motion.NaturalGrip);
             // A one-shot must release its authored stance even when no walking/attack follows it.
             // Channels retain a closed guard loop; their installed exit phase releases the stance.
             if (!motion.Loop)
@@ -98,7 +98,7 @@ internal static class MotionAuthor
             V("leftFoot"), V("rightFoot"), V("shield"));
     }
 
-    private static PosedNode[] PoseRig(AnimationProject rig, Pose p, string name, float time)
+    private static PosedNode[] PoseRig(AnimationProject rig, Pose p, string name, float time, bool naturalGrip)
     {
         var pose = rig.Joints.Select(j => j.Rest).ToArray();
         var root = Index(rig, "rootdummy");
@@ -113,20 +113,44 @@ internal static class MotionAuthor
         // Keep bent elbows below the hands and near the ribs. Wide, shoulder-height poles
         // produce an outward elbow flare even when the hand is in a low guard.
         Solve("lhand_g", p.LeftHand, new Vector3(-.60f, .35f, p.Root.Z + .12f) + centre);
-        Solve("rhand_g", p.RightHand, new Vector3(.36f, -.12f, p.Root.Z - .18f) + centre);
+        Solve("rhand_g", p.RightHand, (naturalGrip
+            ? new Vector3(.52f, -.16f, p.RightHand.Z - .15f)
+            : new Vector3(.36f, -.12f, p.Root.Z - .18f)) + centre);
         // Preserve the native hand's roll around the blade, rather than arbitrarily twisting
         // the wrist when the sword changes direction. Native +Z points toward the wrist/elbow.
         var world = AnimationRig.World(rig.Joints, pose);
         var blade = Vector3.Normalize(p.Blade);
-        var towardElbow = world[Index(rig, "rforearm_g")].Translation - p.RightHand;
-        var wrist = towardElbow - blade * Vector3.Dot(towardElbow, blade);
-        if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitZ - blade * blade.Z;
-        if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitX - blade * blade.X;
-        wrist = Vector3.Normalize(wrist);
-        var across = Vector3.Normalize(Vector3.Cross(blade, wrist));
-        SetWorld("rhand_g", Quaternion.CreateFromRotationMatrix(new Matrix4x4(
-            across.X, across.Y, across.Z, 0, blade.X, blade.Y, blade.Z, 0,
-            wrist.X, wrist.Y, wrist.Z, 0, 0, 0, 0, 1)));
+        if (naturalGrip)
+        {
+            // Let forearm roll carry the grip, then use the smallest wrist swing to aim.
+            // The offset elbow guide keeps this thrust clear of the straight-arm singularity.
+            var rightHand = Index(rig, "rhand_g");
+            var rightForearm = rig.Joints[rightHand].Parent;
+            Matrix4x4.Decompose(world[rightForearm], out _, out var parentRotation, out _);
+            var grip = Quaternion.Normalize(parentRotation * rig.Joints[rightHand].Rest.Orientation);
+            var armAxis = Vector3.Normalize(world[rightHand].Translation - world[rightForearm].Translation);
+            var gripForward = Vector3.Transform(Vector3.UnitY, grip);
+            gripForward -= armAxis * Vector3.Dot(gripForward, armAxis);
+            var aim = blade - armAxis * Vector3.Dot(blade, armAxis);
+            if (gripForward.LengthSquared() < .01f || aim.LengthSquared() < .01f)
+                throw new InvalidDataException($"{name} at {time:0.000}s: move the elbow off the blade line to retain a stable grip.");
+            parentRotation = AnimationRig.Between(Vector3.Normalize(gripForward), Vector3.Normalize(aim)) * parentRotation;
+            SetWorld("rforearm_g", parentRotation);
+            grip = Quaternion.Normalize(parentRotation * rig.Joints[rightHand].Rest.Orientation);
+            SetWorld("rhand_g", AnimationRig.Between(Vector3.Transform(Vector3.UnitY, grip), blade) * grip);
+        }
+        else
+        {
+            var towardElbow = world[Index(rig, "rforearm_g")].Translation - p.RightHand;
+            var wrist = towardElbow - blade * Vector3.Dot(towardElbow, blade);
+            if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitZ - blade * blade.Z;
+            if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitX - blade * blade.X;
+            wrist = Vector3.Normalize(wrist);
+            var across = Vector3.Normalize(Vector3.Cross(blade, wrist));
+            SetWorld("rhand_g", Quaternion.CreateFromRotationMatrix(new Matrix4x4(
+                across.X, across.Y, across.Z, 0, blade.X, blade.Y, blade.Z, 0,
+                wrist.X, wrist.Y, wrist.Z, 0, 0, 0, 0, 1)));
+        }
         // NWN straps shields to lforearm, not lhand_g. Roll the forearm about its
         // elbow-to-wrist axis to turn the shield toward the target without moving the
         // hand, stretching a bone, or rotating the attachment independently of the arm.

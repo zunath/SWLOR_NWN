@@ -260,9 +260,5 @@ public sealed class GltfAnimationSource
         for (var i = 0; i < length; i++) fallback[i] = value[i].GetSingle();
         return fallback;
     }
-    private static byte[] ReadBounded(string path)
-    {
-        if (new FileInfo(path).Length > MaxBytes) throw new InvalidDataException("glTF source exceeds 128 MB.");
-        return File.ReadAllBytes(path);
-    }
+    private static byte[] ReadBounded(string path) => AnimationSourceFile.ReadBytes(path, MaxBytes, "glTF source");
 }

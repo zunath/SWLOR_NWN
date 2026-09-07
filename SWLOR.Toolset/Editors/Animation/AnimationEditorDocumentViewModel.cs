@@ -339,7 +339,8 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     {
         var path = await OpenPath("Load NWN rig", ["*.mdl"]);
         if (path == null || !await ConfirmReplace()) return;
-        var model = await Task.Run(() => new MdlReader().Parse(File.ReadAllBytes(path)));
+        var bytes = await AnimationSourceFile.ReadBytesAsync(path, AnimationMdl.MaximumFileBytes, "Rig model");
+        var model = await Task.Run(() => new MdlReader().Parse(bytes));
         LoadModel(model, Path.GetDirectoryName(path)); TargetPaths = ResolveInstallTarget(model.Name); OnPropertyChanged(nameof(TargetPaths));
         await RefreshStarterMovements();
     });
@@ -351,7 +352,8 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     [RelayCommand] private async Task AttachPreview() => await Run(async () =>
     {
         var path = await OpenPath("Attach matching preview model", ["*.mdl"]); if (path == null) return;
-        var model = await Task.Run(() => new MdlReader().Parse(File.ReadAllBytes(path)));
+        var bytes = await AnimationSourceFile.ReadBytesAsync(path, AnimationMdl.MaximumFileBytes, "Preview model");
+        var model = await Task.Run(() => new MdlReader().Parse(bytes));
         var rig = AnimationProject.FromModel(model);
         if (!MatchesPreviewRig(Project, rig))
             throw new InvalidDataException("The preview model must match this project's joint names, hierarchy, and rest transforms.");
@@ -521,7 +523,8 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     [RelayCommand] private async Task LoadMapping() => await Run(async () =>
     {
         var path = await OpenPath("Load bone mapping", ["*.json"]); if (path == null) return;
-        var map = JsonSerializer.Deserialize<RetargetBinding[]>(await File.ReadAllTextAsync(path)) ?? throw new InvalidDataException("Invalid bone mapping.");
+        var map = JsonSerializer.Deserialize<RetargetBinding[]>(await AnimationSourceFile.ReadTextAsync(path,
+            AnimationProject.MaximumFileBytes, "Bone mapping")) ?? throw new InvalidDataException("Invalid bone mapping.");
         if (map.Any(b => !Mappings.Any(m => m.Target == b.Target) || !SourceBones.Contains(b.Source)) || map.Select(m => m.Target).Distinct().Count() != map.Length)
             throw new InvalidDataException("Mapping does not match the loaded rigs.");
         foreach (var row in Mappings) row.Source = map.FirstOrDefault(m => m.Target == row.Target)?.Source;

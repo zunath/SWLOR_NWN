@@ -52,7 +52,7 @@ public sealed class AnimationInstallPlan
                 try
                 {
                     // Preserve another writer's work if it changed a file during rollback.
-                    if (!File.ReadAllBytes(change.Path).AsSpan().SequenceEqual(change.After))
+                    if (!AnimationSourceFile.Matches(change.Path, change.After))
                         throw new IOException($"Concurrent change prevented rollback of '{change.Path}'.");
                     if (change.Before == null) File.Delete(change.Path);
                     else File.WriteAllBytes(change.Path, change.Before);
@@ -73,14 +73,14 @@ public sealed class AnimationInstallPlan
             if (File.Exists(path))
                 throw new IOException($"'{path}' was created after the installation preview. Prepare a new preview.");
         foreach (var input in Inputs)
-            if (!File.Exists(input.Key) || !File.ReadAllBytes(input.Key).AsSpan().SequenceEqual(input.Value))
+            if (!File.Exists(input.Key) || !AnimationSourceFile.Matches(input.Key, input.Value))
                 throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
     }
 
     private static void Verify(AnimationFileChange change)
     {
         if (change.Before == null ? File.Exists(change.Path) :
-            !File.Exists(change.Path) || !File.ReadAllBytes(change.Path).AsSpan().SequenceEqual(change.Before))
+            !File.Exists(change.Path) || !AnimationSourceFile.Matches(change.Path, change.Before))
             throw new IOException($"'{change.Path}' changed after the installation preview. Prepare a new preview.");
     }
 }
@@ -96,7 +96,7 @@ public static class AnimationInstall
         var root = Path.GetFullPath(repositoryRoot);
         var configPath = Path.Combine(root, "Build", "hakbuilder.json");
         if (!File.Exists(configPath)) return null;
-        using var config = JsonDocument.Parse(File.ReadAllBytes(configPath));
+        using var config = JsonDocument.Parse(AnimationSourceFile.ReadBytes(configPath, AnimationProject.MaximumFileBytes, "HAK configuration"));
         foreach (var layer in ReadLayers(configPath, config.RootElement))
         {
             var path = Path.Combine(layer, resref + ".mdl");
@@ -123,7 +123,8 @@ public static class AnimationInstall
         var absentInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         byte[] Read(string path)
         {
-            if (!inputs.TryGetValue(path, out var data)) inputs[path] = data = File.ReadAllBytes(path);
+            if (!inputs.TryGetValue(path, out var data))
+                inputs[path] = data = AnimationSourceFile.ReadBytes(path, AnimationProject.MaximumFileBytes, "Animation installation input");
             return data;
         }
         using var config = JsonDocument.Parse(Read(configPath));
@@ -212,21 +213,44 @@ public static class AnimationInstall
         foreach (var target in targets)
         {
             var model = models[target];
-            var overlayName = "an_" + Path.GetFileNameWithoutExtension(target);
-            AnimationProject.ValidateToken(overlayName, 16);
-            var overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
-            var existingOverlay = Resolve(overlayName);
             var relativeTarget = Path.GetRelativePath(root, target).Replace('\\', '/');
-            if (existingOverlay != null && (!string.Equals(existingOverlay, overlayPath, StringComparison.OrdinalIgnoreCase) ||
-                model.SuperModel != overlayName || !registrations.Any(r => r.Targets.Contains(relativeTarget, StringComparer.OrdinalIgnoreCase))))
-                throw new InvalidDataException($"Overlay '{overlayName}' exists but is not owned by the animation registry for this target.");
-            var linkPath = target;
+            var registeredTarget = registrations.Any(r => r.Targets.Contains(relativeTarget, StringComparer.OrdinalIgnoreCase));
             var header = $"# SWLOR authored animations for {model.Name}";
             bool IsOwnedBank(string path)
             {
                 var contents = Encoding.ASCII.GetString(Read(path));
                 return contents.StartsWith(header + "\n", StringComparison.Ordinal) || contents.StartsWith(header + "\r\n", StringComparison.Ordinal);
             }
+            var targetName = Path.GetFileNameWithoutExtension(target);
+            AnimationProject.ValidateToken(targetName, 16);
+            var overlayName = "an_" + targetName;
+            if (overlayName.Length > 16)
+            {
+                if (registeredTarget)
+                {
+                    if (chains[target].Count < 2 || !IsOwnedBank(chains[target][1]))
+                        throw new InvalidDataException("Registered target is missing its authored animation bank.");
+                    overlayName = model.SuperModel;
+                }
+                else
+                {
+                    // Leave room for a readable collision suffix even for a full-length target resref.
+                    var prefix = "an_" + targetName[..8] + "_";
+                    var number = 1;
+                    do
+                    {
+                        if (number > 9999) throw new InvalidDataException("No free animation bank names remain for this target.");
+                        overlayName = prefix + (number++).ToString("D4", System.Globalization.CultureInfo.InvariantCulture);
+                    } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
+                }
+            }
+            AnimationProject.ValidateToken(overlayName, 16);
+            var overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
+            var existingOverlay = Resolve(overlayName);
+            if (existingOverlay != null && (!string.Equals(existingOverlay, overlayPath, StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(model.SuperModel, overlayName, StringComparison.OrdinalIgnoreCase) || !registeredTarget))
+                throw new InvalidDataException($"Overlay '{overlayName}' exists but is not owned by the animation registry for this target.");
+            var linkPath = target;
             if (existingOverlay != null)
             {
                 if (!IsOwnedBank(existingOverlay)) throw new InvalidDataException("Existing overlay is not an authored animation source.");

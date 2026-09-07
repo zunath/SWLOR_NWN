@@ -19,10 +19,14 @@ public sealed class NamedAnimationPlayback
     public const string StartSource = "custom1start";
     public const string LoopSource = "custom1lp";
     public const string EndSource = "custom1end";
+    // Keep the authored exit mapped while the engine leaves the custom-emote state.
+    // Generated exits take 0.2 seconds; the remaining time allows a deferred script tick.
+    public const float ExitGraceSeconds = .5f;
+    private const string EndingPrefix = "ending:";
     private readonly INamedAnimationRuntime _runtime;
-    private readonly Action<uint> _releasePose;
+    private readonly Action<uint, Func<bool>> _releasePose;
 
-    public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint> releasePose = null)
+    public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint, Func<bool>> releasePose = null)
     {
         _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
         _releasePose = releasePose;
@@ -57,16 +61,42 @@ public sealed class NamedAnimationPlayback
     public void Complete(uint creature, string token)
     {
         if (!IsCurrent(creature, token)) return;
+        var endingToken = EndingPrefix + token;
+        _runtime.SetToken(creature, endingToken);
+        try
+        {
+            _releasePose?.Invoke(creature, () => OwnsExit(creature, endingToken));
+            _runtime.Schedule(ExitGraceSeconds, () => Restore(creature, endingToken));
+        }
+        catch
+        {
+            Restore(creature, endingToken);
+            throw;
+        }
+    }
+
+    private bool OwnsExit(uint creature, string endingToken) =>
+        _runtime.IsValid(creature) && _runtime.GetToken(creature) == endingToken;
+
+    private void Restore(uint creature, string endingToken)
+    {
+        if (!OwnsExit(creature, endingToken)) return;
         _runtime.Replace(creature, StartSource, "");
         _runtime.Replace(creature, LoopSource, "");
         _runtime.Replace(creature, EndSource, "");
         _runtime.SetToken(creature, "");
-        _releasePose?.Invoke(creature);
     }
 
     public void Stop(uint creature)
     {
         if (_runtime.IsValid(creature)) Complete(creature, _runtime.GetToken(creature));
+    }
+
+    /// <summary>Death must clear ownership immediately, without playing a recovery on resurrection.</summary>
+    public void ClearOnDeath(uint creature)
+    {
+        if (!_runtime.IsValid(creature) || string.IsNullOrEmpty(_runtime.GetToken(creature))) return;
+        Restore(creature, _runtime.GetToken(creature));
     }
 
     public bool StopIfCurrent(uint creature, string token)
@@ -77,5 +107,6 @@ public sealed class NamedAnimationPlayback
     }
 
     public bool IsCurrent(uint creature, string token) =>
-        !string.IsNullOrEmpty(token) && _runtime.IsValid(creature) && _runtime.GetToken(creature) == token;
+        !string.IsNullOrEmpty(token) && !token.StartsWith(EndingPrefix, StringComparison.Ordinal) &&
+        _runtime.IsValid(creature) && _runtime.GetToken(creature) == token;
 }

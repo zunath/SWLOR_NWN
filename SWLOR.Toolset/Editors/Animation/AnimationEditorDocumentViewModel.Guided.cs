@@ -89,7 +89,8 @@ public sealed partial class AnimationEditorDocumentViewModel
                     if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(name + ".mdl"), out var resource) == true)
                         return new MdlReader().Parse(resource.GetBytes());
                     var localPath = localFolder == null ? null : Path.Combine(localFolder, name + ".mdl");
-                    if (localPath != null && File.Exists(localPath)) return new MdlReader().Parse(File.ReadAllBytes(localPath));
+                    if (localPath != null && File.Exists(localPath))
+                        return new MdlReader().Parse(AnimationSourceFile.ReadBytes(localPath, AnimationMdl.MaximumFileBytes, "Supermodel"));
                     return null;
                 }, framesPerSecond: 20, maxFrames: 240, maxDepth: AnimationInstall.MaximumModelChainDepth));
                 foreach (var sample in samples.Where(sample => sample.Length >= 0 && sample.Length <= 12 && sample.Frames.Count > 0))

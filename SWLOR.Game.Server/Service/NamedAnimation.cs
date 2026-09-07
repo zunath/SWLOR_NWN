@@ -49,6 +49,8 @@ public static class NamedAnimation
     /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
     public static bool StopIfCurrent(uint creature, string token) => Playback.StopIfCurrent(creature, token);
 
+    public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
+
     /// <summary>Releases an authored pose; optionally cancels the current scripted animation action.</summary>
     public static void Stop(uint creature, bool cancelQueuedAnimation = false)
     {
@@ -60,13 +62,16 @@ public static class NamedAnimation
         Playback.Stop(creature);
     }
 
-    private static void ReleaseIdlePose(uint creature)
+    private static void ReleaseIdlePose(uint creature, Func<bool> stillOwnsExit)
     {
-        // Restoring a replacement table only affects the next animation lookup. Explicitly
-        // leave the emote state when idle; moving/fighting/dead actors keep their engine state.
-        if (GetCurrentHitPoints(creature) <= 0 || GetIsInCombat(creature) ||
-            GetCurrentAction(creature) != ActionType.Invalid) return;
-        AssignCommand(creature, () => PlayAnimation(Animation.LoopingPause, 1f, .1f));
+        // Leave the emote while its authored exit remains mapped. Re-check ownership and
+        // activity inside AssignCommand: another ability or movement may start before it runs.
+        AssignCommand(creature, () =>
+        {
+            if (!stillOwnsExit() || GetCurrentHitPoints(creature) <= 0 || GetIsInCombat(creature) ||
+                GetCurrentAction(creature) != ActionType.Invalid) return;
+            PlayAnimation(Animation.LoopingPause, 1f, .1f);
+        });
     }
 
     private static float Validate(AnimationClip clip, float? duration)

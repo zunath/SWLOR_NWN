@@ -116,6 +116,8 @@ should expose the animation.
   are copied into `uncategorized/`; reinstalling a clip always reuses its registered path.
   To reorganize an installed project, move the file and update `ProjectPath` together. Use
   `shared/` for motions used across skills. Legacy registries retain existing flat sources.
+  Installation rejects a source changed outside the editor since opening or saving it.
+  Use **Save** to resolve that external change, or reopen the project, then install again.
   Keep `.swlanim` files long term for future edits; the game uses the exported HAK MDLs.
   Generated previews, GIFs, and scratch projects belong in the ignored `artifacts/animations/` folder.
 - `SWLOR.Game.Server/Service/AnimationService/AuthoredAnimation.cs` supplies typed `AnimationClip` references.

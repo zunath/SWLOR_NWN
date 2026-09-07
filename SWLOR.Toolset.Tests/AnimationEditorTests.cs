@@ -1110,6 +1110,39 @@ public class AnimationEditorTests
         vm.ApproveApplicationClose(); vm.OnClose().Should().BeTrue();
         window.Close();
     }
+    [AvaloniaTest]
+    [TestCase(false, false)] [TestCase(true, false)] [TestCase(false, true)] [TestCase(true, true)]
+    public async Task InstallPreservesExternalSourceChangesUntilTheyAreResolved(bool registered, bool deleted)
+    {
+        var target = InstallFixture(); var project = Rig();
+        var path = Write("design/animations/social/Wave.swlanim", project.Serialize());
+        if (registered) AnimationInstall.Prepare(_folder, project, [target], path).Apply();
+        var originalTarget = File.ReadAllBytes(target);
+        var prompts = new Prompts { DestructiveChoice = true, ExternalChoice = ExternalChangeChoice.Overwrite };
+        var vm = new AnimationEditorDocumentViewModel(prompts, new OutputLogService(), repositoryRoot: _folder);
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.TargetPaths = target; vm.PositionX = .5m;
+        project.Duration = 3;
+        var external = project.Serialize();
+        if (deleted) File.Delete(path); else File.WriteAllText(path, external);
+
+        await vm.InstallCommand.ExecuteAsync(null);
+        vm.Status.Should().Contain("source changed on disk");
+        prompts.DestructiveConfirmationCount.Should().Be(0, "a stale source must be rejected before presenting an installation preview");
+        File.ReadAllBytes(target).Should().Equal(originalTarget);
+        if (deleted) File.Exists(path).Should().BeFalse(); else File.ReadAllText(path).Should().Be(external);
+        vm.IsDirty.Should().BeTrue();
+
+        (await vm.TrySaveAsync()).Should().BeTrue("Save offers the existing explicit external-change resolution");
+        await vm.InstallCommand.ExecuteAsync(null);
+        prompts.DestructiveConfirmationCount.Should().Be(1);
+        vm.Status.Should().StartWith("Installed.");
+        vm.PathDisplay.Should().Be(Path.GetFullPath(path));
+        AnimationProject.Deserialize(File.ReadAllText(path)).Serialize().Should().Be(vm.Project.Serialize());
+        vm.OnClose().Should().BeTrue();
+    }
+
     [AvaloniaTest] public async Task SaveProtectsExternalChangesAndCancelledCloseKeepsDocumentOpen()
     {
         var prompts = new Prompts(); var vm = new AnimationEditorDocumentViewModel(prompts, new OutputLogService(), initial: Rig());
@@ -1395,6 +1428,8 @@ public class AnimationEditorTests
     }
     private sealed class Prompts : IEditorPromptService
     {
+        public bool DestructiveChoice { get; init; }
+        public int DestructiveConfirmationCount { get; private set; }
         public ExternalChangeChoice ExternalChoice { get; init; } = ExternalChangeChoice.Cancel;
         public UnsavedChangesChoice CloseChoice { get; init; } = UnsavedChangesChoice.Cancel;
         public Action<string>? OnExternalChange { get; init; }
@@ -1404,7 +1439,11 @@ public class AnimationEditorTests
             return Task.FromResult(ExternalChoice);
         }
         public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) => Task.FromResult(CloseChoice);
-        public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) => Task.FromResult(false);
+        public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel)
+        {
+            DestructiveConfirmationCount++;
+            return Task.FromResult(DestructiveChoice);
+        }
         public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) => Task.FromResult<string?>(null);
     }
 }

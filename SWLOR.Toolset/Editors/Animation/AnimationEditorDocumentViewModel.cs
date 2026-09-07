@@ -534,6 +534,13 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (_repositoryRoot == null) throw new InvalidDataException("Open a SWLOR repository workspace before installing animations.");
         var plan = await Task.Run(() => AnimationInstall.Prepare(_repositoryRoot, Project,
             TargetPaths.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()), _path));
+        // Compare the exact snapshot accepted by Prepare, closing the gap between opening
+        // the document and the install transaction's later concurrent-writer checks.
+        var sourceChange = _path == null ? null : plan.Changes.FirstOrDefault(c =>
+            Path.GetFullPath(c.Path).Equals(Path.GetFullPath(_path), StringComparison.OrdinalIgnoreCase));
+        if (sourceChange != null && (_diskBytes == null || sourceChange.Before == null ||
+            !sourceChange.Before.AsSpan().SequenceEqual(_diskBytes)))
+            throw new IOException("The animation source changed on disk since it was opened or saved. Save to resolve the external change, or reopen the project, then install again.");
         var preview = $"Register {Project.Name} as named animation '{plan.AnimationName}'.\n\n" + string.Join("\n", plan.Changes.Select(c =>
             $"{(c.Before == null ? "Create" : "Update")} {Path.GetRelativePath(_repositoryRoot, c.Path)}")) + "\n\n" + plan.CodeExample +
             "\n\nBuild the HAKs and deploy the rebuilt HAKs to server and clients before using this constant.";

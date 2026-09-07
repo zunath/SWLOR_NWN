@@ -29,6 +29,7 @@ public sealed class AnimationInstallPlan
         var staged = new Dictionary<string, string>();
         var applied = new List<AnimationFileChange>();
         var inputLeases = new List<FileStream>();
+        var reservedAbsentInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         try
         {
             foreach (var change in Changes)
@@ -50,7 +51,24 @@ public sealed class AnimationInstallPlan
                 if (!AnimationSourceFile.Matches(lease, input.Value))
                     throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
             }
-            VerifyInputs();
+            foreach (var path in AbsentInputs)
+            {
+                if (outputs.Contains(path) || reservedAbsentInputs.Contains(path)) continue;
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                // CreateNew fails if another writer won the race. The exclusive delete-on-close
+                // handle reserves this missing resolution path without leaving a file after exit.
+                try
+                {
+                    inputLeases.Add(new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite,
+                        FileShare.None, 1, FileOptions.DeleteOnClose));
+                }
+                catch (IOException exception)
+                {
+                    throw new IOException($"'{path}' may have been created after the installation preview or cannot be reserved. Prepare a new preview.", exception);
+                }
+                reservedAbsentInputs.Add(path);
+            }
+            VerifyInputs(reservedAbsentInputs);
             foreach (var change in Changes)
             {
                 AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.Before, () => { });
@@ -84,10 +102,10 @@ public sealed class AnimationInstallPlan
         }
     }
 
-    private void VerifyInputs()
+    private void VerifyInputs(IReadOnlySet<string>? reservedAbsentInputs = null)
     {
         foreach (var path in AbsentInputs)
-            if (File.Exists(path))
+            if (reservedAbsentInputs?.Contains(path) != true && File.Exists(path))
                 throw new IOException($"'{path}' was created after the installation preview. Prepare a new preview.");
         foreach (var input in Inputs)
             if (!File.Exists(input.Key) || !AnimationSourceFile.Matches(input.Key, input.Value))

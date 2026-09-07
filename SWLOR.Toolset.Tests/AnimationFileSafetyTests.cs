@@ -159,6 +159,29 @@ public class AnimationFileSafetyTests
         File.WriteAllBytes(input, [2]); File.ReadAllBytes(input).Should().Equal(new byte[] { 2 }, "all leases must be released on every exit");
     }
 
+    [TestCase(false)] [TestCase(true)]
+    public void InstallationReservesMissingResolutionPathsUntilCommitOrRollbackCompletes(bool fail)
+    {
+        var missing = Path.Combine(_folder, "higher-priority", "inherited.mdl");
+        var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
+        var checkedReservation = false;
+        var changes = new CommitConflictChanges([new(first, null, [3]), new(second, null, [4])], () =>
+        {
+            File.Exists(first).Should().BeTrue();
+            Action competingWriter = () => File.WriteAllBytes(missing, [5]);
+            competingWriter.Should().Throw<IOException>("a higher-priority resource must not appear between output commits");
+            checkedReservation = true;
+            if (fail) throw new IOException("Simulated later commit failure");
+        });
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]>(), AbsentInputs = [missing, first, second], Changes = changes };
+        Action install = plan.Apply;
+        if (fail) install.Should().Throw<IOException>(); else install.Should().NotThrow();
+        checkedReservation.Should().BeTrue(); File.Exists(first).Should().Be(!fail); File.Exists(second).Should().Be(!fail);
+        File.Exists(missing).Should().BeFalse("delete-on-close must remove every reservation on every exit");
+        File.WriteAllBytes(missing, [5]); File.ReadAllBytes(missing).Should().Equal(5);
+    }
+
     [Test] public void GltfRejectsAnOversizedDeclaredBufferBeforeOpeningItsFile()
     {
         var path = Path.Combine(_folder, "oversized.gltf");

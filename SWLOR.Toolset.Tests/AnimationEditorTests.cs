@@ -256,6 +256,33 @@ public class AnimationEditorTests
         }
         GltfAnimationSource.Load(path).Sample(0, .5f)[0].Translation.X.Should().BeApproximately(.5f, 1e-5f);
     }
+    [TestCase(false)] [TestCase(true)]
+    public void GlbAdditionalBuffersRequireTheirOwnUri(bool secondHasUri)
+    {
+        var root = JsonNode.Parse(File.ReadAllText(Gltf()))!;
+        var buffers = root["buffers"]!.AsArray(); var first = buffers[0]!.AsObject();
+        var uri = first["uri"]!.GetValue<string>(); var bin = Convert.FromBase64String(uri[(uri.IndexOf(',') + 1)..]);
+        first.Remove("uri"); var second = first.DeepClone().AsObject();
+        if (secondHasUri) second["uri"] = uri;
+        buffers.Add(second);
+        root["bufferViews"]![1]!["buffer"] = 1;
+        var json = Encoding.UTF8.GetBytes(root.ToJsonString()); var padding = (4 - json.Length % 4) % 4;
+        var path = Path.Combine(_folder, "multiple.glb");
+        using (var stream = File.Create(path))
+        using (var writer = new BinaryWriter(stream))
+        {
+            writer.Write(0x46546c67u); writer.Write(2u); writer.Write(28 + json.Length + padding + bin.Length);
+            writer.Write(json.Length + padding); writer.Write(0x4e4f534au); writer.Write(json);
+            for (var i = 0; i < padding; i++) writer.Write((byte)' ');
+            writer.Write(bin.Length); writer.Write(0x004e4942u); writer.Write(bin);
+        }
+        if (secondHasUri) GltfAnimationSource.Load(path).Sample(0, .5f)[0].Translation.X.Should().BeApproximately(.5f, 1e-5f);
+        else
+        {
+            Action load = () => GltfAnimationSource.Load(path);
+            load.Should().Throw<InvalidDataException>().WithMessage("*first GLB buffer*URI*");
+        }
+    }
     [TestCase("rootdummy")] [TestCase("ROOTDUMMY")]
     public void RetargetPreservesCalibrationAndScalesRootDisplacement(string root)
     {
@@ -592,6 +619,22 @@ public class AnimationEditorTests
         Action act = plan.Apply; act.Should().Throw<IOException>();
         File.Exists(Path.Combine(_folder, "design/animations/registry.json")).Should().BeFalse();
         File.ReadAllText(target).Should().EndWith("# external edit");
+    }
+    [TestCase(false)] [TestCase(true)]
+    public void InstallationSharesItsInputBudgetAcrossTargetsAndSupermodels(bool supermodel)
+    {
+        var target = InstallFixture(); var original = File.ReadAllText(target);
+        var other = Write("SWLOR_Haks/sw_cr_creature/other.mdl", original.Replace("hero", "other"));
+        if (supermodel) File.WriteAllText(target, original.Replace("setsupermodel hero NULL", "setsupermodel hero other"));
+        var config = Path.Combine(_folder, "Build", "hakbuilder.json");
+        var exactBudget = (int)(new FileInfo(config).Length + new FileInfo(target).Length + new FileInfo(other).Length);
+        string[] targets = supermodel ? [target] : [target, other];
+        Action rejected = () => AnimationInstall.Prepare(_folder, Rig(), targets, exactBudget - 1);
+        rejected.Should().Throw<InvalidDataException>().WithMessage("*remaining aggregate budget*");
+        Directory.GetFiles(Path.GetDirectoryName(target)!, "an_*.mdl").Should().BeEmpty();
+        var plan = AnimationInstall.Prepare(_folder, Rig(), targets, exactBudget);
+        plan.Inputs.Values.Sum(bytes => bytes.Length).Should().Be(exactBudget,
+            "the same target is read several times, but each unique snapshot consumes its budget only once");
     }
     [Test] public void InstallationRechecksInputsAfterStagingBeforePublishingAnyOutput()
     {

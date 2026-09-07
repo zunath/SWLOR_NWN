@@ -92,6 +92,7 @@ public static class AnimationInstall
 {
     public const int ClipsPerBank = 256;
     public const int MaximumModelChainDepth = 32;
+    public const int MaximumInputBytes = 128 * 1024 * 1024;
     /// <summary>Resolves a mounted rig back to its winning loose repository source, never to its HAK archive.</summary>
     public static string? FindTargetSource(string repositoryRoot, string resref)
     {
@@ -113,7 +114,11 @@ public static class AnimationInstall
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configPath)!, layer.GetProperty("Path").GetString()!))).ToArray();
 
     public static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths)
+        => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes);
+
+    internal static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths, int inputBudget)
     {
+        if (inputBudget < 1 || inputBudget > MaximumInputBytes) throw new ArgumentOutOfRangeException(nameof(inputBudget));
         project.Validate();
         if (project.Name == "AuthoredAnimation" || !Regex.IsMatch(project.Name, @"\A[A-Z][A-Za-z0-9_]*\z"))
             throw new InvalidDataException("Use a C# constant name beginning with an uppercase letter, such as SaluteWithSaber.");
@@ -124,10 +129,16 @@ public static class AnimationInstall
         var constantsPath = Path.Combine(root, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
         var inputs = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
         var absentInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var inputBytes = 0;
         byte[] Read(string path)
         {
             if (!inputs.TryGetValue(path, out var data))
-                inputs[path] = data = AnimationSourceFile.ReadBytes(path, AnimationProject.MaximumFileBytes, "Animation installation input");
+            {
+                data = AnimationSourceFile.ReadBytes(path, Math.Min(AnimationProject.MaximumFileBytes, inputBudget - inputBytes),
+                    "Animation installation input (remaining aggregate budget)");
+                inputBytes += data.Length;
+                inputs[path] = data;
+            }
             return data;
         }
         using var config = JsonDocument.Parse(Read(configPath));

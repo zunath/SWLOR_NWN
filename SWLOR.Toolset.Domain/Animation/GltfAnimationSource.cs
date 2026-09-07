@@ -65,7 +65,11 @@ public sealed class GltfAnimationSource
             if (declared < 0 || declared > remaining)
                 throw new InvalidDataException("Invalid or oversized glTF buffers.");
             ReadOnlyMemory<byte> data;
-            if (!buffer.TryGetProperty("uri", out var uri)) data = bin ?? throw new InvalidDataException("Missing GLB buffer.");
+            if (!buffer.TryGetProperty("uri", out var uri))
+            {
+                if (buffers.Count != 0) throw new InvalidDataException("Only the first GLB buffer may omit its URI.");
+                data = bin ?? throw new InvalidDataException("Missing GLB buffer.");
+            }
             else
             {
                 var value = uri.GetString()!;

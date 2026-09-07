@@ -169,6 +169,8 @@ public static class AnimationInstall
                 !Path.GetExtension(target).Equals(".mdl", StringComparison.OrdinalIgnoreCase) ||
                 !string.Equals(Resolve(Path.GetFileNameWithoutExtension(target)), target, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("Targets must be winning model files in the configured SWLOR HAK source directories.");
+            if (Read(target).AsSpan().StartsWith("# SWLOR authored animations for "u8))
+                throw new InvalidDataException("Generated animation banks cannot be installation targets. Select the original character model.");
             var currentPath = target;
             var chain = chains[target] = [];
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

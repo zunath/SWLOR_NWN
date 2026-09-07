@@ -386,6 +386,52 @@ public class AnimationEditorTests
         new FileInfo(saved).Length.Should().Be(AnimationProject.MaximumFileBytes + 1L);
         vm.ApproveApplicationClose(); vm.OnClose();
     }
+    [AvaloniaTest] public async Task OversizedMdlImportKeepsTheCurrentDocument()
+    {
+        var path = Path.Combine(_folder, "oversized.mdl");
+        using (var stream = File.Create(path)) stream.SetLength((long)AnimationMdl.MaximumFileBytes + 1);
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        var original = vm.Project;
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.ImportMdlCommand.ExecuteAsync(null);
+        vm.Status.Should().Contain("MDL exceeds 64 MB");
+        vm.Project.Should().BeSameAs(original); vm.IsDirty.Should().BeFalse();
+        vm.OnClose().Should().BeTrue();
+    }
+    [TestCase(false)] [TestCase(true)]
+    public async Task MdlFileImportPreservesBomEncodedTransforms(bool unicode)
+    {
+        var path = Path.Combine(_folder, "pose.mdl");
+        var source = Rig(); var pose = source.Sample(0);
+        pose[4] = pose[4] with { Position = new(.25f, .5f, .75f) }; source.SetKey(0, pose);
+        await File.WriteAllTextAsync(path, AnimationMdl.Export(source), unicode ? Encoding.Unicode : new UTF8Encoding(true));
+        var imported = await AnimationMdl.ImportFileAsync(path, Rig());
+        imported.Sample(.5f)[4].Position.Should().Be(pose[4].Position);
+    }
+    [TestCase("an_hero")] [TestCase("ab_hero_001")]
+    public void InstallationRejectsGeneratedBanksBeforePreparingAnyWrites(string bankName)
+    {
+        var target = InstallFixture();
+        AnimationInstall.Prepare(_folder, Rig(), [target]).Apply();
+        var firstBank = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
+        var bank = Path.Combine(Path.GetDirectoryName(target)!, bankName + ".mdl");
+        if (bank != firstBank)
+        {
+            File.WriteAllText(bank, File.ReadAllText(firstBank).Replace("an_hero", bankName));
+            File.WriteAllBytes(firstBank, AnimationInstall.PatchSupermodel(File.ReadAllBytes(firstBank), "an_hero", bankName));
+        }
+        var before = Directory.EnumerateFiles(_folder, "*", SearchOption.AllDirectories)
+            .ToDictionary(path => path, File.ReadAllBytes);
+        var next = Rig(); next.Name = "Other";
+        foreach (var selection in new[] { new[] { target, bank }, new[] { bank, target }, new[] { bank } })
+        {
+            Action prepare = () => AnimationInstall.Prepare(_folder, next, selection);
+            prepare.Should().Throw<InvalidDataException>().WithMessage("*Generated animation banks*");
+        }
+        foreach (var (path, bytes) in before) File.ReadAllBytes(path).Should().Equal(bytes);
+        Directory.EnumerateFiles(_folder, "*", SearchOption.AllDirectories).Should().BeEquivalentTo(before.Keys);
+        AnimationInstall.Prepare(_folder, next, [target]).Apply();
+    }
     [Test] public void InstallUsesNamesPreservesGeometryAndSupportsMoreClipsAndUpdates()
     {
         var target = InstallFixture(); var original = File.ReadAllText(target);

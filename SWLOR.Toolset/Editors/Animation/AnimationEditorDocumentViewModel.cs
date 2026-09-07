@@ -405,7 +405,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     {
         var path = await OpenPath("Import one MDL animation block", ["*.txt", "*.mdl"]);
         if (path == null) return;
-        Replace(AnimationMdl.Import(await File.ReadAllTextAsync(path), Project));
+        Replace(await AnimationMdl.ImportFileAsync(path, Project));
         Status = "Animation imported onto the loaded rig.";
     });
     [RelayCommand] private async Task ExportMdl() => await Run(async () =>

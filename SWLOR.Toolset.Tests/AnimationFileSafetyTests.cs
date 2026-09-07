@@ -360,6 +360,69 @@ public class AnimationFileSafetyTests
     }
 
     [Test]
+    public void BomTextInputsSupportTargetLookupAndReinstallation()
+    {
+        var (project, target) = InstallationFixture();
+        var configPath = Path.Combine(_folder, "Build", "hakbuilder.json");
+        void AddBom(string path) => File.WriteAllText(path, File.ReadAllText(path), new UTF8Encoding(true));
+        AddBom(configPath); AddBom(target);
+        AnimationInstall.FindTargetSource(_folder, "hero").Should().Be(target);
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var bankPath = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
+        var constantsPath = Path.Combine(_folder, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
+        var registryPath = Path.Combine(_folder, "design", "animations", "registry.json");
+        var projectPath = Path.Combine(_folder, "design", "animations", "uncategorized", "Wave.swlanim");
+        project.Duration = 2;
+        File.WriteAllText(projectPath, project.Serialize(), new UTF8Encoding(true));
+        foreach (var path in new[] { bankPath, constantsPath, registryPath }) AddBom(path);
+        var paths = new[] { target, configPath, bankPath, constantsPath, registryPath, projectPath };
+        var snapshots = paths.ToDictionary(path => path, File.ReadAllBytes);
+        var plan = AnimationInstall.Prepare(_folder, project, [target]);
+        foreach (var path in paths) plan.Inputs[path].Should().Equal(snapshots[path]);
+        plan.Apply();
+        foreach (var path in new[] { target, configPath, projectPath }) File.ReadAllBytes(path).Should().Equal(snapshots[path]);
+        new MdlReader().Parse(File.ReadAllBytes(bankPath)).Animations.Single(a => a.Name == "sw_wave").Length.Should().Be(2);
+        File.ReadAllText(constantsPath).Should().Contain("sw_wave\", 2f");
+    }
+
+    [TestCase(false)] [TestCase(true)]
+    public void BomConstantsKeepOwnershipAndExternalChangeProtection(bool owned)
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var path = Path.Combine(_folder, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
+        File.WriteAllText(path, owned ? File.ReadAllText(path) : "// Hand-written constants", new UTF8Encoding(true));
+        project.Duration = 2;
+        if (!owned)
+        {
+            var before = File.ReadAllBytes(path);
+            Action prepare = () => AnimationInstall.Prepare(_folder, project, [target]);
+            prepare.Should().Throw<InvalidDataException>().WithMessage("*not owned*");
+            File.ReadAllBytes(path).Should().Equal(before);
+        }
+        else
+        {
+            var plan = AnimationInstall.Prepare(_folder, project, [target]);
+            File.AppendAllText(path, "// External edit\n");
+            var edited = File.ReadAllBytes(path);
+            Action apply = plan.Apply;
+            apply.Should().Throw<IOException>().WithMessage("*changed after the installation preview*");
+            File.ReadAllBytes(path).Should().Equal(edited);
+        }
+    }
+
+    [Test]
+    public void BomDoesNotAllowGeneratedBanksToBeUsedAsInstallationTargets()
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var bank = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
+        File.WriteAllText(bank, File.ReadAllText(bank), new UTF8Encoding(true));
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [bank]);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("Generated animation banks cannot be installation targets*");
+    }
+
+    [Test]
     public void LegacyRegistryWithoutSourcePathKeepsItsExistingProjectInPlace()
     {
         var (project, target) = InstallationFixture();

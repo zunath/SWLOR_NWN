@@ -5,6 +5,11 @@ namespace SWLOR.Toolset.Domain.Animation;
 /// <summary>Reads one bounded file snapshot without allocating from an unchecked file size.</summary>
 public static class AnimationSourceFile
 {
+    // Parse UTF-8 text without its optional preamble; keep the full byte array for
+    // conditional writes and external-change snapshots.
+    internal static ReadOnlyMemory<byte> Utf8Content(byte[] bytes) =>
+        bytes.AsSpan().StartsWith("\uFEFF"u8) ? bytes.AsMemory(3) : bytes;
+
     public static bool Matches(string path, ReadOnlySpan<byte> expected)
     {
         using var stream = Open(path, FileOptions.SequentialScan);

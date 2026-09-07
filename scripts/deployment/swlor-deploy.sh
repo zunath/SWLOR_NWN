@@ -298,6 +298,57 @@ compose()
         "${compose_arguments[@]}" "$@"
 }
 
+server_runtime_directories=(
+    "$SERVER_ROOT/app_logs"
+    "$SERVER_ROOT/database"
+    "$SERVER_ROOT/development"
+    "$SERVER_ROOT/logs"
+    "$SERVER_ROOT/nwsync"
+    "$SERVER_ROOT/override"
+    "$SERVER_ROOT/portraits"
+    "$SERVER_ROOT/saves"
+    "$SERVER_ROOT/servervault"
+)
+server_artifact_directories=(
+    "$SERVER_HAK_ROOT"
+    "$SERVER_TLK_ROOT"
+    "$SERVER_MODULE_ROOT"
+    "$SERVER_DOTNET_ROOT"
+)
+server_runtime_configuration_files=(
+    "$SERVER_ROOT/cryptographic_secret"
+    "$SERVER_ROOT/nwn.ini"
+    "$SERVER_ROOT/nwnplayer.ini"
+    "$SERVER_ROOT/settings.tml"
+)
+
+validate_server_runtime_paths()
+{
+    local runtime_directory
+    local artifact_directory
+    local configuration_file
+
+    [[ -d "$SERVER_ROOT" && ! -L "$SERVER_ROOT" ]] ||
+        die "Server root is missing or is a symbolic link: $SERVER_ROOT"
+
+    for runtime_directory in "${server_runtime_directories[@]}"; do
+        [[ ! -e "$runtime_directory" && ! -L "$runtime_directory" ]] && continue
+        [[ -d "$runtime_directory" && ! -L "$runtime_directory" ]] ||
+            die "Runtime path is not an ordinary directory: $runtime_directory"
+    done
+
+    for artifact_directory in "${server_artifact_directories[@]}"; do
+        [[ -d "$artifact_directory" && ! -L "$artifact_directory" ]] ||
+            die "Server artifact directory is missing or is a symlink: $artifact_directory"
+    done
+
+    for configuration_file in "${server_runtime_configuration_files[@]}"; do
+        [[ ! -e "$configuration_file" && ! -L "$configuration_file" ]] && continue
+        [[ -f "$configuration_file" && ! -L "$configuration_file" ]] ||
+            die "Runtime configuration is not a regular file: $configuration_file"
+    done
+}
+
 prepare_server_runtime_permissions()
 {
     local runtime_identity="$SERVER_RUNTIME_UID:$SERVER_RUNTIME_GID"
@@ -305,27 +356,17 @@ prepare_server_runtime_permissions()
     local readable_directory
     local readable_file
 
+    validate_server_runtime_paths
+
     # /nwn/home is the bind-mounted SERVER_ROOT. Keep the root itself owned by
     # root so the game process cannot replace Compose or environment files, but
     # let the runtime group traverse it.
     chown root:"$SERVER_RUNTIME_GID" "$SERVER_ROOT"
-    chmod g+rx "$SERVER_ROOT"
+    chmod 0750 "$SERVER_ROOT"
 
     # These are the persistent paths written by the upstream entrypoint, NWN,
     # NWNX, or SWLOR. Existing hosts are migrated immediately before startup.
-    for runtime_directory in \
-        "$SERVER_ROOT/app_logs" \
-        "$SERVER_ROOT/database" \
-        "$SERVER_ROOT/development" \
-        "$SERVER_ROOT/logs" \
-        "$SERVER_ROOT/nwsync" \
-        "$SERVER_ROOT/override" \
-        "$SERVER_ROOT/portraits" \
-        "$SERVER_ROOT/saves" \
-        "$SERVER_ROOT/servervault"
-    do
-        [[ ! -L "$runtime_directory" ]] ||
-            die "Runtime directory must not be a symbolic link: $runtime_directory"
+    for runtime_directory in "${server_runtime_directories[@]}"; do
         if [[ ! -e "$runtime_directory" ]]; then
             install -d \
                 -o "$SERVER_RUNTIME_UID" \
@@ -333,8 +374,6 @@ prepare_server_runtime_permissions()
                 -m 0750 \
                 "$runtime_directory"
         fi
-        [[ -d "$runtime_directory" ]] ||
-            die "Runtime path is not a directory: $runtime_directory"
         find "$runtime_directory" -xdev \
             \( -type f -o -type d \) \
             \( ! -uid "$SERVER_RUNTIME_UID" -o ! -gid "$SERVER_RUNTIME_GID" \) \
@@ -347,34 +386,20 @@ prepare_server_runtime_permissions()
 
     # Deployment artifacts remain root-owned and are only readable/executable
     # by the runtime group. A compromised game process cannot rewrite them.
-    for readable_directory in \
-        "$SERVER_HAK_ROOT" \
-        "$SERVER_TLK_ROOT" \
-        "$SERVER_MODULE_ROOT" \
-        "$SERVER_DOTNET_ROOT"
-    do
-        [[ -d "$readable_directory" && ! -L "$readable_directory" ]] ||
-            die "Server artifact directory is missing or is a symlink: $readable_directory"
+    for readable_directory in "${server_artifact_directories[@]}"; do
         find "$readable_directory" -xdev \
             \( -type f -o -type d \) \
             \( ! -uid 0 -o ! -gid "$SERVER_RUNTIME_GID" \) \
             -exec chown root:"$SERVER_RUNTIME_GID" -- {} +
-        chmod -R g+rX,g-w "$readable_directory"
+        chmod -R g+rX,g-w,o-w "$readable_directory"
     done
 
     # The entrypoint imports these optional host files into its writable shadow
     # home. Grant read access without giving the runtime ownership of them.
-    for readable_file in \
-        "$SERVER_ROOT/cryptographic_secret" \
-        "$SERVER_ROOT/nwn.ini" \
-        "$SERVER_ROOT/nwnplayer.ini" \
-        "$SERVER_ROOT/settings.tml"
-    do
+    for readable_file in "${server_runtime_configuration_files[@]}"; do
         [[ -e "$readable_file" ]] || continue
-        [[ -f "$readable_file" && ! -L "$readable_file" ]] ||
-            die "Runtime configuration is not a regular file: $readable_file"
         chown root:"$SERVER_RUNTIME_GID" "$readable_file"
-        chmod g+r,g-w "$readable_file"
+        chmod g+r,g-w,o-w "$readable_file"
     done
 
     log "Prepared server bind mounts for non-root runtime UID $SERVER_RUNTIME_UID and GID $SERVER_RUNTIME_GID."
@@ -793,6 +818,12 @@ do
     [[ -d "$content_directory" && ! -L "$content_directory" ]] ||
         die "Server content directory is missing or is a symlink: $content_directory"
 done
+
+# Reject every path that the non-root permission migration could otherwise
+# mutate before the build begins or the running Compose project is stopped.
+# prepare_server_runtime_permissions repeats this check at cutover as a
+# defense against paths changing during a long build.
+validate_server_runtime_paths
 
 for path_pair in \
     "$NWSYNC_HAK_ROOT|$SERVER_HAK_ROOT|HAK" \

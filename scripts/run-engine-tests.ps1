@@ -110,6 +110,11 @@ function Write-Section($message) {
     Write-Host "=== $message ===" -ForegroundColor Cyan
 }
 
+function ConvertTo-Base64Utf8($text) {
+    $utf8WithoutBom = [System.Text.UTF8Encoding]::new($false)
+    return [Convert]::ToBase64String($utf8WithoutBom.GetBytes($text))
+}
+
 if (-not $SkipBuild) {
     Write-Section "Building SWLOR.Game.Server ($Configuration)"
 
@@ -164,17 +169,6 @@ if (-not (Test-Path $stagedRuntimeConfig)) {
     exit 1
 }
 
-# Stale report from a previous run must not be mistaken for this run's result.
-# If deletion fails and the server then crashes before writing a fresh report,
-# we would otherwise parse the old report and report a bogus pass.
-if (Test-Path $ReportPath) {
-    Remove-Item $ReportPath -Force
-}
-if (Test-Path $ReportPath) {
-    Write-Host "Could not remove stale report at $ReportPath - aborting so this run cannot be judged by a previous run's results." -ForegroundColor Red
-    exit 1
-}
-
 Write-Section "Running engine tests via docker compose (server home: $ServerHome)"
 # Everything mutated below is restored in the outer finally: PowerShell env changes
 # outlive the script in the calling shell, and a leaked SWLOR_ENGINE_TEST_HAK_DIR
@@ -185,6 +179,23 @@ $previousFilter = $env:SWLOR_ENGINE_TEST_FILTER
 $previousArenaResref = $env:SWLOR_ENGINE_TEST_ARENA_RESREF
 $previousHakDir = $env:SWLOR_ENGINE_TEST_HAK_DIR
 $previousHome = $env:SWLOR_ENGINE_TEST_HOME
+$permissionSnapshotName = ".swlor-engine-test-permissions.$PID.snapshot"
+$permissionSnapshotContainer = "/nwn/home/$permissionSnapshotName"
+$permissionsPrepared = $false
+$locationPushed = $false
+$cleanupFailures = @()
+$hostUid = "1000"
+$hostGid = "1000"
+if ([System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Unix) {
+    $hostUid = ((& id -u) | Out-String).Trim()
+    if ($LASTEXITCODE -ne 0 -or $hostUid -notmatch '^\d+$') {
+        throw "Could not determine the invoking user's UID."
+    }
+    $hostGid = ((& id -g) | Out-String).Trim()
+    if ($LASTEXITCODE -ne 0 -or $hostGid -notmatch '^\d+$') {
+        throw "Could not determine the invoking user's GID."
+    }
+}
 try {
     $env:SWLOR_ENGINE_TEST_FILTER = $Filter
     $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
@@ -223,6 +234,7 @@ try {
 
     # Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
     Push-Location $ServerHome
+    $locationPushed = $true
     # docker compose writes progress to stderr; under ErrorActionPreference=Stop with
     # redirected output (CI, transcripts, IDE consoles) every such line would become a
     # terminating NativeCommandError. Relax it for the native compose calls only.
@@ -233,12 +245,26 @@ try {
         & docker compose -p $ComposeProject -f $ComposeFile down --volumes --remove-orphans 2>&1 | ForEach-Object { "$_" } | Write-Host
 
         # The production deployer performs the same ownership migration before
-        # starting the non-root image. Engine-test homes may predate that image,
-        # so prepare only its runtime-writable state with a short-lived root
-        # helper; the actual NWN/NWNX container still runs as UID/GID 1000.
+        # starting the non-root image. Preserve the developer's existing
+        # ownership and modes before the short-lived root helper grants UID/GID
+        # 1000 access. Cleanup restores that metadata on every exit and gives
+        # newly-created files back to the invoking developer.
         Write-Section "Preparing engine-test home for the non-root runtime"
         $permissionScript = @'
 set -e
+snapshot="$SWLOR_PERMISSION_SNAPSHOT"
+rm -f /nwn/home/app_logs/engine_tests/engine-test-results.json
+: > "$snapshot"
+chmod 0600 "$snapshot"
+
+cd /nwn/home
+for path in app_logs database development logs nwsync override portraits saves servervault \
+            cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
+  if test -e "$path" || test -L "$path"; then
+    find "$path" -xdev -printf "%p\0%U\0%G\0%m\0%y\0" >> "$snapshot"
+  fi
+done
+
 for path in app_logs database development logs nwsync override portraits saves servervault; do
   mkdir -p "/nwn/home/$path"
   chown -R 1000:1000 "/nwn/home/$path"
@@ -251,9 +277,17 @@ for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
   fi
 done
 '@
-        & docker compose -p $ComposeProject -f $ComposeFile run --rm --no-deps --user 0:0 --entrypoint /bin/bash swlor-server -lc $permissionScript 2>&1 | ForEach-Object { "$_" } | Write-Host
+        $permissionScriptBase64 = ConvertTo-Base64Utf8 $permissionScript
+        $permissionsPrepared = $true
+        & docker compose -p $ComposeProject -f $ComposeFile run --rm --no-deps -T --user 0:0 --entrypoint /bin/bash -e "SWLOR_PERMISSION_SNAPSHOT=$permissionSnapshotContainer" -e "SWLOR_PERMISSION_SCRIPT_BASE64=$permissionScriptBase64" swlor-server -lc 'printf "%s" "$SWLOR_PERMISSION_SCRIPT_BASE64" | base64 --decode | /bin/bash' 2>&1 | ForEach-Object { "$_" } | Write-Host
         if ($LASTEXITCODE -ne 0) {
             throw "Could not prepare the engine-test home for UID/GID 1000."
+        }
+
+        # The stale result is removed by the privileged helper before the
+        # ownership snapshot. It must be absent before the test server starts.
+        if (Test-Path $ReportPath) {
+            throw "Could not remove stale report at $ReportPath - aborting so this run cannot be judged by a previous run's results."
         }
 
         # HARD WALL CLOCK. `up --abort-on-container-exit` blocks until a container exits, and
@@ -286,12 +320,68 @@ done
             $composeExitCode = 124
         }
 
-        Write-Section "Tearing down containers"
-        & docker compose -p $ComposeProject -f $ComposeFile down --volumes 2>&1 | ForEach-Object { "$_" } | Write-Host
     }
     finally {
+        if ($locationPushed) {
+            Write-Section "Tearing down containers"
+            & docker compose -p $ComposeProject -f $ComposeFile stop 2>&1 | ForEach-Object { "$_" } | Write-Host
+            $composeStopExitCode = $LASTEXITCODE
+
+            if ($permissionsPrepared) {
+                $restorePermissionScript = @'
+set -e
+snapshot="$SWLOR_PERMISSION_SNAPSHOT"
+test -f "$snapshot" || exit 0
+
+# Files created by the test run belong to the invoking developer. Exact
+# ownership and modes for paths that existed before the run are then restored
+# from the NUL-delimited snapshot.
+for path in app_logs database development logs nwsync override portraits saves servervault; do
+  if test -e "/nwn/home/$path"; then
+    chown -R "$SWLOR_HOST_UID:$SWLOR_HOST_GID" "/nwn/home/$path"
+  fi
+done
+
+while IFS= read -r -d "" relative_path &&
+      IFS= read -r -d "" owner_uid &&
+      IFS= read -r -d "" owner_gid &&
+      IFS= read -r -d "" file_mode &&
+      IFS= read -r -d "" file_type
+do
+  target="/nwn/home/$relative_path"
+  if test -e "$target" || test -L "$target"; then
+    if test "$file_type" = l; then
+      chown -h "$owner_uid:$owner_gid" "$target"
+    else
+      chown "$owner_uid:$owner_gid" "$target"
+      chmod "$file_mode" "$target"
+    fi
+  fi
+done < "$snapshot"
+
+rm -f "$snapshot"
+'@
+                $restorePermissionScriptBase64 = ConvertTo-Base64Utf8 $restorePermissionScript
+                & docker compose -p $ComposeProject -f $ComposeFile run --rm --no-deps -T --user 0:0 --entrypoint /bin/bash -e "SWLOR_PERMISSION_SNAPSHOT=$permissionSnapshotContainer" -e "SWLOR_HOST_UID=$hostUid" -e "SWLOR_HOST_GID=$hostGid" -e "SWLOR_PERMISSION_SCRIPT_BASE64=$restorePermissionScriptBase64" swlor-server -lc 'printf "%s" "$SWLOR_PERMISSION_SCRIPT_BASE64" | base64 --decode | /bin/bash' 2>&1 | ForEach-Object { "$_" } | Write-Host
+                $permissionRestoreExitCode = $LASTEXITCODE
+                $permissionsPrepared = $false
+                if ($permissionRestoreExitCode -ne 0) {
+                    $cleanupFailures += "Could not restore engine-test home ownership and modes."
+                }
+            }
+
+            & docker compose -p $ComposeProject -f $ComposeFile down --volumes --remove-orphans 2>&1 | ForEach-Object { "$_" } | Write-Host
+            $composeCleanupExitCode = $LASTEXITCODE
+
+            if ($composeStopExitCode -ne 0 -or $composeCleanupExitCode -ne 0) {
+                $cleanupFailures += "Could not tear down the engine-test Compose project."
+            }
+        }
         $ErrorActionPreference = $previousErrorActionPreference
-        Pop-Location
+        if ($locationPushed) {
+            Pop-Location
+            $locationPushed = $false
+        }
     }
 }
 finally {
@@ -299,6 +389,10 @@ finally {
     $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $previousArenaResref
     $env:SWLOR_ENGINE_TEST_HAK_DIR = $previousHakDir
     $env:SWLOR_ENGINE_TEST_HOME = $previousHome
+}
+
+if ($cleanupFailures.Count -gt 0) {
+    throw ($cleanupFailures -join " ")
 }
 
 Write-Host "docker compose exit code: $composeExitCode"

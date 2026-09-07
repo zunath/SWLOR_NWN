@@ -28,6 +28,52 @@ public class AnimationFileSafetyTests
         return (project, target);
     }
 
+    [Test]
+    public void CompletedBankSizeAllocatesANewBankAndRemainsEditable()
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var native = File.ReadAllBytes(target);
+        var first = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
+        var budget = File.ReadAllBytes(first).Length + 200;
+        project.Name = "Other";
+        var install = AnimationInstall.Prepare(_folder, project, [target], AnimationInstall.MaximumInputBytes, bankBudget: budget);
+        install.Apply();
+        var firstModel = new MdlReader().Parse(File.ReadAllBytes(first));
+        var second = Path.Combine(Path.GetDirectoryName(target)!, firstModel.SuperModel + ".mdl");
+        firstModel.Animations.Select(a => a.Name).Should().Contain("sw_wave").And.NotContain(install.AnimationName);
+        new MdlReader().Parse(File.ReadAllBytes(second)).Animations.Should().Contain(a => a.Name == install.AnimationName);
+        File.ReadAllBytes(first).Length.Should().BeLessThanOrEqualTo(budget);
+        File.ReadAllBytes(second).Length.Should().BeLessThanOrEqualTo(budget);
+        File.ReadAllBytes(target).Should().Equal(native);
+        project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, [target], AnimationInstall.MaximumInputBytes, bankBudget: budget).Apply();
+        new MdlReader().Parse(File.ReadAllBytes(second)).Animations.Single(a => a.Name == install.AnimationName).Length.Should().Be(2);
+    }
+
+    [TestCase(false)] [TestCase(true)]
+    public void OversizedNewAndReplacementBanksAreRejectedBeforeWriting(bool replacement)
+    {
+        var (project, target) = InstallationFixture();
+        var budget = 100;
+        if (replacement)
+        {
+            AnimationInstall.Prepare(_folder, project, [target]).Apply();
+            budget = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")).Length + 200;
+            for (var i = 0; i <= 100; i++)
+            {
+                var pose = project.Joints.Select(j => j.Rest).ToArray();
+                pose[1] = pose[1] with { Position = new Vector3(i / 100f, 0, 1) };
+                project.SetKey(i / 100f, pose);
+            }
+        }
+        var before = Directory.GetFiles(_folder, "*", SearchOption.AllDirectories).ToDictionary(p => p, File.ReadAllBytes);
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [target], AnimationInstall.MaximumInputBytes, bankBudget: budget);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*bank exceeds its input size limit*");
+        Directory.GetFiles(_folder, "*", SearchOption.AllDirectories).Should().BeEquivalentTo(before.Keys);
+        foreach (var file in before) File.ReadAllBytes(file.Key).Should().Equal(file.Value);
+    }
+
     [TestCase(false, false)] [TestCase(true, false)] [TestCase(false, true)]
     public void OccupiedShortBankNamesAllocateAndRetainAFreeName(bool otherLayer, bool inherited)
     {

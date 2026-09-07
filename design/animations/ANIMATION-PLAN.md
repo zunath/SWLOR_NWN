@@ -4,6 +4,8 @@ The current player perks have 214 animation requirements across all ranks: 7 ins
 
 Of the 206 missing clips, 112 have a matching Bible image reference and 94 need a reference or motion brief. Rows represent perk requirements; a shared motion can satisfy multiple compatible perks. Passive traits and NPC-only abilities are excluded.
 
+Beast abilities are excluded: their model-specific rigs and native animations are outside this plan. Player-performed Beast Mastery actions remain included: Tame (including Call Beast), Revive Beast, Reward, Soothe Pet, Guarding Bond, and Predatory Bond.
+
 The existing NWN playback is recorded in [animation-plan.csv](animation-plan.csv), along with perk identifiers, current gameplay descriptions, and ability source files. An existing native gesture does not mean a custom clip has been authored. Stances, auras, and toggles are marked as shared activation candidates; Stealth uses the native action mode.
 
 The reference links come from the cleaned Animations tab in [the Design Bible](../bible/SWLOR%20Design%20Bible%20-%20Combat%20Upgrade.xlsx). Keep the actual perk behavior as the motion brief when an older image depicts a different effect.

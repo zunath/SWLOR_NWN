@@ -45,7 +45,7 @@ public class AnimationPlanningTests
         return rows.ToArray();
     }
 
-    internal static PerkDetail[] CurrentPerks()
+    private static PerkDetail[] AllPerks()
     {
         var perks = new List<PerkDetail>();
         // Match the existing Bible audit's offline construction path; icon lookup needs the NWN VM.
@@ -60,8 +60,22 @@ public class AnimationPlanningTests
             perks.AddRange(((Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
                 .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(builder)!).Values);
         }
-        return perks.Where(perk => perk.IsActive && perk.GroupType == PerkGroupType.Player &&
-            typeof(PerkCategoryType).GetField(perk.Category.ToString())!.GetCustomAttribute<PerkCategoryAttribute>()!.IsActive).ToArray();
+        return perks.ToArray();
+    }
+
+    internal static PerkDetail[] CurrentPerks() => AllPerks().Where(perk => perk.IsActive &&
+        perk.GroupType == PerkGroupType.Player && typeof(PerkCategoryType).GetField(perk.Category.ToString())!
+            .GetCustomAttribute<PerkCategoryAttribute>()!.IsActive).ToArray();
+
+    [Test]
+    public void BeastPerksAreExcludedWhilePlayerBeastMasteryRemains()
+    {
+        var beasts = AllPerks().Where(perk => perk.GroupType == PerkGroupType.Beast).Select(perk => perk.Type.ToString()).ToArray();
+        beasts.Should().NotBeEmpty();
+        var plan = Csv("design/animations/animation-plan.csv");
+        plan.Select(row => row["PerkId"]).Should().NotIntersectWith(beasts);
+        plan.Where(row => row["Category"] == "Beast Mastery").Select(row => row["PerkId"]).Should().BeEquivalentTo(
+            "Tame", "ReviveBeast", "Reward", "SoothePet", "GuardingBond", "PredatoryBond");
     }
 
     [Test]

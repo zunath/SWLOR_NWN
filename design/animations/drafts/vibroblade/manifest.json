@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "4ae45dbf70a01d6805b2c17a00e6ecb37aea20d6581d04e366b8cfa3dcbceb89",
+  "RecipeSha256": "3d5b0336c1577feac57d66fe9ab70115f32a103935107205d66156f9b16a442d",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -201,7 +201,7 @@
       "BibleRow": 7,
       "Reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
       "Observation": "A direct right-hand cut extends toward one target with a compact arc and a braced front leg.",
-      "Interpretation": "A compact descending diagonal cut with a brief shoulder chamber, continuous acceleration through contact, a low finish to the left, and a controlled return. The hips lead the chest and the feet stay planted.",
+      "Interpretation": "A compact descending diagonal cut with a brief shoulder chamber, continuous acceleration through contact, and a low finish to the left. The forearm carries the grip as the blade drops through the finish and returns without twisting the wrist. The hips lead the chest and the feet stay planted.",
       "Status": "Draft: visual review required",
       "Project": "RiotBlade.swlanim",
       "Duration": 0.9,
@@ -242,7 +242,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "c3966bca912a64af3d76bee86545158e9b06c349886e4ce5209d4f8a5261766f"
+      "ProjectSha256": "2ca5bb47c8312539c158331d84285f570f72f8e787eefdb3dfff5f940c8a362c"
     },
     {
       "Id": "RendingStrike",

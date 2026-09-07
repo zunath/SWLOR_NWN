@@ -888,11 +888,12 @@
     },
     {
       "id": "RiotBlade",
+      "naturalGrip": true,
       "name": "Riot Blade",
       "bibleRow": 7,
       "reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
       "observation": "A direct right-hand cut extends toward one target with a compact arc and a braced front leg.",
-      "interpretation": "A compact descending diagonal cut with a brief shoulder chamber, continuous acceleration through contact, a low finish to the left, and a controlled return. The hips lead the chest and the feet stay planted.",
+      "interpretation": "A compact descending diagonal cut with a brief shoulder chamber, continuous acceleration through contact, and a low finish to the left. The forearm carries the grip as the blade drops through the finish and returns without twisting the wrist. The hips lead the chest and the feet stay planted.",
       "shield": false,
       "beats": [
         {
@@ -929,7 +930,7 @@
             "rightHand": [
               0.37,
               0.09,
-              1.59
+              1.56
             ],
             "blade": [
               0.3,
@@ -1058,9 +1059,9 @@
               1.17
             ],
             "blade": [
-              -0.72,
-              0.55,
-              -0.42
+              -0.4,
+              0.32,
+              -0.86
             ],
             "chest": [
               4,
@@ -1100,9 +1101,9 @@
               1.19
             ],
             "blade": [
-              -0.1,
-              0.97,
-              0.23
+              0.15,
+              0.95,
+              0
             ],
             "chest": [
               2,

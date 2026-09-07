@@ -193,10 +193,27 @@ public class AnimationDraftAssetTests
         Vector3.Dot(Vector3.Normalize(incoming), Vector3.Normalize(outgoing)).Should().BeGreaterThan(.75f);
     }
 
-    [Test]
-    public void CoveringStrikeRetainsALimitedContinuousWristBend()
+    [TestCase("CoveringStrike", null)]
+    [TestCase("RiotBlade", null)]
+    [TestCase("RiotBlade", "a_ba")]
+    [TestCase("RiotBlade", "a_fa")]
+    public void SwordGripRetainsALimitedContinuousWristBend(string name, string? installedModel)
     {
-        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "CoveringStrike.swlanim")));
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
+        if (installedModel != null)
+        {
+            var target = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root,
+                "SWLOR_Haks", "sw_cr_creature", installedModel + ".mdl")));
+            var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root,
+                "SWLOR_Haks", "sw_cr_creature", target.SuperModel + ".mdl")));
+            var registered = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(
+                Path.Combine(Root, "design", "animations", "registry.json")))!.Single(r => r.Name == name);
+            var clip = overlay.Animations.Single(a => a.Name == registered.AnimationName);
+            project = AnimationProject.FromModel(target);
+            project.Keys.Clear(); project.Duration = clip.Length;
+            foreach (var frame in MdlAnimationPose.SampleFrames(clip, 120, 240, MdlAnimationPose.BindPose(target)))
+                project.SetKey(frame.Seconds, project.Joints.Select(j => frame.Pose.TryGetValue(j.Name, out var p) ? p : j.Rest).ToArray());
+        }
         var hand = project.Joints.FindIndex(j => j.Name == "rhand_g");
         var rest = project.Joints[hand].Rest.Orientation;
         var previous = project.Sample(0)[hand].Orientation;
@@ -205,7 +222,7 @@ public class AnimationDraftAssetTests
         {
             var rotation = project.Sample(t)[hand].Orientation;
             Angle(rest, rotation).Should().BeLessThan(65, "the forearm should carry roll rather than folding the wrist over");
-            Angle(previous, rotation).Should().BeLessThan(5, "the thrust and recovery must not flip the wrist between frames");
+            Angle(previous, rotation).Should().BeLessThan(5, "the attack and recovery must not flip the wrist between frames");
             previous = rotation;
         }
     }

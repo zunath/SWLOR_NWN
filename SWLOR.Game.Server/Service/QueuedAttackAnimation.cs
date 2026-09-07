@@ -29,6 +29,8 @@ public static class QueuedAttackAnimation
             else SetLocalString(creature, TokenVariable, token);
         }
         public void Replace(uint creature, string source, string replacement) => ReplaceObjectAnimation(creature, source, replacement);
+        public ActionType CurrentAction(uint creature) => GetCurrentAction(creature);
+        public void ClearActions(uint creature) => ClearAllActions(oObject: creature);
         public void Schedule(float seconds, Action callback) => AssignCommand(GetModule(), () => DelayCommand(seconds, callback));
     }
 }

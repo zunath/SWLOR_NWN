@@ -98,6 +98,8 @@ public class AuthoredCombatAnimationTests
         public string GetToken(uint creature) => Token;
         public void SetToken(uint creature, string token) => Token = token;
         public void Replace(uint creature, string source, string replacement) => Maps[source] = replacement;
+        public ActionType CurrentAction(uint creature) => ActionType.Invalid;
+        public void ClearActions(uint creature) => throw new InvalidOperationException("Swing remapping must not clear the action queue.");
         public void Schedule(float seconds, Action callback) => Timeouts.Add(callback);
     }
 }

@@ -33,7 +33,7 @@ services:
         build:
           context: .
           dockerfile: Dockerfile
-        image: zunath/nwn-dotnet:8193.37.15-2
+        image: zunath/nwn-dotnet:8193.37.17-1
         env_file: ${SWLOR_ENGINE_TEST_HOME:-.}/swlor.env
         # These override the values loaded from swlor.env above (Compose gives
         # `environment:` precedence over `env_file:`).

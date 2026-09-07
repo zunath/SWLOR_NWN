@@ -270,12 +270,12 @@ public static class AnimationInstall
         var layers = ReadLayers(configPath, config.RootElement);
         var layerModels = layers.Distinct(PathComparer).ToDictionary(layer => layer, IndexModels, PathComparer);
         // Resolve by the same first-HAK-wins order used by the resource index and pack pipeline.
-        string? Resolve(string name)
+        string? Resolve(string name, bool recordAbsence = true)
         {
             foreach (var layer in layers)
             {
                 if (layerModels[layer].TryGetValue(name, out var path)) return path;
-                absentInputs.Add(Path.Combine(layer, name.ToLowerInvariant() + ".mdl"));
+                if (recordAbsence) absentInputs.Add(Path.Combine(layer, name.ToLowerInvariant() + ".mdl"));
             }
             return null;
         }
@@ -398,7 +398,7 @@ public static class AnimationInstall
                     throw new InvalidDataException("Registered target is missing its authored animation bank.");
                 overlayName = model.SuperModel;
             }
-            else if (overlayName.Length > 16 || Resolve(overlayName) != null ||
+            else if (overlayName.Length > 16 || Resolve(overlayName, recordAbsence: false) != null ||
                 plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)))
             {
                 // Leave room for a readable collision suffix even for a full-length target resref.
@@ -408,7 +408,7 @@ public static class AnimationInstall
                 {
                     if (number > 9999) throw new InvalidDataException("No free animation bank names remain for this target.");
                     overlayName = prefix + (number++).ToString("D4", System.Globalization.CultureInfo.InvariantCulture);
-                } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
+                } while (Resolve(overlayName, recordAbsence: false) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
             }
             AnimationProject.ValidateToken(overlayName, 16);
             var overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
@@ -449,9 +449,9 @@ public static class AnimationInstall
                 {
                     if (number > 999) throw new InvalidDataException("No free animation bank names remain for this target.");
                     overlayName = prefix + (number++).ToString("D3", System.Globalization.CultureInfo.InvariantCulture);
-                } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
+                } while (Resolve(overlayName, recordAbsence: false) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
                 overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
-                existingOverlay = null;
+                existingOverlay = Resolve(overlayName); // Reserve only the accepted free name.
             }
             (string Text, Dictionary<string, string> Blocks) BuildOverlay()
             {

@@ -15,6 +15,19 @@ public class AnimationFileSafetyTests
     [SetUp] public void Setup() { _folder = Path.Combine(Path.GetTempPath(), "swlor-animation-files-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(_folder); }
     [TearDown] public void Teardown() { Directory.Delete(_folder, true); }
 
+    private void RequireCaseSensitiveFileSystem()
+    {
+        var probe = Path.Combine(_folder, "case-probe");
+        bool aliases;
+        try
+        {
+            File.WriteAllText(probe, "probe");
+            aliases = File.Exists(Path.Combine(_folder, "CASE-PROBE"));
+        }
+        finally { File.Delete(probe); }
+        if (aliases) Assert.Ignore("Differently cased paths alias on this filesystem.");
+    }
+
     private (AnimationProject Project, string Target) InstallationFixture()
     {
         var project = new AnimationProject { Name = "Wave", ModelName = "hero", AnimationRoot = "rootdummy",
@@ -85,7 +98,7 @@ public class AnimationFileSafetyTests
     [Test]
     public void AmbiguousCaseVariantsInOneHakLayerAreRejected()
     {
-        if (OperatingSystem.IsWindows()) Assert.Ignore("Case variants alias the same file on Windows.");
+        RequireCaseSensitiveFileSystem();
         var (project, target) = InstallationFixture();
         File.Copy(target, Path.Combine(Path.GetDirectoryName(target)!, "HERO.MDL"));
         Action find = () => AnimationInstall.FindTargetSource(_folder, "hero");
@@ -97,7 +110,7 @@ public class AnimationFileSafetyTests
     [Test]
     public void ACaseVariantCreatedDuringCommitIsDetectedAndOutputsAreRolledBack()
     {
-        if (OperatingSystem.IsWindows()) Assert.Ignore("The existing reservation also blocks case variants on Windows.");
+        RequireCaseSensitiveFileSystem();
         var input = Path.Combine(_folder, "hero.mdl"); File.WriteAllBytes(input, [1]);
         var missing = Path.Combine(_folder, "first", "hero.mdl");
         var competing = Path.Combine(_folder, "first", "HERO.MDL");
@@ -116,8 +129,7 @@ public class AnimationFileSafetyTests
     [TestCase("swlor_haks")]
     public void InstallationRejectsConfiguredTargetsInSiblingHakTrees(string sibling)
     {
-        if (OperatingSystem.IsWindows() && sibling == "swlor_haks")
-            Assert.Ignore("The case-only sibling aliases the HAK tree on Windows.");
+        if (sibling == "swlor_haks") RequireCaseSensitiveFileSystem();
         var (project, target) = InstallationFixture();
         AnimationInstall.FindTargetSource(_folder, "hero").Should().Be(target);
         var outside = Path.Combine(_folder, sibling, "models", "hero.mdl");
@@ -136,7 +148,7 @@ public class AnimationFileSafetyTests
     [Test]
     public void InstallationRejectsACaseDifferingNonWinningLayer()
     {
-        if (OperatingSystem.IsWindows()) Assert.Ignore("Case-only layer paths alias on Windows.");
+        RequireCaseSensitiveFileSystem();
         var (project, winner) = InstallationFixture();
         var shadowed = Path.Combine(_folder, "SWLOR_Haks", "Models", "hero.mdl");
         Directory.CreateDirectory(Path.GetDirectoryName(shadowed)!);
@@ -146,6 +158,39 @@ public class AnimationFileSafetyTests
         AnimationInstall.FindTargetSource(_folder, "hero").Should().Be(winner);
         Action prepare = () => AnimationInstall.Prepare(_folder, project, [shadowed]);
         prepare.Should().Throw<InvalidDataException>().WithMessage("*winning model files*");
+    }
+
+    [TestCase(false)] [TestCase(true)]
+    public void RejectedBankNamesDoNotConsumeMissingResourceReservations(bool rollover)
+    {
+        var (project, target) = InstallationFixture();
+        var folder = Path.GetDirectoryName(target)!;
+        var layers = Enumerable.Range(0, 5).Select(i => $"../SWLOR_Haks/first{i}").Append("../SWLOR_Haks/models");
+        File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"),
+            JsonSerializer.Serialize(new { HakList = layers.Select(path => new { Path = path }) }));
+        var budget = AnimationProject.MaximumFileBytes;
+        if (rollover)
+        {
+            AnimationInstall.Prepare(_folder, project, [target]).Apply();
+            budget = File.ReadAllBytes(Path.Combine(folder, "an_hero.mdl")).Length + 200;
+            project.Name = "Other";
+        }
+        else File.WriteAllText(Path.Combine(folder, "an_hero.mdl"), "reserved");
+        string Candidate(int number) => rollover ? $"ab_hero_{number:D3}" : $"an_hero_{number:D4}";
+        for (var i = 1; i <= 818; i++) File.WriteAllText(Path.Combine(folder, Candidate(i) + ".mdl"), "reserved");
+        var plan = AnimationInstall.Prepare(_folder, project, [target], AnimationInstall.MaximumInputBytes, bankBudget: budget);
+        var accepted = Candidate(819);
+        plan.GetAbsentReservationPaths().Should().HaveCount(rollover ? 15 : 10,
+            "only the selected bank and its target chain need higher-layer reservations");
+        var firstRejected = Candidate(1);
+        plan.AbsentInputs.Should().NotContain(path => Path.GetFileNameWithoutExtension(path) == firstRejected);
+        var irrelevant = Path.Combine(_folder, "SWLOR_Haks", "first0", firstRejected + ".mdl");
+        Directory.CreateDirectory(Path.GetDirectoryName(irrelevant)!);
+        File.WriteAllText(irrelevant, "another rejected candidate");
+        plan.Apply();
+        var bank = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(folder, accepted + ".mdl")));
+        bank.Animations.Should().Contain(animation => animation.Name == plan.AnimationName);
+        File.ReadAllText(irrelevant).Should().Be("another rejected candidate");
     }
 
     [Test]
@@ -637,8 +682,7 @@ public class AnimationFileSafetyTests
     [TestCase("../project/secret.bin")]
     public void GltfRejectsBufferPathsInSiblingDirectoriesBeforeReading(string uri)
     {
-        if (OperatingSystem.IsWindows() && uri.StartsWith("../project/", StringComparison.Ordinal))
-            Assert.Ignore("The case-only sibling aliases the same directory on Windows.");
+        if (uri.StartsWith("../project/", StringComparison.Ordinal)) RequireCaseSensitiveFileSystem();
         var folder = Path.Combine(_folder, "Project"); Directory.CreateDirectory(folder);
         var path = Path.Combine(folder, "source.gltf");
         File.WriteAllText(path, JsonSerializer.Serialize(new { asset = new { version = "2.0" },

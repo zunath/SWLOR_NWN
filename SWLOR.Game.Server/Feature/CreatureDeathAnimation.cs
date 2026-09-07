@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature
         public static void OnDeath()
         {
             var creature = OBJECT_SELF;
+            NamedAnimation.Stop(creature);
             AnimationPlayer.Play(creature, AnimationEvent.CreatureOnDeath);
         }
     }

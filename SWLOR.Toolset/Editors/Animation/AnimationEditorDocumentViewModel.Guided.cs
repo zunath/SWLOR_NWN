@@ -86,11 +86,12 @@ public sealed partial class AnimationEditorDocumentViewModel
                 var samples = await Task.Run(() => MdlAnimationPose.SampleCreaturePreviewAnimations(model, name =>
                 {
                     AnimationProject.ValidateToken(name, 16);
+                    if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(name + ".mdl"), out var resource) == true)
+                        return new MdlReader().Parse(resource.GetBytes());
                     var localPath = localFolder == null ? null : Path.Combine(localFolder, name + ".mdl");
                     if (localPath != null && File.Exists(localPath)) return new MdlReader().Parse(File.ReadAllBytes(localPath));
-                    return ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(name + ".mdl"), out var resource) == true
-                        ? new MdlReader().Parse(resource.GetBytes()) : null;
-                }, framesPerSecond: 20, maxFrames: 240));
+                    return null;
+                }, framesPerSecond: 20, maxFrames: 240, maxDepth: AnimationInstall.MaximumModelChainDepth));
                 foreach (var sample in samples.Where(sample => sample.Length >= 0 && sample.Length <= 12 && sample.Frames.Count > 0))
                 {
                     var label = sample.Name.StartsWith("walk", StringComparison.OrdinalIgnoreCase) ? "Walking" :

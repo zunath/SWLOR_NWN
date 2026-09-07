@@ -111,8 +111,10 @@ internal static class MotionAuthor
         Solve("rfoot_g", p.RightFoot, new Vector3(.42f, 1.1f, .4f) + centre);
         SetWorld("lfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(8)));
         SetWorld("rfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(-12)));
-        Solve("lhand_g", p.LeftHand, new Vector3(-.85f, -.20f, p.Root.Z + .12f) + centre);
-        Solve("rhand_g", p.RightHand, new Vector3(.85f, -.20f, p.Root.Z + .12f) + centre);
+        // Keep bent elbows below the hands and near the ribs. Wide, shoulder-height poles
+        // produce an outward elbow flare even when the hand is in a low guard.
+        Solve("lhand_g", p.LeftHand, new Vector3(-.36f, -.12f, p.Root.Z - .18f) + centre);
+        Solve("rhand_g", p.RightHand, new Vector3(.36f, -.12f, p.Root.Z - .18f) + centre);
         // Preserve the native hand's roll around the blade, rather than arbitrarily twisting
         // the wrist when the sword changes direction. Native +Z points toward the wrist/elbow.
         var world = AnimationRig.World(rig.Joints, pose);

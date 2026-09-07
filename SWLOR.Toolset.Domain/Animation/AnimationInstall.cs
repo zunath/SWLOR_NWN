@@ -88,6 +88,7 @@ public sealed class AnimationInstallPlan
 public static class AnimationInstall
 {
     public const int ClipsPerBank = 256;
+    public const int MaximumModelChainDepth = 32;
     /// <summary>Resolves a mounted rig back to its winning loose repository source, never to its HAK archive.</summary>
     public static string? FindTargetSource(string repositoryRoot, string resref)
     {
@@ -173,7 +174,7 @@ public static class AnimationInstall
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             while (currentPath != null)
             {
-                if (!visited.Add(currentPath) || visited.Count > 32) throw new InvalidDataException("Cyclic or excessively deep supermodel chain.");
+                if (!visited.Add(currentPath) || visited.Count > MaximumModelChainDepth) throw new InvalidDataException("Cyclic or excessively deep supermodel chain.");
                 var model = new MdlReader().Parse(Read(currentPath)); models[currentPath] = model;
                 chain.Add(currentPath);
                 foreach (var animation in model.Animations)
@@ -235,7 +236,7 @@ public static class AnimationInstall
                 if (registration != null && selected == null) throw new InvalidDataException("Registered animation is missing from its target's banks.");
                 if (selected == null)
                 {
-                    if (chains[target].Count >= 32) throw new InvalidDataException("Animation banks would exceed the supported supermodel chain depth. Split the library by target rig.");
+                    if (chains[target].Count >= MaximumModelChainDepth) throw new InvalidDataException("Animation banks would exceed the supported supermodel chain depth. Split the library by target rig.");
                     linkPath = existingOverlay;
                     // Extra banks retain a fixed-size resref and are inserted behind the first
                     // overlay. Native model payloads and the existing animation chain stay intact.
@@ -297,8 +298,9 @@ public static class AnimationInstall
                 {
                     // Release a looping emote into this target's actual neutral pose. Repeating
                     // the final authored pose here can strand an idle creature in a combat stance.
-                    var idle = MdlAnimationPose.FindIdle(model);
-                    var neutral = MdlAnimationPose.Sample(idle, 0, MdlAnimationPose.BindPose(model));
+                    var neutral = MdlAnimationPose.SampleIdle(model, name =>
+                        chains[target].Select(path => models[path]).FirstOrDefault(parent =>
+                            parent.Name.Equals(name, StringComparison.OrdinalIgnoreCase)), maxDepth: MaximumModelChainDepth);
                     phase.Duration = .2f;
                     phase.SetKey(phase.Duration, overlayProject.Joints.Select((joint, index) =>
                     {
@@ -360,7 +362,7 @@ public static class AnimationInstall
             var path = target; var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             while (true)
             {
-                if (!visited.Add(path) || visited.Count > 32) throw new InvalidDataException("Planned animation banks exceed the supported supermodel chain depth or form a cycle.");
+                if (!visited.Add(path) || visited.Count > MaximumModelChainDepth) throw new InvalidDataException("Planned animation banks exceed the supported supermodel chain depth or form a cycle.");
                 var model = plannedModels.TryGetValue(path, out var planned) ? planned : models[path];
                 if (string.IsNullOrWhiteSpace(model.SuperModel) || model.SuperModel.Equals("NULL", StringComparison.OrdinalIgnoreCase)) break;
                 path = plannedModels.Keys.FirstOrDefault(p => Path.GetFileNameWithoutExtension(p).Equals(model.SuperModel, StringComparison.OrdinalIgnoreCase)) ??

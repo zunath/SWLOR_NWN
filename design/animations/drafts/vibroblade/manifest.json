@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "c95bb30bd27148c33cfe8e53e570c2f7185efcd4954c52fa8a7f7fce61c569d7",
+  "RecipeSha256": "31427882ba850f05aad831a320af64c22f926d284190e15ee982dae1deda3a36",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -13,13 +13,13 @@
       "BibleRow": 2,
       "Reference": "https://chatgpt.com/s/m_6a3fdd47b8f88191a44d7c29b566f837",
       "Observation": "A broad stance, forward left-hand shield impact, and a low right-hand blade.",
-      "Interpretation": "Short recoil into the shield side, a fast forward jab, then recovery. Both feet stay planted. The impact burst is a separate VFX.",
+      "Interpretation": "Compact staggered guard. The shield face stays upright and drives straight forward from the elbow with a short weight shift, then recoils. The sword stays ready beside the ribs. Impact VFX is separate.",
       "Status": "Draft: visual review required",
       "Project": "ShieldBash.swlanim",
       "Duration": 1,
       "Keyframes": 25,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3841858E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5463115E-07,
       "Beats": [
         {
           "Time": 0,
@@ -50,7 +50,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "4125bd2d1415bdc39be92aae277e138cad20b465d98ef052932592785ac80b60"
+      "ProjectSha256": "8eea2593ceb62170ffa8880bf419a4ea2e8ad1154fc5df2ce017e15df3849f2e"
     },
     {
       "Id": "ShieldWall",
@@ -58,13 +58,13 @@
       "BibleRow": 3,
       "Reference": "https://chatgpt.com/s/m_6a3fdd84a41c8191ab3fcad9d97786f7",
       "Observation": "The shield is extended at shoulder height over a wide defensive stance; the blade stays low.",
-      "Interpretation": "Raise and brace the shield, hold the protective posture with a small weight shift, then lower to guard. The pictured barrier and allies are separate scene elements.",
+      "Interpretation": "A compact shield guard held through the channel, with restrained breathing and bracing. Elbows stay close to the ribs, sword poised forward, and feet staggered. No repeated shield lowering during the loop.",
       "Status": "Draft: visual review required",
       "Project": "ShieldWall.swlanim",
       "Duration": 2.1,
       "Keyframes": 44,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6697626E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.437016E-07,
       "Beats": [
         {
           "Time": 0,
@@ -95,7 +95,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "1691655dc447c7e7c56e17b892afd5da50675913335b41bc4924d5017cda8e63"
+      "ProjectSha256": "e116cb241373cab85f8ea868def554921f58e6fc98649ecd22c6da662aaff994"
     },
     {
       "Id": "CoveringStrike",
@@ -103,13 +103,13 @@
       "BibleRow": 4,
       "Reference": "https://chatgpt.com/s/m_6a3fde0e8a34819181290c21cdf5dc91",
       "Observation": "A low airborne lunge leads with the left shield while the blade trails behind the right side.",
-      "Interpretation": "A compact hop-lunge with a lifted lead knee, shield-led contact, landing, and a recovery step. The small body offset returns to origin; actual travel is not implemented.",
+      "Interpretation": "A short guarded step and compact diagonal sword cut behind an upright shield, followed by recovery. The lead foot lifts only enough to step, without a jumping squat or an arm held behind the head.",
       "Status": "Draft: visual review required",
       "Project": "CoveringStrike.swlanim",
       "Duration": 1.4,
       "Keyframes": 35,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3466372E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
       "Beats": [
         {
           "Time": 0,
@@ -148,7 +148,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "4c5e3651bc313caa565cb0a0d42dd64b521c176e25d0681a7cf80dd7d55741f3"
+      "ProjectSha256": "b94a830917a8430beaddfdf9219fcd657be44c6624bbf6c889599deb880927ad"
     },
     {
       "Id": "Invincible",
@@ -162,7 +162,7 @@
       "Duration": 1.7,
       "Keyframes": 40,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5463115E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
       "Beats": [
         {
           "Time": 0,
@@ -193,7 +193,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "26c73b4779a32a1bb562ae7b1667aca7ab6eb3e572a9879743e99633a7faa187"
+      "ProjectSha256": "c495b6557725af0edbd4b784365e3ef66be2ad6e93f117fcb9e55d550cdfdd21"
     },
     {
       "Id": "RiotBlade",
@@ -207,7 +207,7 @@
       "Duration": 0.9,
       "Keyframes": 22,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4211522E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.3841858E-07,
       "Beats": [
         {
           "Time": 0,
@@ -238,7 +238,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "eeeb53983e3e0ab5e09bbb36b0395addcd639f18260ad5c1f4590612da96b497"
+      "ProjectSha256": "814a80996725c88bbb34cc3e70699899c9a446557530e7c1084b65f6788566be"
     },
     {
       "Id": "RendingStrike",
@@ -252,7 +252,7 @@
       "Duration": 1.38,
       "Keyframes": 33,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.9802322E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
       "Beats": [
         {
           "Time": 0,
@@ -283,7 +283,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "550cbfaf41d8dffb83c8d09a1c4efb2106956e098ec4a035b46b64869e5ecbae"
+      "ProjectSha256": "4042bddd33c8a2fec0dca0dd6235c6e4256e0bc953a184bbde78c47b8030ea7c"
     },
     {
       "Id": "SavageCleave",
@@ -297,7 +297,7 @@
       "Duration": 1.55,
       "Keyframes": 37,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.731428E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.8128046E-07,
       "Beats": [
         {
           "Time": 0,
@@ -332,7 +332,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "0d8395bf1c571e591eec338695e0b396e74de8644924e375f0e18e64e65f5305"
+      "ProjectSha256": "dde53ca8a214098256bd8d628ca534e79db21b9e6ee1cdaa1f4b0f1a16ddeb5a"
     }
   ]
 }

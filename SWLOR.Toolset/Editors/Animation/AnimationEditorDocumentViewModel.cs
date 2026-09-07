@@ -332,7 +332,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
             throw new InvalidDataException($"Model '{RigResource}' was not found. Open a local MDL using Load rig file.");
         var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
         LoadModel(model, LocalModelFolder(resource.Provenance.SourcePath));
-        TargetPaths = ResolveInstallTarget(model.Name, resource.Provenance.SourcePath); OnPropertyChanged(nameof(TargetPaths));
+        TargetPaths = ResolveInstallTarget(model.Name); OnPropertyChanged(nameof(TargetPaths));
         await RefreshStarterMovements();
     });
     [RelayCommand] private async Task LoadRigFile() => await Run(async () =>
@@ -340,13 +340,13 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var path = await OpenPath("Load NWN rig", ["*.mdl"]);
         if (path == null || !await ConfirmReplace()) return;
         var model = await Task.Run(() => new MdlReader().Parse(File.ReadAllBytes(path)));
-        LoadModel(model, Path.GetDirectoryName(path)); TargetPaths = ResolveInstallTarget(model.Name, path); OnPropertyChanged(nameof(TargetPaths));
+        LoadModel(model, Path.GetDirectoryName(path)); TargetPaths = ResolveInstallTarget(model.Name); OnPropertyChanged(nameof(TargetPaths));
         await RefreshStarterMovements();
     });
-    private string ResolveInstallTarget(string resref, string fallbackPath)
+    private string ResolveInstallTarget(string resref)
     {
         var source = _repositoryRoot == null ? null : AnimationInstall.FindTargetSource(_repositoryRoot, resref);
-        return source ?? (Path.GetExtension(fallbackPath).Equals(".mdl", StringComparison.OrdinalIgnoreCase) && File.Exists(fallbackPath) ? fallbackPath : "");
+        return source ?? "";
     }
     [RelayCommand] private async Task AttachPreview() => await Run(async () =>
     {
@@ -371,7 +371,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     {
         var path = await OpenPath("Open animation project", ["*.swlanim"]);
         if (path == null || !await ConfirmReplace()) return;
-        var bytes = await File.ReadAllBytesAsync(path);
+        var bytes = await AnimationProject.ReadFileBytesAsync(path);
         var project = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
         var preview = await ResolvePreviewModel(project); SetPreviewModel(preview.Model, preview.Folder);
         Project = project; _hasCharacter = true; _path = path; _diskBytes = bytes; _saved = project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null;
@@ -438,13 +438,13 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         try
         {
             ModuleMutationLock.ThrowIfModuleLocked();
-            if (checkExternal && (_diskBytes == null || !File.Exists(path) || !File.ReadAllBytes(path).AsSpan().SequenceEqual(_diskBytes)))
+            if (checkExternal && (_diskBytes == null || !File.Exists(path) || !(await AnimationProject.ReadFileBytesAsync(path)).AsSpan().SequenceEqual(_diskBytes)))
             {
                 var choice = await _prompts.ConfirmExternalChangeAsync(path);
                 if (choice == ExternalChangeChoice.Cancel) return false;
                 if (choice == ExternalChangeChoice.Reload)
                 {
-                    var bytes = await File.ReadAllBytesAsync(path);
+                    var bytes = await AnimationProject.ReadFileBytesAsync(path);
                     var reloaded = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
                     var preview = await ResolvePreviewModel(reloaded); SetPreviewModel(preview.Model, preview.Folder); Project = reloaded; _hasCharacter = true;
                     TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
@@ -453,13 +453,13 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                 }
             }
             var serialized = Project.Serialize(); var data = Encoding.UTF8.GetBytes(serialized);
-            var acceptedBytes = File.Exists(path) ? File.ReadAllBytes(path) : null;
+            var acceptedBytes = File.Exists(path) ? await AnimationProject.ReadFileBytesAsync(path) : null;
             var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
                 await File.WriteAllBytesAsync(temporary, data);
                 ModuleMutationLock.ThrowIfModuleLocked();
-                if (acceptedBytes == null ? File.Exists(path) : !File.Exists(path) || !File.ReadAllBytes(path).AsSpan().SequenceEqual(acceptedBytes))
+                if (acceptedBytes == null ? File.Exists(path) : !File.Exists(path) || !(await AnimationProject.ReadFileBytesAsync(path)).AsSpan().SequenceEqual(acceptedBytes))
                     throw new IOException("The project changed while saving. Save again to review the external change.");
                 File.Move(temporary, path, overwrite: true);
             }

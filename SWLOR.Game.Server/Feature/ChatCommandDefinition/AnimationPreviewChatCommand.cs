@@ -21,7 +21,7 @@ public class AnimationPreviewChatCommand : IChatCommandListDefinition
         .AvailableToAllOnTestEnvironment()
         .Action((user, target, location, args) =>
         {
-            var name = string.Concat(args).Replace("_", "");
+            var name = string.Concat(args);
             if (!Clips.TryGetValue(name, out var clip))
             {
                 SendMessageToPC(user, "Usage: /animtest <name>. Available: " + string.Join(", ", Clips.Keys.OrderBy(key => key)));

@@ -653,6 +653,8 @@ namespace SWLOR.Game.Server.Feature
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
                 if (!activatorIsAlive)
                 {
+                    if (ability.AuthoredAnimation != null)
+                        NamedAnimation.Stop(activator);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(false);
                     return;

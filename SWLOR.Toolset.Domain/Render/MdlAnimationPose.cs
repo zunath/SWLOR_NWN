@@ -208,7 +208,8 @@ namespace SWLOR.Toolset.Domain.Render
             Func<string, MdlModel?> loadSuperModel,
             IReadOnlyDictionary<string, MdlNode>? bindPose = null,
             int framesPerSecond = 20,
-            int maxFrames = 60)
+            int maxFrames = 60,
+            int maxDepth = 8)
         {
             ArgumentNullException.ThrowIfNull(loadSuperModel);
             if (model == null)
@@ -218,7 +219,7 @@ namespace SWLOR.Toolset.Domain.Render
             var clips = new List<SampledAnimation>(3);
             foreach (var selector in new Func<MdlModel?, MdlAnimation?>[] { FindIdle, FindWalk, FindAttack })
             {
-                var (animation, owner) = FindAnimationInChain(model, loadSuperModel, selector);
+                var (animation, owner) = FindAnimationInChain(model, loadSuperModel, selector, maxDepth);
                 if (animation == null || owner == null ||
                     clips.Any(clip => string.Equals(clip.Name, animation.Name, StringComparison.OrdinalIgnoreCase)))
                 {

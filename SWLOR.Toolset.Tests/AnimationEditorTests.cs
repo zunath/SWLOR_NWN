@@ -333,6 +333,47 @@ public class AnimationEditorTests
             donemodel hero
             """);
     }
+    [TestCase(false)] [TestCase(true)]
+    public void ExitPoseFollowsInheritedIdlePastEmptyDeclarations(bool emptyLocalIdle)
+    {
+        var target = InstallFixture();
+        var text = File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero idlebase")
+            .Replace("setanimationscale 1", "setanimationscale 2");
+        if (emptyLocalIdle) text = text.Replace("donemodel hero", "newanim pause1 hero\nlength 1\ndoneanim pause1 hero\ndonemodel hero");
+        File.WriteAllText(target, text);
+        var idleRig = Rig(); idleRig.ModelName = "idlebase";
+        idleRig.Joints[0] = idleRig.Joints[0] with { Name = "idlebase" };
+        Write("SWLOR_Haks/sw_cr_creature/idlebase.mdl", "newmodel idlebase\nsetsupermodel idlebase NULL\n" +
+            AnimationMdl.ExportGeometry(idleRig) +
+            "newanim pause1 idlebase\nlength 1\nnode dummy lower\nparent upper\npositionkey\n0 0 3 0\nendlist\nendnode\ndoneanim pause1 idlebase\ndonemodel idlebase\n");
+        AnimationInstall.Prepare(_folder, Rig(), [target]).Apply();
+        var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")));
+        var exit = overlay.Animations.Single(a => a.Name == "sw_wave_out");
+        var pose = MdlAnimationPose.Sample(exit, exit.Length, MdlAnimationPose.BindPose(overlay));
+        pose["lower"].Position.Should().Be(new Vector3(0, 3, 0), "inherited translations are scaled once by the target at runtime");
+    }
+
+    [AvaloniaTest] public async Task OversizedProjectOpenAndExternalReloadKeepTheCurrentDocument()
+    {
+        var path = Path.Combine(_folder, "oversized.swlanim");
+        using (var stream = File.Create(path)) stream.SetLength((long)AnimationProject.MaximumFileBytes + 1);
+        var vm = new AnimationEditorDocumentViewModel(new Prompts { ExternalChoice = ExternalChangeChoice.Reload },
+            new OutputLogService(), initial: Rig());
+        var original = vm.Project;
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.Status.Should().Contain("64 MB"); vm.Project.Should().BeSameAs(original);
+        var saved = Path.Combine(_folder, "saved.swlanim");
+        vm.PickSavePath = (_, _) => Task.FromResult<string?>(saved);
+        (await vm.TrySaveAsync()).Should().BeTrue();
+        using (var stream = File.Open(saved, FileMode.Truncate)) stream.SetLength((long)AnimationProject.MaximumFileBytes + 1);
+        vm.PositionX = .5m;
+        var edited = vm.Project;
+        (await vm.TrySaveAsync()).Should().BeFalse();
+        vm.Status.Should().Contain("64 MB"); vm.Project.Should().BeSameAs(edited); vm.IsDirty.Should().BeTrue();
+        new FileInfo(saved).Length.Should().Be(AnimationProject.MaximumFileBytes + 1L);
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
     [Test] public void InstallUsesNamesPreservesGeometryAndSupportsMoreClipsAndUpdates()
     {
         var target = InstallFixture(); var original = File.ReadAllText(target);
@@ -855,6 +896,46 @@ public class AnimationEditorTests
         await vm.LoadRigCommand.ExecuteAsync(null);
         vm.TargetPaths.Should().BeEmpty(); vm.Project.ModelName.Should().Be("hero");
         vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task LooseRigOutsideHakSourcesDoesNotBecomeAnInstallationTarget()
+    {
+        var target = InstallFixture();
+        var loose = Write("loose/outsider.mdl", File.ReadAllText(target).Replace("hero", "outsider"));
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), repositoryRoot: _folder);
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(loose);
+        await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.Project.ModelName.Should().Be("outsider"); vm.TargetPaths.Should().BeEmpty();
+        vm.OnClose().Should().BeTrue();
+    }
+
+    [AvaloniaTest] public async Task StarterMovementsUseMountedWinnersBeyondEightAnimationBanks()
+    {
+        var target = InstallFixture();
+        File.WriteAllText(target, File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero bank0"));
+        for (var i = 0; i < 10; i++)
+        {
+            var name = "bank" + i; var parent = i == 9 ? "base" : "bank" + (i + 1);
+            var rig = Rig(); rig.ModelName = name; rig.Joints[0] = rig.Joints[0] with { Name = name };
+            Write("SWLOR_Haks/sw_cr_creature/" + name + ".mdl", $"newmodel {name}\nsetsupermodel {name} {parent}\n" +
+                AnimationMdl.ExportGeometry(rig) + $"donemodel {name}\n");
+        }
+        string Movement(float distance)
+        {
+            var rig = Rig(); rig.ModelName = "base"; rig.Joints[0] = rig.Joints[0] with { Name = "base" };
+            var last = rig.Sample(0); last[1] = last[1] with { Position = new Vector3(distance, 0, 0) };
+            rig.SetKey(0, rig.Sample(0)); rig.SetKey(1, last);
+            return "newmodel base\n" + AnimationMdl.ExportGeometry(rig) + AnimationMdl.Export(rig, "walk") + "donemodel base\n";
+        }
+        Write("SWLOR_Haks/sw_cr_creature/base.mdl", Movement(9));
+        var archive = Path.Combine(_folder, "winner.hak");
+        ResourceIndexTests.WriteSingleResourceHak(archive, "base", "mdl", Encoding.ASCII.GetBytes(Movement(2)));
+        var resources = new ResourceIndex(null, [new("winner", archive)]); await resources.InitializationTask;
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), resources);
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target); await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.StarterMovements.Should().ContainSingle(); vm.UseMovementCommand.Execute(null); vm.Stop();
+        vm.Project.Sample(1)[1].Position.X.Should().BeApproximately(2, .00001f,
+            "the mounted base overrides the adjacent file, even after ten banks");
+        vm.ApproveApplicationClose(); vm.OnClose();
     }
     [AvaloniaTest] public async Task ExternalReloadRetainsOnlyAMatchingPreviewModel()
     {

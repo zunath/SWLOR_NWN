@@ -176,6 +176,19 @@ The editor reserves the workspace during application of the installation transac
 Target proportions and inherited animation scale are accounted for in the generated tracks.
 The installed project becomes the document's saved project, and mounted HAK resources are refreshed.
 
+RGB robe phenotypes also have generated animation bridges for their separate garment joints.
+After changing animations inherited from a body rig, regenerate those bridges from the HAK
+repository before packaging; otherwise a robe can continue using its older movement tracks:
+
+```powershell
+python -B tools/GenerateRobeRgbModels.py --game-data "<NWN installation>/data" --apply
+python -B tools/GenerateRobeRgbModels.py --check
+```
+
+Run these commands from `SWLOR_Haks`. Package and deploy `sw_pt_root.hak`, `sw_pt_robe.hak`,
+and `sw_2da.hak` together with the HAK containing the changed animation overlays.
+The generator audits body poses, weapon attachments, garment bindings, and source/output hashes.
+
 After **rebuilding/deploying the HAKs to server and clients** and rebuilding C#, use:
 
 ```csharp
@@ -195,6 +208,8 @@ mapping if a cleared action queue drops its cleanup action. Per-creature tokens 
 callbacks from clearing newer playback or touching a reused object handle.
 Cleanup also releases the pose on an idle, living creature. Interrupting an authored channel
 releases its mapping immediately; movement and combat that interrupted it retain their own actions.
+Death releases the mapping before player subdual/revival and creature death animation handling.
+Exit poses sample the target's inherited idle, including rigs with an empty local idle clip.
 
 This does not consume additional engine custom slots. SWLOR already assigns the 70 custom slots
 exposed by its pinned NWN library; those IDs are not contiguous because mount/dismount intervene.

@@ -14,6 +14,7 @@ public sealed record AnimationCue(float Time, string Name);
 public sealed class AnimationProject
 {
     public const int MaxKeyframes = 18001;
+    public const int MaximumFileBytes = 64 * 1024 * 1024;
     public int Version { get; set; } = 1;
     public string Name { get; set; } = "NewAnimation";
     public string ModelName { get; set; } = "pmh0";
@@ -25,7 +26,7 @@ public sealed class AnimationProject
     public List<AnimationCue> Events { get; set; } = [];
 
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true, WriteIndented = true };
-    private const int MaximumSerializedCharacters = 64 * 1024 * 1024;
+    private const int MaximumSerializedCharacters = MaximumFileBytes;
     // A rest pose uses the shortest valid numbers and Boolean. Nested poses add indentation, so
     // this lower bound rejects only outputs that are already certain to exceed the file limit.
     private static readonly int MinimumPoseCharacters = JsonSerializer.Serialize(new PosedNode(Vector3.Zero, Quaternion.Identity, 1), JsonOptions).Length;
@@ -50,6 +51,20 @@ public sealed class AnimationProject
             ?? throw new InvalidDataException("Empty animation project.");
         result.Validate();
         return result;
+    }
+
+    /// <summary>Reads a project through a bounded file handle before allocating its text representation.</summary>
+    public static async Task<byte[]> ReadFileBytesAsync(string path)
+    {
+        await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read,
+            4096, FileOptions.Asynchronous | FileOptions.SequentialScan);
+        if (stream.Length > MaximumFileBytes)
+            throw new InvalidDataException("Animation project exceeds 64 MB.");
+        var bytes = new byte[checked((int)stream.Length)];
+        await stream.ReadExactlyAsync(bytes);
+        if (stream.ReadByte() != -1)
+            throw new IOException("The animation project changed while reading.");
+        return bytes;
     }
 
     public AnimationProject Clone() => Deserialize(Serialize());

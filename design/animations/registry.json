@@ -1,23 +1,5 @@
 [
   {
-    "Name": "ShieldBash",
-    "AnimationName": "sw_shieldbas",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
-  },
-  {
-    "Name": "ShieldWall",
-    "AnimationName": "sw_shieldwal",
-    "Duration": 2.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
-  },
-  {
     "Name": "CoveringStrike",
     "AnimationName": "sw_coverings",
     "Duration": 1.4,
@@ -36,15 +18,6 @@
     ]
   },
   {
-    "Name": "RiotBlade",
-    "AnimationName": "sw_riotblade",
-    "Duration": 0.9,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
-  },
-  {
     "Name": "RendingStrike",
     "AnimationName": "sw_rendingst",
     "Duration": 1.38,
@@ -54,9 +27,36 @@
     ]
   },
   {
+    "Name": "RiotBlade",
+    "AnimationName": "sw_riotblade",
+    "Duration": 0.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
     "Name": "SavageCleave",
     "AnimationName": "sw_savagecle",
     "Duration": 1.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "ShieldBash",
+    "AnimationName": "sw_shieldbas",
+    "Duration": 1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ]
+  },
+  {
+    "Name": "ShieldWall",
+    "AnimationName": "sw_shieldwal",
+    "Duration": 2.1,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"

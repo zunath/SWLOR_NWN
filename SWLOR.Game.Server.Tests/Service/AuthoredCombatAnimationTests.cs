@@ -72,6 +72,21 @@ public class AuthoredCombatAnimationTests
             "ShieldBash", "ShieldWall", "CoveringStrike", "Invincible", "RiotBlade", "RendingStrike", "SavageCleave" });
     }
 
+    [Test]
+    public void DeathReleasesAuthoredMappingsBeforeSubdualResurrection()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
+        root.Should().NotBeNull();
+        var death = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Death.cs"));
+        var stop = death.IndexOf("NamedAnimation.Stop(player);", StringComparison.Ordinal);
+        stop.Should().BeGreaterThan(death.IndexOf("var player = GetLastPlayerDied();", StringComparison.Ordinal));
+        stop.Should().BeLessThan(death.IndexOf("EffectResurrection()", StringComparison.Ordinal),
+            "subdual revives the same object immediately, so its old custom mappings must already be gone");
+        var npc = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "CreatureDeathAnimation.cs"));
+        npc.Should().Contain("NamedAnimation.Stop(creature);");
+    }
+
     private sealed class Runtime : INamedAnimationRuntime
     {
         public string Token = "";

@@ -48,7 +48,12 @@ public class AnimationDraftAssetTests
         var project = MotionAuthor.Bake(rig, rig.Sample(0), recipe, motion);
         project.Duration.Should().Be(1);
         project.Keys.Should().HaveCountGreaterThan(2);
-        project.Sample(0).Should().Equal(project.Sample(1));
+        var first = project.Sample(0); var last = project.Sample(1);
+        for (var i = 0; i < first.Length; i++)
+        {
+            Vector3.Distance(first[i].Position, last[i].Position).Should().BeLessThan(.000001f);
+            Math.Abs(Quaternion.Dot(first[i].Orientation, last[i].Orientation)).Should().BeGreaterThan(.99999f);
+        }
     }
 
     [TestCase("a_ba")]
@@ -71,7 +76,11 @@ public class AnimationDraftAssetTests
             var exit = overlay.Animations.Single(a => a.Name == entry.AnimationName + "_out");
             exit.Length.Should().BeApproximately(.2f, .0001f);
             var exitPose = MdlAnimationPose.Sample(exit, exit.Length, MdlAnimationPose.BindPose(overlay));
-            var idle = MdlAnimationPose.Sample(MdlAnimationPose.FindIdle(target), 0, MdlAnimationPose.BindPose(target));
+            var idle = MdlAnimationPose.SampleIdle(target, name =>
+            {
+                var source = AnimationInstall.FindTargetSource(Root, name);
+                return source == null ? null : new MdlReader().Parse(File.ReadAllBytes(source));
+            }, maxDepth: 32);
             foreach (var joint in AnimationProject.FromModel(target).Joints.Where(j => j.Parent >= 0))
             {
                 var expected = idle.TryGetValue(joint.Name, out var value) ? value : joint.Rest;
@@ -130,6 +139,35 @@ public class AnimationDraftAssetTests
         // AShLw model +Y is its top, -X its facing. The old proxy incorrectly used +Z as top.
         Vector3.TransformNormal(Vector3.UnitY, hand).Z.Should().BeGreaterThan(.7f, "an equipped shield must not lie sideways over the arm");
         Vector3.TransformNormal(-Vector3.UnitX, hand).Y.Should().BeGreaterThan(.5f, "the shield face must point toward the attack");
+    }
+
+    [TestCaseSource(nameof(Names))]
+    public void AuthoredGuardsKeepACompactStanceAndLoweredElbows(string name)
+    {
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
+            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var time = recipe.Motions.Single(m => m.Id == name).Beats[1].Time;
+        var pose = AnimationRig.World(project.Joints, project.Sample(time));
+        Vector3 Point(string joint) => pose[project.Joints.FindIndex(j => j.Name == joint)].Translation;
+        Math.Abs(Point("lfoot_g").X - Point("rfoot_g").X).Should().BeLessThan(.56f);
+        foreach (var side in new[] { "l", "r" })
+            Point(side + "forearm_g").Z.Should().BeLessThan(Point(side + "shoulder_g").Z - .05f,
+                "guarding elbows should hang below the shoulders rather than flare outward");
+    }
+
+    [Test]
+    public void ShieldBashDrivesItsUprightFaceForwardWithoutASidewaysSwing()
+    {
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "ShieldBash.swlanim")));
+        var hand = project.Joints.FindIndex(j => j.Name == "lhand_g");
+        var draw = AnimationRig.World(project.Joints, project.Sample(.18f))[hand];
+        var impact = AnimationRig.World(project.Joints, project.Sample(.42f))[hand];
+        (impact.Translation.Y - draw.Translation.Y).Should().BeGreaterThan(.35f);
+        Math.Abs(impact.Translation.X - draw.Translation.X).Should().BeLessThan(.05f);
+        Math.Abs(impact.Translation.Z - draw.Translation.Z).Should().BeLessThan(.05f);
+        Vector3.TransformNormal(-Vector3.UnitX, impact).Y.Should().BeGreaterThan(.98f);
+        Vector3.TransformNormal(Vector3.UnitY, impact).Z.Should().BeGreaterThan(.98f);
     }
 
     [TestCaseSource(nameof(Names))]

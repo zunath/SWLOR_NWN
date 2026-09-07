@@ -83,6 +83,57 @@ public class AnimationFileSafetyTests
             "the second 120 MiB file must be rejected using the remaining 8 MiB budget before allocation");
     }
 
+    [Test] public void ConditionalRemovalPreservesAnotherWritersReplacement()
+    {
+        var path = Path.Combine(_folder, "created.mdl"); File.WriteAllBytes(path, [1, 2]);
+        AnimationProjectFile.CommitStaged(path, null, [1, 2], () => File.WriteAllBytes(path, [3, 4]));
+        File.ReadAllBytes(path).Should().Equal(3, 4);
+        Directory.GetFiles(_folder).Should().Equal(path);
+    }
+
+    [Test] public void ConditionalRemovalRestoresAChangedCapturedFile()
+    {
+        var path = Path.Combine(_folder, "created.mdl"); File.WriteAllBytes(path, [3, 4]);
+        Action remove = () => AnimationProjectFile.CommitStaged(path, null, [1, 2], () => { });
+        remove.Should().Throw<IOException>();
+        File.ReadAllBytes(path).Should().Equal(3, 4); Directory.GetFiles(_folder).Should().Equal(path);
+    }
+
+    [TestCase(false)] [TestCase(true)]
+    public void InstallationRollsBackOnlyItsOwnOutputAfterALaterCommitConflict(bool competingEdit)
+    {
+        var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
+        File.WriteAllBytes(first, [1]); File.WriteAllBytes(second, [2]);
+        var changes = new CommitConflictChanges([new(first, [1], [3]), new(second, [2], [4])], () =>
+        {
+            if (competingEdit) File.WriteAllBytes(first, [5]);
+            File.WriteAllBytes(second, [6]);
+        });
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test", Inputs = new Dictionary<string, byte[]>(), Changes = changes };
+        Action install = plan.Apply;
+        if (competingEdit) install.Should().Throw<AggregateException>();
+        else install.Should().Throw<IOException>();
+        File.ReadAllBytes(first).Should().Equal(competingEdit ? (byte)5 : (byte)1);
+        File.ReadAllBytes(second).Should().Equal(6);
+        Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
+        Directory.GetFiles(_folder, "*.bak").Should().BeEmpty();
+    }
+
+    private sealed class CommitConflictChanges(AnimationFileChange[] changes, Action conflict) : IReadOnlyList<AnimationFileChange>
+    {
+        private int _iterations;
+        public int Count => changes.Length;
+        public AnimationFileChange this[int index] => changes[index];
+        public IEnumerator<AnimationFileChange> GetEnumerator()
+        {
+            var committing = ++_iterations == 3;
+            yield return changes[0];
+            if (committing) conflict();
+            yield return changes[1];
+        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
     [Test] public void GltfRejectsAnOversizedDeclaredBufferBeforeOpeningItsFile()
     {
         var path = Path.Combine(_folder, "oversized.gltf");

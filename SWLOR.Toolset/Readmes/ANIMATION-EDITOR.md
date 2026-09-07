@@ -160,6 +160,9 @@ Saves preserve a file created by another writer during the final commit. If rest
 version would replace that newer file, the status message gives the retained `.bak` recovery path.
 An interrupted save can also leave its captured `.bak` beside the project; keep it until recovery
 is complete. glTF buffers share a 128 MiB aggregate limit checked before each buffer allocation.
+Mounted rig and starter-model reads use the same 64 MiB limit as loose MDL files. Weighted-model
+playback uses a 64 MiB frame budget covering source vertices and expanded face corners; models
+that cannot fit two frames can still be posed and scrubbed individually.
 
 ## Retargeting
 
@@ -209,7 +212,10 @@ should expose the animation.
 
 Input files are checked again after confirmation and after staging, before publishing any output.
 This includes previously absent higher-priority models that would change resource selection.
-Writes are staged and roll back on failure.
+Writes are staged and roll back on failure. Publication and rollback capture and verify each
+replaced file under an exclusive lease; a concurrent writer's replacement is preserved. Recovery
+conflicts report the retained `.bak` path, and interrupted installs may also leave backups beside
+the affected outputs.
 The editor reserves the workspace during application of the installation transaction.
 Target proportions and inherited animation scale are accounted for in the generated tracks.
 The installed project becomes the document's saved project, and mounted HAK resources are refreshed.

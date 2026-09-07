@@ -40,8 +40,7 @@ public sealed class AnimationInstallPlan
             VerifyInputs();
             foreach (var change in Changes)
             {
-                Verify(change);
-                File.Move(staged[change.Path], change.Path, overwrite: true);
+                AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.Before, () => { });
                 applied.Add(change);
             }
         }
@@ -51,11 +50,15 @@ public sealed class AnimationInstallPlan
             foreach (var change in applied.AsEnumerable().Reverse())
                 try
                 {
-                    // Preserve another writer's work if it changed a file during rollback.
-                    if (!AnimationSourceFile.Matches(change.Path, change.After))
-                        throw new IOException($"Concurrent change prevented rollback of '{change.Path}'.");
-                    if (change.Before == null) File.Delete(change.Path);
-                    else File.WriteAllBytes(change.Path, change.Before);
+                    // Rollback uses the same capture/lease/create-only publication as installation.
+                    // Never delete or overwrite another writer's replacement at the original path.
+                    if (change.Before == null)
+                        AnimationProjectFile.CommitStaged(change.Path, null, change.After, () => { });
+                    else
+                    {
+                        File.WriteAllBytes(staged[change.Path], change.Before);
+                        AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.After, () => { });
+                    }
                 }
                 catch (Exception rollback) { errors.Add(rollback); }
             if (errors.Count > 1) throw new AggregateException("Installation failed; some files need recovery from the preview's original contents.", errors);
@@ -63,7 +66,7 @@ public sealed class AnimationInstallPlan
         }
         finally
         {
-            foreach (var file in staged.Values) if (File.Exists(file)) File.Delete(file);
+            foreach (var file in staged.Values) AnimationProjectFile.DeleteStaged(file);
         }
     }
 

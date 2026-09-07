@@ -69,6 +69,34 @@ public class AnimationEditorTests
         var block = AnimationMdl.Export(Rig()).Replace("  endnode", "    alphakey 1\n      0 0.5\n  endnode");
         Action act = () => AnimationMdl.Import(block, Rig()); act.Should().Throw<InvalidDataException>().WithMessage("*Unsupported*");
     }
+    [TestCase(0)] [TestCase(1)]
+    public void MdlImportUsesSourceDefaultsIndependentlyOfThePreviousClip(int explicitLength)
+    {
+        var rig = Rig(); rig.Duration = 5; rig.Transition = 2; rig.AnimationRoot = "hand";
+        var length = explicitLength == 0 ? "" : "length 0.7\n";
+        var imported = AnimationMdl.Import("newanim Pose hero\n" + length +
+            "node dummy hand\nparent lower\nposition 0 0 0\nendnode\ndoneanim Pose hero", rig);
+        imported.Duration.Should().Be(explicitLength == 0 ? 1 : .7f);
+        imported.Transition.Should().Be(0);
+        imported.AnimationRoot.Should().Be("hero");
+        imported.Keys.Last().Time.Should().Be(imported.Duration);
+        rig.Duration.Should().Be(5); rig.Transition.Should().Be(2); rig.AnimationRoot.Should().Be("hand");
+    }
+
+    [TestCase(1)] [TestCase(10)]
+    public void SparseSkinMeshesCannotBypassThePlaybackMemoryBudget(int meshCount)
+    {
+        var model = new MdlModel { GeometryRoot = new MdlNode { Name = "root" } };
+        for (var i = 0; i < meshCount; i++)
+            model.GeometryRoot.Children.Add(new MdlSkinmeshNode
+            {
+                Name = "skin" + i, Vertices = new Vector3[65535],
+                Faces = [new MdlFace { VertexIndex0 = 0, VertexIndex1 = 1, VertexIndex2 = 2 }]
+            });
+        var count = AnimationEditorDocumentViewModel.PreviewFrameCount(model, 10);
+        if (meshCount == 1) count.Should().BeInRange(2, 8);
+        else count.Should().Be(0, "even two frames exceed the budget, so playback must stay disabled");
+    }
     [TestCase("Pose", "hero")]
     [TestCase("pose", "HERO")]
     [TestCase("POSE", "Hero")]

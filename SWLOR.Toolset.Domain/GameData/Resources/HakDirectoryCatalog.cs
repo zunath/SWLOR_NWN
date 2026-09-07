@@ -83,11 +83,17 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         public string Describe(ResourceIdentity identity) =>
             TryGetPath(identity, out var path) ? path : DirectoryPath;
 
-        public bool TryGetBytes(ResourceIdentity identity, out byte[] bytes)
+        public bool TryGetBytes(ResourceIdentity identity, out byte[] bytes, int maximumBytes = int.MaxValue)
         {
+            ArgumentOutOfRangeException.ThrowIfNegative(maximumBytes);
             if (TryGetPath(identity, out var path))
             {
-                bytes = File.ReadAllBytes(path);
+                using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                if (stream.Length > maximumBytes)
+                    throw new InvalidDataException($"Resource '{identity.ResRef}' exceeds the {maximumBytes}-byte read limit.");
+                bytes = new byte[checked((int)stream.Length)];
+                stream.ReadExactly(bytes);
+                if (stream.ReadByte() != -1) throw new IOException("Resource changed while reading.");
                 return true;
             }
 

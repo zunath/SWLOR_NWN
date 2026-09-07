@@ -259,6 +259,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         EndDrag();
         if (IsPlaying) { Stop(); if (_previewVisible) RefreshPreview(); return; }
         if (_previewVisible) RefreshPreview(playback: true);
+        if (_previewVisible && _model != null && !_previewIsPlayback) return;
         _playStart = _playhead; _clock.Restart(); _timer.Start(); OnPropertyChanged(nameof(IsPlaying)); OnPropertyChanged(nameof(PlaybackLabel));
         OnPropertyChanged(nameof(IsAnimationPlaying));
     }
@@ -330,7 +331,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (!await ConfirmReplace()) return;
         if (ResourceIndex == null || !ResourceIndex.TryLookup(ResourceIdentity.FromFileName(RigResource + ".mdl"), out var resource))
             throw new InvalidDataException($"Model '{RigResource}' was not found. Open a local MDL using Load rig file.");
-        var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
+        var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes(AnimationProject.MaximumFileBytes)));
         LoadModel(model, LocalModelFolder(resource.Provenance.SourcePath));
         TargetPaths = ResolveInstallTarget(model.Name); OnPropertyChanged(nameof(TargetPaths));
         await RefreshStarterMovements();
@@ -394,7 +395,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         {
             if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(project.ModelName + ".mdl"), out var resource) == true)
             {
-                var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
+                var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes(AnimationProject.MaximumFileBytes)));
                 if (MatchesPreviewRig(project, AnimationProject.FromModel(model))) return (model, LocalModelFolder(resource.Provenance.SourcePath));
                 _log.AppendLine("Mounted animation preview skipped: the model does not match the saved rig.");
             }
@@ -579,18 +580,30 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         _hasPreviewGeometry = model != null && PreviewMeshes(model).Any();
     }
     private static IEnumerable<MdlTrimeshNode> PreviewMeshes(MdlModel model) => model.GetMeshNodes().Where(MdlMeshBuilder.IsRenderableMesh);
+    internal static int PreviewFrameCount(MdlModel model, float duration)
+    {
+        // CPU skin arrays are sized by source vertices; GPU streams expand face corners.
+        // Include both, even when most source vertices are unreferenced by the faces.
+        var vertices = PreviewMeshes(model).OfType<MdlSkinmeshNode>()
+            .Sum(mesh => (long)mesh.Vertices.Length + (long)mesh.Faces.Length * 3);
+        var budget = Math.Min(240, 64L * 1024 * 1024 / Math.Max(1, vertices * 128));
+        return budget < 2 ? 0 : (int)Math.Clamp((long)Math.Ceiling(duration * 30), 2, budget);
+    }
     private void RefreshPreview(bool playback = false)
     {
         if (_model == null) { PreviewScene = null; OnPropertyChanged(nameof(PreviewScene)); return; }
         var pose = Project.Joints.Select((joint, i) => (joint.Name, Pose[i])).ToDictionary(p => p.Name, p => p.Item2, StringComparer.OrdinalIgnoreCase);
+        var count = playback ? PreviewFrameCount(_model, Project.Duration) : 0;
+        if (playback && count == 0)
+        {
+            Stop(); playback = false;
+            Status = "This model exceeds the playback memory budget. Use the timeline to inspect individual poses.";
+        }
         RenderModel model;
         if (playback)
         {
             // The shared renderer uploads these frames once, then changes frame indices/transforms.
             // Bound weighted geometry as well as frame count: skin frames carry CPU and GPU vertices.
-            var skinVertices = PreviewMeshes(_model).OfType<MdlSkinmeshNode>().Sum(mesh => (long)mesh.Faces.Length * 3);
-            var budgetFrames = (int)Math.Clamp(64L * 1024 * 1024 / Math.Max(1, skinVertices * 128), 2, 240);
-            var count = Math.Clamp((int)Math.Ceiling(Project.Duration * 30), 2, budgetFrames);
             var frames = new List<IReadOnlyDictionary<string, PosedNode>>(count);
             for (var i = 0; i < count; i++)
             {

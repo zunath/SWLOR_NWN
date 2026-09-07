@@ -87,7 +87,7 @@ public sealed partial class AnimationEditorDocumentViewModel
                 {
                     AnimationProject.ValidateToken(name, 16);
                     if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(name + ".mdl"), out var resource) == true)
-                        return new MdlReader().Parse(resource.GetBytes());
+                        return new MdlReader().Parse(resource.GetBytes(AnimationProject.MaximumFileBytes));
                     var localPath = localFolder == null ? null : Path.Combine(localFolder, name + ".mdl");
                     if (localPath != null && File.Exists(localPath))
                         return new MdlReader().Parse(AnimationSourceFile.ReadBytes(localPath, AnimationMdl.MaximumFileBytes, "Supermodel"));

@@ -88,6 +88,10 @@ public static class AnimationMdl
         rig.Validate();
         var project = rig.Clone();
         project.Keys.Clear(); project.Events.Clear();
+        // Import clip metadata from the source, independently of the previously edited clip.
+        project.Duration = 0;
+        project.Transition = 0;
+        project.AnimationRoot = project.Joints[0].Name;
         // The shared reader treats static node values as geometry defaults. Convert animation
         // constants into one-key tracks so they override a nonzero rig bind transform as intended.
         var lines = text.Replace("\r", "").Split('\n');

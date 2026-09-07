@@ -144,8 +144,9 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public bool Contains(ResourceIdentity identity) => _index.ContainsKey(identity);
 
-        public bool TryGetBytes(ResourceIdentity identity, out byte[] bytes)
+        public bool TryGetBytes(ResourceIdentity identity, out byte[] bytes, int maximumBytes = int.MaxValue)
         {
+            ArgumentOutOfRangeException.ThrowIfNegative(maximumBytes);
             bytes = Array.Empty<byte>();
 
             if (!_index.TryGetValue(identity, out var indexed))
@@ -160,7 +161,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             if (bif == null)
                 return false;
 
-            var data = bif.ExtractVariableResource(entry.VariableTableIndex);
+            var data = bif.ExtractVariableResource(entry.VariableTableIndex, maximumBytes);
             if (data == null)
                 return false;
 

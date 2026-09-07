@@ -116,7 +116,7 @@ public sealed partial class AnimationEditorDocumentViewModel
         var next = Project.Clone(); next.Keys.Clear(); next.Events.Clear(); next.Duration = 2;
         var pose = Project.Joints.Select(joint => joint.Rest).ToArray();
         var idle = StarterMovements.FirstOrDefault(movement => movement.Name == "Standing / idle");
-        if (idle != null) pose = Project.Joints.Select(joint => idle.Movement.Frames[0].TryGetValue(joint.Name, out var value) ? value : joint.Rest).ToArray();
+        if (idle != null) pose = Project.Joints.Select(joint => idle.Movement.Frames[^1].TryGetValue(joint.Name, out var value) ? value : joint.Rest).ToArray();
         foreach (var time in new[] { 0f, 1f, 2f }) next.SetKey(time, pose);
         try { Replace(next); }
         catch (Exception ex) { Status = "Could not create poses: " + ex.GetBaseException().Message; return; }

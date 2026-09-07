@@ -580,20 +580,26 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         _hasPreviewGeometry = model != null && PreviewMeshes(model).Any();
     }
     private static IEnumerable<MdlTrimeshNode> PreviewMeshes(MdlModel model) => model.GetMeshNodes().Where(MdlMeshBuilder.IsRenderableMesh);
-    internal static int PreviewFrameCount(MdlModel model, float duration)
+    internal static int PreviewFrameCount(MdlModel model, float duration, int poseJointCount)
     {
         // CPU skin arrays are sized by source vertices; GPU streams expand face corners.
-        // Include both, even when most source vertices are unreferenced by the faces.
-        var vertices = PreviewMeshes(model).OfType<MdlSkinmeshNode>()
-            .Sum(mesh => (long)mesh.Vertices.Length + (long)mesh.Faces.Length * 3);
-        var budget = Math.Min(240, 64L * 1024 * 1024 / Math.Max(1, vertices * 128));
+        // Every render mesh also retains frame matrices, including rigid and unweighted meshes.
+        // Reserve space for sampled poses/dictionaries and collection overhead before geometry.
+        var bytesPerFrame = 1024L + (long)poseJointCount * 256;
+        foreach (var mesh in PreviewMeshes(model))
+        {
+            bytesPerFrame += 128;
+            if (mesh is MdlSkinmeshNode)
+                bytesPerFrame += ((long)mesh.Vertices.Length + (long)mesh.Faces.Length * 3) * 128;
+        }
+        var budget = Math.Min(240, 64L * 1024 * 1024 / bytesPerFrame);
         return budget < 2 ? 0 : (int)Math.Clamp((long)Math.Ceiling(duration * 30), 2, budget);
     }
     private void RefreshPreview(bool playback = false)
     {
         if (_model == null) { PreviewScene = null; OnPropertyChanged(nameof(PreviewScene)); return; }
         var pose = Project.Joints.Select((joint, i) => (joint.Name, Pose[i])).ToDictionary(p => p.Name, p => p.Item2, StringComparer.OrdinalIgnoreCase);
-        var count = playback ? PreviewFrameCount(_model, Project.Duration) : 0;
+        var count = playback ? PreviewFrameCount(_model, Project.Duration, Project.Joints.Count) : 0;
         if (playback && count == 0)
         {
             Stop(); playback = false;
@@ -603,7 +609,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (playback)
         {
             // The shared renderer uploads these frames once, then changes frame indices/transforms.
-            // Bound weighted geometry as well as frame count: skin frames carry CPU and GPU vertices.
+            // The cap includes pose data, rigid matrices, and weighted CPU/GPU geometry.
             var frames = new List<IReadOnlyDictionary<string, PosedNode>>(count);
             for (var i = 0; i < count; i++)
             {

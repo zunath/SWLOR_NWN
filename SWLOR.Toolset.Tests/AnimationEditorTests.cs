@@ -93,9 +93,27 @@ public class AnimationEditorTests
                 Name = "skin" + i, Vertices = new Vector3[65535],
                 Faces = [new MdlFace { VertexIndex0 = 0, VertexIndex1 = 1, VertexIndex2 = 2 }]
             });
-        var count = AnimationEditorDocumentViewModel.PreviewFrameCount(model, 10);
+        var count = AnimationEditorDocumentViewModel.PreviewFrameCount(model, 10, 512);
         if (meshCount == 1) count.Should().BeInRange(2, 8);
         else count.Should().Be(0, "even two frames exceed the budget, so playback must stay disabled");
+    }
+    [TestCase(10_000, false)] [TestCase(99_999, false)] [TestCase(99_998, true)]
+    public void RigidAndMixedMeshesShareThePlaybackBudget(int rigidCount, bool includeSkin)
+    {
+        var root = new MdlNode { Name = "root" };
+        var model = new MdlModel { GeometryRoot = root };
+        var triangle = new[] { Vector3.Zero, Vector3.UnitX, Vector3.UnitY };
+        var faces = new[] { new MdlFace { VertexIndex0 = 0, VertexIndex1 = 1, VertexIndex2 = 2 } };
+        for (var i = 0; i < rigidCount; i++)
+            root.Children.Add(new MdlTrimeshNode { Name = "mesh" + i, Parent = root, Vertices = triangle, Faces = faces });
+        if (includeSkin)
+            root.Children.Add(new MdlSkinmeshNode { Name = "skin", Parent = root, Vertices = new Vector3[65535], Faces = faces });
+        var frames = AnimationEditorDocumentViewModel.PreviewFrameCount(model, 10, 512);
+        frames.Should().BeInRange(2, 104);
+        // Independent lower bound: 64-byte matrices and the existing weighted-vertex allowance.
+        var geometryBytes = rigidCount * 64L + (includeSkin ? (65535L + 3) * 128 : 0);
+        (geometryBytes * frames).Should().BeLessThanOrEqualTo(64L * 1024 * 1024);
+        if (includeSkin) frames.Should().BeLessThan(5, "skin and rigid meshes consume the same budget");
     }
     [TestCase("Pose", "hero")]
     [TestCase("pose", "HERO")]
@@ -930,6 +948,32 @@ public class AnimationEditorTests
         (await vm.TrySaveAsync()).Should().BeTrue();
         AnimationProject.Deserialize(File.ReadAllText(path)).Serialize().Should().Be(vm.Project.Serialize());
         vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task GuidedPosesBeginAndFinishAtTheSettledInheritedIdle()
+    {
+        var target = InstallFixture();
+        File.WriteAllText(target, File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero base")
+            .Replace("setanimationscale 1", "setanimationscale 2"));
+        var source = Rig(); source.ModelName = "base"; source.Joints[0] = source.Joints[0] with { Name = "base" };
+        Write("SWLOR_Haks/sw_cr_creature/base.mdl", "newmodel base\n" + AnimationMdl.ExportGeometry(source) + "newanim pause1 base\nlength 1\n" +
+            "node dummy lower\nparent upper\npositionkey 2\n0 1 0 0\n1 3 0 0\n" +
+            "orientationkey 2\n0 0 0 1 0\n1 0 0 1 0.5\nendnode\ndoneanim pause1 base\ndonemodel base\n");
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target);
+        await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.StarterMovements.Should().ContainSingle().Which.Name.Should().Be("Standing / idle");
+        vm.BuildFromPosesCommand.Execute(null);
+        vm.Project.Keys.Select(key => key.Time).Should().Equal(0, 1, 2);
+        var lower = vm.Project.Joints.FindIndex(joint => joint.Name == "lower");
+        var hand = vm.Project.Joints.FindIndex(joint => joint.Name == "hand");
+        foreach (var key in vm.Project.Keys)
+        {
+            key.Pose[lower].Position.X.Should().BeApproximately(6, 1e-5f, "the final inherited idle is scaled to the character");
+            Math.Abs(Quaternion.Dot(key.Pose[lower].Orientation, Quaternion.CreateFromAxisAngle(Vector3.UnitZ, .5f)))
+                .Should().BeApproximately(1, 1e-5f);
+            key.Pose[hand].Should().Be(vm.Project.Joints[hand].Rest, "unanimated joints retain the character's bind pose");
+        }
+        vm.ApproveApplicationClose(); vm.OnClose();
     }
     [AvaloniaTest] public async Task GuidedViewOpensMountedProjectWithMoreJointsThanThePreviousPose()
     {

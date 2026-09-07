@@ -1111,11 +1111,12 @@ public class AnimationEditorTests
         window.Close();
     }
     [AvaloniaTest]
-    [TestCase(false, false)] [TestCase(true, false)] [TestCase(false, true)] [TestCase(true, true)]
-    public async Task InstallPreservesExternalSourceChangesUntilTheyAreResolved(bool registered, bool deleted)
+    [TestCase(false, false, false)] [TestCase(true, false, false)] [TestCase(false, true, false)] [TestCase(true, true, false)]
+    [TestCase(false, false, true)] [TestCase(true, false, true)] [TestCase(false, true, true)] [TestCase(true, true, true)]
+    public async Task InstallPreservesExternalSourceChangesUntilTheyAreResolved(bool registered, bool deleted, bool categorized)
     {
         var target = InstallFixture(); var project = Rig();
-        var path = Write("design/animations/social/Wave.swlanim", project.Serialize());
+        var path = Write(categorized ? "design/animations/social/Wave.swlanim" : "drafts/Wave.swlanim", project.Serialize());
         if (registered) AnimationInstall.Prepare(_folder, project, [target], path).Apply();
         var originalTarget = File.ReadAllBytes(target);
         var prompts = new Prompts { DestructiveChoice = true, ExternalChoice = ExternalChangeChoice.Overwrite };
@@ -1138,9 +1139,31 @@ public class AnimationEditorTests
         await vm.InstallCommand.ExecuteAsync(null);
         prompts.DestructiveConfirmationCount.Should().Be(1);
         vm.Status.Should().StartWith("Installed.");
-        vm.PathDisplay.Should().Be(Path.GetFullPath(path));
-        AnimationProject.Deserialize(File.ReadAllText(path)).Serialize().Should().Be(vm.Project.Serialize());
+        var installed = categorized ? path : Path.Combine(_folder, "design/animations/uncategorized/Wave.swlanim");
+        vm.PathDisplay.Should().Be(Path.GetFullPath(installed));
+        AnimationProject.Deserialize(File.ReadAllText(installed)).Serialize().Should().Be(vm.Project.Serialize());
         vm.OnClose().Should().BeTrue();
+    }
+
+    [AvaloniaTest]
+    [TestCase(false)] [TestCase(true)]
+    public async Task InstallRejectsRelocatedSourceChangesDuringConfirmation(bool deleted)
+    {
+        var target = InstallFixture(); var project = Rig();
+        var path = Write("drafts/Wave.swlanim", project.Serialize());
+        var originalTarget = File.ReadAllBytes(target);
+        var prompts = new Prompts { DestructiveChoice = true, OnDestructiveConfirmation = () =>
+            { if (deleted) File.Delete(path); else File.WriteAllText(path, "External edit"); } };
+        var vm = new AnimationEditorDocumentViewModel(prompts, new OutputLogService(), repositoryRoot: _folder);
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.OpenProjectCommand.ExecuteAsync(null); vm.TargetPaths = target;
+        await vm.InstallCommand.ExecuteAsync(null);
+        prompts.DestructiveConfirmationCount.Should().Be(1);
+        vm.Status.Should().Contain("changed after the installation preview");
+        Path.GetFullPath(vm.PathDisplay).Should().Be(Path.GetFullPath(path));
+        File.ReadAllBytes(target).Should().Equal(originalTarget);
+        Directory.Exists(Path.Combine(_folder, "design")).Should().BeFalse();
+        vm.ApproveApplicationClose(); vm.OnClose();
     }
 
     [AvaloniaTest] public async Task SaveProtectsExternalChangesAndCancelledCloseKeepsDocumentOpen()
@@ -1430,6 +1453,7 @@ public class AnimationEditorTests
     {
         public bool DestructiveChoice { get; init; }
         public int DestructiveConfirmationCount { get; private set; }
+        public Action? OnDestructiveConfirmation { get; init; }
         public ExternalChangeChoice ExternalChoice { get; init; } = ExternalChangeChoice.Cancel;
         public UnsavedChangesChoice CloseChoice { get; init; } = UnsavedChangesChoice.Cancel;
         public Action<string>? OnExternalChange { get; init; }
@@ -1442,6 +1466,7 @@ public class AnimationEditorTests
         public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel)
         {
             DestructiveConfirmationCount++;
+            OnDestructiveConfirmation?.Invoke();
             return Task.FromResult(DestructiveChoice);
         }
         public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) => Task.FromResult<string?>(null);

@@ -28,6 +28,42 @@ public class AnimationFileSafetyTests
         return (project, target);
     }
 
+    [TestCase("SWLOR_HaksOther")]
+    [TestCase("swlor_haks")]
+    public void InstallationRejectsConfiguredTargetsInSiblingHakTrees(string sibling)
+    {
+        if (OperatingSystem.IsWindows() && sibling == "swlor_haks")
+            Assert.Ignore("The case-only sibling aliases the HAK tree on Windows.");
+        var (project, target) = InstallationFixture();
+        AnimationInstall.FindTargetSource(_folder, "hero").Should().Be(target);
+        var outside = Path.Combine(_folder, sibling, "models", "hero.mdl");
+        Directory.CreateDirectory(Path.GetDirectoryName(outside)!);
+        File.Copy(target, outside);
+        File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"),
+            JsonSerializer.Serialize(new { HakList = new[] { new { Path = $"../{sibling}/models" } } }));
+        var before = Directory.GetFiles(_folder, "*", SearchOption.AllDirectories).ToDictionary(p => p, File.ReadAllBytes);
+        AnimationInstall.FindTargetSource(_folder, "hero").Should().BeNull();
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [outside]);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*winning model files*");
+        Directory.GetFiles(_folder, "*", SearchOption.AllDirectories).Should().BeEquivalentTo(before.Keys);
+        foreach (var file in before) File.ReadAllBytes(file.Key).Should().Equal(file.Value);
+    }
+
+    [Test]
+    public void InstallationRejectsACaseDifferingNonWinningLayer()
+    {
+        if (OperatingSystem.IsWindows()) Assert.Ignore("Case-only layer paths alias on Windows.");
+        var (project, winner) = InstallationFixture();
+        var shadowed = Path.Combine(_folder, "SWLOR_Haks", "Models", "hero.mdl");
+        Directory.CreateDirectory(Path.GetDirectoryName(shadowed)!);
+        File.Copy(winner, shadowed);
+        File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"),
+            "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"},{\"Path\":\"../SWLOR_Haks/Models\"}]}");
+        AnimationInstall.FindTargetSource(_folder, "hero").Should().Be(winner);
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [shadowed]);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*winning model files*");
+    }
+
     [Test]
     public void CompletedBankSizeAllocatesANewBankAndRemainsEditable()
     {
@@ -300,24 +336,97 @@ public class AnimationFileSafetyTests
         Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
     }
 
+    [TestCase(false, false)] [TestCase(false, true)] [TestCase(true, false)] [TestCase(true, true)]
+    public void InstallationOwnsChangeBytesThroughPublicationAndRollback(bool existing, bool fail)
+    {
+        var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
+        if (existing) { File.WriteAllBytes(first, [1]); File.WriteAllBytes(second, [2]); }
+        var changes = new[] { new AnimationFileChange(first, existing ? [1] : null, [3]),
+            new AnimationFileChange(second, existing ? [2] : null, [4]) };
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]>(), Changes = changes };
+        Action install = () => plan.Apply(index =>
+        {
+            if (index != 1) return;
+            File.ReadAllBytes(first).Should().Equal(3);
+            foreach (var change in changes)
+            {
+                change.After[0] = 99;
+                if (change.Before != null) change.Before[0] = 98;
+            }
+            if (fail) throw new IOException("Simulated later commit failure");
+        });
+        if (fail) install.Should().ThrowExactly<IOException>(); else install.Should().NotThrow();
+        File.Exists(first).Should().Be(existing || !fail);
+        File.Exists(second).Should().Be(existing || !fail);
+        if (existing || !fail)
+        {
+            File.ReadAllBytes(first).Should().Equal(fail ? (byte)1 : (byte)3);
+            File.ReadAllBytes(second).Should().Equal(fail ? (byte)2 : (byte)4);
+        }
+        Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
+        Directory.GetFiles(_folder, "*.bak").Should().BeEmpty();
+    }
+
     [TestCase(false)] [TestCase(true)]
-    public void InstallationRollsBackOnlyItsOwnOutputAfterALaterCommitConflict(bool competingEdit)
+    public void InstallationProtectsEarlierOutputsAndRollsBackAfterALaterCommitConflict(bool competingEdit)
     {
         var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
         File.WriteAllBytes(first, [1]); File.WriteAllBytes(second, [2]);
         var changes = new CommitConflictChanges([new(first, [1], [3]), new(second, [2], [4])], () =>
         {
-            if (competingEdit) File.WriteAllBytes(first, [5]);
+            if (competingEdit)
+            {
+                Action rewrite = () => File.WriteAllBytes(first, [5]);
+                rewrite.Should().Throw<IOException>();
+                Action replace = () => File.Move(first, first + ".moved");
+                replace.Should().Throw<IOException>();
+            }
             File.WriteAllBytes(second, [6]);
         });
         var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test", Inputs = new Dictionary<string, byte[]>(), Changes = changes };
         Action install = () => plan.Apply(changes.BeforeCommit);
-        if (competingEdit) install.Should().Throw<AggregateException>();
-        else install.Should().Throw<IOException>();
-        File.ReadAllBytes(first).Should().Equal(competingEdit ? (byte)5 : (byte)1);
+        install.Should().Throw<IOException>();
+        File.ReadAllBytes(first).Should().Equal(1);
         File.ReadAllBytes(second).Should().Equal(6);
         Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
         Directory.GetFiles(_folder, "*.bak").Should().BeEmpty();
+        File.WriteAllBytes(first, [7]); // The output lease is released before returning.
+    }
+
+    [Test]
+    public void InstallationHoldsEveryCommittedOutputUntilSuccessThenReleasesIt()
+    {
+        var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]>(), Changes = [new(first, null, [1]), new(second, null, [2])] };
+        plan.Apply(index =>
+        {
+            if (index != 1) return;
+            Action rewrite = () => File.WriteAllBytes(first, [3]);
+            rewrite.Should().Throw<IOException>();
+            Action replace = () => File.Move(first, first + ".moved");
+            replace.Should().Throw<IOException>();
+        });
+        File.ReadAllBytes(first).Should().Equal(1); File.ReadAllBytes(second).Should().Equal(2);
+        File.WriteAllBytes(first, [3]); File.WriteAllBytes(second, [4]);
+        Directory.GetFiles(_folder).Should().BeEquivalentTo(first, second);
+    }
+
+    [TestCase(false)] [TestCase(true)]
+    public void RelocatedProjectRemainsAnInputDuringInstallation(bool delete)
+    {
+        var (project, target) = InstallationFixture();
+        var source = Path.Combine(_folder, "Wave.swlanim");
+        File.WriteAllText(source, project.Serialize());
+        var plan = AnimationInstall.Prepare(_folder, project, [target], source);
+        plan.Inputs.Should().ContainKey(source);
+        plan.Changes.Should().NotContain(change => change.Path == source);
+        if (delete) File.Delete(source); else File.WriteAllText(source, "External edit");
+        Action apply = plan.Apply;
+        apply.Should().Throw<IOException>().WithMessage("*changed after the installation preview*");
+        Directory.Exists(Path.Combine(_folder, "design")).Should().BeFalse();
+        Directory.GetFiles(Path.GetDirectoryName(target)!).Should().Equal(target);
     }
 
     private sealed class CommitConflictChanges(AnimationFileChange[] changes, Action conflict) : IReadOnlyList<AnimationFileChange>

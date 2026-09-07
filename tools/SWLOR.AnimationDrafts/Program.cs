@@ -22,6 +22,9 @@ try
         var plan = AnimationInstall.Prepare(root, project, targets, Path.GetFullPath(args[2]));
         foreach (var change in plan.Changes) Console.WriteLine(Path.GetRelativePath(root, change.Path));
         plan.Apply();
+        foreach (var backup in plan.RetainedBackups)
+            logger.Warning("Backup cleanup failed; retained {BackupPath}. Review this file before removing it manually.",
+                Path.GetRelativePath(root, backup));
         Console.WriteLine(plan.CodeExample);
         return 0;
     }

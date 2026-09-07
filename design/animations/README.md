@@ -103,6 +103,9 @@ dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll i
 
 The command uses the shared animation installation transaction, then the HAK and C# builds
 must be deployed again. Review both the parent repository and HAK submodule changes.
+If backup cleanup fails after installation, the command lists the retained `.bak` files.
+Review those files before removing them manually; failed installs also report retained backups
+with their recovery details.
 
 `manifest.json` records each Bible row, image link, interpretation, key poses, and validation
 hash. `design/animations/vibroblade/recipe.json` preserves the authored pose controls so Codex

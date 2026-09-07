@@ -453,6 +453,9 @@ namespace SWLOR.Toolset.Shell
                 OpenBuildConfiguration));
         }
 
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private void AnimationEditor() => _editorService.Value.OpenAnimationEditor();
+
         public string TlkEditorAvailabilityMessage => _tlkEditorSource?.IsAvailable == true
             ? "Edit SWLOR's custom sw_tlk source and generated binary."
             : _tlkEditorSource?.UnavailableReason ??
@@ -916,6 +919,7 @@ namespace SWLOR.Toolset.Shell
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
             ModulePropertiesCommand.NotifyCanExecuteChanged();
             TlkEditorCommand.NotifyCanExecuteChanged();
+            AnimationEditorCommand.NotifyCanExecuteChanged();
             NotifyActiveEditorCommandsChanged();
         }
 

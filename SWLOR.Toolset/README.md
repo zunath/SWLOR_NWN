@@ -15,6 +15,12 @@ It is an Avalonia desktop app that reads and writes the module's per-resource JS
 (`Module/{are,git,gic,utc,uti,utp,…}/<resref>.<ext>.json`, neverwinter.nim `nwn_gff` format) and
 reuses the existing pack pipeline unchanged.
 
+The **Animation Editor** starts with a guided choice of existing movements or simple poses,
+readable body-part controls, and a live preview. Advanced mode adds native 3D posing, IK, keyframes, MDL animation exchange, glTF
+retargeting, and installation into HAK model sources with generated C# references. See
+[Animation Editor](Readmes/ANIMATION-EDITOR.md) for the authoring and deployment workflow. No Godot
+installation is needed.
+
 ---
 
 ## Requirements

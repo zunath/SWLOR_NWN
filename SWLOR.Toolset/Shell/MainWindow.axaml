@@ -50,6 +50,8 @@
         <MenuItem x:Name="TlkEditorMenuItem" Header="_TLK Editor..."
                   Command="{Binding TlkEditorCommand}"
                   ToolTip.Tip="{Binding TlkEditorAvailabilityMessage}" />
+        <MenuItem x:Name="AnimationEditorMenuItem" Header="_Animation Editor..."
+                  Command="{Binding AnimationEditorCommand}" />
         <Separator />
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
         <Separator />

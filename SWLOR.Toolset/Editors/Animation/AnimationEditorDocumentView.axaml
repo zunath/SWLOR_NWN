@@ -1,0 +1,273 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:SWLOR.Toolset.Editors.Animation"
+             xmlns:viewport="using:SWLOR.Toolset.Viewport"
+             x:Class="SWLOR.Toolset.Editors.Animation.AnimationEditorDocumentView"
+             x:DataType="local:AnimationEditorDocumentViewModel">
+  <Grid>
+  <Grid x:Name="GuidedEditor" IsVisible="{Binding !IsAdvanced}" RowDefinitions="Auto,*,Auto" Margin="12" RowSpacing="12" IsEnabled="{Binding !IsBusy}">
+    <Grid ColumnDefinitions="*,Auto">
+      <StackPanel>
+        <TextBlock Text="Make an animation" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="Start with a movement or create a few poses. Watch the character as you edit." Opacity="0.7" TextWrapping="Wrap" />
+      </StackPanel>
+      <WrapPanel Grid.Column="1" VerticalAlignment="Center">
+        <Button Content="Open…" Command="{Binding OpenProjectCommand}" />
+        <Button Content="Save" Command="{Binding SaveProjectCommand}" />
+        <CheckBox Content="Advanced" IsChecked="{Binding IsAdvanced}" Margin="12,0,0,0" />
+      </WrapPanel>
+    </Grid>
+    <Grid Grid.Row="1" ColumnDefinitions="340,14,*">
+      <TabControl x:Name="GuidedSteps" SelectedIndex="{Binding BeginnerStep}">
+        <TabItem Header="1. Start">
+          <ScrollViewer><StackPanel Spacing="12" Margin="4,12,8,0">
+            <TextBlock Text="Choose a character" FontSize="17" FontWeight="SemiBold" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+              <Button x:Name="MaleCharacterButton" Content="Male humanoid" Command="{Binding LoadMaleCharacterCommand}" HorizontalAlignment="Stretch" />
+              <Button Grid.Column="1" Content="Female humanoid" Command="{Binding LoadFemaleCharacterCommand}" HorizontalAlignment="Stretch" />
+            </Grid>
+            <Button Content="Other character file…" Command="{Binding LoadRigFileCommand}" HorizontalAlignment="Stretch" />
+            <TextBlock Text="{Binding CharacterSummary}" Opacity="0.7" />
+            <Separator Margin="0,4" />
+            <TextBlock Text="How would you like to begin?" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <Button x:Name="ExistingMovementButton" Command="{Binding ChooseMovementCommand}" IsEnabled="{Binding HasCharacter}" Width="{Binding $parent[StackPanel].Bounds.Width}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="14" MinHeight="104">
+              <StackPanel Spacing="6">
+                <TextBlock Text="Use an existing movement" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock Text="Try standing, walking, or an attack. Then change the poses to make it your own." TextWrapping="Wrap" Opacity="0.75" />
+              </StackPanel>
+            </Button>
+            <Button x:Name="BuildPosesButton" Command="{Binding BuildFromPosesCommand}" IsEnabled="{Binding HasCharacter}" Width="{Binding $parent[StackPanel].Bounds.Width}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="14" MinHeight="104">
+              <StackPanel Spacing="6">
+                <TextBlock Text="Build from poses" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock Text="Set a start, middle, and finish pose. The editor creates the movement between them." TextWrapping="Wrap" Opacity="0.75" />
+              </StackPanel>
+            </Button>
+            <StackPanel IsVisible="{Binding ShowMovementChoices}" Spacing="8">
+              <TextBlock Text="Choose a starting movement" FontWeight="SemiBold" />
+              <ComboBox ItemsSource="{Binding StarterMovements}" SelectedItem="{Binding SelectedMovement}" HorizontalAlignment="Stretch" IsVisible="{Binding HasStarterMovements}">
+                <ComboBox.ItemTemplate><DataTemplate x:DataType="local:AnimationStarterMovement"><TextBlock Text="{Binding Name}" /></DataTemplate></ComboBox.ItemTemplate>
+              </ComboBox>
+              <Button Content="Use movement and play" Command="{Binding UseMovementCommand}" IsVisible="{Binding HasStarterMovements}" HorizontalAlignment="Stretch" />
+              <TextBlock Text="No starter movements were found for this character. You can still build from poses, or import a movement in Advanced." IsVisible="{Binding !HasStarterMovements}" TextWrapping="Wrap" />
+            </StackPanel>
+          </StackPanel></ScrollViewer>
+        </TabItem>
+        <TabItem Header="2. Pose" IsEnabled="{Binding HasCharacter}">
+          <ScrollViewer><StackPanel Spacing="12" Margin="4,12,8,0">
+            <TextBlock Text="Make small changes" FontSize="17" FontWeight="SemiBold" />
+            <TextBlock Text="Pause on a moment, choose a body part, and adjust it. Each change saves a pose at that moment." TextWrapping="Wrap" Opacity="0.75" />
+            <TextBlock Text="Body part" FontWeight="SemiBold" />
+            <ComboBox x:Name="BodyPartPicker" ItemsSource="{Binding BodyParts}" SelectedItem="{Binding SelectedBodyPart}" PlaceholderText="Choose a body part" HorizontalAlignment="Stretch">
+              <ComboBox.ItemTemplate><DataTemplate x:DataType="local:AnimationBodyPart"><TextBlock Text="{Binding Name}" /></DataTemplate></ComboBox.ItemTemplate>
+            </ComboBox>
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="6" IsEnabled="{Binding HasSelectedBodyPart}">
+              <Button Content="Bend −" Command="{Binding AdjustBodyPartCommand}" CommandParameter="bend-" HorizontalAlignment="Stretch" />
+              <Button Grid.Column="1" Content="Bend +" Command="{Binding AdjustBodyPartCommand}" CommandParameter="bend+" HorizontalAlignment="Stretch" />
+              <Button Grid.Row="1" Content="Turn left" Command="{Binding AdjustBodyPartCommand}" CommandParameter="turn-" HorizontalAlignment="Stretch" />
+              <Button Grid.Row="1" Grid.Column="1" Content="Turn right" Command="{Binding AdjustBodyPartCommand}" CommandParameter="turn+" HorizontalAlignment="Stretch" />
+              <Button Grid.Row="2" Content="Tilt left" Command="{Binding AdjustBodyPartCommand}" CommandParameter="tilt-" HorizontalAlignment="Stretch" />
+              <Button Grid.Row="2" Grid.Column="1" Content="Tilt right" Command="{Binding AdjustBodyPartCommand}" CommandParameter="tilt+" HorizontalAlignment="Stretch" />
+            </Grid>
+            <TextBlock Text="Each click rotates by 5°. Try it, watch the preview, and use Undo whenever you need." TextWrapping="Wrap" Opacity="0.7" />
+            <WrapPanel>
+              <Button Content="Undo" Click="OnUndo" IsEnabled="{Binding CanUndo}" />
+              <Button Content="Redo" Click="OnRedo" IsEnabled="{Binding CanRedo}" />
+              <Button Content="Reset body part" Command="{Binding ResetBodyPartCommand}" IsEnabled="{Binding HasSelectedBodyPart}" />
+            </WrapPanel>
+            <Separator />
+            <TextBlock Text="Animation name" FontWeight="SemiBold" />
+            <TextBox Text="{Binding AnimationName}" Watermark="SaberSalute" />
+            <TextBlock Text="Use letters and numbers, e.g. SaberSalute." Opacity="0.7" FontSize="12" />
+            <TextBlock Text="How long should it take?" FontWeight="SemiBold" />
+            <NumericUpDown Value="{Binding Duration}" Minimum="0.01" Maximum="600" Increment="0.25" FormatString="0.## 'seconds'" />
+            <TextBlock Text="A longer duration plays the movement more slowly." TextWrapping="Wrap" Opacity="0.7" />
+          </StackPanel></ScrollViewer>
+        </TabItem>
+        <TabItem Header="3. Use in game" IsEnabled="{Binding HasCharacter}">
+          <ScrollViewer><StackPanel Spacing="12" Margin="4,12,8,0">
+            <TextBlock Text="Save and install" FontSize="17" FontWeight="SemiBold" />
+            <TextBlock Text="Save your editable project first. When you are happy with the preview, install the animation for your character." TextWrapping="Wrap" />
+            <Button Content="Save project" Command="{Binding SaveProjectCommand}" HorizontalAlignment="Stretch" />
+            <Separator />
+            <TextBlock Text="{Binding InstallationTargetSummary}" TextWrapping="Wrap" />
+            <Button Content="Use this character" Command="{Binding UseCurrentCharacterTargetCommand}" HorizontalAlignment="Stretch" />
+            <Button Content="Review and install…" Command="{Binding InstallCommand}" HorizontalAlignment="Stretch" />
+            <TextBlock Text="You will see which files will change before installation. Afterward, rebuild and deploy the HAKs to the server and players, then rebuild the server code." TextWrapping="Wrap" Opacity="0.75" />
+            <TextBlock Text="Advanced includes other target models, file import/export, and precise animation settings." TextWrapping="Wrap" Opacity="0.65" />
+          </StackPanel></ScrollViewer>
+        </TabItem>
+      </TabControl>
+      <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto,Auto,Auto" RowSpacing="8">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding CharacterSummary}" FontWeight="SemiBold" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1" Text="Live preview" Opacity="0.6" VerticalAlignment="Center" />
+        </Grid>
+        <Border Grid.Row="1" Background="#151b24" CornerRadius="6" ClipToBounds="True">
+          <Grid>
+            <viewport:ModelPreviewControl x:Name="BeginnerPreview" IsVisible="{Binding HasModelPreview}" />
+            <local:AnimationRigControl x:Name="BeginnerRig" IsVisible="{Binding ShowRigFallback}" />
+            <StackPanel IsVisible="{Binding !HasCharacter}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="360" Spacing="12" Margin="24">
+              <TextBlock Text="Your character appears here" FontSize="24" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />
+              <TextBlock Text="Choose a character on the left. You can begin with a ready-made movement or create your own poses." TextAlignment="Center" TextWrapping="Wrap" Opacity="0.65" />
+            </StackPanel>
+          </Grid>
+        </Border>
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" IsEnabled="{Binding HasCharacter}">
+          <Button Content="{Binding PlaybackLabel}" Command="{Binding PlayCommand}" />
+          <TextBlock Grid.Column="1" Text="{Binding PoseSummary}" VerticalAlignment="Center" Margin="12,0" TextTrimming="CharacterEllipsis" />
+          <WrapPanel Grid.Column="2">
+            <Button Content="Start" Command="{Binding GoToPoseCommand}" CommandParameter="start" />
+            <Button Content="Middle" Command="{Binding GoToPoseCommand}" CommandParameter="middle" />
+            <Button Content="Finish" Command="{Binding GoToPoseCommand}" CommandParameter="finish" />
+          </WrapPanel>
+        </Grid>
+        <local:AnimationTimelineControl Grid.Row="3" IsEnabled="{Binding HasCharacter}" ToolTip.Tip="Click to choose a moment. Gold marks are saved poses." />
+        <WrapPanel Grid.Row="4" IsEnabled="{Binding HasCharacter}">
+          <Button Content="Previous pose" Command="{Binding PreviousPoseCommand}" />
+          <Button Content="Next pose" Command="{Binding NextPoseCommand}" />
+          <Button Content="Add a pose after this" Command="{Binding AddPoseAfterCommand}" />
+          <Button Content="Delete this pose" Command="{Binding RemovePoseCommand}" IsEnabled="{Binding CanRemovePose}" />
+        </WrapPanel>
+      </Grid>
+    </Grid>
+    <TextBlock Grid.Row="2" Text="{Binding Status}" TextWrapping="Wrap" Opacity="0.8" />
+  </Grid>
+  <Grid x:Name="AdvancedEditor" IsVisible="{Binding IsAdvanced}" RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="8" RowSpacing="6" IsEnabled="{Binding !IsBusy}">
+    <WrapPanel>
+      <Button Content="Open project" Command="{Binding OpenProjectCommand}" />
+      <Button Content="Save" Command="{Binding SaveProjectCommand}" />
+      <Button Content="Save as" Command="{Binding SaveAsCommand}" />
+      <Button Content="Import MDL" Command="{Binding ImportMdlCommand}" />
+      <Button Content="Export MDL" Command="{Binding ExportMdlCommand}" />
+      <CheckBox Content="Advanced" IsChecked="{Binding IsAdvanced}" Margin="12,0" />
+      <TextBlock Text="{Binding PathDisplay}" Margin="12,0" VerticalAlignment="Center" />
+    </WrapPanel>
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,150,Auto,Auto,*,Auto">
+      <TextBlock Text="Rig model" VerticalAlignment="Center" Margin="0,0,8,0" />
+      <TextBox Grid.Column="1" Text="{Binding RigResource}" Watermark="a_ba" />
+      <Button Grid.Column="2" Content="Load rig" Command="{Binding LoadRigCommand}" />
+      <Button Grid.Column="3" Content="Load rig file" Command="{Binding LoadRigFileCommand}" />
+      <TextBlock Grid.Column="5" Text="Working…" IsVisible="{Binding IsBusy}" VerticalAlignment="Center" />
+    </Grid>
+    <Grid Grid.Row="2" ColumnDefinitions="165,5,*,5,290">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="RIG JOINTS" FontWeight="Bold" Margin="0,0,0,8" />
+        <ListBox ItemsSource="{Binding JointNames}" SelectedIndex="{Binding SelectedJoint}" />
+      </DockPanel>
+      <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
+      <TabControl x:Name="PreviewTabs" Grid.Column="2" SelectionChanged="OnPreviewTabChanged">
+        <TabItem Header="Pose rig">
+          <Grid RowDefinitions="Auto,*">
+            <WrapPanel Margin="0,4">
+              <ComboBox ItemsSource="{Binding EditModes}" SelectedItem="{Binding EditMode}" Width="95" />
+              <ComboBox ItemsSource="{Binding Axes}" SelectedItem="{Binding Axis}" Width="65" />
+              <Button Content="Frame rig" Click="OnFrameRig" />
+              <Button Content="Reset pose" Command="{Binding ResetPoseCommand}" />
+            </WrapPanel>
+            <local:AnimationRigControl x:Name="Rig" Grid.Row="1" />
+          </Grid>
+        </TabItem>
+        <TabItem Header="Model preview">
+          <DockPanel>
+            <Button DockPanel.Dock="Top" Content="Attach matching preview model" Command="{Binding AttachPreviewCommand}" />
+            <viewport:ModelPreviewControl x:Name="ModelPreview" />
+          </DockPanel>
+        </TabItem>
+      </TabControl>
+      <GridSplitter Grid.Column="3" ResizeDirection="Columns" />
+      <TabControl Grid.Column="4">
+        <TabItem Header="Pose">
+          <ScrollViewer><StackPanel Spacing="6" Margin="4">
+            <TextBlock Text="Animation name" />
+            <TextBox Text="{Binding AnimationName}" />
+            <TextBlock Text="Duration (seconds; resizes keys)" />
+            <NumericUpDown Value="{Binding Duration}" Minimum="0.01" Maximum="600" Increment="0.1" />
+            <TextBlock Text="Transition (seconds)" />
+            <NumericUpDown Value="{Binding Transition}" Minimum="0" Maximum="600" Increment="0.05" />
+            <TextBlock Text="Local position X / Y / Z (metres)" />
+            <Grid ColumnDefinitions="*,*,*">
+              <NumericUpDown Value="{Binding PositionX}" ShowButtonSpinner="False" FormatString="0.###" Increment="0.01" />
+              <NumericUpDown Grid.Column="1" Value="{Binding PositionY}" ShowButtonSpinner="False" FormatString="0.###" Increment="0.01" />
+              <NumericUpDown Grid.Column="2" Value="{Binding PositionZ}" ShowButtonSpinner="False" FormatString="0.###" Increment="0.01" />
+            </Grid>
+            <TextBlock Text="Set local rotation X / Y / Z (degrees)" TextWrapping="Wrap" />
+            <Grid ColumnDefinitions="*,*,*">
+              <NumericUpDown Value="{Binding RotationX}" ShowButtonSpinner="False" FormatString="0.###" Minimum="-360" Maximum="360" />
+              <NumericUpDown Grid.Column="1" Value="{Binding RotationY}" ShowButtonSpinner="False" FormatString="0.###" Minimum="-360" Maximum="360" />
+              <NumericUpDown Grid.Column="2" Value="{Binding RotationZ}" ShowButtonSpinner="False" FormatString="0.###" Minimum="-360" Maximum="360" />
+            </Grid>
+            <Button Content="Apply rotation" Command="{Binding RotateCommand}" />
+            <TextBlock Text="Local scale" />
+            <NumericUpDown Value="{Binding JointScale}" Minimum="0.001" Maximum="100" Increment="0.01" />
+            <TextBlock Text="IK pole X / Y / Z (world metres)" TextWrapping="Wrap" />
+            <CheckBox Content="Anchor hands and feet when moving body" IsChecked="{Binding AnchorLimbs}" />
+            <Grid ColumnDefinitions="*,*,*">
+              <NumericUpDown Value="{Binding PoleX}" ShowButtonSpinner="False" FormatString="0.###" Increment="0.1" />
+              <NumericUpDown Grid.Column="1" Value="{Binding PoleY}" ShowButtonSpinner="False" FormatString="0.###" Increment="0.1" />
+              <NumericUpDown Grid.Column="2" Value="{Binding PoleZ}" ShowButtonSpinner="False" FormatString="0.###" Increment="0.1" />
+            </Grid>
+            <TextBlock Text="Event at playhead" />
+            <TextBox Text="{Binding EventName}" />
+            <WrapPanel>
+              <Button Content="Add event" Command="{Binding AddEventCommand}" />
+              <Button Content="Remove events" Command="{Binding RemoveEventsCommand}" />
+            </WrapPanel>
+            <TextBlock Text="{Binding EventsDisplay}" TextWrapping="Wrap" />
+          </StackPanel></ScrollViewer>
+        </TabItem>
+        <TabItem Header="Retarget">
+          <ScrollViewer><StackPanel Spacing="6" Margin="4">
+            <Button Content="Load GLB / glTF" Command="{Binding LoadSourceCommand}" />
+            <ComboBox ItemsSource="{Binding SourceClips}" SelectedIndex="{Binding SourceClip}" HorizontalAlignment="Stretch" />
+            <TextBlock Text="Map joints, pose a matching frame, lock the offsets, then bake." TextWrapping="Wrap" />
+            <TextBlock Text="Root motion scale" />
+            <NumericUpDown Value="{Binding RootScale}" Minimum="0.001" Maximum="1000" Increment="0.1" />
+            <TextBlock Text="Bake frames per second" />
+            <NumericUpDown Value="{Binding BakeRate}" Minimum="1" Maximum="60" />
+            <WrapPanel>
+              <Button Content="Lock" Command="{Binding LockCalibrationCommand}" />
+              <Button Content="Bake" Command="{Binding BakeCommand}" />
+              <Button Content="Load map" Command="{Binding LoadMappingCommand}" />
+              <Button Content="Save map" Command="{Binding SaveMappingCommand}" />
+            </WrapPanel>
+            <ItemsControl ItemsSource="{Binding Mappings}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="local:BoneMappingRow">
+                  <StackPanel Margin="0,3">
+                    <TextBlock Text="{Binding Target}" />
+                    <ComboBox ItemsSource="{Binding $parent[UserControl].((local:AnimationEditorDocumentViewModel)DataContext).SourceBones}"
+                              SelectedItem="{Binding Source}" HorizontalAlignment="Stretch" />
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel></ScrollViewer>
+        </TabItem>
+        <TabItem Header="Install">
+          <StackPanel Spacing="8" Margin="4">
+            <TextBlock Text="Target model files" FontWeight="Bold" />
+            <TextBlock Text="Choose each model that should inherit this animation. Installation creates a named animation and a typed C# reference." TextWrapping="Wrap" />
+            <TextBox Text="{Binding TargetPaths}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="140" />
+            <Button Content="Add target model" Command="{Binding AddTargetCommand}" />
+            <Button Content="Preview installation…" Command="{Binding InstallCommand}" />
+            <TextBlock Text="Review the affected files before applying. Rebuild and deploy the HAKs, then rebuild C# to use the generated constant." TextWrapping="Wrap" />
+          </StackPanel>
+        </TabItem>
+      </TabControl>
+    </Grid>
+    <Grid Grid.Row="3" RowDefinitions="Auto,Auto,Auto">
+      <WrapPanel>
+        <Button Content="Play / pause" Command="{Binding PlayCommand}" />
+        <Button Content="Set key" Command="{Binding SetKeyCommand}" />
+        <Button Content="Remove key" Command="{Binding RemoveKeyCommand}" />
+        <Button Content="Copy pose" Command="{Binding CopyPoseCommand}" />
+        <Button Content="Paste pose" Command="{Binding PastePoseCommand}" />
+        <TextBlock Text="{Binding Playhead, StringFormat='  {0:0.000} seconds'}" VerticalAlignment="Center" />
+      </WrapPanel>
+      <Slider Grid.Row="1" Minimum="0" Maximum="{Binding Duration}" Value="{Binding Playhead}" />
+      <local:AnimationTimelineControl Grid.Row="2" ToolTip.Tip="Click a gold marker to select its exact keyframe; drag to scrub." />
+    </Grid>
+    <TextBlock Grid.Row="4" Text="{Binding Status}" TextWrapping="Wrap" />
+  </Grid>
+  </Grid>
+</UserControl>

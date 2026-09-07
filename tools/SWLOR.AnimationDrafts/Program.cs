@@ -13,7 +13,7 @@ if (args.Length >= 4 && args[0] == "install")
 {
     // Run against an isolated checkout with the toolset closed, just like other source generators.
     var root = Path.GetFullPath(args[1]);
-    var project = AnimationProject.Deserialize(File.ReadAllText(args[2]));
+    var project = AnimationProject.Deserialize(await ReadText(args[2]));
     var targets = args.Skip(3).Select(name => AnimationInstall.FindTargetSource(root, name)
         ?? throw new FileNotFoundException($"No configured HAK source for {name}.")).ToArray();
     var plan = AnimationInstall.Prepare(root, project, targets);
@@ -25,7 +25,7 @@ if (args.Length >= 4 && args[0] == "install")
 
 if (args.Length == 2 && args[0] == "inspect")
 {
-    var source = new MdlReader().Parse(File.ReadAllBytes(args[1]));
+    var source = new MdlReader().Parse(ReadBytes(args[1]));
     foreach (var mesh in MdlMeshBuilder.Build(source).Meshes)
     {
         var vertices = Enumerable.Range(0, mesh.Positions.Length / 3).Select(i => Vector3.Transform(
@@ -37,7 +37,7 @@ if (args.Length == 2 && args[0] == "inspect")
 
 if (args.Length >= 4 && args[0] == "render-data")
 {
-    var source = new MdlReader().Parse(File.ReadAllBytes(args[1]));
+    var source = new MdlReader().Parse(ReadBytes(args[1]));
     var sourceRig = AnimationProject.FromModel(source);
     MdlModel? overlay = null;
     AnimationRegistration[]? registry = null;
@@ -49,23 +49,23 @@ if (args.Length >= 4 && args[0] == "render-data")
         {
             var option = args[i];
             if (++i == args.Length) throw new ArgumentException(option + " requires a path.");
-            if (option == "--overlay") overlay = new MdlReader().Parse(File.ReadAllBytes(args[i]));
-            else registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(args[i]));
+            if (option == "--overlay") overlay = new MdlReader().Parse(ReadBytes(args[i]));
+            else registry = JsonSerializer.Deserialize<AnimationRegistration[]>(await ReadText(args[i]));
             continue;
         }
         var part = args[i] switch { "--shield" => "shield", "--sword" => "weaponr", _ => throw new ArgumentException("Unknown render option.") };
         var bone = MdlPartBoneMap.GetBoneName(part)!;
         if (++i == args.Length) throw new ArgumentException("Equipment option requires an MDL path.");
-        equipment.Add((bone, new MdlReader().Parse(File.ReadAllBytes(args[i]))));
+        equipment.Add((bone, new MdlReader().Parse(ReadBytes(args[i]))));
     }
     if ((overlay == null) != (registry == null)) throw new ArgumentException("Installed rendering requires both --overlay and --registry.");
-    using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(args[2], "manifest.json")));
+    using var manifest = JsonDocument.Parse(await ReadText(Path.Combine(args[2], "manifest.json")));
     var poses = new List<object>();
     foreach (var entry in manifest.RootElement.GetProperty("Animations").EnumerateArray())
     {
         var id = entry.GetProperty("Id").GetString()!;
         AnimationProject.ValidateToken(id, 63);
-        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(args[2], id + ".swlanim")));
+        var project = AnimationProject.Deserialize(await ReadText(Path.Combine(args[2], id + ".swlanim")));
         var snapshots = new List<object>();
         var beats = entry.GetProperty("Beats").EnumerateArray().ToArray();
         var times = args.Contains("--frames")
@@ -130,13 +130,13 @@ using var logger = new LoggerConfiguration().WriteTo.Console(standardErrorFromLe
 try
 {
     logger.Information("Generating animation drafts from {RecipePath} with model {ModelPath}", args[2], args[1]);
-    var modelBytes = File.ReadAllBytes(args[1]);
+    var modelBytes = ReadBytes(args[1]);
     var model = new MdlReader().Parse(modelBytes);
     var rig = AnimationProject.FromModel(model);
     var idle = model.Animations.Single(a => a.Name == "pause1");
     var sampledIdle = MdlAnimationPose.Sample(idle, 0, MdlAnimationPose.BindPose(model));
     var neutral = rig.Joints.Select(j => sampledIdle.TryGetValue(j.Name, out var p) ? p : j.Rest).ToArray();
-    var recipeText = File.ReadAllText(args[2]).Replace("\r\n", "\n");
+    var recipeText = (await ReadText(args[2])).Replace("\r\n", "\n");
     var recipe = JsonSerializer.Deserialize<Recipe>(recipeText, Recipe.Json) ?? throw new InvalidDataException("Empty recipe.");
     if (model.Name != recipe.Model) throw new InvalidDataException($"Recipe requires {recipe.Model}, received {model.Name}.");
     var output = Path.GetFullPath(args[3]);
@@ -206,3 +206,9 @@ catch (Exception ex)
     Console.Error.WriteLine(ex.Message);
     return 1;
 }
+
+static byte[] ReadBytes(string path) =>
+    AnimationSourceFile.ReadBytes(path, AnimationProject.MaximumFileBytes, "Animation source");
+
+static Task<string> ReadText(string path) =>
+    AnimationSourceFile.ReadTextAsync(path, AnimationProject.MaximumFileBytes, "Animation source");

@@ -10,9 +10,8 @@ public sealed class AnimationRetarget
 {
     private readonly AnimationProject _rig;
     private readonly PosedNode[] _referencePose;
-    private readonly Dictionary<int, (int Source, Quaternion Offset, Vector3 SourcePosition)> _bindings;
-    private readonly string[] _sourceNames;
-    private readonly int[] _sourceParents;
+    private readonly Dictionary<int, (int Source, Quaternion Offset, Vector3 SourcePosition, Quaternion MotionRotation)> _bindings;
+    private readonly SourceJoint[] _sourceJoints;
     private readonly Matrix4x4[] _targetWorld;
 
     public AnimationRetarget(AnimationProject rig, PosedNode[] pose, GltfAnimationSource source,
@@ -21,8 +20,7 @@ public sealed class AnimationRetarget
         _rig = rig.Clone(); _referencePose = (PosedNode[])pose.Clone();
         _targetWorld = AnimationRig.World(rig.Joints, pose);
         var sourceWorld = source.Sample(clip, time);
-        _sourceNames = source.Joints.Select(j => j.Name).ToArray();
-        _sourceParents = source.Joints.Select(j => j.Parent).ToArray();
+        _sourceJoints = source.Joints.ToArray();
         _bindings = [];
         foreach (var binding in bindings)
         {
@@ -34,7 +32,8 @@ public sealed class AnimationRetarget
             if (!Matrix4x4.Decompose(sourceWorld[index], out _, out var sourceRotation, out _) ||
                 !Matrix4x4.Decompose(_targetWorld[target], out _, out var targetRotation, out _))
                 throw new InvalidDataException("Calibration transform cannot be decomposed.");
-            _bindings.Add(target, (index, Quaternion.Normalize(Quaternion.Inverse(sourceRotation) * targetRotation), sourceWorld[index].Translation));
+            _bindings.Add(target, (index, Quaternion.Normalize(Quaternion.Inverse(sourceRotation) * targetRotation), sourceWorld[index].Translation,
+                Quaternion.Normalize(targetRotation * Quaternion.Inverse(sourceRotation))));
         }
         if (_bindings.Count == 0) throw new InvalidDataException("Map at least one joint before locking calibration.");
     }
@@ -43,8 +42,7 @@ public sealed class AnimationRetarget
     {
         if (framesPerSecond is < 1 or > 60 || !float.IsFinite(rootScale) || rootScale <= 0 || rootScale > 1000)
             throw new InvalidDataException("Bake rate must be 1–60 FPS and root scale must be positive (at most 1000).");
-        if (!_sourceNames.SequenceEqual(source.Joints.Select(j => j.Name)) ||
-            !_sourceParents.SequenceEqual(source.Joints.Select(j => j.Parent)))
+        if (!_sourceJoints.SequenceEqual(source.Joints))
             throw new InvalidDataException("Source skeleton changed. Lock calibration again.");
         var result = _rig.Clone(); result.Keys.Clear(); result.Events.Clear();
         result.Duration = source.GetPlaybackDuration(clip);
@@ -74,7 +72,8 @@ public sealed class AnimationRetarget
                     if (i == root)
                     {
                         if (!Matrix4x4.Invert(parentWorld, out var inverse)) throw new InvalidDataException("Target parent is singular.");
-                        var position = _targetWorld[i].Translation + (sourceWorld[binding.Source].Translation - binding.SourcePosition) * rootScale;
+                        var delta = sourceWorld[binding.Source].Translation - binding.SourcePosition;
+                        var position = _targetWorld[i].Translation + Vector3.Transform(delta, binding.MotionRotation) * rootScale;
                         pose[i] = pose[i] with { Position = Vector3.Transform(position, inverse) };
                     }
                 }

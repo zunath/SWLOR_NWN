@@ -503,7 +503,7 @@ public static class AnimationInstall
         if (File.Exists(projectPath))
         {
             var existing = Read(projectPath);
-            if (Encoding.UTF8.GetString(existing).Replace("\r\n", "\n").TrimEnd('\n') == serializedProject.Replace("\r\n", "\n"))
+            if (Encoding.UTF8.GetString(existing).TrimStart('\uFEFF').Replace("\r\n", "\n").TrimEnd('\n') == serializedProject.Replace("\r\n", "\n"))
                 projectBytes = existing;
         }
         Add(projectPath, projectBytes);

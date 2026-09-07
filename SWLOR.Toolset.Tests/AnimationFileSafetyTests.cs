@@ -26,13 +26,14 @@ public class AnimationFileSafetyTests
         return (project, target);
     }
 
-    [TestCase(false)] [TestCase(true)]
-    public void InstallationKeepsOneSourceAndReusesItsRegisteredCategory(bool categorized)
+    [TestCase(false, false)] [TestCase(true, false)] [TestCase(true, true)]
+    public void InstallationKeepsOneSourceAndReusesItsRegisteredCategory(bool categorized, bool bom)
     {
         var (project, target) = InstallationFixture();
         var relative = $"design/animations/projects/{(categorized ? "social/greetings" : "uncategorized")}/Wave.swlanim";
         var source = Path.Combine(_folder, relative);
         var original = Encoding.UTF8.GetBytes(project.Serialize().Replace("\r\n", "\n").Replace("\n", "\r\n") + "\r\n");
+        if (bom) original = new UTF8Encoding(true).GetPreamble().Concat(original).ToArray();
         if (categorized)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(source)!);
@@ -47,6 +48,18 @@ public class AnimationFileSafetyTests
         AnimationInstall.Prepare(_folder, project, [target], Path.Combine(_folder, "elsewhere/Wave.swlanim")).Apply();
         Directory.GetFiles(Path.Combine(_folder, "design/animations"), "*.swlanim", SearchOption.AllDirectories).Select(Path.GetFullPath).Should().Equal(Path.GetFullPath(source));
         AnimationProject.Deserialize(File.ReadAllText(source)).Duration.Should().Be(2);
+    }
+
+    [Test]
+    public async Task ByteBackedProjectLoadingAcceptsAUtf8Bom()
+    {
+        var (project, _) = InstallationFixture();
+        var path = Path.Combine(_folder, "bom.swlanim");
+        var bytes = new UTF8Encoding(true).GetPreamble().Concat(Encoding.UTF8.GetBytes(project.Serialize())).ToArray();
+        File.WriteAllBytes(path, bytes);
+        var loadedBytes = await AnimationProject.ReadFileBytesAsync(path);
+        AnimationProject.Deserialize(Encoding.UTF8.GetString(loadedBytes)).Serialize().Should().Be(project.Serialize());
+        loadedBytes.Should().Equal(bytes, "external-change detection must retain the exact disk bytes");
     }
 
     [Test]

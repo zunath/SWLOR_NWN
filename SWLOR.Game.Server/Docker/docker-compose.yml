@@ -25,7 +25,7 @@ services:
         build:
           context: .
           dockerfile: Dockerfile
-        image: zunath/nwn-dotnet:8193.37.15-2
+        image: zunath/nwn-dotnet:8193.37.17-2
         env_file: ./swlor.env
         links:
             - "redis:redis"
@@ -34,6 +34,10 @@ services:
         volumes:
             - ./logs:/nwn/run/logs.0
             - ./:/nwn/home
+            - ./hak:/nwn/home/hak:ro
+            - ./tlk:/nwn/home/tlk:ro
+            - ./modules:/nwn/home/modules:ro
+            - ./dotnet:/nwn/home/dotnet:ro
             - ./logs:/nwn/data/bin/linux-x86/logs.0
         ports:
             - "5121:5121/udp"

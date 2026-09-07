@@ -7,6 +7,10 @@ CONFIG_FILE="${SWLOR_DEPLOY_CONFIG:-/etc/swlor-deploy.conf}"
 LOG_FILE="${SWLOR_DEPLOY_LOG:-/var/log/swlor-deploy.log}"
 LOCK_FILE="${SWLOR_DEPLOY_LOCK:-/run/lock/swlor-deploy.lock}"
 LOCK_FD_INHERITED="${SWLOR_DEPLOY_LOCK_FD_INHERITED:-0}"
+# Older installed deployers already establish the log pipeline before exporting
+# the inherited lock marker. Treat that marker as the compatibility signal on
+# the first rollout of explicit log-pipeline tracking.
+LOG_INITIALIZED="${SWLOR_DEPLOY_LOG_INITIALIZED:-$LOCK_FD_INHERITED}"
 
 if [[ -f "$CONFIG_FILE" && ! -L "$CONFIG_FILE" && -r "$CONFIG_FILE" ]]; then
     if [[ "$(stat -c '%u' "$CONFIG_FILE")" != 0 ]]; then
@@ -32,7 +36,7 @@ fi
 required_settings=(
     DEPLOYMENT_NAME SOURCE_ROOT REPOSITORY_URL GIT_REMOTE BRANCH
     NWSYNC_ROOT SERVER_ROOT COMPOSE_FILE STATE_ROOT CACHE_ROOT MODULE_NAME
-    SERVER_SERVICE SERVER_IMAGE
+    SERVER_SERVICE
     STOP_TIMEOUT_SECONDS HEALTH_TIMEOUT_SECONDS HEALTH_STABLE_SECONDS
     HEALTH_LOG_MARKER MIN_FREE_GIB_BEFORE_BUILD MIN_FREE_GIB_BEFORE_CUTOVER
     NEVERWINTER_NIM_VERSION NEVERWINTER_NIM_RELEASE_URL NEVERWINTER_NIM_SHA256
@@ -58,10 +62,34 @@ SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
 SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
 NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
+SERVER_RUNTIME_UID="${SERVER_RUNTIME_UID:-1000}"
+SERVER_RUNTIME_GID="${SERVER_RUNTIME_GID:-1000}"
+SERVER_IMAGE_FILE="${SERVER_IMAGE_FILE:-$SOURCE_ROOT/scripts/deployment/server-image.txt}"
+INSTALLED_DEPLOY_SCRIPT="${SWLOR_DEPLOY_COMMAND_PATH:-/usr/local/sbin/swlor-deploy}"
+COMPOSE_IMAGE_OVERRIDE_FILE="$STATE_ROOT/server-image.override.yml"
 REQUIRED_TWEAK_VARIABLE="NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL"
 REQUIRED_TWEAK_VALUE="true"
+SERVER_RUNTIME_PERMISSION_VERSION="2"
 HEALTH_FATAL_LOG_PATTERN="${HEALTH_FATAL_LOG_PATTERN:-buffer overflow|Fatal error|has crashed|Segmentation fault}"
 HEALTH_LOG_TAIL_LINES="${HEALTH_LOG_TAIL_LINES:-2000}"
+
+if [[ -L "$SERVER_IMAGE_FILE" ]]; then
+    printf 'Server image file must not be a symbolic link: %s\n' \
+        "$SERVER_IMAGE_FILE" >&2
+    exit 78
+elif [[ -f "$SERVER_IMAGE_FILE" ]]; then
+    server_image_line_count="$(awk 'END { print NR }' "$SERVER_IMAGE_FILE")"
+    (( server_image_line_count == 1 )) || {
+        printf 'Server image file must contain exactly one line: %s\n' \
+            "$SERVER_IMAGE_FILE" >&2
+        exit 78
+    }
+    SERVER_IMAGE="$(tr -d '\r\n' < "$SERVER_IMAGE_FILE")"
+elif [[ -z "${SERVER_IMAGE:-}" ]]; then
+    printf 'Server image file is unavailable and SERVER_IMAGE is unset: %s\n' \
+        "$SERVER_IMAGE_FILE" >&2
+    exit 78
+fi
 
 # A host config can set these directly. Environment overrides win when supplied
 # for an individual invocation.
@@ -92,8 +120,8 @@ Usage: swlor-deploy [--if-changed | --force | --status]
   --if-changed  Deploy only when GIT_REMOTE/BRANCH differs from the last
                 successfully started commit. This is the default.
   --force       Rebuild and redeploy even when the commit is already active.
-  --status      Display recorded commits, the active NWSync manifest, Compose
-                state, and free space without changing anything.
+  --status      Display recorded commits and images, the active NWSync
+                manifest, Compose state, and free space without changes.
 EOF
 }
 
@@ -123,13 +151,33 @@ if (( EUID != 0 )); then
     die "Run this command as root."
 fi
 
-if [[ ! -e "$LOG_FILE" ]]; then
-    install -o root -g root -m 0640 /dev/null "$LOG_FILE"
-else
-    chown root:root "$LOG_FILE"
-    chmod 0640 "$LOG_FILE"
+checked_out_deploy_script="$SOURCE_ROOT/scripts/deployment/swlor-deploy.sh"
+[[ "$SOURCE_ROOT" == /* ]] ||
+    die "SOURCE_ROOT must be absolute before transferring to the checked-out deployer."
+[[ -f "$checked_out_deploy_script" && ! -L "$checked_out_deploy_script" ]] ||
+    die "Checked-out deployment script is missing or is a symbolic link: $checked_out_deploy_script"
+[[ "$(stat -c '%u' "$checked_out_deploy_script")" == 0 ]] ||
+    die "Checked-out deployment script must be owned by root: $checked_out_deploy_script"
+
+# /usr/local/sbin/swlor-deploy is an installed bootstrap copy. Always transfer
+# control to the checked-out script before reading deployment state. This also
+# makes retries use the implementation fetched by an earlier failed attempt.
+if [[ ! "${BASH_SOURCE[0]}" -ef "$checked_out_deploy_script" ]]; then
+    exec "$BASH" "$checked_out_deploy_script" "$@"
 fi
-exec > >(tee -a "$LOG_FILE") 2>&1
+
+if [[ "$LOG_INITIALIZED" == 0 ]]; then
+    if [[ ! -e "$LOG_FILE" ]]; then
+        install -o root -g root -m 0640 /dev/null "$LOG_FILE"
+    else
+        chown root:root "$LOG_FILE"
+        chmod 0640 "$LOG_FILE"
+    fi
+    exec > >(tee -a "$LOG_FILE") 2>&1
+    export SWLOR_DEPLOY_LOG_INITIALIZED=1
+elif [[ "$LOG_INITIALIZED" != 1 ]]; then
+    die "SWLOR_DEPLOY_LOG_INITIALIZED must be 0 or 1."
+fi
 
 if [[ "$LOCK_FD_INHERITED" == 1 ]]; then
     inherited_lock_target="$(realpath "/proc/$$/fd/9" 2>/dev/null || true)"
@@ -163,10 +211,26 @@ do
     require_command "$required_command"
 done
 
+[[ "$INSTALLED_DEPLOY_SCRIPT" == /* ]] ||
+    die "SWLOR_DEPLOY_COMMAND_PATH must be absolute: $INSTALLED_DEPLOY_SCRIPT"
+[[ ! -L "$INSTALLED_DEPLOY_SCRIPT" ]] ||
+    die "Installed deployment command must not be a symbolic link: $INSTALLED_DEPLOY_SCRIPT"
+installed_deploy_directory="${INSTALLED_DEPLOY_SCRIPT%/*}"
+[[ -d "$installed_deploy_directory" ]] ||
+    die "Installed deployment command directory does not exist: $installed_deploy_directory"
+if ! cmp --silent "$checked_out_deploy_script" "$INSTALLED_DEPLOY_SCRIPT"; then
+    installed_deploy_temporary="$INSTALLED_DEPLOY_SCRIPT.tmp.$$"
+    install -o root -g root -m 0750 \
+        "$checked_out_deploy_script" \
+        "$installed_deploy_temporary"
+    mv -f "$installed_deploy_temporary" "$INSTALLED_DEPLOY_SCRIPT"
+    log "Refreshed the installed deployment command from the checked-out script."
+fi
+
 for numeric_setting in \
     STOP_TIMEOUT_SECONDS HEALTH_TIMEOUT_SECONDS HEALTH_STABLE_SECONDS \
     HEALTH_LOG_TAIL_LINES MIN_FREE_GIB_BEFORE_BUILD \
-    MIN_FREE_GIB_BEFORE_CUTOVER
+    MIN_FREE_GIB_BEFORE_CUTOVER SERVER_RUNTIME_UID SERVER_RUNTIME_GID
 do
     [[ "${!numeric_setting}" =~ ^[0-9]+$ ]] ||
         die "$numeric_setting must be a non-negative integer."
@@ -175,6 +239,10 @@ done
     die "HEALTH_TIMEOUT_SECONDS must be greater than zero."
 (( HEALTH_LOG_TAIL_LINES > 0 )) ||
     die "HEALTH_LOG_TAIL_LINES must be greater than zero."
+(( SERVER_RUNTIME_UID > 0 )) ||
+    die "SERVER_RUNTIME_UID must be greater than zero."
+(( SERVER_RUNTIME_GID > 0 )) ||
+    die "SERVER_RUNTIME_GID must be greater than zero."
 [[ -n "$HEALTH_FATAL_LOG_PATTERN" ]] ||
     die "HEALTH_FATAL_LOG_PATTERN must not be empty."
 health_pattern_status=0
@@ -186,7 +254,8 @@ printf '' |
 
 for absolute_path in \
     "$SOURCE_ROOT" "$NWSYNC_ROOT" "$SERVER_ROOT" "$COMPOSE_FILE" \
-    "$STATE_ROOT" "$CACHE_ROOT" "$NWSYNC_BUILD_SCRIPT" \
+    "$STATE_ROOT" "$CACHE_ROOT" "$COMPOSE_IMAGE_OVERRIDE_FILE" \
+    "$SERVER_IMAGE_FILE" "$NWSYNC_BUILD_SCRIPT" \
     "$NWSYNC_HAK_ROOT" "$NWSYNC_TLK_ROOT" "$NWSYNC_MODULE_ROOT" \
     "$SERVER_HAK_ROOT" "$SERVER_TLK_ROOT" "$SERVER_MODULE_ROOT" \
     "$SERVER_DOTNET_ROOT" "$SERVER_ENV_FILE"
@@ -203,6 +272,8 @@ done
     die "GIT_REMOTE contains unsupported characters: $GIT_REMOTE"
 [[ "$SERVER_SERVICE" =~ ^[A-Za-z0-9._-]+$ ]] ||
     die "SERVER_SERVICE contains unsupported characters: $SERVER_SERVICE"
+[[ "$SERVER_IMAGE" =~ ^[A-Za-z0-9._/@:-]+$ ]] ||
+    die "SERVER_IMAGE contains unsupported characters: $SERVER_IMAGE"
 [[ "$HAKS_SUBMODULE_PATH" =~ ^[A-Za-z0-9._/-]+$ ]] ||
     die "HAKS_SUBMODULE_PATH contains unsupported characters."
 if [[ -n "$COMPOSE_PROJECT_NAME" &&
@@ -215,17 +286,152 @@ fi
 
 install -d -o root -g root -m 0750 "$STATE_ROOT" "$CACHE_ROOT"
 
+compose_image_override_temporary="$STATE_ROOT/.server-image.override.yml.$$"
+printf 'services:\n  %s:\n    image: ${SWLOR_DEPLOY_SERVER_IMAGE:?SWLOR_DEPLOY_SERVER_IMAGE is required}\n' \
+    "$SERVER_SERVICE" > "$compose_image_override_temporary"
+chown root:root "$compose_image_override_temporary"
+chmod 0640 "$compose_image_override_temporary"
+mv -f "$compose_image_override_temporary" "$COMPOSE_IMAGE_OVERRIDE_FILE"
+
 compose()
 {
     local compose_arguments=(
         docker compose
         --project-directory "$SERVER_ROOT"
         --file "$COMPOSE_FILE"
+        --file "$COMPOSE_IMAGE_OVERRIDE_FILE"
     )
     if [[ -n "$COMPOSE_PROJECT_NAME" ]]; then
         compose_arguments+=(--project-name "$COMPOSE_PROJECT_NAME")
     fi
-    "${compose_arguments[@]}" "$@"
+    SWLOR_DEPLOY_SERVER_IMAGE="${COMPOSE_SERVER_IMAGE_OVERRIDE:-$SERVER_IMAGE}" \
+        "${compose_arguments[@]}" "$@"
+}
+
+server_runtime_directories=(
+    "$SERVER_ROOT/app_logs"
+    "$SERVER_ROOT/database"
+    "$SERVER_ROOT/development"
+    "$SERVER_ROOT/logs"
+    "$SERVER_ROOT/nwsync"
+    "$SERVER_ROOT/override"
+    "$SERVER_ROOT/portraits"
+    "$SERVER_ROOT/saves"
+    "$SERVER_ROOT/servervault"
+)
+server_artifact_directories=(
+    "$SERVER_HAK_ROOT"
+    "$SERVER_TLK_ROOT"
+    "$SERVER_MODULE_ROOT"
+    "$SERVER_DOTNET_ROOT"
+)
+server_runtime_configuration_files=(
+    "$SERVER_ROOT/cryptographic_secret"
+    "$SERVER_ROOT/nwn.ini"
+    "$SERVER_ROOT/nwnplayer.ini"
+    "$SERVER_ROOT/settings.tml"
+)
+server_protected_configuration_files=(
+    "$SERVER_ENV_FILE"
+    "$COMPOSE_FILE"
+)
+
+validate_server_runtime_paths()
+{
+    local runtime_directory
+    local artifact_directory
+    local configuration_file
+    local protected_configuration_file
+
+    [[ -d "$SERVER_ROOT" && ! -L "$SERVER_ROOT" ]] ||
+        die "Server root is missing or is a symbolic link: $SERVER_ROOT"
+
+    for runtime_directory in "${server_runtime_directories[@]}"; do
+        [[ ! -e "$runtime_directory" && ! -L "$runtime_directory" ]] && continue
+        [[ -d "$runtime_directory" && ! -L "$runtime_directory" ]] ||
+            die "Runtime path is not an ordinary directory: $runtime_directory"
+    done
+
+    for artifact_directory in "${server_artifact_directories[@]}"; do
+        [[ -d "$artifact_directory" && ! -L "$artifact_directory" ]] ||
+            die "Server artifact directory is missing or is a symlink: $artifact_directory"
+    done
+
+    for configuration_file in "${server_runtime_configuration_files[@]}"; do
+        [[ ! -e "$configuration_file" && ! -L "$configuration_file" ]] && continue
+        [[ -f "$configuration_file" && ! -L "$configuration_file" ]] ||
+            die "Runtime configuration is not a regular file: $configuration_file"
+    done
+
+    for protected_configuration_file in "${server_protected_configuration_files[@]}"; do
+        [[ -f "$protected_configuration_file" && ! -L "$protected_configuration_file" ]] ||
+            die "Protected server configuration is missing, is not a regular file, or is a symbolic link: $protected_configuration_file"
+    done
+}
+
+prepare_server_runtime_permissions()
+{
+    local runtime_identity="$SERVER_RUNTIME_UID:$SERVER_RUNTIME_GID"
+    local runtime_directory
+    local readable_directory
+    local readable_file
+    local protected_configuration_file
+
+    validate_server_runtime_paths
+
+    # /nwn/home is the bind-mounted SERVER_ROOT. Keep the root itself owned by
+    # root so the game process cannot replace Compose or environment files, but
+    # let the runtime group traverse it.
+    chown root:"$SERVER_RUNTIME_GID" "$SERVER_ROOT"
+    chmod 0750 "$SERVER_ROOT"
+
+    # These are the persistent paths written by the upstream entrypoint, NWN,
+    # NWNX, or SWLOR. Existing hosts are migrated immediately before startup.
+    for runtime_directory in "${server_runtime_directories[@]}"; do
+        if [[ ! -e "$runtime_directory" ]]; then
+            install -d \
+                -o "$SERVER_RUNTIME_UID" \
+                -g "$SERVER_RUNTIME_GID" \
+                -m 0750 \
+                "$runtime_directory"
+        fi
+        find "$runtime_directory" -xdev \
+            \( -type f -o -type d \) \
+            \( ! -uid "$SERVER_RUNTIME_UID" -o ! -gid "$SERVER_RUNTIME_GID" \) \
+            -exec chown "$runtime_identity" -- {} +
+        find "$runtime_directory" -xdev -type d ! -perm -0700 \
+            -exec chmod u+rwx -- {} +
+        find "$runtime_directory" -xdev -type f ! -perm -0600 \
+            -exec chmod u+rw -- {} +
+    done
+
+    # Deployment artifacts remain root-owned and are only readable/executable
+    # by the runtime group. A compromised game process cannot rewrite them.
+    for readable_directory in "${server_artifact_directories[@]}"; do
+        find "$readable_directory" -xdev \
+            \( -type f -o -type d \) \
+            \( ! -uid 0 -o ! -gid "$SERVER_RUNTIME_GID" \) \
+            -exec chown root:"$SERVER_RUNTIME_GID" -- {} +
+        chmod -R g+rX,g-w,o-w "$readable_directory"
+    done
+
+    # The entrypoint imports these optional host files into its writable shadow
+    # home. Grant read access without giving the runtime ownership of them.
+    for readable_file in "${server_runtime_configuration_files[@]}"; do
+        [[ -e "$readable_file" ]] || continue
+        chown root:"$SERVER_RUNTIME_GID" "$readable_file"
+        chmod 0640 "$readable_file"
+    done
+
+    # Compose and environment configuration is consumed by the root-owned
+    # deployment process, not by the game process. Keep it inaccessible for
+    # writes through the read-write /nwn/home bind mount.
+    for protected_configuration_file in "${server_protected_configuration_files[@]}"; do
+        chown root:root "$protected_configuration_file"
+        chmod 0640 "$protected_configuration_file"
+    done
+
+    log "Prepared server bind mounts for non-root runtime UID $SERVER_RUNTIME_UID and GID $SERVER_RUNTIME_GID."
 }
 
 available_bytes()
@@ -464,8 +670,8 @@ write_server_env_setting()
           }
         ' \
         "$SERVER_ENV_FILE" > "$server_env_temporary"
-    chown --reference="$SERVER_ENV_FILE" "$server_env_temporary"
-    chmod --reference="$SERVER_ENV_FILE" "$server_env_temporary"
+    chown root:root "$server_env_temporary"
+    chmod 0640 "$server_env_temporary"
     mv -f "$server_env_temporary" "$SERVER_ENV_FILE"
     server_env_temporary=
 
@@ -547,12 +753,27 @@ show_status()
 {
     local active_commit
     local previous_commit
+    local active_server_image
+    local previous_server_image
+    local active_runtime_permission_version
+    local running_server_container
+    local running_server_image
     local active_manifest
     local configured_manifest
     local github_dispatch_run
 
     active_commit="$(state_value active-commit)"
     previous_commit="$(state_value previous-commit)"
+    active_server_image="$(state_value active-server-image)"
+    previous_server_image="$(state_value previous-server-image)"
+    active_runtime_permission_version="$(state_value server-runtime-permission-version)"
+    running_server_container="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null || true)"
+    running_server_image=
+    if [[ -n "$running_server_container" ]]; then
+        running_server_image="$(
+            docker inspect --format '{{.Config.Image}}' "$running_server_container"
+        )"
+    fi
     github_dispatch_run="$(state_value github-dispatch-run)"
     if [[ -s "$NWSYNC_ROOT/latest" ]]; then
         active_manifest="$(tr -d '\r\n' < "$NWSYNC_ROOT/latest")"
@@ -568,6 +789,16 @@ show_status()
     printf 'Branch:           %s/%s\n' "$GIT_REMOTE" "$BRANCH"
     printf 'Active commit:    %s\n' "${active_commit:-not recorded}"
     printf 'Previous commit:  %s\n' "${previous_commit:-not recorded}"
+    printf 'Desired image:    %s\n' "$SERVER_IMAGE"
+    printf 'Image source:     %s\n' "$SERVER_IMAGE_FILE"
+    printf 'Active image:     %s\n' "${active_server_image:-not recorded}"
+    printf 'Previous image:   %s\n' "${previous_server_image:-not recorded}"
+    printf 'Running image:    %s\n' "${running_server_image:-not running}"
+    printf 'Runtime account:  uid=%s gid=%s\n' \
+        "$SERVER_RUNTIME_UID" "$SERVER_RUNTIME_GID"
+    printf 'Permission schema: %s (active: %s)\n' \
+        "$SERVER_RUNTIME_PERMISSION_VERSION" \
+        "${active_runtime_permission_version:-not recorded}"
     printf 'GitHub request:   %s\n' "${github_dispatch_run:-not recorded}"
     printf 'NWSync root:      %s\n' "$NWSYNC_ROOT"
     printf 'NWSync manifest:  %s\n' "$active_manifest"
@@ -594,6 +825,12 @@ fi
 [[ -d "$NWSYNC_ROOT" ]] || die "NWSync root does not exist: $NWSYNC_ROOT"
 [[ -d "$SERVER_ROOT" ]] || die "Server root does not exist: $SERVER_ROOT"
 [[ -f "$COMPOSE_FILE" ]] || die "Compose file does not exist: $COMPOSE_FILE"
+resolved_server_image="$(
+    compose config --format json |
+        jq -er --arg service "$SERVER_SERVICE" '.services[$service].image'
+)" || die "Unable to resolve $SERVER_SERVICE from the Compose configuration."
+[[ "$resolved_server_image" == "$SERVER_IMAGE" ]] ||
+    die "Compose resolved $SERVER_SERVICE to '$resolved_server_image'; expected '$SERVER_IMAGE'."
 [[ -f "$SERVER_ENV_FILE" && ! -L "$SERVER_ENV_FILE" ]] ||
     die "Server environment file does not exist or is a symlink: $SERVER_ENV_FILE"
 [[ -x "$NWSYNC_BUILD_SCRIPT" ]] ||
@@ -615,6 +852,12 @@ do
     [[ -d "$content_directory" && ! -L "$content_directory" ]] ||
         die "Server content directory is missing or is a symlink: $content_directory"
 done
+
+# Reject every path that the non-root permission migration could otherwise
+# mutate before the build begins or the running Compose project is stopped.
+# prepare_server_runtime_permissions repeats this check at cutover as a
+# defense against paths changing during a long build.
+validate_server_runtime_paths
 
 for path_pair in \
     "$NWSYNC_HAK_ROOT|$SERVER_HAK_ROOT|HAK" \
@@ -733,10 +976,31 @@ fi
 
 target_commit="$(git -C "$SOURCE_ROOT" rev-parse HEAD)"
 active_commit="$(state_value active-commit)"
+active_server_image="$(state_value active-server-image)"
+active_runtime_permission_version="$(state_value server-runtime-permission-version)"
+runtime_permission_migration_required=0
+if [[ "$active_runtime_permission_version" != "$SERVER_RUNTIME_PERMISSION_VERSION" ]]; then
+    runtime_permission_migration_required=1
+    log "Server runtime permissions will migrate from version '${active_runtime_permission_version:-not recorded}' to '$SERVER_RUNTIME_PERMISSION_VERSION'."
+fi
+active_server_container="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null || true)"
+if [[ -n "$active_server_container" ]]; then
+    active_server_image="$(
+        docker inspect --format '{{.Config.Image}}' "$active_server_container"
+    )"
+fi
+server_image_changed=0
+if [[ "$active_server_image" != "$SERVER_IMAGE" ]]; then
+    server_image_changed=1
+    log "Server image will change from '${active_server_image:-not recorded}' to '$SERVER_IMAGE'."
+fi
 if [[ "$MODE" == if-changed &&
-      "$active_commit" == "$target_commit" &&
-      "$server_env_migration_required" == 0 ]]
+       "$active_commit" == "$target_commit" &&
+       "$server_env_migration_required" == 0 &&
+       "$runtime_permission_migration_required" == 0 &&
+       "$server_image_changed" == 0 ]]
 then
+    record_state active-server-image "$SERVER_IMAGE"
     log "Commit $target_commit is already active; nothing to deploy."
     exit 0
 fi
@@ -878,6 +1142,10 @@ log "Build plan: HAK/TLK=$(
     (( nwsync_inputs_changed == 1 )) && printf generate || printf reuse
 ), .NET=$(
     (( dotnet_inputs_changed == 1 )) && printf build || printf reuse
+), image=$(
+    (( server_image_changed == 1 )) && printf pull || printf reuse
+), permissions=$(
+    (( runtime_permission_migration_required == 1 )) && printf migrate || printf reuse
 )."
 
 haks_root="$SOURCE_ROOT/$HAKS_SUBMODULE_PATH"
@@ -969,9 +1237,12 @@ preserve_work_directory=0
 rollback_cutover()
 {
     local rollback_started_at
+    local rollback_server_image="${active_server_image:-$SERVER_IMAGE}"
 
-    log "Restoring the pre-deployment server files and manifest hash."
-    compose down --timeout "$STOP_TIMEOUT_SECONDS" || return 1
+    log "Restoring the pre-deployment server files, manifest hash, and image $rollback_server_image."
+    docker image inspect "$rollback_server_image" >/dev/null 2>&1 || return 1
+    COMPOSE_SERVER_IMAGE_OVERRIDE="$rollback_server_image" \
+        compose down --timeout "$STOP_TIMEOUT_SECONDS" || return 1
 
     restore_directory \
         "$rollback_directory/hak" \
@@ -1009,9 +1280,13 @@ rollback_cutover()
         server_env_restore_temporary=
     fi
 
+    prepare_server_runtime_permissions || return 1
+
     rollback_started_at="$(timestamp)"
-    compose up -d || return 1
-    wait_for_server_health "$rollback_started_at"
+    COMPOSE_SERVER_IMAGE_OVERRIDE="$rollback_server_image" \
+        compose up -d || return 1
+    COMPOSE_SERVER_IMAGE_OVERRIDE="$rollback_server_image" \
+        wait_for_server_health "$rollback_started_at"
 }
 
 cleanup_on_exit()
@@ -1336,7 +1611,9 @@ if (( haks_inputs_changed == 1 ||
       module_inputs_changed == 1 ||
       dotnet_payload_changed == 1 ||
       manifest_changed == 1 ||
-      server_env_migration_required == 1 ))
+      server_env_migration_required == 1 ||
+      runtime_permission_migration_required == 1 ||
+      server_image_changed == 1 ))
 then
     runtime_payload_changed=1
 fi
@@ -1344,6 +1621,8 @@ fi
 if (( runtime_payload_changed == 0 )); then
     record_state active-commit "$target_commit"
     record_state active-manifest "$manifest_id"
+    record_state active-server-image "$SERVER_IMAGE"
+    record_state server-runtime-permission-version "$SERVER_RUNTIME_PERMISSION_VERSION"
     record_state neverwinter-tool-key "$neverwinter_tool_key"
     record_state nwsync-build-script-sha "$nwsync_build_script_sha"
     record_state deployed-at "$(timestamp)"
@@ -1353,10 +1632,8 @@ if (( runtime_payload_changed == 0 )); then
     exit 0
 fi
 
-if ! docker image inspect "$SERVER_IMAGE" >/dev/null 2>&1; then
-    log "Building the missing server container image before downtime."
-    compose build "$SERVER_SERVICE"
-fi
+log "Pulling authoritative server container image $SERVER_IMAGE before downtime."
+docker pull "$SERVER_IMAGE"
 while IFS= read -r compose_image; do
     [[ -n "$compose_image" ]] || continue
     if ! docker image inspect "$compose_image" >/dev/null 2>&1; then
@@ -1463,6 +1740,8 @@ if (( dotnet_payload_changed == 1 )); then
     mv "$staged_dotnet" "$SERVER_DOTNET_ROOT"
 fi
 
+prepare_server_runtime_permissions
+
 server_started_at="$(timestamp)"
 compose up -d
 
@@ -1478,8 +1757,13 @@ fi
 if [[ -n "$previous_manifest" ]]; then
     record_state previous-manifest "$previous_manifest"
 fi
+if (( server_image_changed == 1 )) && [[ -n "$active_server_image" ]]; then
+    record_state previous-server-image "$active_server_image"
+fi
 record_state active-commit "$target_commit"
 record_state active-manifest "$manifest_id"
+record_state active-server-image "$SERVER_IMAGE"
+record_state server-runtime-permission-version "$SERVER_RUNTIME_PERMISSION_VERSION"
 record_state neverwinter-tool-key "$neverwinter_tool_key"
 record_state nwsync-build-script-sha "$nwsync_build_script_sha"
 record_state deployed-at "$(timestamp)"

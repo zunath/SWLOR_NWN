@@ -43,7 +43,14 @@ MODULE_NAME="Star Wars LOR v2.mod"
 HAKS_SUBMODULE_PATH=SWLOR_Haks
 
 SERVER_SERVICE=swlor-server
-SERVER_IMAGE=zunath/nwn-dotnet:8193.37.15-2
+# The tracked scripts/deployment/server-image.txt file is authoritative. This
+# value is a backward-compatible fallback for checkouts predating that file.
+SERVER_IMAGE=zunath/nwn-dotnet:8193.37.17-2
+# Must match the numeric user created by the published server image. The
+# deployer migrates only the server's required writable state to this identity;
+# artifacts and host configuration remain root-owned and non-writable.
+SERVER_RUNTIME_UID=1000
+SERVER_RUNTIME_GID=1000
 # Keep this stable so Compose reuses the host's existing named volumes.
 # Change it in the production host configuration if production uses another
 # established Compose project name.

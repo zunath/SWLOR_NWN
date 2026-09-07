@@ -30,10 +30,7 @@ services:
     swlor-server:
         hostname: nwnx-server
         stop_signal: SIGINT
-        build:
-          context: .
-          dockerfile: Dockerfile
-        image: zunath/nwn-dotnet:8193.37.15-2
+        image: zunath/nwn-dotnet:8193.37.17-2
         env_file: ${SWLOR_ENGINE_TEST_HOME:-.}/swlor.env
         # These override the values loaded from swlor.env above (Compose gives
         # `environment:` precedence over `env_file:`).
@@ -80,5 +77,8 @@ services:
             # without duplicating ~13GB on disk: NTFS junctions do NOT survive Docker bind
             # mounts, so the share happens here as its own mount instead. Defaults to the
             # server home's own hak directory. The runner scripts set this automatically.
-            - ${SWLOR_ENGINE_TEST_HAK_DIR:-${SWLOR_ENGINE_TEST_HOME:-.}/hak}:/nwn/home/hak
+            - ${SWLOR_ENGINE_TEST_HAK_DIR:-${SWLOR_ENGINE_TEST_HOME:-.}/hak}:/nwn/home/hak:ro
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/tlk:/nwn/home/tlk:ro
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/modules:/nwn/home/modules:ro
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/dotnet:/nwn/home/dotnet:ro
             - ${SWLOR_ENGINE_TEST_HOME:-.}/logs:/nwn/data/bin/linux-x86/logs.0

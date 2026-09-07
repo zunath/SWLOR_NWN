@@ -26,10 +26,10 @@ public sealed class AnimationInstallPlan
     private static HashSet<string> GetAbsentReservationPaths(IReadOnlyList<AnimationFileChange> changes, IEnumerable<string> absentInputs)
     {
         var outputs = new HashSet<string>(AnimationInstall.PathComparer);
-        for (var i = 0; i < changes.Count; i++) outputs.Add(changes[i].Path);
+        for (var i = 0; i < changes.Count; i++) outputs.Add(AnimationInstall.ResourcePathKey(changes[i].Path));
         var paths = new HashSet<string>(AnimationInstall.PathComparer);
         foreach (var path in absentInputs)
-            if (!outputs.Contains(path) && paths.Add(path) && paths.Count > AnimationInstall.MaximumAbsentReservations)
+            if (!outputs.Contains(AnimationInstall.ResourcePathKey(path)) && paths.Add(path) && paths.Count > AnimationInstall.MaximumAbsentReservations)
                 throw new InvalidDataException($"Installation has too many missing model dependencies (maximum {AnimationInstall.MaximumAbsentReservations}). Select fewer targets or HAK layers.");
         return paths;
     }
@@ -102,6 +102,10 @@ public sealed class AnimationInstallPlan
                 if (!AnimationSourceFile.Matches(lease, change.After))
                     throw new IOException($"'{change.Path}' changed during installation.");
             }
+            // A case-sensitive filesystem can admit another spelling beside a reserved
+            // path. Check NWN resource identities again before reporting success.
+            VerifyModelResolutions(inputs.Keys.Concat(outputs), absentInputs,
+                reservedAbsentInputs.Concat(outputs).ToHashSet(AnimationInstall.PathComparer));
         }
         catch (Exception failure)
         {
@@ -136,12 +140,30 @@ public sealed class AnimationInstallPlan
     private static void VerifyInputs(IReadOnlyDictionary<string, byte[]> inputs, IEnumerable<string> absentInputs,
         IReadOnlySet<string>? reservedAbsentInputs = null)
     {
+        VerifyModelResolutions(inputs.Keys, absentInputs, reservedAbsentInputs);
         foreach (var path in absentInputs)
             if (reservedAbsentInputs?.Contains(path) != true && File.Exists(path))
                 throw new IOException($"'{path}' was created after the installation preview. Prepare a new preview.");
         foreach (var input in inputs)
             if (!File.Exists(input.Key) || !AnimationSourceFile.Matches(input.Key, input.Value))
                 throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
+    }
+
+    private static void VerifyModelResolutions(IEnumerable<string> presentPaths, IEnumerable<string> absentPaths,
+        IReadOnlySet<string>? allowedAbsentPaths)
+    {
+        var present = presentPaths.Where(AnimationInstall.IsModelPath).ToArray();
+        var absent = absentPaths.Where(AnimationInstall.IsModelPath).ToArray();
+        var layers = present.Concat(absent).Select(path => Path.GetDirectoryName(path)!)
+            .Distinct(AnimationInstall.PathComparer).ToDictionary(path => path, AnimationInstall.IndexModels, AnimationInstall.PathComparer);
+        foreach (var path in present)
+            if (!layers[Path.GetDirectoryName(path)!].TryGetValue(Path.GetFileNameWithoutExtension(path), out var actual) ||
+                !AnimationInstall.PathComparer.Equals(path, actual))
+                throw new IOException($"'{path}' changed after the installation preview. Prepare a new preview.");
+        foreach (var path in absent)
+            if (layers[Path.GetDirectoryName(path)!].TryGetValue(Path.GetFileNameWithoutExtension(path), out var actual) &&
+                allowedAbsentPaths?.Contains(actual) != true)
+                throw new IOException($"'{path}' was created after the installation preview. Prepare a new preview.");
     }
 
     private static void Verify(AnimationFileChange change)
@@ -156,6 +178,19 @@ public static class AnimationInstall
 {
     private static StringComparison PathComparison => OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
     internal static StringComparer PathComparer => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+    internal static bool IsModelPath(string path) => Path.GetExtension(path).Equals(".mdl", StringComparison.OrdinalIgnoreCase);
+    internal static string ResourcePathKey(string path) => IsModelPath(path)
+        ? Path.Combine(Path.GetDirectoryName(path)!, Path.GetFileName(path).ToLowerInvariant()) : path;
+
+    internal static Dictionary<string, string> IndexModels(string folder)
+    {
+        var models = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (!Directory.Exists(folder)) return models;
+        foreach (var path in Directory.EnumerateFiles(folder).Where(IsModelPath))
+            if (!models.TryAdd(Path.GetFileNameWithoutExtension(path), path))
+                throw new InvalidDataException($"Ambiguous model resource '{Path.GetFileNameWithoutExtension(path)}': source filenames differ only by case.");
+        return models;
+    }
     public const int ClipsPerBank = 256;
     public const int MaximumModelChainDepth = 32;
     public const int MaximumInputBytes = 128 * 1024 * 1024;
@@ -171,8 +206,7 @@ public static class AnimationInstall
         using var config = JsonDocument.Parse(AnimationSourceFile.ReadBytes(configPath, AnimationProject.MaximumFileBytes, "HAK configuration"));
         foreach (var layer in ReadLayers(configPath, config.RootElement))
         {
-            var path = Path.Combine(layer, resref + ".mdl");
-            if (File.Exists(path))
+            if (IndexModels(layer).TryGetValue(resref, out var path))
                 return path.StartsWith(Path.Combine(root, "SWLOR_Haks") + Path.DirectorySeparatorChar, PathComparison) ? path : null;
         }
         return null;
@@ -224,14 +258,14 @@ public static class AnimationInstall
         }
         using var config = JsonDocument.Parse(Read(configPath));
         var layers = ReadLayers(configPath, config.RootElement);
+        var layerModels = layers.Distinct(PathComparer).ToDictionary(layer => layer, IndexModels, PathComparer);
         // Resolve by the same first-HAK-wins order used by the resource index and pack pipeline.
         string? Resolve(string name)
         {
             foreach (var layer in layers)
             {
-                var path = Path.Combine(layer, name + ".mdl");
-                if (File.Exists(path)) return path;
-                absentInputs.Add(path);
+                if (layerModels[layer].TryGetValue(name, out var path)) return path;
+                absentInputs.Add(Path.Combine(layer, name.ToLowerInvariant() + ".mdl"));
             }
             return null;
         }
@@ -369,9 +403,10 @@ public static class AnimationInstall
             AnimationProject.ValidateToken(overlayName, 16);
             var overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
             var existingOverlay = Resolve(overlayName);
-            if (existingOverlay != null && (!PathComparer.Equals(existingOverlay, overlayPath) ||
+            if (existingOverlay != null && (!PathComparer.Equals(Path.GetDirectoryName(existingOverlay), Path.GetDirectoryName(overlayPath)) ||
                 !string.Equals(model.SuperModel, overlayName, StringComparison.OrdinalIgnoreCase) || !registeredTarget))
                 throw new InvalidDataException($"Overlay '{overlayName}' exists but is not owned by the animation registry for this target.");
+            overlayPath = existingOverlay ?? overlayPath;
             var linkPath = target;
             if (existingOverlay != null)
             {

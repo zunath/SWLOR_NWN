@@ -213,7 +213,8 @@ public static class AnimationInstall
         var root = Path.GetFullPath(repositoryRoot);
         var configPath = Path.Combine(root, "Build", "hakbuilder.json");
         if (!File.Exists(configPath)) return null;
-        using var config = JsonDocument.Parse(AnimationSourceFile.ReadBytes(configPath, AnimationProject.MaximumFileBytes, "HAK configuration"));
+        using var config = JsonDocument.Parse(AnimationSourceFile.Utf8Content(
+            AnimationSourceFile.ReadBytes(configPath, AnimationProject.MaximumFileBytes, "HAK configuration")));
         foreach (var layer in ReadLayers(configPath, config.RootElement))
         {
             if (IndexModels(layer).TryGetValue(resref, out var path))
@@ -266,7 +267,7 @@ public static class AnimationInstall
             if (File.Exists(sourcePath)) Read(sourcePath);
             else absentInputs.Add(sourcePath);
         }
-        using var config = JsonDocument.Parse(Read(configPath));
+        using var config = JsonDocument.Parse(AnimationSourceFile.Utf8Content(Read(configPath)));
         var layers = ReadLayers(configPath, config.RootElement);
         var layerModels = layers.Distinct(PathComparer).ToDictionary(layer => layer, IndexModels, PathComparer);
         // Resolve by the same first-HAK-wins order used by the resource index and pack pipeline.
@@ -280,10 +281,8 @@ public static class AnimationInstall
             return null;
         }
         var registryBytes = File.Exists(registryPath) ? Read(registryPath) : null;
-        var registryJson = registryBytes.AsSpan();
-        if (registryJson.StartsWith("\uFEFF"u8)) registryJson = registryJson[3..];
         var registrations = registryBytes != null
-            ? JsonSerializer.Deserialize<List<AnimationRegistration>>(registryJson) ?? throw new InvalidDataException("Invalid animation registry.")
+            ? JsonSerializer.Deserialize<List<AnimationRegistration>>(AnimationSourceFile.Utf8Content(registryBytes).Span) ?? throw new InvalidDataException("Invalid animation registry.")
             : [];
         if (registrations.Any(r => r == null || string.IsNullOrEmpty(r.Name) || r.Name == "AuthoredAnimation" || !Regex.IsMatch(r.Name, @"\A[A-Z][A-Za-z0-9_]*\z") ||
                 r.AnimationName == null || r.AnimationName.Length > AnimationClip.MaxNameLength || !Regex.IsMatch(r.AnimationName, @"\Asw_[a-z0-9_]+\z") || r.Targets == null || r.Targets.Length == 0 ||
@@ -328,7 +327,7 @@ public static class AnimationInstall
                 !Path.GetExtension(target).Equals(".mdl", StringComparison.OrdinalIgnoreCase) ||
                 !PathComparer.Equals(Resolve(Path.GetFileNameWithoutExtension(target)), target))
                 throw new InvalidDataException("Targets must be winning model files in the configured SWLOR HAK source directories.");
-            if (Read(target).AsSpan().StartsWith("# SWLOR authored animations for "u8))
+            if (AnimationSourceFile.Utf8Content(Read(target)).Span.StartsWith("# SWLOR authored animations for "u8))
                 throw new InvalidDataException("Generated animation banks cannot be installation targets. Select the original character model.");
             var currentPath = target;
             var chain = chains[target] = [];
@@ -389,7 +388,7 @@ public static class AnimationInstall
             var header = $"# SWLOR authored animations for {model.Name}";
             bool IsOwnedBank(string path)
             {
-                var contents = Encoding.ASCII.GetString(Read(path));
+                var contents = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(Read(path)).Span);
                 return contents.StartsWith(header + "\n", StringComparison.Ordinal) || contents.StartsWith(header + "\r\n", StringComparison.Ordinal);
             }
             var targetName = Path.GetFileNameWithoutExtension(target);
@@ -529,7 +528,7 @@ public static class AnimationInstall
             var (overlay, blocks) = BuildOverlay();
             if (existingOverlay != null)
             {
-                overlay = Encoding.ASCII.GetString(Read(existingOverlay));
+                overlay = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(Read(existingOverlay)).Span);
                 if (!overlay.StartsWith(header + "\n", StringComparison.Ordinal) && !overlay.StartsWith(header + "\r\n", StringComparison.Ordinal))
                     throw new InvalidDataException("Existing overlay is not an authored animation source.");
                 if (registration != null)
@@ -591,7 +590,7 @@ public static class AnimationInstall
             "namespace SWLOR.Game.Server.Service.AnimationService;\n\npublic static class AuthoredAnimation\n{\n" +
             string.Join("\n", registrations.OrderBy(r => r.Name, StringComparer.Ordinal).Select(r =>
                 $"    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip {r.Name} = new(\"{r.AnimationName}\", {AnimationMdl.F(r.Duration)}f);")) + "\n}\n";
-        if (File.Exists(constantsPath) && !Encoding.UTF8.GetString(Read(constantsPath)).StartsWith("// Generated by SWLOR's Animation Editor", StringComparison.Ordinal))
+        if (File.Exists(constantsPath) && !AnimationSourceFile.Utf8Content(Read(constantsPath)).Span.StartsWith("// Generated by SWLOR's Animation Editor"u8))
             throw new InvalidDataException("The animation constants file is not owned by this editor.");
         Add(constantsPath, Encoding.UTF8.GetBytes(generated));
         var serializedProject = project.Serialize();
@@ -601,7 +600,7 @@ public static class AnimationInstall
         if (File.Exists(projectPath))
         {
             var existing = Read(projectPath);
-            if (Encoding.UTF8.GetString(existing).TrimStart('\uFEFF').Replace("\r\n", "\n").TrimEnd('\n') == serializedProject.Replace("\r\n", "\n"))
+            if (Encoding.UTF8.GetString(AnimationSourceFile.Utf8Content(existing).Span).Replace("\r\n", "\n").TrimEnd('\n') == serializedProject.Replace("\r\n", "\n"))
                 projectBytes = existing;
         }
         Add(projectPath, projectBytes);

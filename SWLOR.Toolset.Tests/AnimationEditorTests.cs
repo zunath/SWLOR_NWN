@@ -69,12 +69,24 @@ public class AnimationEditorTests
         var block = AnimationMdl.Export(Rig()).Replace("  endnode", "    alphakey 1\n      0 0.5\n  endnode");
         Action act = () => AnimationMdl.Import(block, Rig()); act.Should().Throw<InvalidDataException>().WithMessage("*Unsupported*");
     }
-    [Test] public void StaticAnimationValuesOverrideTheRigBindPose()
+    [TestCase("Pose", "hero")]
+    [TestCase("pose", "HERO")]
+    [TestCase("POSE", "Hero")]
+    public void StaticAnimationValuesOverrideTheRigBindPose(string endAnimation, string endModel)
     {
-        var block = "newanim Pose hero\nlength 1\nnode dummy hand\nparent lower\nposition 0 0 0\norientation 0 0 1 0.5\nendnode\ndoneanim Pose hero\n";
+        var block = "newanim Pose hero\nlength 1\nnode dummy hand\nparent lower\nposition 0 0 0\norientation 0 0 1 0.5\nendnode\n" +
+            $"doneanim {endAnimation} {endModel}\n";
         var pose = AnimationMdl.Import(block, Rig()).Sample(.5f);
         pose[4].Position.Should().Be(Vector3.Zero);
         Math.Abs(Quaternion.Dot(pose[4].Orientation, Quaternion.CreateFromAxisAngle(Vector3.UnitZ, .5f))).Should().BeApproximately(1, 1e-5f);
+    }
+    [TestCase("Other", "hero")]
+    [TestCase("Pose", "other")]
+    public void MdlImportRejectsMismatchedAnimationTerminators(string endAnimation, string endModel)
+    {
+        var block = $"newanim Pose hero\nlength 1\ndoneanim {endAnimation} {endModel}\n";
+        Action import = () => AnimationMdl.Import(block, Rig());
+        import.Should().Throw<InvalidDataException>().WithMessage("*Mismatched animation terminator*");
     }
     [TestCase("newanim")] [TestCase("NEWANIM")]
     public void MdlImportRejectsASecondBlockEvenAfterACompleteFirstAnimation(string declaration)

@@ -155,7 +155,9 @@ public static class AnimationMdl
                     node = false; directives.Clear(); break;
                 case "doneanim":
                     Need(parts, 3);
-                    if (node || parts[1] != project.Name || parts[2] != declaredModel) throw new InvalidDataException("Mismatched animation terminator.");
+                    if (node || !parts[1].Equals(project.Name, StringComparison.OrdinalIgnoreCase) ||
+                        !parts[2].Equals(declaredModel, StringComparison.OrdinalIgnoreCase))
+                        throw new InvalidDataException("Mismatched animation terminator.");
                     end = index; break;
                 default: throw new InvalidDataException($"Unsupported animation directive '{op}'. Import cancelled to preserve its data.");
             }

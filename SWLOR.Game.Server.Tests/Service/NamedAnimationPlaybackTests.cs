@@ -10,6 +10,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class NamedAnimationPlaybackTests
 {
+    [Test] public void PreviewStopDoesNotCancelANewerAbilityAndReleasesOnlyOnce()
+    {
+        var runtime = new Runtime(); var released = new List<uint>();
+        var playback = new NamedAnimationPlayback(runtime, released.Add);
+        var preview = playback.Begin(1, new AnimationClip("sw_preview", 2), 2);
+        playback.IsCurrent(1, preview).Should().BeTrue();
+        var ability = playback.Begin(1, new AnimationClip("sw_ability", 3), 3);
+        playback.IsCurrent(1, preview).Should().BeFalse("a deferred preview callback must skip a superseded animation");
+        playback.StopIfCurrent(1, preview).Should().BeFalse();
+        runtime.Token.Should().Be(ability);
+        released.Should().BeEmpty();
+        playback.StopIfCurrent(1, ability).Should().BeTrue();
+        playback.StopIfCurrent(1, ability).Should().BeFalse();
+        playback.IsCurrent(1, ability).Should().BeFalse("closing before the deferred play must prevent it from starting");
+        released.Should().Equal(1u);
+    }
     [Test] public void CompletionAndInterruptionReleaseThePoseOnlyForTheOwnedPlayback()
     {
         var runtime = new Runtime(); var released = new List<uint>();

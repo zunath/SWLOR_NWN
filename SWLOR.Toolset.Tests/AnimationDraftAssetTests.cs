@@ -174,6 +174,22 @@ public class AnimationDraftAssetTests
         Vector3.TransformNormal(Vector3.UnitY, impact).Z.Should().BeGreaterThan(.9f);
     }
 
+    [TestCase("CoveringStrike", .48f)]
+    [TestCase("RiotBlade", .35f)]
+    [TestCase("RendingStrike", .62f)]
+    [TestCase("SavageCleave", .63f)]
+    public void SwordStrikesContinueThroughContactWithoutStoppingOrReversing(string name, float contact)
+    {
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
+        var hand = project.Joints.FindIndex(j => j.Name == "rhand");
+        Vector3 At(float t) => AnimationRig.World(project.Joints, project.Sample(t))[hand].Translation;
+        var incoming = (At(contact) - At(contact - .02f)) / .02f;
+        var outgoing = (At(contact + .02f) - At(contact)) / .02f;
+        incoming.Length().Should().BeGreaterThan(.3f, "the weapon must still be travelling into contact");
+        outgoing.Length().Should().BeGreaterThan(.3f, "contact is part of a continuous strike, not a held pose");
+        Vector3.Dot(Vector3.Normalize(incoming), Vector3.Normalize(outgoing)).Should().BeGreaterThan(.75f);
+    }
+
     [TestCase("a_ba")]
     [TestCase("a_fa")]
     public void InstalledClipsKeepTheNativeShieldSocketFacingForward(string modelName)

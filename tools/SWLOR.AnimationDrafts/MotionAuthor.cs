@@ -12,7 +12,7 @@ internal sealed record Recipe(string Workbook, string Model, JsonObject ReadyShi
 }
 internal sealed record Motion(string Id, string Name, int BibleRow, string Reference, string Observation,
     string Interpretation, bool Shield, Beat[] Beats, string AbilityDefinition, bool Loop = false);
-internal sealed record Beat(float Time, string Label, JsonObject Pose);
+internal sealed record Beat(float Time, string Label, JsonObject Pose, bool Through = false);
 
 internal static class MotionAuthor
 {
@@ -35,8 +35,7 @@ internal static class MotionAuthor
         {
             while (segment < beats.Length - 2 && time > beats[segment + 1].Time) segment++;
             var fraction = Math.Clamp((time - beats[segment].Time) / (beats[segment + 1].Time - beats[segment].Time), 0, 1);
-            var eased = fraction * fraction * (3 - 2 * fraction);
-            var p = Pose.Lerp(poses[segment], poses[segment + 1], eased);
+            var p = Pose.Interpolate(poses, beats, segment, fraction);
             var pose = PoseRig(rig, p, motion.Id, time);
             // A one-shot must release its authored stance even when no walking/attack follows it.
             // Channels retain a closed guard loop; their installed exit phase releases the stance.
@@ -182,9 +181,38 @@ internal static class MotionAuthor
     private sealed record Pose(Vector3 Root, Vector3 Chest, Vector3 Hips, Vector3 LeftHand, Vector3 RightHand,
         Vector3 Blade, Vector3 LeftFoot, Vector3 RightFoot, Vector3 Shield)
     {
-        public static Pose Lerp(Pose a, Pose b, float t) => new(
-            Vector3.Lerp(a.Root, b.Root, t), Vector3.Lerp(a.Chest, b.Chest, t), Vector3.Lerp(a.Hips, b.Hips, t),
-            Vector3.Lerp(a.LeftHand, b.LeftHand, t), Vector3.Lerp(a.RightHand, b.RightHand, t), Vector3.Lerp(a.Blade, b.Blade, t),
-            Vector3.Lerp(a.LeftFoot, b.LeftFoot, t), Vector3.Lerp(a.RightFoot, b.RightFoot, t), Vector3.Lerp(a.Shield, b.Shield, t));
+        // A strike passes through contact poses without stopping. Shape-preserving
+        // Hermite tangents keep that velocity continuous without overshooting limb
+        // targets or dragging planted feet below the floor. Unmarked beats still rest.
+        public static Pose Interpolate(Pose[] poses, Beat[] beats, int segment, float t)
+        {
+            Vector3 V(Func<Pose, Vector3> select)
+            {
+                var a = select(poses[segment]); var b = select(poses[segment + 1]);
+                if (!beats[segment].Through && !beats[segment + 1].Through)
+                    return Vector3.Lerp(a, b, t * t * (3 - 2 * t));
+                var duration = beats[segment + 1].Time - beats[segment].Time;
+                Vector3 Tangent(int i)
+                {
+                    if (i == 0 || i == poses.Length - 1 || !beats[i].Through) return Vector3.Zero;
+                    var before = beats[i].Time - beats[i - 1].Time;
+                    var after = beats[i + 1].Time - beats[i].Time;
+                    var left = (select(poses[i]) - select(poses[i - 1])) / before;
+                    var right = (select(poses[i + 1]) - select(poses[i])) / after;
+                    float Slope(float l, float r)
+                    {
+                        if (l * r <= 0) return 0;
+                        var w1 = 2 * after + before; var w2 = after + 2 * before;
+                        return (w1 + w2) / (w1 / l + w2 / r);
+                    }
+                    return new(Slope(left.X, right.X), Slope(left.Y, right.Y), Slope(left.Z, right.Z));
+                }
+                var t2 = t * t; var t3 = t2 * t;
+                return (2 * t3 - 3 * t2 + 1) * a + (t3 - 2 * t2 + t) * duration * Tangent(segment) +
+                    (-2 * t3 + 3 * t2) * b + (t3 - t2) * duration * Tangent(segment + 1);
+            }
+            return new(V(p => p.Root), V(p => p.Chest), V(p => p.Hips), V(p => p.LeftHand), V(p => p.RightHand),
+                V(p => p.Blade), V(p => p.LeftFoot), V(p => p.RightFoot), V(p => p.Shield));
+        }
     }
 }

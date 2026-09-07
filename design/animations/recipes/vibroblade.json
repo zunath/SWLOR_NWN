@@ -409,219 +409,311 @@
       "bibleRow": 4,
       "reference": "https://chatgpt.com/s/m_6a3fde0e8a34819181290c21cdf5dc91",
       "observation": "A low airborne lunge leads with the left shield while the blade trails behind the right side.",
-      "interpretation": "A short guarded step and compact diagonal sword cut behind an upright shield, followed by recovery. The lead foot lifts only enough to step, without a jumping squat or an arm held behind the head.",
+      "interpretation": "A planted shield guard covers a direct sword thrust. Chamber beside the ribs, drive the point forward, withdraw along the same line, and settle without hopping or sweeping through the shield.",
       "shield": true,
       "beats": [
         {
           "time": 0,
           "label": "Ready",
-          "pose": {}
-        },
-        {
-          "time": 0.2,
-          "label": "Crouch",
           "pose": {
-            "root": [
-              0.0,
-              -0.03,
-              1.108
-            ],
-            "chest": [
-              9.0,
-              -6.0,
-              0.0
-            ],
-            "leftHand": [
-              0.015,
-              0.32,
-              1.4
-            ],
-            "rightHand": [
-              0.31,
-              0.1,
-              1.38
-            ],
-            "blade": [
-              0.35,
-              0.4,
-              0.85
-            ]
-          }
-        },
-        {
-          "time": 0.36,
-          "label": "Launch",
-          "pose": {
-            "root": [
-              -0.012,
-              0.0525,
-              1.128
-            ],
-            "chest": [
-              13.2,
-              -9.0,
-              0.0
-            ],
-            "leftHand": [
-              0.015,
-              0.32,
-              1.4
-            ],
             "leftFoot": [
-              -0.1938,
-              0.32,
-              0.2255
+              -0.19,
+              0.2,
+              0.14
             ],
             "rightFoot": [
-              0.2125,
-              -0.208,
-              0.1535
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
+        },
+        {
+          "time": 0.22,
+          "label": "Chamber",
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.38,
-              0.15,
-              1.48
+              0.3,
+              0.09,
+              1.42
             ],
             "blade": [
-              0.55,
-              0.35,
-              0.7
+              0.02,
+              0.98,
+              0.16
+            ],
+            "chest": [
+              2,
+              -10,
+              0
+            ],
+            "root": [
+              0,
+              -0.025,
+              1.145
+            ],
+            "hips": [
+              0,
+              -4,
+              0
             ]
-          }
+          },
+          "through": false
+        },
+        {
+          "time": 0.37,
+          "label": "Drive",
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ],
+            "rightHand": [
+              0.28,
+              0.34,
+              1.45
+            ],
+            "blade": [
+              0.01,
+              1,
+              0.025
+            ],
+            "chest": [
+              5,
+              0,
+              0
+            ],
+            "root": [
+              0.01,
+              0.025,
+              1.135
+            ],
+            "hips": [
+              0,
+              0,
+              0
+            ]
+          },
+          "through": true
         },
         {
           "time": 0.48,
           "label": "Lunge",
           "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ],
+            "rightHand": [
+              0.24,
+              0.57,
+              1.46
+            ],
+            "blade": [
+              0.01,
+              1,
+              0.005
+            ],
+            "chest": [
+              8,
+              8,
+              0
+            ],
             "root": [
-              -0.012,
-              0.1275,
+              0.01,
+              0.07,
+              1.13
+            ],
+            "hips": [
+              0,
+              4,
+              0
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.55,
+          "label": "Extend",
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ],
+            "rightHand": [
+              0.22,
+              0.61,
+              1.46
+            ],
+            "blade": [
+              0.01,
+              1,
+              0.005
+            ],
+            "chest": [
+              8,
+              10,
+              0
+            ],
+            "root": [
+              0.01,
+              0.08,
+              1.13
+            ],
+            "hips": [
+              0,
+              5,
+              0
+            ]
+          },
+          "through": false
+        },
+        {
+          "time": 0.75,
+          "label": "Withdraw",
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ],
+            "rightHand": [
+              0.29,
+              0.28,
+              1.44
+            ],
+            "blade": [
+              0.02,
+              0.98,
+              0.14
+            ],
+            "chest": [
+              4,
+              2,
+              0
+            ],
+            "root": [
+              0,
+              0.025,
               1.14
             ],
-            "chest": [
-              13.8,
-              -9.0,
-              0.0
-            ],
-            "leftHand": [
-              0.015,
-              0.32,
-              1.4
-            ],
+            "hips": [
+              0,
+              1,
+              0
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.97,
+          "label": "Guard",
+          "pose": {
             "leftFoot": [
-              -0.1938,
-              0.384,
-              0.212
-            ],
-            "rightFoot": [
-              0.2125,
-              -0.192,
-              0.1805
-            ],
-            "rightHand": [
-              0.28,
-              0.52,
-              1.42
-            ],
-            "blade": [
+              -0.19,
               0.2,
-              0.9,
-              -0.1
-            ]
-          }
-        },
-        {
-          "time": 0.62,
-          "label": "Land",
-          "pose": {
-            "root": [
-              -0.018,
-              0.1125,
-              1.108
-            ],
-            "chest": [
-              10.2,
-              -7.2,
-              0.0
-            ],
-            "leftHand": [
-              0.015,
-              0.32,
-              1.4
-            ],
-            "leftFoot": [
-              -0.1938,
-              0.384,
               0.14
             ],
             "rightFoot": [
-              0.2125,
-              -0.192,
+              0.21,
+              -0.16,
               0.14
             ],
             "rightHand": [
-              0.05,
-              0.5,
-              1.25
+              0.3,
+              0.18,
+              1.34
             ],
             "blade": [
-              -0.5,
+              0.08,
               0.8,
-              -0.15
-            ]
-          }
-        },
-        {
-          "time": 0.84,
-          "label": "Recover",
-          "pose": {
-            "root": [
-              -0.012,
-              0.045,
-              1.128
+              0.6
             ],
             "chest": [
-              4.8,
-              -6.0,
-              0.0
+              2,
+              -4,
+              0
             ],
-            "leftHand": [
-              0.015,
-              0.32,
-              1.4
+            "root": [
+              0,
+              0,
+              1.14
             ],
+            "hips": [
+              0,
+              0,
+              0
+            ]
+          },
+          "through": false
+        },
+        {
+          "time": 1.16,
+          "label": "Settle",
+          "pose": {
             "leftFoot": [
-              -0.1938,
-              0.384,
+              -0.19,
+              0.2,
               0.14
             ],
             "rightFoot": [
-              0.2125,
-              -0.208,
+              0.21,
+              -0.16,
               0.14
             ]
-          }
-        },
-        {
-          "time": 1.04,
-          "label": "Step back",
-          "pose": {
-            "leftFoot": [
-              -0.2063,
-              0.28,
-              0.1895
-            ]
-          }
-        },
-        {
-          "time": 1.24,
-          "label": "Settle",
-          "pose": {}
+          },
+          "through": false
         },
         {
           "time": 1.4,
           "label": "Ready",
-          "pose": {}
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         }
       ],
       "abilityDefinition": "Vibroblade.CoveringStrikeAbilityDefinition"
@@ -799,158 +891,269 @@
       "bibleRow": 7,
       "reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
       "observation": "A direct right-hand cut extends toward one target with a compact arc and a braced front leg.",
-      "interpretation": "A fast shoulder draw, sharp forward cut, and short cross-body follow-through. Its shorter timing distinguishes it from the heavier strikes.",
+      "interpretation": "A compact descending diagonal cut with a brief shoulder chamber, continuous acceleration through contact, a low finish to the left, and a controlled return. The hips lead the chest and the feet stay planted.",
       "shield": false,
       "beats": [
         {
           "time": 0,
           "label": "Ready",
-          "pose": {}
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         },
         {
-          "time": 0.15,
+          "time": 0.16,
           "label": "Draw",
           "pose": {
-            "root": [
-              0.0,
-              -0.015,
-              1.14
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              2.4,
-              -10.8,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              -4.2,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.3665,
-              -0.0325,
-              1.473
+              0.37,
+              0.09,
+              1.59
             ],
             "blade": [
-              0.8,
-              -0.25,
-              0.5
+              0.3,
+              -0.28,
+              0.91
+            ],
+            "chest": [
+              2,
+              -16,
+              0
+            ],
+            "root": [
+              0,
+              -0.025,
+              1.15
+            ],
+            "hips": [
+              0,
+              -7,
+              0
             ]
-          }
+          },
+          "through": false
         },
         {
-          "time": 0.29,
+          "time": 0.27,
           "label": "Cut",
           "pose": {
-            "root": [
-              0.012,
-              0.045,
-              1.13
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              6.0,
-              7.2,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              3.6,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.2135,
-              0.4945,
-              1.439
+              0.32,
+              0.37,
+              1.52
             ],
             "blade": [
-              0.55,
-              0.8,
-              -0.1
+              0.66,
+              0.69,
+              0.28
+            ],
+            "chest": [
+              5,
+              -3,
+              0
+            ],
+            "root": [
+              0.01,
+              0.02,
+              1.14
+            ],
+            "hips": [
+              0,
+              4,
+              0
             ]
-          }
+          },
+          "through": true
         },
         {
           "time": 0.35,
           "label": "Impact",
           "pose": {
-            "root": [
-              0.018,
-              0.075,
-              1.124
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              6.6,
-              14.4,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              6.0,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.086,
-              0.6008,
-              1.3795
+              0.16,
+              0.54,
+              1.39
             ],
             "blade": [
               0.3,
               0.95,
               -0.08
+            ],
+            "chest": [
+              6,
+              13,
+              0
+            ],
+            "root": [
+              0.01,
+              0.045,
+              1.135
+            ],
+            "hips": [
+              0,
+              8,
+              0
             ]
-          }
+          },
+          "through": true
         },
         {
           "time": 0.46,
           "label": "Follow through",
           "pose": {
-            "root": [
-              0.012,
-              0.0525,
-              1.128
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ],
+            "rightHand": [
+              -0.08,
+              0.44,
+              1.17
+            ],
+            "blade": [
+              -0.72,
+              0.55,
+              -0.42
             ],
             "chest": [
-              5.4,
-              21.0,
-              0.0
+              4,
+              24,
+              0
+            ],
+            "root": [
+              0,
+              0.025,
+              1.14
             ],
             "hips": [
-              0.0,
-              7.2,
-              0.0
-            ],
-            "rightHand": [
-              -0.1265,
-              0.4605,
-              1.2945
-            ],
-            "blade": [
-              -0.8,
-              0.5,
-              -0.2
+              0,
+              10,
+              0
             ]
-          }
+          },
+          "through": false
         },
         {
-          "time": 0.66,
+          "time": 0.64,
           "label": "Recover",
           "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ],
             "rightHand": [
-              0.103,
-              0.265,
-              1.303
+              0.13,
+              0.26,
+              1.19
             ],
             "blade": [
-              -0.15,
-              0.9,
-              0.2
+              -0.1,
+              0.97,
+              0.23
+            ],
+            "chest": [
+              2,
+              10,
+              0
+            ],
+            "root": [
+              0,
+              0,
+              1.145
+            ],
+            "hips": [
+              0,
+              3,
+              0
             ]
-          }
+          },
+          "through": true
+        },
+        {
+          "time": 0.76,
+          "label": "Guard",
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         },
         {
           "time": 0.9,
           "label": "Ready",
-          "pose": {}
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         }
       ],
       "abilityDefinition": "Vibroblade.RiotBladeAbilityDefinition"
@@ -961,163 +1164,269 @@
       "bibleRow": 8,
       "reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
       "observation": "A heavy cut crosses upward through the target's lower torso, with the left arm held back.",
-      "interpretation": "Draw low on the right, transfer weight into a rising diagonal cut, and finish across the body before resetting.",
+      "interpretation": "A deliberate low chamber powers a rising diagonal cut through the target. Weight rises with the sword, the blade continues through contact, then returns outside the shield to guard.",
       "shield": false,
       "beats": [
         {
           "time": 0,
           "label": "Ready",
-          "pose": {}
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         },
         {
           "time": 0.28,
           "label": "Low draw",
           "pose": {
-            "root": [
-              0.0,
-              -0.015,
-              1.124
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              4.8,
-              -15.0,
-              -1.8
-            ],
-            "hips": [
-              0.0,
-              -5.4,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.4005,
-              -0.1175,
-              1.116
+              0.37,
+              0.03,
+              1.11
             ],
             "blade": [
-              0.5,
-              -0.4,
-              -0.8
+              0.6,
+              -0.38,
+              -0.7
+            ],
+            "chest": [
+              5,
+              -18,
+              -2
+            ],
+            "root": [
+              0,
+              -0.02,
+              1.115
+            ],
+            "hips": [
+              0,
+              -8,
+              0
             ]
-          }
+          },
+          "through": false
         },
         {
-          "time": 0.48,
+          "time": 0.46,
           "label": "Drive up",
           "pose": {
-            "root": [
-              0.018,
-              0.0562,
-              1.114
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              8.4,
-              5.4,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              2.4,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.2475,
-              0.3585,
-              1.218
+              0.37,
+              0.32,
+              1.16
             ],
             "blade": [
-              0.4,
-              0.88,
-              -0.12
+              0.64,
+              0.73,
+              -0.24
+            ],
+            "chest": [
+              6,
+              -2,
+              -1
+            ],
+            "root": [
+              0.01,
+              0.02,
+              1.12
+            ],
+            "hips": [
+              0,
+              3,
+              0
             ]
-          }
+          },
+          "through": true
         },
         {
           "time": 0.62,
           "label": "Impact",
           "pose": {
-            "root": [
-              0.021,
-              0.0825,
-              1.118
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              7.2,
-              15.0,
-              0.6
-            ],
-            "hips": [
-              0.0,
-              6.0,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.0605,
-              0.6092,
-              1.371
+              0.16,
+              0.53,
+              1.38
             ],
             "blade": [
-              0.02,
-              0.82,
-              0.58
+              0.2,
+              0.88,
+              0.43
+            ],
+            "chest": [
+              4,
+              14,
+              0
+            ],
+            "root": [
+              0.01,
+              0.05,
+              1.145
+            ],
+            "hips": [
+              0,
+              9,
+              0
             ]
-          }
+          },
+          "through": true
         },
         {
-          "time": 0.78,
+          "time": 0.77,
           "label": "Rise through",
           "pose": {
-            "root": [
-              0.009,
-              0.0562,
-              1.132
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              4.2,
-              24.0,
-              0.6
-            ],
-            "hips": [
-              0.0,
-              7.8,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              -0.135,
-              0.486,
-              1.5495
+              -0.07,
+              0.4,
+              1.64
             ],
             "blade": [
-              -0.5,
-              0.5,
-              0.7
+              -0.52,
+              0.52,
+              0.68
+            ],
+            "chest": [
+              1,
+              25,
+              0
+            ],
+            "root": [
+              0,
+              0.025,
+              1.16
+            ],
+            "hips": [
+              0,
+              12,
+              0
             ]
-          }
+          },
+          "through": false
         },
         {
-          "time": 1.05,
+          "time": 0.98,
           "label": "Recover",
           "pose": {
-            "chest": [
-              3.0,
-              9.0,
-              0.0
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.0435,
-              0.2905,
-              1.4815
+              0.19,
+              0.28,
+              1.6
             ],
             "blade": [
               -0.1,
               0.55,
-              0.8
+              0.83
+            ],
+            "chest": [
+              2,
+              11,
+              0
+            ],
+            "root": [
+              0,
+              0,
+              1.15
+            ],
+            "hips": [
+              0,
+              3,
+              0
             ]
-          }
+          },
+          "through": true
+        },
+        {
+          "time": 1.16,
+          "label": "Guard",
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         },
         {
           "time": 1.38,
           "label": "Ready",
-          "pose": {}
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         }
       ],
       "abilityDefinition": "Vibroblade.RendingStrikeAbilityDefinition"
@@ -1128,194 +1437,311 @@
       "bibleRow": 9,
       "reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
       "observation": "A low, broad stance drives a waist-height sweep through a wide frontal arc. The free arm extends for balance.",
-      "interpretation": "A large right-side wind-up becomes a broad horizontal sweep, with hips and chest rotating together. Both feet remain planted through the frontal sweep.",
+      "interpretation": "A weighty waist-high sweep winds to the right, accelerates through the frontal arc, and decelerates on the left. The pelvis leads the shoulders through contact; a separate low recovery keeps the blade from reversing through the same cut.",
       "shield": false,
       "beats": [
         {
           "time": 0,
           "label": "Ready",
-          "pose": {}
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         },
         {
           "time": 0.32,
           "label": "Wide draw",
           "pose": {
-            "root": [
-              0.0,
-              -0.015,
-              1.108
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              7.8,
-              -22.8,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              -9.0,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.4685,
-              -0.1175,
-              1.32
+              0.45,
+              0.04,
+              1.29
             ],
             "blade": [
               0.85,
               -0.5,
               0.02
+            ],
+            "chest": [
+              5,
+              -26,
+              0
+            ],
+            "root": [
+              0.01,
+              -0.025,
+              1.125
+            ],
+            "hips": [
+              0,
+              -12,
+              0
             ]
-          }
+          },
+          "through": false
         },
         {
           "time": 0.49,
           "label": "Sweep right",
           "pose": {
-            "root": [
-              0.009,
-              0.0375,
-              1.104
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              8.4,
-              -4.8,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              -1.8,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.3835,
-              0.401,
-              1.2605
+              0.43,
+              0.32,
+              1.26
             ],
             "blade": [
-              0.8,
-              0.6,
+              0.82,
+              0.57,
+              0.02
+            ],
+            "chest": [
+              6,
+              -12,
+              0
+            ],
+            "root": [
+              0.01,
+              0.02,
+              1.12
+            ],
+            "hips": [
+              0,
+              0,
               0
             ]
-          }
+          },
+          "through": true
         },
         {
           "time": 0.63,
           "label": "Front arc",
           "pose": {
-            "root": [
-              0.012,
-              0.0562,
-              1.104
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              8.4,
-              15.0,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              6.6,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              0.103,
-              0.6008,
-              1.269
+              0.13,
+              0.55,
+              1.26
             ],
             "blade": [
-              0.35,
-              0.94,
+              0.15,
+              0.99,
+              0
+            ],
+            "chest": [
+              5,
+              15,
+              0
+            ],
+            "root": [
+              0,
+              0.045,
+              1.12
+            ],
+            "hips": [
+              0,
+              13,
               0
             ]
-          }
+          },
+          "through": true
         },
         {
-          "time": 0.8,
+          "time": 0.76,
           "label": "Sweep left",
           "pose": {
-            "root": [
-              0.0,
-              0.0375,
-              1.112
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
             ],
-            "chest": [
-              6.6,
-              36.6,
-              0.0
-            ],
-            "hips": [
-              0.0,
-              13.8,
-              0.0
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              -0.24,
-              0.29,
-              1.33
+              -0.15,
+              0.43,
+              1.28
             ],
             "blade": [
-              -0.88,
-              0.46,
-              0.01
+              -0.78,
+              0.63,
+              0.015
+            ],
+            "chest": [
+              4,
+              32,
+              0
+            ],
+            "root": [
+              -0.015,
+              0.025,
+              1.125
+            ],
+            "hips": [
+              0,
+              17,
+              0
             ]
-          }
+          },
+          "through": true
         },
         {
-          "time": 0.96,
+          "time": 0.88,
           "label": "Follow through",
           "pose": {
-            "root": [
-              -0.012,
-              0.0075,
-              1.124
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ],
+            "rightHand": [
+              -0.22,
+              0.3,
+              1.31
+            ],
+            "blade": [
+              -0.98,
+              0.18,
+              0.035
             ],
             "chest": [
-              4.8,
-              41.4,
-              0.0
+              3,
+              38,
+              0
+            ],
+            "root": [
+              -0.02,
+              0,
+              1.135
             ],
             "hips": [
-              0.0,
-              14.4,
-              0.0
-            ],
-            "rightHand": [
-              -0.28,
-              0.18,
-              1.34
-            ],
-            "blade": [
-              -0.99,
-              -0.05,
-              0.06
+              0,
+              17,
+              0
             ]
-          }
+          },
+          "through": false
         },
         {
-          "time": 1.19,
-          "label": "Recover",
+          "time": 1.12,
+          "label": "Low return",
           "pose": {
-            "chest": [
-              3.0,
-              13.2,
-              0.0
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
             ],
             "rightHand": [
-              -0.05,
-              0.282,
-              1.388
+              0.06,
+              0.26,
+              1.11
             ],
             "blade": [
-              -0.25,
-              0.8,
-              0.3
+              -0.35,
+              0.79,
+              -0.5
+            ],
+            "chest": [
+              3,
+              18,
+              0
+            ],
+            "root": [
+              0,
+              -0.005,
+              1.14
+            ],
+            "hips": [
+              0,
+              6,
+              0
             ]
-          }
+          },
+          "through": true
+        },
+        {
+          "time": 1.32,
+          "label": "Guard",
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         },
         {
           "time": 1.55,
           "label": "Ready",
-          "pose": {}
+          "pose": {
+            "leftFoot": [
+              -0.19,
+              0.2,
+              0.14
+            ],
+            "rightFoot": [
+              0.21,
+              -0.16,
+              0.14
+            ]
+          },
+          "through": false
         }
       ],
       "abilityDefinition": "Vibroblade.SavageCleaveAbilityDefinition"

@@ -56,7 +56,7 @@ public sealed class NamedAnimationPlayback
 
     public void Complete(uint creature, string token)
     {
-        if (string.IsNullOrEmpty(token) || !_runtime.IsValid(creature) || _runtime.GetToken(creature) != token) return;
+        if (!IsCurrent(creature, token)) return;
         _runtime.Replace(creature, StartSource, "");
         _runtime.Replace(creature, LoopSource, "");
         _runtime.Replace(creature, EndSource, "");
@@ -68,4 +68,14 @@ public sealed class NamedAnimationPlayback
     {
         if (_runtime.IsValid(creature)) Complete(creature, _runtime.GetToken(creature));
     }
+
+    public bool StopIfCurrent(uint creature, string token)
+    {
+        if (!IsCurrent(creature, token)) return false;
+        Complete(creature, token);
+        return true;
+    }
+
+    public bool IsCurrent(uint creature, string token) =>
+        !string.IsNullOrEmpty(token) && _runtime.IsValid(creature) && _runtime.GetToken(creature) == token;
 }

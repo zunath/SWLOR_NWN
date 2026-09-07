@@ -82,6 +82,10 @@ feet during interpolation and correspondence with the Bible references. Recipe v
 native metres (`+Y` forward, `+Z` up); `chest`, `hips`, and `shield` use degrees in the order
 forward lean, yaw, side bend. Each beat overrides the corresponding ready pose, and the
 generator solves limb positions at 20 frames per second with smooth timing between beats.
+Mark contact and passing beats with `"through": true` to carry velocity through them. The
+generator uses shape-preserving cubic interpolation, with zero velocity at unmarked beats
+and direction changes; targets never overshoot. The four sword attacks use this to continue
+through contact, keeping their original durations while separating wind-up, strike, and recovery.
 Native shield meshes face `-X` with their top along `+Y`. NWN attaches shields to the
 `lforearm` dummy beneath `lforearm_g`; weapons attach to `lhand` / `rhand`, which have
 offsets from the `lhand_g` / `rhand_g` body pivots. See the
@@ -102,6 +106,22 @@ For female validation use `a_fa.mdl` and `an_a_fa.mdl`. These are offline render
 they do not verify the live client's playback, model cache, equipment choice, or transitions.
 
 ## Advanced authoring
+
+### In-game animation tester
+
+Use `/animations` to open the searchable **Animation Tester**. It is available to everyone
+on the Test environment, and to DM/Admin accounts on other environments. Search by readable
+name (`covering strike`), identifier (`CoveringStrike`), or installed name (`sw_coverings`).
+The list reads the generated `AuthoredAnimation` catalog automatically and shows 20 matches
+per page, so additional installed clips require no separate debug list.
+
+Equip the weapon and shield you want to inspect, stand outside combat, and click **Play**.
+The selected clip runs once on your character without damage, costs, or perk effects. Click
+**Play** again to repeat. **Stop** and closing the window release only the preview started by
+that window, preserving any newer ability animation. `/animtest <name>` remains available
+with the same staff/Test permissions. Updated model assets require a client and server restart.
+
+### Detailed pose tools
 
 1. Enter a mounted NWN model resref (for example `a_ba`) and choose **Load rig**, or choose
    **Load rig file** for an ASCII or compiled `.mdl`. The model supplies the real joint names,

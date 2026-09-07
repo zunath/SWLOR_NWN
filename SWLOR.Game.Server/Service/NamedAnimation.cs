@@ -27,16 +27,27 @@ public static class NamedAnimation
     }
 
     /// <summary>Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.</summary>
-    public static void Play(uint creature, AnimationClip clip, float? durationSeconds = null)
+    public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null)
     {
         var duration = Validate(clip, durationSeconds);
-        AssignCommand(creature, () =>
+        // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
+        // the caller can stop it even before that closure runs (for example on close).
+        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true);
+        try
         {
-            var token = Playback.Begin(creature, clip, duration, completeAtDuration: true);
-            try { PlayAnimation(Animation.PointForward, 1f, duration); }
-            catch { Playback.Complete(creature, token); throw; }
-        });
+            AssignCommand(creature, () =>
+            {
+                if (!Playback.IsCurrent(creature, token)) return;
+                try { PlayAnimation(Animation.PointForward, 1f, duration); }
+                catch { Playback.Complete(creature, token); throw; }
+            });
+        }
+        catch { Playback.Complete(creature, token); throw; }
+        return token;
     }
+
+    /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
+    public static bool StopIfCurrent(uint creature, string token) => Playback.StopIfCurrent(creature, token);
 
     /// <summary>Releases an authored pose; optionally cancels the current scripted animation action.</summary>
     public static void Stop(uint creature, bool cancelQueuedAnimation = false)

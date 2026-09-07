@@ -9,15 +9,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition;
 
 public class AnimationPreviewChatCommand : IChatCommandListDefinition
 {
-    public static IReadOnlyDictionary<string, AnimationClip> Clips { get; } =
-        typeof(AuthoredAnimation).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
-            .Where(field => field.FieldType == typeof(AnimationClip))
-            .ToDictionary(field => field.Name, field => (AnimationClip)field.GetValue(null), StringComparer.OrdinalIgnoreCase);
+    public static IReadOnlyDictionary<string, AnimationClip> Clips => AnimationPreviewCatalog.Clips;
 
     public Dictionary<string, ChatCommandDetail> BuildChatCommands() => new ChatCommandBuilder()
         .Create("animtest")
         .Description("Preview an installed animation: /animtest ShieldBash. No argument lists available clips.")
-        .Permissions(AuthorizationLevel.Admin)
+        .Permissions(AuthorizationLevel.DM | AuthorizationLevel.Admin)
         .AvailableToAllOnTestEnvironment()
         .Action((user, target, location, args) =>
         {

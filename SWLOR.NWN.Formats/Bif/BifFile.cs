@@ -24,16 +24,18 @@ public sealed class BifFile
 
     public IReadOnlyList<BifResourceEntry> VariableResources { get; }
 
-    public byte[]? ExtractVariableResource(int index)
+    public byte[]? ExtractVariableResource(int index, int maximumBytes = int.MaxValue)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(maximumBytes);
         if (index < 0 || index >= VariableResources.Count)
             return null;
 
         var entry = VariableResources[index];
-        if (entry.Size > BifReader.MaximumResourceSize)
+        var limit = Math.Min((long)maximumBytes, BifReader.MaximumResourceSize);
+        if (entry.Size > limit)
         {
             throw new NwnFormatException(
-                $"BIF resource {index} size {entry.Size} exceeds the {BifReader.MaximumResourceSize}-byte extraction limit.");
+                $"BIF resource {index} size {entry.Size} exceeds the {limit}-byte extraction limit.");
         }
 
         if (_bytes != null)
@@ -49,6 +51,8 @@ public sealed class BifFile
             FileShare.Read,
             bufferSize: 4096,
             FileOptions.RandomAccess);
+        if (entry.Offset > stream.Length || entry.Size > stream.Length - entry.Offset)
+            throw new NwnFormatException("BIF resource is outside the current archive.");
         stream.Seek(entry.Offset, SeekOrigin.Begin);
         var result = new byte[checked((int)entry.Size)];
         stream.ReadExactly(result);

@@ -12,7 +12,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         IEnumerable<ResourceIdentity> Resources { get; }
 
-        bool TryGetBytes(ResourceIdentity identity, out byte[] bytes);
+        bool TryGetBytes(ResourceIdentity identity, out byte[] bytes, int maximumBytes = int.MaxValue);
 
         string Describe(ResourceIdentity identity);
     }

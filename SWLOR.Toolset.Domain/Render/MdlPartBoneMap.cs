@@ -36,12 +36,13 @@ namespace SWLOR.Toolset.Domain.Render
                 ["footr"] = ["rfoot_g", "rfoot"],
                 ["robe"] = ["torso_g", "pelvis_g", "torso", "pelvis"],
 
-                // Equipped item models use their own authored origin and hang directly from the
-                // creature skeleton's visible attachment bones. Distinct part names keep robe
-                // coverage from mistaking a held weapon for the hand body part beneath it.
+                // Equipment uses the native attachment dummies, not the body mesh pivots.
+                // In particular, a shield follows lforearm, independently of the wrist.
+                // https://nwn.wiki/spaces/NWN1/pages/38176272/Model+Special+Nodes
                 ["helmet"] = ["head_g", "head"],
-                ["weaponl"] = ["lhand_g", "lhand"],
-                ["weaponr"] = ["rhand_g", "rhand"],
+                ["weaponl"] = ["lhand"],
+                ["weaponr"] = ["rhand"],
+                ["shield"] = ["lforearm"],
 
                 // A cloak hangs from the skeleton's own Cloak_g, which sits under torso_g and carries
                 // the CL*/CM*/CR* chain the cloak's skinmesh is weighted to. Verified against pmh0.

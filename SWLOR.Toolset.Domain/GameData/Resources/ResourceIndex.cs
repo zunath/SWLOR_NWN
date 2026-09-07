@@ -24,19 +24,24 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     /// </summary>
     public sealed class ResourceHandle
     {
-        private readonly Func<byte[]> _load;
+        private readonly Func<int, byte[]> _load;
 
         public ResourceIdentity Identity { get; }
         public ResourceProvenance Provenance { get; }
 
-        internal ResourceHandle(ResourceIdentity identity, ResourceProvenance provenance, Func<byte[]> load)
+        internal ResourceHandle(ResourceIdentity identity, ResourceProvenance provenance, Func<int, byte[]> load)
         {
             Identity = identity;
             Provenance = provenance;
             _load = load;
         }
 
-        public byte[] GetBytes() => _load();
+        /// <summary>Rejects a resource exceeding the caller's limit before allocating its payload.</summary>
+        public byte[] GetBytes(int maximumBytes = int.MaxValue)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(maximumBytes);
+            return _load(maximumBytes);
+        }
     }
 
     /// <summary>
@@ -265,13 +270,13 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                 handle = new ResourceHandle(
                     identity,
                     new ResourceProvenance(ResourceLayerKind.Hak, name, source),
-                    () =>
+                    maximumBytes =>
                     {
                         var message =
                             $"The indexed resource '{identity.ResRef}' could not be read from '{source}'.";
                         try
                         {
-                            if (catalog.TryGetBytes(identity, out var bytes))
+                            if (catalog.TryGetBytes(identity, out var bytes, maximumBytes))
                                 return bytes;
                         }
                         catch (Exception exception) when (
@@ -290,13 +295,13 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                 handle = new ResourceHandle(
                     identity,
                     new ResourceProvenance(ResourceLayerKind.BaseGame, "nwn_base", "nwn_base.key"),
-                    () =>
+                    maximumBytes =>
                     {
                         var message =
                             $"The KEY index contains '{identity.ResRef}', but its BIF payload could not be read.";
                         try
                         {
-                            if (_baseLayer.TryGetBytes(identity, out var bytes))
+                            if (_baseLayer.TryGetBytes(identity, out var bytes, maximumBytes))
                                 return bytes;
                         }
                         catch (Exception exception) when (

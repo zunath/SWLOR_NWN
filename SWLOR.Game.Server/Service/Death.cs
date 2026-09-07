@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();
+            NamedAnimation.ClearOnDeath(player);
             var hostile = GetLastHostileActor(player);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);

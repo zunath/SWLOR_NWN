@@ -45,7 +45,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' AND '$(RunPostBuildEvent)' != 'Never'">
-    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
+  <Target Name="PostBuild" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT' AND '$(RunPostBuildEvent)' != 'Never'">
+    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o --server-output &quot;$(TargetDir).&quot;" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
   </Target>
 </Project>

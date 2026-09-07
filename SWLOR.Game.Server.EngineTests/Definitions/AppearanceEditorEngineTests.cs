@@ -24,6 +24,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private sealed record ArmorSnapshot(uint Item, int[] Models, int[] Colors, int[] Markers, int[] Projections);
 
+        [EngineTest("Appearance editor ignores black picker hydration until a user gesture", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task PickerHydrationPreservesSkin(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var nativeSkin = GetColor(civilian, ColorChannel.Skin);
+                var stateName = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
+                var savedTint = GetLocalInt(civilian, stateName);
+                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
+                editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
+                    new AppearanceEditorPayload(civilian), OBJECT_INVALID);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(0, 0, 0), userGesture: false);
+                InvokePrivate(editor, "FlushPendingPickerColor");
+                editor.OnSelectEquipment()();
+                editor.OnSelectAppearance()();
+                ctx.AssertEqual(nativeSkin, GetColor(civilian, ColorChannel.Skin), "Opening and switching tabs retains native skin");
+                ctx.AssertEqual(savedTint, GetLocalInt(civilian, stateName), "Black hydration must not create a custom skin tint");
+                ctx.Assert(editor.IsCustomTintEditable, "Skin supports deliberate RGB edits");
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(0, 0, 0));
+                editor.OnMouseUpTintPicker()();
+                ctx.AssertEqual(new TintMapColor(0, 0, 0).ToStoredValue(), GetLocalInt(civilian, stateName),
+                    "A deliberate black skin selection must still work");
+            });
+        }
+
         [EngineTest("Appearance editor enables every native armor dye target and inheritance preview", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task EveryArmorColorTargetRetainsPickerAndNativePreview(EngineTestContext ctx)
         {
@@ -529,6 +555,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
                 AssertTintInput(ctx, editor, laterGlobal, "Inheritance reset supersedes pending RGB text");
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, laterGlobal);
+                editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(120, 30, 60);
                 InvokePrivate(editor, "ResetArmorColorToInheritance",
                     AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
@@ -687,8 +714,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private static void ApplyWatchedValue(AppearanceEditorViewModel editor, string propertyName, object value, Action beforeCallback = null,
-            bool flushPicker = true)
+            bool flushPicker = true, bool userGesture = true)
         {
+            if (userGesture && propertyName == nameof(editor.SelectedTintColor))
+                editor.OnMouseDownTintPicker()();
+
             // Mirror only UpdatePropertyFromClient's incoming-read setup. Use its real private
             // cache/SkipNotify fields, real property setter and real completion callback.
             var baseType = typeof(AppearanceEditorViewModel).BaseType;

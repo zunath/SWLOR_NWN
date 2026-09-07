@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             switch (partialName)
             {
                 case AppearanceEditorViewModel.EditorMainPartial: definition.BuildMainEditor(panel); break;
+                case AppearanceEditorViewModel.EditorWeaponPartial: definition.BuildWeaponEditor(panel); break;
                 case AppearanceEditorViewModel.EditorArmorPartial: definition.BuildArmorEditor(panel); break;
                 case AppearanceEditorViewModel.SettingsPartial: definition.BuildSettings(panel); break;
                 default: throw new ArgumentOutOfRangeException(nameof(partialName), partialName, "Unknown appearance editor panel.");
@@ -51,6 +52,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClosed(model => model.OnCloseWindow())
 
                 .DefinePartialView(AppearanceEditorViewModel.EditorMainPartial, BuildMainEditor)
+
+                .DefinePartialView(AppearanceEditorViewModel.EditorWeaponPartial, BuildWeaponEditor)
 
                 .DefinePartialView(AppearanceEditorViewModel.EditorArmorPartial, BuildArmorEditor)
 
@@ -118,6 +121,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         private void BuildMainEditor(GuiGroup<AppearanceEditorViewModel> partial)
+            => BuildMainEditor(partial, includeColors: true);
+
+        private void BuildWeaponEditor(GuiGroup<AppearanceEditorViewModel> partial)
+            => BuildMainEditor(partial, includeColors: false);
+
+        private void BuildMainEditor(GuiGroup<AppearanceEditorViewModel> partial, bool includeColors)
         {
             // Each side owns its vertical scrolling while the client gives the detail
             // group the width remaining beside the category rail.
@@ -143,23 +152,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(col2 =>
                         {
-                            col2.AddRow(row2 =>
+                            if (includeColors)
                             {
-                                row2.SetHeight(162f);
-                                row2.AddList(template =>
+                                col2.AddRow(row2 =>
                                 {
-                                    template.AddCell(cell =>
+                                    row2.SetHeight(162f);
+                                    row2.AddList(template =>
                                     {
-                                        cell.AddToggleButton()
-                                            .SetId("ae_color_category")
-                                            .BindText(model => model.ColorCategoryOptions)
-                                            .BindIsToggled(model => model.ColorCategorySelected)
-                                            .BindOnClicked(model => model.OnSelectColorCategory());
-                                    });
-                                })
-                                    .BindRowCount(model => model.ColorCategoryOptions)
-                                    .SetHeight(154f);
-                            });
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .SetId("ae_color_category")
+                                                .BindText(model => model.ColorCategoryOptions)
+                                                .BindIsToggled(model => model.ColorCategorySelected)
+                                                .BindOnClicked(model => model.OnSelectColorCategory());
+                                        });
+                                    })
+                                        .BindRowCount(model => model.ColorCategoryOptions)
+                                        .SetHeight(154f);
+                                });
+                            }
 
                             col2.AddRow(row2 =>
                             {
@@ -189,18 +201,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(col2 =>
                         {
-                            col2.AddRow(row2 =>
+                            if (includeColors)
                             {
-                                row2.AddGroup(palette => BuildColorPalette(palette, showTarget: false))
-                                    .SetId("ae_color_palette")
-                                    .BindIsVisible(model => model.IsColorPickerVisible);
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddGroup(palette => BuildColorPalette(palette, showTarget: false))
+                                        .SetId("ae_color_palette")
+                                        .BindIsVisible(model => model.IsColorPickerVisible);
 
-                                // A fixed palette alone pulls the group's private layout back
-                                // to its width. Give this row a place to absorb extra space.
-                                row2.AddSpacer();
+                                    // A fixed palette alone pulls the group's private layout back
+                                    // to its width. Give this row a place to absorb extra space.
+                                    row2.AddSpacer();
                             });
 
                             BuildCustomTintEditor(col2);
+                            }
 
                             col2.AddRow(row2 =>
                             {
@@ -252,6 +267,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindSelectedColor(model => model.SelectedTintColor)
                     .BindIsEnabled(model => model.IsCustomTintEditable)
                     .BindTooltip(model => model.CustomTintTooltip)
+                    .BindOnMouseDown(model => model.OnMouseDownTintPicker())
                     .BindOnMouseUp(model => model.OnMouseUpTintPicker())
                     .SetHeight(128f);
             });

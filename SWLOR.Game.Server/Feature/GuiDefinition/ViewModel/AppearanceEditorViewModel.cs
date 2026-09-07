@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ArmorColorElement = "ARMOR_COLOR_VIEW";
 
         public const string EditorMainPartial = "APPEARANCE_EDITOR_MAIN_PARTIAL";
+        public const string EditorWeaponPartial = "APPEARANCE_EDITOR_WEAPON_PARTIAL";
         public const string EditorArmorPartial = "APPEARANCE_EDITOR_ARMOR_PARTIAL";
         public const string SettingsPartial = "SETTINGS_PARTIAL";
         public const string ArmorColorsClothLeather = "APPEARANCE_EDITOR_COLORS_CLOTH_LEATHER";
@@ -74,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private GuiColor _pendingPickerColor;
         private Action<TintMapColor> _pendingPickerApply;
         private bool _pickerFlushScheduled;
+        private bool _tintPickerActive;
         private bool _tintControlBindingsWatched;
         private string _tintComponentCorrection;
 
@@ -87,12 +89,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int EquipmentTabId = 1;
         private const int SettingsTabId = 2;
         private const int SimpleEquipmentTabId = 3;
+        private const int WeaponEquipmentTabId = 4;
         private static readonly GuiTabGroup<AppearanceEditorViewModel, AppearanceEditorPayload> EditorTabs =
             new GuiTabGroup<AppearanceEditorViewModel, AppearanceEditorPayload>()
                 .AddTab(AppearanceTabId, EditorMainPartial)
                 .AddTab(EquipmentTabId, EditorArmorPartial)
                 .AddTab(SettingsTabId, SettingsPartial)
-                .AddTab(SimpleEquipmentTabId, EditorMainPartial);
+                .AddTab(SimpleEquipmentTabId, EditorMainPartial)
+                .AddTab(WeaponEquipmentTabId, EditorWeaponPartial);
         private static readonly GuiToggleGroupSync EditorToggles = new(AppearanceTabId, EquipmentTabId);
         private static readonly GuiToggleGroupSync SettingsToggles = new(SettingsTabId);
         private int _selectedTabId = AppearanceTabId;
@@ -271,6 +275,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SynchronizeCustomTintComponents(value);
                     return;
                 }
+
+                // A newly created NUI picker can report its default black value. Only
+                // an explicit pointer gesture may turn a watched value into a tint edit.
+                if (!_tintPickerActive)
+                    return;
 
                 _tintEditGeneration++;
                 _tintComponentCorrection = null;
@@ -903,6 +912,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
+            _tintPickerActive = false;
+            _pendingPickerColor = null;
+            _pendingPickerApply = null;
+            _pickerFlushScheduled = false;
+            _hasTintComponentDraft = false;
+            _tintComponentApply = null;
             _tintComponentCorrection = null;
             _tintEditGeneration++;
             _armorBindingGeneration++;
@@ -1085,6 +1100,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             GuiColor color,
             bool synchronizeComponents = true)
         {
+            _tintPickerActive = false;
             SynchronizeTintControlBindings(() =>
             {
                 _loadingTintColor = true;
@@ -1168,7 +1184,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             };
         }
 
-        public Action OnMouseUpTintPicker() => FlushPendingPickerColor;
+        public Action OnMouseDownTintPicker() => () => _tintPickerActive = true;
+
+        public Action OnMouseUpTintPicker() => () =>
+        {
+            // A click on the current color need not produce another watched value.
+            if (_tintPickerActive && _pendingPickerColor == null)
+            {
+                _pendingPickerColor = SelectedTintColor;
+                _pendingPickerApply = CaptureTintColorEdit();
+            }
+            FlushPendingPickerColor();
+            _tintPickerActive = false;
+        };
 
         private void FlushPendingPickerColor()
         {
@@ -1426,7 +1454,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var partialTabId = IsSettingsSelected
                 ? SettingsTabId
                 : IsEquipmentSelected
-                    ? SelectedItemTypeIndex == 0 ? EquipmentTabId : SimpleEquipmentTabId
+                    ? SelectedItemTypeIndex == 0 ? EquipmentTabId
+                        : SelectedItemTypeIndex is 3 or 4 ? WeaponEquipmentTabId : SimpleEquipmentTabId
                     : AppearanceTabId;
             EditorTabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied);
         }

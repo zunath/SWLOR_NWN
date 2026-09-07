@@ -532,7 +532,8 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     [RelayCommand] private async Task Install() => await Run(async () =>
     {
         if (_repositoryRoot == null) throw new InvalidDataException("Open a SWLOR repository workspace before installing animations.");
-        var plan = await Task.Run(() => AnimationInstall.Prepare(_repositoryRoot, Project, TargetPaths.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim())));
+        var plan = await Task.Run(() => AnimationInstall.Prepare(_repositoryRoot, Project,
+            TargetPaths.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()), _path));
         var preview = $"Register {Project.Name} as named animation '{plan.AnimationName}'.\n\n" + string.Join("\n", plan.Changes.Select(c =>
             $"{(c.Before == null ? "Create" : "Update")} {Path.GetRelativePath(_repositoryRoot, c.Path)}")) + "\n\n" + plan.CodeExample +
             "\n\nBuild the HAKs and deploy the rebuilt HAKs to server and clients before using this constant.";

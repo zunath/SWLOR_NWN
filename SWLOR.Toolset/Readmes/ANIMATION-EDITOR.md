@@ -127,7 +127,10 @@ should expose the animation.
 Input files are checked again after confirmation and after staging, before publishing any output.
 All unique input snapshots share a 128 MiB budget, including every selected target and its
 supermodel chain. Select fewer targets when creating a new registration if needed.
-Generated output payloads have a separate 128 MiB aggregate limit. Unchanged source dependencies
+Generated output payloads have a separate 128 MiB aggregate limit; each file stays within the
+64 MiB input limit so later installations can read it. A new clip that would overflow an existing
+bank moves to a fresh bank. Oversized individual clips or replacements are rejected before writing.
+Unchanged source dependencies
 remain leased through publication and rollback so their hierarchy and configuration stay stable.
 Missing higher-priority resource paths are held with exclusive, delete-on-close reservations
 during the transaction. Competing reads or writes fail while these short-lived reservations

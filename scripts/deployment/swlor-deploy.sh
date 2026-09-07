@@ -7,7 +7,10 @@ CONFIG_FILE="${SWLOR_DEPLOY_CONFIG:-/etc/swlor-deploy.conf}"
 LOG_FILE="${SWLOR_DEPLOY_LOG:-/var/log/swlor-deploy.log}"
 LOCK_FILE="${SWLOR_DEPLOY_LOCK:-/run/lock/swlor-deploy.lock}"
 LOCK_FD_INHERITED="${SWLOR_DEPLOY_LOCK_FD_INHERITED:-0}"
-LOG_INITIALIZED="${SWLOR_DEPLOY_LOG_INITIALIZED:-0}"
+# Older installed deployers already establish the log pipeline before exporting
+# the inherited lock marker. Treat that marker as the compatibility signal on
+# the first rollout of explicit log-pipeline tracking.
+LOG_INITIALIZED="${SWLOR_DEPLOY_LOG_INITIALIZED:-$LOCK_FD_INHERITED}"
 
 if [[ -f "$CONFIG_FILE" && ! -L "$CONFIG_FILE" && -r "$CONFIG_FILE" ]]; then
     if [[ "$(stat -c '%u' "$CONFIG_FILE")" != 0 ]]; then

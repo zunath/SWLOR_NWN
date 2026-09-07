@@ -12,9 +12,6 @@ concurrency:
   group: publish-nwn-server-image
   cancel-in-progress: false
 
-env:
-  SERVER_IMAGE: zunath/nwn-dotnet:8193.37.17-1
-
 jobs:
   authorize:
     name: Authorize image publication
@@ -45,6 +42,27 @@ jobs:
       - name: Check out the requested source revision
         uses: actions/checkout@v4
 
+      - name: Resolve the tracked versioned image
+        id: image
+        shell: bash
+        run: |
+          mapfile -t image_lines < scripts/deployment/server-image.txt
+          if (( ${#image_lines[@]} != 1 )); then
+            echo "scripts/deployment/server-image.txt must contain exactly one line." >&2
+            exit 1
+          fi
+
+          server_image="${image_lines[0]%$'\r'}"
+          if [[ ! "$server_image" =~ ^zunath/nwn-dotnet:[A-Za-z0-9._-]+$ ||
+                "$server_image" == *:latest ]]
+          then
+            echo "Invalid immutable server image: $server_image" >&2
+            exit 1
+          fi
+
+          printf 'server_image=%s\n' "$server_image" >> "$GITHUB_OUTPUT"
+          echo "Publishing $server_image"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -56,6 +74,8 @@ jobs:
 
       - name: Refuse to replace an existing versioned image
         shell: bash
+        env:
+          SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
         run: |
           if docker buildx imagetools inspect "$SERVER_IMAGE" >/dev/null 2>&1; then
             echo "Refusing to overwrite existing image: $SERVER_IMAGE" >&2
@@ -69,10 +89,12 @@ jobs:
           file: SWLOR.Game.Server/Docker/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.SERVER_IMAGE }}
+          tags: ${{ steps.image.outputs.server_image }}
 
       - name: Record the published image
         shell: bash
+        env:
+          SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
         run: |
           docker buildx imagetools inspect "$SERVER_IMAGE"
           printf 'Published `%s` from `%s`.\n' \

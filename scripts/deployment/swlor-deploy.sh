@@ -32,7 +32,7 @@ fi
 required_settings=(
     DEPLOYMENT_NAME SOURCE_ROOT REPOSITORY_URL GIT_REMOTE BRANCH
     NWSYNC_ROOT SERVER_ROOT COMPOSE_FILE STATE_ROOT CACHE_ROOT MODULE_NAME
-    SERVER_SERVICE SERVER_IMAGE
+    SERVER_SERVICE
     STOP_TIMEOUT_SECONDS HEALTH_TIMEOUT_SECONDS HEALTH_STABLE_SECONDS
     HEALTH_LOG_MARKER MIN_FREE_GIB_BEFORE_BUILD MIN_FREE_GIB_BEFORE_CUTOVER
     NEVERWINTER_NIM_VERSION NEVERWINTER_NIM_RELEASE_URL NEVERWINTER_NIM_SHA256
@@ -58,11 +58,30 @@ SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
 SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
 NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
+SERVER_IMAGE_FILE="${SERVER_IMAGE_FILE:-$SOURCE_ROOT/scripts/deployment/server-image.txt}"
 COMPOSE_IMAGE_OVERRIDE_FILE="$STATE_ROOT/server-image.override.yml"
 REQUIRED_TWEAK_VARIABLE="NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL"
 REQUIRED_TWEAK_VALUE="true"
 HEALTH_FATAL_LOG_PATTERN="${HEALTH_FATAL_LOG_PATTERN:-buffer overflow|Fatal error|has crashed|Segmentation fault}"
 HEALTH_LOG_TAIL_LINES="${HEALTH_LOG_TAIL_LINES:-2000}"
+
+if [[ -L "$SERVER_IMAGE_FILE" ]]; then
+    printf 'Server image file must not be a symbolic link: %s\n' \
+        "$SERVER_IMAGE_FILE" >&2
+    exit 78
+elif [[ -f "$SERVER_IMAGE_FILE" ]]; then
+    server_image_line_count="$(awk 'END { print NR }' "$SERVER_IMAGE_FILE")"
+    (( server_image_line_count == 1 )) || {
+        printf 'Server image file must contain exactly one line: %s\n' \
+            "$SERVER_IMAGE_FILE" >&2
+        exit 78
+    }
+    SERVER_IMAGE="$(tr -d '\r\n' < "$SERVER_IMAGE_FILE")"
+elif [[ -z "${SERVER_IMAGE:-}" ]]; then
+    printf 'Server image file is unavailable and SERVER_IMAGE is unset: %s\n' \
+        "$SERVER_IMAGE_FILE" >&2
+    exit 78
+fi
 
 # A host config can set these directly. Environment overrides win when supplied
 # for an individual invocation.
@@ -188,7 +207,7 @@ printf '' |
 for absolute_path in \
     "$SOURCE_ROOT" "$NWSYNC_ROOT" "$SERVER_ROOT" "$COMPOSE_FILE" \
     "$STATE_ROOT" "$CACHE_ROOT" "$COMPOSE_IMAGE_OVERRIDE_FILE" \
-    "$NWSYNC_BUILD_SCRIPT" \
+    "$SERVER_IMAGE_FILE" "$NWSYNC_BUILD_SCRIPT" \
     "$NWSYNC_HAK_ROOT" "$NWSYNC_TLK_ROOT" "$NWSYNC_MODULE_ROOT" \
     "$SERVER_HAK_ROOT" "$SERVER_TLK_ROOT" "$SERVER_MODULE_ROOT" \
     "$SERVER_DOTNET_ROOT" "$SERVER_ENV_FILE"
@@ -595,6 +614,7 @@ show_status()
     printf 'Active commit:    %s\n' "${active_commit:-not recorded}"
     printf 'Previous commit:  %s\n' "${previous_commit:-not recorded}"
     printf 'Desired image:    %s\n' "$SERVER_IMAGE"
+    printf 'Image source:     %s\n' "$SERVER_IMAGE_FILE"
     printf 'Active image:     %s\n' "${active_server_image:-not recorded}"
     printf 'Previous image:   %s\n' "${previous_server_image:-not recorded}"
     printf 'Running image:    %s\n' "${running_server_image:-not running}"

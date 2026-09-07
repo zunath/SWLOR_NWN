@@ -129,8 +129,9 @@ The production host uses the guarded, manual-first deployment workflow in
 [`scripts/deployment/README.md`](../../scripts/deployment/README.md). It builds
 and validates a temporary HAK/TLK/module set in the existing NWSync repository
 while the live server continues using separate permanent artifact directories.
-The versioned server image is published once by the owner-only GitHub workflow
-and pulled by every deployment host; deployment hosts do not build it locally.
+The versioned server image is selected from the tracked deployment image file,
+published once by the owner-only GitHub workflow, and pulled by every
+deployment host; deployment hosts do not build it locally.
 After that host's `build.sh` generates the manifest, the workflow takes the
 complete Compose project down, updates `NWN_NWSYNCHASH`, atomically moves the
 new artifacts into the server tree, brings the project up, and health-checks

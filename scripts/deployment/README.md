@@ -77,16 +77,18 @@ players. Review its help and disk usage separately before enabling pruning.
 
 ## Authoritative server image
 
-The game server uses the versioned Docker Hub image configured by
-`SERVER_IMAGE`. Deployment hosts never build this image. The deployer applies
-an internal Compose override so the host configuration is authoritative,
-pulls the configured tag before downtime, and treats an image change as a
-cutover even when HAK, module, NWSync, and .NET outputs are unchanged. If the
-new image fails its health check, rollback starts the previously running image.
+The game server uses the versioned Docker Hub image recorded in the tracked
+`scripts/deployment/server-image.txt` file. Deployment hosts never build this
+image. After fetching a commit, the deployer re-executes the updated script,
+reads that commit's image file, and applies an internal Compose override. It
+pulls the tracked tag before downtime and treats an image change as a cutover
+even when HAK, module, NWSync, and .NET outputs are unchanged. If the new image
+fails its health check, rollback starts the previously running image. The
+`SERVER_IMAGE` host setting remains only as a fallback for older checkouts.
 
 `.github/workflows/publish-nwn-server-image.yml` is the sole supported
 publisher. It accepts only a manual request whose original and triggering
-actor are both `zunath`, builds `linux/amd64` from
+actor are both `zunath`, reads the same tracked image file, builds `linux/amd64` from
 `SWLOR.Game.Server/Docker/Dockerfile`, and refuses to overwrite an existing
 versioned tag. Configure these GitHub Actions repository secrets once:
 
@@ -94,27 +96,16 @@ versioned tag. Configure these GitHub Actions repository secrets once:
 - `DOCKERHUB_TOKEN`: a Docker Hub access token with read/write permission
 
 The workflow must exist on the repository's default branch before GitHub shows
-its **Run workflow** button. Select the source branch containing the Dockerfile
-to publish. Publish the new image before changing a deployment host to its tag.
+its **Run workflow** button. Select the source branch containing the matching
+Dockerfile and image file. Publish the new image before deploying that commit.
+For future runtime upgrades, change the Dockerfile and image file together;
+hosts select the new tag automatically after fetching the commit.
 
-For an existing host, update both its preserved configuration and its working
-Compose file once. This keeps direct/manual Compose commands aligned with the
-deployer's override:
+To inspect the authoritative image on an existing host:
 
 ```bash
-source /etc/swlor-deploy.conf
-NEW_SERVER_IMAGE=zunath/nwn-dotnet:8193.37.17-1
-
-sed -i \
-  "s#^SERVER_IMAGE=.*#SERVER_IMAGE=$NEW_SERVER_IMAGE#" \
-  /etc/swlor-deploy.conf
-
-sed -i \
-  "s#image: *zunath/nwn-dotnet:.*#image: $NEW_SERVER_IMAGE#" \
-  "$COMPOSE_FILE"
-
-grep '^SERVER_IMAGE=' /etc/swlor-deploy.conf
-grep -n 'image: *zunath/nwn-dotnet:' "$COMPOSE_FILE"
+cat /mnt/swlor-web-vol/deployment-source/scripts/deployment/server-image.txt
+/usr/local/sbin/swlor-deploy --status
 ```
 
 ## Initial source checkout

@@ -38,6 +38,10 @@ jobs:
     name: Build and publish immutable image
     needs: authorize
     runs-on: ubuntu-latest
+    # Configure this environment with zunath as its required reviewer and keep
+    # the two Docker Hub credentials below as environment secrets only. The
+    # approval boundary then lives outside workflow code selected by a branch.
+    environment: dockerhub-publish
     steps:
       - name: Check out the requested source revision
         uses: actions/checkout@v4
@@ -69,27 +73,75 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_PUBLISH_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PUBLISH_TOKEN }}
 
       - name: Refuse to replace an existing versioned image
         shell: bash
         env:
           SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
         run: |
-          if docker buildx imagetools inspect "$SERVER_IMAGE" >/dev/null 2>&1; then
+          set +e
+          probe_output="$(
+            docker buildx imagetools inspect "$SERVER_IMAGE" 2>&1
+          )"
+          probe_status=$?
+          set -e
+
+          if (( probe_status == 0 )); then
             echo "Refusing to overwrite existing image: $SERVER_IMAGE" >&2
             exit 1
           fi
 
-      - name: Build and publish the server image
+          if ! grep -Eqi '(^|[[:space:]:])(manifest unknown|not found)([[:space:]:]|$)' \
+            <<< "$probe_output"
+          then
+            echo "Could not prove that the versioned image is absent; refusing to publish." >&2
+            printf '%s\n' "$probe_output" >&2
+            exit 1
+          fi
+
+          echo "Confirmed that $SERVER_IMAGE does not exist."
+
+      - name: Build the server image
         uses: docker/build-push-action@v6
         with:
           context: SWLOR.Game.Server/Docker
           file: SWLOR.Game.Server/Docker/Dockerfile
           platforms: linux/amd64
-          push: true
+          load: true
+          push: false
           tags: ${{ steps.image.outputs.server_image }}
+
+      - name: Verify the non-root runtime
+        shell: bash
+        env:
+          SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
+        run: |
+          configured_user="$(
+            docker image inspect \
+              --format '{{.Config.User}}' \
+              "$SERVER_IMAGE"
+          )"
+
+          if [[ "$configured_user" != "1000:1000" ]]; then
+            echo "Unexpected configured runtime user: $configured_user" >&2
+            exit 1
+          fi
+
+          docker run --rm --entrypoint /bin/bash "$SERVER_IMAGE" -lc '
+            test "$(id -u)" = 1000
+            test "$(id -g)" = 1000
+            test -w /nwn/home
+            test -w /nwn/run
+            test -x /nwn/run-server.sh
+          '
+
+      - name: Publish the verified server image
+        shell: bash
+        env:
+          SERVER_IMAGE: ${{ steps.image.outputs.server_image }}
+        run: docker push "$SERVER_IMAGE"
 
       - name: Record the published image
         shell: bash

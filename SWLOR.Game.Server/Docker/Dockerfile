@@ -1,5 +1,9 @@
-﻿# NWNX 8193.37-17, pinned to the tested immutable upstream commit tag.
+# NWNX 8193.37-17, pinned to the tested immutable upstream commit tag.
 FROM nwnxee/unified:3d4c4e1
+
+ARG SWLOR_RUNTIME_UID=1000
+ARG SWLOR_RUNTIME_GID=1000
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         dotnet-apphost-pack-10.0 \
@@ -17,4 +21,17 @@ RUN apt-get update \
 
 RUN wget https://aka.ms/getvsdbgsh -O - 2>/dev/null | /bin/sh /dev/stdin -v vs2022 -l /remote_debugger/vsdbg
 
-RUN chmod 777 -R /remote_debugger/vsdbg
+RUN groupadd --gid "$SWLOR_RUNTIME_GID" swlor \
+    && useradd \
+        --uid "$SWLOR_RUNTIME_UID" \
+        --gid "$SWLOR_RUNTIME_GID" \
+        --home-dir /nwn/run \
+        --no-create-home \
+        --shell /usr/sbin/nologin \
+        swlor \
+    && chown -R "$SWLOR_RUNTIME_UID:$SWLOR_RUNTIME_GID" /nwn/home /nwn/run \
+    && chmod -R a=rX,u+w /remote_debugger/vsdbg
+
+ENV HOME=/nwn/run
+
+USER ${SWLOR_RUNTIME_UID}:${SWLOR_RUNTIME_GID}

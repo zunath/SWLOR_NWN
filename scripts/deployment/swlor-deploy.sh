@@ -58,7 +58,10 @@ SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
 SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
 NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
+SERVER_RUNTIME_UID="${SERVER_RUNTIME_UID:-1000}"
+SERVER_RUNTIME_GID="${SERVER_RUNTIME_GID:-1000}"
 SERVER_IMAGE_FILE="${SERVER_IMAGE_FILE:-$SOURCE_ROOT/scripts/deployment/server-image.txt}"
+INSTALLED_DEPLOY_SCRIPT="${SWLOR_DEPLOY_COMMAND_PATH:-/usr/local/sbin/swlor-deploy}"
 COMPOSE_IMAGE_OVERRIDE_FILE="$STATE_ROOT/server-image.override.yml"
 REQUIRED_TWEAK_VARIABLE="NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL"
 REQUIRED_TWEAK_VALUE="true"
@@ -143,6 +146,21 @@ if (( EUID != 0 )); then
     die "Run this command as root."
 fi
 
+checked_out_deploy_script="$SOURCE_ROOT/scripts/deployment/swlor-deploy.sh"
+[[ "$SOURCE_ROOT" == /* ]] ||
+    die "SOURCE_ROOT must be absolute before transferring to the checked-out deployer."
+[[ -f "$checked_out_deploy_script" && ! -L "$checked_out_deploy_script" ]] ||
+    die "Checked-out deployment script is missing or is a symbolic link: $checked_out_deploy_script"
+[[ "$(stat -c '%u' "$checked_out_deploy_script")" == 0 ]] ||
+    die "Checked-out deployment script must be owned by root: $checked_out_deploy_script"
+
+# /usr/local/sbin/swlor-deploy is an installed bootstrap copy. Always transfer
+# control to the checked-out script before reading deployment state. This also
+# makes retries use the implementation fetched by an earlier failed attempt.
+if [[ ! "${BASH_SOURCE[0]}" -ef "$checked_out_deploy_script" ]]; then
+    exec "$BASH" "$checked_out_deploy_script" "$@"
+fi
+
 if [[ ! -e "$LOG_FILE" ]]; then
     install -o root -g root -m 0640 /dev/null "$LOG_FILE"
 else
@@ -183,10 +201,26 @@ do
     require_command "$required_command"
 done
 
+[[ "$INSTALLED_DEPLOY_SCRIPT" == /* ]] ||
+    die "SWLOR_DEPLOY_COMMAND_PATH must be absolute: $INSTALLED_DEPLOY_SCRIPT"
+[[ ! -L "$INSTALLED_DEPLOY_SCRIPT" ]] ||
+    die "Installed deployment command must not be a symbolic link: $INSTALLED_DEPLOY_SCRIPT"
+installed_deploy_directory="${INSTALLED_DEPLOY_SCRIPT%/*}"
+[[ -d "$installed_deploy_directory" ]] ||
+    die "Installed deployment command directory does not exist: $installed_deploy_directory"
+if ! cmp --silent "$checked_out_deploy_script" "$INSTALLED_DEPLOY_SCRIPT"; then
+    installed_deploy_temporary="$INSTALLED_DEPLOY_SCRIPT.tmp.$$"
+    install -o root -g root -m 0750 \
+        "$checked_out_deploy_script" \
+        "$installed_deploy_temporary"
+    mv -f "$installed_deploy_temporary" "$INSTALLED_DEPLOY_SCRIPT"
+    log "Refreshed the installed deployment command from the checked-out script."
+fi
+
 for numeric_setting in \
     STOP_TIMEOUT_SECONDS HEALTH_TIMEOUT_SECONDS HEALTH_STABLE_SECONDS \
     HEALTH_LOG_TAIL_LINES MIN_FREE_GIB_BEFORE_BUILD \
-    MIN_FREE_GIB_BEFORE_CUTOVER
+    MIN_FREE_GIB_BEFORE_CUTOVER SERVER_RUNTIME_UID SERVER_RUNTIME_GID
 do
     [[ "${!numeric_setting}" =~ ^[0-9]+$ ]] ||
         die "$numeric_setting must be a non-negative integer."
@@ -195,6 +229,10 @@ done
     die "HEALTH_TIMEOUT_SECONDS must be greater than zero."
 (( HEALTH_LOG_TAIL_LINES > 0 )) ||
     die "HEALTH_LOG_TAIL_LINES must be greater than zero."
+(( SERVER_RUNTIME_UID > 0 )) ||
+    die "SERVER_RUNTIME_UID must be greater than zero."
+(( SERVER_RUNTIME_GID > 0 )) ||
+    die "SERVER_RUNTIME_GID must be greater than zero."
 [[ -n "$HEALTH_FATAL_LOG_PATTERN" ]] ||
     die "HEALTH_FATAL_LOG_PATTERN must not be empty."
 health_pattern_status=0
@@ -258,6 +296,88 @@ compose()
     fi
     SWLOR_DEPLOY_SERVER_IMAGE="${COMPOSE_SERVER_IMAGE_OVERRIDE:-$SERVER_IMAGE}" \
         "${compose_arguments[@]}" "$@"
+}
+
+prepare_server_runtime_permissions()
+{
+    local runtime_identity="$SERVER_RUNTIME_UID:$SERVER_RUNTIME_GID"
+    local runtime_directory
+    local readable_directory
+    local readable_file
+
+    # /nwn/home is the bind-mounted SERVER_ROOT. Keep the root itself owned by
+    # root so the game process cannot replace Compose or environment files, but
+    # let the runtime group traverse it.
+    chown root:"$SERVER_RUNTIME_GID" "$SERVER_ROOT"
+    chmod g+rx "$SERVER_ROOT"
+
+    # These are the persistent paths written by the upstream entrypoint, NWN,
+    # NWNX, or SWLOR. Existing hosts are migrated immediately before startup.
+    for runtime_directory in \
+        "$SERVER_ROOT/app_logs" \
+        "$SERVER_ROOT/database" \
+        "$SERVER_ROOT/development" \
+        "$SERVER_ROOT/logs" \
+        "$SERVER_ROOT/nwsync" \
+        "$SERVER_ROOT/override" \
+        "$SERVER_ROOT/portraits" \
+        "$SERVER_ROOT/saves" \
+        "$SERVER_ROOT/servervault"
+    do
+        [[ ! -L "$runtime_directory" ]] ||
+            die "Runtime directory must not be a symbolic link: $runtime_directory"
+        if [[ ! -e "$runtime_directory" ]]; then
+            install -d \
+                -o "$SERVER_RUNTIME_UID" \
+                -g "$SERVER_RUNTIME_GID" \
+                -m 0750 \
+                "$runtime_directory"
+        fi
+        [[ -d "$runtime_directory" ]] ||
+            die "Runtime path is not a directory: $runtime_directory"
+        find "$runtime_directory" -xdev \
+            \( -type f -o -type d \) \
+            \( ! -uid "$SERVER_RUNTIME_UID" -o ! -gid "$SERVER_RUNTIME_GID" \) \
+            -exec chown "$runtime_identity" -- {} +
+        find "$runtime_directory" -xdev -type d ! -perm -0700 \
+            -exec chmod u+rwx -- {} +
+        find "$runtime_directory" -xdev -type f ! -perm -0600 \
+            -exec chmod u+rw -- {} +
+    done
+
+    # Deployment artifacts remain root-owned and are only readable/executable
+    # by the runtime group. A compromised game process cannot rewrite them.
+    for readable_directory in \
+        "$SERVER_HAK_ROOT" \
+        "$SERVER_TLK_ROOT" \
+        "$SERVER_MODULE_ROOT" \
+        "$SERVER_DOTNET_ROOT"
+    do
+        [[ -d "$readable_directory" && ! -L "$readable_directory" ]] ||
+            die "Server artifact directory is missing or is a symlink: $readable_directory"
+        find "$readable_directory" -xdev \
+            \( -type f -o -type d \) \
+            \( ! -uid 0 -o ! -gid "$SERVER_RUNTIME_GID" \) \
+            -exec chown root:"$SERVER_RUNTIME_GID" -- {} +
+        chmod -R g+rX,g-w "$readable_directory"
+    done
+
+    # The entrypoint imports these optional host files into its writable shadow
+    # home. Grant read access without giving the runtime ownership of them.
+    for readable_file in \
+        "$SERVER_ROOT/cryptographic_secret" \
+        "$SERVER_ROOT/nwn.ini" \
+        "$SERVER_ROOT/nwnplayer.ini" \
+        "$SERVER_ROOT/settings.tml"
+    do
+        [[ -e "$readable_file" ]] || continue
+        [[ -f "$readable_file" && ! -L "$readable_file" ]] ||
+            die "Runtime configuration is not a regular file: $readable_file"
+        chown root:"$SERVER_RUNTIME_GID" "$readable_file"
+        chmod g+r,g-w "$readable_file"
+    done
+
+    log "Prepared server bind mounts for non-root runtime UID $SERVER_RUNTIME_UID and GID $SERVER_RUNTIME_GID."
 }
 
 available_bytes()
@@ -618,6 +738,8 @@ show_status()
     printf 'Active image:     %s\n' "${active_server_image:-not recorded}"
     printf 'Previous image:   %s\n' "${previous_server_image:-not recorded}"
     printf 'Running image:    %s\n' "${running_server_image:-not running}"
+    printf 'Runtime account:  uid=%s gid=%s\n' \
+        "$SERVER_RUNTIME_UID" "$SERVER_RUNTIME_GID"
     printf 'GitHub request:   %s\n' "${github_dispatch_run:-not recorded}"
     printf 'NWSync root:      %s\n' "$NWSYNC_ROOT"
     printf 'NWSync manifest:  %s\n' "$active_manifest"
@@ -1084,6 +1206,8 @@ rollback_cutover()
         server_env_restore_temporary=
     fi
 
+    prepare_server_runtime_permissions || return 1
+
     rollback_started_at="$(timestamp)"
     COMPOSE_SERVER_IMAGE_OVERRIDE="$rollback_server_image" \
         compose up -d || return 1
@@ -1539,6 +1663,8 @@ if (( dotnet_payload_changed == 1 )); then
     mv "$SERVER_DOTNET_ROOT" "$rollback_directory/dotnet"
     mv "$staged_dotnet" "$SERVER_DOTNET_ROOT"
 fi
+
+prepare_server_runtime_permissions
 
 server_started_at="$(timestamp)"
 compose up -d

@@ -216,6 +216,36 @@ pushd "$SERVER_HOME" > /dev/null
 # Remove anything a previously interrupted run left behind before starting fresh.
 docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes --remove-orphans
 
+# The production deployer performs the same ownership migration before
+# starting the non-root image. Engine-test homes may predate that image, so
+# prepare only runtime-writable state with a short-lived root helper; the
+# actual NWN/NWNX container still runs as UID/GID 1000.
+section "Preparing engine-test home for the non-root runtime"
+docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" run \
+    --rm \
+    --no-deps \
+    --user 0:0 \
+    --entrypoint /bin/bash \
+    swlor-server \
+    -lc '
+set -e
+for path in app_logs database development logs nwsync override portraits saves servervault; do
+  mkdir -p "/nwn/home/$path"
+  chown -R 1000:1000 "/nwn/home/$path"
+  chmod -R u+rwX "/nwn/home/$path"
+done
+for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
+  if test -f "/nwn/home/$path"; then
+    chown 0:1000 "/nwn/home/$path"
+    chmod g+r,g-w "/nwn/home/$path"
+  fi
+done
+'
+if [ $? -ne 0 ]; then
+    echo "Could not prepare the engine-test home for UID/GID 1000." >&2
+    exit 1
+fi
+
 # HARD WALL CLOCK. `up --abort-on-container-exit` blocks until a container exits, and a
 # server that never schedules its tests (missing harness, bad filter) idles happily forever -
 # it is responsive, so the NWNX thread watchdog never fires either. Without this, such a run

@@ -44,7 +44,9 @@ The deployment:
    pulled separately.
 7. Runs `docker compose down`, updates `NWN_NWSYNCHASH` when needed, and
    atomically moves the affected pre-staged directories into the server tree.
-   The NWSync raw directories remain untouched and populated.
+   It then prepares the bind-mounted runtime state for the configured non-root
+   UID/GID while keeping Compose, environment, HAK, TLK, module, and .NET files
+   root-owned. The NWSync raw directories remain untouched and populated.
 8. Requires `Server: Module loaded` within five minutes, rejects any crash
    marker or container restart, and then requires 120 seconds of stability
    after bringing the complete Compose project back up.
@@ -86,14 +88,31 @@ even when HAK, module, NWSync, and .NET outputs are unchanged. If the new image
 fails its health check, rollback starts the previously running image. The
 `SERVER_IMAGE` host setting remains only as a fallback for older checkouts.
 
+The image runs the NWN/NWNX process as UID/GID `1000:1000` by default. The
+matching `SERVER_RUNTIME_UID` and `SERVER_RUNTIME_GID` settings let a host use
+different numeric IDs when a correspondingly parameterized image is published.
+Immediately before every start, the deployer grants that identity ownership of
+only the writable runtime directories (`app_logs`, `database`, `development`,
+`logs`, `nwsync`, `override`, `portraits`, `saves`, and `servervault`). The
+server root and deployed artifacts remain owned by root and are exposed to the
+runtime group without write permission; Compose also overlays the HAK, TLK,
+module, and .NET artifact directories as read-only mounts. This performs the
+one-time ownership migration automatically on existing hosts.
+
 `.github/workflows/publish-nwn-server-image.yml` is the sole supported
 publisher. It accepts only a manual request whose original and triggering
-actor are both `zunath`, reads the same tracked image file, builds `linux/amd64` from
-`SWLOR.Game.Server/Docker/Dockerfile`, and refuses to overwrite an existing
-versioned tag. Configure these GitHub Actions repository secrets once:
+actor are both `zunath`, reads the same tracked image file, builds `linux/amd64`
+from `SWLOR.Game.Server/Docker/Dockerfile`, verifies that the built image really
+runs as UID/GID `1000:1000` with writable shadow-home paths, and refuses to
+overwrite an existing versioned tag. Its publishing job is bound to the
+`dockerhub-publish` GitHub Environment so credential access is protected
+outside branch-editable workflow code.
 
-- `DOCKERHUB_USERNAME`: the Docker Hub account that owns `zunath/nwn-dotnet`
-- `DOCKERHUB_TOKEN`: a Docker Hub access token with read/write permission
+Configure that environment with `zunath` as its required reviewer and store
+these as **environment secrets only** (do not create repository-level copies):
+
+- `DOCKERHUB_PUBLISH_USERNAME`: the Docker Hub account that owns `zunath/nwn-dotnet`
+- `DOCKERHUB_PUBLISH_TOKEN`: a Docker Hub access token with read/write permission
 
 The workflow must exist on the repository's default branch before GitHub shows
 its **Run workflow** button. Select the source branch containing the matching

@@ -282,6 +282,24 @@ public class AnimationFileSafetyTests
         File.ReadAllBytes(path).Should().Equal(3, 4); Directory.GetFiles(_folder).Should().Equal(path);
     }
 
+    [Test]
+    public void InstallationUsesOneSnapshotWhenTheCallerChangesTheOutputList()
+    {
+        var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
+        var added = Path.Combine(_folder, "added.mdl");
+        var changes = new List<AnimationFileChange> { new(first, null, [1]), new(second, null, [2]) };
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]>(), Changes = changes };
+        plan.Apply(index =>
+        {
+            if (index != 1) return;
+            changes[1] = new(second, null, [9]); changes.Add(new(added, null, [3]));
+        });
+        File.ReadAllBytes(first).Should().Equal(1); File.ReadAllBytes(second).Should().Equal(2);
+        File.Exists(added).Should().BeFalse();
+        Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
+    }
+
     [TestCase(false)] [TestCase(true)]
     public void InstallationRollsBackOnlyItsOwnOutputAfterALaterCommitConflict(bool competingEdit)
     {
@@ -293,7 +311,7 @@ public class AnimationFileSafetyTests
             File.WriteAllBytes(second, [6]);
         });
         var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test", Inputs = new Dictionary<string, byte[]>(), Changes = changes };
-        Action install = plan.Apply;
+        Action install = () => plan.Apply(changes.BeforeCommit);
         if (competingEdit) install.Should().Throw<AggregateException>();
         else install.Should().Throw<IOException>();
         File.ReadAllBytes(first).Should().Equal(competingEdit ? (byte)5 : (byte)1);
@@ -304,16 +322,10 @@ public class AnimationFileSafetyTests
 
     private sealed class CommitConflictChanges(AnimationFileChange[] changes, Action conflict) : IReadOnlyList<AnimationFileChange>
     {
-        private int _iterations;
         public int Count => changes.Length;
         public AnimationFileChange this[int index] => changes[index];
-        public IEnumerator<AnimationFileChange> GetEnumerator()
-        {
-            var committing = ++_iterations == 3;
-            yield return changes[0];
-            if (committing) conflict();
-            yield return changes[1];
-        }
+        public void BeforeCommit(int index) { if (index == 1) conflict(); }
+        public IEnumerator<AnimationFileChange> GetEnumerator() => ((IEnumerable<AnimationFileChange>)changes).GetEnumerator();
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
@@ -335,7 +347,7 @@ public class AnimationFileSafetyTests
         });
         var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
             Inputs = new Dictionary<string, byte[]> { [input] = [1] }, Changes = changes };
-        Action install = plan.Apply;
+        Action install = () => plan.Apply(changes.BeforeCommit);
         if (fail) install.Should().Throw<IOException>(); else install.Should().NotThrow();
         checkedLease.Should().BeTrue(); File.Exists(first).Should().Be(!fail); File.Exists(second).Should().Be(!fail);
         File.ReadAllBytes(input).Should().Equal(1);
@@ -358,7 +370,7 @@ public class AnimationFileSafetyTests
         });
         var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
             Inputs = new Dictionary<string, byte[]>(), AbsentInputs = [missing, first, second], Changes = changes };
-        Action install = plan.Apply;
+        Action install = () => plan.Apply(changes.BeforeCommit);
         if (fail) install.Should().Throw<IOException>(); else install.Should().NotThrow();
         checkedReservation.Should().BeTrue(); File.Exists(first).Should().Be(!fail); File.Exists(second).Should().Be(!fail);
         File.Exists(missing).Should().BeFalse("delete-on-close must remove every reservation on every exit");
@@ -395,5 +407,19 @@ public class AnimationFileSafetyTests
             buffers = new[] { new { uri = "does-not-exist.bin", byteLength = 128 * 1024 * 1024 + 1 } } }));
         Action load = () => GltfAnimationSource.Load(path);
         load.Should().Throw<InvalidDataException>().WithMessage("*oversized glTF buffers*");
+    }
+
+    [TestCase("../ProjectNeighbour/secret.bin")]
+    [TestCase("../project/secret.bin")]
+    public void GltfRejectsBufferPathsInSiblingDirectoriesBeforeReading(string uri)
+    {
+        if (OperatingSystem.IsWindows() && uri.StartsWith("../project/", StringComparison.Ordinal))
+            Assert.Ignore("The case-only sibling aliases the same directory on Windows.");
+        var folder = Path.Combine(_folder, "Project"); Directory.CreateDirectory(folder);
+        var path = Path.Combine(folder, "source.gltf");
+        File.WriteAllText(path, JsonSerializer.Serialize(new { asset = new { version = "2.0" },
+            buffers = new[] { new { uri, byteLength = 0 } } }));
+        Action load = () => GltfAnimationSource.Load(path);
+        load.Should().Throw<InvalidDataException>().WithMessage("*buffers must be local files alongside the source*");
     }
 }

@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Animation;
@@ -59,7 +60,7 @@ public class GltfCoordinateBasisTests
             Near(start[i].Translation, initial[i].Translation);
             AssertDirections(finish[i], initial[i] * turn);
         }
-        Near(finish[0].Translation, new(0, 0, 3));
+        Near(finish[0].Translation, new Vector3(0, 0, 1) + Vector3.Transform(new Vector3(0, 0, 2), pose[0].Orientation));
         Near(finish[1].Translation, finish[0].Translation +
             Vector3.TransformNormal(initial[1].Translation - initial[0].Translation, turn));
     }
@@ -114,13 +115,51 @@ public class GltfCoordinateBasisTests
         Source(0, startTime, duration: 600).Animations[0].Duration.Should().Be(600);
     }
 
-    private GltfAnimationSource Source(int axis, float startTime = 0, bool singleKey = false, float duration = 1)
+    [TestCase(0f)] [TestCase(1f)]
+    public void RootMotionUsesTheCalibratedTargetFrameAndScale(float calibrationTime)
+    {
+        var source = Source(0, forwardMotion: true);
+        var rest = new PosedNode(new(4, 5, 6), Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI / 2), 1);
+        var rig = new AnimationProject { AnimationRoot = "root", Joints = [new("root", -1, rest)] };
+        var calibration = new AnimationRetarget(rig, [rest], source, 0, calibrationTime, [new("root", "Root")]);
+        var baked = calibration.Bake(source, 0, 20, 2);
+        foreach (var time in new[] { 0f, .5f, 1f })
+        {
+            // At time 0, source forward (-Y) maps to target +X. At time 1 the source
+            // is rolled around X, so its displacement maps into the target's Z axis.
+            var displacement = calibrationTime == 0 ? new Vector3(4 * time, 0, 0) : new Vector3(0, 0, 4 * (time - 1));
+            Near(baked.Sample(time)[0].Position, rest.Position + displacement);
+        }
+    }
+
+    [TestCase("translation")] [TestCase("rotation")] [TestCase("scale")]
+    public void ReloadingChangedSourceBindTransformsRequiresRecalibration(string channel)
+    {
+        var source = Source(0);
+        var rest = new PosedNode(Vector3.Zero, Quaternion.Identity, 1);
+        var rig = new AnimationProject { AnimationRoot = "root", Joints = [new("root", -1, rest)] };
+        var calibration = new AnimationRetarget(rig, [rest], source, 0, 0, [new("root", "Root")]);
+        var path = Path.Combine(_folder, "motion.gltf");
+        calibration.Bake(GltfAnimationSource.Load(path), 0, 20, 1).Keys.Should().NotBeEmpty();
+        var json = JsonNode.Parse(File.ReadAllText(path))!;
+        json["nodes"]![1]![channel] = JsonSerializer.SerializeToNode(channel switch
+        {
+            "rotation" => new[] { 0f, 0f, 1f, 0f }, "scale" => new[] { 2f, 2f, 2f }, _ => new[] { 2f, 0f, 0f }
+        });
+        File.WriteAllText(path, json.ToJsonString());
+        var changed = GltfAnimationSource.Load(path);
+        Action bake = () => calibration.Bake(changed, 0, 20, 1);
+        bake.Should().Throw<InvalidDataException>().WithMessage("Source skeleton changed. Lock calibration again.");
+    }
+
+    private GltfAnimationSource Source(int axis, float startTime = 0, bool singleKey = false, float duration = 1, bool forwardMotion = false)
     {
         var rotation = Quaternion.CreateFromAxisAngle(axis switch
             { 0 => Vector3.UnitX, 1 => Vector3.UnitY, _ => Vector3.UnitZ }, MathF.PI / 2);
         using var payload = new MemoryStream();
         using (var writer = new BinaryWriter(payload, System.Text.Encoding.UTF8, leaveOpen: true))
-            foreach (var value in new[] { startTime, startTime + duration, 0, 0, 0, 1, rotation.X, rotation.Y, rotation.Z, rotation.W, 0, 1, 0, 0, 3, 0 })
+            foreach (var value in new[] { startTime, startTime + duration, 0, 0, 0, 1, rotation.X, rotation.Y, rotation.Z, rotation.W,
+                0, forwardMotion ? 0 : 1, forwardMotion ? 1 : 0, 0, forwardMotion ? 0 : 3, forwardMotion ? 3 : 0 })
                 writer.Write(value);
         File.WriteAllBytes(Path.Combine(_folder, "motion.bin"), payload.ToArray());
         var path = Path.Combine(_folder, "motion.gltf");

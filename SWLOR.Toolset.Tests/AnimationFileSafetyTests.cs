@@ -134,6 +134,31 @@ public class AnimationFileSafetyTests
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
+    [TestCase(false)] [TestCase(true)]
+    public void InstallationLeasesDependenciesThroughCommitAndReleasesThemAfterSuccessOrFailure(bool fail)
+    {
+        var input = Path.Combine(_folder, "inherited.mdl"); File.WriteAllBytes(input, [1]);
+        var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
+        var checkedLease = false;
+        var changes = new CommitConflictChanges([new(first, null, [3]), new(second, null, [4])], () =>
+        {
+            File.ReadAllBytes(first).Should().Equal(new byte[] { 3 }, "the first output has already been committed");
+            Action rewrite = () => File.WriteAllBytes(input, [2]);
+            rewrite.Should().Throw<IOException>("the dependency must remain stable between output commits");
+            Action replace = () => File.Move(input, input + ".moved");
+            replace.Should().Throw<IOException>("the input lease must also prevent replacement or deletion");
+            checkedLease = true;
+            if (fail) throw new IOException("Simulated later commit failure");
+        });
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]> { [input] = [1] }, Changes = changes };
+        Action install = plan.Apply;
+        if (fail) install.Should().Throw<IOException>(); else install.Should().NotThrow();
+        checkedLease.Should().BeTrue(); File.Exists(first).Should().Be(!fail); File.Exists(second).Should().Be(!fail);
+        File.ReadAllBytes(input).Should().Equal(1);
+        File.WriteAllBytes(input, [2]); File.ReadAllBytes(input).Should().Equal(new byte[] { 2 }, "all leases must be released on every exit");
+    }
+
     [Test] public void GltfRejectsAnOversizedDeclaredBufferBeforeOpeningItsFile()
     {
         var path = Path.Combine(_folder, "oversized.gltf");

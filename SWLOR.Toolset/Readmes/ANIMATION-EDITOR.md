@@ -214,6 +214,8 @@ should expose the animation.
 Input files are checked again after confirmation and after staging, before publishing any output.
 All unique input snapshots share a 128 MiB budget, including every selected target and its
 supermodel chain. Select fewer targets when creating a new registration if needed.
+Generated output payloads have a separate 128 MiB aggregate limit. Unchanged source dependencies
+remain leased through publication and rollback so their hierarchy and configuration stay stable.
 This includes previously absent higher-priority models that would change resource selection.
 Writes are staged and roll back on failure. Publication and rollback capture and verify each
 replaced file under an exclusive lease; a concurrent writer's replacement is preserved. Recovery

@@ -28,6 +28,7 @@ public sealed class AnimationInstallPlan
         foreach (var change in Changes) Verify(change);
         var staged = new Dictionary<string, string>();
         var applied = new List<AnimationFileChange>();
+        var inputLeases = new List<FileStream>();
         try
         {
             foreach (var change in Changes)
@@ -36,6 +37,18 @@ public sealed class AnimationInstallPlan
                 var temporary = change.Path + "." + Guid.NewGuid().ToString("N") + ".tmp";
                 staged.Add(change.Path, temporary);
                 File.WriteAllBytes(temporary, change.After);
+            }
+            // Outputs are captured and verified at their conditional commit. Keep every other
+            // dependency stable through the entire commit/rollback sequence, including config.
+            var outputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < Changes.Count; i++) outputs.Add(Changes[i].Path);
+            foreach (var input in Inputs)
+            {
+                if (outputs.Contains(input.Key)) continue;
+                var lease = new FileStream(input.Key, FileMode.Open, FileAccess.Read, FileShare.Read);
+                inputLeases.Add(lease);
+                if (!AnimationSourceFile.Matches(lease, input.Value))
+                    throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
             }
             VerifyInputs();
             foreach (var change in Changes)
@@ -66,6 +79,7 @@ public sealed class AnimationInstallPlan
         }
         finally
         {
+            foreach (var lease in inputLeases) lease.Dispose();
             foreach (var file in staged.Values) AnimationProjectFile.DeleteStaged(file);
         }
     }
@@ -93,6 +107,7 @@ public static class AnimationInstall
     public const int ClipsPerBank = 256;
     public const int MaximumModelChainDepth = 32;
     public const int MaximumInputBytes = 128 * 1024 * 1024;
+    public const int MaximumOutputBytes = 128 * 1024 * 1024;
     /// <summary>Resolves a mounted rig back to its winning loose repository source, never to its HAK archive.</summary>
     public static string? FindTargetSource(string repositoryRoot, string resref)
     {
@@ -116,9 +131,11 @@ public static class AnimationInstall
     public static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths)
         => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes);
 
-    internal static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths, int inputBudget)
+    internal static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths, int inputBudget,
+        int outputBudget = MaximumOutputBytes)
     {
         if (inputBudget < 1 || inputBudget > MaximumInputBytes) throw new ArgumentOutOfRangeException(nameof(inputBudget));
+        if (outputBudget < 1 || outputBudget > MaximumOutputBytes) throw new ArgumentOutOfRangeException(nameof(outputBudget));
         project.Validate();
         if (project.Name == "AuthoredAnimation" || !Regex.IsMatch(project.Name, @"\A[A-Z][A-Za-z0-9_]*\z"))
             throw new InvalidDataException("Use a C# constant name beginning with an uppercase letter, such as SaluteWithSaber.");
@@ -223,7 +240,18 @@ public static class AnimationInstall
             throw new InvalidDataException("An installed animation must be updated for all of its original targets. Use the target paths in the registry.");
         var changes = new List<AnimationFileChange>();
         var plannedModels = new Dictionary<string, MdlModel>(StringComparer.OrdinalIgnoreCase);
-        void Add(string path, byte[] bytes) => changes.Add(new(path, File.Exists(path) ? Read(path) : null, bytes));
+        var outputBytes = 0;
+        void EnsureOutputCapacity(int bytes)
+        {
+            if (bytes > outputBudget - outputBytes)
+                throw new InvalidDataException("Generated animation outputs exceed the aggregate installation budget. Select fewer targets for a new registration.");
+        }
+        void Add(string path, byte[] bytes)
+        {
+            EnsureOutputCapacity(bytes.Length);
+            outputBytes += bytes.Length;
+            changes.Add(new(path, File.Exists(path) ? Read(path) : null, bytes));
+        }
         foreach (var target in targets)
         {
             var model = models[target];
@@ -384,9 +412,10 @@ public static class AnimationInstall
                     overlay = terminator.Replace(overlay, match => block + match.Value);
                 }
             }
+            EnsureOutputCapacity(Encoding.ASCII.GetByteCount(overlay));
             var overlayBytes = Encoding.ASCII.GetBytes(overlay);
-            plannedModels[overlayPath] = new MdlReader().Parse(overlayBytes);
             Add(overlayPath, overlayBytes);
+            plannedModels[overlayPath] = new MdlReader().Parse(overlayBytes);
             if (existingOverlay == null)
             {
                 var patched = PatchSupermodel(Read(linkPath), models[linkPath].Name, overlayName);

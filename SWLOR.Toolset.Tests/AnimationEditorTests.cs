@@ -650,6 +650,20 @@ public class AnimationEditorTests
         File.ReadAllText(input).Should().Be("external change");
         Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
     }
+    [Test] public void InstallationBoundsTheCombinedOutputsEvenWhenEveryIndividualOutputFits()
+    {
+        var first = InstallFixture(); var original = File.ReadAllText(first);
+        var second = Write("SWLOR_Haks/sw_cr_creature/other.mdl", original.Replace("hero", "other"));
+        var normal = AnimationInstall.Prepare(_folder, Rig(), [first, second]);
+        var largest = normal.Changes.Max(change => change.After.Length);
+        Action prepare = () => AnimationInstall.Prepare(_folder, Rig(), [first, second], AnimationInstall.MaximumInputBytes, largest);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*outputs exceed the aggregate*");
+        Directory.GetFiles(Path.GetDirectoryName(first)!, "an_*.mdl").Should().BeEmpty();
+        File.ReadAllText(first).Should().Be(original);
+        var total = normal.Changes.Sum(change => change.After.Length);
+        AnimationInstall.Prepare(_folder, Rig(), [first, second], AnimationInstall.MaximumInputBytes, total)
+            .Changes.Sum(change => change.After.Length).Should().Be(total);
+    }
     private sealed class ChangingInputs(Action afterFirstRead) : Dictionary<string, byte[]>, IEnumerable<KeyValuePair<string, byte[]>>
     {
         private int _reads;

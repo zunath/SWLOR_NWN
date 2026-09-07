@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service;
 
@@ -10,6 +11,8 @@ public interface INamedAnimationRuntime
     string GetToken(uint creature);
     void SetToken(uint creature, string token);
     void Replace(uint creature, string source, string replacement);
+    ActionType CurrentAction(uint creature);
+    void ClearActions(uint creature);
     void Schedule(float seconds, Action callback);
 }
 
@@ -87,9 +90,15 @@ public sealed class NamedAnimationPlayback
         _runtime.SetToken(creature, "");
     }
 
-    public void Stop(uint creature)
+    public void Stop(uint creature, bool cancelQueuedAnimation = false)
     {
-        if (_runtime.IsValid(creature)) Complete(creature, _runtime.GetToken(creature));
+        if (!_runtime.IsValid(creature)) return;
+        // The queued begin action may not have established playback ownership yet. Honor
+        // cancellation before reading its token. Invalid is the native scripted-animation action;
+        // movement and combat may have interrupted the cast and must keep their own actions.
+        if (cancelQueuedAnimation && _runtime.CurrentAction(creature) == ActionType.Invalid)
+            _runtime.ClearActions(creature);
+        Complete(creature, _runtime.GetToken(creature));
     }
 
     /// <summary>Death must clear ownership immediately, without playing a recovery on resurrection.</summary>

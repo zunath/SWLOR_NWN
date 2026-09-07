@@ -26,11 +26,12 @@ public class AnimationFileSafetyTests
         return (project, target);
     }
 
-    [TestCase(false, false)] [TestCase(true, false)] [TestCase(true, true)]
-    public void InstallationKeepsOneSourceAndReusesItsRegisteredCategory(bool categorized, bool bom)
+    [TestCase(null, false)] [TestCase("social", false)] [TestCase("social/greetings", false)] [TestCase("social/greetings", true)]
+    public void InstallationKeepsOneSourceAndReusesItsRegisteredCategory(string? category, bool bom)
     {
         var (project, target) = InstallationFixture();
-        var relative = $"design/animations/projects/{(categorized ? "social/greetings" : "uncategorized")}/Wave.swlanim";
+        var categorized = category != null;
+        var relative = $"design/animations/{category ?? "uncategorized"}/Wave.swlanim";
         var source = Path.Combine(_folder, relative);
         var original = Encoding.UTF8.GetBytes(project.Serialize().Replace("\r\n", "\n").Replace("\n", "\r\n") + "\r\n");
         if (bom) original = new UTF8Encoding(true).GetPreamble().Concat(original).ToArray();
@@ -68,7 +69,7 @@ public class AnimationFileSafetyTests
         var (project, target) = InstallationFixture();
         AnimationInstall.Prepare(_folder, project, [target]).Apply();
         var legacy = Path.Combine(_folder, "design/animations/Wave.swlanim");
-        File.Move(Path.Combine(_folder, "design/animations/projects/uncategorized/Wave.swlanim"), legacy);
+        File.Move(Path.Combine(_folder, "design/animations/uncategorized/Wave.swlanim"), legacy);
         var registryPath = Path.Combine(_folder, "design/animations/registry.json");
         var entries = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(registryPath))!;
         File.WriteAllText(registryPath, JsonSerializer.Serialize(entries.Select(e => new { e.Name, e.AnimationName, e.Duration, e.Targets })));
@@ -79,8 +80,8 @@ public class AnimationFileSafetyTests
     }
 
     [TestCase("../Wave.swlanim")]
-    [TestCase("design/animations/projects/../../Wave.swlanim")]
-    [TestCase("design/animations/projects/social/Other.swlanim")]
+    [TestCase("design/animations/social/../../Wave.swlanim")]
+    [TestCase("design/animations/social/Other.swlanim")]
     [TestCase("SWLOR.Game.Server/Wave.swlanim")]
     public void RegistryCannotRedirectSourceWritesOutsideItsNamedProject(string path)
     {

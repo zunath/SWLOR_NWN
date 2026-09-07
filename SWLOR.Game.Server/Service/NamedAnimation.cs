@@ -52,15 +52,8 @@ public static class NamedAnimation
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
     /// <summary>Releases an authored pose; optionally cancels the current scripted animation action.</summary>
-    public static void Stop(uint creature, bool cancelQueuedAnimation = false)
-    {
-        if (string.IsNullOrEmpty(GetLocalString(creature, PlaybackTokenVariable))) return;
-        // GetCurrentAction returns Invalid for the internal scripted-animation action. Do not
-        // cancel movement or combat that may itself have interrupted a channel.
-        if (cancelQueuedAnimation && GetCurrentAction(creature) == ActionType.Invalid)
-            ClearAllActions(oObject: creature);
-        Playback.Stop(creature);
-    }
+    public static void Stop(uint creature, bool cancelQueuedAnimation = false) =>
+        Playback.Stop(creature, cancelQueuedAnimation);
 
     private static void ReleaseIdlePose(uint creature, Func<bool> stillOwnsExit)
     {
@@ -92,6 +85,8 @@ public static class NamedAnimation
             else SetLocalString(creature, PlaybackTokenVariable, token);
         }
         public void Replace(uint creature, string source, string replacement) => ReplaceObjectAnimation(creature, source, replacement);
+        public ActionType CurrentAction(uint creature) => GetCurrentAction(creature);
+        public void ClearActions(uint creature) => ClearAllActions(oObject: creature);
         public void Schedule(float seconds, Action callback) => AssignCommand(GetModule(), () => DelayCommand(seconds, callback));
     }
 }

@@ -10,6 +10,48 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class NamedAnimationPlaybackTests
 {
+    [Test] public void CancellationBeforeQueuedBeginPreventsTheClipFromStarting()
+    {
+        var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
+        runtime.Actions.Enqueue(() => playback.Begin(1, new AnimationClip("sw_cancelled", 2), 2));
+        runtime.Token.Should().BeEmpty("the native begin action has not executed yet");
+        playback.Stop(1, cancelQueuedAnimation: true);
+        runtime.RunActions();
+        runtime.ClearedActions.Should().Be(1);
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements.Should().BeEmpty("the cancelled begin must never map or play its clip");
+        runtime.Callbacks.Should().BeEmpty();
+    }
+
+    [TestCase(ActionType.MoveToPoint, true)]
+    [TestCase(ActionType.AttackObject, true)]
+    [TestCase(ActionType.Invalid, false)]
+    public void StoppingPreservesMovementCombatAndQueuesWithoutAnExplicitCancellation(ActionType action, bool cancel)
+    {
+        var runtime = new Runtime { Action = action }; var playback = new NamedAnimationPlayback(runtime);
+        var continued = false;
+        runtime.Actions.Enqueue(() => continued = true);
+        playback.Stop(1, cancel);
+        runtime.RunActions();
+        continued.Should().BeTrue();
+        runtime.ClearedActions.Should().Be(0);
+    }
+
+    [Test] public void CancellationOfAnActiveClipClearsTheQueueAndStillReleasesItsOwnedPose()
+    {
+        var runtime = new Runtime(); var releases = new List<uint>();
+        var playback = new NamedAnimationPlayback(runtime, (creature, _) => releases.Add(creature));
+        playback.Begin(1, new AnimationClip("sw_active", 2), 2);
+        runtime.Actions.Enqueue(() => throw new InvalidOperationException("Cancelled action executed."));
+        playback.Stop(1, cancelQueuedAnimation: true);
+        runtime.RunActions();
+        runtime.ClearedActions.Should().Be(1);
+        releases.Should().Equal(1u);
+        runtime.Callbacks[^1]();
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+    }
+
     [Test] public void PreviewStopDoesNotCancelANewerAbilityAndReleasesOnlyOnce()
     {
         var runtime = new Runtime(); var released = new List<uint>();
@@ -163,6 +205,9 @@ public class NamedAnimationPlaybackTests
     {
         public string Token = "";
         public bool Valid = true, FailSchedule;
+        public ActionType Action = ActionType.Invalid;
+        public int ClearedActions;
+        public Queue<Action> Actions { get; } = new();
         public Dictionary<string, string> Replacements { get; } = new();
         public List<Action> Callbacks { get; } = new();
         public List<float> Delays { get; } = new();
@@ -170,6 +215,9 @@ public class NamedAnimationPlaybackTests
         public string GetToken(uint creature) => Token;
         public void SetToken(uint creature, string token) => Token = token;
         public void Replace(uint creature, string source, string replacement) => Replacements[source] = replacement;
+        public ActionType CurrentAction(uint creature) => Action;
+        public void ClearActions(uint creature) { ClearedActions++; Actions.Clear(); }
+        public void RunActions() { while (Actions.TryDequeue(out var action)) action(); }
         public void Schedule(float seconds, Action callback)
         {
             if (FailSchedule) throw new InvalidOperationException("Schedule failed");

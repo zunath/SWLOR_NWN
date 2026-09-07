@@ -141,7 +141,9 @@ try
             poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), project.Duration,
                 PoseSource = overlay == null ? "Editable project" : "Installed MDL: " + overlay.Name, Snapshots = snapshots });
         }
-        File.WriteAllText(args[3], JsonSerializer.Serialize(poses));
+        var renderOutput = Path.GetFullPath(args[3]);
+        Directory.CreateDirectory(Path.GetDirectoryName(renderOutput)!);
+        File.WriteAllText(renderOutput, JsonSerializer.Serialize(poses));
         return 0;
     }
 

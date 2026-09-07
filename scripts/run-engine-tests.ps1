@@ -253,11 +253,18 @@ try {
         $permissionScript = @'
 set -e
 snapshot="$SWLOR_PERMISSION_SNAPSHOT"
+cd /nwn/home
+for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
+  if test -L "$path"; then
+    echo "Engine-test configuration must not be a symbolic link: /nwn/home/$path" >&2
+    exit 1
+  fi
+done
+
 rm -f /nwn/home/app_logs/engine_tests/engine-test-results.json
 : > "$snapshot"
 chmod 0600 "$snapshot"
 
-cd /nwn/home
 for path in app_logs database development logs nwsync override portraits saves servervault \
             cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
   if test -e "$path" || test -L "$path"; then
@@ -273,7 +280,7 @@ done
 for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
   if test -f "/nwn/home/$path"; then
     chown 0:1000 "/nwn/home/$path"
-    chmod g+r,g-w "/nwn/home/$path"
+    chmod 0640 "/nwn/home/$path"
   fi
 done
 '@

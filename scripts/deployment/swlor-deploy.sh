@@ -7,6 +7,7 @@ CONFIG_FILE="${SWLOR_DEPLOY_CONFIG:-/etc/swlor-deploy.conf}"
 LOG_FILE="${SWLOR_DEPLOY_LOG:-/var/log/swlor-deploy.log}"
 LOCK_FILE="${SWLOR_DEPLOY_LOCK:-/run/lock/swlor-deploy.lock}"
 LOCK_FD_INHERITED="${SWLOR_DEPLOY_LOCK_FD_INHERITED:-0}"
+LOG_INITIALIZED="${SWLOR_DEPLOY_LOG_INITIALIZED:-0}"
 
 if [[ -f "$CONFIG_FILE" && ! -L "$CONFIG_FILE" && -r "$CONFIG_FILE" ]]; then
     if [[ "$(stat -c '%u' "$CONFIG_FILE")" != 0 ]]; then
@@ -65,6 +66,7 @@ INSTALLED_DEPLOY_SCRIPT="${SWLOR_DEPLOY_COMMAND_PATH:-/usr/local/sbin/swlor-depl
 COMPOSE_IMAGE_OVERRIDE_FILE="$STATE_ROOT/server-image.override.yml"
 REQUIRED_TWEAK_VARIABLE="NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL"
 REQUIRED_TWEAK_VALUE="true"
+SERVER_RUNTIME_PERMISSION_VERSION="2"
 HEALTH_FATAL_LOG_PATTERN="${HEALTH_FATAL_LOG_PATTERN:-buffer overflow|Fatal error|has crashed|Segmentation fault}"
 HEALTH_LOG_TAIL_LINES="${HEALTH_LOG_TAIL_LINES:-2000}"
 
@@ -161,13 +163,18 @@ if [[ ! "${BASH_SOURCE[0]}" -ef "$checked_out_deploy_script" ]]; then
     exec "$BASH" "$checked_out_deploy_script" "$@"
 fi
 
-if [[ ! -e "$LOG_FILE" ]]; then
-    install -o root -g root -m 0640 /dev/null "$LOG_FILE"
-else
-    chown root:root "$LOG_FILE"
-    chmod 0640 "$LOG_FILE"
+if [[ "$LOG_INITIALIZED" == 0 ]]; then
+    if [[ ! -e "$LOG_FILE" ]]; then
+        install -o root -g root -m 0640 /dev/null "$LOG_FILE"
+    else
+        chown root:root "$LOG_FILE"
+        chmod 0640 "$LOG_FILE"
+    fi
+    exec > >(tee -a "$LOG_FILE") 2>&1
+    export SWLOR_DEPLOY_LOG_INITIALIZED=1
+elif [[ "$LOG_INITIALIZED" != 1 ]]; then
+    die "SWLOR_DEPLOY_LOG_INITIALIZED must be 0 or 1."
 fi
-exec > >(tee -a "$LOG_FILE") 2>&1
 
 if [[ "$LOCK_FD_INHERITED" == 1 ]]; then
     inherited_lock_target="$(realpath "/proc/$$/fd/9" 2>/dev/null || true)"
@@ -321,12 +328,17 @@ server_runtime_configuration_files=(
     "$SERVER_ROOT/nwnplayer.ini"
     "$SERVER_ROOT/settings.tml"
 )
+server_protected_configuration_files=(
+    "$SERVER_ENV_FILE"
+    "$COMPOSE_FILE"
+)
 
 validate_server_runtime_paths()
 {
     local runtime_directory
     local artifact_directory
     local configuration_file
+    local protected_configuration_file
 
     [[ -d "$SERVER_ROOT" && ! -L "$SERVER_ROOT" ]] ||
         die "Server root is missing or is a symbolic link: $SERVER_ROOT"
@@ -347,6 +359,11 @@ validate_server_runtime_paths()
         [[ -f "$configuration_file" && ! -L "$configuration_file" ]] ||
             die "Runtime configuration is not a regular file: $configuration_file"
     done
+
+    for protected_configuration_file in "${server_protected_configuration_files[@]}"; do
+        [[ -f "$protected_configuration_file" && ! -L "$protected_configuration_file" ]] ||
+            die "Protected server configuration is missing, is not a regular file, or is a symbolic link: $protected_configuration_file"
+    done
 }
 
 prepare_server_runtime_permissions()
@@ -355,6 +372,7 @@ prepare_server_runtime_permissions()
     local runtime_directory
     local readable_directory
     local readable_file
+    local protected_configuration_file
 
     validate_server_runtime_paths
 
@@ -399,7 +417,15 @@ prepare_server_runtime_permissions()
     for readable_file in "${server_runtime_configuration_files[@]}"; do
         [[ -e "$readable_file" ]] || continue
         chown root:"$SERVER_RUNTIME_GID" "$readable_file"
-        chmod g+r,g-w,o-w "$readable_file"
+        chmod 0640 "$readable_file"
+    done
+
+    # Compose and environment configuration is consumed by the root-owned
+    # deployment process, not by the game process. Keep it inaccessible for
+    # writes through the read-write /nwn/home bind mount.
+    for protected_configuration_file in "${server_protected_configuration_files[@]}"; do
+        chown root:root "$protected_configuration_file"
+        chmod 0640 "$protected_configuration_file"
     done
 
     log "Prepared server bind mounts for non-root runtime UID $SERVER_RUNTIME_UID and GID $SERVER_RUNTIME_GID."
@@ -641,8 +667,8 @@ write_server_env_setting()
           }
         ' \
         "$SERVER_ENV_FILE" > "$server_env_temporary"
-    chown --reference="$SERVER_ENV_FILE" "$server_env_temporary"
-    chmod --reference="$SERVER_ENV_FILE" "$server_env_temporary"
+    chown root:root "$server_env_temporary"
+    chmod 0640 "$server_env_temporary"
     mv -f "$server_env_temporary" "$SERVER_ENV_FILE"
     server_env_temporary=
 
@@ -726,6 +752,7 @@ show_status()
     local previous_commit
     local active_server_image
     local previous_server_image
+    local active_runtime_permission_version
     local running_server_container
     local running_server_image
     local active_manifest
@@ -736,6 +763,7 @@ show_status()
     previous_commit="$(state_value previous-commit)"
     active_server_image="$(state_value active-server-image)"
     previous_server_image="$(state_value previous-server-image)"
+    active_runtime_permission_version="$(state_value server-runtime-permission-version)"
     running_server_container="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null || true)"
     running_server_image=
     if [[ -n "$running_server_container" ]]; then
@@ -765,6 +793,9 @@ show_status()
     printf 'Running image:    %s\n' "${running_server_image:-not running}"
     printf 'Runtime account:  uid=%s gid=%s\n' \
         "$SERVER_RUNTIME_UID" "$SERVER_RUNTIME_GID"
+    printf 'Permission schema: %s (active: %s)\n' \
+        "$SERVER_RUNTIME_PERMISSION_VERSION" \
+        "${active_runtime_permission_version:-not recorded}"
     printf 'GitHub request:   %s\n' "${github_dispatch_run:-not recorded}"
     printf 'NWSync root:      %s\n' "$NWSYNC_ROOT"
     printf 'NWSync manifest:  %s\n' "$active_manifest"
@@ -943,6 +974,12 @@ fi
 target_commit="$(git -C "$SOURCE_ROOT" rev-parse HEAD)"
 active_commit="$(state_value active-commit)"
 active_server_image="$(state_value active-server-image)"
+active_runtime_permission_version="$(state_value server-runtime-permission-version)"
+runtime_permission_migration_required=0
+if [[ "$active_runtime_permission_version" != "$SERVER_RUNTIME_PERMISSION_VERSION" ]]; then
+    runtime_permission_migration_required=1
+    log "Server runtime permissions will migrate from version '${active_runtime_permission_version:-not recorded}' to '$SERVER_RUNTIME_PERMISSION_VERSION'."
+fi
 active_server_container="$(compose ps -q "$SERVER_SERVICE" 2>/dev/null || true)"
 if [[ -n "$active_server_container" ]]; then
     active_server_image="$(
@@ -957,6 +994,7 @@ fi
 if [[ "$MODE" == if-changed &&
        "$active_commit" == "$target_commit" &&
        "$server_env_migration_required" == 0 &&
+       "$runtime_permission_migration_required" == 0 &&
        "$server_image_changed" == 0 ]]
 then
     record_state active-server-image "$SERVER_IMAGE"
@@ -1103,6 +1141,8 @@ log "Build plan: HAK/TLK=$(
     (( dotnet_inputs_changed == 1 )) && printf build || printf reuse
 ), image=$(
     (( server_image_changed == 1 )) && printf pull || printf reuse
+), permissions=$(
+    (( runtime_permission_migration_required == 1 )) && printf migrate || printf reuse
 )."
 
 haks_root="$SOURCE_ROOT/$HAKS_SUBMODULE_PATH"
@@ -1569,6 +1609,7 @@ if (( haks_inputs_changed == 1 ||
       dotnet_payload_changed == 1 ||
       manifest_changed == 1 ||
       server_env_migration_required == 1 ||
+      runtime_permission_migration_required == 1 ||
       server_image_changed == 1 ))
 then
     runtime_payload_changed=1
@@ -1578,6 +1619,7 @@ if (( runtime_payload_changed == 0 )); then
     record_state active-commit "$target_commit"
     record_state active-manifest "$manifest_id"
     record_state active-server-image "$SERVER_IMAGE"
+    record_state server-runtime-permission-version "$SERVER_RUNTIME_PERMISSION_VERSION"
     record_state neverwinter-tool-key "$neverwinter_tool_key"
     record_state nwsync-build-script-sha "$nwsync_build_script_sha"
     record_state deployed-at "$(timestamp)"
@@ -1718,6 +1760,7 @@ fi
 record_state active-commit "$target_commit"
 record_state active-manifest "$manifest_id"
 record_state active-server-image "$SERVER_IMAGE"
+record_state server-runtime-permission-version "$SERVER_RUNTIME_PERMISSION_VERSION"
 record_state neverwinter-tool-key "$neverwinter_tool_key"
 record_state nwsync-build-script-sha "$nwsync_build_script_sha"
 record_state deployed-at "$(timestamp)"

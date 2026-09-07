@@ -78,7 +78,7 @@ public class GltfCoordinateBasisTests
     private static void Near(Vector3 actual, Vector3 expected) =>
         Vector3.Distance(actual, expected).Should().BeLessThan(1e-5f, $"expected {expected}, received {actual}");
 
-    [TestCase(0f)] [TestCase(5f)]
+    [TestCase(0f)] [TestCase(5f)] [TestCase(610f)]
     public void PositiveClipStartsSampleAndBakeOnAZeroBasedTimeline(float startTime)
     {
         var source = Source(0, startTime);
@@ -106,13 +106,21 @@ public class GltfCoordinateBasisTests
         Near(source.Sample(0, 1)[0].Translation, new(0, 0, 1));
     }
 
-    private GltfAnimationSource Source(int axis, float startTime = 0, bool singleKey = false)
+    [TestCase(0f)] [TestCase(610f)]
+    public void SourceRejectsNormalizedDurationsOverTenMinutes(float startTime)
+    {
+        Action load = () => Source(0, startTime, duration: 601);
+        load.Should().Throw<InvalidDataException>().WithMessage("*duration exceeds 600*");
+        Source(0, startTime, duration: 600).Animations[0].Duration.Should().Be(600);
+    }
+
+    private GltfAnimationSource Source(int axis, float startTime = 0, bool singleKey = false, float duration = 1)
     {
         var rotation = Quaternion.CreateFromAxisAngle(axis switch
             { 0 => Vector3.UnitX, 1 => Vector3.UnitY, _ => Vector3.UnitZ }, MathF.PI / 2);
         using var payload = new MemoryStream();
         using (var writer = new BinaryWriter(payload, System.Text.Encoding.UTF8, leaveOpen: true))
-            foreach (var value in new[] { startTime, startTime + 1, 0, 0, 0, 1, rotation.X, rotation.Y, rotation.Z, rotation.W, 0, 1, 0, 0, 3, 0 })
+            foreach (var value in new[] { startTime, startTime + duration, 0, 0, 0, 1, rotation.X, rotation.Y, rotation.Z, rotation.W, 0, 1, 0, 0, 3, 0 })
                 writer.Write(value);
         File.WriteAllBytes(Path.Combine(_folder, "motion.bin"), payload.ToArray());
         var path = Path.Combine(_folder, "motion.gltf");

@@ -19,6 +19,8 @@ public sealed class AnimationInstallPlan
     public required IReadOnlyList<AnimationFileChange> Changes { get; init; }
     public required IReadOnlyDictionary<string, byte[]> Inputs { get; init; }
     public IReadOnlyCollection<string> AbsentInputs { get; init; } = [];
+    /// <summary>Backup files whose cleanup failed during the most recent Apply call.</summary>
+    public IReadOnlyList<string> RetainedBackups { get; private set; } = [];
     public string CodeExample => $"NamedAnimation.Queue(creature, AuthoredAnimation.{ConstantName});";
 
     internal HashSet<string> GetAbsentReservationPaths() => GetAbsentReservationPaths(Changes, AbsentInputs);
@@ -36,8 +38,9 @@ public sealed class AnimationInstallPlan
 
     public void Apply() => Apply(null);
 
-    internal void Apply(Action<int>? beforeCommit)
+    internal void Apply(Action<int>? beforeCommit, Action<string>? deleteBackup = null)
     {
+        RetainedBackups = [];
         // Own the transaction's bytes as well as its ordering through commit and rollback.
         var changes = Changes.Select(change => new AnimationFileChange(change.Path, change.Before?.ToArray(), change.After.ToArray())).ToArray();
         var inputs = Inputs.ToDictionary(input => input.Key, input => input.Value.ToArray(), AnimationInstall.PathComparer);
@@ -51,6 +54,7 @@ public sealed class AnimationInstallPlan
         var inputLeases = new List<FileStream>();
         var outputLeases = new List<FileStream>();
         var reservedAbsentInputs = new HashSet<string>(AnimationInstall.PathComparer);
+        var retainedBackups = new List<string>();
         try
         {
             foreach (var change in changes)
@@ -92,7 +96,8 @@ public sealed class AnimationInstallPlan
             foreach (var change in changes)
             {
                 beforeCommit?.Invoke(applied.Count);
-                AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.Before, () => { });
+                var backup = AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.Before, () => { }, deleteBackup);
+                if (backup != null) retainedBackups.Add(backup);
                 applied.Add(change);
                 // Recheck publication under a lease, then keep earlier outputs stable while
                 // the rest of the transaction commits. A writer winning the acquisition gap
@@ -117,20 +122,25 @@ public sealed class AnimationInstallPlan
                 {
                     // Rollback uses the same capture/lease/create-only publication as installation.
                     // Never delete or overwrite another writer's replacement at the original path.
+                    string? backup;
                     if (change.Before == null)
-                        AnimationProjectFile.CommitStaged(change.Path, null, change.After, () => { });
+                        backup = AnimationProjectFile.CommitStaged(change.Path, null, change.After, () => { }, deleteBackup);
                     else
                     {
                         File.WriteAllBytes(staged[change.Path], change.Before);
-                        AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.After, () => { });
+                        backup = AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.After, () => { }, deleteBackup);
                     }
+                    if (backup != null) retainedBackups.Add(backup);
                 }
                 catch (Exception rollback) { errors.Add(rollback); }
-            if (errors.Count > 1) throw new AggregateException("Installation failed; some files need recovery from the preview's original contents.", errors);
+            if (retainedBackups.Count > 0)
+                errors.Add(new IOException("Backup cleanup failed; retained files: " + string.Join(", ", retainedBackups)));
+            if (errors.Count > 1) throw new AggregateException("Installation failed; review the recovery and backup cleanup details.", errors);
             throw;
         }
         finally
         {
+            RetainedBackups = retainedBackups.AsReadOnly();
             foreach (var lease in outputLeases) lease.Dispose();
             foreach (var lease in inputLeases) lease.Dispose();
             foreach (var file in staged.Values) AnimationProjectFile.DeleteStaged(file);

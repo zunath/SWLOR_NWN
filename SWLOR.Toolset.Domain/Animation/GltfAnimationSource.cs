@@ -21,6 +21,7 @@ public sealed class GltfAnimationSource
 
     public static GltfAnimationSource Load(string path)
     {
+        path = Path.GetFullPath(path);
         var bytes = ReadBounded(path);
         ReadOnlyMemory<byte>? bin = null;
         ReadOnlyMemory<byte> json = bytes;
@@ -81,7 +82,7 @@ public sealed class GltfAnimationSource
                 }
                 else
                 {
-                    var folder = Path.GetFullPath(Path.GetDirectoryName(path)!);
+                    var folder = Path.GetDirectoryName(path)!;
                     var decoded = Uri.UnescapeDataString(value);
                     var file = Path.GetFullPath(Path.Combine(folder, decoded));
                     var prefix = Path.EndsInDirectorySeparator(folder) ? folder : folder + Path.DirectorySeparatorChar;

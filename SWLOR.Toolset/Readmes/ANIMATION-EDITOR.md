@@ -111,11 +111,11 @@ should expose the animation.
 - Each target's supermodel reference points to its overlay. Compiled model payloads remain
   unchanged outside the fixed supermodel-name field; ASCII geometry and unrelated text are preserved.
 - `design/animations/registry.json` records the clip, natural duration, target paths, and source `ProjectPath`.
-- `design/animations/projects/<category>/<Name>.swlanim` stores the single editable source.
+- `design/animations/<category>/<Name>.swlanim` stores the single editable source.
   Save a new project there before installation to choose its category. Projects saved elsewhere
-  are copied into `projects/uncategorized/`; reinstalling a clip always reuses its registered path.
+  are copied into `uncategorized/`; reinstalling a clip always reuses its registered path.
   To reorganize an installed project, move the file and update `ProjectPath` together. Use
-  `projects/shared/` for motions used across skills. Legacy registries retain existing flat sources.
+  `shared/` for motions used across skills. Legacy registries retain existing flat sources.
   Keep `.swlanim` files long term for future edits; the game uses the exported HAK MDLs.
   Generated previews, GIFs, and scratch projects belong in the ignored `artifacts/animations/` folder.
 - `SWLOR.Game.Server/Service/AnimationService/AuthoredAnimation.cs` supplies typed `AnimationClip` references.

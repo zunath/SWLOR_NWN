@@ -38,10 +38,12 @@ All seven are installed into the `a_ba` and `a_fa` humanoid supermodel chains in
 Their installed editable copies are in `design/animations/`. The images establish the main
 pose; wind-up, recovery, and durations are authored interpretations for review. The shield
 barriers, hit effects, blood, targets, and gameplay outcomes pictured in the references are
-not part of the skeletal clips. Covering Strike uses a small returning body offset and a hop;
-actual character travel requires separate gameplay support.
+not part of the skeletal clips. Covering Strike uses a planted guarded thrust, Riot Blade a
+compact descending cut, Rending Strike a rising diagonal, and Savage Cleave a broad waist-height
+sweep with a low recovery. These motions return to their starting position; actual character
+travel requires separate gameplay support.
 
-After rebuilding C# and deploying `sw_cr_creature.hak` to the server and client, use the existing
+After rebuilding C# and deploying the updated creature and clothing HAKs to the server and client, use the existing
 Shield Bash, Shield Wall, Covering Strike, Invincible, Riot Blade, Rending Strike, and Savage Cleave
 perks. Every rank references its generated `AuthoredAnimation` clip. Shield Bash and Riot Blade
 replace native melee swings while readied and restore them after consumption/cancellation;
@@ -49,7 +51,7 @@ they do not enqueue another animation at impact. Other clips play once at activa
 for a longer cast/channel. Damage, costs, cooldowns, and movement rules are unchanged.
 
 `/animtest ShieldBash` previews a clip on your character; `/animtest` lists all names. This debug
-command is available to administrators and everyone on a test server. Hacking Blade and Carve
+command is available to DM/Admin accounts and everyone on a test server. Hacking Blade and Carve
 are outdated spreadsheet entries with no current matching abilities, so they are excluded
 from the recipe, installed models, registry, and preview list. Recipe entries must identify an
 existing `IAbilityListDefinition`; generation rejects stale entries instead of inventing perks.

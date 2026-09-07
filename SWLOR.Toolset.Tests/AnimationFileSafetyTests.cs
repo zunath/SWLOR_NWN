@@ -402,6 +402,37 @@ public class AnimationFileSafetyTests
         File.ReadAllBytes(path).Should().Equal(3, 4); Directory.GetFiles(_folder).Should().Equal(path);
     }
 
+    [TestCase(true, false, 2)] [TestCase(true, true, 2)] [TestCase(false, true, 1)]
+    public void InstallationReportsRetainedBackupsFromCommitAndRollback(bool existing, bool fail, int expectedBackups)
+    {
+        var first = Path.Combine(_folder, "first.mdl"); var second = Path.Combine(_folder, "second.mdl");
+        if (existing) { File.WriteAllBytes(first, [1]); File.WriteAllBytes(second, [2]); }
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]>(), Changes = [new(first, existing ? [1] : null, [3]), new(second, existing ? [2] : null, [4])] };
+        Action apply = () => plan.Apply(index =>
+        {
+            if (fail && index == 1) throw new IOException("Simulated later commit failure");
+        }, _ => throw new UnauthorizedAccessException("Simulated backup cleanup failure"));
+        if (fail)
+        {
+            var failure = apply.Should().Throw<AggregateException>().Which;
+            failure.Message.Should().Contain("Simulated later commit failure");
+            foreach (var path in plan.RetainedBackups) failure.Message.Should().Contain(path);
+        }
+        else apply.Should().NotThrow("retained backups do not undo a successful installation");
+        plan.RetainedBackups.Should().HaveCount(expectedBackups);
+        Directory.GetFiles(_folder, "*.bak").Should().BeEquivalentTo(plan.RetainedBackups);
+        var backupValues = plan.RetainedBackups.Select(path => File.ReadAllBytes(path).Single());
+        backupValues.Should().BeEquivalentTo(existing ? (fail ? new byte[] { 1, 3 } : [1, 2]) : [3]);
+        File.Exists(first).Should().Be(existing || !fail); File.Exists(second).Should().Be(existing || !fail);
+        if (existing || !fail)
+        {
+            File.ReadAllBytes(first).Should().Equal(fail ? (byte)1 : (byte)3);
+            File.ReadAllBytes(second).Should().Equal(fail ? (byte)2 : (byte)4);
+        }
+        Directory.GetFiles(_folder, "*.tmp").Should().BeEmpty();
+    }
+
     [Test]
     public void InstallationUsesOneSnapshotWhenTheCallerChangesTheOutputList()
     {

@@ -16,7 +16,8 @@ public static class AnimationProjectFile
     }
 
     // A null staged path removes only the captured, verified version (used by install rollback).
-    internal static string? CommitStaged(string path, string? temporary, byte[]? expected, Action ensureCanCommit)
+    internal static string? CommitStaged(string path, string? temporary, byte[]? expected, Action ensureCanCommit,
+        Action<string>? deleteBackup = null)
     {
         if (temporary == null && expected == null) throw new ArgumentException("Removing a file requires its expected contents.");
         var id = Guid.NewGuid().ToString("N");
@@ -61,7 +62,7 @@ public static class AnimationProjectFile
         }
         if (captured)
         {
-            try { File.Delete(backup); }
+            try { (deleteBackup ?? File.Delete)(backup); }
             catch (IOException) { return backup; }
             catch (UnauthorizedAccessException) { return backup; }
         }

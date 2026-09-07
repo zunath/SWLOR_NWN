@@ -237,9 +237,11 @@ public sealed class GltfAnimationSource
             world[i] = Matrix4x4.CreateScale(scales[i]) * Matrix4x4.CreateFromQuaternion(rotations[i]) * Matrix4x4.CreateTranslation(positions[i]);
             if (Joints[i].Parent >= 0) world[i] *= world[Joints[i].Parent];
         }
-        // glTF is Y up; Aurora is Z up. Convert after hierarchy evaluation.
+        // glTF is Y up; Aurora is Z up. Express both joint axes and translations in
+        // Aurora coordinates after hierarchy evaluation (System.Numerics uses row vectors).
         var basis = Matrix4x4.CreateRotationX(MathF.PI / 2);
-        return world.Select(matrix => matrix * basis).ToArray();
+        var inverseBasis = Matrix4x4.Transpose(basis);
+        return world.Select(matrix => inverseBasis * matrix * basis).ToArray();
     }
 
     private static Vector4 SampleTrack(SourceTrack track, float time)

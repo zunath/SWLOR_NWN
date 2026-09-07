@@ -549,6 +549,9 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var installedProject = plan.Changes.Single(c => c.Path.EndsWith(".swlanim", StringComparison.OrdinalIgnoreCase));
         _path = installedProject.Path; _diskBytes = installedProject.After; _saved = Project.Serialize(); Changed();
         Status = "Installed. Rebuild HAKs and C# before using the new animation. " + plan.CodeExample;
+        if (plan.RetainedBackups.Count > 0)
+            Status += " Backup cleanup failed; retained files: " + string.Join(", ",
+                plan.RetainedBackups.Select(path => Path.GetRelativePath(_repositoryRoot, path)));
         _log.AppendLine(Status);
         if (ResourceIndex != null)
         {

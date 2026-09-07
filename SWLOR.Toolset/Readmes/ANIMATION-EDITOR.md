@@ -142,7 +142,8 @@ This includes previously absent higher-priority models that would change resourc
 Writes are staged and roll back on failure. Publication and rollback capture and verify each
 replaced file under an exclusive lease; a concurrent writer's replacement is preserved. Recovery
 conflicts report the retained `.bak` path, and interrupted installs may also leave backups beside
-the affected outputs.
+the affected outputs. If an otherwise successful installation cannot remove a backup, its status
+and Output Log list the retained files. Review those files before removing them manually.
 The editor reserves the workspace during application of the installation transaction.
 Target proportions and inherited animation scale are accounted for in the generated tracks.
 The installed project becomes the document's saved project, and mounted HAK resources are refreshed.

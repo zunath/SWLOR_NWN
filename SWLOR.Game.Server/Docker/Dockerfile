@@ -1,4 +1,5 @@
-﻿FROM nwnxee/unified:build8193.37.15
+﻿# NWNX 8193.37-17, pinned to the tested immutable upstream commit tag.
+FROM nwnxee/unified:3d4c4e1
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         dotnet-apphost-pack-10.0 \

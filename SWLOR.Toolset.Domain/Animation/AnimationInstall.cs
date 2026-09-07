@@ -314,25 +314,23 @@ public static class AnimationInstall
             var targetName = Path.GetFileNameWithoutExtension(target);
             AnimationProject.ValidateToken(targetName, 16);
             var overlayName = "an_" + targetName;
-            if (overlayName.Length > 16)
+            if (registeredTarget)
             {
-                if (registeredTarget)
+                if (chains[target].Count < 2 || !IsOwnedBank(chains[target][1]))
+                    throw new InvalidDataException("Registered target is missing its authored animation bank.");
+                overlayName = model.SuperModel;
+            }
+            else if (overlayName.Length > 16 || Resolve(overlayName) != null ||
+                plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)))
+            {
+                // Leave room for a readable collision suffix even for a full-length target resref.
+                var prefix = "an_" + targetName[..Math.Min(targetName.Length, 8)] + "_";
+                var number = 1;
+                do
                 {
-                    if (chains[target].Count < 2 || !IsOwnedBank(chains[target][1]))
-                        throw new InvalidDataException("Registered target is missing its authored animation bank.");
-                    overlayName = model.SuperModel;
-                }
-                else
-                {
-                    // Leave room for a readable collision suffix even for a full-length target resref.
-                    var prefix = "an_" + targetName[..8] + "_";
-                    var number = 1;
-                    do
-                    {
-                        if (number > 9999) throw new InvalidDataException("No free animation bank names remain for this target.");
-                        overlayName = prefix + (number++).ToString("D4", System.Globalization.CultureInfo.InvariantCulture);
-                    } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
-                }
+                    if (number > 9999) throw new InvalidDataException("No free animation bank names remain for this target.");
+                    overlayName = prefix + (number++).ToString("D4", System.Globalization.CultureInfo.InvariantCulture);
+                } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
             }
             AnimationProject.ValidateToken(overlayName, 16);
             var overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
@@ -388,7 +386,7 @@ public static class AnimationInstall
                     key.Pose[jointIndex] = value with
                     {
                         Position = (targetJoint.Rest.Position + value.Position - sourceJoint.Rest.Position) / model.Scale,
-                        Orientation = Quaternion.Normalize(value.Orientation * Quaternion.Inverse(sourceJoint.Rest.Orientation) * targetJoint.Rest.Orientation),
+                        Orientation = Quaternion.Normalize(targetJoint.Rest.Orientation * Quaternion.Inverse(sourceJoint.Rest.Orientation) * value.Orientation),
                         Scale = targetJoint.Rest.Scale * value.Scale / sourceJoint.Rest.Scale
                     };
                 }

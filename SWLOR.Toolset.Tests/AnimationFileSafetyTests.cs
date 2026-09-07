@@ -3,7 +3,9 @@ using System.Text.Json;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
+using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests;
 
@@ -24,6 +26,59 @@ public class AnimationFileSafetyTests
         Directory.CreateDirectory(Path.Combine(_folder, "Build"));
         File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"), "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"}]}");
         return (project, target);
+    }
+
+    [TestCase(false, false)] [TestCase(true, false)] [TestCase(false, true)]
+    public void OccupiedShortBankNamesAllocateAndRetainAFreeName(bool otherLayer, bool inherited)
+    {
+        var (project, target) = InstallationFixture();
+        var collisionFolder = otherLayer ? Path.Combine(_folder, "SWLOR_Haks", "other") : Path.GetDirectoryName(target)!;
+        Directory.CreateDirectory(collisionFolder);
+        var collision = Path.Combine(collisionFolder, "an_hero.mdl");
+        File.WriteAllText(collision, File.ReadAllText(target).Replace("hero", "an_hero"));
+        var original = File.ReadAllBytes(collision);
+        if (otherLayer) File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"),
+            "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"},{\"Path\":\"../SWLOR_Haks/other\"}]}");
+        if (inherited) File.WriteAllText(target, File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero an_hero"));
+
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var bank = new MdlReader().Parse(File.ReadAllBytes(target)).SuperModel;
+        bank.Should().NotBe("an_hero"); bank.Length.Should().BeLessThanOrEqualTo(16);
+        var overlayPath = Path.Combine(Path.GetDirectoryName(target)!, bank + ".mdl");
+        new MdlReader().Parse(File.ReadAllBytes(overlayPath)).SuperModel.Should().Be(inherited ? "an_hero" : "");
+        File.ReadAllBytes(collision).Should().Equal(original);
+        if (!inherited) File.Delete(collision); // Freeing the default must not change an installed bank's identity.
+        project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        new MdlReader().Parse(File.ReadAllBytes(target)).SuperModel.Should().Be(bank);
+        new MdlReader().Parse(File.ReadAllBytes(overlayPath)).Animations.Single(a => a.Name == "sw_wave").Length.Should().Be(2);
+        if (inherited) File.ReadAllBytes(collision).Should().Equal(original);
+    }
+
+    [Test]
+    public void InstallationKeepsBendsInTheTargetsLocalJointFrame()
+    {
+        var (project, target) = InstallationFixture();
+        var targetRig = project.Clone();
+        targetRig.Joints[1] = targetRig.Joints[1] with { Rest = targetRig.Joints[1].Rest with
+            { Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 2) } };
+        File.WriteAllText(target, "newmodel hero\nsetsupermodel hero NULL\n" + AnimationMdl.ExportGeometry(targetRig) + "donemodel hero\n");
+        project.Joints[1] = project.Joints[1] with { Rest = project.Joints[1].Rest with
+            { Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI / 2) } };
+        var start = project.Sample(0); var finish = (PosedNode[])start.Clone();
+        finish[1] = finish[1] with { Orientation = start[1].Orientation * Quaternion.CreateFromAxisAngle(Vector3.UnitY, MathF.PI / 2) };
+        project.SetKey(0, start); project.SetKey(1, finish);
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var bank = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")));
+        var motion = bank.Animations.Single(a => a.Name == "sw_wave");
+        foreach (var time in new[] { 0f, .5f, 1f })
+        {
+            var rotation = MdlAnimationPose.Sample(motion, time)["rootdummy"].Orientation;
+            // A local Y bend under a target rest rolled 90 degrees around X sweeps X toward Y.
+            var expected = new Vector3(MathF.Cos(time * MathF.PI / 2), MathF.Sin(time * MathF.PI / 2), 0);
+            Vector3.Distance(Vector3.Transform(Vector3.UnitX, rotation), expected).Should().BeLessThan(1e-5f);
+            Vector3.Distance(Vector3.Transform(Vector3.UnitY, rotation), Vector3.UnitZ).Should().BeLessThan(1e-5f);
+        }
     }
 
     [TestCase(null, false)] [TestCase("social", false)] [TestCase("social/greetings", false)] [TestCase("social/greetings", true)]

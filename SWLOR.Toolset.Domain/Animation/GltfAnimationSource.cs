@@ -194,7 +194,7 @@ public sealed class GltfAnimationSource
                 if (!decodedTimes.TryGetValue(input, out var times))
                     decodedTimes.Add(input, times = Accessor(input, "SCALAR").Select(v => v.X).ToArray());
                 var values = Accessor(sampler.GetProperty("output").GetInt32(), channelPath == "rotation" ? "VEC4" : "VEC3");
-                if (times[0] < 0 || times[^1] > 600 || times.Zip(times.Skip(1)).Any(p => p.First >= p.Second) ||
+                if (times[0] < 0 || times.Zip(times.Skip(1)).Any(p => p.First >= p.Second) ||
                     values.Length != times.Length * (interpolation == "CUBICSPLINE" ? 3 : 1))
                     throw new InvalidDataException("Invalid animation key count or times.");
                 var keyedValues = interpolation == "CUBICSPLINE" ? values.Where((_, i) => i % 3 == 1) : values;
@@ -206,8 +206,10 @@ public sealed class GltfAnimationSource
             if (tracks.Count > 0)
             {
                 var startTime = tracks.Min(t => t.Times[0]);
+                var duration = tracks.Max(t => t.Times[^1]) - startTime;
+                if (duration > 600) throw new InvalidDataException("Source animation duration exceeds 600 seconds.");
                 animations.Add(new(clip.TryGetProperty("name", out var name) ? name.GetString() ?? "Animation" : $"Animation {animations.Count + 1}",
-                    tracks.Max(t => t.Times[^1]) - startTime, tracks, startTime));
+                    duration, tracks, startTime));
             }
         }
         if (animations.Count == 0) throw new InvalidDataException("No skeletal animations in this source.");

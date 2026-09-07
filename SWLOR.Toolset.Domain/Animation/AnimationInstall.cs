@@ -164,10 +164,11 @@ public static class AnimationInstall
         => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes, sourceProjectPath: sourceProjectPath);
 
     internal static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths, int inputBudget,
-        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null)
+        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null, int bankBudget = AnimationProject.MaximumFileBytes)
     {
         if (inputBudget < 1 || inputBudget > MaximumInputBytes) throw new ArgumentOutOfRangeException(nameof(inputBudget));
         if (outputBudget < 1 || outputBudget > MaximumOutputBytes) throw new ArgumentOutOfRangeException(nameof(outputBudget));
+        if (bankBudget < 1 || bankBudget > AnimationProject.MaximumFileBytes) throw new ArgumentOutOfRangeException(nameof(bankBudget));
         project.Validate();
         if (project.Name == "AuthoredAnimation" || !Regex.IsMatch(project.Name, @"\A[A-Z][A-Za-z0-9_]*\z"))
             throw new InvalidDataException("Use a C# constant name beginning with an uppercase letter, such as SaluteWithSaber.");
@@ -296,6 +297,8 @@ public static class AnimationInstall
         }
         void Add(string path, byte[] bytes)
         {
+            if (bytes.Length > AnimationProject.MaximumFileBytes)
+                throw new InvalidDataException("Generated animation file exceeds the 64 MiB input limit. Simplify the project before installing it.");
             EnsureOutputCapacity(bytes.Length);
             outputBytes += bytes.Length;
             changes.Add(new(path, File.Exists(path) ? Read(path) : null, bytes));
@@ -350,19 +353,7 @@ public static class AnimationInstall
                 if (registration != null && selected == null) throw new InvalidDataException("Registered animation is missing from its target's banks.");
                 if (selected == null)
                 {
-                    if (chains[target].Count >= MaximumModelChainDepth) throw new InvalidDataException("Animation banks would exceed the supported supermodel chain depth. Split the library by target rig.");
-                    linkPath = existingOverlay;
-                    // Extra banks retain a fixed-size resref and are inserted behind the first
-                    // overlay. Native model payloads and the existing animation chain stay intact.
-                    var prefix = "ab_" + model.Name[..Math.Min(model.Name.Length, 8)] + "_";
-                    var number = 1;
-                    do
-                    {
-                        if (number > 999) throw new InvalidDataException("No free animation bank names remain for this target.");
-                        overlayName = prefix + (number++).ToString("D3", System.Globalization.CultureInfo.InvariantCulture);
-                    } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
-                    overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
-                    existingOverlay = null;
+                    SelectNewBank();
                 }
                 else
                 {
@@ -370,72 +361,93 @@ public static class AnimationInstall
                     overlayName = models[selected].Name;
                 }
             }
-            var overlayProject = project.Clone(); overlayProject.ModelName = overlayName;
-            var targetRig = AnimationProject.FromModel(model);
-            if (!float.IsFinite(model.Scale) || model.Scale <= 0) throw new InvalidDataException("Target model has an invalid animation scale.");
-            // Match target proportions and compensate for NWN applying the target's animation scale
-            // to inherited translations. An unkeyed rest pose must stay at the target's own bind pose.
-            if (overlayProject.Keys.Count == 0) overlayProject.SetKey(0, project.Sample(0));
-            for (var jointIndex = 0; jointIndex < overlayProject.Joints.Count; jointIndex++)
+            void SelectNewBank()
             {
-                var sourceJoint = project.Joints[jointIndex];
-                var targetJoint = sourceJoint.Parent < 0 ? targetRig.Joints[0] : targetRig.Joints.Single(j => j.Name.Equals(sourceJoint.Name, StringComparison.OrdinalIgnoreCase));
-                foreach (var key in overlayProject.Keys)
+                if (chains[target].Count >= MaximumModelChainDepth) throw new InvalidDataException("Animation banks would exceed the supported supermodel chain depth. Split the library by target rig.");
+                linkPath = chains[target][1];
+                // Extra banks retain a fixed-size resref and are inserted behind the first
+                // overlay. Native model payloads and the existing animation chain stay intact.
+                var prefix = "ab_" + model.Name[..Math.Min(model.Name.Length, 8)] + "_";
+                var number = 1;
+                do
                 {
-                    var value = key.Pose[jointIndex];
-                    key.Pose[jointIndex] = value with
-                    {
-                        Position = (targetJoint.Rest.Position + value.Position - sourceJoint.Rest.Position) / model.Scale,
-                        Orientation = Quaternion.Normalize(targetJoint.Rest.Orientation * Quaternion.Inverse(sourceJoint.Rest.Orientation) * value.Orientation),
-                        Scale = targetJoint.Rest.Scale * value.Scale / sourceJoint.Rest.Scale
-                    };
-                }
+                    if (number > 999) throw new InvalidDataException("No free animation bank names remain for this target.");
+                    overlayName = prefix + (number++).ToString("D3", System.Globalization.CultureInfo.InvariantCulture);
+                } while (Resolve(overlayName) != null || plannedModels.Values.Any(m => m.Name.Equals(overlayName, StringComparison.OrdinalIgnoreCase)));
+                overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
+                existingOverlay = null;
             }
-            for (var i = 0; i < overlayProject.Joints.Count; i++)
-                if (overlayProject.Joints[i].Parent < 0)
-                {
-                    if (overlayProject.AnimationRoot.Equals(overlayProject.Joints[i].Name, StringComparison.OrdinalIgnoreCase)) overlayProject.AnimationRoot = overlayName;
-                    overlayProject.Joints[i] = overlayProject.Joints[i] with { Name = overlayName };
-                }
-            var previousSuper = models[linkPath].SuperModel;
-            var super = string.IsNullOrWhiteSpace(previousSuper) ? "NULL" : previousSuper;
-            var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            (string Text, Dictionary<string, string> Blocks) BuildOverlay()
             {
-                [animationName] = AnimationMdl.Export(overlayProject, animationName, overlayName)
-            };
-            foreach (var (suffix, time) in new[] { ("_in", 0f), ("_out", project.Duration) })
-            {
-                var phase = overlayProject.Clone(); var pose = phase.Sample(time);
-                phase.Keys.Clear(); phase.Events.Clear(); phase.Duration = .001f; phase.Transition = 0;
-                phase.SetKey(0, pose);
-                if (suffix == "_out")
+                var overlayProject = project.Clone(); overlayProject.ModelName = overlayName;
+                var targetRig = AnimationProject.FromModel(model);
+                if (!float.IsFinite(model.Scale) || model.Scale <= 0) throw new InvalidDataException("Target model has an invalid animation scale.");
+                // Match target proportions and compensate for NWN applying the target's animation scale
+                // to inherited translations. An unkeyed rest pose must stay at the target's own bind pose.
+                if (overlayProject.Keys.Count == 0) overlayProject.SetKey(0, project.Sample(0));
+                for (var jointIndex = 0; jointIndex < overlayProject.Joints.Count; jointIndex++)
                 {
-                    // Release a looping emote into this target's actual neutral pose. Repeating
-                    // the final authored pose here can strand an idle creature in a combat stance.
-                    var neutral = MdlAnimationPose.SampleIdle(model, name =>
-                        chains[target].Select(path => models[path]).FirstOrDefault(parent =>
-                            parent.Name.Equals(name, StringComparison.OrdinalIgnoreCase)), maxDepth: MaximumModelChainDepth);
-                    phase.Duration = .2f;
-                    phase.SetKey(phase.Duration, overlayProject.Joints.Select((joint, index) =>
+                    var sourceJoint = project.Joints[jointIndex];
+                    var targetJoint = sourceJoint.Parent < 0 ? targetRig.Joints[0] : targetRig.Joints.Single(j => j.Name.Equals(sourceJoint.Name, StringComparison.OrdinalIgnoreCase));
+                    foreach (var key in overlayProject.Keys)
                     {
-                        var targetJoint = index == 0 ? targetRig.Joints[0] : targetRig.Joints.Single(j => j.Name.Equals(joint.Name, StringComparison.OrdinalIgnoreCase));
-                        var rest = neutral.TryGetValue(targetJoint.Name, out var value) ? value : targetJoint.Rest;
-                        return rest with { Position = rest.Position / model.Scale };
-                    }).ToArray());
+                        var value = key.Pose[jointIndex];
+                        key.Pose[jointIndex] = value with
+                        {
+                            Position = (targetJoint.Rest.Position + value.Position - sourceJoint.Rest.Position) / model.Scale,
+                            Orientation = Quaternion.Normalize(targetJoint.Rest.Orientation * Quaternion.Inverse(sourceJoint.Rest.Orientation) * value.Orientation),
+                            Scale = targetJoint.Rest.Scale * value.Scale / sourceJoint.Rest.Scale
+                        };
+                    }
                 }
-                blocks[animationName + suffix] = AnimationMdl.Export(phase, animationName + suffix, overlayName);
+                for (var i = 0; i < overlayProject.Joints.Count; i++)
+                    if (overlayProject.Joints[i].Parent < 0)
+                    {
+                        if (overlayProject.AnimationRoot.Equals(overlayProject.Joints[i].Name, StringComparison.OrdinalIgnoreCase)) overlayProject.AnimationRoot = overlayName;
+                        overlayProject.Joints[i] = overlayProject.Joints[i] with { Name = overlayName };
+                    }
+                var previousSuper = models[linkPath].SuperModel;
+                var super = string.IsNullOrWhiteSpace(previousSuper) ? "NULL" : previousSuper;
+                var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    [animationName] = AnimationMdl.Export(overlayProject, animationName, overlayName)
+                };
+                foreach (var (suffix, time) in new[] { ("_in", 0f), ("_out", project.Duration) })
+                {
+                    var phase = overlayProject.Clone(); var pose = phase.Sample(time);
+                    phase.Keys.Clear(); phase.Events.Clear(); phase.Duration = .001f; phase.Transition = 0;
+                    phase.SetKey(0, pose);
+                    if (suffix == "_out")
+                    {
+                        // Release a looping emote into this target's actual neutral pose. Repeating
+                        // the final authored pose here can strand an idle creature in a combat stance.
+                        var neutral = MdlAnimationPose.SampleIdle(model, name =>
+                            chains[target].Select(path => models[path]).FirstOrDefault(parent =>
+                                parent.Name.Equals(name, StringComparison.OrdinalIgnoreCase)), maxDepth: MaximumModelChainDepth);
+                        phase.Duration = .2f;
+                        phase.SetKey(phase.Duration, overlayProject.Joints.Select((joint, index) =>
+                        {
+                            var targetJoint = index == 0 ? targetRig.Joints[0] : targetRig.Joints.Single(j => j.Name.Equals(joint.Name, StringComparison.OrdinalIgnoreCase));
+                            var rest = neutral.TryGetValue(targetJoint.Name, out var value) ? value : targetJoint.Rest;
+                            return rest with { Position = rest.Position / model.Scale };
+                        }).ToArray());
+                    }
+                    blocks[animationName + suffix] = AnimationMdl.Export(phase, animationName + suffix, overlayName);
+                }
+                var block = string.Concat(blocks.Values);
+                targetRig.ModelName = overlayName;
+                if (targetRig.AnimationRoot.Equals(targetRig.Joints[0].Name, StringComparison.OrdinalIgnoreCase)) targetRig.AnimationRoot = overlayName;
+                targetRig.Joints = targetRig.Joints.Select((joint, i) => joint with
+                {
+                    Name = i == 0 ? overlayName : joint.Name,
+                    Rest = joint.Rest with { Position = joint.Rest.Position / model.Scale }
+                }).ToList();
+                var overlay = $"# SWLOR authored animations for {model.Name}\nnewmodel {overlayName}\nsetsupermodel {overlayName} {super}\nclassification character\nsetanimationscale 1\n" +
+                    AnimationMdl.ExportGeometry(targetRig) +
+                    block + $"donemodel {overlayName}\n";
+                return (overlay, blocks);
             }
-            var block = string.Concat(blocks.Values);
-            targetRig.ModelName = overlayName;
-            if (targetRig.AnimationRoot.Equals(targetRig.Joints[0].Name, StringComparison.OrdinalIgnoreCase)) targetRig.AnimationRoot = overlayName;
-            targetRig.Joints = targetRig.Joints.Select((joint, i) => joint with
-            {
-                Name = i == 0 ? overlayName : joint.Name,
-                Rest = joint.Rest with { Position = joint.Rest.Position / model.Scale }
-            }).ToList();
-            var overlay = $"# SWLOR authored animations for {model.Name}\nnewmodel {overlayName}\nsetsupermodel {overlayName} {super}\nclassification character\nsetanimationscale 1\n" +
-                AnimationMdl.ExportGeometry(targetRig) +
-                block + $"donemodel {overlayName}\n";
+            var (overlay, blocks) = BuildOverlay();
             if (existingOverlay != null)
             {
                 overlay = Encoding.ASCII.GetString(Read(existingOverlay));
@@ -455,9 +467,18 @@ public static class AnimationInstall
                 {
                     var terminator = new Regex(@"(?m)^donemodel\s+[^\r\n]+\r?$");
                     if (terminator.Matches(overlay).Count != 1) throw new InvalidDataException("Invalid overlay terminator.");
-                    overlay = terminator.Replace(overlay, match => block + match.Value);
+                    overlay = terminator.Replace(overlay, match => string.Concat(blocks.Values) + match.Value);
                 }
             }
+            // A completed bank must remain readable by the next install. A current-size
+            // heuristic cannot account for a dense incoming clip's encoded payload.
+            if (Encoding.ASCII.GetByteCount(overlay) > bankBudget && existingOverlay != null && registration == null)
+            {
+                SelectNewBank();
+                (overlay, blocks) = BuildOverlay();
+            }
+            if (Encoding.ASCII.GetByteCount(overlay) > bankBudget)
+                throw new InvalidDataException("Completed animation bank exceeds its input size limit. Simplify the clip before installing it.");
             EnsureOutputCapacity(Encoding.ASCII.GetByteCount(overlay));
             var overlayBytes = Encoding.ASCII.GetBytes(overlay);
             Add(overlayPath, overlayBytes);

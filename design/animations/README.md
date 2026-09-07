@@ -39,18 +39,41 @@ preserves matching Bible image references, and identifies installed clips and sh
 
 ## Authored clips and generation
 
+```text
+design/animations/
+  README.md                    Workflow and library conventions
+  registry.json                Installed names, targets, and canonical ProjectPath values
+  ANIMATION-PLAN.md             Readable production backlog
+  animation-plan.csv            Searchable production backlog
+  projects/
+    vibroblade/
+      *.swlanim                One editable source per animation
+      recipe.json              Repeatable pose-authoring controls
+      manifest.json            Bible references and generated-source hashes
+```
 
-The seven current Vibroblade perk references on the Bible's **Animations** tab have editable drafts in
-`design/animations/drafts/vibroblade/`. Open `preview.html` in your normal browser to choose a
-motion, play it slowly, orbit the mannequin, and jump to its main poses. Its accessory proxies
-use NWN's equipment attachment points; check the final equipment and motion in NWN.
+Add future skill groups beside `vibroblade`; use lowercase folder names with hyphens and
+keep each animation in one owning group even when several perks use it. Shared motions can
+live in `projects/shared/`. A categorized project named to match its animation is reused on
+first installation. Projects saved elsewhere are copied into `projects/uncategorized/`.
+Subsequent installations reuse the registry's `ProjectPath`. To reorganize an installed source,
+move its file and update that path together. Legacy registries retain existing flat sources
+until explicitly reorganized. Keep generated previews, GIFs, render data, and scratch drafts
+in the ignored `artifacts/animations/` directory.
+
+
+The seven current Vibroblade perk references on the Bible's **Animations** tab have editable sources in
+`design/animations/projects/vibroblade/`. Keep these `.swlanim` files long term: they preserve
+the rig and editable poses used to export the installed MDLs. The game reads MDLs from the HAKs.
+The recipe records procedural pose controls; the manifest records Bible references and hashes.
+Neither replaces hand-edited projects. There is one canonical project per animation.
 
 The seven `.swlanim` files are editable authoring projects. When the separate animation
 editor is installed, choose **Open project** to modify them visually. These drafts use the native male humanoid `a_ba` rig and remain editable. One-shot moves start and finish in
 the native standing pose. Shield Wall keeps a guard loop for its channel, with a separate exit
 that returns to the target model's neutral pose.
 All seven are installed into the `a_ba` and `a_fa` humanoid supermodel chains in `sw_cr_creature`.
-Their installed editable copies are in `design/animations/`. The images establish the main
+The registry points to these same editable sources; installation does not keep a second copy. The images establish the main
 pose; wind-up, recovery, and durations are authored interpretations for review. The shield
 barriers, hit effects, blood, targets, and gameplay outcomes pictured in the references are
 not part of the skeletal clips. Covering Strike uses a planted guarded thrust, Riot Blade a
@@ -76,14 +99,14 @@ isolated checkout with the complete HAK source chain available:
 
 ```powershell
 dotnet build tools/SWLOR.AnimationDrafts/SWLOR.AnimationDrafts.csproj -p:RunPostBuildEvent=Never
-dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install . design/animations/drafts/vibroblade/ShieldBash.swlanim a_ba a_fa
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install . design/animations/projects/vibroblade/ShieldBash.swlanim a_ba a_fa
 ```
 
 The command uses the shared animation installation transaction, then the HAK and C# builds
 must be deployed again. Review both the parent repository and HAK submodule changes.
 
 `manifest.json` records each Bible row, image link, interpretation, key poses, and validation
-hash. `design/animations/recipes/vibroblade.json` preserves the authored pose controls so Codex
+hash. `design/animations/projects/vibroblade/recipe.json` preserves the authored pose controls so Codex
 can make repeatable changes such as a stronger lunge or a faster cut. It does not call an
 external AI service. Keep manual edits in **Save as** copies before regenerating the originals.
 
@@ -91,11 +114,20 @@ Regenerate with a local copy of the HAK source model (substitute your actual pat
 
 ```powershell
 dotnet build tools/SWLOR.AnimationDrafts/SWLOR.AnimationDrafts.csproj -p:RunPostBuildEvent=Never
-dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate C:/Projects/SWLOR_NWN/SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/recipes/vibroblade.json design/animations/drafts/vibroblade --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate C:/Projects/SWLOR_NWN/SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/projects/vibroblade/recipe.json design/animations/projects/vibroblade --overwrite
 ```
 
 The generator checks joint reach, foot clearance, a matching start/end pose, project loading,
-and native MDL exchange before writing outputs. `AnimationDraftAssetTests` also checks planted
+and native MDL exchange before writing outputs. It does not write a browser preview into the
+source library. Generate a preview from the saved projects without rebaking or changing them:
+
+```powershell
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll preview design/animations/projects/vibroblade artifacts/animations/vibroblade/preview.html --overwrite
+```
+
+Open that HTML file in a browser to select a motion, slow playback, orbit the mannequin,
+and jump to its main poses. Its accessory proxies use NWN's attachment points; verify final
+equipment and motion in NWN. `AnimationDraftAssetTests` also checks planted
 feet during interpolation and correspondence with the Bible references. Recipe vectors use
 native metres (`+Y` forward, `+Z` up); `chest`, `hips`, and `shield` use degrees in the order
 forward lean, yaw, side bend. Each beat overrides the corresponding ready pose, and the
@@ -115,7 +147,7 @@ moves, since a shield may remain equipped during a sword attack. To inspect
 actual equipment rather than the HTML mannequin's stand-ins, export posed triangles with:
 
 ```powershell
-dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll render-data SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/drafts/vibroblade artifacts/animation-poses.json --frames --shield SWLOR_Haks/sw_weapon/ashlw_113.mdl --sword SWLOR_Haks/sw_weapon/wswls_t_122.mdl
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll render-data SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/projects/vibroblade artifacts/animation-poses.json --frames --shield SWLOR_Haks/sw_weapon/ashlw_113.mdl --sword SWLOR_Haks/sw_weapon/wswls_t_122.mdl
 ```
 
 Add `--overlay SWLOR_Haks/sw_cr_creature/an_a_ba.mdl --registry design/animations/registry.json`

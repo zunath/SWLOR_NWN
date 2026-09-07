@@ -16,10 +16,32 @@ if (args.Length >= 4 && args[0] == "install")
     var project = AnimationProject.Deserialize(await ReadText(args[2]));
     var targets = args.Skip(3).Select(name => AnimationInstall.FindTargetSource(root, name)
         ?? throw new FileNotFoundException($"No configured HAK source for {name}.")).ToArray();
-    var plan = AnimationInstall.Prepare(root, project, targets);
+    var plan = AnimationInstall.Prepare(root, project, targets, Path.GetFullPath(args[2]));
     foreach (var change in plan.Changes) Console.WriteLine(Path.GetRelativePath(root, change.Path));
     plan.Apply();
     Console.WriteLine(plan.CodeExample);
+    return 0;
+}
+
+if (args.Length is 3 or 4 && args[0] == "preview")
+{
+    if (args.Length == 4 && args[3] != "--overwrite") throw new ArgumentException("Unknown preview option.");
+    var recipe = JsonSerializer.Deserialize<Recipe>(await ReadText(Path.Combine(args[1], "recipe.json")), Recipe.Json)
+        ?? throw new InvalidDataException("Empty recipe.");
+    var previews = new List<object>();
+    foreach (var motion in recipe.Motions)
+    {
+        AnimationProject.ValidateToken(motion.Id, 63);
+        var project = AnimationProject.Deserialize(await ReadText(Path.Combine(args[1], motion.Id + ".swlanim")));
+        previews.Add(PreviewWriter.Motion(project, motion));
+    }
+    var output = Path.GetFullPath(args[2]);
+    var html = PreviewWriter.Html(previews);
+    Directory.CreateDirectory(Path.GetDirectoryName(output)!);
+    using var file = new FileStream(output, args.Contains("--overwrite") ? FileMode.Create : FileMode.CreateNew, FileAccess.Write);
+    using var writer = new StreamWriter(file);
+    await writer.WriteAsync(html);
+    Console.WriteLine($"Wrote preview from {previews.Count} saved projects to {output}");
     return 0;
 }
 
@@ -123,6 +145,7 @@ if (args.Length >= 4 && args[0] == "render-data")
 if (args.Length < 4 || args[0] != "generate" || args.Skip(4).Any(a => a != "--overwrite"))
 {
     Console.Error.WriteLine("Usage: SWLOR.AnimationDrafts generate <a_ba.mdl> <recipe.json> <output-folder> [--overwrite]");
+    Console.Error.WriteLine("       SWLOR.AnimationDrafts preview <project-folder> <output.html> [--overwrite]");
     return 1;
 }
 
@@ -141,7 +164,7 @@ try
     if (model.Name != recipe.Model) throw new InvalidDataException($"Recipe requires {recipe.Model}, received {model.Name}.");
     var output = Path.GetFullPath(args[3]);
     var files = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-    var previews = new List<object>();
+    files.Add("recipe.json", recipeText);
     var reports = new List<object>();
     foreach (var motion in recipe.Motions)
     {
@@ -171,7 +194,6 @@ try
         }
         if (maximumError > .001f) throw new InvalidDataException($"{motion.Id}: MDL round trip moved a joint by {maximumError}m.");
         files.Add(motion.Id + ".swlanim", serialized + "\n");
-        previews.Add(PreviewWriter.Motion(project, motion));
         reports.Add(new
         {
             motion.Id, motion.Name, motion.BibleRow, motion.Reference, motion.Observation, motion.Interpretation,
@@ -190,14 +212,13 @@ try
         Notes = "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
         Animations = reports
     }, Recipe.Json) + "\n");
-    files.Add("preview.html", PreviewWriter.Html(previews));
     if (!args.Contains("--overwrite"))
         foreach (var file in files.Keys)
             if (File.Exists(Path.Combine(output, file))) throw new IOException($"Already exists: {file}. Choose another folder or use --overwrite.");
     Directory.CreateDirectory(output);
     foreach (var (file, contents) in files) File.WriteAllText(Path.Combine(output, file), contents);
     logger.Information("Generated {MotionCount} animation drafts in {OutputDirectory}", recipe.Motions.Length, output);
-    Console.WriteLine($"Wrote {recipe.Motions.Length} editable drafts and preview to {output}");
+    Console.WriteLine($"Wrote {recipe.Motions.Length} editable projects and their manifest to {output}. Use the preview command to render saved projects separately.");
     return 0;
 }
 catch (Exception ex)

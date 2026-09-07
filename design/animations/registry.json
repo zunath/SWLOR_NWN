@@ -6,7 +6,8 @@
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
+    ],
+    "ProjectPath": "design/animations/projects/vibroblade/Invincible.swlanim"
   },
   {
     "Name": "RiotBlade",
@@ -15,7 +16,8 @@
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
+    ],
+    "ProjectPath": "design/animations/projects/vibroblade/RiotBlade.swlanim"
   },
   {
     "Name": "ShieldBash",
@@ -24,7 +26,8 @@
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
+    ],
+    "ProjectPath": "design/animations/projects/vibroblade/ShieldBash.swlanim"
   },
   {
     "Name": "ShieldWall",
@@ -33,7 +36,8 @@
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
+    ],
+    "ProjectPath": "design/animations/projects/vibroblade/ShieldWall.swlanim"
   },
   {
     "Name": "RendingStrike",
@@ -42,7 +46,8 @@
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
+    ],
+    "ProjectPath": "design/animations/projects/vibroblade/RendingStrike.swlanim"
   },
   {
     "Name": "SavageCleave",
@@ -51,7 +56,8 @@
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
+    ],
+    "ProjectPath": "design/animations/projects/vibroblade/SavageCleave.swlanim"
   },
   {
     "Name": "CoveringStrike",
@@ -60,6 +66,7 @@
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ]
+    ],
+    "ProjectPath": "design/animations/projects/vibroblade/CoveringStrike.swlanim"
   }
 ]

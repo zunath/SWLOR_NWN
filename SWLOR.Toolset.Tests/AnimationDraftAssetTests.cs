@@ -26,7 +26,7 @@ public class AnimationDraftAssetTests
             return path?.FullName ?? throw new DirectoryNotFoundException("Repository root not found.");
         }
     }
-    private static string Folder => Path.Combine(Root, "design", "animations", "drafts", "vibroblade");
+    private static string Folder => Path.Combine(Root, "design", "animations", "projects", "vibroblade");
 
     [Test]
     public void TwoBeatOneShotsAreRejectedBeforePosing()
@@ -40,8 +40,7 @@ public class AnimationDraftAssetTests
     [Test]
     public void TwoBeatClosedChannelsRemainSupported()
     {
-        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
-            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Folder, "recipe.json")), Recipe.Json)!;
         var channel = recipe.Motions.Single(m => m.Id == "ShieldWall");
         var motion = channel with { Beats = [channel.Beats[0], channel.Beats[0] with { Time = 1 }] };
         var rig = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "ShieldWall.swlanim")));
@@ -87,9 +86,24 @@ public class AnimationDraftAssetTests
                 Vector3.Distance(exitPose[joint.Name].Position * target.Scale, expected.Position).Should().BeLessThan(.0001f);
                 Math.Abs(Quaternion.Dot(exitPose[joint.Name].Orientation, expected.Orientation)).Should().BeGreaterThan(.9999f);
             }
-            var installed = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, "design", "animations", name + ".swlanim")));
-            var draft = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
-            installed.Serialize().Should().Be(draft.Serialize());
+            entry.ProjectPath.Should().Be("design/animations/projects/vibroblade/" + name + ".swlanim");
+        }
+    }
+
+    [Test]
+    public void EachRegisteredAnimationHasOneCanonicalEditableSource()
+    {
+        var library = Path.Combine(Root, "design", "animations");
+        var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(library, "registry.json")))!;
+        var paths = registry.Select(r => r.ProjectPath).ToArray();
+        paths.Should().OnlyHaveUniqueItems().And.NotContainNulls();
+        Directory.GetFiles(library, "*.swlanim", SearchOption.AllDirectories)
+            .Select(p => Path.GetRelativePath(Root, p).Replace('\\', '/')).Should().BeEquivalentTo(paths);
+        foreach (var entry in registry)
+        {
+            var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, entry.ProjectPath!)));
+            project.Name.Should().Be(entry.Name);
+            project.Duration.Should().Be(entry.Duration);
         }
     }
 
@@ -146,8 +160,7 @@ public class AnimationDraftAssetTests
     public void AuthoredGuardsKeepACompactStanceAndLoweredElbows(string name)
     {
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
-        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
-            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Folder, "recipe.json")), Recipe.Json)!;
         var time = recipe.Motions.Single(m => m.Id == name).Beats[1].Time;
         var pose = AnimationRig.World(project.Joints, project.Sample(time));
         Vector3 Point(string joint) => pose[project.Joints.FindIndex(j => j.Name == joint)].Translation;
@@ -180,8 +193,7 @@ public class AnimationDraftAssetTests
     [TestCase("SavageCleave", "Front arc")]
     public void SwordStrikesContinueThroughContactWithoutStoppingOrReversing(string name, string contactLabel)
     {
-        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
-            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Folder, "recipe.json")), Recipe.Json)!;
         var contact = recipe.Motions.Single(m => m.Id == name).Beats.Single(b => b.Label == contactLabel).Time;
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
         var hand = project.Joints.FindIndex(j => j.Name == "rhand");
@@ -251,8 +263,7 @@ public class AnimationDraftAssetTests
         var rig = AnimationProject.FromModel(model);
         var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(path)!, model.SuperModel + ".mdl")));
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
-        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
-            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Folder, "recipe.json")), Recipe.Json)!;
         foreach (var motion in recipe.Motions)
         {
             var clip = overlay.Animations.Single(a => a.Name == registry.Single(r => r.Name == motion.Id).AnimationName);
@@ -274,8 +285,7 @@ public class AnimationDraftAssetTests
     public void CombatPosesKeepShieldSocketsRigidAndWristsAlignedWithTheForearm(string name)
     {
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
-        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
-            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Folder, "recipe.json")), Recipe.Json)!;
         var beats = recipe.Motions.Single(m => m.Id == name).Beats;
         foreach (var key in project.Keys.Where(k => k.Time >= beats[1].Time && k.Time <= beats[^2].Time))
         {

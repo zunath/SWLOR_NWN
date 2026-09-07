@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,
+        AnimationDebug = 902,
         ChangePortrait = 9999
     }
 }

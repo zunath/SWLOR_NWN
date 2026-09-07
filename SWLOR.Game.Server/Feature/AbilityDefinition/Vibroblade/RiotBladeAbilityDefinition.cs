@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Name(name)
                     .Level(level)
                     .HasRecastDelay(RecastGroup.RiotBlade, 18f)
-                    .UsesAnimation(Animation.RiotBlade),
+                    .UsesQueuedAttackAnimation(AuthoredAnimation.RiotBlade),
                 SkillType.Vibroblade,
                 baseDamage,
                 0,

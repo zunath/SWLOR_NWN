@@ -176,6 +176,9 @@ namespace SWLOR.Game.Server.Feature
             if (activation.IsAwaitingImpact)
                 Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);
 
+            if (activation.Ability.AuthoredAnimation != null)
+                NamedAnimation.Stop(activator, cancelQueuedAnimation: true);
+
             _activeAbilityActivations.Remove(activator);
             ResumeAttack(activator, activation.ResumeAttackTarget);
             return true;
@@ -508,6 +511,13 @@ namespace SWLOR.Game.Server.Feature
                 /// </summary>
                 void PlayActivationAnimation(float animationLength)
                 {
+                    if (ability.AuthoredAnimation != null)
+                    {
+                        NamedAnimation.Queue(activator, ability.AuthoredAnimation,
+                            Math.Max(ability.AuthoredAnimation.Duration, animationLength));
+                        return;
+                    }
+
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;
 
@@ -643,6 +653,8 @@ namespace SWLOR.Game.Server.Feature
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
                 if (!activatorIsAlive)
                 {
+                    if (ability.AuthoredAnimation != null)
+                        NamedAnimation.Stop(activator);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(false);
                     return;
@@ -695,7 +707,13 @@ namespace SWLOR.Game.Server.Feature
                         targetLocation,
                         activationAreaTelegraphs:
                             ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null);
-                    ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
+                    // NPCs must clear their combat state before reattacking. Queue that reset
+                    // after the authored clip, so it cannot erase the animation at impact.
+                    if (ability.AuthoredAnimation != null && !GetIsPC(activator))
+                        AssignCommand(activator, () => ActionDoCommand(() =>
+                            ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)));
+                    else
+                        ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
                     // If this is an attack make the NPC react.
                     if (GetIsObjectValid(target) && target != activator)
@@ -854,6 +872,8 @@ namespace SWLOR.Game.Server.Feature
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
             SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
             SuppressQueuedAbilityFeedback(activator);
+
+            QueuedAttackAnimation.Begin(activator, ability.QueuedAttackAnimation);
 
             ApplyRequirementEffects(activator, ability);
 
@@ -1229,6 +1249,7 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Combat.CompleteAbilityStaminaCostContext(activator, abilityDetail);
+                QueuedAttackAnimation.Stop(activator);
                 DeleteLocalString(activator, ActiveAbilityIdName);
                 DeleteLocalInt(activator, ActiveAbilityFeatIdName);
                 DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
@@ -1261,17 +1282,19 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
         [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);
         }
 
         /// <summary>
-        /// Clears the queued ability of a player.
+        /// Clears queued ability state and animation replacements, including after death.
         /// </summary>
         /// <param name="player">The player to clear</param>
-        private static void ClearQueuedAbility(uint player)
+        public static void ClearQueuedAbility(uint player)
         {
+            QueuedAttackAnimation.Stop(player);
             Combat.ClearQueuedWeaponAbilityActivationBonuses(player);
             Combat.ClearQueuedWeaponAbilityAttemptBonuses(player);
             var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);

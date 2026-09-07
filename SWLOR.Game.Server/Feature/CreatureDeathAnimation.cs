@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var creature = OBJECT_SELF;
             NamedAnimation.ClearOnDeath(creature);
+            UsePerkFeat.ClearQueuedAbility(creature);
             AnimationPlayer.Play(creature, AnimationEvent.CreatureOnDeath);
         }
     }

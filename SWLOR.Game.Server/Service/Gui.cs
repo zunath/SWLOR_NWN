@@ -290,9 +290,14 @@ namespace SWLOR.Game.Server.Service
         public static void HandleNuiWatchEvent()
         {
             var player = NuiGetEventPlayer();
+            var uiTarget = player;
+
+            if (GetIsDMPossessed(player))
+                player = GetMaster(player);
+
             var playerId = GetObjectUUID(player);
             var windowToken = NuiGetEventWindow();
-            var windowId = NuiGetWindowId(player, windowToken);
+            var windowId = NuiGetWindowId(uiTarget, windowToken);
             var eventType = NuiGetEventType();
             var propertyName = NuiGetEventElement();
 

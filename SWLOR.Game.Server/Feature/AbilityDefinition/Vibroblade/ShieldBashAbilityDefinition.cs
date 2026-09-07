@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.AnimationService;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
@@ -12,7 +13,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
     public class ShieldBashAbilityDefinition : IAbilityListDefinition
     {
-        private const string ReplacementAnimationName = "Shield_Bash";
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesImpactAnimationOverwrite(ReplacementAnimationName)
+                .UsesQueuedAttackAnimation(AuthoredAnimation.ShieldBash)
                 .RequirementStamina(stamina);
         }
 

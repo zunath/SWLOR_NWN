@@ -93,6 +93,7 @@ namespace SWLOR.Toolset.Viewport
 
         private void AttachViewModel()
         {
+            if (_disposed) return;
             if (_viewModel != null)
                 _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
             if (_subscribedResourceIndex != null)

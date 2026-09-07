@@ -16,7 +16,17 @@ public sealed partial class AnimationEditorDocumentViewModel
     private bool _isAdvanced, _showMovementChoices, _hasCharacter;
     private int _beginnerStep;
     private AnimationStarterMovement? _selectedMovement;
-    public bool IsAdvanced { get => _isAdvanced; set { EndDrag(); Stop(); SetProperty(ref _isAdvanced, value); } }
+    public bool IsAdvanced
+    {
+        get => _isAdvanced;
+        set
+        {
+            if (_isAdvanced == value) return;
+            EndDrag(); Stop();
+            if (_previewVisible) RefreshPreview();
+            SetProperty(ref _isAdvanced, value);
+        }
+    }
     public int BeginnerStep { get => _beginnerStep; set => SetProperty(ref _beginnerStep, Math.Clamp(value, 0, 2)); }
     public bool ShowMovementChoices { get => _showMovementChoices; private set => SetProperty(ref _showMovementChoices, value); }
     public bool HasCharacter => _hasCharacter;

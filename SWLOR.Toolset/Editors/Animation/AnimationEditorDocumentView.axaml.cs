@@ -11,6 +11,7 @@ public partial class AnimationEditorDocumentView : UserControl
 {
     private AnimationEditorDocumentViewModel? _viewModel;
     private bool _initialized;
+    private bool _closed;
     public AnimationEditorDocumentView()
     {
         InitializeComponent();
@@ -19,10 +20,12 @@ public partial class AnimationEditorDocumentView : UserControl
     }
     private void Attach()
     {
-        if (_viewModel != null) { _viewModel.PropertyChanged -= OnViewModelChanged; _viewModel.PickOpenPath = null; _viewModel.PickSavePath = null; _viewModel.Stop(); }
+        if (_closed) return;
+        ReleaseViewModel();
         _viewModel = DataContext as AnimationEditorDocumentViewModel;
         if (_viewModel == null) return;
         _viewModel.PropertyChanged += OnViewModelChanged;
+        _viewModel.Closed += OnDocumentClosed;
         _viewModel.PickOpenPath = async (title, patterns) =>
         {
             var provider = TopLevel.GetTopLevel(this)?.StorageProvider;
@@ -40,6 +43,24 @@ public partial class AnimationEditorDocumentView : UserControl
             return file?.TryGetLocalPath();
         };
         UpdatePreview();
+    }
+    private void ReleaseViewModel()
+    {
+        if (_viewModel == null) return;
+        _viewModel.PropertyChanged -= OnViewModelChanged;
+        _viewModel.Closed -= OnDocumentClosed;
+        _viewModel.PickOpenPath = null;
+        _viewModel.PickSavePath = null;
+        _viewModel.Stop();
+        _viewModel = null;
+    }
+    private void OnDocumentClosed(AnimationEditorDocumentViewModel document)
+    {
+        _closed = true;
+        ReleaseViewModel();
+        this.FindControl<ModelPreviewControl>("ModelPreview")?.Dispose();
+        this.FindControl<ModelPreviewControl>("BeginnerPreview")?.Dispose();
+        DataContext = null;
     }
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e) { base.OnAttachedToVisualTree(e); Attach(); }
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

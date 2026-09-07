@@ -14,6 +14,7 @@ using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Animation;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
+using SWLOR.Toolset.Viewport;
 
 namespace SWLOR.Toolset.Tests;
 
@@ -1081,6 +1082,68 @@ public class AnimationEditorTests
         vm.PreviewScene!.Instances[0].Model!.Meshes.Single().Transform.Should().Be(MdlMeshBuilder.ComposeNodeTransform(node, sampled));
         vm.ApproveApplicationClose(); vm.OnClose();
     }
+    [AvaloniaTest]
+    [TestCase(false)] [TestCase(true)]
+    public async Task SwitchingLayoutsStopsAtTheCurrentPose(bool startAdvanced)
+    {
+        var target = InstallFixture();
+        var geometry = "node trimesh visible\nparent hand\nverts 3\n0 0 0\n1 0 0\n0 1 0\nfaces 1\n0 1 2 0 0 0 0 0\nendnode\n";
+        File.WriteAllText(target, File.ReadAllText(target).Replace("endmodelgeom hero", geometry + "endmodelgeom hero"));
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target);
+        await vm.LoadRigFileCommand.ExecuteAsync(null);
+        var view = new AnimationEditorDocumentView { DataContext = vm };
+        var window = new Window { Content = view, Width = 1280, Height = 900 };
+        window.Show(); window.UpdateLayout();
+        view.FindControl<TabControl>("PreviewTabs")!.SelectedIndex = 1;
+        vm.IsAdvanced = startAdvanced;
+        vm.BuildFromPosesCommand.Execute(null); vm.AdjustBodyPartCommand.Execute("bend+");
+        vm.Playhead = 0; vm.PlayCommand.Execute(null); vm.Playhead = .65;
+        var playhead = vm.Playhead;
+        var playingScene = vm.PreviewScene;
+        vm.IsAdvanced = !startAdvanced;
+        window.UpdateLayout(); Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        vm.Playhead.Should().Be(playhead); vm.IsAnimationPlaying.Should().BeFalse();
+        vm.PreviewAnimationName.Should().BeNull(); vm.PreviewScene.Should().NotBeSameAs(playingScene);
+        var mdl = new MdlReader().Parse(File.ReadAllBytes(target));
+        var sampled = vm.Project.Joints.Select((joint, i) => (joint.Name, vm.Pose[i])).ToDictionary(p => p.Name, p => p.Item2);
+        vm.PreviewScene!.Instances[0].Model!.Meshes.Single().Transform.Should()
+            .Be(MdlMeshBuilder.ComposeNodeTransform(mdl.GetMeshNodes().Single(), sampled));
+        var host = view.FindControl<ModelPreviewControl>(startAdvanced ? "BeginnerPreview" : "ModelPreview")!;
+        host.FindControl<GlAreaControl>("ModelView")!.Scene.Should().BeSameAs(vm.PreviewScene);
+        vm.ApproveApplicationClose(); vm.OnClose(); window.Close();
+    }
+
+    [AvaloniaTest]
+    [TestCase(false)] [TestCase(true)]
+    public async Task ClosingAnimationDocumentReleasesBothPreviewResourceSubscriptions(bool closeWhileDetached)
+    {
+        var resources = new ResourceIndex(null, []); await resources.InitializationTask;
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), resources, initial: Rig());
+        var view = new AnimationEditorDocumentView { DataContext = vm };
+        var window = new Window { Content = view, Width = 1280, Height = 900 };
+        window.Show(); window.UpdateLayout();
+        var hosts = new[] { view.FindControl<ModelPreviewControl>("ModelPreview")!, view.FindControl<ModelPreviewControl>("BeginnerPreview")! };
+        var reload = typeof(ResourceIndex).GetField("ResourcesReloaded", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        object?[] Subscribers() => ((Delegate?)reload.GetValue(resources))?.GetInvocationList().Select(callback => callback.Target).ToArray() ?? [];
+        Subscribers().Should().Contain(hosts);
+        window.Content = null;
+        Subscribers().Should().Contain(hosts, "temporary detachment must not terminally dispose previews");
+        window.Content = view; window.UpdateLayout();
+        if (closeWhileDetached) window.Content = null;
+        vm.ApproveApplicationClose(); vm.OnClose().Should().BeTrue();
+        Subscribers().Should().NotContain(target => hosts.Contains(target));
+        foreach (var host in hosts)
+        {
+            host.DataContext.Should().BeNull();
+            host.FindControl<GlAreaControl>("ModelView")!.Scene.Should().BeNull();
+            host.DataContext = vm;
+        }
+        Subscribers().Should().NotContain(target => hosts.Contains(target), "disposed controls must not resubscribe on rebinding");
+        vm.PickOpenPath.Should().BeNull(); vm.PickSavePath.Should().BeNull();
+        window.Close();
+    }
+
     [AvaloniaTest] public async Task CharactersWithoutMovementsCanStillStartFromPoses()
     {
         var target = InstallFixture(); var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());

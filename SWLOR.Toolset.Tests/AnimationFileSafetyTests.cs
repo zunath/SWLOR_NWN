@@ -28,6 +28,90 @@ public class AnimationFileSafetyTests
         return (project, target);
     }
 
+    [Test]
+    public void ModelResolutionPreservesResourceCaseInsensitivityForTargetsSupermodelsAndBanks()
+    {
+        var (project, target) = InstallationFixture();
+        var folder = Path.GetDirectoryName(target)!;
+        var parent = Path.Combine(folder, "bAsE.MDL");
+        File.WriteAllText(parent, File.ReadAllText(target).Replace("hero", "base"));
+        var native = File.ReadAllBytes(parent);
+        File.WriteAllText(target, File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero BASE"));
+        AnimationInstall.FindTargetSource(_folder, "HeRo").Should().Be(target);
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var bank = Path.Combine(folder, "an_hero.mdl");
+        var capitalized = Path.Combine(folder, "AN_HERO.MDL");
+        File.Move(bank, bank + ".rename"); File.Move(bank + ".rename", capitalized);
+        project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var installed = new MdlReader().Parse(File.ReadAllBytes(capitalized));
+        installed.Animations.Single(a => a.Name == "sw_wave").Length.Should().Be(2);
+        installed.SuperModel.Should().Be("BASE");
+        File.ReadAllBytes(parent).Should().Equal(native);
+        Directory.GetFiles(folder).Should().BeEquivalentTo(target, parent, capitalized);
+    }
+
+    [Test]
+    public void CaseInsensitiveModelResolutionKeepsTheFirstHakLayerAsWinner()
+    {
+        var (project, shadowed) = InstallationFixture();
+        var winner = Path.Combine(_folder, "SWLOR_Haks", "first", "HERO.MDL");
+        Directory.CreateDirectory(Path.GetDirectoryName(winner)!); File.Copy(shadowed, winner);
+        File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"),
+            "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/first\"},{\"Path\":\"../SWLOR_Haks/models\"}]}");
+        AnimationInstall.FindTargetSource(_folder, "hero").Should().Be(winner);
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [shadowed]);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*winning model files*");
+        var untouched = File.ReadAllBytes(shadowed);
+        AnimationInstall.Prepare(_folder, project, [winner]).Apply();
+        File.ReadAllBytes(shadowed).Should().Equal(untouched);
+    }
+
+    [Test]
+    public void ACaseVariantInAHigherLayerAfterPreparationInvalidatesInstallation()
+    {
+        var (project, target) = InstallationFixture();
+        var higher = Path.Combine(_folder, "SWLOR_Haks", "first", "HERO.MDL");
+        Directory.CreateDirectory(Path.GetDirectoryName(higher)!);
+        File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"),
+            "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/first\"},{\"Path\":\"../SWLOR_Haks/models\"}]}");
+        var plan = AnimationInstall.Prepare(_folder, project, [target]);
+        File.Copy(target, higher);
+        Action apply = plan.Apply;
+        apply.Should().Throw<IOException>().WithMessage("*created after the installation preview*");
+        Directory.Exists(Path.Combine(_folder, "design")).Should().BeFalse();
+    }
+
+    [Test]
+    public void AmbiguousCaseVariantsInOneHakLayerAreRejected()
+    {
+        if (OperatingSystem.IsWindows()) Assert.Ignore("Case variants alias the same file on Windows.");
+        var (project, target) = InstallationFixture();
+        File.Copy(target, Path.Combine(Path.GetDirectoryName(target)!, "HERO.MDL"));
+        Action find = () => AnimationInstall.FindTargetSource(_folder, "hero");
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [target]);
+        find.Should().Throw<InvalidDataException>().WithMessage("Ambiguous model resource*");
+        prepare.Should().Throw<InvalidDataException>().WithMessage("Ambiguous model resource*");
+    }
+
+    [Test]
+    public void ACaseVariantCreatedDuringCommitIsDetectedAndOutputsAreRolledBack()
+    {
+        if (OperatingSystem.IsWindows()) Assert.Ignore("The existing reservation also blocks case variants on Windows.");
+        var input = Path.Combine(_folder, "hero.mdl"); File.WriteAllBytes(input, [1]);
+        var missing = Path.Combine(_folder, "first", "hero.mdl");
+        var competing = Path.Combine(_folder, "first", "HERO.MDL");
+        var first = Path.Combine(_folder, "one.mdl"); var second = Path.Combine(_folder, "two.mdl");
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]> { [input] = [1] }, AbsentInputs = [missing],
+            Changes = [new(first, null, [2]), new(second, null, [3])] };
+        Action apply = () => plan.Apply(index => { if (index == 1) File.WriteAllBytes(competing, [4]); });
+        apply.Should().Throw<InvalidDataException>().WithMessage("Ambiguous model resource*");
+        File.Exists(first).Should().BeFalse(); File.Exists(second).Should().BeFalse();
+        File.Exists(missing).Should().BeFalse(); File.ReadAllBytes(competing).Should().Equal(4);
+        File.ReadAllBytes(input).Should().Equal(1);
+    }
+
     [TestCase("SWLOR_HaksOther")]
     [TestCase("swlor_haks")]
     public void InstallationRejectsConfiguredTargetsInSiblingHakTrees(string sibling)

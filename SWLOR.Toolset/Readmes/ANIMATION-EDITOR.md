@@ -156,6 +156,10 @@ Save, Save All, Ctrl+Z, Ctrl+Y, external-change checks, and unsaved-close prompt
 document workflow. Playback stops when the view detaches. History is bounded to 100 recent
 entries and 32 MiB of serialized snapshots. Projects are bounded to 64 MiB; very dense bakes may
 need a lower frame rate. Long timelines draw markers without creating one UI control per key.
+Saves preserve a file created by another writer during the final commit. If restoring the captured
+version would replace that newer file, the status message gives the retained `.bak` recovery path.
+An interrupted save can also leave its captured `.bak` beside the project; keep it until recovery
+is complete. glTF buffers share a 128 MiB aggregate limit checked before each buffer allocation.
 
 ## Retargeting
 

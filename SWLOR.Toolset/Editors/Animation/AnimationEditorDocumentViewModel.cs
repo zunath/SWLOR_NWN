@@ -456,17 +456,10 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                 }
             }
             var serialized = Project.Serialize(); var data = Encoding.UTF8.GetBytes(serialized);
-            var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
-            try
-            {
-                await File.WriteAllBytesAsync(temporary, data);
-                ModuleMutationLock.ThrowIfModuleLocked();
-                if (acceptedBytes == null ? File.Exists(path) : !File.Exists(path) || !(await AnimationProject.ReadFileBytesAsync(path)).AsSpan().SequenceEqual(acceptedBytes))
-                    throw new IOException("The project changed while saving. Save again to review the external change.");
-                File.Move(temporary, path, overwrite: true);
-            }
-            finally { if (File.Exists(temporary)) File.Delete(temporary); }
-            _path = path; _diskBytes = data; _saved = serialized; Changed(); Status = "Animation project saved."; return true;
+            var backup = await AnimationProjectFile.SaveAsync(path, data, acceptedBytes, ModuleMutationLock.ThrowIfModuleLocked);
+            _path = path; _diskBytes = data; _saved = serialized; Changed();
+            Status = backup == null ? "Animation project saved." : $"Animation project saved. Previous version retained at '{backup}'.";
+            return true;
         }
         catch (Exception ex) { Status = ex.GetBaseException().Message; return false; }
     }

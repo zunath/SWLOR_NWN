@@ -22,21 +22,21 @@ public sealed class GltfAnimationSource
     public static GltfAnimationSource Load(string path)
     {
         var bytes = ReadBounded(path);
-        byte[]? bin = null;
-        byte[] json = bytes;
+        ReadOnlyMemory<byte>? bin = null;
+        ReadOnlyMemory<byte> json = bytes;
         if (bytes.Length >= 12 && BinaryPrimitives.ReadUInt32LittleEndian(bytes) == 0x46546c67)
         {
             if (BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(4)) != 2 ||
                 BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(8)) != bytes.Length)
                 throw new InvalidDataException("Invalid GLB 2.0 header.");
-            json = [];
+            json = ReadOnlyMemory<byte>.Empty;
             for (var offset = 12; offset < bytes.Length;)
             {
                 if (offset + 8 > bytes.Length) throw new InvalidDataException("Truncated GLB chunk.");
                 var length = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(offset));
                 var kind = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(offset + 4));
                 if (length % 4 != 0 || length > bytes.Length - offset - 8) throw new InvalidDataException("Invalid GLB chunk length.");
-                var chunk = bytes.AsSpan(offset + 8, (int)length).ToArray();
+                var chunk = bytes.AsMemory(offset + 8, (int)length);
                 if (kind == 0x4e4f534a)
                 {
                     if (offset != 12 || json.Length != 0) throw new InvalidDataException("GLB JSON must be the first chunk.");
@@ -56,11 +56,15 @@ public sealed class GltfAnimationSource
             throw new InvalidDataException("Only glTF 2.0 is supported.");
         if (root.TryGetProperty("extensionsRequired", out var required) && required.GetArrayLength() > 0)
             throw new InvalidDataException("This source requires glTF extensions. Export an uncompressed glTF 2.0 animation.");
-        var buffers = new List<byte[]>();
-        long total = 0;
+        var buffers = new List<ReadOnlyMemory<byte>>();
+        var total = 0;
         foreach (var buffer in root.GetProperty("buffers").EnumerateArray())
         {
-            byte[] data;
+            var remaining = MaxBytes - total;
+            var declared = buffer.GetProperty("byteLength").GetInt32();
+            if (declared < 0 || declared > remaining)
+                throw new InvalidDataException("Invalid or oversized glTF buffers.");
+            ReadOnlyMemory<byte> data;
             if (!buffer.TryGetProperty("uri", out var uri)) data = bin ?? throw new InvalidDataException("Missing GLB buffer.");
             else
             {
@@ -69,7 +73,7 @@ public sealed class GltfAnimationSource
                 {
                     var split = value.IndexOf(',');
                     if (split < 0 || !value[..split].EndsWith(";base64", StringComparison.Ordinal)) throw new InvalidDataException("Unsupported data URI.");
-                    data = Convert.FromBase64String(value[(split + 1)..]);
+                    data = DecodeBuffer(value.AsSpan(split + 1), remaining);
                 }
                 else
                 {
@@ -79,13 +83,13 @@ public sealed class GltfAnimationSource
                     if (Path.IsPathRooted(decoded) || decoded.Contains(':') ||
                         !file.StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
                         throw new InvalidDataException("glTF buffers must be local files alongside the source.");
-                    data = ReadBounded(file);
+                    data = ReadBounded(file, remaining);
                 }
             }
-            var declared = buffer.GetProperty("byteLength").GetInt32();
-            if (declared < 0 || declared > data.Length || (total += data.Length) > MaxBytes)
+            if (declared > data.Length || data.Length > remaining)
                 throw new InvalidDataException("Invalid or oversized glTF buffers.");
-            buffers.Add(data.AsSpan(0, declared).ToArray());
+            total += data.Length;
+            buffers.Add(data[..declared]);
         }
 
         var nodes = root.GetProperty("nodes").EnumerateArray().ToArray();
@@ -155,7 +159,7 @@ public sealed class GltfAnimationSource
             for (var row = 0; row < count; row++)
                 for (var column = 0; column < width; column++)
                 {
-                    var value = BinaryPrimitives.ReadSingleLittleEndian(data.AsSpan(start + offset + row * stride + column * 4));
+                    var value = BinaryPrimitives.ReadSingleLittleEndian(data.Span[(start + offset + row * stride + column * 4)..]);
                     if (!float.IsFinite(value)) throw new InvalidDataException("Source contains a non-finite key.");
                     values[row][column] = value;
                 }
@@ -260,5 +264,25 @@ public sealed class GltfAnimationSource
         for (var i = 0; i < length; i++) fallback[i] = value[i].GetSingle();
         return fallback;
     }
-    private static byte[] ReadBounded(string path) => AnimationSourceFile.ReadBytes(path, MaxBytes, "glTF source");
+    private static byte[] ReadBounded(string path, int remaining = MaxBytes) =>
+        AnimationSourceFile.ReadBytes(path, remaining, "glTF source");
+
+    private static byte[] DecodeBuffer(ReadOnlySpan<char> encoded, int remaining)
+    {
+        var count = 0; var padding = 0;
+        foreach (var value in encoded)
+        {
+            if (char.IsWhiteSpace(value)) continue;
+            count++;
+            padding = value == '=' ? padding + 1 : 0;
+        }
+        if (count % 4 != 0 || padding > 2)
+            throw new InvalidDataException("Invalid base64 glTF buffer.");
+        var length = count / 4 * 3 - padding;
+        if (length > remaining) throw new InvalidDataException("Invalid or oversized glTF buffers.");
+        var data = new byte[length];
+        if (!Convert.TryFromBase64Chars(encoded, data, out var written) || written != length)
+            throw new InvalidDataException("Invalid base64 glTF buffer.");
+        return data;
+    }
 }

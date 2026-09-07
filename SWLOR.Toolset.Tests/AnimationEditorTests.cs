@@ -198,6 +198,36 @@ public class AnimationEditorTests
     {
         var path = Gltf(badView: true); Action act = () => GltfAnimationSource.Load(path); act.Should().Throw<InvalidDataException>();
     }
+    [TestCase(false)] [TestCase(true)]
+    public void GltfEmbeddedBuffersRetainSamplesWithWhitespaceOrGlbStorage(bool glb)
+    {
+        var path = Gltf(); var root = JsonNode.Parse(File.ReadAllText(path))!;
+        var buffer = root["buffers"]![0]!.AsObject();
+        var uri = buffer["uri"]!.GetValue<string>();
+        var payload = uri[(uri.IndexOf(',') + 1)..];
+        if (glb)
+        {
+            buffer.Remove("uri");
+            var json = Encoding.UTF8.GetBytes(root.ToJsonString());
+            var padding = (4 - json.Length % 4) % 4;
+            var bin = Convert.FromBase64String(payload);
+            using var contents = new MemoryStream();
+            using (var writer = new BinaryWriter(contents, Encoding.UTF8, leaveOpen: true))
+            {
+                writer.Write(0x46546c67u); writer.Write(2u); writer.Write((uint)(28 + json.Length + padding + bin.Length));
+                writer.Write(json.Length + padding); writer.Write(0x4e4f534au); writer.Write(json);
+                for (var i = 0; i < padding; i++) writer.Write((byte)' ');
+                writer.Write(bin.Length); writer.Write(0x004e4942u); writer.Write(bin);
+            }
+            path = Path.Combine(_folder, "source.glb"); File.WriteAllBytes(path, contents.ToArray());
+        }
+        else
+        {
+            buffer["uri"] = "data:application/octet-stream;base64,\n" + payload[..4] + " \t" + payload[4..] + "\r\n";
+            File.WriteAllText(path, root.ToJsonString());
+        }
+        GltfAnimationSource.Load(path).Sample(0, .5f)[0].Translation.X.Should().BeApproximately(.5f, 1e-5f);
+    }
     [TestCase("rootdummy")] [TestCase("ROOTDUMMY")]
     public void RetargetPreservesCalibrationAndScalesRootDisplacement(string root)
     {

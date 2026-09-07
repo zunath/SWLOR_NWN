@@ -8,6 +8,11 @@ public static class AnimationSourceFile
     public static bool Matches(string path, ReadOnlySpan<byte> expected)
     {
         using var stream = Open(path, FileOptions.SequentialScan);
+        return Matches(stream, expected);
+    }
+
+    internal static bool Matches(FileStream stream, ReadOnlySpan<byte> expected)
+    {
         if (stream.Length != expected.Length) return false;
         Span<byte> buffer = stackalloc byte[8192];
         while (!expected.IsEmpty)
@@ -50,7 +55,7 @@ public static class AnimationSourceFile
 
     private static byte[] Allocate(FileStream stream, int maximumBytes, string description)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maximumBytes);
+        ArgumentOutOfRangeException.ThrowIfNegative(maximumBytes);
         var length = stream.Length;
         if (length > maximumBytes)
             throw new InvalidDataException($"{description} exceeds {maximumBytes / (1024 * 1024)} MB.");

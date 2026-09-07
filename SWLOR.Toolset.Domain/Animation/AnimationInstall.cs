@@ -217,19 +217,19 @@ public static class AnimationInstall
             throw new InvalidDataException("That animation name already exists with different capitalization. Use its registered C# name.");
         foreach (var entry in registrations)
             if (entry.ProjectPath != null && !IsProjectPath(entry.ProjectPath, entry.Name))
-                throw new InvalidDataException($"Invalid source project path for '{entry.Name}'. Use design/animations/projects/<category>/{entry.Name}.swlanim.");
+                throw new InvalidDataException($"Invalid source project path for '{entry.Name}'. Use design/animations/<category>/{entry.Name}.swlanim.");
         var relativeProjectPath = registration?.ProjectPath;
         if (registration == null && sourceProjectPath != null)
         {
             var relativeSource = Path.GetRelativePath(root, Path.GetFullPath(sourceProjectPath)).Replace('\\', '/');
-            if (relativeSource.StartsWith("design/animations/projects/", StringComparison.Ordinal) && IsProjectPath(relativeSource, project.Name))
+            if (IsCategorizedProjectPath(relativeSource, project.Name))
                 relativeProjectPath = relativeSource;
         }
         // Keep legacy installations editable in place. New projects always live in the library;
         // choosing a categorized source on the first install avoids creating a second copy.
         var legacyProjectPath = $"design/animations/{project.Name}.swlanim";
         relativeProjectPath ??= registration != null && File.Exists(Path.Combine(root, legacyProjectPath))
-            ? legacyProjectPath : $"design/animations/projects/uncategorized/{project.Name}.swlanim";
+            ? legacyProjectPath : $"design/animations/uncategorized/{project.Name}.swlanim";
         var projectPath = Path.GetFullPath(Path.Combine(root, relativeProjectPath));
         var stem = "sw_" + project.Name.ToLowerInvariant(); stem = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength)];
         var animationName = registration?.AnimationName ?? stem;
@@ -514,7 +514,10 @@ public static class AnimationInstall
 
     private static bool IsProjectPath(string path, string name) =>
         path == $"design/animations/{name}.swlanim" ||
-        Regex.IsMatch(path, @"\Adesign/animations/projects/(?:[A-Za-z0-9_-]+/)+" + Regex.Escape(name) + @"\.swlanim\z");
+        IsCategorizedProjectPath(path, name);
+
+    private static bool IsCategorizedProjectPath(string path, string name) =>
+        Regex.IsMatch(path, @"\Adesign/animations/(?:[A-Za-z0-9_-]+/)+" + Regex.Escape(name) + @"\.swlanim\z");
 
     private static int CountNodes(MdlModel model)
     {

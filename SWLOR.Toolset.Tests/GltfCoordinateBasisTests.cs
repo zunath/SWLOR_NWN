@@ -18,6 +18,24 @@ public class GltfCoordinateBasisTests
     }
     [TearDown] public void Teardown() => Directory.Delete(_folder, true);
 
+    [TestCase("motion.gltf")] [TestCase("./motion.gltf")]
+    [NonParallelizable]
+    public void RelativeSourcesLoadExternalBuffersAndSampleLikeAbsoluteSources(string relativePath)
+    {
+        var expected = Source(0);
+        var previousDirectory = Directory.GetCurrentDirectory();
+        try
+        {
+            Directory.SetCurrentDirectory(_folder);
+            var actual = GltfAnimationSource.Load(relativePath);
+            actual.Joints.Should().Equal(expected.Joints);
+            actual.Animations[0].Duration.Should().Be(expected.Animations[0].Duration);
+            foreach (var time in new[] { 0f, .5f, 1f })
+                actual.Sample(0, time).Should().Equal(expected.Sample(0, time));
+        }
+        finally { Directory.SetCurrentDirectory(previousDirectory); }
+    }
+
     [TestCase(0)] [TestCase(1)] [TestCase(2)]
     public void SampleConvertsRotationAxesAndInheritedTranslationsToNwnCoordinates(int axis)
     {

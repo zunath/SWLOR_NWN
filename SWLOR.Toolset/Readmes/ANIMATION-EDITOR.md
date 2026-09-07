@@ -57,6 +57,8 @@ Save, Save All, Ctrl+Z, Ctrl+Y, external-change checks, and unsaved-close prompt
 document workflow. Playback stops when the view detaches. History is bounded to 100 recent
 entries and 32 MiB of serialized snapshots. Projects are bounded to 64 MiB; very dense bakes may
 need a lower frame rate. Long timelines draw markers without creating one UI control per key.
+Project opens and external reloads accept UTF-8 BOMs from Windows editors while retaining
+the original disk bytes for concurrent-change checks.
 Saves preserve a file created by another writer during the final commit. If restoring the captured
 version would replace that newer file, the status message gives the retained `.bak` recovery path.
 An interrupted save can also leave its captured `.bak` beside the project; keep it until recovery
@@ -69,6 +71,8 @@ that cannot fit two frames can still be posed and scrubbed individually.
 
 Load a `.glb` or `.gltf` in the Retarget panel and select its clip. The native importer reads
 skeletal translation, rotation, and scale channels with LINEAR, STEP, and CUBICSPLINE interpolation.
+Each clip starts at its earliest skeletal key, so a source beginning at a positive timestamp
+does not add a leading pause. Relative timing between tracks is preserved.
 glTF's Y-up coordinates are converted to NWN's Z-up coordinates once, after hierarchy evaluation.
 Buffers may be embedded or local to the source folder. Required extensions, compressed/sparse
 animation accessors, singular transforms, and malformed buffers fail with a message.

@@ -1017,6 +1017,47 @@ public class AnimationEditorTests
         vm.StarterMovements.Should().BeEmpty(); vm.HasStarterMovements.Should().BeFalse(); vm.HasModelPreview.Should().BeFalse();
         vm.OnClose().Should().BeTrue();
     }
+    [AvaloniaTest] public async Task AttachingGeometryNotifiesGuidedPreviewAndFallbackBindings()
+    {
+        var target = InstallFixture();
+        var geometry = "node trimesh visible\nparent hand\nverts 3\n0 0 0\n1 0 0\n0 1 0\nfaces 1\n0 1 2 0 0 0 0 0\nendnode\n";
+        File.WriteAllText(target, File.ReadAllText(target).Replace("endmodelgeom hero", geometry + "endmodelgeom hero"));
+        var project = AnimationProject.FromModel(new MdlReader().Parse(File.ReadAllBytes(target)));
+        var path = Write("unresolved.swlanim", project.Serialize());
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.HasModelPreview.Should().BeFalse(); vm.ShowRigFallback.Should().BeTrue();
+        var changes = new List<string?>();
+        vm.PropertyChanged += (_, e) => changes.Add(e.PropertyName);
+        vm.IsAdvanced = true;
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target);
+        await vm.AttachPreviewCommand.ExecuteAsync(null);
+        changes.Should().Contain(nameof(vm.HasModelPreview)).And.Contain(nameof(vm.ShowRigFallback));
+        vm.HasModelPreview.Should().BeTrue(); vm.ShowRigFallback.Should().BeFalse();
+        vm.IsAdvanced = false;
+        vm.HasModelPreview.Should().BeTrue(); vm.ShowRigFallback.Should().BeFalse();
+        vm.OnClose().Should().BeTrue();
+    }
+
+    [AvaloniaTest] public async Task BomProjectsOpenAndExternallyReloadWithoutLosingDiskByteTracking()
+    {
+        var project = Rig(); var path = Path.Combine(_folder, "bom.swlanim");
+        File.WriteAllText(path, project.Serialize(), new UTF8Encoding(true));
+        var vm = new AnimationEditorDocumentViewModel(new Prompts { ExternalChoice = ExternalChangeChoice.Reload }, new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path);
+        await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.Project.Serialize().Should().Be(project.Serialize()); vm.PathDisplay.Should().Be(path);
+        project.Name = "ExternalPose";
+        File.WriteAllText(path, project.Serialize(), new UTF8Encoding(true));
+        vm.PositionX = .5m;
+        (await vm.TrySaveAsync()).Should().BeFalse();
+        vm.Project.Name.Should().Be("ExternalPose"); vm.IsDirty.Should().BeFalse();
+        vm.PositionX = .6m;
+        (await vm.TrySaveAsync()).Should().BeTrue("the reloaded BOM-bearing bytes must match the next save's external-change check");
+        vm.OnClose().Should().BeTrue();
+    }
+
     [AvaloniaTest] public async Task ModelPlaybackReusesGeometryAndScrubbingRestoresAnExactPose()
     {
         var target = InstallFixture();

@@ -141,12 +141,15 @@ public sealed class GltfAnimationSource
 
         var accessors = root.GetProperty("accessors"); var views = root.GetProperty("bufferViews");
         long componentsRead = 0;
+        var decodedAccessors = new Dictionary<int, Vector4[]>();
+        var decodedTimes = new Dictionary<int, float[]>();
         Vector4[] Accessor(int index, string type)
         {
             var a = accessors[index];
             if (a.GetProperty("componentType").GetInt32() != 5126 || a.GetProperty("type").GetString() != type ||
                 a.TryGetProperty("sparse", out _) || a.TryGetProperty("normalized", out var normalized) && normalized.GetBoolean())
                 throw new InvalidDataException("Animation tracks require non-sparse float accessors.");
+            if (decodedAccessors.TryGetValue(index, out var decoded)) return decoded;
             var count = a.GetProperty("count").GetInt32();
             var width = type == "SCALAR" ? 1 : type == "VEC3" ? 3 : 4;
             if (count < 1 || count > 1_000_000 || (componentsRead += (long)count * width) > 8_000_000)
@@ -167,6 +170,7 @@ public sealed class GltfAnimationSource
                     if (!float.IsFinite(value)) throw new InvalidDataException("Source contains a non-finite key.");
                     values[row][column] = value;
                 }
+            decodedAccessors.Add(index, values);
             return values;
         }
         var animations = new List<SourceAnimation>();
@@ -186,7 +190,9 @@ public sealed class GltfAnimationSource
                 var sampler = clip.GetProperty("samplers")[channel.GetProperty("sampler").GetInt32()];
                 var interpolation = sampler.TryGetProperty("interpolation", out var mode) ? mode.GetString()! : "LINEAR";
                 if (interpolation is not ("LINEAR" or "STEP" or "CUBICSPLINE")) throw new InvalidDataException("Unsupported interpolation.");
-                var times = Accessor(sampler.GetProperty("input").GetInt32(), "SCALAR").Select(v => v.X).ToArray();
+                var input = sampler.GetProperty("input").GetInt32();
+                if (!decodedTimes.TryGetValue(input, out var times))
+                    decodedTimes.Add(input, times = Accessor(input, "SCALAR").Select(v => v.X).ToArray());
                 var values = Accessor(sampler.GetProperty("output").GetInt32(), channelPath == "rotation" ? "VEC4" : "VEC3");
                 if (times[0] < 0 || times[^1] > 600 || times.Zip(times.Skip(1)).Any(p => p.First >= p.Second) ||
                     values.Length != times.Length * (interpolation == "CUBICSPLINE" ? 3 : 1))

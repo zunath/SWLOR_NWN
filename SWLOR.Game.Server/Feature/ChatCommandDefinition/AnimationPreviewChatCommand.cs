@@ -18,14 +18,15 @@ public class AnimationPreviewChatCommand : IChatCommandListDefinition
         .AvailableToAllOnTestEnvironment()
         .Action((user, target, location, args) =>
         {
+            var controller = AnimationPreviewCatalog.GetController(user);
             var name = string.Concat(args);
             if (!Clips.TryGetValue(name, out var clip))
             {
-                SendMessageToPC(user, "Usage: /animtest <name>. Available: " + string.Join(", ", Clips.Keys.OrderBy(key => key)));
+                SendMessageToPC(controller, "Usage: /animtest <name>. Available: " + string.Join(", ", Clips.Keys.OrderBy(key => key)));
                 return;
             }
             NamedAnimation.Play(user, clip);
-            SendMessageToPC(user, $"Playing {name} ({clip.Duration:0.##} seconds).");
+            SendMessageToPC(controller, $"Playing {name} ({clip.Duration:0.##} seconds).");
         })
         .Build();
 }

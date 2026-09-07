@@ -60,6 +60,7 @@ To update an installed draft from the command line, close the toolset and run th
 isolated checkout with the complete HAK source chain available:
 
 ```powershell
+dotnet build tools/SWLOR.AnimationDrafts/SWLOR.AnimationDrafts.csproj -p:RunPostBuildEvent=Never
 dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install . design/animations/drafts/vibroblade/ShieldBash.swlanim a_ba a_fa
 ```
 
@@ -87,7 +88,7 @@ generator solves limb positions at 20 frames per second with smooth timing betwe
 Mark contact and passing beats with `"through": true` to carry velocity through them. The
 generator uses shape-preserving cubic interpolation, with zero velocity at unmarked beats
 and direction changes; targets never overshoot. The four sword attacks use this to continue
-through contact, keeping their original durations while separating wind-up, strike, and recovery.
+through contact while separating wind-up, strike, and recovery.
 Native shield meshes face `-X` with their top along `+Y`. NWN attaches shields to the
 `lforearm` dummy beneath `lforearm_g`; weapons attach to `lhand` / `rhand`, which have
 offsets from the `lhand_g` / `rhand_g` body pivots. See the

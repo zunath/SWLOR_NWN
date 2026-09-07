@@ -352,6 +352,25 @@ namespace SWLOR.Toolset.Tests
                 .And.Contain(model => model.EndsWith("_t_011", StringComparison.OrdinalIgnoreCase));
         }
 
+        [TestCase(BaseItem.SmallShield, "shield")]
+        [TestCase(BaseItem.LargeShield, "shield")]
+        [TestCase(BaseItem.TowerShield, "shield")]
+        [TestCase(BaseItem.Longsword, "weaponl")]
+        public void Resolve_OffhandShieldsAndWeaponsUseDifferentAttachments(BaseItem baseItem, string expectedPart)
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "npc_l");
+            new CreatureValueStore(root).SetEquippedResRef(32, "attachment_test");
+            var item = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            item.SetInt("BaseItem", GffFieldType.Int, (int)baseItem);
+            item.SetInt("ModelPart1", GffFieldType.Byte, 1);
+            item.SetInt("xModelPart1", GffFieldType.Word, 1);
+            var result = BlueprintModelResolver.Resolve(ResourceType.Utc, root, Appearances(), null, null,
+                resRef => resRef == "attachment_test" ? item : BlueprintRoot(ResourceType.Uti, resRef),
+                _ => true, baseItems: BaseItems().GetOrNull);
+            result.Parts.Where(p => p.PartType is "shield" or "weaponl").Should().NotBeEmpty()
+                .And.OnlyContain(p => p.PartType == expectedPart);
+        }
+
         [Test]
         public void Resolve_EquippedCloak_UsesTheWearersBodyPrefixAndItsOwnDyes()
         {

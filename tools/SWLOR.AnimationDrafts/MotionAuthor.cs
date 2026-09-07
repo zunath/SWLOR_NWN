@@ -113,7 +113,7 @@ internal static class MotionAuthor
         SetWorld("rfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(-12)));
         // Keep bent elbows below the hands and near the ribs. Wide, shoulder-height poles
         // produce an outward elbow flare even when the hand is in a low guard.
-        Solve("lhand_g", p.LeftHand, new Vector3(-.36f, -.12f, p.Root.Z - .18f) + centre);
+        Solve("lhand_g", p.LeftHand, new Vector3(-.60f, .35f, p.Root.Z + .12f) + centre);
         Solve("rhand_g", p.RightHand, new Vector3(.36f, -.12f, p.Root.Z - .18f) + centre);
         // Preserve the native hand's roll around the blade, rather than arbitrarily twisting
         // the wrist when the sword changes direction. Native +Z points toward the wrist/elbow.
@@ -128,11 +128,24 @@ internal static class MotionAuthor
         SetWorld("rhand_g", Quaternion.CreateFromRotationMatrix(new Matrix4x4(
             across.X, across.Y, across.Z, 0, blade.X, blade.Y, blade.Z, 0,
             wrist.X, wrist.Y, wrist.Z, 0, 0, 0, 0, 1)));
-        // Actual AShLw meshes face -X and their TOP is +Y (not +Z). Apply both axes,
-        // including for sword moves: a shield can still be equipped in the off hand.
-        SetWorld("lhand_g", Rotation(p.Shield) *
-            Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -MathF.PI / 2) *
-            Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 2));
+        // NWN straps shields to lforearm, not lhand_g. Roll the forearm about its
+        // elbow-to-wrist axis to turn the shield toward the target without moving the
+        // hand, stretching a bone, or rotating the attachment independently of the arm.
+        world = AnimationRig.World(rig.Joints, pose);
+        var forearm = Index(rig, "lforearm_g");
+        var hand = Index(rig, "lhand_g");
+        var axis = Vector3.Normalize(world[hand].Translation - world[forearm].Translation);
+        var normal = Vector3.TransformNormal(-Vector3.UnitX, world[Index(rig, "lforearm")]);
+        normal = Vector3.Normalize(normal - axis * Vector3.Dot(normal, axis));
+        var forward = Vector3.Transform(Vector3.UnitY, Rotation(p.Shield));
+        forward -= axis * Vector3.Dot(forward, axis);
+        if (forward.LengthSquared() < .01f)
+            throw new InvalidDataException($"{name} at {time:0.000}s: shield arm points into the strike; bend the elbow across the guard.");
+        Matrix4x4.Decompose(world[forearm], out _, out var forearmRotation, out _);
+        SetWorld("lforearm_g", AnimationRig.Between(normal, Vector3.Normalize(forward)) * forearmRotation);
+        // A neutral wrist follows the braced forearm. Rotating the hand to aim the
+        // shield only twists the fingers in game, since the shield ignores that bone.
+        pose[hand] = pose[hand] with { Orientation = rig.Joints[hand].Rest.Orientation };
         return pose;
 
         void Solve(string joint, Vector3 target, Vector3 pole)

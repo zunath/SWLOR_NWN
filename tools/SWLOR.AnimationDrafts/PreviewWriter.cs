@@ -18,14 +18,18 @@ internal static class PreviewWriter
         {
             var world = AnimationRig.World(project.Joints, project.Sample(project.Duration * frame / (count - 1)));
             var points = ids.Select(i => world[i].Translation).ToList();
-            // Accessories are explanatory proxies attached to the authored hand transforms.
-            points.Add(Vector3.Transform(new Vector3(0, .8f, 0), world[ids[9]]));
+            // Even simplified accessories must use NWN's equipment dummies, so the preview
+            // cannot conceal a misplaced sword or a shield rotated by the forearm.
+            var weapon = world[project.Joints.FindIndex(j => j.Name == "rhand")];
+            var shield = world[project.Joints.FindIndex(j => j.Name == "lforearm")];
+            points.Add(Vector3.Transform(new Vector3(0, .8f, 0), weapon));
             foreach (var (x, z) in new[] { (-.19f, .49f), (.19f, .49f), (.28f, .34f), (.28f, -.34f),
                          (.19f, -.49f), (-.19f, -.49f), (-.28f, -.34f), (-.28f, .34f) })
-                points.Add(Vector3.Transform(new Vector3(-.09f, z, x), world[ids[6]]));
+                points.Add(Vector3.Transform(new Vector3(-.09f, z, x), shield));
             points.Add(Vector3.Transform(new Vector3(0, .21f, -.075f), world[ids[12]]));
             points.Add(Vector3.Transform(new Vector3(0, .21f, -.075f), world[ids[15]]));
             points.Add(Vector3.Transform(new Vector3(0, .14f, .13f), world[ids[3]]));
+            points.Add(weapon.Translation);
             frames.Add(points.Select(v => new[] { v.X, v.Y, v.Z }).ToArray());
         }
         return new { motion.Id, motion.Name, motion.Reference, motion.Observation, motion.Interpretation, motion.Shield,

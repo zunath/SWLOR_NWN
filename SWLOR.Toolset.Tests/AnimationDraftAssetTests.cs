@@ -135,10 +135,11 @@ public class AnimationDraftAssetTests
         using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(Folder, "manifest.json")));
         var entry = manifest.RootElement.GetProperty("Animations").EnumerateArray().Single(a => a.GetProperty("Id").GetString() == name);
         var time = entry.GetProperty("Beats")[1].GetProperty("Time").GetSingle();
-        var hand = AnimationRig.World(project.Joints, project.Sample(time))[project.Joints.FindIndex(j => j.Name == "lhand_g")];
-        // AShLw model +Y is its top, -X its facing. The old proxy incorrectly used +Z as top.
-        Vector3.TransformNormal(Vector3.UnitY, hand).Z.Should().BeGreaterThan(.7f, "an equipped shield must not lie sideways over the arm");
-        Vector3.TransformNormal(-Vector3.UnitX, hand).Y.Should().BeGreaterThan(.5f, "the shield face must point toward the attack");
+        var shield = AnimationRig.World(project.Joints, project.Sample(time))[project.Joints.FindIndex(j => j.Name == "lforearm")];
+        // NWN's equipment socket is lforearm, not the lhand_g mesh pivot used by the old preview.
+        // AShLw model +Y is its top, -X its facing.
+        Vector3.TransformNormal(Vector3.UnitY, shield).Z.Should().BeGreaterThan(.7f, "an equipped shield must not lie sideways over the arm");
+        Vector3.TransformNormal(-Vector3.UnitX, shield).Y.Should().BeGreaterThan(.8f, "the shield face must protect the front of the character");
     }
 
     [TestCaseSource(nameof(Names))]
@@ -157,17 +158,71 @@ public class AnimationDraftAssetTests
     }
 
     [Test]
-    public void ShieldBashDrivesItsUprightFaceForwardWithoutASidewaysSwing()
+    public void ShieldBashDrivesItsUprightFacePredominantlyForward()
     {
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, "ShieldBash.swlanim")));
-        var hand = project.Joints.FindIndex(j => j.Name == "lhand_g");
-        var draw = AnimationRig.World(project.Joints, project.Sample(.18f))[hand];
-        var impact = AnimationRig.World(project.Joints, project.Sample(.42f))[hand];
-        (impact.Translation.Y - draw.Translation.Y).Should().BeGreaterThan(.35f);
-        Math.Abs(impact.Translation.X - draw.Translation.X).Should().BeLessThan(.05f);
-        Math.Abs(impact.Translation.Z - draw.Translation.Z).Should().BeLessThan(.05f);
-        Vector3.TransformNormal(-Vector3.UnitX, impact).Y.Should().BeGreaterThan(.98f);
-        Vector3.TransformNormal(Vector3.UnitY, impact).Z.Should().BeGreaterThan(.98f);
+        var socket = project.Joints.FindIndex(j => j.Name == "lforearm");
+        var draw = AnimationRig.World(project.Joints, project.Sample(.18f))[socket];
+        var impact = AnimationRig.World(project.Joints, project.Sample(.42f))[socket];
+        // A strapped shield strikes with its face and a bent arm; an extended fist is not a bash.
+        var face = new Vector3(-.09f, 0, 0);
+        var travel = Vector3.Transform(face, impact) - Vector3.Transform(face, draw);
+        travel.Y.Should().BeGreaterThan(.2f);
+        Math.Abs(travel.X).Should().BeLessThan(travel.Y / 2, "the face must drive forward rather than sweep sideways");
+        Math.Abs(travel.Z).Should().BeLessThan(.10f);
+        Vector3.TransformNormal(-Vector3.UnitX, impact).Y.Should().BeGreaterThan(.9f);
+        Vector3.TransformNormal(Vector3.UnitY, impact).Z.Should().BeGreaterThan(.9f);
+    }
+
+    [TestCase("a_ba")]
+    [TestCase("a_fa")]
+    public void InstalledClipsKeepTheNativeShieldSocketFacingForward(string modelName)
+    {
+        var path = Path.Combine(Root, "SWLOR_Haks", "sw_cr_creature", modelName + ".mdl");
+        if (!File.Exists(path)) Assert.Ignore("Initialize the HAK submodule for native equipment verification.");
+        var model = new MdlReader().Parse(File.ReadAllBytes(path));
+        var rig = AnimationProject.FromModel(model);
+        var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(path)!, model.SuperModel + ".mdl")));
+        var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
+            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        foreach (var motion in recipe.Motions)
+        {
+            var clip = overlay.Animations.Single(a => a.Name == registry.Single(r => r.Name == motion.Id).AnimationName);
+            foreach (var beat in motion.Beats.Skip(1).SkipLast(1))
+            {
+                var sample = MdlAnimationPose.Sample(clip, beat.Time, MdlAnimationPose.BindPose(model));
+                var pose = rig.Joints.Select(j => sample.TryGetValue(j.Name, out var value)
+                    ? value with { Position = value.Position * model.Scale } : j.Rest).ToArray();
+                var world = AnimationRig.World(rig.Joints, pose);
+                var socket = world[rig.Joints.FindIndex(j => j.Name == "lforearm")];
+                Vector3.TransformNormal(-Vector3.UnitX, socket).Y.Should().BeGreaterThan(.7f,
+                    $"installed {motion.Id}/{beat.Label} must guard forward on {modelName}");
+                Vector3.TransformNormal(Vector3.UnitY, socket).Z.Should().BeGreaterThan(.65f);
+            }
+        }
+    }
+
+    [TestCaseSource(nameof(Names))]
+    public void CombatPosesKeepShieldSocketsRigidAndWristsAlignedWithTheForearm(string name)
+    {
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Root,
+            "design", "animations", "recipes", "vibroblade.json")), Recipe.Json)!;
+        var beats = recipe.Motions.Single(m => m.Id == name).Beats;
+        foreach (var key in project.Keys.Where(k => k.Time >= beats[1].Time && k.Time <= beats[^2].Time))
+        {
+            var world = AnimationRig.World(project.Joints, key.Pose);
+            var shield = world[project.Joints.FindIndex(j => j.Name == "lforearm")];
+            Vector3.TransformNormal(-Vector3.UnitX, shield).Y.Should().BeGreaterThan(.7f, $"{name} at {key.Time}s must guard with the shield face");
+            Vector3.TransformNormal(Vector3.UnitY, shield).Z.Should().BeGreaterThan(.65f);
+            foreach (var node in new[] { "lforearm", "lhand", "rhand", "lhand_g" })
+            {
+                var i = project.Joints.FindIndex(j => j.Name == node);
+                Math.Abs(Quaternion.Dot(key.Pose[i].Orientation, project.Joints[i].Rest.Orientation)).Should().BeGreaterThan(.9999f,
+                    "equipment dummies must remain rigid and the left wrist must follow its forearm");
+            }
+        }
     }
 
     [TestCaseSource(nameof(Names))]

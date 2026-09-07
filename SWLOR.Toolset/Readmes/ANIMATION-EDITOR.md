@@ -28,7 +28,7 @@ or other target models. Switching layouts preserves the animation and its undo h
 The seven current perks among the first nine image references on the Bible's **Animations** tab have editable drafts in
 `design/animations/drafts/vibroblade/`. Open `preview.html` in your normal browser to choose a
 motion, play it slowly, orbit the mannequin, and jump to its main poses. Its accessory proxies
-show the intended blade and shield directions; check the final equipment in NWN.
+use NWN's equipment attachment points; check the final equipment and motion in NWN.
 
 In the toolset, choose **Open project** and open any of the seven `.swlanim` files. These drafts
 use the native male humanoid `a_ba` rig and remain editable. One-shot moves start and finish in
@@ -82,13 +82,24 @@ feet during interpolation and correspondence with the Bible references. Recipe v
 native metres (`+Y` forward, `+Z` up); `chest`, `hips`, and `shield` use degrees in the order
 forward lean, yaw, side bend. Each beat overrides the corresponding ready pose, and the
 generator solves limb positions at 20 frames per second with smooth timing between beats.
-Native shield meshes face `-X` with their top along `+Y`; both axes must be calibrated when
-posing the hand, including sword moves that can be used with a shield equipped. To inspect
+Native shield meshes face `-X` with their top along `+Y`. NWN attaches shields to the
+`lforearm` dummy beneath `lforearm_g`; weapons attach to `lhand` / `rhand`, which have
+offsets from the `lhand_g` / `rhand_g` body pivots. See the
+[native attachment node reference](https://nwn.wiki/spaces/NWN1/pages/38176272/Model+Special+Nodes).
+Rotating a hand to aim a shield makes the preview misleading and twists the wrist in game.
+The generator instead braces the forearm across the guard and rolls it about the elbow-to-wrist
+axis, retaining the native socket offsets and a neutral left wrist. This applies to all seven
+moves, since a shield may remain equipped during a sword attack. To inspect
 actual equipment rather than the HTML mannequin's stand-ins, export posed triangles with:
 
 ```powershell
 dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll render-data SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/drafts/vibroblade artifacts/animation-poses.json --frames --shield SWLOR_Haks/sw_weapon/ashlw_113.mdl --sword SWLOR_Haks/sw_weapon/wswls_t_122.mdl
 ```
+
+Add `--overlay SWLOR_Haks/sw_cr_creature/an_a_ba.mdl --registry design/animations/registry.json`
+to sample the installed animation file against the target model's skeleton and animation scale.
+For female validation use `a_fa.mdl` and `an_a_fa.mdl`. These are offline renders of game assets;
+they do not verify the live client's playback, model cache, equipment choice, or transitions.
 
 ## Advanced authoring
 

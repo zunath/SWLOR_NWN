@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "31427882ba850f05aad831a320af64c22f926d284190e15ee982dae1deda3a36",
+  "RecipeSha256": "658269bdd59256c5aedcfd605b033d64f1f26a4d3cca6eb64e88f06cd8aa1dfd",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -13,13 +13,13 @@
       "BibleRow": 2,
       "Reference": "https://chatgpt.com/s/m_6a3fdd47b8f88191a44d7c29b566f837",
       "Observation": "A broad stance, forward left-hand shield impact, and a low right-hand blade.",
-      "Interpretation": "Compact staggered guard. The shield face stays upright and drives straight forward from the elbow with a short weight shift, then recoils. The sword stays ready beside the ribs. Impact VFX is separate.",
+      "Interpretation": "Brace the shield on the left forearm across the chest, drive its broad face forward with a short shoulder and weight shift, then recover. The elbow stays bent and the sword guards the right side. Impact VFX is separate.",
       "Status": "Draft: visual review required",
       "Project": "ShieldBash.swlanim",
       "Duration": 1,
       "Keyframes": 25,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5463115E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.550668E-07,
       "Beats": [
         {
           "Time": 0,
@@ -50,7 +50,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "8eea2593ceb62170ffa8880bf419a4ea2e8ad1154fc5df2ce017e15df3849f2e"
+      "ProjectSha256": "8ea9ef1fbacac808e2f8d6258615498d577f4141823d3c85ed1409598a474fa1"
     },
     {
       "Id": "ShieldWall",
@@ -64,7 +64,7 @@
       "Duration": 2.1,
       "Keyframes": 44,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.437016E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.494554E-07,
       "Beats": [
         {
           "Time": 0,
@@ -95,7 +95,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "e116cb241373cab85f8ea868def554921f58e6fc98649ecd22c6da662aaff994"
+      "ProjectSha256": "9872f882272b4f15906a9bdcf3a1d60954ed05270eb386c93fae3a63504513a1"
     },
     {
       "Id": "CoveringStrike",
@@ -109,7 +109,7 @@
       "Duration": 1.4,
       "Keyframes": 35,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.494554E-07,
       "Beats": [
         {
           "Time": 0,
@@ -148,7 +148,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "b94a830917a8430beaddfdf9219fcd657be44c6624bbf6c889599deb880927ad"
+      "ProjectSha256": "9a5ad9d95fc3312e83d0734ff5caf1e97a36cdf440eeb8d7dd5cd9d5d3a154ed"
     },
     {
       "Id": "Invincible",
@@ -162,7 +162,7 @@
       "Duration": 1.7,
       "Keyframes": 40,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.494554E-07,
       "Beats": [
         {
           "Time": 0,
@@ -193,7 +193,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "c495b6557725af0edbd4b784365e3ef66be2ad6e93f117fcb9e55d550cdfdd21"
+      "ProjectSha256": "662e9bb498f929b5bc4676cb870e576cb437527d818ab69030c57771b13c335b"
     },
     {
       "Id": "RiotBlade",
@@ -207,7 +207,7 @@
       "Duration": 0.9,
       "Keyframes": 22,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.3841858E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.1073424E-07,
       "Beats": [
         {
           "Time": 0,
@@ -238,7 +238,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "814a80996725c88bbb34cc3e70699899c9a446557530e7c1084b65f6788566be"
+      "ProjectSha256": "b272ab8d4846c3fb6086ad746801228877b281249aae7b1ebbe5abb3a5559f1a"
     },
     {
       "Id": "RendingStrike",
@@ -283,7 +283,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "4042bddd33c8a2fec0dca0dd6235c6e4256e0bc953a184bbde78c47b8030ea7c"
+      "ProjectSha256": "b0d24510af4c11d1dafb33b58e4fce07e833b6bdaca38a955cfdda0ab3cedca1"
     },
     {
       "Id": "SavageCleave",
@@ -297,7 +297,7 @@
       "Duration": 1.55,
       "Keyframes": 37,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.8128046E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5680197E-07,
       "Beats": [
         {
           "Time": 0,
@@ -332,7 +332,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "dde53ca8a214098256bd8d628ca534e79db21b9e6ee1cdaa1f4b0f1a16ddeb5a"
+      "ProjectSha256": "d533b60050629b3f1d0185cf9fdbdc14f13c6323327a6267c8ebb4036416a8ae"
     }
   ]
 }

@@ -38,14 +38,27 @@ if (args.Length == 2 && args[0] == "inspect")
 if (args.Length >= 4 && args[0] == "render-data")
 {
     var source = new MdlReader().Parse(File.ReadAllBytes(args[1]));
+    var sourceRig = AnimationProject.FromModel(source);
+    MdlModel? overlay = null;
+    AnimationRegistration[]? registry = null;
     var equipment = new List<(string Bone, MdlModel Model)>();
     for (var i = 4; i < args.Length; i++)
     {
         if (args[i] == "--frames") continue;
-        var bone = args[i] switch { "--shield" => "lhand_g", "--sword" => "rhand_g", _ => throw new ArgumentException("Unknown render option.") };
+        if (args[i] is "--overlay" or "--registry")
+        {
+            var option = args[i];
+            if (++i == args.Length) throw new ArgumentException(option + " requires a path.");
+            if (option == "--overlay") overlay = new MdlReader().Parse(File.ReadAllBytes(args[i]));
+            else registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(args[i]));
+            continue;
+        }
+        var part = args[i] switch { "--shield" => "shield", "--sword" => "weaponr", _ => throw new ArgumentException("Unknown render option.") };
+        var bone = MdlPartBoneMap.GetBoneName(part)!;
         if (++i == args.Length) throw new ArgumentException("Equipment option requires an MDL path.");
         equipment.Add((bone, new MdlReader().Parse(File.ReadAllBytes(args[i]))));
     }
+    if ((overlay == null) != (registry == null)) throw new ArgumentException("Installed rendering requires both --overlay and --registry.");
     using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(args[2], "manifest.json")));
     var poses = new List<object>();
     foreach (var entry in manifest.RootElement.GetProperty("Animations").EnumerateArray())
@@ -61,13 +74,25 @@ if (args.Length >= 4 && args[0] == "render-data")
         foreach (var time in times)
         {
             var beat = beats.Last(b => b.GetProperty("Time").GetSingle() <= time);
-            var pose = project.Sample(time);
-            var named = project.Joints.Select((j, i) => (j.Name, Pose: pose[i])).ToDictionary(j => j.Name, j => j.Pose);
-            var world = AnimationRig.World(project.Joints, pose);
+            var rig = overlay == null ? project : sourceRig;
+            PosedNode[] pose;
+            if (overlay == null) pose = project.Sample(time);
+            else
+            {
+                var registered = registry!.Single(r => r.Name == id);
+                var animation = overlay.Animations.Single(a => a.Name == registered.AnimationName);
+                var sampled = MdlAnimationPose.Sample(animation, time, MdlAnimationPose.BindPose(source));
+                // NWN scales inherited translations for the target model. Render the installed
+                // clip against that model, rather than reusing the authored project's transforms.
+                pose = rig.Joints.Select(j => sampled.TryGetValue(j.Name, out var p)
+                    ? p with { Position = p.Position * source.Scale } : j.Rest).ToArray();
+            }
+            var named = rig.Joints.Select((j, i) => (j.Name, Pose: pose[i])).ToDictionary(j => j.Name, j => j.Pose);
+            var world = AnimationRig.World(rig.Joints, pose);
             var allMeshes = MdlMeshBuilder.Build(source, [named]).Meshes.Select(mesh => (Mesh: mesh, Transform: mesh.Transform)).ToList();
             foreach (var item in equipment)
                 foreach (var mesh in MdlMeshBuilder.Build(item.Model).Meshes)
-                    allMeshes.Add((mesh, mesh.Transform * world[project.Joints.FindIndex(j => j.Name == item.Bone)]));
+                    allMeshes.Add((mesh, mesh.Transform * world[rig.Joints.FindIndex(j => j.Name == item.Bone)]));
             var meshes = allMeshes.Select(entry => new
             {
                 entry.Mesh.NodeName, entry.Mesh.Indices,
@@ -80,15 +105,16 @@ if (args.Length >= 4 && args[0] == "render-data")
             });
             float[] Point(string joint, Vector3 local)
             {
-                var p = Vector3.Transform(local, world[project.Joints.FindIndex(j => j.Name == joint)]);
+                var p = Vector3.Transform(local, world[rig.Joints.FindIndex(j => j.Name == joint)]);
                 return [p.X, p.Y, p.Z];
             }
             snapshots.Add(new { Time = time, Label = beat.GetProperty("Label").GetString(), Meshes = meshes.ToArray(),
-                Hand = Point("rhand_g", Vector3.Zero), Tip = Point("rhand_g", new Vector3(0, .8f, 0)),
-                Shield = Enumerable.Range(0, 8).Select(i => Point("lhand_g", new Vector3(-.09f,
+                Hand = Point("rhand", Vector3.Zero), Tip = Point("rhand", new Vector3(0, .8f, 0)),
+                Shield = Enumerable.Range(0, 8).Select(i => Point("lforearm", new Vector3(-.09f,
                     .49f * MathF.Sin(i * MathF.PI / 4), .29f * MathF.Cos(i * MathF.PI / 4)))).ToArray(), EquipmentMeshes = equipment.Count > 0 });
         }
-        poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), project.Duration, Snapshots = snapshots });
+        poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), project.Duration,
+            PoseSource = overlay == null ? "Editable project" : "Installed MDL: " + overlay.Name, Snapshots = snapshots });
     }
     File.WriteAllText(args[3], JsonSerializer.Serialize(poses));
     return 0;

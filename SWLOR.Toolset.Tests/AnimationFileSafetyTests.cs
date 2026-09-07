@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Animation;
@@ -11,6 +12,73 @@ public class AnimationFileSafetyTests
     private string _folder = null!;
     [SetUp] public void Setup() { _folder = Path.Combine(Path.GetTempPath(), "swlor-animation-files-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(_folder); }
     [TearDown] public void Teardown() { Directory.Delete(_folder, true); }
+
+    private (AnimationProject Project, string Target) InstallationFixture()
+    {
+        var project = new AnimationProject { Name = "Wave", ModelName = "hero", AnimationRoot = "rootdummy",
+            Joints = [new("hero", -1, new(Vector3.Zero, Quaternion.Identity, 1)),
+                new("rootdummy", 0, new(Vector3.UnitZ, Quaternion.Identity, 1))] };
+        var target = Path.Combine(_folder, "SWLOR_Haks", "models", "hero.mdl");
+        Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+        File.WriteAllText(target, "newmodel hero\nsetsupermodel hero NULL\n" + AnimationMdl.ExportGeometry(project) + "donemodel hero\n");
+        Directory.CreateDirectory(Path.Combine(_folder, "Build"));
+        File.WriteAllText(Path.Combine(_folder, "Build", "hakbuilder.json"), "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"}]}");
+        return (project, target);
+    }
+
+    [TestCase(false)] [TestCase(true)]
+    public void InstallationKeepsOneSourceAndReusesItsRegisteredCategory(bool categorized)
+    {
+        var (project, target) = InstallationFixture();
+        var relative = $"design/animations/projects/{(categorized ? "social/greetings" : "uncategorized")}/Wave.swlanim";
+        var source = Path.Combine(_folder, relative);
+        var original = Encoding.UTF8.GetBytes(project.Serialize().Replace("\r\n", "\n").Replace("\n", "\r\n") + "\r\n");
+        if (categorized)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(source)!);
+            File.WriteAllBytes(source, original);
+        }
+        var plan = AnimationInstall.Prepare(_folder, project, [target], categorized ? source : null);
+        plan.Apply();
+        if (categorized) File.ReadAllBytes(source).Should().Equal(original, "installation must preserve the provenance hash");
+        var registryPath = Path.Combine(_folder, "design/animations/registry.json");
+        JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(registryPath))!.Single().ProjectPath.Should().Be(relative);
+        project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, [target], Path.Combine(_folder, "elsewhere/Wave.swlanim")).Apply();
+        Directory.GetFiles(Path.Combine(_folder, "design/animations"), "*.swlanim", SearchOption.AllDirectories).Select(Path.GetFullPath).Should().Equal(Path.GetFullPath(source));
+        AnimationProject.Deserialize(File.ReadAllText(source)).Duration.Should().Be(2);
+    }
+
+    [Test]
+    public void LegacyRegistryWithoutSourcePathKeepsItsExistingProjectInPlace()
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var legacy = Path.Combine(_folder, "design/animations/Wave.swlanim");
+        File.Move(Path.Combine(_folder, "design/animations/projects/uncategorized/Wave.swlanim"), legacy);
+        var registryPath = Path.Combine(_folder, "design/animations/registry.json");
+        var entries = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(registryPath))!;
+        File.WriteAllText(registryPath, JsonSerializer.Serialize(entries.Select(e => new { e.Name, e.AnimationName, e.Duration, e.Targets })));
+        project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        Directory.GetFiles(Path.Combine(_folder, "design/animations"), "*.swlanim", SearchOption.AllDirectories).Select(Path.GetFullPath).Should().Equal(Path.GetFullPath(legacy));
+        AnimationProject.Deserialize(File.ReadAllText(legacy)).Duration.Should().Be(2);
+    }
+
+    [TestCase("../Wave.swlanim")]
+    [TestCase("design/animations/projects/../../Wave.swlanim")]
+    [TestCase("design/animations/projects/social/Other.swlanim")]
+    [TestCase("SWLOR.Game.Server/Wave.swlanim")]
+    public void RegistryCannotRedirectSourceWritesOutsideItsNamedProject(string path)
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var registryPath = Path.Combine(_folder, "design/animations/registry.json");
+        var entries = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(registryPath))!;
+        File.WriteAllText(registryPath, JsonSerializer.Serialize(entries.Select(e => e with { ProjectPath = path })));
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [target]);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*Invalid source project path*");
+    }
 
     [TestCase(false)] [TestCase(true)]
     public async Task AnotherWriterCreatingTheDestinationAtCommitIsNeverOverwritten(bool existing)

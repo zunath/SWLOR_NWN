@@ -21,14 +21,14 @@ public sealed class AnimationInstallPlan
     public IReadOnlyCollection<string> AbsentInputs { get; init; } = [];
     public string CodeExample => $"NamedAnimation.Queue(creature, AuthoredAnimation.{ConstantName});";
 
-    internal HashSet<string> GetAbsentReservationPaths() => GetAbsentReservationPaths(Changes);
+    internal HashSet<string> GetAbsentReservationPaths() => GetAbsentReservationPaths(Changes, AbsentInputs);
 
-    private HashSet<string> GetAbsentReservationPaths(IReadOnlyList<AnimationFileChange> changes)
+    private static HashSet<string> GetAbsentReservationPaths(IReadOnlyList<AnimationFileChange> changes, IEnumerable<string> absentInputs)
     {
-        var outputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var outputs = new HashSet<string>(AnimationInstall.PathComparer);
         for (var i = 0; i < changes.Count; i++) outputs.Add(changes[i].Path);
-        var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var path in AbsentInputs)
+        var paths = new HashSet<string>(AnimationInstall.PathComparer);
+        foreach (var path in absentInputs)
             if (!outputs.Contains(path) && paths.Add(path) && paths.Count > AnimationInstall.MaximumAbsentReservations)
                 throw new InvalidDataException($"Installation has too many missing model dependencies (maximum {AnimationInstall.MaximumAbsentReservations}). Select fewer targets or HAK layers.");
         return paths;
@@ -38,16 +38,19 @@ public sealed class AnimationInstallPlan
 
     internal void Apply(Action<int>? beforeCommit)
     {
-        // Freeze the output list before any filesystem work; all phases use this same ordering.
-        var changes = Changes.ToArray();
-        var absentReservations = GetAbsentReservationPaths(changes);
+        // Own the transaction's bytes as well as its ordering through commit and rollback.
+        var changes = Changes.Select(change => new AnimationFileChange(change.Path, change.Before?.ToArray(), change.After.ToArray())).ToArray();
+        var inputs = Inputs.ToDictionary(input => input.Key, input => input.Value.ToArray(), AnimationInstall.PathComparer);
+        var absentInputs = AbsentInputs.ToArray();
+        var absentReservations = GetAbsentReservationPaths(changes, absentInputs);
         // The caller holds the module mutation lock. Every input is checked again after confirmation.
-        VerifyInputs();
+        VerifyInputs(inputs, absentInputs);
         foreach (var change in changes) Verify(change);
-        var staged = new Dictionary<string, string>();
+        var staged = new Dictionary<string, string>(AnimationInstall.PathComparer);
         var applied = new List<AnimationFileChange>();
         var inputLeases = new List<FileStream>();
-        var reservedAbsentInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var outputLeases = new List<FileStream>();
+        var reservedAbsentInputs = new HashSet<string>(AnimationInstall.PathComparer);
         try
         {
             foreach (var change in changes)
@@ -59,9 +62,9 @@ public sealed class AnimationInstallPlan
             }
             // Outputs are captured and verified at their conditional commit. Keep every other
             // dependency stable through the entire commit/rollback sequence, including config.
-            var outputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var outputs = new HashSet<string>(AnimationInstall.PathComparer);
             for (var i = 0; i < changes.Length; i++) outputs.Add(changes[i].Path);
-            foreach (var input in Inputs)
+            foreach (var input in inputs)
             {
                 if (outputs.Contains(input.Key)) continue;
                 var lease = new FileStream(input.Key, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -85,16 +88,25 @@ public sealed class AnimationInstallPlan
                 }
                 reservedAbsentInputs.Add(path);
             }
-            VerifyInputs(reservedAbsentInputs);
+            VerifyInputs(inputs, absentInputs, reservedAbsentInputs);
             foreach (var change in changes)
             {
                 beforeCommit?.Invoke(applied.Count);
                 AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.Before, () => { });
                 applied.Add(change);
+                // Recheck publication under a lease, then keep earlier outputs stable while
+                // the rest of the transaction commits. A writer winning the acquisition gap
+                // is detected before success and is preserved by conditional rollback.
+                var lease = new FileStream(change.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                outputLeases.Add(lease);
+                if (!AnimationSourceFile.Matches(lease, change.After))
+                    throw new IOException($"'{change.Path}' changed during installation.");
             }
         }
         catch (Exception failure)
         {
+            foreach (var lease in outputLeases) lease.Dispose();
+            outputLeases.Clear();
             var errors = new List<Exception> { failure };
             foreach (var change in applied.AsEnumerable().Reverse())
                 try
@@ -115,17 +127,19 @@ public sealed class AnimationInstallPlan
         }
         finally
         {
+            foreach (var lease in outputLeases) lease.Dispose();
             foreach (var lease in inputLeases) lease.Dispose();
             foreach (var file in staged.Values) AnimationProjectFile.DeleteStaged(file);
         }
     }
 
-    private void VerifyInputs(IReadOnlySet<string>? reservedAbsentInputs = null)
+    private static void VerifyInputs(IReadOnlyDictionary<string, byte[]> inputs, IEnumerable<string> absentInputs,
+        IReadOnlySet<string>? reservedAbsentInputs = null)
     {
-        foreach (var path in AbsentInputs)
+        foreach (var path in absentInputs)
             if (reservedAbsentInputs?.Contains(path) != true && File.Exists(path))
                 throw new IOException($"'{path}' was created after the installation preview. Prepare a new preview.");
-        foreach (var input in Inputs)
+        foreach (var input in inputs)
             if (!File.Exists(input.Key) || !AnimationSourceFile.Matches(input.Key, input.Value))
                 throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
     }
@@ -140,6 +154,8 @@ public sealed class AnimationInstallPlan
 
 public static class AnimationInstall
 {
+    private static StringComparison PathComparison => OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+    internal static StringComparer PathComparer => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
     public const int ClipsPerBank = 256;
     public const int MaximumModelChainDepth = 32;
     public const int MaximumInputBytes = 128 * 1024 * 1024;
@@ -157,7 +173,7 @@ public static class AnimationInstall
         {
             var path = Path.Combine(layer, resref + ".mdl");
             if (File.Exists(path))
-                return path.StartsWith(Path.Combine(root, "SWLOR_Haks") + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ? path : null;
+                return path.StartsWith(Path.Combine(root, "SWLOR_Haks") + Path.DirectorySeparatorChar, PathComparison) ? path : null;
         }
         return null;
     }
@@ -183,8 +199,8 @@ public static class AnimationInstall
         var configPath = Path.Combine(root, "Build", "hakbuilder.json");
         var registryPath = Path.Combine(root, "design", "animations", "registry.json");
         var constantsPath = Path.Combine(root, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
-        var inputs = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
-        var absentInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var inputs = new Dictionary<string, byte[]>(PathComparer);
+        var absentInputs = new HashSet<string>(PathComparer);
         var inputBytes = 0;
         byte[] Read(string path)
         {
@@ -196,6 +212,15 @@ public static class AnimationInstall
                 inputs[path] = data;
             }
             return data;
+        }
+        // The opened authoring file remains an input even when registration copies it to
+        // another location. Its snapshot lets the editor detect stale documents, and Apply
+        // keeps that input stable through the installation confirmation and transaction.
+        if (sourceProjectPath != null)
+        {
+            var sourcePath = Path.GetFullPath(sourceProjectPath);
+            if (File.Exists(sourcePath)) Read(sourcePath);
+            else absentInputs.Add(sourcePath);
         }
         using var config = JsonDocument.Parse(Read(configPath));
         var layers = ReadLayers(configPath, config.RootElement);
@@ -246,21 +271,21 @@ public static class AnimationInstall
             var number = suffix.ToString(System.Globalization.CultureInfo.InvariantCulture);
             animationName = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength - number.Length)] + number;
         }
-        var targets = targetPaths.Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var targets = targetPaths.Select(Path.GetFullPath).Distinct(PathComparer).ToArray();
         if (targets.Length is < 1 or > 32) throw new InvalidDataException("Select 1–32 target model files.");
-        var models = new Dictionary<string, MdlModel>(StringComparer.OrdinalIgnoreCase);
-        var chains = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        var models = new Dictionary<string, MdlModel>(PathComparer);
+        var chains = new Dictionary<string, List<string>>(PathComparer);
         foreach (var target in targets)
         {
-            if (!target.StartsWith(hakRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ||
+            if (!target.StartsWith(hakRoot + Path.DirectorySeparatorChar, PathComparison) ||
                 !Path.GetExtension(target).Equals(".mdl", StringComparison.OrdinalIgnoreCase) ||
-                !string.Equals(Resolve(Path.GetFileNameWithoutExtension(target)), target, StringComparison.OrdinalIgnoreCase))
+                !PathComparer.Equals(Resolve(Path.GetFileNameWithoutExtension(target)), target))
                 throw new InvalidDataException("Targets must be winning model files in the configured SWLOR HAK source directories.");
             if (Read(target).AsSpan().StartsWith("# SWLOR authored animations for "u8))
                 throw new InvalidDataException("Generated animation banks cannot be installation targets. Select the original character model.");
             var currentPath = target;
             var chain = chains[target] = [];
-            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var visited = new HashSet<string>(PathComparer);
             while (currentPath != null)
             {
                 if (!visited.Add(currentPath) || visited.Count > MaximumModelChainDepth) throw new InvalidDataException("Cyclic or excessively deep supermodel chain.");
@@ -291,10 +316,10 @@ public static class AnimationInstall
             }
         }
         var targetNames = targets.Select(path => Path.GetRelativePath(root, path).Replace('\\', '/')).ToArray();
-        if (registration != null && !registration.Targets.ToHashSet(StringComparer.OrdinalIgnoreCase).SetEquals(targetNames))
+        if (registration != null && !registration.Targets.ToHashSet(PathComparer).SetEquals(targetNames))
             throw new InvalidDataException("An installed animation must be updated for all of its original targets. Use the target paths in the registry.");
         var changes = new List<AnimationFileChange>();
-        var plannedModels = new Dictionary<string, MdlModel>(StringComparer.OrdinalIgnoreCase);
+        var plannedModels = new Dictionary<string, MdlModel>(PathComparer);
         var outputBytes = 0;
         void EnsureOutputCapacity(int bytes)
         {
@@ -313,7 +338,7 @@ public static class AnimationInstall
         {
             var model = models[target];
             var relativeTarget = Path.GetRelativePath(root, target).Replace('\\', '/');
-            var registeredTarget = registrations.Any(r => r.Targets.Contains(relativeTarget, StringComparer.OrdinalIgnoreCase));
+            var registeredTarget = registrations.Any(r => r.Targets.Contains(relativeTarget, PathComparer));
             var header = $"# SWLOR authored animations for {model.Name}";
             bool IsOwnedBank(string path)
             {
@@ -344,7 +369,7 @@ public static class AnimationInstall
             AnimationProject.ValidateToken(overlayName, 16);
             var overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
             var existingOverlay = Resolve(overlayName);
-            if (existingOverlay != null && (!string.Equals(existingOverlay, overlayPath, StringComparison.OrdinalIgnoreCase) ||
+            if (existingOverlay != null && (!PathComparer.Equals(existingOverlay, overlayPath) ||
                 !string.Equals(model.SuperModel, overlayName, StringComparison.OrdinalIgnoreCase) || !registeredTarget))
                 throw new InvalidDataException($"Overlay '{overlayName}' exists but is not owned by the animation registry for this target.");
             var linkPath = target;
@@ -501,7 +526,7 @@ public static class AnimationInstall
         // chains, including every new bank, before applying any part of the transaction.
         foreach (var target in targets)
         {
-            var path = target; var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var path = target; var visited = new HashSet<string>(PathComparer);
             while (true)
             {
                 if (!visited.Add(path) || visited.Count > MaximumModelChainDepth) throw new InvalidDataException("Planned animation banks exceed the supported supermodel chain depth or form a cycle.");

@@ -78,13 +78,41 @@ public class GltfCoordinateBasisTests
     private static void Near(Vector3 actual, Vector3 expected) =>
         Vector3.Distance(actual, expected).Should().BeLessThan(1e-5f, $"expected {expected}, received {actual}");
 
-    private GltfAnimationSource Source(int axis)
+    [TestCase(0f)] [TestCase(5f)]
+    public void PositiveClipStartsSampleAndBakeOnAZeroBasedTimeline(float startTime)
+    {
+        var source = Source(0, startTime);
+        source.Animations[0].Duration.Should().Be(1);
+        source.Animations[0].Tracks[0].Times.Should().Equal(startTime, startTime + 1);
+        Near(source.Sample(0, 0)[0].Translation, new(0, 0, 1));
+        Near(source.Sample(0, .5f)[0].Translation, new(0, 0, 2));
+        Near(source.Sample(0, 1)[0].Translation, new(0, 0, 3));
+        var rest = new PosedNode(new(0, 0, 1), Quaternion.Identity, 1);
+        var rig = new AnimationProject { AnimationRoot = "root", Joints = [new("root", -1, rest)] };
+        var calibration = new AnimationRetarget(rig, [rest], source, 0, 0, [new("root", "Root")]);
+        var baked = calibration.Bake(source, 0, 20, 1);
+        baked.Duration.Should().Be(1);
+        Near(baked.Sample(.5f)[0].Position, new(0, 0, 2));
+        Near(baked.Sample(1)[0].Position, new(0, 0, 3));
+    }
+
+    [Test]
+    public void SingleKeyAtAPositiveTimestampIsAOneSecondHeldPose()
+    {
+        var source = Source(0, 5, singleKey: true);
+        source.Animations[0].Duration.Should().Be(0);
+        source.GetPlaybackDuration(0).Should().Be(1);
+        Near(source.Sample(0, 0)[0].Translation, new(0, 0, 1));
+        Near(source.Sample(0, 1)[0].Translation, new(0, 0, 1));
+    }
+
+    private GltfAnimationSource Source(int axis, float startTime = 0, bool singleKey = false)
     {
         var rotation = Quaternion.CreateFromAxisAngle(axis switch
             { 0 => Vector3.UnitX, 1 => Vector3.UnitY, _ => Vector3.UnitZ }, MathF.PI / 2);
         using var payload = new MemoryStream();
         using (var writer = new BinaryWriter(payload, System.Text.Encoding.UTF8, leaveOpen: true))
-            foreach (var value in new[] { 0f, 1f, 0, 0, 0, 1, rotation.X, rotation.Y, rotation.Z, rotation.W, 0, 1, 0, 0, 3, 0 })
+            foreach (var value in new[] { startTime, startTime + 1, 0, 0, 0, 1, rotation.X, rotation.Y, rotation.Z, rotation.W, 0, 1, 0, 0, 3, 0 })
                 writer.Write(value);
         File.WriteAllBytes(Path.Combine(_folder, "motion.bin"), payload.ToArray());
         var path = Path.Combine(_folder, "motion.gltf");
@@ -100,9 +128,9 @@ public class GltfCoordinateBasisTests
             },
             accessors = new[]
             {
-                new { bufferView = 0, componentType = 5126, count = 2, type = "SCALAR" },
-                new { bufferView = 1, componentType = 5126, count = 2, type = "VEC4" },
-                new { bufferView = 2, componentType = 5126, count = 2, type = "VEC3" }
+                new { bufferView = 0, componentType = 5126, count = singleKey ? 1 : 2, type = "SCALAR" },
+                new { bufferView = 1, componentType = 5126, count = singleKey ? 1 : 2, type = "VEC4" },
+                new { bufferView = 2, componentType = 5126, count = singleKey ? 1 : 2, type = "VEC3" }
             },
             nodes = new object[]
             {

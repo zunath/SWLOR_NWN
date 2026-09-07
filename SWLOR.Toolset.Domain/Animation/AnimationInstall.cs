@@ -279,8 +279,11 @@ public static class AnimationInstall
             }
             return null;
         }
-        var registrations = File.Exists(registryPath)
-            ? JsonSerializer.Deserialize<List<AnimationRegistration>>(Read(registryPath)) ?? throw new InvalidDataException("Invalid animation registry.")
+        var registryBytes = File.Exists(registryPath) ? Read(registryPath) : null;
+        var registryJson = registryBytes.AsSpan();
+        if (registryJson.StartsWith("\uFEFF"u8)) registryJson = registryJson[3..];
+        var registrations = registryBytes != null
+            ? JsonSerializer.Deserialize<List<AnimationRegistration>>(registryJson) ?? throw new InvalidDataException("Invalid animation registry.")
             : [];
         if (registrations.Any(r => r == null || string.IsNullOrEmpty(r.Name) || r.Name == "AuthoredAnimation" || !Regex.IsMatch(r.Name, @"\A[A-Z][A-Za-z0-9_]*\z") ||
                 r.AnimationName == null || r.AnimationName.Length > AnimationClip.MaxNameLength || !Regex.IsMatch(r.AnimationName, @"\Asw_[a-z0-9_]+\z") || r.Targets == null || r.Targets.Length == 0 ||

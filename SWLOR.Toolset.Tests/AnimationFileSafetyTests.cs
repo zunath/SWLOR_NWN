@@ -329,6 +329,36 @@ public class AnimationFileSafetyTests
         loadedBytes.Should().Equal(bytes, "external-change detection must retain the exact disk bytes");
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void BomRegistryLoadsAndRetainsItsExactInputSnapshot(bool editAfterPreparation)
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var registryPath = Path.Combine(_folder, "design", "animations", "registry.json");
+        File.WriteAllText(registryPath, File.ReadAllText(registryPath), new UTF8Encoding(true));
+        var before = File.ReadAllBytes(registryPath);
+        before.Take(3).Should().Equal(0xef, 0xbb, 0xbf);
+        project.Duration = 2;
+        var plan = AnimationInstall.Prepare(_folder, project, [target]);
+        plan.Inputs[registryPath].Should().Equal(before);
+        if (editAfterPreparation)
+        {
+            File.AppendAllText(registryPath, " ");
+            var edited = File.ReadAllBytes(registryPath);
+            Action apply = plan.Apply;
+            apply.Should().Throw<IOException>().WithMessage("*changed after the installation preview*");
+            File.ReadAllBytes(registryPath).Should().Equal(edited);
+        }
+        else
+        {
+            plan.Apply();
+            var registration = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(registryPath))!.Single();
+            registration.Duration.Should().Be(2);
+            registration.ProjectPath.Should().Be("design/animations/uncategorized/Wave.swlanim");
+        }
+    }
+
     [Test]
     public void LegacyRegistryWithoutSourcePathKeepsItsExistingProjectInPlace()
     {

@@ -11,7 +11,14 @@ internal static class PreviewWriter
 
     public static object Motion(AnimationProject project, Motion motion)
     {
-        var ids = Bones.Select(name => project.Joints.FindIndex(j => j.Name == name)).ToArray();
+        int Joint(string name)
+        {
+            var index = project.Joints.FindIndex(j => j.Name == name);
+            return index >= 0 ? index : throw new InvalidDataException($"Project '{project.Name}' has no joint '{name}'. The browser preview requires a humanoid rig.");
+        }
+        var ids = Bones.Select(Joint).ToArray();
+        var weaponIndex = Joint("rhand");
+        var shieldIndex = Joint("lforearm");
         var frames = new List<float[][]>();
         var count = (int)Math.Ceiling(project.Duration * 60) + 1;
         for (var frame = 0; frame < count; frame++)
@@ -20,8 +27,8 @@ internal static class PreviewWriter
             var points = ids.Select(i => world[i].Translation).ToList();
             // Even simplified accessories must use NWN's equipment dummies, so the preview
             // cannot conceal a misplaced sword or a shield rotated by the forearm.
-            var weapon = world[project.Joints.FindIndex(j => j.Name == "rhand")];
-            var shield = world[project.Joints.FindIndex(j => j.Name == "lforearm")];
+            var weapon = world[weaponIndex];
+            var shield = world[shieldIndex];
             points.Add(Vector3.Transform(new Vector3(0, .8f, 0), weapon));
             foreach (var (x, z) in new[] { (-.19f, .49f), (.19f, .49f), (.28f, .34f), (.28f, -.34f),
                          (.19f, -.49f), (-.19f, -.49f), (-.28f, -.34f), (-.28f, .34f) })

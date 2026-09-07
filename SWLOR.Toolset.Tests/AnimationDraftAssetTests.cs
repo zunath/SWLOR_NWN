@@ -214,8 +214,9 @@ public class AnimationDraftAssetTests
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
         if (installedModel != null)
         {
-            var target = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root,
-                "SWLOR_Haks", "sw_cr_creature", installedModel + ".mdl")));
+            var targetPath = Path.Combine(Root, "SWLOR_Haks", "sw_cr_creature", installedModel + ".mdl");
+            if (!File.Exists(targetPath)) Assert.Ignore("Initialize the HAK submodule to verify installed native assets.");
+            var target = new MdlReader().Parse(File.ReadAllBytes(targetPath));
             var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root,
                 "SWLOR_Haks", "sw_cr_creature", target.SuperModel + ".mdl")));
             var registered = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(

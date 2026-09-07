@@ -12,13 +12,25 @@ public class AnimationDebugDefinition : IGuiWindowDefinition
     public GuiConstructedWindow BuildWindow()
     {
         var window = _builder.CreateWindow(GuiWindowType.AnimationDebug)
-            .SetInitialGeometry(20f, 60f, 580f, 510f)
+            .SetInitialGeometry(20f, 60f, 800f, 510f)
             .SetTitle("Animation Tester")
             .SetIsResizable(true).SetIsCollapsible(true)
             .BindOnClosed(m => m.OnWindowClosed())
             .DefinePartialView(AnimationDebugViewModel.MainContentPartial, AddContent);
-        window.AddStandardLayout(layout => layout.SetContentPartialElement(AnimationDebugViewModel.ContentElement));
+        window.AddStandardLayout(layout => layout
+            .AddLeadingColumn(AddCategories, 200f)
+            .SetContentPartialElement(AnimationDebugViewModel.ContentElement));
         return _builder.Build();
+    }
+
+    private static void AddCategories(GuiColumn<AnimationDebugViewModel> column)
+    {
+        column.AddRow(row => row.AddLabel().SetText("Categories").SetHeight(24f)
+            .SetHorizontalAlign(NuiHorizontalAlign.Left));
+        column.AddRow(row => row.AddList(template => template.AddCell(cell =>
+            cell.AddToggleButton().BindText(m => m.CategoryNames)
+                .BindIsToggled(m => m.CategorySelected).BindOnClicked(m => m.OnCategoryRow())))
+            .BindRowCount(m => m.CategoryNames).SetRowHeight(32f).SetHeight(410f));
     }
 
     private static void AddContent(GuiGroup<AnimationDebugViewModel> host) => host.AddColumn(col =>

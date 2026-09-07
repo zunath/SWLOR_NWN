@@ -890,7 +890,7 @@
       "id": "RiotBlade",
       "naturalGrip": true,
       "name": "Riot Blade",
-      "bibleRow": 7,
+      "bibleRow": 6,
       "reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
       "observation": "A direct right-hand cut extends toward one target with a compact arc and a braced front leg.",
       "interpretation": "A compact descending diagonal cut with a brief shoulder chamber, continuous acceleration through contact, and a low finish to the left. The forearm carries the grip as the blade drops through the finish and returns without twisting the wrist. The hips lead the chest and the feet stay planted.",
@@ -1163,7 +1163,7 @@
     {
       "id": "RendingStrike",
       "name": "Rending Strike",
-      "bibleRow": 8,
+      "bibleRow": 7,
       "reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
       "observation": "A heavy cut crosses upward through the target's lower torso, with the left arm held back.",
       "interpretation": "A quick rising diagonal from a low chamber. Keep the blade moving through contact, then recover outside the shield without a second strike.",
@@ -1436,7 +1436,7 @@
     {
       "id": "SavageCleave",
       "name": "Savage Cleave",
-      "bibleRow": 9,
+      "bibleRow": 8,
       "reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
       "observation": "A low, broad stance drives a waist-height sweep through a wide frontal arc. The free arm extends for balance.",
       "interpretation": "A brisk horizontal sweep at waist height, distinct from the rising Rending Strike. The pelvis leads the chest through the frontal arc; a low recovery returns to guard without another strike.",

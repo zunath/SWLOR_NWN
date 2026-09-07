@@ -5,6 +5,9 @@ using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -52,6 +55,65 @@ public class AnimationDebugTests
         model.Names.Should().HaveCount(Math.Min(AnimationDebugViewModel.PageSize, AnimationPreviewCatalog.Entries.Count));
         model.OnPrevious()();
         model.HasPrevious.Should().BeFalse();
+    }
+
+    [Test]
+    public void CategoriesFollowPlaybackSkillsAndRetainSharedAndUnassignedClips()
+    {
+        var entries = AnimationPreviewCatalog.CreateEntries(new[]
+        {
+            new AbilityDetail { SkillType = SkillType.Vibroblade, QueuedAttackAnimation = AuthoredAnimation.RiotBlade },
+            new AbilityDetail { SkillType = SkillType.Lightsaber, AuthoredAnimation = AuthoredAnimation.RiotBlade },
+            new AbilityDetail { SkillType = SkillType.Vibroblade, AuthoredAnimation = AuthoredAnimation.RiotBlade },
+        });
+        var riot = entries.Single(entry => entry.Id == "RiotBlade");
+        riot.Categories.Should().BeEquivalentTo("Vibroblade", "Lightsaber");
+        AnimationPreviewCatalog.Search("riot", "Vibroblade", entries).Should().ContainSingle();
+        AnimationPreviewCatalog.Search("riot", "Lightsaber", entries).Should().ContainSingle();
+        AnimationPreviewCatalog.Search("riot", "Other", entries).Should().BeEmpty();
+        AnimationPreviewCatalog.Search("shield", "Other", entries).Should().HaveCount(2);
+    }
+
+    [Test]
+    public void CurrentClipsDeriveVibrobladeCategoryFromTheirAbilityBindings()
+    {
+        var abilities = typeof(IAbilityListDefinition).Assembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities().Values);
+        var entries = AnimationPreviewCatalog.CreateEntries(abilities,
+            AnimationPlanningTests.CurrentPerks().ToDictionary(perk => perk.Type));
+        entries.Should().NotBeEmpty().And.OnlyContain(entry => entry.Categories.Contains("Vibroblade"));
+    }
+
+    [Test]
+    public void CategoriesComposeWithSearchAndResetPagesForLargeCatalogs()
+    {
+        var entries = Enumerable.Range(0, 1050).Select(i => new AnimationPreviewCatalog.Entry(
+            $"Move{i}", $"Move {i:D4}", AuthoredAnimation.RiotBlade, new[] { i < 25 ? "Vibroblade" : "Force" })).ToArray();
+        var model = new AnimationDebugViewModel();
+        model.LoadCatalog(entries);
+        model.CategoryNames.Should().Equal("All animations (1050)", "Force (1025)", "Vibroblade (25)");
+        model.SelectCategory(2);
+        model.OnNext()();
+        model.Names.Should().HaveCount(5);
+        model.SearchText = "Move 000";
+        model.PageText.Should().Be("Page 1 / 1");
+        model.Names.Should().HaveCount(10);
+        model.SelectCategory(1);
+        model.Names.Should().BeEmpty();
+        model.CategorySelected.Should().Equal(false, true, false);
+        model.SearchText = "";
+        model.Names.Should().HaveCount(20);
+        model.OnNext()();
+        model.SelectCategory(2);
+        model.PageText.Should().Be("Page 1 / 2");
+        model.SelectCategory(-1);
+        model.SelectCategory(999);
+        model.SelectedCategory.Should().Be("Vibroblade");
+        model.SelectCategory(0);
+        model.OnNext()();
+        model.Names.Should().HaveCount(20);
+        model.PageText.Should().Be("Page 2 / 53");
     }
 
     [Test]

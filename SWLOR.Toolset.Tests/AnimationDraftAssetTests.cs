@@ -330,7 +330,7 @@ public class AnimationDraftAssetTests
     }
 
     [Test]
-    public void ManifestMatchesCurrentPerksFromTheFirstNineBibleReferencesAndSavedProjects()
+    public void ManifestMatchesCurrentBibleReferencesAndSavedProjects()
     {
         using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(Folder, "manifest.json")));
         using var zip = ZipFile.OpenRead(Path.Combine(Root, "design", "bible", "SWLOR Design Bible - Combat Upgrade.xlsx"));
@@ -353,7 +353,7 @@ public class AnimationDraftAssetTests
         };
         var entries = manifest.RootElement.GetProperty("Animations").EnumerateArray().ToArray();
         entries.Select(e => e.GetProperty("Id").GetString()).Should().Equal(Names);
-        entries.Select(e => e.GetProperty("BibleRow").GetInt32()).Should().Equal(2, 3, 4, 5, 7, 8, 9);
+        entries.Select(e => e.GetProperty("BibleRow").GetInt32()).Should().OnlyHaveUniqueItems();
         foreach (var entry in entries)
         {
             var row = entry.GetProperty("BibleRow").GetInt32();

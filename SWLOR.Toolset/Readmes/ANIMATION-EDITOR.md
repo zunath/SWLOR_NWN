@@ -25,7 +25,7 @@ or other target models. Switching layouts preserves the animation and its undo h
 
 ## Bible animation drafts
 
-The seven current perks among the first nine image references on the Bible's **Animations** tab have editable drafts in
+The seven current Vibroblade perk references on the Bible's **Animations** tab have editable drafts in
 `design/animations/drafts/vibroblade/`. Open `preview.html` in your normal browser to choose a
 motion, play it slowly, orbit the mannequin, and jump to its main poses. Its accessory proxies
 use NWN's equipment attachment points; check the final equipment and motion in NWN.
@@ -115,6 +115,12 @@ they do not verify the live client's playback, model cache, equipment choice, or
 Use `/animations` to open the searchable **Animation Tester**. It is available to everyone
 on the Test environment, and to DM/Admin accounts on other environments. Search by readable
 name (`covering strike`), identifier (`CoveringStrike`), or installed name (`sw_coverings`).
+Choose a skill category on the left to narrow the list, or **All animations** to search across
+categories. Counts show installed clips; search works within the selected category. Changing
+category resets pagination while keeping the search text. Categories come from the skills
+declared on the abilities that play each clip, falling back to their associated perk category
+for buffs and casts without a declared skill. Shared clips appear in each applicable category.
+Clips without a categorized ability binding remain available under **Other**.
 The list reads the generated `AuthoredAnimation` catalog automatically and shows 20 matches
 per page, so additional installed clips require no separate debug list.
 While a DM possesses an NPC, the window opens on the DM's screen and previews on that NPC.
@@ -124,6 +130,10 @@ The selected clip runs once on your character without damage, costs, or perk eff
 **Play** again to repeat. **Stop** and closing the window release only the preview started by
 that window, preserving any newer ability animation. `/animtest <name>` remains available
 with the same staff/Test permissions. Updated model assets require a client and server restart.
+
+The current animation backlog is in [the animation production plan](../../design/animations/ANIMATION-PLAN.md),
+with a searchable [CSV](../../design/animations/animation-plan.csv). It groups current active perks,
+preserves matching Bible image references, and identifies installed clips and shared-motion candidates.
 
 ### Detailed pose tools
 

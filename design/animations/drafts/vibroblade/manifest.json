@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "3d5b0336c1577feac57d66fe9ab70115f32a103935107205d66156f9b16a442d",
+  "RecipeSha256": "414e86f0040a9b589db547d32d42a505f63eacaf176d03d0af1e103204c918a8",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -198,7 +198,7 @@
     {
       "Id": "RiotBlade",
       "Name": "Riot Blade",
-      "BibleRow": 7,
+      "BibleRow": 6,
       "Reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
       "Observation": "A direct right-hand cut extends toward one target with a compact arc and a braced front leg.",
       "Interpretation": "A compact descending diagonal cut with a brief shoulder chamber, continuous acceleration through contact, and a low finish to the left. The forearm carries the grip as the blade drops through the finish and returns without twisting the wrist. The hips lead the chest and the feet stay planted.",
@@ -247,7 +247,7 @@
     {
       "Id": "RendingStrike",
       "Name": "Rending Strike",
-      "BibleRow": 8,
+      "BibleRow": 7,
       "Reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
       "Observation": "A heavy cut crosses upward through the target\u0027s lower torso, with the left arm held back.",
       "Interpretation": "A quick rising diagonal from a low chamber. Keep the blade moving through contact, then recover outside the shield without a second strike.",
@@ -296,7 +296,7 @@
     {
       "Id": "SavageCleave",
       "Name": "Savage Cleave",
-      "BibleRow": 9,
+      "BibleRow": 8,
       "Reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
       "Observation": "A low, broad stance drives a waist-height sweep through a wide frontal arc. The free arm extends for balance.",
       "Interpretation": "A brisk horizontal sweep at waist height, distinct from the rising Rending Strike. The pelvis leads the chest through the frontal arc; a low recovery returns to guard without another strike.",

@@ -21,10 +21,12 @@ public sealed class AnimationInstallPlan
     public IReadOnlyCollection<string> AbsentInputs { get; init; } = [];
     public string CodeExample => $"NamedAnimation.Queue(creature, AuthoredAnimation.{ConstantName});";
 
-    internal HashSet<string> GetAbsentReservationPaths()
+    internal HashSet<string> GetAbsentReservationPaths() => GetAbsentReservationPaths(Changes);
+
+    private HashSet<string> GetAbsentReservationPaths(IReadOnlyList<AnimationFileChange> changes)
     {
         var outputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        for (var i = 0; i < Changes.Count; i++) outputs.Add(Changes[i].Path);
+        for (var i = 0; i < changes.Count; i++) outputs.Add(changes[i].Path);
         var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var path in AbsentInputs)
             if (!outputs.Contains(path) && paths.Add(path) && paths.Count > AnimationInstall.MaximumAbsentReservations)
@@ -32,20 +34,23 @@ public sealed class AnimationInstallPlan
         return paths;
     }
 
-    public void Apply()
+    public void Apply() => Apply(null);
+
+    internal void Apply(Action<int>? beforeCommit)
     {
-        // Bound and snapshot this list before staging files or opening any reservation handles.
-        var absentReservations = GetAbsentReservationPaths();
+        // Freeze the output list before any filesystem work; all phases use this same ordering.
+        var changes = Changes.ToArray();
+        var absentReservations = GetAbsentReservationPaths(changes);
         // The caller holds the module mutation lock. Every input is checked again after confirmation.
         VerifyInputs();
-        foreach (var change in Changes) Verify(change);
+        foreach (var change in changes) Verify(change);
         var staged = new Dictionary<string, string>();
         var applied = new List<AnimationFileChange>();
         var inputLeases = new List<FileStream>();
         var reservedAbsentInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         try
         {
-            foreach (var change in Changes)
+            foreach (var change in changes)
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(change.Path)!);
                 var temporary = change.Path + "." + Guid.NewGuid().ToString("N") + ".tmp";
@@ -55,7 +60,7 @@ public sealed class AnimationInstallPlan
             // Outputs are captured and verified at their conditional commit. Keep every other
             // dependency stable through the entire commit/rollback sequence, including config.
             var outputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            for (var i = 0; i < Changes.Count; i++) outputs.Add(Changes[i].Path);
+            for (var i = 0; i < changes.Length; i++) outputs.Add(changes[i].Path);
             foreach (var input in Inputs)
             {
                 if (outputs.Contains(input.Key)) continue;
@@ -81,8 +86,9 @@ public sealed class AnimationInstallPlan
                 reservedAbsentInputs.Add(path);
             }
             VerifyInputs(reservedAbsentInputs);
-            foreach (var change in Changes)
+            foreach (var change in changes)
             {
+                beforeCommit?.Invoke(applied.Count);
                 AnimationProjectFile.CommitStaged(change.Path, staged[change.Path], change.Before, () => { });
                 applied.Add(change);
             }

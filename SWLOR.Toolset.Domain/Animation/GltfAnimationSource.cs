@@ -84,8 +84,9 @@ public sealed class GltfAnimationSource
                     var folder = Path.GetFullPath(Path.GetDirectoryName(path)!);
                     var decoded = Uri.UnescapeDataString(value);
                     var file = Path.GetFullPath(Path.Combine(folder, decoded));
+                    var prefix = Path.EndsInDirectorySeparator(folder) ? folder : folder + Path.DirectorySeparatorChar;
                     if (Path.IsPathRooted(decoded) || decoded.Contains(':') ||
-                        !file.StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                        !file.StartsWith(prefix, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                         throw new InvalidDataException("glTF buffers must be local files alongside the source.");
                     data = ReadBounded(file, remaining);
                 }

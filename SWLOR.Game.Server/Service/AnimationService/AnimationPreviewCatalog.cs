@@ -36,5 +36,7 @@ public static class AnimationPreviewCatalog
         environment == ServerEnvironmentType.Test || (authorization & (AuthorizationLevel.DM | AuthorizationLevel.Admin)) != 0;
 
     public static bool CanUse(uint player) => ApplicationSettings.Get().ServerEnvironment == ServerEnvironmentType.Test ||
-        IsAllowed(ApplicationSettings.Get().ServerEnvironment, Authorization.GetAuthorizationLevel(player));
+        IsAllowed(ApplicationSettings.Get().ServerEnvironment, Authorization.GetAuthorizationLevel(GetController(player)));
+
+    public static uint GetController(uint actor) => GetIsDMPossessed(actor) ? GetMaster(actor) : actor;
 }

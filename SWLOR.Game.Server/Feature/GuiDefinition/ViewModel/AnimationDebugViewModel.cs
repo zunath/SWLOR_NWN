@@ -29,7 +29,7 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
         StatusText = "Stand outside combat, then choose Play. Stop releases the preview pose.";
         if (!AnimationPreviewCatalog.CanUse(Player))
         {
-            Gui.CloseWindow(Player, GuiWindowType.AnimationDebug, Player);
+            NuiDestroy(Player, WindowToken);
             return;
         }
         WatchOnClient(m => m.SearchText);

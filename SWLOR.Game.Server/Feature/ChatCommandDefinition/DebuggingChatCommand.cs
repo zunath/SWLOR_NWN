@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
@@ -107,7 +108,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Opens the searchable animation tester. Preview moves on your character.")
                 .Permissions(AuthorizationLevel.DM | AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
-                .Action((user, target, location, args) => Gui.TogglePlayerWindow(user, GuiWindowType.AnimationDebug));
+                .Action((user, target, location, args) =>
+                {
+                    // Store the window under the owning DM while binding the UI and
+                    // playback to the possessed creature, as with DMTools and Dice.
+                    Gui.TogglePlayerWindow(AnimationPreviewCatalog.GetController(user),
+                        GuiWindowType.AnimationDebug, uiTarget: user);
+                });
         }
 
         private void GetObjectId()

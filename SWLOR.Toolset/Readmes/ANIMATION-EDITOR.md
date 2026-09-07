@@ -114,6 +114,7 @@ on the Test environment, and to DM/Admin accounts on other environments. Search 
 name (`covering strike`), identifier (`CoveringStrike`), or installed name (`sw_coverings`).
 The list reads the generated `AuthoredAnimation` catalog automatically and shows 20 matches
 per page, so additional installed clips require no separate debug list.
+While a DM possesses an NPC, the window opens on the DM's screen and previews on that NPC.
 
 Equip the weapon and shield you want to inspect, stand outside combat, and click **Play**.
 The selected clip runs once on your character without damage, costs, or perk effects. Click

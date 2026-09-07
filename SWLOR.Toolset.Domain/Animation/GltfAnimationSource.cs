@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace SWLOR.Toolset.Domain.Animation;
 
 public sealed record SourceJoint(string Name, int Parent, Vector3 Position, Quaternion Rotation, Vector3 Scale);
-public sealed record SourceAnimation(string Name, float Duration, IReadOnlyList<SourceTrack> Tracks);
+public sealed record SourceAnimation(string Name, float Duration, IReadOnlyList<SourceTrack> Tracks, float StartTime = 0);
 public sealed record SourceTrack(int Joint, string Path, string Interpolation, float[] Times, Vector4[] Values);
 
 /// <summary>glTF 2.0 skeleton/animation reader, based on the Khronos specification. No scene engine is required.</summary>
@@ -203,8 +203,12 @@ public sealed class GltfAnimationSource
                     throw new InvalidDataException("Animation keys require unit rotations and positive scales.");
                 tracks.Add(new(joint, channelPath, interpolation, times, values));
             }
-            if (tracks.Count > 0) animations.Add(new(clip.TryGetProperty("name", out var name) ? name.GetString() ?? "Animation" : $"Animation {animations.Count + 1}",
-                tracks.Max(t => t.Times[^1]), tracks));
+            if (tracks.Count > 0)
+            {
+                var startTime = tracks.Min(t => t.Times[0]);
+                animations.Add(new(clip.TryGetProperty("name", out var name) ? name.GetString() ?? "Animation" : $"Animation {animations.Count + 1}",
+                    tracks.Max(t => t.Times[^1]) - startTime, tracks, startTime));
+            }
         }
         if (animations.Count == 0) throw new InvalidDataException("No skeletal animations in this source.");
         return new() { Joints = joints, Animations = animations, Order = order.ToArray() };
@@ -213,12 +217,15 @@ public sealed class GltfAnimationSource
     public Matrix4x4[] Sample(int animation, float time)
     {
         if (!float.IsFinite(time)) throw new ArgumentOutOfRangeException(nameof(time));
+        var clip = Animations[animation];
+        // Keep shared accessor timestamps intact; expose a zero-based timeline per clip.
+        var sourceTime = Math.Clamp(time, 0, clip.Duration) + clip.StartTime;
         var positions = Joints.Select(j => j.Position).ToArray();
         var rotations = Joints.Select(j => j.Rotation).ToArray();
         var scales = Joints.Select(j => j.Scale).ToArray();
-        foreach (var track in Animations[animation].Tracks)
+        foreach (var track in clip.Tracks)
         {
-            var value = SampleTrack(track, time);
+            var value = SampleTrack(track, sourceTime);
             switch (track.Path)
             {
                 case "translation": positions[track.Joint] = new(value.X, value.Y, value.Z); break;

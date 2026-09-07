@@ -47,6 +47,8 @@ public sealed class AnimationProject
     public static AnimationProject Deserialize(string text)
     {
         if (text.Length > MaximumSerializedCharacters) throw new InvalidDataException("Animation project exceeds 64 MB.");
+        // Byte-backed document opens and external reloads retain a UTF-8 BOM as U+FEFF.
+        if (text.Length > 0 && text[0] == '\uFEFF') text = text[1..];
         var result = JsonSerializer.Deserialize<AnimationProject>(text, JsonOptions)
             ?? throw new InvalidDataException("Empty animation project.");
         result.Validate();

@@ -455,8 +455,9 @@ public class AnimationEditorTests
             donemodel hero
             """);
     }
-    [TestCase(false)] [TestCase(true)]
-    public void ExitPoseFollowsInheritedIdlePastEmptyDeclarations(bool emptyLocalIdle)
+    [TestCase(false, false)] [TestCase(true, false)]
+    [TestCase(false, true)] [TestCase(true, true)]
+    public void ExitPoseFollowsInheritedIdlePastEmptyDeclarations(bool emptyLocalIdle, bool staticIdle)
     {
         var target = InstallFixture();
         var text = File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero idlebase")
@@ -467,7 +468,9 @@ public class AnimationEditorTests
         idleRig.Joints[0] = idleRig.Joints[0] with { Name = "idlebase" };
         Write("SWLOR_Haks/sw_cr_creature/idlebase.mdl", "newmodel idlebase\nsetsupermodel idlebase NULL\n" +
             AnimationMdl.ExportGeometry(idleRig) +
-            "newanim pause1 idlebase\nlength 1\nnode dummy lower\nparent upper\npositionkey\n0 0 3 0\nendlist\nendnode\ndoneanim pause1 idlebase\ndonemodel idlebase\n");
+            "newanim pause1 idlebase\nlength 1\nnode dummy lower\nparent upper\n" +
+            (staticIdle ? "position 0 3 0\n" : "positionkey\n0 0 3 0\nendlist\n") +
+            "endnode\ndoneanim pause1 idlebase\ndonemodel idlebase\n");
         AnimationInstall.Prepare(_folder, Rig(), [target]).Apply();
         var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")));
         var exit = overlay.Animations.Single(a => a.Name == "sw_wave_out");

@@ -85,6 +85,46 @@ namespace SWLOR.Toolset.Tests
                 .Position.X.Should().BeApproximately(5f, 0.001f);
         }
 
+        [Test]
+        public void AsciiAnimationConstantsOverrideOnlyTheirAuthoredComponents()
+        {
+            var model = new MdlReader().Parse(System.Text.Encoding.ASCII.GetBytes("""
+                newmodel hero
+                setsupermodel hero NULL
+                beginmodelgeom hero
+                node dummy hero
+                  parent NULL
+                endnode
+                node dummy hand
+                  parent hero
+                  position 1 2 3
+                  orientation 0 0 1 0.5
+                  scale 2
+                endnode
+                endmodelgeom hero
+                newanim pause1 hero
+                  length 1
+                  node dummy hero
+                    parent NULL
+                  endnode
+                  node dummy hand
+                    parent hero
+                    orientation 1 0 0 1.2
+                    scale 1.5
+                  endnode
+                doneanim pause1 hero
+                donemodel hero
+                """));
+            var bind = MdlAnimationPose.BindPose(model);
+            bind["hand"].PositionTimes.Should().BeEmpty("geometry constants are not animation tracks");
+            var pose = MdlAnimationPose.SampleIdle(model, _ => throw new AssertionException("The local static idle must be used"));
+            pose.Should().NotContainKey("hero", "an empty animation node must not reset its bind transform");
+            pose["hand"].Position.Should().Be(new Vector3(1, 2, 3));
+            MathF.Abs(Quaternion.Dot(pose["hand"].Orientation,
+                Quaternion.CreateFromAxisAngle(Vector3.UnitX, 1.2f))).Should().BeApproximately(1, .00001f);
+            pose["hand"].Scale.Should().Be(1.5f);
+        }
+
         /// <summary>
         /// Past either end the nearest keyframe is held rather than wrapped - asking beyond the track
         /// wants the final pose, not the first one snapped back to.

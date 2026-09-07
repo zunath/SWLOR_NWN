@@ -200,12 +200,27 @@ internal sealed class AsciiMdlReader
                     break;
                 case "position":
                     node.Position = Vector3Tokens(tokens, 1, line, "node position");
+                    if (animationOnly && node.PositionTimes.Length == 0)
+                    {
+                        node.PositionTimes = [0f];
+                        node.PositionValues = [node.Position];
+                    }
                     break;
                 case "orientation":
                     node.Orientation = AxisAngleTokens(tokens, 1, line, "node orientation");
+                    if (animationOnly && node.OrientationTimes.Length == 0)
+                    {
+                        node.OrientationTimes = [0f];
+                        node.OrientationValues = [node.Orientation];
+                    }
                     break;
                 case "scale":
                     node.Scale = FloatToken(tokens, 1, line, "node scale");
+                    if (animationOnly && node.ScaleTimes.Length == 0)
+                    {
+                        node.ScaleTimes = [0f];
+                        node.ScaleValues = [node.Scale];
+                    }
                     break;
                 case "positionkey":
                     ReadPositionKeys(node, tokens, line);

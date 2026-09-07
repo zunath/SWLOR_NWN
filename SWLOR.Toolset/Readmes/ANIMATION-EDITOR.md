@@ -237,12 +237,17 @@ repository before packaging; otherwise a robe can continue using its older movem
 
 ```powershell
 python -B tools/GenerateRobeRgbModels.py --game-data "<NWN installation>/data" --apply
+python -B tools/PruneRobeAnimationBridges.py --apply
+python -B tools/PruneRobeAnimationBridges.py
 python -B tools/GenerateRobeRgbModels.py --check
 ```
 
 Run these commands from `SWLOR_Haks`. Package and deploy `sw_pt_root.hak`, `sw_pt_robe.hak`,
 and `sw_2da.hak` together with the HAK containing the changed animation overlays.
 The generator audits body poses, weapon attachments, garment bindings, and source/output hashes.
+The cleanup keeps every bridge referenced by a current or retired body model, including transitive
+parents across all configured HAK layers. It removes only verified, unreachable generated files;
+historical resref assignments remain reserved. Run it from a checkout containing all tracked models.
 
 After **rebuilding/deploying the HAKs to server and clients** and rebuilding C#, use:
 

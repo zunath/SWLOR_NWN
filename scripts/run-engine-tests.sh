@@ -171,16 +171,6 @@ if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.runtimeconfig.json" ]; then
     exit 1
 fi
 
-# Stale report from a previous run must not be mistaken for this run's result.
-# If deletion silently fails (e.g. the directory is owned by another UID from a
-# prior Docker run) and the server then crashes before writing a fresh report,
-# we would otherwise parse the old report and report a bogus pass.
-rm -f "$REPORT_PATH"
-if [ -e "$REPORT_PATH" ]; then
-    echo "Could not remove stale report at $REPORT_PATH - aborting so this run cannot be judged by a previous run's results." >&2
-    exit 1
-fi
-
 section "Running engine tests via docker compose (server home: $SERVER_HOME)"
 export SWLOR_ENGINE_TEST_FILTER="$FILTER"
 export SWLOR_ENGINE_TEST_ARENA_RESREF="$ARENA_RESREF"
@@ -213,8 +203,163 @@ fi
 # Run from the server home so any '.'-fallback interpolation still resolves to it.
 pushd "$SERVER_HOME" > /dev/null
 
+HOST_UID="$(id -u)"
+HOST_GID="$(id -g)"
+PERMISSION_SNAPSHOT_NAME=".swlor-engine-test-permissions.$$.snapshot"
+PERMISSION_SNAPSHOT_CONTAINER="/nwn/home/$PERMISSION_SNAPSHOT_NAME"
+PERMISSIONS_PREPARED=0
+ENGINE_TEST_HOME_ACTIVE=1
+
+restore_engine_test_permissions()
+{
+    local restore_status=0
+
+    if [ "$PERMISSIONS_PREPARED" -eq 1 ]; then
+        docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" run \
+            --rm \
+            --no-deps \
+            -T \
+            --user 0:0 \
+            --entrypoint /bin/bash \
+            -e "SWLOR_PERMISSION_SNAPSHOT=$PERMISSION_SNAPSHOT_CONTAINER" \
+            -e "SWLOR_HOST_UID=$HOST_UID" \
+            -e "SWLOR_HOST_GID=$HOST_GID" \
+            swlor-server \
+            -s <<'SWLOR_RESTORE_PERMISSIONS'
+set -e
+snapshot="$SWLOR_PERMISSION_SNAPSHOT"
+test -f "$snapshot" || exit 0
+
+# Files created by the test run belong to the invoking developer. Exact
+# ownership and modes for paths that existed before the run are then restored
+# from the NUL-delimited snapshot.
+for path in app_logs database development logs nwsync override portraits saves servervault; do
+  if test -e "/nwn/home/$path"; then
+    chown -R "$SWLOR_HOST_UID:$SWLOR_HOST_GID" "/nwn/home/$path"
+  fi
+done
+
+while IFS= read -r -d "" relative_path &&
+      IFS= read -r -d "" owner_uid &&
+      IFS= read -r -d "" owner_gid &&
+      IFS= read -r -d "" file_mode &&
+      IFS= read -r -d "" file_type
+do
+  target="/nwn/home/$relative_path"
+  if test -e "$target" || test -L "$target"; then
+    if test "$file_type" = l; then
+      chown -h "$owner_uid:$owner_gid" "$target"
+    else
+      chown "$owner_uid:$owner_gid" "$target"
+      chmod "$file_mode" "$target"
+    fi
+  fi
+done < "$snapshot"
+
+rm -f "$snapshot"
+SWLOR_RESTORE_PERMISSIONS
+        restore_status=$?
+    fi
+
+    PERMISSIONS_PREPARED=0
+    return "$restore_status"
+}
+
+cleanup_engine_test_environment()
+{
+    local cleanup_status=$?
+    local compose_cleanup_status=0
+    local permission_cleanup_status=0
+
+    trap - EXIT INT TERM
+    set +e
+    if [ "$ENGINE_TEST_HOME_ACTIVE" -eq 1 ]; then
+        docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" stop ||
+            compose_cleanup_status=$?
+        restore_engine_test_permissions || permission_cleanup_status=$?
+        docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" \
+            down --volumes --remove-orphans || compose_cleanup_status=$?
+        popd > /dev/null || true
+        ENGINE_TEST_HOME_ACTIVE=0
+    fi
+
+    if [ "$cleanup_status" -eq 0 ]; then
+        if [ "$compose_cleanup_status" -ne 0 ]; then
+            cleanup_status="$compose_cleanup_status"
+        elif [ "$permission_cleanup_status" -ne 0 ]; then
+            cleanup_status="$permission_cleanup_status"
+        fi
+    fi
+    exit "$cleanup_status"
+}
+
+trap cleanup_engine_test_environment EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
 # Remove anything a previously interrupted run left behind before starting fresh.
 docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes --remove-orphans
+
+# The production deployer performs the same ownership migration before
+# starting the non-root image. Preserve the developer's existing ownership and
+# modes before the short-lived root helper grants UID/GID 1000 access. Cleanup
+# restores that metadata on every exit and gives newly-created files back to
+# the invoking developer.
+section "Preparing engine-test home for the non-root runtime"
+PERMISSIONS_PREPARED=1
+docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" run \
+    --rm \
+    --no-deps \
+    -T \
+    --user 0:0 \
+    --entrypoint /bin/bash \
+    -e "SWLOR_PERMISSION_SNAPSHOT=$PERMISSION_SNAPSHOT_CONTAINER" \
+    swlor-server \
+    -s <<'SWLOR_PREPARE_PERMISSIONS'
+set -e
+snapshot="$SWLOR_PERMISSION_SNAPSHOT"
+cd /nwn/home
+for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
+  if test -L "$path"; then
+    echo "Engine-test configuration must not be a symbolic link: /nwn/home/$path" >&2
+    exit 1
+  fi
+done
+
+rm -f /nwn/home/app_logs/engine_tests/engine-test-results.json
+: > "$snapshot"
+chmod 0600 "$snapshot"
+
+for path in app_logs database development logs nwsync override portraits saves servervault \
+            cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
+  if test -e "$path" || test -L "$path"; then
+    find "$path" -xdev -printf "%p\0%U\0%G\0%m\0%y\0" >> "$snapshot"
+  fi
+done
+
+for path in app_logs database development logs nwsync override portraits saves servervault; do
+  mkdir -p "/nwn/home/$path"
+  chown -R 1000:1000 "/nwn/home/$path"
+  chmod -R u+rwX "/nwn/home/$path"
+done
+for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
+  if test -f "/nwn/home/$path"; then
+    chown 0:1000 "/nwn/home/$path"
+    chmod 0640 "/nwn/home/$path"
+  fi
+done
+SWLOR_PREPARE_PERMISSIONS
+if [ $? -ne 0 ]; then
+    echo "Could not prepare the engine-test home for UID/GID 1000." >&2
+    exit 1
+fi
+
+# The stale result is removed by the privileged helper before the ownership
+# snapshot. It must be absent before the test server is allowed to start.
+if [ -e "$REPORT_PATH" ]; then
+    echo "Could not remove stale report at $REPORT_PATH - aborting so this run cannot be judged by a previous run's results." >&2
+    exit 1
+fi
 
 # HARD WALL CLOCK. `up --abort-on-container-exit` blocks until a container exits, and a
 # server that never schedules its tests (missing harness, bad filter) idles happily forever -
@@ -230,9 +375,25 @@ if [ "$COMPOSE_EXIT_CODE" -eq 124 ]; then
 fi
 
 section "Tearing down containers"
-docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes
+docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" stop
+STOP_EXIT_CODE=$?
+restore_engine_test_permissions
+PERMISSION_RESTORE_EXIT_CODE=$?
+docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes --remove-orphans
+TEARDOWN_EXIT_CODE=$?
 
 popd > /dev/null
+ENGINE_TEST_HOME_ACTIVE=0
+trap - EXIT INT TERM
+
+if [ "$STOP_EXIT_CODE" -ne 0 ] || [ "$TEARDOWN_EXIT_CODE" -ne 0 ]; then
+    echo "Could not tear down the engine-test Compose project." >&2
+    exit 1
+fi
+if [ "$PERMISSION_RESTORE_EXIT_CODE" -ne 0 ]; then
+    echo "Could not restore engine-test home ownership and modes." >&2
+    exit "$PERMISSION_RESTORE_EXIT_CODE"
+fi
 
 echo "docker compose exit code: $COMPOSE_EXIT_CODE"
 

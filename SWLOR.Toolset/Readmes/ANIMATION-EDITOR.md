@@ -105,8 +105,9 @@ should expose the animation.
 **Preview installation** lists every file before writing:
 
 - An `an_<target>.mdl` source beside each target contains a dummy skeleton, the new named clip and short entry/exit
-  poses, and inherits the target's previous supermodel. The resulting resref must fit NWN's
-  16-character limit. Subsequent installs append to this owned overlay; updating the same name
+  poses, and inherits the target's previous supermodel. If that name is occupied or too long,
+  installation chooses a free suffixed name within NWN's 16-character limit and retains it on
+  later installs. Subsequent installs append to this owned overlay; updating the same name
   replaces only its three animation blocks and requires the original target set.
 - Each target's supermodel reference points to its overlay. Compiled model payloads remain
   unchanged outside the fixed supermodel-name field; ASCII geometry and unrelated text are preserved.

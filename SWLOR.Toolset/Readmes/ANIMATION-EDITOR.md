@@ -219,6 +219,9 @@ remain leased through publication and rollback so their hierarchy and configurat
 Missing higher-priority resource paths are held with exclusive, delete-on-close reservations
 during the transaction. Competing reads or writes fail while these short-lived reservations
 are held; the reservations disappear on success, failure, or process exit.
+An installation may reserve at most 4,096 unique missing paths. Oversized batches are rejected
+before confirmation and checked again before staging; duplicate paths and planned outputs do
+not consume reservation slots.
 This includes previously absent higher-priority models that would change resource selection.
 Writes are staged and roll back on failure. Publication and rollback capture and verify each
 replaced file under an exclusive lease; a concurrent writer's replacement is preserved. Recovery

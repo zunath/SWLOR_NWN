@@ -182,6 +182,29 @@ public class AnimationFileSafetyTests
         File.WriteAllBytes(missing, [5]); File.ReadAllBytes(missing).Should().Equal(5);
     }
 
+    [Test] public void TooManyAbsentDependenciesFailBeforeStagingOrOpeningReservations()
+    {
+        var output = Path.Combine(_folder, "outputs", "created.mdl");
+        var missing = Enumerable.Range(0, AnimationInstall.MaximumAbsentReservations + 1)
+            .Select(i => Path.Combine(_folder, "missing", "model" + i + ".mdl")).ToArray();
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test", Changes = [new(output, null, [1])],
+            Inputs = new Dictionary<string, byte[]>(), AbsentInputs = missing };
+        Action apply = plan.Apply;
+        apply.Should().Throw<InvalidDataException>().WithMessage("*too many missing model dependencies*");
+        Directory.GetFileSystemEntries(_folder).Should().BeEmpty();
+    }
+
+    [Test] public void ReservationLimitCountsUniqueNonOutputPathsOnly()
+    {
+        var output = Path.Combine(_folder, "created.mdl");
+        var missing = Enumerable.Range(0, AnimationInstall.MaximumAbsentReservations)
+            .Select(i => Path.Combine(_folder, "model" + i + ".mdl")).ToArray();
+        var plan = new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test", Changes = [new(output, null, [1])],
+            Inputs = new Dictionary<string, byte[]>(), AbsentInputs = missing.Concat(missing).Append(output).ToArray() };
+        plan.GetAbsentReservationPaths().Should().HaveCount(AnimationInstall.MaximumAbsentReservations);
+        Directory.GetFileSystemEntries(_folder).Should().BeEmpty();
+    }
+
     [Test] public void GltfRejectsAnOversizedDeclaredBufferBeforeOpeningItsFile()
     {
         var path = Path.Combine(_folder, "oversized.gltf");

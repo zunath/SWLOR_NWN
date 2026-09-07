@@ -21,8 +21,21 @@ public sealed class AnimationInstallPlan
     public IReadOnlyCollection<string> AbsentInputs { get; init; } = [];
     public string CodeExample => $"NamedAnimation.Queue(creature, AuthoredAnimation.{ConstantName});";
 
+    internal HashSet<string> GetAbsentReservationPaths()
+    {
+        var outputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        for (var i = 0; i < Changes.Count; i++) outputs.Add(Changes[i].Path);
+        var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var path in AbsentInputs)
+            if (!outputs.Contains(path) && paths.Add(path) && paths.Count > AnimationInstall.MaximumAbsentReservations)
+                throw new InvalidDataException($"Installation has too many missing model dependencies (maximum {AnimationInstall.MaximumAbsentReservations}). Select fewer targets or HAK layers.");
+        return paths;
+    }
+
     public void Apply()
     {
+        // Bound and snapshot this list before staging files or opening any reservation handles.
+        var absentReservations = GetAbsentReservationPaths();
         // The caller holds the module mutation lock. Every input is checked again after confirmation.
         VerifyInputs();
         foreach (var change in Changes) Verify(change);
@@ -51,9 +64,8 @@ public sealed class AnimationInstallPlan
                 if (!AnimationSourceFile.Matches(lease, input.Value))
                     throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
             }
-            foreach (var path in AbsentInputs)
+            foreach (var path in absentReservations)
             {
-                if (outputs.Contains(path) || reservedAbsentInputs.Contains(path)) continue;
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                 // CreateNew fails if another writer won the race. The exclusive delete-on-close
                 // handle reserves this missing resolution path without leaving a file after exit.
@@ -126,6 +138,7 @@ public static class AnimationInstall
     public const int MaximumModelChainDepth = 32;
     public const int MaximumInputBytes = 128 * 1024 * 1024;
     public const int MaximumOutputBytes = 128 * 1024 * 1024;
+    public const int MaximumAbsentReservations = 4096;
     /// <summary>Resolves a mounted rig back to its winning loose repository source, never to its HAK archive.</summary>
     public static string? FindTargetSource(string repositoryRoot, string resref)
     {
@@ -467,7 +480,9 @@ public static class AnimationInstall
             throw new InvalidDataException("The animation constants file is not owned by this editor.");
         Add(constantsPath, Encoding.UTF8.GetBytes(generated));
         Add(Path.Combine(root, "design", "animations", project.Name + ".swlanim"), Encoding.UTF8.GetBytes(project.Serialize()));
-        return new() { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, AbsentInputs = absentInputs };
+        var plan = new AnimationInstallPlan { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, AbsentInputs = absentInputs };
+        _ = plan.GetAbsentReservationPaths(); // Reject an oversized transaction before presenting its installation preview.
+        return plan;
     }
 
     private static int CountNodes(MdlModel model)

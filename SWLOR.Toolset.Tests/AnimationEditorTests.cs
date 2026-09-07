@@ -664,6 +664,17 @@ public class AnimationEditorTests
         AnimationInstall.Prepare(_folder, Rig(), [first, second], AnimationInstall.MaximumInputBytes, total)
             .Changes.Sum(change => change.After.Length).Should().Be(total);
     }
+    [Test] public void InstallationPreviewRejectsTooManyMissingResolutionDependencies()
+    {
+        var target = InstallFixture();
+        var layers = Enumerable.Range(0, AnimationInstall.MaximumAbsentReservations + 1)
+            .Select(i => new { Path = "../SWLOR_Haks/absent" + i })
+            .Append(new { Path = "../SWLOR_Haks/sw_cr_creature" });
+        Write("Build/hakbuilder.json", JsonSerializer.Serialize(new { HakList = layers }));
+        Action prepare = () => AnimationInstall.Prepare(_folder, Rig(), [target]);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*too many missing model dependencies*");
+        Directory.GetDirectories(Path.Combine(_folder, "SWLOR_Haks")).Should().HaveCount(1);
+    }
     private sealed class ChangingInputs(Action afterFirstRead) : Dictionary<string, byte[]>, IEnumerable<KeyValuePair<string, byte[]>>
     {
         private int _reads;

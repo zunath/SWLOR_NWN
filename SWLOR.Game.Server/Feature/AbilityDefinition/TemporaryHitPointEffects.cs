@@ -12,6 +12,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string OwnerVariableSuffix = "_OWNER";
         private const string SourceVariableSuffix = "_SOURCE";
 
+        public static int GetRemaining(uint target)
+        {
+            var total = 0;
+            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            {
+                if (GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints)
+                    total += Math.Max(0, GetEffectInteger(effect, 0));
+            }
+
+            return total;
+        }
+
         public static void ApplyFlatPlusPercent(
             uint target,
             string effectKey,

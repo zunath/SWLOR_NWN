@@ -49,6 +49,11 @@ namespace SWLOR.Game.Server.Feature
         public static void PlayerFPAdjusted()
         {
             var player = OBJECT_SELF;
+            if (!GetIsPC(player))
+            {
+                Gui.PublishCharacterSheetRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+                return;
+            }
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
@@ -59,6 +64,11 @@ namespace SWLOR.Game.Server.Feature
         public static void PlayerSTMAdjusted()
         {
             var player = OBJECT_SELF;
+            if (!GetIsPC(player))
+            {
+                Gui.PublishCharacterSheetRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+                return;
+            }
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 

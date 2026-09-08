@@ -611,7 +611,7 @@ public class CombatDamageTests
             damageCalculation.Should().Contain(
                 "trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon");
             damageCalculation.Should().Contain("skillType == SkillType.BeastMastery");
-            damageCalculation.Should().Contain("!usesQueuedNaturalWeapon");
+            damageCalculation.Should().Contain("Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon");
             damageCalculation.Should().Contain(
                 "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon)");
         }

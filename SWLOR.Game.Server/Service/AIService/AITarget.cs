@@ -29,6 +29,20 @@ namespace SWLOR.Game.Server.Service.AIService
             return context => context.CurrentEnmityTarget;
         }
 
+        public static AITargetSelector HighestEnmityWithinRange(float maxRange)
+        {
+            return context =>
+            {
+                var target = context.CurrentEnmityTarget;
+                return maxRange > 0f && GetIsObjectValid(target) &&
+                       GetArea(target) == GetArea(context.Self) &&
+                       GetDistanceBetween(context.Self, target) <= maxRange &&
+                       LineOfSightObject(context.Self, target)
+                    ? target
+                    : OBJECT_INVALID;
+            };
+        }
+
         public static AITargetSelector Master()
         {
             return context => context.Master;

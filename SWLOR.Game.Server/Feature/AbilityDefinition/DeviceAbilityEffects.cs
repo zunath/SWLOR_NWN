@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         ApplyAreaHostilePulse(this);
                     else
                         ApplySingleHostilePulse(this);
-                });
+                }, baseDamage: baseDamage);
             }
 
             public uint Activator { get; }

@@ -1663,7 +1663,8 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().BeLessThan(
                 hostileCombatImpactSource.IndexOf("Combat.TryResolveAbilityHit(", StringComparison.Ordinal),
                 "the defender must enter combat even when the opening hostile cast misses");
-        hostileCombatImpactSource.Should().Contain("firstHostileAbilityHitDamageBonusApplied: true");
+        hostileCombatImpactSource.Should().Contain("firstHostileAbilityHitDamageBonusApplied: impactDamage.DealsDamage",
+            "control-only casts must preserve First Strike stacks because they did not receive the damage bonus");
         abilitySource.Should().Contain("bool firstHostileAbilityHitDamageBonusApplied = false");
         combatSource.Should().Contain("if (firstHostileAbilityHitDamageBonusApplied)");
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");

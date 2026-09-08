@@ -41,6 +41,88 @@ public class AnimationFileSafetyTests
         return (project, target);
     }
 
+    private (AnimationProject Project, string Target, string Bank, string Source) CompiledInstallationFixture()
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !Directory.Exists(Path.Combine(root.FullName, "SWLOR.Toolset.Tests", "Fixtures", "Animation"))) root = root.Parent;
+        var fixtures = Path.Combine(root!.FullName, "SWLOR.Toolset.Tests", "Fixtures", "Animation");
+        var bank = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
+        var binary = File.ReadAllBytes(Path.Combine(fixtures, "CompiledBank.mdl"));
+        var text = File.ReadAllBytes(Path.Combine(fixtures, "CompiledBank.txt"));
+        var source = AnimationBankSource.PathFor(Path.Combine(_folder, "SWLOR_Haks"), bank);
+        Directory.CreateDirectory(Path.GetDirectoryName(source)!);
+        File.WriteAllBytes(bank, binary); File.WriteAllBytes(source, AnimationBankSource.Encode(text, binary));
+        return (project, target, bank, source);
+    }
+
+    [Test]
+    public void CompiledBanksCanBeEditedWithoutLosingOtherAnimationBlocks()
+    {
+        var (project, target, bank, source) = CompiledInstallationFixture();
+        var originalText = AnimationBankSource.Decode(File.ReadAllBytes(source), File.ReadAllBytes(bank));
+        project.Name = "Nod";
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        var text = File.ReadAllText(bank);
+        var start = Encoding.UTF8.GetString(originalText);
+        foreach (var name in new[] { "sw_wave", "sw_wave_in", "sw_wave_out" })
+        {
+            var from = start.IndexOf("newanim " + name + " ", StringComparison.Ordinal);
+            var to = start.IndexOf("doneanim " + name + " an_hero", from, StringComparison.Ordinal) + ("doneanim " + name + " an_hero").Length;
+            text.Should().Contain(start[from..to]);
+        }
+        new MdlReader().Parse(File.ReadAllBytes(bank)).Animations.Should().HaveCount(6);
+    }
+
+    [TestCase("binary")] [TestCase("source")] [TestCase("missing")]
+    public void CompiledBankSourcesMustMatchBothSavedAndCompiledContents(string change)
+    {
+        var (project, target, bank, source) = CompiledInstallationFixture();
+        if (change == "binary") File.AppendAllText(bank, "changed");
+        else if (change == "source") File.AppendAllText(source, "# edit");
+        else File.Delete(source);
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [target]);
+        prepare.Should().Throw<InvalidDataException>();
+    }
+
+    [Test]
+    public void CompiledBankSourceIsRecheckedAfterConfirmation()
+    {
+        var (project, target, bank, source) = CompiledInstallationFixture();
+        var before = File.ReadAllBytes(bank);
+        var plan = AnimationInstall.Prepare(_folder, project, [target]);
+        File.AppendAllText(source, "# edit");
+        Action apply = plan.Apply;
+        apply.Should().Throw<IOException>().WithMessage("*changed after the installation preview*");
+        File.ReadAllBytes(bank).Should().Equal(before);
+    }
+
+    [Test]
+    public void CompiledBankRolloverUpdatesItsMatchingEditableParentLink()
+    {
+        var (project, target, bank, source) = CompiledInstallationFixture();
+        project.Name = "Nod";
+        var combinedSize = AnimationInstall.Prepare(_folder, project, [target]).Changes.Single(change => change.Path == bank).After.Length;
+        AnimationInstall.Prepare(_folder, project, [target], AnimationInstall.MaximumInputBytes, bankBudget: combinedSize - 100).Apply();
+        var binary = File.ReadAllBytes(bank);
+        AnimationBankSource.IsBinary(binary).Should().BeTrue();
+        var text = AnimationBankSource.Decode(File.ReadAllBytes(source), binary);
+        var parent = new MdlReader().Parse(binary).SuperModel;
+        parent.Should().StartWith("ab_hero_");
+        new MdlReader().Parse(text).SuperModel.Should().Be(parent);
+        project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+    }
+
+    [Test]
+    public void EditableCompiledSourceAcceptsCheckoutLineEndingsButNotPayloadEdits()
+    {
+        var (project, target, _, source) = CompiledInstallationFixture();
+        File.WriteAllText(source, File.ReadAllText(source).Replace("\n", "\r\n"), new UTF8Encoding(true));
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+    }
+
     [Test]
     public void ModelResolutionPreservesResourceCaseInsensitivityForTargetsSupermodelsAndBanks()
     {

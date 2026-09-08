@@ -284,6 +284,17 @@ public static class AnimationInstall
         var registrations = registryBytes != null
             ? JsonSerializer.Deserialize<List<AnimationRegistration>>(AnimationSourceFile.Utf8Content(registryBytes).Span) ?? throw new InvalidDataException("Invalid animation registry.")
             : [];
+        var bankSources = new Dictionary<string, byte[]>(PathComparer);
+        byte[] BankText(string path)
+        {
+            var bytes = Read(path);
+            if (!AnimationBankSource.IsBinary(bytes)) return bytes;
+            if (bankSources.TryGetValue(path, out var cached)) return cached;
+            var sourcePath = AnimationBankSource.PathFor(hakRoot, path);
+            if (!File.Exists(sourcePath))
+                throw new InvalidDataException($"Compiled bank '{path}' has no editable source at '{sourcePath}'. Recompile it with CompileModels.py before installing more animations.");
+            return bankSources[path] = AnimationBankSource.Decode(Read(sourcePath), bytes);
+        }
         if (registrations.Any(r => r == null || string.IsNullOrEmpty(r.Name) || r.Name == "AuthoredAnimation" || !Regex.IsMatch(r.Name, @"\A[A-Z][A-Za-z0-9_]*\z") ||
                 r.AnimationName == null || r.AnimationName.Length > AnimationClip.MaxNameLength || !Regex.IsMatch(r.AnimationName, @"\Asw_[a-z0-9_]+\z") || r.Targets == null || r.Targets.Length == 0 ||
                 !float.IsFinite(r.Duration) || r.Duration <= 0 || r.Duration > 600) ||
@@ -327,7 +338,8 @@ public static class AnimationInstall
                 !Path.GetExtension(target).Equals(".mdl", StringComparison.OrdinalIgnoreCase) ||
                 !PathComparer.Equals(Resolve(Path.GetFileNameWithoutExtension(target)), target))
                 throw new InvalidDataException("Targets must be winning model files in the configured SWLOR HAK source directories.");
-            if (AnimationSourceFile.Utf8Content(Read(target)).Span.StartsWith("# SWLOR authored animations for "u8))
+            if (AnimationSourceFile.Utf8Content(Read(target)).Span.StartsWith("# SWLOR authored animations for "u8) ||
+                File.Exists(AnimationBankSource.PathFor(hakRoot, target)))
                 throw new InvalidDataException("Generated animation banks cannot be installation targets. Select the original character model.");
             var currentPath = target;
             var chain = chains[target] = [];
@@ -388,7 +400,8 @@ public static class AnimationInstall
             var header = $"# SWLOR authored animations for {model.Name}";
             bool IsOwnedBank(string path)
             {
-                var contents = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(Read(path)).Span);
+                if (AnimationBankSource.IsBinary(Read(path)) && !File.Exists(AnimationBankSource.PathFor(hakRoot, path))) return false;
+                var contents = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(BankText(path)).Span);
                 return contents.StartsWith(header + "\n", StringComparison.Ordinal) || contents.StartsWith(header + "\r\n", StringComparison.Ordinal);
             }
             var targetName = Path.GetFileNameWithoutExtension(target);
@@ -528,7 +541,7 @@ public static class AnimationInstall
             var (overlay, blocks) = BuildOverlay();
             if (existingOverlay != null)
             {
-                overlay = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(Read(existingOverlay)).Span);
+                overlay = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(BankText(existingOverlay)).Span);
                 if (!overlay.StartsWith(header + "\n", StringComparison.Ordinal) && !overlay.StartsWith(header + "\r\n", StringComparison.Ordinal))
                     throw new InvalidDataException("Existing overlay is not an authored animation source.");
                 if (registration != null)
@@ -564,6 +577,9 @@ public static class AnimationInstall
             if (existingOverlay == null)
             {
                 var patched = PatchSupermodel(Read(linkPath), models[linkPath].Name, overlayName);
+                if (AnimationBankSource.IsBinary(Read(linkPath)) && bankSources.TryGetValue(linkPath, out var source))
+                    Add(AnimationBankSource.PathFor(hakRoot, linkPath),
+                        AnimationBankSource.Encode(PatchSupermodel(source, models[linkPath].Name, overlayName), patched));
                 plannedModels[linkPath] = new MdlReader().Parse(patched);
                 if (plannedModels[linkPath].SuperModel != overlayName) throw new InvalidDataException("Supermodel patch failed validation.");
                 Add(linkPath, patched);

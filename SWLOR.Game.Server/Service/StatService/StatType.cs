@@ -5163,8 +5163,8 @@ namespace SWLOR.Game.Server.Service.StatService
 
         /// <summary>
         /// Percent bonus to the direct damage of mimicked techniques (combat analyzer potency).
-        /// Granted by Combat Analyzer ranks, the Overclocked Analyzer capstone's Overload, and
-        /// damage-type loadout set bonuses; read by the Mimicry technique impact as a damage-percent adjustment.
+        /// Granted by Combat Analyzer ranks, Finishing Drive, Overload, and damage-type loadout
+        /// set bonuses; applied to the complete damage roll by the shared outgoing damage pipeline.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         MimicryPotencyPercent = 915,

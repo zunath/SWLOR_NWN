@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                     Ability.ApplyCombatImpact(
                         activator, arc, GetLocation(arc),
-                        ResolveSkillType(activator, profile), ScaleForMimicryPotency(activator, profile, arcDamage), arcDuration, arcStatus, false,
+                        ResolveSkillType(activator, profile), arcDamage, arcDuration, arcStatus, false,
                         damageType: damageType, playImpactAnimation: false,
                         useNPCStatScaling: ShouldUseNPCStatScaling(activator));
 
@@ -244,23 +244,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         }
 
         /// <summary>
-        /// Applies combat-analyzer potency to a mimicked technique's base damage. Potency
-        /// (<see cref="StatType.MimicryPotencyPercent"/>) is granted by Combat Analyzer ranks, the
-        /// Overclocked Analyzer capstone's Overload, and damage-type set bonuses. Only the Mimicry
-        /// profile is affected, so shared innate-ability damage for other skills is unchanged.
+        /// Builds a hostile single-target ability with profile-specific scaling, status effects,
+        /// and successful-hit callbacks routed through the shared combat impact pipeline.
         /// </summary>
-        private static int ScaleForMimicryPotency(uint activator, InnateAbilityProfile profile, int baseDamage)
-        {
-            if (!ReferenceEquals(profile, InnateAbilityProfile.Mimicry))
-                return baseDamage;
-
-            var potency = Stat.GetStatAdjustment(activator, StatType.MimicryPotencyPercent);
-            if (potency <= 0)
-                return baseDamage;
-
-            return baseDamage + baseDamage * potency / 100;
-        }
-
         public static AbilityBuilder BuildSingleTarget(
             AbilityBuilder builder,
             FeatType feat,
@@ -308,7 +294,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    ScaleForMimicryPotency(activator, profile, baseDamage),
+                    baseDamage,
                     duration,
                     statusEffect,
                     false,
@@ -328,6 +314,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return ability;
         }
 
+        /// <summary>
+        /// Builds a hostile area ability with targeting geometry and profile-specific combat impacts.
+        /// The shared damage pipeline applies outgoing modifiers to each struck target.
+        /// </summary>
         public static AbilityBuilder BuildArea(
             AbilityBuilder builder,
             FeatType feat,
@@ -392,7 +382,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    ScaleForMimicryPotency(activator, profile, baseDamage),
+                    baseDamage,
                     duration,
                     statusEffect,
                     shape,

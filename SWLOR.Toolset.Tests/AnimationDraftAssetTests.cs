@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Numerics;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
@@ -63,7 +64,13 @@ public class AnimationDraftAssetTests
         if (!File.Exists(path)) Assert.Ignore("Initialize the HAK submodule to verify installed native assets.");
         var target = new MdlReader().Parse(File.ReadAllBytes(path));
         target.SuperModel.Should().Be("an_" + modelName);
-        var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(path)!, target.SuperModel + ".mdl")));
+        var bankPath = Path.Combine(Path.GetDirectoryName(path)!, target.SuperModel + ".mdl");
+        var bankBytes = File.ReadAllBytes(bankPath);
+        AnimationBankSource.IsBinary(bankBytes).Should().BeTrue("all shipped animation MDLs must be compiled");
+        var sourcePath = AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bankPath);
+        var bankSource = AnimationBankSource.Decode(File.ReadAllBytes(sourcePath), bankBytes);
+        Encoding.UTF8.GetString(bankSource).Should().StartWith("# SWLOR authored animations for " + modelName);
+        var overlay = new MdlReader().Parse(bankBytes);
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
         foreach (var name in Names)
         {
@@ -104,6 +111,26 @@ public class AnimationDraftAssetTests
             var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, entry.ProjectPath!)));
             project.Name.Should().Be(entry.Name);
             project.Duration.Should().Be(entry.Duration);
+        }
+    }
+
+    [Test]
+    public void EveryRegisteredClipCanBePreparedAgainstCompiledBanks()
+    {
+        var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
+        foreach (var entry in registry)
+        {
+            var source = Path.Combine(Root, entry.ProjectPath!);
+            var project = AnimationProject.Deserialize(File.ReadAllText(source));
+            var plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+            var banks = plan.Changes.Where(change => Path.GetExtension(change.Path) == ".mdl").ToArray();
+            banks.Should().HaveCount(entry.Targets.Length);
+            foreach (var bank in banks)
+            {
+                AnimationBankSource.IsBinary(bank.Before!).Should().BeTrue();
+                AnimationBankSource.IsBinary(bank.After).Should().BeFalse("the preview produces editable text for the subsequent native compilation step");
+                plan.Inputs.Should().ContainKey(AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path));
+            }
         }
     }
 

@@ -159,6 +159,21 @@ they do not verify the live client's playback, model cache, equipment choice, or
 
 ## Clothing animation bridges
 
+All MDLs published in the HAK folders must be compiled. After installing or updating banks,
+run the native compiler from `SWLOR_Haks` before regenerating clothing:
+
+```powershell
+python -B tools/CompileModels.py --model an_a_ba --model an_a_fa --apply
+```
+
+Use the actual changed bank resrefs when the library grows. Compilation audits every output
+and retains editable bank text in `model_sources/<hak-folder>/<bank>.mdl.ascii`, outside the
+packaged HAK folders. Commit these companions with the compiled MDLs. They retain all existing
+animation blocks and hashes of both source text and compiled bytes so subsequent editor/CLI
+installs can update compiled banks without discarding other clips. Missing or mismatched pairs
+are rejected. The `.swlanim` files remain the canonical pose projects; these bank sources are
+the reproducible inputs for the compiled model resources. Recompile after each installation.
+
 RGB robe phenotypes also have generated animation bridges for their separate garment joints.
 After changing animations inherited from a body rig, regenerate those bridges from the HAK
 repository before packaging; otherwise a robe can continue using its older movement tracks:
@@ -166,6 +181,7 @@ repository before packaging; otherwise a robe can continue using its older movem
 ```powershell
 python -B tools/GenerateRobeRgbModels.py --game-data "<NWN installation>/data" --apply
 python -B tools/PruneRobeAnimationBridges.py --apply
+git add -u -- sw_pt_root
 python -B tools/PruneRobeAnimationBridges.py
 python -B tools/GenerateRobeRgbModels.py --check
 ```

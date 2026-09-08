@@ -228,9 +228,12 @@ namespace SWLOR.Game.Server.Service
         /// Retains the originating ability and cast sequence for recurring impacts without
         /// consuming another activation's pending bonuses or replacing its impact tracker.
         /// </summary>
-        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction)
+        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction, int baseDamage = 0)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
+            // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
+            // later pulses cannot consume bonuses earned after the field was created.
+            PrepareCombatImpactDamageBonuses(activator, baseDamage);
             var originatingImpact = GetTrackedAbilityImpact(activator);
             if (originatingImpact == null)
                 return impactAction;

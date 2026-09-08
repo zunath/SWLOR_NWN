@@ -81,8 +81,9 @@ public class AbilityImpactDamageBonusTests
         Apply(0, bash, () => 75).Should().Be((75, true));
     }
 
-    [Test]
-    public void ImpactPreparation_LeavesControlBonusesArmedAndConsumesOnceForDamage()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ImpactPreparation_LeavesControlBonusesArmedAndConsumesOnceForDamage(bool scheduled)
     {
         var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
         var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
@@ -100,10 +101,17 @@ public class AbilityImpactDamageBonusTests
         impacts.Add(caster, impact);
         try
         {
-            prepare(caster, 0);
+            void DeclareDamage(int damage)
+            {
+                if (scheduled)
+                    Ability.CaptureRepeatedAbilityImpact(caster, () => { }, baseDamage: damage);
+                else
+                    prepare(caster, damage);
+            }
+            DeclareDamage(0);
             calls.Should().Be(0, "control impacts must not invoke activation bonus consumers");
-            prepare(caster, 100);
-            prepare(caster, 100);
+            DeclareDamage(100);
+            DeclareDamage(100);
             calls.Should().Be(1, "multiple targets and phases share one consumption");
         }
         finally

@@ -186,7 +186,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
             var applyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
-                () => ApplyCreepingTerrorPulse(activator, location, scaledPulseDamage, radius));
+                () => ApplyCreepingTerrorPulse(activator, location, scaledPulseDamage, radius),
+                baseDamage: scaledPulseDamage);
 
             CombatAreaPulses.SchedulePulses(
                 activator,

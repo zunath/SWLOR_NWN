@@ -23,7 +23,7 @@ public class AppearanceEditorLayoutTests
     private static readonly string[] EditorPanels =
     {
         AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial,
-        AppearanceEditorViewModel.SettingsPartial
+        AppearanceEditorViewModel.SettingsPartial, AppearanceEditorViewModel.EditorWeaponPartial
     };
 
     [SetUp]
@@ -43,6 +43,21 @@ public class AppearanceEditorLayoutTests
             .GetField("_activeWindow", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(builder)!;
         _partials = authoredWindow.PartialViews;
+    }
+
+    [Test]
+    public void WeaponsContainOnlyPartControlsWithoutReservedTintSpace()
+    {
+        var weapon = _partials[AppearanceEditorViewModel.EditorWeaponPartial];
+        var widgets = Walk(weapon).ToArray();
+        widgets.Should().Contain(widget => widget.Id == "ae_part_select");
+        widgets.Should().Contain(widget => widget.Id == "ae_part_category");
+        widgets.Should().NotContain(widget => widget.Id == "ae_color_category" ||
+            widget.Id == "ae_color_palette" || widget.Id == "ae_tint_picker" ||
+            (widget.Id != null && widget.Id.StartsWith("ae_palette_")));
+        var partList = widgets.Single(widget => widget.Id == "ae_part_select");
+        partList.Should().NotBeNull();
+        _window.LayoutFindings.Should().BeEmpty();
     }
 
     [Test]

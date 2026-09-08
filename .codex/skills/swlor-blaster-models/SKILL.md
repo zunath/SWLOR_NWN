@@ -27,11 +27,14 @@ conversion, fitting and export helpers in the process tooling.
   an existing replacement.
 - Pistol base item is **11**, class **WBwSh**. Native slot is `model * 10 + color`;
   toolset label is `model-color`; catalog ID is `color * 100 + model`. Imported
-  blaster_high41_a01 occupies **44 / 4-4 / Part #404**; Vesper-9 occupies
+  Inspect current assets/catalogs and open asset PRs for occupied slots; these
+  examples are not the complete replacement list. blaster_high41_a01 occupies **44 / 4-4 / Part #404**; Vesper-9 occupies
   **201 / 20-1 / Part #120**. These are not free slots.
 - For rigid opaque GR2 imports, use `tools/SetupBlasterImporter.ps1` and
   `tools/ImportBlasterModel.py` with local inputs and a local manifest. Use the
-  guide's schema. Other material/animation requirements need explicit handling.
+  guide's schema. Classify the mesh itself, not shared texture filenames; rifles
+  need their own workflow. Inspect all material subsets and handle source emission
+  explicitly as described in the guide. Unpack SWTOR normal green exactly once.
 - For original designs, author a distinct silhouette and material treatment in
   a local scene/script. Reuse `write_mdl` from the converter for static export.
   For later edits, work from the committed MDL, MTR and DDS maps; do not require
@@ -65,15 +68,15 @@ conversion, fitting and export helpers in the process tooling.
   See the guide for the command and binary/material verification. For later edits,
   read the shipped binary with `MdlReader` into local authoring rather than relying
   on a legacy decompiler to preserve EE materials.
-
-
 - Check the native slot against `PistolAppearanceDefinition.MiddleParts`, the
   model and inventory icon. Validate new geometry/export changes using the native
   model reader, and check all MTR/texture references directly. Run focused converter
   tests when changing the converter. Do not require source manifests for asset checks.
 - For requested deployment, use the normal build route and compare packed content
   with committed game resources. Verification builds use `-p:RunPostBuildEvent=Never`.
-  See [troubleshooting](references/troubleshooting.md) for content/editor failures.
+  See [troubleshooting](references/troubleshooting.md) for first-view hitches,
+  sustained rendering cost and content/editor failures. Compilation and offline
+  checks are not a measured client performance result.
 - Report slot IDs, checks, deployment and outstanding client review in the PR.
   Offline renders do not establish live fit: check idle/attack grip, muzzle direction,
   body sizes, inventory and ground appearance after restarting NWN to clear its cache.

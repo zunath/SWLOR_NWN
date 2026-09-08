@@ -33,6 +33,31 @@ The repository's normal Windows server build rebuilds changed HAK inputs and
 deploys them. `-p:RunPostBuildEvent=Never` deliberately skips this. Repair a broken
 normal build path instead of relying on permanent manual copies to hide it.
 
+## First-view lag or sustained rendering cost
+
+Distinguish a cold first appearance from continued slow rendering. Restart the
+client for the cold check, then show the same weapon again in the same scene.
+Record the model, lighting/body setup and before/after frame times if measuring.
+
+- A cold hitch with shipped ASCII models calls for native NWN:EE precompilation.
+  Inspect the MDL extracted from the actual loaded HAK, not only a staging copy.
+  Binary MDLs start with four zero bytes; check EE material names and referenced
+  vertex tangent frames as well as the header. Leave the legacy build compiler off.
+- Large maps and missing mipmaps increase texture load/memory cost. Use the guide's
+  DDS presets and per-map sizes; preserve smaller sources and use tiny maps for
+  constant material values. Remove superseded maps and competing TGA resources.
+- Continued slow rendering needs mesh/triangle, material/draw-call and texture
+  cost inspection. Reduce wasted faces or maps without sacrificing the accepted
+  silhouette. Compilation does not lower visible triangle count or guarantee FPS.
+
+The latest optimization compiled all 17 shipped blasters and reduced the earlier
+batch's texture payload by 8,607,008 bytes: Lifeday22 color and MTX19 color/normal
+maps went from 2048 to 1024; constant MTX36 fallback maps went from 256 to 4.
+Native-reader, material/tangent, DDS/icon and packed-HAK checks passed. These prove
+asset delivery and integrity; live-client frame-time improvement still requires
+retesting. Do not report compiler process wall time, which includes game startup,
+as a measured first-view hitch or FPS improvement.
+
 ## Model missing from appearance choices
 
 `SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/PistolAppearanceDefinition.cs`

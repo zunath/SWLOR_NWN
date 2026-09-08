@@ -18,12 +18,13 @@ catalog encodes `color * 100 + model`.
 | Imported blaster_high41_a01 | 44 | 4-4 | Part #404 | blstr_h41 |
 | Original Vesper-9 | 201 | 20-1 | Part #120 | blstr_vsp9 |
 
-These slots are occupied replacements. Choose another modern pistol for a new
+These are examples, not a complete free-slot inventory. Inspect the current HAK
+resources, catalog and open asset PRs before selecting a slot. Choose another modern pistol for a new
 design unless asked to revise one of them. Replacing a shared slot also changes
 persisted items using it. Basic Pistol already uses middle 201. Do not substitute
 the native-sling compatibility base item 61 or change item stats to select a model.
 
-A middle slot uses `wbwsh_m_NNN.mdl` and `iwbwsh_m_NNN.tga` in
+A middle slot uses `wbwsh_m_NNN.mdl` and `iwbwsh_m_NNN.dds` in
 `SWLOR_Haks/sw_weapon/`. Register its catalog ID in
 `PistolAppearanceDefinition.MiddleParts` if missing. Thus native 44 requires 404.
 The example weapons use empty top/bottom parts 11. Texture resrefs must be unique,
@@ -40,6 +41,12 @@ powershell -ExecutionPolicy Bypass -File tools/SetupBlasterImporter.ps1
 Setup downloads and verifies the add-on into `.tmp/blaster-tools`; it does not
 change saved Blender preferences. Transparent, animated or emissive weapons need
 separate material/geometry work rather than silent flattening by this preset.
+
+Extract each archive into its own ignored input folder to avoid overwriting shared
+texture filenames. Classify the actual mesh visually: rifle-named shared textures
+do not establish that a model is a rifle. This importer and hand fixture are for
+pistols; use the rifle-specific workflow for a rifle. Inspect material assignments
+for missing or shared texture sets before conversion.
 
 Copy the supplied inputs to an ignored local input folder. Create a local
 `import.json` alongside them with this structure, replacing the filenames, slot,
@@ -98,7 +105,19 @@ Inputs, manifest, generated scene and report stay local.
 SWTOR packed normals use alpha for X and inverted green for Y; reconstruct and
 normalize Z. Red/blue are not normal channels. Diffuse stays opaque; colored
 specular RGB is retained. SWTOR gloss alpha is not NWN roughness. This conversion
-uses NWN's default roughness and approximates the source material.
+uses NWN's default roughness and approximates the source material. Invert source
+green exactly once during unpacking; Blender-baked OpenGL normals already have the
+target convention and do not need another inversion. DDS row orientation is a
+separate operation from changing normal Y.
+
+For the supported SWTOR packed material, inspect the normal texture's blue channel
+as the emission mask. A bright diffuse panel alone does not imply emission. Where
+the mask is meaningful, multiply decoded diffuse RGB by the mask in linear light,
+encode the result as a color DDS and bind it to MTR `texture5`. Zero-mask texels must
+remain black; do not add a map when the mask is all zero. Review alignment on the
+textured mesh. The generic opaque importer does not perform this emission step;
+handle it explicitly after import. Preserve separate material subsets rather than
+applying a fallback finish to the whole weapon when one source texture set is missing.
 
 ## Original designs and later edits
 
@@ -121,9 +140,12 @@ NWN:EE PBR uses MTR `texture0` for base color, `texture1` for OpenGL tangent nor
 `texture2` for scalar specularity, and `texture3` for linear roughness. The standard
 `inc_material` shader derives metallicness as `clamp(3 * specularity - 0.6, 0, 1)`.
 Keep scalar maps linear. Use distinct responses for exposed metals, coatings,
-composite grips and glass; avoid strong baked highlights. For new originals, aim for one 512-square material atlas and roughly 1,500–4,000
-triangles, increasing only when visible detail warrants it. Existing imported
-models may need larger maps; review at actual handheld size.
+composite grips and glass; avoid strong baked highlights. Prefer few meshes and
+512-1024-square atlases sized to visible detail. The imported pistols span roughly
+1,200-6,100 triangles; these are reference costs, not a reason to flatten a design
+into coarse slabs. Compare shape construction, grip transitions, recessed detail
+and material wear against accepted SWTOR assets under matching light. Preserve
+silhouette and visual quality while reducing wasted geometry and texture space.
 
 Validate the exported maps themselves: MTR bindings, dimensions, scalar channels,
 normal lengths, UV assignment and visible material response. Review renders use
@@ -137,8 +159,11 @@ commit its executable, archive, logs or intermediate textures. The tested Window
 64-bit build is dated March 3, 2023. These are runtime DDS files, distinct from the
 original packed SWTOR DDS inputs kept outside Git.
 
-Use 512-square maps for compact originals and at most 1024-square maps for typical
-imported handheld blasters. Compare textured previews before reducing larger maps;
+Use 512-square maps where sufficient and at most 1024-square maps for typical
+handheld blasters. Preserve smaller source maps; do not upscale a 256/512 map to a
+larger atlas just because the manifest uses a common `texture_size`. The generic
+importer resizes maps to that setting, so stage per-map corrections when needed.
+Compare textured previews before reducing larger maps;
 filter color in linear light and reconstruct/renormalize tangent normals. Constant
 material maps can use 4x4 DDS with full mipmaps. Avoid allocating large maps to solid
 colors. Preserve approved fit and silhouette when optimizing.
@@ -147,7 +172,7 @@ For opaque blaster maps, use these explicit options with `-fileformat dds
 
 | Map | Additional options | Stored channels |
 |---|---|---|
-| Base color | `-DXT1 -gamma 2.2` | BC1 RGB |
+| Base color / colored emission | `-DXT1 -gamma 2.2` | BC1 RGB |
 | Tangent normals | `-DXN -normalize -renormalize -uniformMetrics -gamma 1.0` | BC5/ATI2 XY |
 | Scalar specularity/roughness | `-DXT5A -setAtoY -gamma 1.0` | BC4/ATI1 scalar |
 | Colored specular (imported blaster) | `-DXT1 -uniformMetrics -gamma 1.0` | BC1 RGB |
@@ -187,7 +212,10 @@ texture payload is 5,637,112 bytes, versus 19,074,749 bytes as uncompressed TGAs
 Fit the grip with uniform scale and preserve natural proportions. NWN pistol
 space uses barrel **-Z** and grip **-Y**. The approved example's grip pivot is
 `(0, 0.03, 0.015)`; its six-degree pitch correction rotates around that pivot.
-Do not normalize every blaster to a compact pistol's total length.
+Do not normalize every blaster to a compact pistol's total length. The example
+scale 9.6 is a starting point, not a batch-wide fit guarantee: source grip sizes
+vary. Refit oversized grips uniformly around the contact pivot and review both
+sides. Widen the review camera for long barrels rather than truncating the check.
 
 The actual human right-hand reference is `pmh0_handr001`. Custom pistol animation
 uses **bowshot**, whose hook retains its rest orientation; generic **xbowshot**
@@ -249,6 +277,14 @@ with the native reader before packing. Verify tangent data when changing export 
 compiler paths, and compare visible triangle corners and UVs against the staged
 ASCII to detect compiler changes. Native compilation may split seam vertices or
 remove degenerate triangles; vertex counts alone do not establish geometry loss.
+Remove exact zero-area export faces and compact unused vertices where practical.
+When comparing before/after compilation, match triangle corner positions and UVs,
+not vertex indices. Any removed face must be proven zero-area; do not waive a
+mismatch for a visible face. On vertices referenced by faces, check finite unit
+normals/tangents, near-zero normal/tangent dot product and handedness of +1 or -1.
+The compiler may retain unused vertices after removing degenerate faces; their
+zero handedness is not a rendered tangent failure. The helper's header/log checks
+alone do not establish material, tangent or visual correctness.
 For later edits, read the binary with `MdlReader` and export a local editable mesh;
 do not use the legacy decompiler to round-trip EE material fields.
 

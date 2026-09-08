@@ -81,10 +81,17 @@ namespace SWLOR.Game.Server.Service
 
         public static void SendResourceRestored(uint creature, int restored, string resource)
         {
-            if (!DiagnosticsEnabled || restored <= 0 || !GetIsPC(creature) || GetIsDM(creature))
+            if (!DiagnosticsEnabled || restored <= 0 || !GetIsObjectValid(creature))
                 return;
 
-            SendMessageToPC(creature, ColorToken.Combat(BuildResourceRestoredMessage(restored, resource)));
+            var receiver = GetIsPC(creature) ? creature : GetMaster(creature);
+            if (!GetIsObjectValid(receiver) || !GetIsPC(receiver) || GetIsDM(receiver))
+                return;
+
+            var message = BuildResourceRestoredMessage(restored, resource);
+            if (receiver != creature)
+                message = $"{PlayerName.GetDisplayName(receiver, creature)}: {message}";
+            SendMessageToPC(receiver, ColorToken.Combat(message));
         }
     }
 }

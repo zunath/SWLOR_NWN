@@ -1,0 +1,79 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Toolset.Domain.Animation;
+
+namespace SWLOR.Toolset.Tests;
+
+public class AnimationInstallBatchTests
+{
+    private string _folder = null!;
+    [SetUp] public void Setup() { _folder = Path.Combine(Path.GetTempPath(), "swlor-animation-batch-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(_folder); }
+    [TearDown] public void Teardown() { Directory.Delete(_folder, true); }
+
+    private AnimationInstallPlan Change(string path, byte[] bytes) => new()
+    {
+        AnimationName = "sw_test", ConstantName = "Test", Inputs = new Dictionary<string, byte[]>(),
+        Changes = [new(path, File.Exists(path) ? File.ReadAllBytes(path) : null, bytes)]
+    };
+
+    [Test]
+    public void LaterPreparationFailureRestoresOriginalFilesAndRemovesNewBanks()
+    {
+        var existing = Path.Combine(_folder, "registry.json"); File.WriteAllBytes(existing, [1]);
+        var created = Path.Combine(_folder, "created.mdl");
+        Action apply = () => AnimationInstallBatch.Apply([
+            () => Change(existing, [2]), () => Change(created, [3]), () => Change(existing, [4]), () => Change(created, [5]),
+            () => throw new InvalidDataException("Later animation is invalid.")]);
+        apply.Should().Throw<InvalidDataException>();
+        File.ReadAllBytes(existing).Should().Equal(1);
+        File.Exists(created).Should().BeFalse();
+        Directory.GetFiles(_folder).Should().Equal(existing);
+    }
+
+    [Test]
+    public void LaterApplyFailureRollsBackAllEarlierSuccessfulPlans()
+    {
+        var existing = Path.Combine(_folder, "registry.json"); File.WriteAllBytes(existing, [1]);
+        var blocked = Path.Combine(_folder, "blocked"); Directory.CreateDirectory(blocked);
+        Action apply = () => AnimationInstallBatch.Apply([() => Change(existing, [2]), () => Change(blocked, [3])]);
+        apply.Should().Throw<Exception>();
+        File.ReadAllBytes(existing).Should().Equal(1);
+        Directory.Exists(blocked).Should().BeTrue();
+        Directory.GetFiles(_folder).Should().Equal(existing);
+    }
+
+    [Test]
+    public void ConcurrentWriterIsPreservedAndOtherBatchFilesAreRestored()
+    {
+        var first = Path.Combine(_folder, "first.json"); File.WriteAllBytes(first, [1]);
+        var second = Path.Combine(_folder, "second.json"); File.WriteAllBytes(second, [2]);
+        Action apply = () => AnimationInstallBatch.Apply([() => Change(first, [3]), () => Change(second, [4]), () =>
+        {
+            File.WriteAllBytes(first, [9]);
+            return Change(first, [5]);
+        }]);
+        apply.Should().Throw<AggregateException>();
+        File.ReadAllBytes(first).Should().Equal(9);
+        File.ReadAllBytes(second).Should().Equal(2);
+        Directory.GetFiles(_folder).Should().BeEquivalentTo([first, second]);
+    }
+
+    [Test]
+    public void SnapshotLimitRejectsLaterStepAndRestoresEarlierSteps()
+    {
+        var first = Path.Combine(_folder, "first.json"); File.WriteAllBytes(first, [1]);
+        var second = Path.Combine(_folder, "second.json"); File.WriteAllBytes(second, [2]);
+        Action apply = () => AnimationInstallBatch.Apply([() => Change(first, [3]), () => Change(second, [4, 5, 6])], 5);
+        apply.Should().Throw<InvalidDataException>().WithMessage("*snapshot budget*");
+        File.ReadAllBytes(first).Should().Equal(1);
+        File.ReadAllBytes(second).Should().Equal(2);
+    }
+
+    [Test]
+    public void SuccessfulBatchPublishesTheFinalStateOfRepeatedPaths()
+    {
+        var path = Path.Combine(_folder, "registry.json"); File.WriteAllBytes(path, [1]);
+        AnimationInstallBatch.Apply([() => Change(path, [2]), () => Change(path, [3])]).Should().BeEmpty();
+        File.ReadAllBytes(path).Should().Equal(3);
+    }
+}

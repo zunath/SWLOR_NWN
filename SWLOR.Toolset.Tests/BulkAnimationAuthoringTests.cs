@@ -36,8 +36,9 @@ public class BulkAnimationAuthoringTests
         finally { Directory.Delete(folder, true); }
     }
 
-    [Test]
-    public void GeneratingANewAbilityDoesNotOverwriteAnExistingManuallyEditedBase()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void GeneratingANewAbilityDoesNotOverwriteAnExistingManuallyEditedBase(bool targetedReplacement)
     {
         var model = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
         if (!File.Exists(model)) Assert.Ignore("Initialize HAK sources.");
@@ -52,7 +53,8 @@ public class BulkAnimationAuthoringTests
             File.WriteAllBytes(basePath, edited);
             var input = Path.Combine(folder, "input.json");
             File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.") }));
-            BulkMotionAuthor.Generate(model, input, Path.Combine(folder, "output"), false);
+            BulkMotionAuthor.Generate(model, input, Path.Combine(folder, "output"), targetedReplacement,
+                targetedReplacement ? new HashSet<string> { "NewShot" } : null);
             File.ReadAllBytes(basePath).Should().Equal(edited);
             File.Exists(Path.Combine(folder, "output/pistol/NewShot.swlanim")).Should().BeTrue();
         }

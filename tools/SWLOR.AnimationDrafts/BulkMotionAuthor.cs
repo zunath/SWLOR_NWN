@@ -170,9 +170,8 @@ internal static class BulkMotionAuthor
         }
     }
 
-    internal static void Generate(string modelPath, string inputPath, string output, bool overwrite, IReadOnlySet<string>? replaceIds = null)
+    internal static HashSet<string> ValidateEntries(ActiveMotion[] entries)
     {
-        var entries = JsonSerializer.Deserialize<ActiveMotion[]>(File.ReadAllText(inputPath), Json) ?? throw new InvalidDataException("Empty inventory.");
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in entries)
@@ -186,10 +185,17 @@ internal static class BulkMotionAuthor
                     throw new InvalidDataException("Unknown feat: " + feat);
         }
         var resources = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        if (replaceIds != null && replaceIds.Any(id => !ids.Contains(id))) throw new InvalidDataException("A requested replacement ID is absent from the inventory.");
         foreach (var entry in entries)
             foreach (var resource in new[] { entry.InternalName, entry.InternalName + "_in", entry.InternalName + "_out" })
                 if (!resources.Add(resource)) throw new InvalidDataException("Animation identity collides with a transition: " + resource);
+        return ids;
+    }
+
+    internal static void Generate(string modelPath, string inputPath, string output, bool overwrite, IReadOnlySet<string>? replaceIds = null)
+    {
+        var entries = JsonSerializer.Deserialize<ActiveMotion[]>(File.ReadAllText(inputPath), Json) ?? throw new InvalidDataException("Empty inventory.");
+        var ids = ValidateEntries(entries);
+        if (replaceIds != null && replaceIds.Any(id => !ids.Contains(id))) throw new InvalidDataException("A requested replacement ID is absent from the inventory.");
         var manifestPath = Path.Combine(output, "active-manifest.json");
         using var previousManifest = File.Exists(manifestPath) ? JsonDocument.Parse(File.ReadAllText(manifestPath)) : null;
         var previous = previousManifest?.RootElement.GetProperty("Animations").EnumerateArray()
@@ -230,7 +236,7 @@ internal static class BulkMotionAuthor
             var id = Regex.Replace(profile.Name, "[^A-Za-z0-9]", "");
             var baseMotion = new ActiveMotion(id, "sw_base", "Bases", "Base", "Reusable procedural base: " + profile.Name);
             var basePath = Path.Combine(output, "bases", id + ".swlanim");
-            if (overwrite || !File.Exists(basePath))
+            if ((overwrite && replaceIds == null) || !File.Exists(basePath))
                 pending.Add(basePath, Bake(model, baseMotion, profile).Serialize() + "\n");
         }
         foreach (var (path, contents) in pending) { Directory.CreateDirectory(Path.GetDirectoryName(path)!); File.WriteAllText(path, contents); }

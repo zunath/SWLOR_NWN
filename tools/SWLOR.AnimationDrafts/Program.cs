@@ -25,17 +25,30 @@ try
         var root = Path.GetFullPath(args[1]);
         var entries = JsonSerializer.Deserialize<ActiveMotion[]>(await ReadText(args[2]), BulkMotionAuthor.Json)
             ?? throw new InvalidDataException("Empty inventory.");
+        BulkMotionAuthor.ValidateEntries(entries);
         var targets = args.Skip(3).Select(name => AnimationInstall.FindTargetSource(root, name)
             ?? throw new FileNotFoundException($"No configured HAK source for {name}.")).ToArray();
+        var projects = new List<(ActiveMotion Entry, string Path, AnimationProject Project, byte[] Hash)>();
+        // Reject missing, malformed or mismatched projects before publishing any bank.
         foreach (var entry in entries)
         {
             var category = System.Text.RegularExpressions.Regex.Replace(entry.Category.ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
             var path = Path.Combine(root, "design", "animations", category, entry.Id + ".swlanim");
-            var project = AnimationProject.Deserialize(await ReadText(path));
-            var plan = AnimationInstall.Prepare(root, project, targets, path, entry.InternalName);
-            plan.Apply();
-            Console.WriteLine($"Installed {entry.Id}: {plan.AnimationName} ({project.Duration:0.00}s)");
+            var bytes = await AnimationProject.ReadFileBytesAsync(path);
+            var project = AnimationProject.Deserialize(System.Text.Encoding.UTF8.GetString(bytes));
+            if (project.Name != entry.Id) throw new InvalidDataException("Project identity mismatch: " + path);
+            projects.Add((entry, path, project, SHA256.HashData(bytes)));
         }
+        var backups = AnimationInstallBatch.Apply(projects.Select(item => (Func<AnimationInstallPlan>)(() =>
+        {
+            var plan = AnimationInstall.Prepare(root, item.Project, targets, item.Path, item.Entry.InternalName);
+            if (!plan.Inputs.TryGetValue(item.Path, out var captured) || !SHA256.HashData(captured).AsSpan().SequenceEqual(item.Hash))
+                throw new IOException("Project changed after batch preflight: " + item.Path);
+            return plan;
+        })));
+        foreach (var item in projects)
+            Console.WriteLine($"Installed {item.Entry.Id}: {item.Entry.InternalName} ({item.Project.Duration:0.00}s)");
+        foreach (var backup in backups) logger.Warning("Backup cleanup failed; retained {BackupPath}.", backup);
         return 0;
     }
     if (args.Length >= 4 && args[0] == "install")

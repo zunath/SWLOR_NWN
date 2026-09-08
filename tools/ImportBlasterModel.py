@@ -74,7 +74,9 @@ def write_mdl(path, model, texture, meshes):
     lines = ["#MAXMODEL ASCII", f"newmodel {model}", f"setsupermodel {model} NULL",
              "classification CHARACTER", "setanimationscale 1", f"beginmodelgeom {model}",
              f"node dummy {model}", "  parent NULL", "endnode"]
-    for index, (verts, uvs, faces) in enumerate(meshes):
+    for index, mesh in enumerate(meshes):
+        verts, uvs, faces = mesh[:3]
+        normals = mesh[3] if len(mesh) == 4 else None
         if not verts or not faces or max(len(verts), len(faces)) > 65535:
             raise ValueError("Empty mesh or NWN vertex/face limit exceeded")
         if len(uvs) != len(verts):
@@ -85,12 +87,19 @@ def write_mdl(path, model, texture, meshes):
             raise ValueError("Non-finite UV")
         if any(min(f) < 0 or max(f) >= len(verts) for f in faces):
             raise ValueError("Invalid face index")
+        if normals is not None and (len(normals) != len(verts) or any(
+                len(n) != 3 or not all(math.isfinite(c) for c in n)
+                or abs(sum(c*c for c in n) - 1) > .001 for n in normals)):
+            raise ValueError("Every exported vertex must have a finite unit normal")
         lines += [f"node trimesh blaster{index}", f"  parent {model}", "  position 0 0 0",
                   "  orientation 0 0 1 0", "  ambient 1 1 1", "  diffuse 1 1 1",
                   "  specular 0 0 0", "  shininess 20", "  shadow 1", "  render 1",
                   "  tilefade 0", f"  bitmap {texture}", f"  materialname {texture}",
                   "  renderhint NormalAndSpecMapped", f"  verts {len(verts)}"]
         lines += ["    " + " ".join(f"{n:.9g}" for n in v) for v in verts]
+        if normals is not None:
+            lines += [f"  normals {len(normals)}"]
+            lines += ["    " + " ".join(f"{n:.9g}" for n in v) for v in normals]
         lines += [f"  tverts {len(uvs)}"]
         lines += [f"    {u:.9g} {v:.9g} 0" for u, v in uvs]
         lines += [f"  faces {len(faces)}"]
@@ -98,6 +107,31 @@ def write_mdl(path, model, texture, meshes):
         lines += ["endnode"]
     lines += [f"endmodelgeom {model}", f"donemodel {model}"]
     path.write_text("\n".join(lines) + "\n", encoding="ascii")
+
+
+def export_mesh(mesh, transform):
+    """Retain transformed authored corner normals when splitting geometry at UV seams."""
+    from mathutils import Vector
+    mesh.calc_loop_triangles()
+    mesh.calc_normals_split()
+    # Split on source vertex, UV and normal to retain authored seams/hard edges.
+    indices, verts, uvs, faces, normals = {}, [], [], [], []
+    normal_transform = transform.to_3x3().inverted().transposed()
+    for tri in mesh.loop_triangles:
+        face = []
+        for li in tri.loops:
+            loop = mesh.loops[li]
+            uv = tuple(mesh.uv_layers.active.data[li].uv)
+            normal = tuple(mesh.corner_normals[li].vector)
+            key = (loop.vertex_index, uv, normal)
+            if key not in indices:
+                indices[key] = len(verts)
+                verts.append(tuple(transform @ mesh.vertices[loop.vertex_index].co))
+                uvs.append(uv)
+                normals.append(tuple((normal_transform @ Vector(normal)).normalized()))
+            face.append(indices[key])
+        faces.append(tuple(face))
+    return verts, uvs, faces, normals
 
 
 def main():
@@ -147,24 +181,7 @@ def main():
         # The importer assigns a Blender-only +90 X object rotation. Manifest axes refer
         # to raw SWTOR vertex coordinates, not the importer's viewport conversion.
         ob.matrix_world = transform
-        mesh = ob.data
-        mesh.calc_loop_triangles()
-        # Split on source vertex, UV and normal to retain authored seams/hard edges.
-        indices, verts, uvs, faces = {}, [], [], []
-        for tri in mesh.loop_triangles:
-            face = []
-            for li in tri.loops:
-                loop = mesh.loops[li]
-                uv = tuple(mesh.uv_layers.active.data[li].uv)
-                normal = tuple(mesh.corner_normals[li].vector)
-                key = (loop.vertex_index, uv, normal)
-                if key not in indices:
-                    indices[key] = len(verts)
-                    verts.append(tuple(transform @ mesh.vertices[loop.vertex_index].co))
-                    uvs.append(uv)
-                face.append(indices[key])
-            faces.append(tuple(face))
-        meshes.append((verts, uvs, faces))
+        meshes.append(export_mesh(ob.data, transform))
     output.mkdir(parents=True, exist_ok=True)
     resources = output / "resources"
     resources.mkdir()
@@ -222,7 +239,7 @@ def main():
     for ob in objects:
         ob.data.materials.clear()
         ob.data.materials.append(material)
-    points = [Vector(v) for verts, _, _ in meshes for v in verts]
+    points = [Vector(v) for mesh in meshes for v in mesh[0]]
     lo = Vector(tuple(min(v[i] for v in points) for i in range(3)))
     hi = Vector(tuple(max(v[i] for v in points) for i in range(3)))
     center = (lo + hi) / 2
@@ -258,8 +275,8 @@ def main():
     bpy.ops.render.render(write_still=True)
     report = {"manifest": manifest.name, "blender": bpy.app.version_string,
               "importer": "SWTOR-Slicers 4.2.1", "model": model,
-              "vertices": sum(len(v) for v, _, _ in meshes),
-              "triangles": sum(len(f) for _, _, f in meshes),
+              "vertices": sum(len(mesh[0]) for mesh in meshes),
+              "triangles": sum(len(mesh[2]) for mesh in meshes),
               "bounds_min": list(lo), "bounds_max": list(hi),
               "resources": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(resources.iterdir())}}
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

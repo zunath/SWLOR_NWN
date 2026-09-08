@@ -1184,16 +1184,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             };
         }
 
-        public Action OnMouseDownTintPicker() => () => _tintPickerActive = true;
+        public Action OnMouseDownTintPicker() => () =>
+        {
+            var payload = NuiGetEventPayload();
+            var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
+            BeginTintPickerGesture((NuiMouseButton)button);
+        };
+
+        private void BeginTintPickerGesture(NuiMouseButton button)
+        {
+            if (button == NuiMouseButton.Left)
+                _tintPickerActive = true;
+        }
 
         public Action OnMouseUpTintPicker() => () =>
         {
-            // A click on the current color need not produce another watched value.
-            if (_tintPickerActive && _pendingPickerColor == null)
-            {
-                _pendingPickerColor = SelectedTintColor;
-                _pendingPickerApply = CaptureTintColorEdit();
-            }
+            // Only watched values received during a gesture create pending edits.
+            // Hydration and clicks without a color update must not create overrides.
             FlushPendingPickerColor();
             _tintPickerActive = false;
         };

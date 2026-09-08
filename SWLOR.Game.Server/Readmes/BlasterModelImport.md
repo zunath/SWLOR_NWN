@@ -225,7 +225,7 @@ rotates it differently. The human `rhand` hook sits at
 Render a local review scene already in NWN coordinates with:
 
 ```powershell
-SWLOR_Haks/nwnmdlcomp.exe -d SWLOR_Haks/sw_pt_rhand/pmh0_handr001.mdl .tmp/hand001.mdl
+SWLOR_Haks/nwnmdlcomp.exe -d -e SWLOR_Haks/sw_pt_rhand/pmh0_handr001.mdl .tmp/hand001.mdl
 & 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe' `
   -b --factory-startup --python-exit-code 1 `
   --python tools/RenderBlasterGrip.py -- `
@@ -241,6 +241,13 @@ is a review fixture and must not enter the exported weapon.
 ## Validation and normal deployment
 
 When changing the converter, run its focused tests:
+
+The exporter writes transformed corner normals explicitly, including duplicated
+vertices at UV seams. Do not drop those normals and rely on smoothing group 1:
+the compiler would introduce hard lighting seams at the duplicated vertices.
+Set `NWN_EE_NWMAIN` to the installed `nwmain.exe` path to include the native
+compiler normal-preservation round trip in the tests below. Ordinary Python
+runs the portable tests and skips Blender-only coverage when unavailable.
 
 ```powershell
 & 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe' `

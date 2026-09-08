@@ -38,6 +38,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(0, 0, 0), userGesture: false);
                 InvokePrivate(editor, "FlushPendingPickerColor");
+                editor.OnMouseDownTintPicker()();
+                editor.OnMouseUpTintPicker()();
+                ctx.AssertEqual(nativeSkin, GetColor(civilian, ColorChannel.Skin), "Click without a watched update retains native skin");
+                ctx.AssertEqual(savedTint, GetLocalInt(civilian, stateName), "Hydration followed by an empty gesture must not create an override");
                 editor.OnSelectEquipment()();
                 editor.OnSelectAppearance()();
                 ctx.AssertEqual(nativeSkin, GetColor(civilian, ColorChannel.Skin), "Opening and switching tabs retains native skin");

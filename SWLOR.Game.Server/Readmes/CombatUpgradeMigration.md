@@ -9,7 +9,8 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 - Player migration: `SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigration/_14_MigrateResistanceItemProperties.cs`
 - Player migration: `SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigration/_15_RemoveObsoleteCombatInstructionDiscs.cs`
 - Server version 22 has two stages: `_22_CombatSystemReplacement` repairs raw database records at `PostDatabaseLoad`; `StoredItemSchemaMigration` (in the same file) migrates native items and bank storage at `PostCacheLoad`, after skill and recipe caches are available.
-- The runner advances the global version only after both stages succeed. A failure blocks subsequent stages and version advancement. Player conversion saves `DataMigrationVersion = 22` with its refunds and bonus token, so a restarted migration skips already converted players. Login `Player.Version` remains independent.
+- The runner advances the server configuration's migration version only after both stages succeed. A failure blocks subsequent stages and version advancement. Server player-data conversion preserves `Player.Version`; refunds remove or trim their source perk entries in the same save, making retries safe without another version field on players.
+- Login migrations use the existing `Player.Version` checkpoint. After each live-object migration succeeds, the runner refreshes the player record and applies `MigratePlayerData` before saving that record with its new version. Player migration 15 grants the bonus rebuild token in that save, so retries cannot repeat it. New characters start at the latest player version and receive their starting token through initialization.
 - Nonempty serialized records that cannot be loaded or saved now fail the migration instead of silently being marked complete. Login migration failures disconnect the affected player for staff repair.
 - `MigrationObject` applies item-property removals synchronously through the engine handler and verifies removal before subsequent migration steps or serialization. Replacements cannot retain both legacy and new properties. Nested item copies and removals resolve the actual bag with `GetItemPossessor(item, true)`.
 - Current behavior:
@@ -17,8 +18,8 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Refunds removed or materially changed combat perks during `MigratePlayerData`, before obsolete keys are discarded. Numeric and named aliases count as one investment; legacy blueprint refunds use their original purchase prices.
   - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.
   - Uses `LegacyPerkRefundMigration` to resolve all 265 historical player perk definitions from pre-upgrade master commit `ce4f91749c2e`. Retired proficiencies, styles, and weapon-focus perks receive their original SP investments, including numeric and named aliases. New perk names never inherit refunds from a reused legacy numeric ID.
-  - Forces every player through a full rebuild by setting `Player.RebuildComplete = false` in the same save as refunds and the migration checkpoint.
-  - Grants every player one `CurrencyType.RebuildToken` via `GrantCombatUpgradeRebuildToken` in addition to the forced rebuild, so players keep a spare respec for later use.
+  - Forces every player through a full rebuild by setting `Player.RebuildComplete = false` in the same save as refunds.
+  - Grants each existing player one `CurrencyType.RebuildToken` through player migration 15 on login, in addition to the forced rebuild, so players keep a spare respec for later use.
   - Updates stored item requirement properties to the combat-upgrade skill requirement model.
   - Applies droid CPU/weapon-skill and recipe transformations to carried items, equipped items, nested containers, and controller inventories. Blueprint expansion keeps every replacement recipe in those inventories. Database recipe variants use stable IDs and are written before replacing their source, so retries neither duplicate nor lose alternatives.
   - Preserves obsolete saber-kit stack quantities during conversion and refreshes the replacement name, resref, tag, and icon in storage metadata.
@@ -39,7 +40,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 
 - Force all players to perform a full rebuild for the combat upgrade.
 - The forced rebuild itself is free and does not require spending a rebuild token.
-- Additionally, grant every player one `CurrencyType.RebuildToken` so they have a spare respec banked after the forced rebuild. New characters likewise start with one free rebuild token (`PlayerInitialization.GiveStartingRebuildToken`).
+- Additionally, grant every existing player one `CurrencyType.RebuildToken` on login so they have a spare respec banked after the forced rebuild. New characters likewise start with one free rebuild token (`PlayerInitialization.GiveStartingRebuildToken`).
 - Use a 400 skill cap. Armor is not exempt from the cap and grants SP through the normal active-skill path.
 - Current Bible General perks use Armor skill requirements because Armor is the closest thing SWLOR has to a general character-level proxy.
 - Refund SP for removed attack-count/mastery perks so players are not stranded with deleted perk investments.
@@ -89,7 +90,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 ## Follow-Up Checks Before Release
 
 - Character sheet combat display cleanup is complete: Physical Defense and Force Defense use dedicated bindings, and typed elemental/status mitigation is presented through the Resistance table.
-- Static coverage in `CombatUpgradeMigrationCoverageTests` confirms `_22_CombatSystemReplacement` still follows master migration `_21_SetDefaultOutfitAndMarketLimits`, forces `Player.RebuildComplete = false`, and grants a rebuild token via `GrantCombatUpgradeRebuildToken`. If another migration is added first, renumber the combat upgrade migration series and update that test.
+- Static coverage in `CombatUpgradeMigrationCoverageTests` confirms `_22_CombatSystemReplacement` still follows master migration `_21_SetDefaultOutfitAndMarketLimits` and forces `Player.RebuildComplete = false`. `PlayerMigrationTests` verifies the bonus rebuild token is saved with player migration 15's version. If another migration is added first, renumber the combat upgrade migration series and update those tests.
 - Keep the removed-perk refund mappings in place. The forced rebuild uses `TotalSPAcquired` for skill redistribution, but deleted perk definitions cannot be refunded by the rebuild UI after their keys are removed; migration must refund those obsolete perk investments before cleanup. Recheck the hard-coded amounts only if the legacy final prices change.
 - Static coverage in `CombatUpgradeMigrationCoverageTests` confirms removed-perk cleanup entry points for players, beasts, stale recasts, live player migration, stored item records, constructed droids, and ship/module serialized items. Still spot-check that obsolete Heavy/Light Armor and stale Armor perk-tree rows no longer appear in player-facing builders, default perk maps, instruction discs, or UI surfaces.
 - Confirm Armor skill rank-ups count toward the 400 skill cap, grant SP normally, and gate current Bible General perks as intended.
@@ -98,7 +99,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
   - calls from player initialization/login temporary effects
   - beast/droid setup
   - equip/purchase/refund triggers
-- `MigrationDataTests` exercises player checkpoint retries, refunds, numeric resistance keys, recipe aliases, beast cleanup, and migration failure state. `MigrationEngineTests` uses real NWN serialization for stored weapons, carried and serialized droid data, nested blueprints, obsolete containers, saber normalization, replacement stacks, and storage metadata. A staging run against a production database copy remains the release check for the actual saved corpus.
+- `MigrationDataTests` exercises repeatable server refunds, numeric resistance keys, recipe aliases, beast cleanup, and migration failure state. `PlayerMigrationTests` exercises login checkpoints, record refreshes, and token-grant retries after failures before or after a database write. `MigrationEngineTests` uses real NWN serialization for stored weapons, carried and serialized droid data, nested blueprints, obsolete containers, saber normalization, replacement stacks, and storage metadata. A staging run against a production database copy remains the release check for the actual saved corpus.
 - Confirm the weapon Delay migration updates old Throwing/Vibroknife/natural-weapon and Sling-based pistol values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store/NPC item instances have already been normalized to the updated delay table.
 - Logged-out active status effects are process-local runtime cache only. They are not persisted and do not survive the fresh boot migration path, so no migration cleanup is required.
 - Add release notes telling players they must perform a forced full rebuild, that removed combat perks were refunded, and that they were granted a bonus rebuild token for later use.
@@ -110,5 +111,5 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 - Rebuild landing redirect: `PersistentLocation`
 - Rebuild completion UI: `CharacterFullRebuildViewModel`
 - Historical player refunds: `LegacyPerkRefundMigration.Migrate(...)`; current removed-perk cleanup: `_22_CombatSystemReplacement.CleanPerks(...)`
-- Bonus rebuild token grant (existing players): `_22_CombatSystemReplacement.GrantCombatUpgradeRebuildToken(dbPlayer)`
+- Bonus rebuild token grant (existing players): `_15_RemoveObsoleteCombatInstructionDiscs.MigratePlayerData(dbPlayer)`, saved with `Player.Version` by the login migration runner
 - Starting rebuild token grant (new characters): `PlayerInitialization.GiveStartingRebuildToken(dbPlayer)`

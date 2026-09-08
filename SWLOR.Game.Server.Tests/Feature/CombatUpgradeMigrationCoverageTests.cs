@@ -19,7 +19,7 @@ public class CombatUpgradeMigrationCoverageTests
     private const string PerkTypeEnumMemberPattern = @"^\s*([A-Za-z_]\w*)\s*(?:=\s*-?\d+)?\s*,?\s*(?://.*)?$";
 
     [Test]
-    public void CombatUpgradeServerMigration_ForcesFullRebuildAndGrantsRebuildToken()
+    public void CombatUpgradeServerMigration_ForcesFullRebuildAndRepairsStoredData()
     {
         var root = FindRepositoryRoot();
         var serverMigrations = Path.Combine(
@@ -52,8 +52,7 @@ public class CombatUpgradeMigrationCoverageTests
         combatMigration.Should().Contain("NormalizeResistanceDictionary(jObject, nameof(Player.Resistances));");
         combatMigration.Should().Contain("PlayerRemovedPerks");
         combatMigration.Should().Contain("BeastRemovedPerks");
-        combatMigration.Should().Contain("GrantCombatUpgradeRebuildToken(dbPlayer);");
-        combatMigration.Should().Contain("CurrencyType.RebuildToken");
+        combatMigration.Should().NotContain("CurrencyType.RebuildToken");
     }
 
     [Test]

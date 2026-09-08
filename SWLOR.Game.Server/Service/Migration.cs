@@ -146,7 +146,6 @@ namespace SWLOR.Game.Server.Service
                 .Where(x => x.Key > dbPlayer.Version)
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
-            var newVersion = dbPlayer.Version;
 
             foreach (var migration in migrations)
             {
@@ -154,8 +153,9 @@ namespace SWLOR.Game.Server.Service
                 try
                 {
                     sw.Start();
-                    migration.Migrate(player);
-                    newVersion = migration.Version;
+                    ApplyPlayerMigration(migration, player,
+                        () => DB.Get<Player>(playerId) ?? throw new InvalidOperationException("The player record was lost during migration."),
+                        updatedPlayer => DB.Set(updatedPlayer));
                     sw.Stop();
                     Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
                 }
@@ -167,10 +167,25 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // Migrations can edit the database player entity. Refresh it before updating the version.
-            dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-            dbPlayer.Version = newVersion;
-            DB.Set(dbPlayer);
+        }
+
+        internal static void ApplyPlayerMigration(
+            IPlayerMigration migration,
+            uint player,
+            Func<Player> loadPlayer,
+            Action<Player> savePlayer)
+        {
+            if (loadPlayer().Version >= migration.Version)
+                return;
+
+            migration.Migrate(player);
+
+            // Live-object migrations may save player data. Refresh it before adding
+            // record-only changes, then persist those and the checkpoint in one save.
+            var dbPlayer = loadPlayer();
+            migration.MigratePlayerData(dbPlayer);
+            dbPlayer.Version = migration.Version;
+            savePlayer(dbPlayer);
         }
 
         private static void LoadServerMigrations()

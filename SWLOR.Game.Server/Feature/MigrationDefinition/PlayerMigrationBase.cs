@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     {
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
+        public virtual void MigratePlayerData(Player player) { }
 
         protected void RecalculateStats(uint player)
         {

@@ -65,7 +65,7 @@ public class MigrationDataTests
     }
 
     [Test]
-    public void RetryingAStoredPlayerDoesNotGrantAnotherTokenOrRefund()
+    public void RetryingServerPlayerConversionPreservesCurrenciesAndDoesNotRefundTwice()
     {
         var raw = PlayerJson();
         raw["Version"] = 12;
@@ -75,16 +75,15 @@ public class MigrationDataTests
         var player = MigratePlayer(raw, out var refund)!;
         refund.Should().Be(9, "numeric and named aliases represent the same purchased ranks");
         player.UnallocatedSP.Should().Be(14);
-        player.Currencies[CurrencyType.RebuildToken].Should().Be(4);
-        player.Version.Should().Be(12, "login migrations are a separate checkpoint");
-        player.DataMigrationVersion.Should().Be(22);
+        player.Currencies[CurrencyType.RebuildToken].Should().Be(3, "the bonus token belongs to the player migration");
+        player.Version.Should().Be(12, "server conversion must not advance player migrations");
         player.RebuildComplete.Should().BeFalse();
 
         var saved = JObject.FromObject(player);
         var before = saved.DeepClone();
-        MigratePlayer(saved, out refund).Should().BeNull();
+        var retried = MigratePlayer(saved, out refund)!;
         refund.Should().Be(0);
-        JToken.DeepEquals(saved, before).Should().BeTrue();
+        JToken.DeepEquals(JObject.FromObject(retried), before).Should().BeTrue();
     }
 
     [TestCase(1, 1)]

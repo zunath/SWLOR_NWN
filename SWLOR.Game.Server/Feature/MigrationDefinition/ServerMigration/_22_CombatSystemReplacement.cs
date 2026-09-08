@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
@@ -443,12 +442,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             {
                 var jObject = JObject.Parse(dbPlayerJson);
                 var dbPlayer = MigratePlayerData(jObject, out var refundAmount);
-                if (dbPlayer == null)
-                {
-                    progress.RecordProcessed(false);
-                    continue;
-                }
-
                 EnsureUnknownDisplayName(dbPlayer);
                 DB.Set(dbPlayer);
 
@@ -464,9 +457,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         private Player MigratePlayerData(JObject jObject, out int refundAmount)
         {
             refundAmount = 0;
-            if (GetInt(jObject[nameof(Player.DataMigrationVersion)]) >= Version)
-                return null;
-
             ClearRecastTimes(jObject);
             refundAmount = LegacyPerkRefundMigration.Migrate(jObject, PlayerRemovedPerks.Keys);
             WeaponBlueprintPerkMigration.CollapsePlayerPerks(jObject, out var weaponBlueprintRefundAmount);
@@ -490,7 +480,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             EnsureDefinedPlayerSkills(dbPlayer);
             CombatReadinessMigration.ResetCombatReadiness(dbPlayer);
             dbPlayer.RebuildComplete = false;
-            GrantCombatUpgradeRebuildToken(dbPlayer);
 
             refundAmount += CleanPerks(
                 dbPlayer.Perks,
@@ -502,16 +491,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             if (refundAmount > 0)
                 dbPlayer.UnallocatedSP += refundAmount;
 
-            dbPlayer.DataMigrationVersion = Version;
             return dbPlayer;
-        }
-
-        private static void GrantCombatUpgradeRebuildToken(Player dbPlayer)
-        {
-            if (!dbPlayer.Currencies.ContainsKey(CurrencyType.RebuildToken))
-                dbPlayer.Currencies[CurrencyType.RebuildToken] = 0;
-
-            dbPlayer.Currencies[CurrencyType.RebuildToken]++;
         }
 
         private static void EnsureUnknownDisplayName(Player dbPlayer)

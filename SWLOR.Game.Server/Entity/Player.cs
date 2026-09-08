@@ -106,8 +106,6 @@ namespace SWLOR.Game.Server.Entity
 
         [Indexed]
         public int Version { get; set; }
-        // Server-side data conversions are checkpointed independently of login migrations.
-        public int DataMigrationVersion { get; set; }
         [Indexed]
         public string Name { get; set; }
         public int MaxHP { get; set; }

@@ -145,7 +145,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var hasRobeRgb = selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe &&
                 selection.Material.Layers.Any(layer => GetEffectiveColor(creature, selection, layer).CustomColor.HasValue));
             var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections, hasRobeRgb);
-            ProjectNativeAttachmentColors(creature, selections, rendersRobeRgb);
+            ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
+            ApplyEquippedHelmetColors(creature, selections);
             ResetMaterialShaderUniforms(creature);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
@@ -189,19 +190,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
         }
 
-        private static void ProjectNativeAttachmentColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,
+        private static void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,
             bool rendersRobeRgb)
         {
-            // The client omits separate robes and worn helmets from material-uniform replay.
-            // Tiny PLT resources carry these native palette values to their shaders.
+            // The client replays material uniforms on the body/head/attachments, but omits its
+            // separate robe Gob. Tiny PLT resources carry these native palette values to the shader.
             var robes = selections.Where(selection => !rendersRobeRgb && selection.ArmorPart == AppearanceArmor.Robe).ToList();
-            var helmets = selections.Where(selection => selection.IsWornHelmet).ToList();
             var creatureStateChanged = false;
             foreach (var layer in Enum.GetValues<TintMapLayerType>().Where(TintMapVariable.IsCreatureColorLayer))
             {
                 var channel = GetCreatureColorChannel(layer);
                 var nativeColor = GetColor(creature, channel);
-                var active = robes.Concat(helmets).Any(selection => selection.Material.Layers.Contains(layer)) &&
+                var active = robes.Any(selection => selection.Material.Layers.Contains(layer)) &&
                              TintMapColor.TryFromStoredValue(
                                  GetLocalInt(creature, GetCreatureCustomColorStateVariable(layer)), out _);
                 var update = ResolveNativePaletteUpdate(creature, (int)layer, nativeColor,
@@ -233,8 +233,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 }
             }
 
-            ProjectNativeHelmetColors(creature, helmets);
-
             var item = GetItemInSlot(InventorySlot.Chest, creature);
             if (!GetIsObjectValid(item))
                 return;
@@ -261,37 +259,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     changes.Add((colorIndex, update.Color));
             }
 
-            ApplyNativeItemPaletteUpdates(creature, item, changes, itemStateChanged);
-        }
-
-        private static void ProjectNativeHelmetColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
-        {
-            var item = GetItemInSlot(InventorySlot.Head, creature);
-            if (!GetIsObjectValid(item))
-                return;
-
-            var changes = new List<(int Index, int Color)>();
-            var stateChanged = false;
-            foreach (var layer in Enum.GetValues<TintMapLayerType>())
-            {
-                if (!TryGetArmorColorChannel(layer, out var channel))
-                    continue;
-                var index = (int)channel;
-                var nativeColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, index);
-                var selection = selections.FirstOrDefault(selection => selection.PaletteSource == item &&
-                    selection.Material.Layers.Contains(layer) && GetSavedColor(selection, layer) > 0);
-                var update = ResolveNativePaletteUpdate(item, index, nativeColor,
-                    selection == null ? null : GetEffectiveColor(creature, selection, layer).PaletteColorId);
-                stateChanged |= StoreNativePaletteUpdate(item, index, update);
-                if (update.Color != nativeColor)
-                    changes.Add((index, update.Color));
-            }
-            ApplyNativeItemPaletteUpdates(creature, item, changes, stateChanged);
-        }
-
-        private static void ApplyNativeItemPaletteUpdates(uint creature, uint item,
-            IReadOnlyList<(int Index, int Color)> changes, bool itemStateChanged)
-        {
             for (var index = 0; index < changes.Count; index++)
             {
                 var change = changes[index];
@@ -306,6 +273,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
             if (itemStateChanged || changes.Count > 0)
                 Droid.UpdateEquippedItemSnapshot(creature, item);
+        }
+
+        private static void ApplyEquippedHelmetColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
+        {
+            var helmet = GetItemInSlot(InventorySlot.Head, creature);
+            if (!GetIsObjectValid(helmet))
+                return;
+            // The client does not replay creature rows onto its worn helmet attachment.
+            // Publish the exact same effective colors on the equipped item itself.
+            ResetMaterialShaderUniforms(helmet);
+            foreach (var selection in selections.Where(selection => selection.IsWornHelmet))
+            {
+                foreach (var layer in selection.Material.Layers)
+                    WriteMaterialColor(helmet, selection.Material.Resref, layer,
+                        GetEffectiveColor(creature, selection, layer));
+            }
         }
 
         private static void RestoreNativePaletteQuickbar(uint creature, uint item)
@@ -1643,8 +1626,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     }
 
                     return Math.Clamp(
-                        GetNativePaletteBaseline(selection.PaletteSource, colorIndex,
-                            GetItemAppearance(selection.PaletteSource, ItemAppearanceType.ArmorColor, colorIndex)),
+                        GetItemAppearance(selection.PaletteSource, ItemAppearanceType.ArmorColor, colorIndex),
                         0,
                         TintMapMaterialRegistry.PaletteColorCount - 1);
                 }

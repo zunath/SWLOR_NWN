@@ -84,12 +84,11 @@ and custom-mode publications after an RGB edit.
 ## Preserve native palette transport on separate attachments
 
 The 89.8193.37-17 client does not replay creature material overrides onto the
-separate robe and worn helmet attachments. Its ordinary body and head receive those records;
-these attachments do not, even for an empty material-name wildcard. Repeating the
-refresh or writing the records on the equipped item cannot repair that gap.
-The civilian reproduced it with all 14 robe materials retaining defaults while
-the head had the correct rows. A successful server-side row test therefore
-does not establish that a robe received its colors.
+separate robe and worn helmet attachments. Its ordinary body and head receive
+those records. Worn helmets receive exact RGB when the effective material rows
+are also published on the equipped helmet item. Robes use the body-root path
+described below. A successful server-side creature-row test alone therefore
+does not establish that an attachment received its colors.
 
 NWN has another per-material transport: `PLTscheme[15]`. The native body-part
 loader fills it from the wearer and equipment when its selected PLT resource
@@ -114,12 +113,13 @@ but fill it from `pal_armor01` and use matching picker colors. Do not modify
 the original palette resources themselves. The GPU regression checks every
 color and shade against the original palette RGBA, including this distinction.
 
-This transport only supports native palette IDs. Worn helmets and unsupported robe/body
-combinations retain the nearest-preset compatibility projection for persisted
-RGB, with RGB editing disabled and presets available. Preserve the authored
-palette values separately from projected values so reset restores the original
-color and per-part inheritance. NPCs without overrides must retain their raw
-palette fields.
+The native scheme carries palette IDs; explicit material rows carry exact RGB.
+Worn helmets support both without changing their native dye fields. Unsupported
+robe/body combinations retain the nearest-preset compatibility projection for
+persisted RGB, with RGB editing disabled and presets available. Preserve those
+robes' authored palette values separately from projected values so reset restores
+the original color and per-part inheritance. NPCs without overrides must retain
+their raw palette fields.
 
 ### Shuttle Pilot helmet regression
 
@@ -130,28 +130,40 @@ armor Cloth1 132, Cloth2/Leather1/Leather2 20, Metal1 133, Metal2 0. The origina
 PLT sources and geometry also match; the conversion changed material bindings.
 Do not recolor the NPC to compensate for a renderer defect.
 
+The installed master HAK used for the reference screenshot predates Republic
+Armor Update (#320). Its female human chest 249 uses a 256-by-256, two-layer
+PLT, while master source and the converted material use that update's 512-by-512,
+five-layer replacement. With the same dyes, the replacement has a lighter torso.
+Retain the replacement artwork: tint parity must use its source PLT, rather than
+recoloring the NPC or reverting the texture to reproduce that older screenshot.
+
 In the 89.8193.37-17 Windows client, the `CNWCAnimBaseParts` material replay path
 visits the body, head, and three accessory objects, but omits the worn helmet.
 The server can correctly publish `helm_114` rows while the helmet still uses its
 positive row-zero MTR defaults, producing the reported tan crest. The generated
 `helm_114.plt` control restores its native scheme; negative MTR defaults select
 that scheme. The normal/specular textures and full-resolution BC5 mask remain
-unchanged. A dropped helmet still accepts explicit item material rows.
+unchanged. Explicit item material rows support exact RGB on both worn and
+dropped helmets. A complete helmet refresh resets the item's old rows once,
+then writes every effective layer, including the wearer's skin and hair colors.
 
-The generator applies this rule across the helmet catalog, proving each native
-named subtree and isolating shared materials used by ordinary heads. Persisted
-helmet RGB colors retain their stored value and project to the nearest native
-preset while worn; reset restores the authored dye. The editor offers preset
-colors for worn helmets and explains why exact RGB editing is unavailable.
+The generator applies the native fallback across the helmet catalog, proving
+each native named subtree and isolating shared materials used by ordinary heads.
+The editor keeps RGB enabled for worn helmets. Both preset and RGB edits publish
+the item's effective rows; reset clears the stored custom color and publishes
+the authored dye. The native palette fields are never replaced by an approximation.
 
 `TintMapEngineTests.ShuttlePilotRefreshInstallsAuthoredRows` checks the placed
-NPC's helmet/chest rows and legacy RGB/reset behavior in NWN. The GPU harness
+NPC's helmet/chest rows and exact equipped-item RGB/reset behavior in NWN. The GPU harness
 compares the actual helmet BC5 material with native versus scripted dyes and
 requires the old row-zero defaults to produce a different result. These checks
 do not attach a game client to the test server; verify the pilot in a fresh
 client session after deployment. Pack `sw_tint_mtr`, `sw_pt_helm`, `sw_pt_head`,
-and `sw_2da` together for this fix. The existing module HAK list already includes
-them, so no NPC or module data changes are needed.
+and `sw_2da` together for this fix, along with any changed tint masks. Confirm
+that the deployed, packed module declares all four tint HAKs (`sw_tint_mtr`,
+`sw_tint0`, `sw_tint1`, `sw_tint2`). The checked-in module list already includes
+them, but an older compiled module may omit them. `ModuleDeclaresTintAssets`
+checks the running module's native HAK list to catch that deployment failure.
 
 ## Exact RGB on robes
 

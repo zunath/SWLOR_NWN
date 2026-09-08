@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class HelmetTintTests
 {
-    [TestCase("helm_114", 1u, 2u, false)]
-    [TestCase("HELM_114", 1u, 2u, false)]
+    [TestCase("helm_114", 1u, 2u, true)]
+    [TestCase("HELM_114", 1u, 2u, true)]
     [TestCase("helm_114", 1u, 1u, true)]
     [TestCase("pfh0_head103", 2u, 2u, true)]
     [TestCase("pfh0_chest249", 1u, 2u, true)]

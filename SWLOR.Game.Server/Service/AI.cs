@@ -236,11 +236,6 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Log.WriteStructured(
-                LogGroup.AI,
-                "Recovering blocked creature movement using existing threat: Creature={Creature} Blocker={Blocker}",
-                creature,
-                blocker);
             Enmity.ResumeAttackAfterActionsCleared(creature);
         }
 

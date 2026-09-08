@@ -75,7 +75,6 @@ public class NPCChaseTests
             public static class Log
             {
                 public static void Write(LogGroup group, string message) { }
-                public static void WriteStructured(LogGroup group, string message, params object[] values) { }
             }
             public static class Enmity
             {

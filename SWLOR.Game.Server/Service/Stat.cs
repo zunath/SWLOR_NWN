@@ -1220,17 +1220,21 @@ namespace SWLOR.Game.Server.Service
 
         private static int ApplyPostAttackStatusModifiers(uint creature, int attack, SkillType skillType)
         {
-            var adjustment = GetStatAdjustment(creature, StatType.AttackPercentAdjustment);
-            if (skillType == SkillType.Force)
-            {
-                adjustment += GetStatAdjustment(creature, StatType.ForceAttackPercentAdjustment);
-            }
+            var adjustment = GetAttackPercentAdjustment(creature, skillType);
 
             adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
             adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(creature);
             adjustment += Combat.GetLowHPAttackAdjustment(creature);
             adjustment += Combat.GetLowFPAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
+        }
+
+        public static int GetAttackPercentAdjustment(uint creature, SkillType skillType)
+        {
+            return GetStatAdjustment(creature, StatType.AttackPercentAdjustment) +
+                   (skillType == SkillType.Force
+                       ? GetStatAdjustment(creature, StatType.ForceAttackPercentAdjustment)
+                       : 0);
         }
 
         private static int GetHighFPAndStaminaAttackAdjustment(uint creature)
@@ -2599,8 +2603,10 @@ namespace SWLOR.Game.Server.Service
 
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
-            var fp = GetLocalInt(self, "FP") + 1;
-            var stm = GetLocalInt(self, "STAMINA");
+            var previousFP = GetLocalInt(self, "FP");
+            var previousSTM = GetLocalInt(self, "STAMINA");
+            var fp = previousFP + 1;
+            var stm = previousSTM;
             var canRestoreStamina = !respectsStaminaRegenDelay || CanRestoreBeastStamina(self);
             if (canRestoreStamina)
                 stm++;
@@ -2612,6 +2618,11 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+
+            if (fp != previousFP)
+                ExecuteScript("pc_fp_adjusted", self);
+            if (stm != previousSTM)
+                ExecuteScript("pc_stm_adjusted", self);
 
             if (outOfCombatRegen)
             {

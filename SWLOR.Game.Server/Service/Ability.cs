@@ -2369,19 +2369,16 @@ namespace SWLOR.Game.Server.Service
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
-            var usesWeaponDamage = !useUnscaledDamage &&
-                (Combat.IsWeaponSkillType(skillType) ||
-                 (trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
-                  skillType == SkillType.BeastMastery));
-            var hasDirectDamage = adjustedBaseDamage > 0 || usesWeaponDamage;
-            adjustedBaseDamage = ApplyCombatImpactBaseDamageBonuses(
+            var impactDamage = ResolveCombatImpactBaseDamage(
                 adjustedBaseDamage,
-                usesWeaponDamage,
+                skillType,
+                trackedImpact?.Ability,
                 () => Combat.GetAbilityImpactBaseDamageBonus(
                           activator, target, trackedImpact?.Ability, skillType) +
                       Combat.GetAbilityStatusCategoryDamageBonus(
                           activator, skillType, appliedStatusCategories));
-            var damage = useUnscaledDamage
+            adjustedBaseDamage = impactDamage.BaseDamage;
+            var damage = !impactDamage.DealsDamage ? 0 : useUnscaledDamage
                 ? CalculateUnscaledCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType)
                 : usesNPCStatScaling
                     ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
@@ -2405,20 +2402,21 @@ namespace SWLOR.Game.Server.Service
                 beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
                 effectDamageType,
-                firstHostileAbilityHitDamageBonusApplied: hasDirectDamage);
+                firstHostileAbilityHitDamageBonusApplied: impactDamage.DealsDamage);
         }
 
-        private static int ApplyCombatImpactBaseDamageBonuses(
+        private static (int BaseDamage, bool DealsDamage) ResolveCombatImpactBaseDamage(
             int baseDamage,
-            bool usesWeaponDamage,
+            SkillType skillType,
+            AbilityDetail ability,
             Func<int> getDamageBonus)
         {
-            // Control-only impacts must not gain damage or consume damage bonuses. Weapon
-            // impacts can have zero added base damage because their weapon supplies the damage.
-            if (baseDamage <= 0 && !usesWeaponDamage)
-                return 0;
-
-            return baseDamage + getDamageBonus();
+            // Weapon damage and explicitly declared deferred damage remain eligible even
+            // with zero immediate base damage. Control-only impacts must not consume bonuses.
+            var dealsDamage = baseDamage > 0 || Combat.IsWeaponSkillType(skillType) ||
+                              ability?.ActivationType == AbilityActivationType.Weapon ||
+                              ability?.DealsDeferredDamage == true;
+            return dealsDamage ? (baseDamage + getDamageBonus(), true) : (0, false);
         }
 
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)

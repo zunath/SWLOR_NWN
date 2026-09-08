@@ -148,6 +148,15 @@ The editor reserves the workspace during application of the installation transac
 Target proportions and inherited animation scale are accounted for in the generated tracks.
 The installed project becomes the document's saved project, and mounted HAK resources are refreshed.
 
+Installation writes editable bank text. Before publishing or packaging changed models, run the
+HAK repository's `tools/CompileModels.py --model <bank-resref> --apply` for each changed bank.
+Ship compiled MDLs only. The compiler retains bank text under
+`SWLOR_Haks/model_sources/<hak-folder>/<bank>.mdl.ascii`, outside packaged folders, with hashes
+of both the text and compiled resource. Commit these source companions alongside the binary MDLs.
+Subsequent installations verify and use those companions to retain unedited animation blocks;
+missing or mismatched sources are rejected. Recompile after each installation. Use the compiler
+version that emits these companions; older compiler versions do not retain this editing metadata.
+
 After **rebuilding/deploying the HAKs to server and clients** and rebuilding C#, use:
 
 ```csharp

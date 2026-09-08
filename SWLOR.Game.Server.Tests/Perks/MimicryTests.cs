@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
 using SWLOR.Game.Server.Feature.PerkDefinition;
@@ -725,6 +726,32 @@ public class MimicryTests
                     $"{perk.Name} should never grant technique feats directly");
             }
         }
+    }
+
+    /// <summary>Checks that the ability and client targeting tables agree on cursor-free self activation.</summary>
+    [Test]
+    public void OverclockedAnalyzer_ActivatesOnSelfWithoutTargetSelection()
+    {
+        var ability = new OverclockedAnalyzerAbilityDefinition().BuildAbilities()[FeatType.Overload];
+        ability.ActivationType.Should().Be(AbilityActivationType.Casted);
+        ability.RequiresTarget.Should().BeFalse("Overclocked Analyzer applies its buff to the activator");
+        ability.RequiresLocationTarget.Should().BeFalse();
+        ability.IsHostileAbility.Should().BeFalse();
+
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "spells.2da")));
+        var featRow = featRows[(int)FeatType.Overload];
+        featRow["TARGETSELF"].Should().Be("1", "the self-buff must activate without opening a target cursor");
+        featRow["HostileFeat"].Should().Be("****", "the self-buff cannot require a hostile target");
+
+        var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+        spellRow["FeatID"].Should().Be(((int)FeatType.Overload).ToString());
+        spellRow["TargetType"].Should().Be("0x01", "the linked spell must only accept the caster");
+        spellRow["Range"].Should().Be("P");
+        spellRow["HostileSetting"].Should().Be("0");
     }
 
     // Registry-driven 2DA linkage check covering every technique in the pool. Replaces the old

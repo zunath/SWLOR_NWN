@@ -1015,6 +1015,10 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, attack + (int)Math.Ceiling(attack * (adjustment / 100f)));
         }
 
+        /// <summary>
+        /// Rejects immune hits, then applies outgoing ability, skill, damage-type, and target
+        /// modifiers to a damage roll while enforcing the shared percentage bonus cap.
+        /// </summary>
         public static int ApplyDamageDealtModifiers(
             uint attacker,
             uint defender,
@@ -1037,6 +1041,7 @@ namespace SWLOR.Game.Server.Service
 
             var damageBeforePercentStages = damage;
 
+            damage = ApplyMimicryAbilityDamageModifier(attacker, damage, skillType, isAbilityDamage);
             damage = ApplySkillAbilityDamageModifier(attacker, damage, skillType, isAbilityDamage);
             damage = ApplyOutgoingDamageModifier(attacker, damage);
             damage = ApplyDamageTypeDealtModifiers(attacker, damage, damageType);
@@ -1081,6 +1086,23 @@ namespace SWLOR.Game.Server.Service
                     ? Stat.GetStatAdjustment(attacker, StatType.AreaAbilityDamagePercentAdjustment)
                     : 0;
             return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        /// <summary>
+        /// Applies analyzer potency to the complete technique damage roll, including attribute
+        /// scaling. All direct impacts, including custom areas and secondary arcs, pass here once.
+        /// </summary>
+        public static int ApplyMimicryAbilityDamageModifier(
+            uint attacker,
+            int damage,
+            SkillType skillType,
+            bool isAbilityDamage)
+        {
+            if (damage <= 0 || !isAbilityDamage || skillType != SkillType.Mimicry)
+                return damage;
+
+            var potency = Stat.GetStatAdjustment(attacker, StatType.MimicryPotencyPercent);
+            return ApplyPercentDamageAdjustment(damage, potency);
         }
 
         public static int ApplySkillAbilityDamageModifier(

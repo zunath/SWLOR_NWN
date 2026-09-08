@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -234,6 +235,142 @@ public class MigrationDataTests
         first.Should().NotBe(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "source", 4801));
         first.Should().NotBe(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "other", 4800));
         first.Should().Be("source-recipe-4800");
+    }
+
+    [TestCase(PerkType.IonGrenade, 3, 2, 3)]
+    [TestCase(PerkType.AdhesiveGrenade, 3, 2, 3)]
+    [TestCase(PerkType.MedKit, 5, 4, 4)]
+    [TestCase(PerkType.Resuscitation, 3, 2, 4)]
+    [TestCase(PerkType.Shielding, 4, 3, 4)]
+    public void TrimmedPerksRefundOnlyRemovedRanksAndRemainStableOnRetry(PerkType perk, int oldRank, int newRank, int expectedRefund)
+    {
+        var raw = PlayerJson();
+        raw["Perks"] = new JObject { [perk.ToString()] = oldRank, [perk.ToString("D")] = oldRank - 1 };
+        var player = MigratePlayer(raw, out var refund)!;
+        refund.Should().Be(expectedRefund);
+        player.Perks.Should().ContainSingle().Which.Should().Be(new KeyValuePair<PerkType, int>(perk, newRank));
+
+        var retried = MigratePlayer(JObject.FromObject(player), out refund)!;
+        refund.Should().Be(0);
+        retried.UnallocatedSP.Should().Be(expectedRefund);
+        retried.Perks.Should().BeEquivalentTo(player.Perks);
+    }
+
+    [TestCase(-3, 0)]
+    [TestCase(0, 0)]
+    [TestCase(99, 9)]
+    public void HistoricalRefundsAreBoundedByActualPurchasableRanks(int rank, int expected)
+    {
+        var raw = PlayerJson();
+        raw["Perks"] = new JObject { ["HackingBlade"] = rank };
+        var player = MigratePlayer(raw, out var refund)!;
+        refund.Should().Be(expected);
+        player.UnallocatedSP.Should().Be(expected);
+        player.Perks.Should().BeEmpty();
+    }
+
+    [TestCase(1, 3)]
+    [TestCase(3, 1)]
+    public void HistoricalAliasesUseTheHighestRankRegardlessOfWhichKeyHasIt(int namedRank, int numericRank)
+    {
+        var raw = PlayerJson();
+        raw["Perks"] = new JObject { ["HackingBlade"] = namedRank, ["8"] = numericRank };
+        MigratePlayer(raw, out var refund);
+        refund.Should().Be(9);
+    }
+
+    [Test]
+    public void UnlockingAnUnpurchasedRetiredPerkDoesNotAwardSkillPoints()
+    {
+        var raw = PlayerJson();
+        raw["UnallocatedSP"] = 17;
+        raw["UnlockedPerks"] = new JObject { ["HackingBlade"] = new DateTime(2025, 1, 1) };
+        var player = MigratePlayer(raw, out var refund)!;
+        refund.Should().Be(0);
+        player.UnallocatedSP.Should().Be(17);
+        player.UnlockedPerks.Should().BeEmpty();
+    }
+
+    [TestCase(0, -12, -12)]
+    [TestCase(-12, 0, -12)]
+    [TestCase(-12, -5, -5)]
+    [TestCase(-12, 8, 8)]
+    [TestCase(18, 8, 18)]
+    public void MixedResistanceAliasesPreserveVulnerabilitiesAndTheStrongerNonzeroValue(int named, int numeric, int expected)
+    {
+        var raw = PlayerJson();
+        raw["Resistances"] = new JObject { ["Fire"] = named, ["1"] = numeric };
+        var player = MigratePlayer(raw, out _)!;
+        player.Resistances[ResistanceType.Fire].Should().Be(expected);
+        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
+        retried.Resistances.Should().BeEquivalentTo(player.Resistances);
+    }
+
+    [TestCase(0, -4, 0, 4)]
+    [TestCase(-10, 5, 0, 0)]
+    [TestCase(99, 60, 50, 0)]
+    [TestCase(20, 3, 20, 17)]
+    public void BeastRebuildClampsThePointBudgetAndDoesNotRegrantOnRetry(int level, int unallocated, int expectedPoints, int expectedRefund)
+    {
+        var beast = new Beast { Level = level, UnallocatedSP = unallocated, Perks = null! };
+        var args = new object[] { beast, false };
+        Invoke("ServerMigration._22_CombatSystemReplacement", "RefundBeastPerks", args).Should().Be(expectedRefund);
+        beast.UnallocatedSP.Should().Be(expectedPoints);
+        beast.Perks.Should().BeEmpty();
+        Invoke("ServerMigration._22_CombatSystemReplacement", "RefundBeastPerks", args).Should().Be(0);
+        args[1].Should().Be(false);
+    }
+
+    [Test]
+    public void RecipeRenameKeepsExistingReplacementDatesAndUnrelatedRecipes()
+    {
+        var raw = PlayerJson();
+        var oldDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var replacementDate = oldDate.AddDays(7);
+        foreach (var dictionary in new[] { "UnlockedRecipes", "CraftedRecipes" })
+            raw[dictionary] = new JObject
+            {
+                ["LightsaberUpgradeKit1"] = oldDate,
+                ["367"] = oldDate,
+                [nameof(RecipeType.ChiroLightsaberUpgradeKit)] = replacementDate,
+                [nameof(RecipeType.CookedSardine)] = oldDate
+            };
+        var player = MigratePlayer(raw, out _)!;
+        foreach (var recipes in new[] { player.UnlockedRecipes, player.CraftedRecipes })
+        {
+            recipes.Should().HaveCount(2);
+            recipes[RecipeType.ChiroLightsaberUpgradeKit].Should().Be(replacementDate);
+            recipes[RecipeType.CookedSardine].Should().Be(oldDate);
+        }
+        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
+        retried.UnlockedRecipes.Should().BeEquivalentTo(player.UnlockedRecipes);
+        retried.CraftedRecipes.Should().BeEquivalentTo(player.CraftedRecipes);
+    }
+
+    [TestCase("OneHandedBoost1", "LightWeaponBoost1", "3488", new[] { 4799, 4800, 4801 })]
+    [TestCase("TwoHandedBoost1", "HeavyWeaponBoost1", "3489", new[] { 4802, 4803, 4804, 4805 })]
+    [TestCase("MartialArtsBoost1", "KatarStaffBoost1", "3490", new[] { 4806, 4807 })]
+    [TestCase("RangedBoost1", "ProjectileBoost1", "3491", new[] { 4808, 4809, 4810 })]
+    [TestCase("OneHandedBoost2", "LightWeaponBoost2", "3492", new[] { 4811, 4812, 4813 })]
+    [TestCase("TwoHandedBoost2", "HeavyWeaponBoost2", "3493", new[] { 4814, 4815, 4816, 4817 })]
+    [TestCase("MartialArtsBoost2", "KatarStaffBoost2", "3494", new[] { 4818, 4819 })]
+    [TestCase("RangedBoost2", "ProjectileBoost2", "3495", new[] { 4820, 4821, 4822 })]
+    public void EachDroidRecipeAliasExpandsBothDictionariesAndSurvivesRetry(string name, string alias, string numeric, int[] replacements)
+    {
+        var date = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        foreach (var key in new[] { name, alias, numeric })
+        {
+            var raw = PlayerJson();
+            raw["UnlockedRecipes"] = new JObject { [key] = date };
+            raw["CraftedRecipes"] = new JObject { [key] = date };
+            var player = MigratePlayer(raw, out _)!;
+            var expected = replacements.ToDictionary(id => (RecipeType)id, _ => date);
+            player.UnlockedRecipes.Should().BeEquivalentTo(expected, $"unlock alias {key}");
+            player.CraftedRecipes.Should().BeEquivalentTo(expected, $"crafted alias {key}");
+            var retried = MigratePlayer(JObject.FromObject(player), out _)!;
+            retried.UnlockedRecipes.Should().BeEquivalentTo(expected);
+            retried.CraftedRecipes.Should().BeEquivalentTo(expected);
+        }
     }
 
     private static JObject PlayerJson() => JObject.Parse("""{"UnknownDisplayName":"A quiet traveler","RebuildComplete":true}""");

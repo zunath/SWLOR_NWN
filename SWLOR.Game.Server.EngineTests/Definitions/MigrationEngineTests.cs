@@ -16,7 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
-    public static class MigrationEngineTests
+    public static partial class MigrationEngineTests
     {
         [EngineTest("Migration removes equipped item properties and their native effects", Category = "Migration")]
         public static async Task EquippedPropertyRemoval(EngineTestContext ctx)

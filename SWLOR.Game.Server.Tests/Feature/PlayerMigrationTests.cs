@@ -92,6 +92,73 @@ public class PlayerMigrationTests
         saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(3);
     }
 
+    [TestCase(1)]
+    [TestCase(2)]
+    public void FailedPlayerLoadDoesNotSaveOrGrantTokenAndCanBeRetried(int failingLoad)
+    {
+        var saved = PlayerJson(14);
+        var loads = 0;
+        var liveRuns = 0;
+        var migration = TokenMigration(() => liveRuns++);
+        Action fail = () => Apply(migration, () =>
+        {
+            if (++loads == failingLoad)
+                throw new InvalidOperationException("Player record unavailable");
+            return saved.ToObject<Player>()!;
+        }, _ => Assert.Fail("A failed load must prevent saving"));
+
+        fail.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
+        liveRuns.Should().Be(failingLoad - 1);
+        saved.Should().BeEquivalentTo(PlayerJson(14));
+
+        Apply(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
+        saved["Version"]!.Value<int>().Should().Be(15);
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
+    }
+
+    [Test]
+    public void FailedDataHookDiscardsUnsavedChangesAndRetryGrantsOnlyOneToken()
+    {
+        var saved = PlayerJson(14);
+        var failHook = true;
+        var migration = new TestMigration(15, () => { }, player =>
+        {
+            new _15_RemoveObsoleteCombatInstructionDiscs().MigratePlayerData(player);
+            if (failHook)
+                throw new InvalidOperationException("Data update failed");
+        });
+        Action fail = () => Apply(migration, () => saved.ToObject<Player>()!,
+            _ => Assert.Fail("A failed data hook must prevent saving"));
+        fail.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
+        saved.Should().BeEquivalentTo(PlayerJson(14));
+
+        failHook = false;
+        Apply(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
+        saved["Version"]!.Value<int>().Should().Be(15);
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
+    }
+
+    [Test]
+    public void BonusTokenIsAddedWhenTheCurrencyDictionaryHasNoTokenEntry()
+    {
+        var saved = PlayerJson(14);
+        saved["Currencies"] = new JObject();
+        Apply(TokenMigration(() => { }), () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
+        saved["Version"]!.Value<int>().Should().Be(15);
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(1);
+    }
+
+    [Test]
+    public void LiveOnlyMigrationSavesRefreshedDataAndAdvancesTheExistingVersion()
+    {
+        var saved = PlayerJson(12);
+        var migration = new TestMigration(13, () => saved["UnallocatedSP"] = 42);
+        Apply(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player));
+        saved["Version"]!.Value<int>().Should().Be(13);
+        saved["UnallocatedSP"]!.Value<int>().Should().Be(42);
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(3);
+    }
+
     private static JObject PlayerJson(int version) => new()
     {
         ["Version"] = version,

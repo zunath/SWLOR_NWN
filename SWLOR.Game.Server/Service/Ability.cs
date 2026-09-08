@@ -2369,15 +2369,18 @@ namespace SWLOR.Game.Server.Service
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
-            adjustedBaseDamage += Combat.GetAbilityImpactBaseDamageBonus(
-                activator,
-                target,
-                trackedImpact?.Ability,
-                skillType);
-            adjustedBaseDamage += Combat.GetAbilityStatusCategoryDamageBonus(
-                activator,
-                skillType,
-                appliedStatusCategories);
+            var usesWeaponDamage = !useUnscaledDamage &&
+                (Combat.IsWeaponSkillType(skillType) ||
+                 (trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
+                  skillType == SkillType.BeastMastery));
+            var hasDirectDamage = adjustedBaseDamage > 0 || usesWeaponDamage;
+            adjustedBaseDamage = ApplyCombatImpactBaseDamageBonuses(
+                adjustedBaseDamage,
+                usesWeaponDamage,
+                () => Combat.GetAbilityImpactBaseDamageBonus(
+                          activator, target, trackedImpact?.Ability, skillType) +
+                      Combat.GetAbilityStatusCategoryDamageBonus(
+                          activator, skillType, appliedStatusCategories));
             var damage = useUnscaledDamage
                 ? CalculateUnscaledCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType)
                 : usesNPCStatScaling
@@ -2402,7 +2405,20 @@ namespace SWLOR.Game.Server.Service
                 beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
                 effectDamageType,
-                firstHostileAbilityHitDamageBonusApplied: true);
+                firstHostileAbilityHitDamageBonusApplied: hasDirectDamage);
+        }
+
+        private static int ApplyCombatImpactBaseDamageBonuses(
+            int baseDamage,
+            bool usesWeaponDamage,
+            Func<int> getDamageBonus)
+        {
+            // Control-only impacts must not gain damage or consume damage bonuses. Weapon
+            // impacts can have zero added base damage because their weapon supplies the damage.
+            if (baseDamage <= 0 && !usesWeaponDamage)
+                return 0;
+
+            return baseDamage + getDamageBonus();
         }
 
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)

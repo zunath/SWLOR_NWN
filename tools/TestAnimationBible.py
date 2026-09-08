@@ -4,6 +4,7 @@ import os
 import tempfile
 import unittest
 import zipfile
+from xml.etree import ElementTree as ET
 from pathlib import Path
 from unittest.mock import patch
 
@@ -68,7 +69,7 @@ class AnimationBibleTests(unittest.TestCase):
                 "xl/workbook.xml": '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Animations" sheetId="2" r:id="rId2"/></sheets></workbook>',
                 "xl/_rels/workbook.xml.rels": '<Relationships><Relationship Id="rId2" Target="worksheets/sheet2.xml"/></Relationships>',
                 "xl/worksheets/sheet1.xml": '<worksheet><c r="A1"><f>1+2</f><v>3</v></c></worksheet>',
-                "xl/worksheets/sheet2.xml": '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="C1" t="inlineStr"><is><t>Name</t></is></c></row><row r="2"><c r="B2" t="inlineStr"><is><t>Force</t></is></c><c r="C2" t="inlineStr"><is><t>Push</t></is></c></row></sheetData></worksheet>',
+                "xl/worksheets/sheet2.xml": '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="C1" s="17" t="inlineStr"><is><t>Name</t></is></c><c r="D1" s="17"/><c r="Z1" s="8"/><c r="F1" s="17" t="inlineStr"><is><t>Old Internal Name</t></is></c></row><row r="2"><c r="A2" s="18"/><c r="B2" s="18" t="inlineStr"><is><t>Force</t></is></c><c r="C2" s="18" t="inlineStr"><is><t>Push</t></is></c><c r="D2" s="4"/><c r="E2" s="31"/><c r="F2" s="4"/><c r="Z2" t="inlineStr"><is><t>Retained after blank</t></is></c></row></sheetData></worksheet>',
             }
             with zipfile.ZipFile(path, "w") as z:
                 for name, value in files.items():
@@ -85,6 +86,16 @@ class AnimationBibleTests(unittest.TestCase):
                 self.assertIn(b'F2', first)
                 self.assertIn(b'sw_push', first)
                 self.assertIn(b'sw_pull', first)
+                ns = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+                sheet = ET.fromstring(first)
+                for row in sheet.findall("s:sheetData/s:row", ns):
+                    refs = [c.get("r") for c in row]
+                    columns = [''.join(ch for ch in ref if ch.isalpha()) for ref in refs]
+                    self.assertEqual(columns, sorted(columns, key=lambda c: (len(c), c)))
+                    self.assertEqual(len(refs), len(set(refs)))
+                self.assertEqual(sheet.find('.//s:c[@r="Z2"]/s:is/s:t', ns).text, "Retained after blank")
+                for column, style in {"A": "18", "B": "18", "C": "18", "D": "4", "E": "31"}.items():
+                    self.assertEqual(sheet.find(f'.//s:c[@r="{column}3"]', ns).get("s"), style)
             self.assertEqual([e["BibleAnimationRow"] for e in entries], [2, 3])
             synchronize(path, copy.deepcopy(entries), registry)
             with zipfile.ZipFile(path) as z:

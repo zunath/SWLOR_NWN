@@ -55,6 +55,7 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
     path = target.lstrip("/") if target.startswith("/") else "xl/" + target
     xml = original[path].decode("utf-8-sig")
     root = ET.fromstring(xml)
+    ET.register_namespace("", NS["s"])
     if root.findall(".//s:f", NS):
         raise ValueError("Animation formulas require explicit migration before synchronization")
     hyperlink_nodes = root.findall("s:hyperlinks/s:hyperlink", NS)
@@ -78,9 +79,33 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
     seen = set()
     last = 1
     rows = []
-    for match in re.finditer(r"<row\b[^>]*(?:/>|>.*?</row>)", xml, re.S):
-        text = match.group()
-        node = ET.fromstring('<root xmlns="' + NS["s"] + '">' + text + '</root>')[0]
+    data_styles = {}
+    header_styles = {}
+    for row in root.findall("s:sheetData/s:row", NS):
+        styles = header_styles if row.get("r") == "1" else data_styles
+        for existing in row.findall("s:c", NS):
+            column = re.sub(r"\d", "", existing.get("r"))
+            if existing.get("s") is not None:
+                styles.setdefault(column, existing.get("s"))
+
+    def style(column, header=False):
+        styles = header_styles if header else data_styles
+        return styles.get(column, styles.get("D", "17" if header else "4"))
+
+    def serialize_row(node):
+        # Parse complete XML elements: a self-closing blank cell must never consume the
+        # following populated cell, and all cells must remain in spreadsheet column order.
+        cells = list(node.findall("s:c", NS))
+        for existing in cells:
+            node.remove(existing)
+        def order(existing):
+            letters = re.sub(r"\d", "", existing.get("r"))
+            return len(letters), letters
+        for existing in sorted(cells, key=order):
+            node.append(existing)
+        return ET.tostring(node, encoding="unicode")
+
+    for node in root.findall("s:sheetData/s:row", NS):
         number = int(node.get("r"))
         cells = {re.sub(r"\d", "", c.get("r")): value(c) for c in node}
         if number == 1:
@@ -102,17 +127,16 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
         else:
             continue
         last = max(last, number)
+        for existing in list(node.findall("s:c", NS)):
+            column = re.sub(r"\d", "", existing.get("r"))
+            if column in extra:
+                node.remove(existing)
+            elif column in "ABCDEFGHI":
+                existing.set("s", style(column, number == 1))
         for column, content in extra.items():
-            text = re.sub(rf'<c\b[^>]*\br="{column}{number}"[^>]*(?:/>|>.*?</c>)', '', text, flags=re.S)
-        if text.endswith('/>'):
-            text = text[:-2] + '></row>'
-        text = text.replace('</row>', ''.join(cell(c, number, v, "17" if number == 1 else "4") for c, v in extra.items()) + '</row>')
-        fragments = re.findall(r'<c\b[^>]*(?:/>|>.*?</c>)', text, re.S)
-        def cell_order(fragment):
-            letters = re.search(r'\br="([A-Z]+)\d+"', fragment)[1]
-            return len(letters), letters
-        text = re.sub(r'(?<=\>).*?(?=</row>)', lambda _: ''.join(sorted(fragments, key=cell_order)), text, count=1, flags=re.S)
-        rows.append(text)
+            node.append(ET.fromstring('<root xmlns="' + NS["s"] + '">' +
+                cell(column, number, content, style(column, number == 1)) + '</root>')[0])
+        rows.append(serialize_row(node))
     for entry in entries:
         if entry["Id"] in seen:
             continue
@@ -122,7 +146,9 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
                   "D": entry.get("Description", ""), "E": entry.get("Reference", ""), **details(entry, installed[entry["Id"]])}
         if values["E"]:
             raise ValueError("New image references must be added with a hyperlink relationship")
-        rows.append(f'<row r="{last}">' + ''.join(cell(c, last, v) for c, v in values.items()) + '</row>')
+        added = ET.fromstring(f'<row xmlns="{NS["s"]}" r="{last}">' +
+            ''.join(cell(c, last, v, style(c)) for c, v in values.items()) + '</row>')
+        rows.append(serialize_row(added))
     xml = re.sub(r'<sheetData\b[^>]*>.*?</sheetData>', '<sheetData>' + ''.join(rows) + '</sheetData>', xml, flags=re.S)
     xml = re.sub(r'<dimension\b[^>]*/>', f'<dimension ref="A1:I{last}"/>', xml)
     xml = re.sub(r'(<autoFilter\b[^>]*\bref=")[^"]+', lambda m: m[1] + f'A1:I{last}', xml)

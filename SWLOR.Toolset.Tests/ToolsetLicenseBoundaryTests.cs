@@ -20,7 +20,8 @@ namespace SWLOR.Toolset.Tests
 
         private static readonly HashSet<string> ApprovedToolsetReferences = new(StringComparer.Ordinal)
         {
-            "SWLOR.ConversationMigrator -> SWLOR.Toolset.Domain"
+            "SWLOR.ConversationMigrator -> SWLOR.Toolset.Domain",
+            "SWLOR.AnimationDrafts -> SWLOR.Toolset.Domain"
         };
 
         private static readonly string[] ExecutableSourceRoots =
@@ -29,6 +30,7 @@ namespace SWLOR.Toolset.Tests
             "SWLOR.Toolset.Domain",
             "SWLOR.Toolset.Tests",
             Path.Combine("tools", "SWLOR.ConversationMigrator"),
+            Path.Combine("tools", "SWLOR.AnimationDrafts"),
             "SWLOR.NWN.Formats",
             "SWLOR.NWN.Formats.Tests",
             "SWLOR.NWN.Formats.Corpus.Tests"

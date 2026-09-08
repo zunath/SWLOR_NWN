@@ -108,11 +108,29 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options.</returns>
         public AbilityBuilder UsesAnimation(Animation animation)
         {
+            _activeAbility.AuthoredAnimation = null;
             _activeAbility.AnimationType = animation;
             _activeAbility.AnimationSourceAnimationName = string.Empty;
             _activeAbility.AnimationReplacementAnimationName = string.Empty;
             _activeAbility.AnimationRestoreDelaySeconds = 0f;
 
+            return this;
+        }
+
+        /// <summary>Plays an installed clip during activation, using its natural length for instant abilities.</summary>
+        public AbilityBuilder UsesAnimation(AnimationService.AnimationClip clip)
+        {
+            ArgumentNullException.ThrowIfNull(clip);
+            UsesAnimation(Animation.PointForward);
+            _activeAbility.AuthoredAnimation = clip;
+            return this;
+        }
+
+        /// <summary>Replaces melee attack swings while this weapon ability is readied.</summary>
+        public AbilityBuilder UsesQueuedAttackAnimation(AnimationService.AnimationClip clip)
+        {
+            ArgumentNullException.ThrowIfNull(clip);
+            _activeAbility.QueuedAttackAnimation = clip;
             return this;
         }
 
@@ -174,6 +192,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
             _activeAbility.AnimationType = animation;
             _activeAbility.AnimationSourceAnimationName = sourceAnimationName;
+            _activeAbility.AuthoredAnimation = null;
             _activeAbility.AnimationReplacementAnimationName = replacementAnimationName;
             _activeAbility.AnimationRestoreDelaySeconds = restoreDelaySeconds;
 

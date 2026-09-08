@@ -7,7 +7,8 @@ SWLOR first-party source is licensed under the repository's MIT license in `LICE
 The current toolset dependency graph is:
 
 ```text
-{ SWLOR.Toolset, SWLOR.ConversationMigrator } → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
+{ SWLOR.Toolset, SWLOR.ConversationMigrator, SWLOR.AnimationDrafts }
+    → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
 ```
 
 `SWLOR.NWN.Formats` is a standalone first-party, read-only implementation of the Aurora resource
@@ -23,10 +24,13 @@ authoritative version inventory.
 
 ## Architecture rule
 
-The desktop toolset and the dedicated conversation-migration utility are outer application layers.
+The desktop toolset, conversation-migration utility, and animation-authoring CLI are outer application layers.
 Shared libraries and the game server must not reference `SWLOR.Toolset` or
-`SWLOR.Toolset.Domain`. The migration utility is an explicitly reviewed leaf consumer of the
-headless domain library; it must not be referenced by shared or runtime projects. The formats
+`SWLOR.Toolset.Domain`. `SWLOR.ConversationMigrator` and `SWLOR.AnimationDrafts` are explicitly
+reviewed executable leaf consumers of the headless domain library; shared and runtime projects
+must not reference either executable. `tools/SWLOR.AnimationDrafts/` generates and installs authored
+animation projects through that library, independently of the desktop editor. Its first-party
+source is MIT-licensed and does not incorporate Godot or upstream GPL animation-tool code/assets. The formats
 library does not reference the toolset or game server. `ToolsetLicenseBoundaryTests` enforces the
 approved dependency direction and the absence of the retired external format dependency from
 executable first-party source and project references.

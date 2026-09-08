@@ -513,7 +513,7 @@ namespace SWLOR.Toolset.Tests
             identity.ResourceType.Should().Be(2072);
         }
 
-        private static void WriteSingleResourceHak(
+        internal static void WriteSingleResourceHak(
             string path,
             string resRef,
             string extension,

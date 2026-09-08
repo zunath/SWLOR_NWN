@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             builder
                 .Create(FeatType.PredatoryBond, PerkType.PredatoryBond)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Predatory Bond")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.BeastBond, 30f)

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ThermalDetonator1, PerkType.ThermalDetonator)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Thermal Detonator")
                 .Level(1)
                 .HasActivationDelay(1.5f)

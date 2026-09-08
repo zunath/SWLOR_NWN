@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IncendiaryField1, PerkType.IncendiaryField)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Incendiary Field I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IncendiaryField2, PerkType.IncendiaryField)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Incendiary Field II")
                 .Level(2)
                 .HasActivationDelay(1.5f)
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IncendiaryField3, PerkType.IncendiaryField)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Incendiary Field III")
                 .Level(3)
                 .HasActivationDelay(1.5f)

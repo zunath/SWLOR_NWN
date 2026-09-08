@@ -36,6 +36,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AnimationService.AnimationClip AuthoredAnimation { get; set; }
         /// <summary>Catalog motion for this rank, including abilities retaining native gameplay playback.</summary>
         public AnimationService.AnimationClip PreviewAnimation { get; set; }
+        public AnimationService.AnimationClip AuthoredImpactAnimation { get; set; }
+        public bool UsesImmediateAuthoredAnimation { get; set; }
+        public bool UsesAuthoredImpactAnimation { get; set; }
+        public float ImmediateNativeImpactAnimationDuration { get; set; }
         public bool HasGeneratedAnimationBinding { get; set; }
         public Animation NativeAnimationType { get; set; }
         /// <summary>Impact actions own movement/animation ordering; catalog clips are preview-only.</summary>

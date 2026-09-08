@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.Flamethrower1, PerkType.Flamethrower)
+                .UsesImmediateNativeImpactAnimation(2.1f)
                 .Name("Flamethrower I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.Flamethrower2, PerkType.Flamethrower)
+                .UsesImmediateNativeImpactAnimation(2.1f)
                 .Name("Flamethrower II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -83,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.Flamethrower3, PerkType.Flamethrower)
+                .UsesImmediateNativeImpactAnimation(2.1f)
                 .Name("Flamethrower III")
                 .Level(3)
                 .HasActivationDelay(1f)

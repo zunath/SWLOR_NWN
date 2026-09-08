@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.PowerCell1, PerkType.PowerCell)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Power Cell I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.PowerCell2, PerkType.PowerCell)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Power Cell II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.PowerCell3, PerkType.PowerCell)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Power Cell III")
                 .Level(3)
                 .HasActivationDelay(1.5f)

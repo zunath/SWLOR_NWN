@@ -1,0 +1,2415 @@
+[
+  {
+    "Id": "FragGrenade",
+    "Description": "Authored overarm throw arc from the native throwing guard: standard overarm grenade delivery",
+    "Duration": 1.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.216,
+        "Label": "Prepare grenade",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.19,
+          1.2
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ]
+      },
+      {
+        "Time": 0.5265,
+        "Label": "Cock hand above and behind shoulder",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          -0.1,
+          1.64
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -14
+        ]
+      },
+      {
+        "Time": 0.864,
+        "Label": "Release grenade forward",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.29,
+          0.62,
+          1.51
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          12
+        ]
+      },
+      {
+        "Time": 1.0935,
+        "Label": "Follow through down and across",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.08,
+          0.43,
+          1.12
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          7.800000000000001
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ConcussionGrenade",
+    "Description": "Authored overarm throw arc from the native throwing guard: heavy cock and forceful direct grenade delivery",
+    "Duration": 1.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.24,
+        "Label": "Prepare grenade",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.19,
+          1.2
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ]
+      },
+      {
+        "Time": 0.585,
+        "Label": "Cock hand above and behind shoulder",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.4,
+          -0.18,
+          1.59
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -22
+        ]
+      },
+      {
+        "Time": 0.96,
+        "Label": "Release grenade forward",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.24,
+          0.64,
+          1.42
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          18
+        ]
+      },
+      {
+        "Time": 1.215,
+        "Label": "Follow through down and across",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.08,
+          0.43,
+          1.12
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          11.700000000000001
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FlashGrenade",
+    "Description": "Authored overarm throw arc from the native throwing guard: compact quick overarm flash delivery",
+    "Duration": 1.15,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.184,
+        "Label": "Prepare grenade",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.19,
+          1.2
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ]
+      },
+      {
+        "Time": 0.4485,
+        "Label": "Cock hand above and behind shoulder",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          0.05,
+          1.6
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 0.736,
+        "Label": "Release grenade forward",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.2,
+          0.64,
+          1.5
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          7
+        ]
+      },
+      {
+        "Time": 0.9315,
+        "Label": "Follow through down and across",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.08,
+          0.43,
+          1.12
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          4.55
+        ]
+      },
+      {
+        "Time": 1.15,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "AdhesiveGrenade",
+    "Description": "Authored overarm throw arc from the native throwing guard: measured high lob with a deliberate aiming pause",
+    "Duration": 1.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.264,
+        "Label": "Prepare grenade",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.19,
+          1.2
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ]
+      },
+      {
+        "Time": 0.6435,
+        "Label": "Cock hand above and behind shoulder",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          -0.06,
+          1.76
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 0.825,
+        "Label": "Hold high aiming arc",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          -0.06,
+          1.76
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 1.056,
+        "Label": "Release grenade forward",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.22,
+          0.53,
+          1.71
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          9
+        ]
+      },
+      {
+        "Time": 1.3365,
+        "Label": "Follow through down and across",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.08,
+          0.43,
+          1.12
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          5.8500000000000005
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "IonGrenade",
+    "Description": "Authored overarm throw arc from the native throwing guard: chest preparation followed by a brisk overarm release",
+    "Duration": 1.4,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.224,
+        "Label": "Prepare grenade",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.19,
+          1.2
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ]
+      },
+      {
+        "Time": 0.546,
+        "Label": "Cock hand above and behind shoulder",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.35,
+          -0.12,
+          1.6
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -16
+        ]
+      },
+      {
+        "Time": 0.896,
+        "Label": "Release grenade forward",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.63,
+          1.52
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          14
+        ]
+      },
+      {
+        "Time": 1.134,
+        "Label": "Follow through down and across",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.08,
+          0.43,
+          1.12
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          9.1
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ThermalDetonator",
+    "Description": "Authored overarm throw arc from the native throwing guard: high windup and weighted forward follow-through",
+    "Duration": 1.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.28,
+        "Label": "Prepare grenade",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.19,
+          1.2
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ]
+      },
+      {
+        "Time": 0.6825,
+        "Label": "Cock hand above and behind shoulder",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.4,
+          -0.19,
+          1.75
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -24
+        ]
+      },
+      {
+        "Time": 1.12,
+        "Label": "Release grenade forward",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.59,
+          1.59
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          20
+        ]
+      },
+      {
+        "Time": 1.4175,
+        "Label": "Follow through down and across",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.08,
+          0.43,
+          1.12
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.24
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          13.0
+        ]
+      },
+      {
+        "Time": 1.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ClusterGrenade",
+    "Description": "Three authored short overarm throw arcs from the native throwing guard, with separate recocking and releases",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.18,
+        "Label": "Prepare three charges",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.23,
+          0.17,
+          1.19
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ]
+      },
+      {
+        "Time": 0.43,
+        "Label": "Cock first charge",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.39,
+          -0.08,
+          1.63
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 0.7,
+        "Label": "Release first charge left",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.1,
+          0.61,
+          1.5
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          11
+        ]
+      },
+      {
+        "Time": 0.86,
+        "Label": "Follow first throw",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.12,
+          0.41,
+          1.25
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          5
+        ]
+      },
+      {
+        "Time": 1.08,
+        "Label": "Recock second charge",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          -0.06,
+          1.62
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -10
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Release second charge center",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.29,
+          0.63,
+          1.53
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          9
+        ]
+      },
+      {
+        "Time": 1.49,
+        "Label": "Follow second throw",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.22,
+          0.41,
+          1.23
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          3
+        ]
+      },
+      {
+        "Time": 1.7,
+        "Label": "Recock final charge",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.41,
+          -0.07,
+          1.66
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 1.98,
+        "Label": "Release final charge right",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.46,
+          0.54,
+          1.51
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          -3
+        ]
+      },
+      {
+        "Time": 2.18,
+        "Label": "Final follow-through",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.45,
+          1.13
+        ],
+        "LeftHand": [
+          -0.28,
+          0.27,
+          1.22
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          5
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ArcProjector",
+    "Description": "Supported right wrist electrical discharge and sharp recoil",
+    "Duration": 1.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Raise emitter",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.32,
+          0.28,
+          1.28
+        ]
+      },
+      {
+        "Time": 0.52,
+        "Label": "Aim arc",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.27,
+          0.62,
+          1.37
+        ]
+      },
+      {
+        "Time": 0.65,
+        "Label": "Arc recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.28,
+          0.48,
+          1.42
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.92,
+        "Label": "Reacquire target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.27,
+          0.6,
+          1.37
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CryoSprayer",
+    "Description": "Braced right wrist cold spray traverses a narrow cone",
+    "Duration": 1.9,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Brace sprayer",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.28,
+          0.43,
+          1.32
+        ]
+      },
+      {
+        "Time": 0.52,
+        "Label": "Begin spray at left edge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.02,
+          0.63,
+          1.36
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 1.28,
+        "Label": "Sweep to right edge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.48,
+          0.51,
+          1.33
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 1.52,
+        "Label": "Close sprayer valve",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.29,
+          0.35,
+          1.28
+        ]
+      },
+      {
+        "Time": 1.9,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "IonLance",
+    "Description": "Focused straight ion beam from the right wrist while the offhand remains guarded",
+    "Duration": 1.45,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.24,
+        "Label": "Raise projector with offhand guard",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.12,
+          0.3,
+          1.2
+        ],
+        "RightHand": [
+          0.28,
+          0.38,
+          1.28
+        ]
+      },
+      {
+        "Time": 0.57,
+        "Label": "Extend focused wrist projector",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.13,
+          0.42,
+          1.23
+        ],
+        "RightHand": [
+          0.2,
+          0.67,
+          1.37
+        ]
+      },
+      {
+        "Time": 0.68,
+        "Label": "Linear discharge recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.13,
+          0.36,
+          1.23
+        ],
+        "RightHand": [
+          0.2,
+          0.57,
+          1.37
+        ]
+      },
+      {
+        "Time": 1.04,
+        "Label": "Hold beam alignment",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.13,
+          0.42,
+          1.23
+        ],
+        "RightHand": [
+          0.2,
+          0.65,
+          1.37
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RailDart",
+    "Description": "Quick raised forearm aim with a tiny dart-release snap",
+    "Duration": 1.12,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.22,
+        "Label": "Lift dart projector",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.37,
+          0.27,
+          1.25
+        ]
+      },
+      {
+        "Time": 0.48,
+        "Label": "Sight target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.27,
+          0.61,
+          1.48
+        ]
+      },
+      {
+        "Time": 0.56,
+        "Label": "Dart release",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.27,
+          0.55,
+          1.5
+        ]
+      },
+      {
+        "Time": 0.72,
+        "Label": "Lower projector",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.34,
+          1.24
+        ]
+      },
+      {
+        "Time": 1.12,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WristRocket",
+    "Description": "Guarded right wrist rocket launch with pronounced shoulder recoil",
+    "Duration": 1.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.27,
+        "Label": "Raise launch arm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.24,
+          1.24
+        ],
+        "RightHand": [
+          0.36,
+          0.31,
+          1.34
+        ]
+      },
+      {
+        "Time": 0.6,
+        "Label": "Fully aim launcher",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.24,
+          1.24
+        ],
+        "RightHand": [
+          0.31,
+          0.65,
+          1.37
+        ]
+      },
+      {
+        "Time": 0.73,
+        "Label": "Rocket kickback",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.24,
+          1.24
+        ],
+        "RightHand": [
+          0.34,
+          0.39,
+          1.47
+        ],
+        "TorsoDegrees": [
+          -9,
+          0,
+          -4
+        ]
+      },
+      {
+        "Time": 1.13,
+        "Label": "Settle launch arm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.24,
+          1.24
+        ],
+        "RightHand": [
+          0.32,
+          0.5,
+          1.32
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "OverloadBarrage",
+    "Description": "Braced wrist fires three distinct discharges with separate recovery",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.28,
+        "Label": "Brace barrage emitter",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.27,
+          0.51,
+          1.35
+        ]
+      },
+      {
+        "Time": 0.48,
+        "Label": "First discharge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.27,
+          0.63,
+          1.35
+        ]
+      },
+      {
+        "Time": 0.61,
+        "Label": "First recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.29,
+          0.48,
+          1.39
+        ]
+      },
+      {
+        "Time": 0.87,
+        "Label": "Aim second discharge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.27,
+          0.64,
+          1.35
+        ]
+      },
+      {
+        "Time": 1.02,
+        "Label": "Heavy second recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.33,
+          0.35,
+          1.44
+        ],
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.36,
+        "Label": "Aim sonic discharge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.27,
+          0.62,
+          1.35
+        ]
+      },
+      {
+        "Time": 1.52,
+        "Label": "Final recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.28,
+          0.49,
+          1.39
+        ]
+      },
+      {
+        "Time": 1.89,
+        "Label": "Power down emitter",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.16,
+          0.34,
+          1.22
+        ],
+        "RightHand": [
+          0.31,
+          0.3,
+          1.27
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SonicBurst",
+    "Description": "Compact chest charge snaps both forearms low and wide with backward torso recoil for a radial sonic pulse",
+    "Duration": 1.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Charge chest emitter",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.17,
+          0.16,
+          1.35
+        ],
+        "RightHand": [
+          0.17,
+          0.16,
+          1.35
+        ]
+      },
+      {
+        "Time": 0.69,
+        "Label": "Release radial pulse",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.49,
+          0.34,
+          1.04
+        ],
+        "RightHand": [
+          0.49,
+          0.34,
+          1.04
+        ],
+        "TorsoDegrees": [
+          -10,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.02,
+        "Label": "Settle pulse recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.34,
+          0.29,
+          1.16
+        ],
+        "RightHand": [
+          0.34,
+          0.29,
+          1.16
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DisruptionPulse",
+    "Description": "Raise disruption emitter then project a downward-forward pulse",
+    "Duration": 1.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Arm pulse at chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.22,
+          0.18,
+          1.24
+        ],
+        "RightHand": [
+          0.17,
+          0.23,
+          1.36
+        ]
+      },
+      {
+        "Time": 0.68,
+        "Label": "Direct pulse to target point",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.64,
+          1.16
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.82,
+        "Label": "Pulse recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.29,
+          0.47,
+          1.22
+        ]
+      },
+      {
+        "Time": 1.13,
+        "Label": "Close emitter",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.23,
+          0.28,
+          1.2
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "Flamethrower",
+    "Description": "Original custom64 flamethrower entry and outward wrist-projector loop at native timing",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.1,
+        "Label": "Begin original custom64 flamethrower entry",
+        "SourceAnimation": "custom64start",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 0.833,
+        "Label": "Complete native flamethrower entry",
+        "SourceAnimation": "custom64start",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 0.84,
+        "Label": "Begin original flame projector hold",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.273,
+        "Label": "Complete first native flame loop",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.274,
+        "Label": "Continue native flame loop",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.707,
+        "Label": "Complete second native flame loop",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.708,
+        "Label": "Sustain final flame projection",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.9,
+        "Label": "End flame projection",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0.4434,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "BlasterBeacon",
+    "Description": "Waist-arm beacon, forward delivery and target designation",
+    "Duration": 1.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Retrieve beacon from belt",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.05,
+          0.98
+        ]
+      },
+      {
+        "Time": 0.53,
+        "Label": "Arm targeting beacon",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.05,
+          0.22,
+          1.2
+        ],
+        "RightHand": [
+          0.18,
+          0.23,
+          1.19
+        ]
+      },
+      {
+        "Time": 0.92,
+        "Label": "Deliver beacon forward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.32,
+          0.56,
+          1.08
+        ]
+      },
+      {
+        "Time": 1.26,
+        "Label": "Designate firing zone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.28,
+          0.61,
+          1.42
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ShockBeacon",
+    "Description": "Chest-level confirmation followed by low underarm beacon delivery",
+    "Duration": 1.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.31,
+        "Label": "Confirm shock charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.23,
+          1.31
+        ],
+        "RightHand": [
+          0.12,
+          0.23,
+          1.31
+        ]
+      },
+      {
+        "Time": 0.62,
+        "Label": "Lower armed beacon",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.06,
+          1.02
+        ]
+      },
+      {
+        "Time": 1.01,
+        "Label": "Underarm beacon release",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.57,
+          1.12
+        ]
+      },
+      {
+        "Time": 1.28,
+        "Label": "Release recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.35,
+          1.17
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "KillzoneBeacon",
+    "Description": "Two-stage beacon arming followed by broad target-zone designation",
+    "Duration": 2.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.32,
+        "Label": "Retrieve targeting unit",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.26,
+          0.04,
+          1.0
+        ]
+      },
+      {
+        "Time": 0.67,
+        "Label": "Confirm firing pattern",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.08,
+          0.24,
+          1.24
+        ],
+        "RightHand": [
+          0.12,
+          0.25,
+          1.23
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Mark near boundary",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.04,
+          0.61,
+          1.33
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          7
+        ]
+      },
+      {
+        "Time": 1.53,
+        "Label": "Sweep far boundary",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.48,
+          0.51,
+          1.35
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 2.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SignalJammer",
+    "Description": "Activate belt jammer then sweep the raised forearm across its scan arc",
+    "Duration": 1.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.27,
+        "Label": "Enable belt jammer",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.24,
+          0.05,
+          0.99
+        ]
+      },
+      {
+        "Time": 0.62,
+        "Label": "Raise antenna control",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.33,
+          0.23,
+          1.52
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Sweep interference field left",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.04,
+          0.4,
+          1.49
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 1.38,
+        "Label": "Sweep interference field right",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.43,
+          0.38,
+          1.42
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -6
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RemoteCharge",
+    "Description": "Lower fully to place a charge, visibly rise, then press the standing waist-level remote trigger",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.22,
+        "Label": "Lower charge",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.12
+      },
+      {
+        "Time": 0.72,
+        "Label": "Place charge",
+        "SourceAnimation": "getlow",
+        "SourceTime": 1
+      },
+      {
+        "Time": 1.26,
+        "Label": "Stand after placing",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.58,
+        "Label": "Press remote trigger",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.08,
+          0.24,
+          1.1
+        ],
+        "RightHand": [
+          0.18,
+          0.27,
+          1.09
+        ]
+      },
+      {
+        "Time": 1.76,
+        "Label": "Release remote trigger",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.27,
+          0.23,
+          1.13
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "IncendiaryField",
+    "Description": "Low canister delivery followed by a horizontal ignition sweep",
+    "Duration": 1.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.24,
+        "Label": "Ready ignition canister",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.28,
+          0.04,
+          1.01
+        ]
+      },
+      {
+        "Time": 0.62,
+        "Label": "Cast canister underarm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.38,
+          0.57,
+          1.1
+        ]
+      },
+      {
+        "Time": 0.99,
+        "Label": "Arm igniter",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.16,
+          0.35,
+          1.27
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Sweep ignition line",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.48,
+          0.5,
+          1.3
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "EmergencyBunker",
+    "Description": "Standing forearm-console operation opens a broad defensive projection",
+    "Duration": 2.2,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.34,
+        "Label": "Raise standing control console",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.08,
+          0.27,
+          1.29
+        ],
+        "RightHand": [
+          0.1,
+          0.22,
+          1.35
+        ]
+      },
+      {
+        "Time": 0.72,
+        "Label": "Confirm bunker deployment",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.08,
+          0.3,
+          1.28
+        ],
+        "RightHand": [
+          0.02,
+          0.29,
+          1.28
+        ]
+      },
+      {
+        "Time": 1.08,
+        "Label": "Open left boundary",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.45,
+          0.37,
+          1.35
+        ],
+        "RightHand": [
+          0.17,
+          0.27,
+          1.27
+        ]
+      },
+      {
+        "Time": 1.51,
+        "Label": "Expand both shield boundaries",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.42,
+          1.37
+        ],
+        "RightHand": [
+          0.5,
+          0.42,
+          1.37
+        ]
+      },
+      {
+        "Time": 1.82,
+        "Label": "Stabilize projection",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.38,
+          0.39,
+          1.27
+        ],
+        "RightHand": [
+          0.38,
+          0.39,
+          1.27
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DeflectorShield",
+    "Description": "Chest brace extends a directed single-ally shield projection",
+    "Duration": 1.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Prime shield across chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.23,
+          1.24
+        ],
+        "RightHand": [
+          0.03,
+          0.22,
+          1.35
+        ]
+      },
+      {
+        "Time": 0.67,
+        "Label": "Push directed shield",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.23,
+          1.24
+        ],
+        "RightHand": [
+          0.25,
+          0.65,
+          1.38
+        ]
+      },
+      {
+        "Time": 1.1,
+        "Label": "Hold ally shield alignment",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.23,
+          1.24
+        ],
+        "RightHand": [
+          0.27,
+          0.57,
+          1.33
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "GroupDeflector",
+    "Description": "Symmetrical chest guard opens into a wide group shield sweep",
+    "Duration": 1.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.34,
+        "Label": "Prime group shield",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.11,
+          0.2,
+          1.29
+        ],
+        "RightHand": [
+          0.11,
+          0.2,
+          1.29
+        ]
+      },
+      {
+        "Time": 0.82,
+        "Label": "Project shields around group",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.43,
+          0.36,
+          1.46
+        ],
+        "RightHand": [
+          0.43,
+          0.36,
+          1.46
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Expand shield perimeter",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.54,
+          0.34,
+          1.24
+        ],
+        "RightHand": [
+          0.54,
+          0.34,
+          1.24
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PowerCell",
+    "Description": "Retrieve a power cell and transfer its charge through a forward-upward gesture",
+    "Duration": 1.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.28,
+        "Label": "Retrieve power cell",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.22,
+          0.03,
+          0.99
+        ]
+      },
+      {
+        "Time": 0.61,
+        "Label": "Couple power cell at chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.11,
+          0.23,
+          1.26
+        ],
+        "RightHand": [
+          0.12,
+          0.23,
+          1.26
+        ]
+      },
+      {
+        "Time": 1.01,
+        "Label": "Transfer charge forward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.29,
+          1.25
+        ],
+        "RightHand": [
+          0.24,
+          0.56,
+          1.26
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Finish upward charge transfer",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.51,
+          1.49
+        ]
+      },
+      {
+        "Time": 1.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WeaponJam",
+    "Description": "Focused wrist targeting followed by a short elbow-driven locking sweep",
+    "Duration": 1.45,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.26,
+        "Label": "Raise jammer sight",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          0.28,
+          1.35
+        ]
+      },
+      {
+        "Time": 0.58,
+        "Label": "Lock hostile weapon",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.28,
+          0.61,
+          1.4
+        ]
+      },
+      {
+        "Time": 0.84,
+        "Label": "Sweep locking signal",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.1,
+          0.6,
+          1.36
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          5
+        ]
+      },
+      {
+        "Time": 1.1,
+        "Label": "Confirm lock",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.29,
+          0.44,
+          1.29
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

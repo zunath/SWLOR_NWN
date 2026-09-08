@@ -53,6 +53,8 @@ public static class NamedAnimation
 
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
+    public static void ReleaseForNativePlayback(uint creature) => Playback.ReleaseForNativePlayback(creature);
+
     /// <summary>
     /// Releases a started authored pose; optionally cancels its current scripted animation action.
     /// Clips still waiting for their queued begin have not claimed playback ownership.

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RailDart1, PerkType.RailDart)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Rail Dart I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RailDart2, PerkType.RailDart)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Rail Dart II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RailDart3, PerkType.RailDart)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Rail Dart III")
                 .Level(3)
                 .HasActivationDelay(1f)

@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ClusterGrenade1, PerkType.ClusterGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Cluster Grenade")
                 .Level(1)
                 .HasActivationDelay(1f)

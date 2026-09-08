@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WeaponJam1, PerkType.WeaponJam)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Weapon Jam")
                 .Level(1)
                 .HasActivationDelay(1f)

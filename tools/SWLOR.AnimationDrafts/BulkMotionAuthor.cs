@@ -228,12 +228,36 @@ internal static class BulkMotionAuthor
         var reports = new List<object>();
         var pending = new Dictionary<string, string>();
         var baseProfiles = new Dictionary<string, MotionProfile>();
+        var choreographyModels = new Dictionary<string, MdlModel>();
+        var choreographyModelHashes = new Dictionary<string, string>();
+        var choreographies = new Dictionary<string, Choreography[]>(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in entries)
         {
             var category = Regex.Replace(entry.Category.ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
             if (category.Length == 0) throw new InvalidDataException("Missing category for " + entry.Id);
             var relative = category + "/" + entry.Id + ".swlanim";
             var path = Path.Combine(output, relative);
+            var recipePath = Path.Combine(output, category, "choreographies.json");
+            if (!choreographies.TryGetValue(category, out var recipes))
+            {
+                var recipeBytes = Capture(recipePath);
+                recipes = recipeBytes == null ? [] : ChoreographyAuthor.Read(Text(recipeBytes));
+                if (recipes.Any(recipe => !entries.Any(e => e.Id == recipe.Id && e.Category == entry.Category)))
+                    throw new InvalidDataException("Choreography has no matching inventory entry in category " + entry.Category);
+                choreographies.Add(category, recipes);
+            }
+            var choreography = recipes.SingleOrDefault(recipe => recipe.Id == entry.Id);
+            var sourceNames = choreography?.Beats.Where(b => b.SourceModel != null).Select(b => b.SourceModel!).Distinct().Order().ToArray() ?? [];
+            foreach (var sourceName in sourceNames)
+            {
+                if (choreographyModels.ContainsKey(sourceName)) continue;
+                var sourcePath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(modelPath))!, sourceName + ".mdl");
+                var sourceBytes = Capture(sourcePath) ?? throw new FileNotFoundException("Missing choreography source model.", sourcePath);
+                choreographyModels.Add(sourceName, new MdlReader().Parse(sourceBytes));
+                choreographyModelHashes.Add(sourceName, Convert.ToHexString(SHA256.HashData(sourceBytes)).ToLowerInvariant());
+            }
+            var choreographyHash = choreography == null ? null : ProjectHash(JsonSerializer.Serialize(choreography, Json));
+            var choreographySourceHash = choreography == null ? null : ProjectHash(string.Join("\n", sourceNames.Select(name => name + ":" + choreographyModelHashes[name])));
             var profile = Select(entry);
             AnimationProject project;
             string contents;
@@ -244,15 +268,22 @@ internal static class BulkMotionAuthor
                 contents = Text(projectBytes!); project = AnimationProject.Deserialize(contents);
                 if (project.Name != entry.Id) throw new InvalidDataException("Project identity mismatch: " + path);
             }
-            else { project = Bake(model, entry, profile); contents = project.Serialize() + "\n"; pending.Add(path, contents); }
-            if (profile.Procedural && !preserved) baseProfiles.TryAdd(profile.Name, profile);
+            else { project = choreography == null ? Bake(model, entry, profile) : ChoreographyAuthor.Bake(model, choreography, choreographyModels); contents = project.Serialize() + "\n"; pending.Add(path, contents); }
+            if (profile.Procedural && choreography == null && !preserved) baseProfiles.TryAdd(profile.Name, profile);
             var hash = ProjectHash(contents);
             var hasProvenance = preserved && previous.TryGetValue(entry.Id, out var prior) && prior.GetProperty("ProjectSha256").GetString() == hash;
+            if (hasProvenance && previous[entry.Id].TryGetProperty("ChoreographySha256", out var priorRecipeHash) && priorRecipeHash.ValueKind == JsonValueKind.String)
+                hasProvenance = choreography != null && priorRecipeHash.GetString() == choreographyHash &&
+                    (sourceNames.Length == 0 || previous[entry.Id].TryGetProperty("ChoreographySourceSha256", out var sourceHash) && sourceHash.GetString() == choreographySourceHash);
             string? Prior(string property) => hasProvenance ? previous[entry.Id].GetProperty(property).GetString() : null;
             reports.Add(new { entry.Id, entry.InternalName, entry.Category, project.Duration, Project = relative,
-                SourceModel = preserved ? Prior("SourceModel") ?? "Existing authored project" : model.Name,
-                SourceAnimation = preserved ? Prior("SourceAnimation") : profile.Source, Profile = preserved ? Prior("Profile") ?? "Preserved authored motion" : profile.Name,
-                Procedural = hasProvenance ? previous[entry.Id].GetProperty("Procedural").GetBoolean() : !preserved && profile.Procedural,
+                SourceModel = preserved ? Prior("SourceModel") ?? "Existing authored project" : string.Join(" + ", new[] { model.Name }.Concat(sourceNames)),
+                SourceAnimation = preserved ? Prior("SourceAnimation") : choreography == null ? profile.Source : string.Join(" + ", choreography.Beats.Select(b => b.SourceAnimation).Distinct()),
+                Profile = preserved ? Prior("Profile") ?? "Preserved authored motion" : choreography == null ? profile.Name : "Authored choreography: " + choreography.Description,
+                ChoreographyPath = preserved ? hasProvenance && previous[entry.Id].TryGetProperty("ChoreographyPath", out var savedRecipe) ? savedRecipe.GetString() : null : choreography == null ? null : category + "/choreographies.json",
+                ChoreographySha256 = preserved ? hasProvenance && previous[entry.Id].TryGetProperty("ChoreographySha256", out var savedHash) ? savedHash.GetString() : null : choreography == null ? null : choreographyHash,
+                ChoreographySourceSha256 = preserved ? hasProvenance && previous[entry.Id].TryGetProperty("ChoreographySourceSha256", out var savedSourceHash) ? savedSourceHash.GetString() : null : choreographySourceHash,
+                Procedural = hasProvenance ? previous[entry.Id].GetProperty("Procedural").GetBoolean() : !preserved && choreography == null && profile.Procedural,
                 Status = "Draft: in-game visual review required", entry.Reference, ProjectSha256 = hash });
         }
         foreach (var profile in baseProfiles.Values)

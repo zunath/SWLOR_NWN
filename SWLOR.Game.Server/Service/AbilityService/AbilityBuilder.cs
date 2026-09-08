@@ -107,6 +107,29 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Plays the catalog gesture once at activation without occupying the action queue.</summary>
+        public AbilityBuilder UsesImmediateAuthoredAnimation()
+        {
+            _activeAbility.UsesImmediateAuthoredAnimation = true;
+            return this;
+        }
+
+        /// <summary>Plays the catalog motion once at impact, preserving native throw carriers.</summary>
+        public AbilityBuilder UsesAuthoredAnimationAtImpact()
+        {
+            _activeAbility.UsesAuthoredImpactAnimation = true;
+            return this;
+        }
+
+        /// <summary>Retains a timed native impact gesture without adding an action-queue delay.</summary>
+        public AbilityBuilder UsesImmediateNativeImpactAnimation(float duration)
+        {
+            if (!float.IsFinite(duration) || duration <= 0f || duration > 600f)
+                throw new ArgumentOutOfRangeException(nameof(duration));
+            _activeAbility.ImmediateNativeImpactAnimationDuration = duration;
+            return this;
+        }
+
         /// <summary>
         /// Assigns an animation to the caster of the ability. This will be played when the creature uses the ability.
         /// Calling this more than once will replace the previous animation.

@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             builder
                 .Create(FeatType.DisruptionPulse1, PerkType.DisruptionPulse)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Disruption Pulse")
                 .Level(1)
                 .HasActivationDelay(1.5f)

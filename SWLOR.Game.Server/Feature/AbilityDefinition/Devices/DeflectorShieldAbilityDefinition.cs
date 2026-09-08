@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield III")
                 .Level(3)
                 .HasActivationDelay(1f)

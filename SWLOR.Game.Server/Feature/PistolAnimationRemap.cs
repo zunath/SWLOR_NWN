@@ -156,10 +156,13 @@ namespace SWLOR.Game.Server.Feature
             uint creature,
             Animation animation,
             float speed,
-            float durationSeconds)
+            float durationSeconds,
+            bool immediate = false)
         {
+            if (immediate) NamedAnimation.ReleaseForNativePlayback(creature);
             var suspendedRemap = SuspendForExplicitThrow(creature, animation);
-            ActionPlayAnimation(animation, speed, durationSeconds);
+            if (immediate) PlayAnimation(animation, speed, durationSeconds);
+            else ActionPlayAnimation(animation, speed, durationSeconds);
 
             if (suspendedRemap)
             {

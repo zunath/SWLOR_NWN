@@ -2157,6 +2157,22 @@ namespace SWLOR.Game.Server.Service
             if (animation == Animation.Invalid)
                 return;
 
+            var authoredImpact = AnimationService.AbilityAnimationBinding.ImpactClip(trackedAbility, GetIsPC(activator));
+            if (authoredImpact != null)
+            {
+                // Damage and projectile effects are already dispatched by the ability. Use the
+                // named one-shot carrier here, including grenades, without queuing another action.
+                NamedAnimation.Play(activator, authoredImpact);
+                return;
+            }
+
+            if (trackedAbility?.ImmediateNativeImpactAnimationDuration > 0f)
+            {
+                AssignCommand(activator, () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                    activator, animation, 1f, trackedAbility.ImmediateNativeImpactAnimationDuration, immediate: true));
+                return;
+            }
+
             var sourceAnimationName = string.Empty;
             var replacementAnimationName = string.Empty;
             var restoreDelaySeconds = 0f;

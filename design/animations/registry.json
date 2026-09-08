@@ -1,35 +1,5 @@
 [
   {
-    "Name": "CallBeast",
-    "AnimationName": "sw_callbeast",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/beast-mastery/CallBeast.swlanim"
-  },
-  {
-    "Name": "GuardingBond",
-    "AnimationName": "sw_guardbond",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/beast-mastery/GuardingBond.swlanim"
-  },
-  {
-    "Name": "PredatoryBond",
-    "AnimationName": "sw_predbond",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/beast-mastery/PredatoryBond.swlanim"
-  },
-  {
     "Name": "ReviveBeast",
     "AnimationName": "sw_revi_beas",
     "Duration": 1.5,
@@ -68,276 +38,6 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/beast-mastery/Tame.swlanim"
-  },
-  {
-    "Name": "AdhesiveGrenade",
-    "AnimationName": "sw_adhe_gren",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/AdhesiveGrenade.swlanim"
-  },
-  {
-    "Name": "ArcProjector",
-    "AnimationName": "sw_arc_proje",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/ArcProjector.swlanim"
-  },
-  {
-    "Name": "BlasterBeacon",
-    "AnimationName": "sw_blas_beac",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/BlasterBeacon.swlanim"
-  },
-  {
-    "Name": "ClusterGrenade",
-    "AnimationName": "sw_clus_gren",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/ClusterGrenade.swlanim"
-  },
-  {
-    "Name": "ConcussionGrenade",
-    "AnimationName": "sw_conc_gren",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/ConcussionGrenade.swlanim"
-  },
-  {
-    "Name": "CryoSprayer",
-    "AnimationName": "sw_cryo_spra",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/CryoSprayer.swlanim"
-  },
-  {
-    "Name": "DeflectorShield",
-    "AnimationName": "sw_defl_shie",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/DeflectorShield.swlanim"
-  },
-  {
-    "Name": "DisruptionPulse",
-    "AnimationName": "sw_disr_puls",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/DisruptionPulse.swlanim"
-  },
-  {
-    "Name": "EmergencyBunker",
-    "AnimationName": "sw_emer_bunk",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/EmergencyBunker.swlanim"
-  },
-  {
-    "Name": "Flamethrower",
-    "AnimationName": "sw_flamethrw",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/Flamethrower.swlanim"
-  },
-  {
-    "Name": "FlashGrenade",
-    "AnimationName": "sw_flashgren",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/FlashGrenade.swlanim"
-  },
-  {
-    "Name": "FragGrenade",
-    "AnimationName": "sw_fraggren",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/FragGrenade.swlanim"
-  },
-  {
-    "Name": "GroupDeflector",
-    "AnimationName": "sw_grou_defl",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/GroupDeflector.swlanim"
-  },
-  {
-    "Name": "IncendiaryField",
-    "AnimationName": "sw_ince_fiel",
-    "Duration": 1.3,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/IncendiaryField.swlanim"
-  },
-  {
-    "Name": "IonGrenade",
-    "AnimationName": "sw_iongren",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/IonGrenade.swlanim"
-  },
-  {
-    "Name": "IonLance",
-    "AnimationName": "sw_ionlance",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/IonLance.swlanim"
-  },
-  {
-    "Name": "KillzoneBeacon",
-    "AnimationName": "sw_kill_beac",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/KillzoneBeacon.swlanim"
-  },
-  {
-    "Name": "OverloadBarrage",
-    "AnimationName": "sw_over_barr",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/OverloadBarrage.swlanim"
-  },
-  {
-    "Name": "PowerCell",
-    "AnimationName": "sw_powercell",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/PowerCell.swlanim"
-  },
-  {
-    "Name": "RailDart",
-    "AnimationName": "sw_raildart",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/RailDart.swlanim"
-  },
-  {
-    "Name": "RemoteCharge",
-    "AnimationName": "sw_remo_char",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/RemoteCharge.swlanim"
-  },
-  {
-    "Name": "ShockBeacon",
-    "AnimationName": "sw_shoc_beac",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/ShockBeacon.swlanim"
-  },
-  {
-    "Name": "SignalJammer",
-    "AnimationName": "sw_sign_jamm",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/SignalJammer.swlanim"
-  },
-  {
-    "Name": "SonicBurst",
-    "AnimationName": "sw_soni_burs",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/SonicBurst.swlanim"
-  },
-  {
-    "Name": "ThermalDetonator",
-    "AnimationName": "sw_ther_deto",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/ThermalDetonator.swlanim"
-  },
-  {
-    "Name": "WeaponJam",
-    "AnimationName": "sw_weaponjam",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/WeaponJam.swlanim"
-  },
-  {
-    "Name": "WristRocket",
-    "AnimationName": "sw_wris_rock",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/devices/WristRocket.swlanim"
   },
   {
     "Name": "GhostProtocol",
@@ -2818,5 +2518,305 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/force/ForceLeap.swlanim"
+  },
+  {
+    "Name": "CallBeast",
+    "AnimationName": "sw_callbeast",
+    "Duration": 2.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/beast-mastery/CallBeast.swlanim"
+  },
+  {
+    "Name": "GuardingBond",
+    "AnimationName": "sw_guardbond",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/beast-mastery/GuardingBond.swlanim"
+  },
+  {
+    "Name": "PredatoryBond",
+    "AnimationName": "sw_predbond",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/beast-mastery/PredatoryBond.swlanim"
+  },
+  {
+    "Name": "AdhesiveGrenade",
+    "AnimationName": "sw_adhe_gren",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/AdhesiveGrenade.swlanim"
+  },
+  {
+    "Name": "ArcProjector",
+    "AnimationName": "sw_arc_proje",
+    "Duration": 1.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/ArcProjector.swlanim"
+  },
+  {
+    "Name": "BlasterBeacon",
+    "AnimationName": "sw_blas_beac",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/BlasterBeacon.swlanim"
+  },
+  {
+    "Name": "ClusterGrenade",
+    "AnimationName": "sw_clus_gren",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/ClusterGrenade.swlanim"
+  },
+  {
+    "Name": "ConcussionGrenade",
+    "AnimationName": "sw_conc_gren",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/ConcussionGrenade.swlanim"
+  },
+  {
+    "Name": "CryoSprayer",
+    "AnimationName": "sw_cryo_spra",
+    "Duration": 1.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/CryoSprayer.swlanim"
+  },
+  {
+    "Name": "DeflectorShield",
+    "AnimationName": "sw_defl_shie",
+    "Duration": 1.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/DeflectorShield.swlanim"
+  },
+  {
+    "Name": "DisruptionPulse",
+    "AnimationName": "sw_disr_puls",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/DisruptionPulse.swlanim"
+  },
+  {
+    "Name": "EmergencyBunker",
+    "AnimationName": "sw_emer_bunk",
+    "Duration": 2.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/EmergencyBunker.swlanim"
+  },
+  {
+    "Name": "Flamethrower",
+    "AnimationName": "sw_flamethrw",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/Flamethrower.swlanim"
+  },
+  {
+    "Name": "FlashGrenade",
+    "AnimationName": "sw_flashgren",
+    "Duration": 1.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/FlashGrenade.swlanim"
+  },
+  {
+    "Name": "FragGrenade",
+    "AnimationName": "sw_fraggren",
+    "Duration": 1.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/FragGrenade.swlanim"
+  },
+  {
+    "Name": "GroupDeflector",
+    "AnimationName": "sw_grou_defl",
+    "Duration": 1.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/GroupDeflector.swlanim"
+  },
+  {
+    "Name": "IncendiaryField",
+    "AnimationName": "sw_ince_fiel",
+    "Duration": 1.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/IncendiaryField.swlanim"
+  },
+  {
+    "Name": "IonGrenade",
+    "AnimationName": "sw_iongren",
+    "Duration": 1.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/IonGrenade.swlanim"
+  },
+  {
+    "Name": "IonLance",
+    "AnimationName": "sw_ionlance",
+    "Duration": 1.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/IonLance.swlanim"
+  },
+  {
+    "Name": "KillzoneBeacon",
+    "AnimationName": "sw_kill_beac",
+    "Duration": 2.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/KillzoneBeacon.swlanim"
+  },
+  {
+    "Name": "OverloadBarrage",
+    "AnimationName": "sw_over_barr",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/OverloadBarrage.swlanim"
+  },
+  {
+    "Name": "PowerCell",
+    "AnimationName": "sw_powercell",
+    "Duration": 1.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/PowerCell.swlanim"
+  },
+  {
+    "Name": "RailDart",
+    "AnimationName": "sw_raildart",
+    "Duration": 1.12,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/RailDart.swlanim"
+  },
+  {
+    "Name": "RemoteCharge",
+    "AnimationName": "sw_remo_char",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/RemoteCharge.swlanim"
+  },
+  {
+    "Name": "ShockBeacon",
+    "AnimationName": "sw_shoc_beac",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/ShockBeacon.swlanim"
+  },
+  {
+    "Name": "SignalJammer",
+    "AnimationName": "sw_sign_jamm",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/SignalJammer.swlanim"
+  },
+  {
+    "Name": "SonicBurst",
+    "AnimationName": "sw_soni_burs",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/SonicBurst.swlanim"
+  },
+  {
+    "Name": "ThermalDetonator",
+    "AnimationName": "sw_ther_deto",
+    "Duration": 1.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/ThermalDetonator.swlanim"
+  },
+  {
+    "Name": "WeaponJam",
+    "AnimationName": "sw_weaponjam",
+    "Duration": 1.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/WeaponJam.swlanim"
+  },
+  {
+    "Name": "WristRocket",
+    "AnimationName": "sw_wris_rock",
+    "Duration": 1.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/devices/WristRocket.swlanim"
   }
 ]

@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             _builder
                 .Create(FeatType.CallBeast, PerkType.Tame) // Intentionally tied to Tame
+                .UsesImmediateAuthoredAnimation()
                 .Name("Call Beast")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.CallBeast, 60f * 10f)

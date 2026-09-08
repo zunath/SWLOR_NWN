@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FlashGrenade1, PerkType.FlashGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Flash Grenade")
                 .Level(1)
                 .HasActivationDelay(1f)

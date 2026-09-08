@@ -9,9 +9,12 @@ namespace SWLOR.Game.Server.Service.AnimationService;
 public static class AbilityAnimationBinding
 {
     public static AnimationClip ActivationClip(AbilityDetail ability, bool isPlayer, float? animationWindow = null) =>
-        ability.HasGeneratedAnimationBinding && (!isPlayer || animationWindow.HasValue &&
+        ability.HasGeneratedAnimationBinding && (!isPlayer || !ability.UsesImmediateAuthoredAnimation && animationWindow.HasValue &&
             (ability.AuthoredAnimation == null || ability.AuthoredAnimation.Duration > animationWindow.Value))
             ? null : ability.AuthoredAnimation;
+
+    public static AnimationClip ImpactClip(AbilityDetail ability, bool isPlayer) =>
+        isPlayer ? ability?.AuthoredImpactAnimation : null;
 
     public static AnimationClip QueuedClip(AbilityDetail ability, bool isPlayer) =>
         ability.HasGeneratedAnimationBinding && !isPlayer ? null : ability.QueuedAttackAnimation;
@@ -33,6 +36,23 @@ public static class AbilityAnimationBinding
             if (ability.IsMimicryTrait)
                 throw new InvalidOperationException($"Animation {entry.Id} references passive trait {feat}.");
             ability.PreviewAnimation = entry.Clip;
+            if (ability.UsesImmediateAuthoredAnimation || ability.UsesAuthoredImpactAnimation)
+            {
+                if (ability.UsesImmediateAuthoredAnimation && ability.UsesAuthoredImpactAnimation ||
+                    ability.ActivationType == AbilityActivationType.Weapon || ability.IsChanneled)
+                    throw new InvalidOperationException($"Invalid immediate animation stage for {feat}.");
+                if (!ability.HasGeneratedAnimationBinding)
+                    ability.NativeAnimationType = ability.AnimationType;
+                ability.HasGeneratedAnimationBinding = true;
+                if (ability.UsesAuthoredImpactAnimation)
+                    ability.AuthoredImpactAnimation = entry.Clip;
+                else
+                {
+                    ability.AuthoredAnimation = entry.Clip;
+                    ability.AnimationType = Animation.PointForward;
+                }
+                continue;
+            }
             // Explicit authored bindings remain authoritative. Native replacements carry projectile,
             // equipment and channel semantics which an ordinary pose must not overwrite.
             // Katar equipment owns 1h-to-unarmed mappings; queued cleanup cannot restore that layer.

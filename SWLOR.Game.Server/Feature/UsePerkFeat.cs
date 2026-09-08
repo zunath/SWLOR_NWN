@@ -517,7 +517,10 @@ namespace SWLOR.Game.Server.Feature
                     var authoredClip = AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator), animationLength);
                     if (authoredClip != null)
                     {
-                        NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength));
+                        if (ability.UsesImmediateAuthoredAnimation)
+                            NamedAnimation.Play(activator, authoredClip);
+                        else
+                            NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength));
                         return;
                     }
 

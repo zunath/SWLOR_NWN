@@ -1,5 +1,12 @@
 # Active ability animations
 
+All 27 Devices animations and the Call Beast, Guarding Bond, and Predatory Bond commands
+now have individual timed choreography recipes. Throws, projectors, deployments, and support
+gestures have separate motion direction. Emergency Bunker deploys while standing;
+Flamethrower follows master's `CUSTOM64` motion from `a_ba_casts`. See the
+[recipe workflow](README.md#device-and-companion-choreography). These 30 revisions retain
+their existing internal names and require live in-game visual review.
+
 The library covers 282 animation entries and 506 active ability-rank bindings. It includes the 214 perk requirements, 67 active Mimicry techniques, and Call Beast separately from Tame. Passive Mimicry traits, NPC-only abilities, and Beast-model abilities are excluded. Player Beast Mastery remains included. Stealth has a tester clip while gameplay uses its native action mode.
 
 The seven original Vibroblade clips are preserved. New clips use native motion families and three reusable procedural bases (pistol recoil, rifle recoil, and leap). Related abilities may share a base, but each has its own stable internal name and editable source. These are animation drafts requiring in-game visual review with equipment; generation does not reproduce image VFX or alter gameplay effects.

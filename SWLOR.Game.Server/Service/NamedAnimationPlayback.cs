@@ -104,6 +104,10 @@ public sealed class NamedAnimationPlayback
 
     /// <summary>Death must clear ownership immediately, without playing a recovery on resurrection.</summary>
     public void ClearOnDeath(uint creature)
+        => ReleaseForNativePlayback(creature);
+
+    /// <summary>Hands control to another animation without issuing an idle/recovery action.</summary>
+    public void ReleaseForNativePlayback(uint creature)
     {
         if (!_runtime.IsValid(creature) || string.IsNullOrEmpty(_runtime.GetToken(creature))) return;
         Restore(creature, _runtime.GetToken(creature));

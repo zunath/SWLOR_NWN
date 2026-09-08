@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.OverloadBarrage1, PerkType.OverloadBarrage)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Overload Barrage")
                 .Level(1)
                 .HasActivationDelay(1.5f)

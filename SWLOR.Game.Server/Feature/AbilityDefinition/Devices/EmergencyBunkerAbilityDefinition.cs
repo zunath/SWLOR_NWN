@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.EmergencyBunker1, PerkType.EmergencyBunker)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Emergency Bunker")
                 .Level(1)
                 .HasActivationDelay(2f)

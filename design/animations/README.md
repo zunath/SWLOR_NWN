@@ -45,6 +45,35 @@ Generated gameplay playback is limited to player creatures. Native ranged/projec
 channel, space, stealth, and explicit animation contracts remain authoritative; their
 generated clips remain available in the tester. NPCs retain their native playback.
 
+## Device and companion choreography
+
+All 27 Devices clips and Call Beast, Guarding Bond, and Predatory Bond have individual
+timed recipes in `devices/choreographies.json` and `beast-mastery/choreographies.json`.
+Grenades use throwing preparation, release, and follow-through. Projectors, beacons,
+support devices, and companion commands have separate gestures. Emergency Bunker deploys
+from a standing pose. Flamethrower follows the master branch's `CastOutAnimation`
+playback: that enum's numeric value, 86, selects NWScript `CUSTOM64`. Its source clips
+are `custom64start` and `custom64lp` in `a_ba_casts`, rather than the similarly named
+`castout` motion. The 2.1-second sampled draft still requires comparison with native playback
+in the live game.
+
+Grenade abilities play the same named motion as the tester. Their C# ability logic owns
+blast and visual effects; the animation does not provide a native projectile carrier.
+Existing gameplay timing remains separate from the authored throw's visual beats.
+
+Each recipe contains an ability `Id`, a motion `Description`, `Duration` in seconds,
+and labeled `Beats`. Beat `Time` is in seconds and `SourceTime` is a normalized position
+within `SourceAnimation`. An optional per-beat `SourceModel` selects another model's motion.
+Optional `LeftHand` and `RightHand` targets use absolute model-space
+metres; `TorsoDegrees` supplies the torso adjustment. Entry and recovery use native idle.
+The generator automatically reads each category's recipe file. Regenerate selected entries
+with `generate-active ... --replace <Id>` and reinstall before compiling body and robe models.
+The provenance manifest records recipe paths, per-ability recipe hashes, additional model
+dependency hashes, and editable project hashes.
+
+These revisions have offline generation checks, but no live NWN visual approval. Review them
+in `/animations` with the intended weapon and shield after deploying both body and robe HAKs.
+
 ## Animation tester
 
 

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             builder
                 .Create(FeatType.GuardingBond, PerkType.GuardingBond)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Guarding Bond")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.BeastBond, 30f)

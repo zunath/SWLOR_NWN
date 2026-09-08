@@ -186,6 +186,26 @@ public class NamedAnimationPlaybackTests
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
     }
     [TestCase(false)] [TestCase(true)]
+    public void NativeHandoffInvalidatesPreviewTimersAndDeferredRecoveryWithoutClearingActions(bool alreadyEnding)
+    {
+        var runtime = new Runtime();
+        var exits = new List<Func<bool>>();
+        var playback = new NamedAnimationPlayback(runtime, (_, ownsExit) => exits.Add(ownsExit));
+        var token = playback.Begin(1, new AnimationClip("sw_preview", 2), 2, completeAtDuration: true);
+        if (alreadyEnding) playback.Complete(1, token);
+        var exitsBeforeHandoff = exits.Count;
+        runtime.Actions.Enqueue(() => { });
+        playback.ReleaseForNativePlayback(1);
+        foreach (var callback in runtime.Callbacks.ToArray()) callback();
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        exits.Should().HaveCount(exitsBeforeHandoff, "native handoff must not issue a recovery which interrupts the new native gesture");
+        exits.Should().OnlyContain(ownsExit => !ownsExit());
+        runtime.ClearedActions.Should().Be(0);
+        runtime.Actions.Should().HaveCount(1);
+    }
+
+    [TestCase(false)] [TestCase(true)]
     public void DeathClearsActiveOrEndingMappingsWithoutARecoveryAfterRevival(bool alreadyEnding)
     {
         var runtime = new Runtime(); var exits = new List<Func<bool>>();

@@ -532,13 +532,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Resumes existing combat after the caller clears the action queue. The previous attack
+        /// command is no longer pending, so its throttle must not delay the replacement command.
+        /// </summary>
+        public static void ResumeAttackAfterActionsCleared(uint creature)
+        {
+            _attackCommandTimes.Remove(creature);
+            AttackHighestEnmityTarget(creature);
+        }
+
+        /// <summary>
         /// Forces a creature to attack the highest enmity target.
-        /// If creature does not have enmity, nothing will happen.
+        /// Stops an existing chase when its last proximity target is no longer in range.
+        /// If creature did not have enmity, nothing will happen.
         /// If the creature is already actively attacking that target, nothing will happen.
         /// </summary>
         public static void AttackHighestEnmityTarget(uint creature)
         {
             uint target;
+            var removedProximityEnmity = false;
             if (CompanionControl.IsRegisteredCompanion(creature))
             {
                 target = CompanionControl.PeekAuthorizedTarget(creature);
@@ -549,8 +561,15 @@ namespace SWLOR.Game.Server.Service
                 while (GetIsObjectValid(target) && ShouldRemoveStaleProximityTarget(creature, target))
                 {
                     RemoveProximityEnmity(target, creature);
+                    removedProximityEnmity = true;
                     target = GetHighestEnmityTarget(creature);
                 }
+            }
+
+            if (removedProximityEnmity && !GetIsObjectValid(target))
+            {
+                AI.StopCombatAfterProximityLoss(creature);
+                return;
             }
 
             AttackTargetIfNeeded(creature, target);

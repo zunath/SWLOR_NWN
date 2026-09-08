@@ -108,6 +108,34 @@ public class AnimationFileSafetyTests
         new MdlReader().Parse(File.ReadAllBytes(bank)).Animations.Should().HaveCount(6);
     }
 
+    [Test]
+    public void CompiledBankDiscoveryUsesResourceNameWhenModelLabelDiffers()
+    {
+        var (project, target, bank, source) = CompiledInstallationFixture();
+        var original = File.ReadAllBytes(bank);
+        var binary = original.ToArray();
+        var oldName = Encoding.ASCII.GetBytes("an_hero\0");
+        var newName = Encoding.ASCII.GetBytes("an_alias\0");
+        for (int i = 0; i <= binary.Length - newName.Length; i++)
+            if (binary.AsSpan(i, oldName.Length).SequenceEqual(oldName))
+            {
+                binary[i + oldName.Length].Should().Be(0, "native model names use fixed-size zero-padded fields");
+                newName.CopyTo(binary.AsSpan(i));
+            }
+        var text = Encoding.UTF8.GetString(AnimationBankSource.Decode(File.ReadAllBytes(source), original)).Replace("an_hero", "an_alias");
+        var aliasTarget = Path.Combine(Path.GetDirectoryName(target)!, "alias.mdl");
+        File.WriteAllBytes(aliasTarget, AnimationInstall.PatchSupermodel(File.ReadAllBytes(target), "hero", "an_alias"));
+        var aliasBank = Path.Combine(Path.GetDirectoryName(bank)!, "an_alias.mdl");
+        File.WriteAllBytes(aliasBank, binary);
+        File.WriteAllBytes(AnimationBankSource.PathFor(Path.Combine(_folder, "SWLOR_Haks"), aliasBank), AnimationBankSource.Encode(Encoding.UTF8.GetBytes(text), binary));
+        var registryPath = Path.Combine(_folder, "design/animations/registry.json");
+        var registrations = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(registryPath))!;
+        registrations[0] = registrations[0] with { Targets = [Path.GetRelativePath(_folder, aliasTarget).Replace('\\', '/')] };
+        File.WriteAllText(registryPath, JsonSerializer.Serialize(registrations));
+        var plan = AnimationInstall.Prepare(_folder, project, [aliasTarget]);
+        plan.Changes.Should().Contain(change => change.Path == aliasBank);
+    }
+
     [TestCase("binary")] [TestCase("source")] [TestCase("missing")]
     public void CompiledBankSourcesMustMatchBothSavedAndCompiledContents(string change)
     {

@@ -418,10 +418,10 @@ public static class AnimationInstall
                 // budget once the library rolled over into multiple banks. This is only a
                 // candidate check: every bank we actually edit is fully hash/header verified.
                 var name = models[path].Name;
-                var shortName = model.Name[..Math.Min(model.Name.Length, 8)];
-                return (name.Equals("an_" + model.Name, StringComparison.OrdinalIgnoreCase) ||
-                        name.StartsWith("an_" + shortName + "_", StringComparison.OrdinalIgnoreCase) ||
-                        name.StartsWith("ab_" + shortName + "_", StringComparison.OrdinalIgnoreCase)) &&
+                var fileName = Path.GetFileNameWithoutExtension(target);
+                return (name.Equals("an_" + fileName, StringComparison.OrdinalIgnoreCase) ||
+                        name.StartsWith("an_" + fileName[..Math.Min(fileName.Length, 8)] + "_", StringComparison.OrdinalIgnoreCase) ||
+                        name.StartsWith("ab_" + model.Name[..Math.Min(model.Name.Length, 8)] + "_", StringComparison.OrdinalIgnoreCase)) &&
                     File.Exists(AnimationBankSource.PathFor(hakRoot, path));
             }
             var targetName = Path.GetFileNameWithoutExtension(target);

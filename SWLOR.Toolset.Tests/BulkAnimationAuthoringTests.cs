@@ -12,6 +12,14 @@ namespace SWLOR.Toolset.Tests;
 public class BulkAnimationAuthoringTests
 {
     [Test]
+    public void ProjectProvenanceIgnoresCheckoutLineEndingsButDetectsContentChanges()
+    {
+        const string project = "{\n  \"Name\": \"Example\"\n}\n";
+        BulkMotionAuthor.ProjectHash(project.Replace("\n", "\r\n")).Should().Be(BulkMotionAuthor.ProjectHash(project));
+        BulkMotionAuthor.ProjectHash(project.Replace("Example", "Changed")).Should().NotBe(BulkMotionAuthor.ProjectHash(project));
+    }
+
+    [Test]
     public void NumericFeatValuesAreRejectedBeforeGeneratingInvalidCatalogMembers()
     {
         var folder = Path.Combine(Path.GetTempPath(), "swlor-bulk-feat-" + Guid.NewGuid().ToString("N"));

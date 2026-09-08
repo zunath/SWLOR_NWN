@@ -18,6 +18,8 @@ internal sealed record MotionProfile(string Name, string Source, float Duration,
 internal static class BulkMotionAuthor
 {
     internal static readonly JsonSerializerOptions Json = new() { PropertyNameCaseInsensitive = true, WriteIndented = true };
+    internal static string ProjectHash(string contents) => Convert.ToHexString(SHA256.HashData(
+        System.Text.Encoding.UTF8.GetBytes(contents.Replace("\r\n", "\n")))).ToLowerInvariant();
 
     internal static MotionProfile Select(ActiveMotion motion)
     {
@@ -214,7 +216,7 @@ internal static class BulkMotionAuthor
             }
             else { project = Bake(model, entry, profile); contents = project.Serialize() + "\n"; pending.Add(path, contents); }
             if (profile.Procedural && !preserved) baseProfiles.TryAdd(profile.Name, profile);
-            var hash = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(contents))).ToLowerInvariant();
+            var hash = ProjectHash(contents);
             var hasProvenance = preserved && previous.TryGetValue(entry.Id, out var prior) && prior.GetProperty("ProjectSha256").GetString() == hash;
             string? Prior(string property) => hasProvenance ? previous[entry.Id].GetProperty(property).GetString() : null;
             reports.Add(new { entry.Id, entry.InternalName, entry.Category, project.Duration, Project = relative,

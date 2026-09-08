@@ -108,7 +108,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, target);
             ctx.MakeHostile(target);
             TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitDamageBonus, 75, 120f);
-            TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitMaximumCount, 100, 120f);
+            TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitMaximumCount, 3, 120f);
+            TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitCooldownSeconds, 90, 120f);
             TemporaryStatModifier.Add(caster, StatType.MimicryPotencyPercent, 100, 120f);
             Combat.SetAbilityHitResolutionOverride(true);
             try
@@ -131,6 +132,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         $"{feat} still applies its control effect");
                     StatusEffect.RemoveAllStatusEffects(target);
                 }
+
+                // All three damage bonuses must remain available after the four control-only casts.
+                var attack = Ability.GetAbilityDetail(FeatType.ApexBite1);
+                for (var stack = 0; stack < 3; stack++)
+                {
+                    ctx.AssertEqual(75, Combat.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
+                        "Control-only casts preserve every First Strike stack without starting recharge");
+                    Stat.SetNPCMaxHitPoints(target, 1000, true);
+                    Ability.BeginAbilityImpact(caster, attack);
+                    try
+                    {
+                        await ctx.ExecuteInCreatureContextAsync(caster,
+                            () => attack.ImpactAction(caster, target, 1, GetLocation(target)));
+                    }
+                    finally { Ability.EndAbilityImpact(caster); }
+                }
+                ctx.AssertEqual(0, Combat.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
+                    "Damaging attacks consume all three stacks and enter recharge normally");
             }
             finally { Combat.SetAbilityHitResolutionOverride(null); }
         }

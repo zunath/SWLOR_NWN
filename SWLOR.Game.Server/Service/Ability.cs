@@ -2409,7 +2409,7 @@ namespace SWLOR.Game.Server.Service
                 beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
                 effectDamageType,
-                firstHostileAbilityHitDamageBonusApplied: true);
+                firstHostileAbilityHitDamageBonusApplied: dealsDamage);
         }
 
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)

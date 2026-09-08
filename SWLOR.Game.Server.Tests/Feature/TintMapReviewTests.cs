@@ -112,7 +112,8 @@ public class TintMapReviewTests
         var definitionRoot = CSharpSyntaxTree.ParseText(definition).GetRoot();
         var definitionMethods = definitionRoot.DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
-            .ToDictionary(method => method.Identifier.ValueText);
+            .GroupBy(method => method.Identifier.ValueText)
+            .ToDictionary(group => group.Key, group => string.Join("\n", group.Select(method => method.ToString())));
 
         definition.Should().Contain("row.AddColorPicker()");
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");

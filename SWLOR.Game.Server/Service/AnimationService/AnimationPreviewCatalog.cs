@@ -16,11 +16,18 @@ public static class AnimationPreviewCatalog
     public const string OtherCategory = "Other";
     public sealed record Entry(string Id, string DisplayName, AnimationClip Clip, IReadOnlyList<string> Categories);
 
-    public static IReadOnlyDictionary<string, AnimationClip> Clips { get; } =
-        new ReadOnlyDictionary<string, AnimationClip>(typeof(AuthoredAnimation)
+    public static IReadOnlyDictionary<string, AnimationClip> Clips { get; } = CreateClips();
+
+    private static IReadOnlyDictionary<string, AnimationClip> CreateClips()
+    {
+        var clips = ActiveAbilityAnimationCatalog.Entries.ToDictionary(entry => entry.Id, entry => entry.Clip,
+            StringComparer.OrdinalIgnoreCase);
+        foreach (var field in typeof(AuthoredAnimation)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.FieldType == typeof(AnimationClip))
-            .ToDictionary(field => field.Name, field => (AnimationClip)field.GetValue(null), StringComparer.OrdinalIgnoreCase));
+            .Where(field => field.FieldType == typeof(AnimationClip)))
+            clips[field.Name] = (AnimationClip)field.GetValue(null);
+        return new ReadOnlyDictionary<string, AnimationClip>(clips);
+    }
 
     public static IReadOnlyList<Entry> Entries { get; private set; } = CreateEntries(Array.Empty<AbilityDetail>());
 
@@ -28,11 +35,20 @@ public static class AnimationPreviewCatalog
     public static void CacheCategories() => Entries = CreateEntries(Ability.GetAllAbilityDetails().Values, Perk.GetAllPerks());
 
     public static IReadOnlyList<Entry> CreateEntries(IEnumerable<AbilityDetail> abilities,
-        IReadOnlyDictionary<PerkType, PerkDetail> perks = null)
+        IReadOnlyDictionary<PerkType, PerkDetail> perks = null,
+        IEnumerable<AbilityAnimationEntry> authoredEntries = null)
     {
         // Some buffs and casts declare their perk without a combat skill. Use that perk's category
         // when needed; keep shared clips in every category where they have a playback binding.
         var categories = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        var authored = (authoredEntries ?? ActiveAbilityAnimationCatalog.Entries)
+            .ToDictionary(entry => entry.Id, StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in authored.Values)
+        {
+            if (!categories.TryGetValue(entry.Clip.Name, out var names))
+                categories[entry.Clip.Name] = names = new(StringComparer.OrdinalIgnoreCase);
+            names.Add(entry.Category);
+        }
         foreach (var ability in abilities)
         {
             var skill = typeof(SkillType).GetField(ability.SkillType.ToString())?.GetCustomAttribute<SkillAttribute>();
@@ -43,7 +59,7 @@ public static class AnimationPreviewCatalog
                 if (metadata is { IsActive: true }) category = metadata.Name.Split(" - ", 2)[0];
             }
             if (category == null) continue;
-            foreach (var clip in new[] { ability.AuthoredAnimation, ability.QueuedAttackAnimation })
+            foreach (var clip in new[] { ability.AuthoredAnimation, ability.QueuedAttackAnimation, ability.PreviewAnimation })
             {
                 if (clip == null) continue;
                 if (!categories.TryGetValue(clip.Name, out var names)) categories[clip.Name] = names = new(StringComparer.OrdinalIgnoreCase);
@@ -51,7 +67,8 @@ public static class AnimationPreviewCatalog
             }
         }
         return Array.AsReadOnly(Clips.Select(pair => new Entry(pair.Key,
-                Regex.Replace(pair.Key, "(?<=[a-z0-9])(?=[A-Z])", " "), pair.Value,
+                authored.TryGetValue(pair.Key, out var metadata) ? metadata.DisplayName :
+                    Regex.Replace(pair.Key, "(?<=[a-z0-9])(?=[A-Z])", " "), pair.Value,
                 Array.AsReadOnly(categories.TryGetValue(pair.Value.Name, out var names)
                     ? names.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray()
                     : new[] { OtherCategory })))
@@ -66,6 +83,7 @@ public static class AnimationPreviewCatalog
     {
         var text = Normalize(query);
         return Normalize(entry.DisplayName).Contains(text, StringComparison.OrdinalIgnoreCase) ||
+               Normalize(entry.Id).Contains(text, StringComparison.OrdinalIgnoreCase) ||
                Normalize(entry.Clip.Name).Contains(text, StringComparison.OrdinalIgnoreCase);
     }
 

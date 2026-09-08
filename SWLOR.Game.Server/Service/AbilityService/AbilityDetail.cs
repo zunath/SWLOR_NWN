@@ -34,6 +34,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
         public AnimationService.AnimationClip AuthoredAnimation { get; set; }
+        /// <summary>Catalog motion for this rank, including abilities retaining native gameplay playback.</summary>
+        public AnimationService.AnimationClip PreviewAnimation { get; set; }
+        public bool HasGeneratedAnimationBinding { get; set; }
+        public Animation NativeAnimationType { get; set; }
+        /// <summary>Impact actions own movement/animation ordering; catalog clips are preview-only.</summary>
+        public bool PreservesNativeAnimationChoreography { get; set; }
         public AnimationService.AnimationClip QueuedAttackAnimation { get; set; }
         public string AnimationSourceAnimationName { get; set; }
         public string AnimationReplacementAnimationName { get; set; }

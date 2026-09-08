@@ -12,6 +12,32 @@ using SWLOR.Game.Server.Service.AbilityService;
 using var logger = new LoggerConfiguration().WriteTo.Console(standardErrorFromLevel: LogEventLevel.Verbose).CreateLogger();
 try
 {
+    if (args.Length >= 4 && args[0] == "generate-active")
+    {
+        if (args.Length > 4 && !(args.Length == 5 && args[4] == "--overwrite") && !(args.Length >= 6 && args[4] == "--replace"))
+            throw new ArgumentException("Use --overwrite or --replace followed by exact animation IDs.");
+        BulkMotionAuthor.Generate(args[1], args[2], Path.GetFullPath(args[3]), args.Length > 4,
+            args.Length >= 6 ? args.Skip(5).ToHashSet(StringComparer.OrdinalIgnoreCase) : null);
+        return 0;
+    }
+    if (args.Length >= 4 && args[0] == "install-active")
+    {
+        var root = Path.GetFullPath(args[1]);
+        var entries = JsonSerializer.Deserialize<ActiveMotion[]>(await ReadText(args[2]), BulkMotionAuthor.Json)
+            ?? throw new InvalidDataException("Empty inventory.");
+        var targets = args.Skip(3).Select(name => AnimationInstall.FindTargetSource(root, name)
+            ?? throw new FileNotFoundException($"No configured HAK source for {name}.")).ToArray();
+        foreach (var entry in entries)
+        {
+            var category = System.Text.RegularExpressions.Regex.Replace(entry.Category.ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
+            var path = Path.Combine(root, "design", "animations", category, entry.Id + ".swlanim");
+            var project = AnimationProject.Deserialize(await ReadText(path));
+            var plan = AnimationInstall.Prepare(root, project, targets, path, entry.InternalName);
+            plan.Apply();
+            Console.WriteLine($"Installed {entry.Id}: {plan.AnimationName} ({project.Duration:0.00}s)");
+        }
+        return 0;
+    }
     if (args.Length >= 4 && args[0] == "install")
     {
         // Run against an isolated checkout with the toolset closed, just like other source generators.
@@ -153,6 +179,8 @@ try
     if (args.Length < 4 || args[0] != "generate" || args.Skip(4).Any(a => a != "--overwrite"))
     {
         Console.Error.WriteLine("Usage: SWLOR.AnimationDrafts generate <a_ba.mdl> <recipe.json> <output-folder> [--overwrite]");
+        Console.Error.WriteLine("       SWLOR.AnimationDrafts generate-active <a_ba.mdl> <active-abilities.json> <animation-folder> [--overwrite]");
+        Console.Error.WriteLine("       SWLOR.AnimationDrafts install-active <repository-root> <active-abilities.json> <target-model> [target-model ...]");
         Console.Error.WriteLine("       SWLOR.AnimationDrafts preview <project-folder> <output.html> [--overwrite]");
         Console.Error.WriteLine("       SWLOR.AnimationDrafts install <repository-root> <project.swlanim> <target-model> [target-model ...]");
         Console.Error.WriteLine("       SWLOR.AnimationDrafts inspect <model.mdl>");

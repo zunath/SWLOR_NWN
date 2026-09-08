@@ -4,12 +4,41 @@ This branch contains perk playback, the in-game animation tester, authored clips
 current animation production plan. The command-line generator uses the shared headless
 animation library and works without the separate Avalonia animation editor.
 
-The Design Bible Animations tab retains 119 references matching current active player perks.
-Its 47 obsolete or passive entries have been removed. The production plan covers every
-current active player perk: 7 installed clips, 206 remaining requirements, and the native
-Stealth action. Beast abilities are excluded because their models have separate animation
-sets; the six Beast Mastery abilities remain included. Shared motions can satisfy multiple
-requirements. Existing image links are preserved; missing references are recorded in the plan.
+The active library covers 282 animation entries and 506 ability-rank bindings: the 214
+perk requirements, 67 active Mimicry techniques, and Call Beast as its own action.
+Beast abilities are excluded because their models have separate animation sets; player
+Beast Mastery actions remain included. The Animations tab retains all 119 image references
+and documents every entry's internal name, base motion, source project, and review status.
+The seven original Vibroblade clips are preserved. New clips are editable adaptations of
+native motion families or generated motion bases, and require in-game visual review.
+
+`active-abilities.json` is the explicit authoring and feat-binding contract;
+`animation-names.json` reserves the stable internal names. Names are at most 12 characters,
+leaving room for `_in` and `_out` within NWN's 16-character limit. Animators should use the
+Bible's **Internal Name** exactly. Display names and C# identifiers are separate from it.
+`active-manifest.json` records actual motion sources, durations, and source hashes.
+Related abilities intentionally share base movement families while retaining independent
+names and editable projects. Skeletal animation does not create the effects shown in the
+reference images or change ability mechanics.
+
+Generate and install through the headless CLI:
+
+```powershell
+dotnet build tools/SWLOR.AnimationDrafts/SWLOR.AnimationDrafts.csproj -p:RunPostBuildEvent=Never
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate-active SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/active-abilities.json design/animations
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install-active . design/animations/active-abilities.json a_ba a_fa
+python tools/UpdateAnimationBible.py design/animations/active-abilities.json
+powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible
+```
+
+Generation preserves existing projects unless explicitly passed `--overwrite`; preserve
+manual edits before using that switch. Compile the changed HAK models and regenerate robe
+bridges using the workflow below before deployment. The generator's foot-floor and release
+checks do not replace testing with actual equipment in NWN.
+
+Generated gameplay playback is limited to player creatures. Native ranged/projectile,
+channel, space, stealth, and explicit animation contracts remain authoritative; their
+generated clips remain available in the tester. NPCs retain their native playback.
 
 ## Animation tester
 
@@ -19,8 +48,8 @@ on the Test environment, and to DM/Admin accounts on other environments. Search 
 name (`covering strike`), identifier (`CoveringStrike`), or installed name (`sw_coverings`).
 Choose a skill category on the left to narrow the list, or **All animations** to search across
 categories. Counts show installed clips; search works within the selected category. Changing
-category resets pagination while keeping the search text. Categories come from the skills
-declared on the abilities that play each clip, falling back to their associated perk category
+category resets pagination while keeping the search text. Categories start with the authored
+catalog and include the skills declared on abilities, falling back to their associated perk category
 for buffs and casts without a declared skill. Shared clips appear in each applicable category.
 Clips without a categorized ability binding remain available under **Other**.
 The list reads the generated `AuthoredAnimation` catalog automatically and shows 20 matches
@@ -45,6 +74,11 @@ design/animations/
   registry.json                Installed names, targets, and canonical ProjectPath values
   ANIMATION-PLAN.md             Readable production backlog
   animation-plan.csv            Searchable production backlog
+  active-abilities.json         Active actions and exact feat bindings
+  animation-names.json          Stable internal names reserved for animators
+  active-manifest.json          Generated motion provenance and source hashes
+  bases/                       Reusable generated motion bases
+  <skill-category>/            Editable sources for each skill group
   vibroblade/
     *.swlanim                  One editable source per animation
     recipe.json                Repeatable pose-authoring controls
@@ -67,8 +101,8 @@ the rig and editable poses used to export the installed MDLs. The game reads MDL
 The recipe records procedural pose controls; the manifest records Bible references and hashes.
 Neither replaces hand-edited projects. There is one canonical project per animation.
 
-The seven `.swlanim` files are editable authoring projects. When the separate animation
-editor is installed, choose **Open project** to modify them visually. These drafts use the native male humanoid `a_ba` rig and remain editable. One-shot moves start and finish in
+The seven `.swlanim` files are editable authoring projects. These drafts use the native
+male humanoid `a_ba` rig and remain editable through the CLI workflow. One-shot moves start and finish in
 the native standing pose. Shield Wall keeps a guard loop for its channel, with a separate exit
 that returns to the target model's neutral pose.
 All seven are installed into the `a_ba` and `a_fa` humanoid supermodel chains in `sw_cr_creature`.
@@ -93,7 +127,7 @@ are outdated spreadsheet entries with no current matching abilities, so they are
 from the recipe, installed models, registry, and preview list. Recipe entries must identify an
 existing `IAbilityListDefinition`; generation rejects stale entries instead of inventing perks.
 
-To update an installed draft from the command line, close the toolset and run this against an
+To update an installed draft from the command line, run this against an
 isolated checkout with the complete HAK source chain available:
 
 ```powershell
@@ -110,7 +144,7 @@ with their recovery details.
 `manifest.json` records each Bible row, image link, interpretation, key poses, and validation
 hash. `design/animations/vibroblade/recipe.json` preserves the authored pose controls so Codex
 can make repeatable changes such as a stronger lunge or a faster cut. It does not call an
-external AI service. Keep manual edits in **Save as** copies before regenerating the originals.
+external AI service. Back up manual edits before regenerating the originals.
 
 Regenerate with a local copy of the HAK source model (substitute your actual path):
 
@@ -163,7 +197,7 @@ All MDLs published in the HAK folders must be compiled. After installing or upda
 run the native compiler from `SWLOR_Haks` before regenerating clothing:
 
 ```powershell
-python -B tools/CompileModels.py --model an_a_ba --model an_a_fa --apply
+python -B tools/CompileModels.py --since origin/feature/combat-upgrade --apply
 ```
 
 Use the actual changed bank resrefs when the library grows. Compilation audits every output

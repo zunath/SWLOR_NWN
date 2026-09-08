@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .HasImpactAction((activator, target, _, targetLocation) =>
                     ApplyShadowStep(activator, target, evasionPercent, cleansesMovementImpairing))
                 .IsCastedAbility()
+                .PreservesNativeAnimationChoreography()
                 .IsHostileAbility()
                 .RequirementStamina(stamina);
         }

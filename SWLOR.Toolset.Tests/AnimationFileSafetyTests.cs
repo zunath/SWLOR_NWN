@@ -58,6 +58,39 @@ public class AnimationFileSafetyTests
     }
 
     [Test]
+    public void ExplicitAnimatorIdentityIsPreservedAcrossInstallationAndCannotSilentlyRename()
+    {
+        var (project, target) = InstallationFixture();
+        var first = AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_greet");
+        first.AnimationName.Should().Be("sw_greet");
+        first.Apply();
+        AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_greet").AnimationName.Should().Be("sw_greet");
+        Action rename = () => AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_other");
+        rename.Should().Throw<InvalidDataException>().WithMessage("*cannot be renamed*");
+    }
+
+    [TestCase("sw_greet")]
+    [TestCase("sw_greet_in")]
+    public void ExplicitAnimatorIdentityCannotCollideWithClipOrEntryPhase(string name)
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_greet").Apply();
+        project.Name = "Other";
+        Action collide = () => AnimationInstall.Prepare(_folder, project, [target], internalName: name);
+        collide.Should().Throw<InvalidDataException>().WithMessage("*collides*");
+    }
+
+    [TestCase("sw_toolongname")]
+    [TestCase("sw_BadCase")]
+    [TestCase("../bad")]
+    public void ExplicitAnimatorIdentityLeavesRoomForBothEnginePhases(string name)
+    {
+        var (project, target) = InstallationFixture();
+        Action invalid = () => AnimationInstall.Prepare(_folder, project, [target], internalName: name);
+        invalid.Should().Throw<InvalidDataException>();
+    }
+
+    [Test]
     public void CompiledBanksCanBeEditedWithoutLosingOtherAnimationBlocks()
     {
         var (project, target, bank, source) = CompiledInstallationFixture();

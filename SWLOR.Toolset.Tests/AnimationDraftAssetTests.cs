@@ -104,8 +104,28 @@ public class AnimationDraftAssetTests
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(library, "registry.json")))!;
         var paths = registry.Select(r => r.ProjectPath).ToArray();
         paths.Should().OnlyHaveUniqueItems().And.NotContainNulls();
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(library, "active-manifest.json")));
+        var basePaths = manifest.RootElement.GetProperty("Animations").EnumerateArray()
+            .Where(a => a.GetProperty("Procedural").GetBoolean())
+            .Select(a => "design/animations/bases/" + System.Text.RegularExpressions.Regex.Replace(
+                a.GetProperty("Profile").GetString()!, "[^A-Za-z0-9]", "") + ".swlanim")
+            .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        basePaths.Should().NotBeEmpty("procedural ability motions retain their reusable authoring bases");
+        Directory.GetFiles(Path.Combine(library, "bases"), "*.swlanim", SearchOption.AllDirectories)
+            .Select(p => Path.GetRelativePath(Root, p).Replace('\\', '/')).Should().BeEquivalentTo(basePaths,
+                "only bases referenced by installed procedural motions are exempt from direct gameplay registration");
         Directory.GetFiles(library, "*.swlanim", SearchOption.AllDirectories)
-            .Select(p => Path.GetRelativePath(Root, p).Replace('\\', '/')).Should().BeEquivalentTo(paths);
+            .Select(p => Path.GetRelativePath(Root, p).Replace('\\', '/')).Should().BeEquivalentTo(paths.Concat(basePaths));
+        foreach (var path in basePaths)
+        {
+            var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, path)));
+            project.Name.Should().Be(Path.GetFileNameWithoutExtension(path));
+            project.Events.Should().BeEmpty("a reusable motion base carries movement, not gameplay effects");
+            var start = project.Sample(0);
+            var world = AnimationRig.World(project.Joints, start);
+            var floor = new[] { "lfoot_g", "rfoot_g" }.Min(name => world[project.Joints.FindIndex(j => j.Name == name)].Translation.Z);
+            BulkMotionAuthor.ValidateMotion(project, start, floor);
+        }
         foreach (var entry in registry)
         {
             var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, entry.ProjectPath!)));
@@ -132,6 +152,20 @@ public class AnimationDraftAssetTests
                 plan.Inputs.Should().ContainKey(AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path));
             }
         }
+    }
+
+    [Test]
+    public void CompiledBankDiscoveryRetainsOnlyEditedCompanions()
+    {
+        var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design/animations/registry.json")))!;
+        var entry = registry.First();
+        var source = Path.Combine(Root, entry.ProjectPath!);
+        var project = AnimationProject.Deserialize(File.ReadAllText(source));
+        var plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+        var banks = plan.Changes.Where(change => Path.GetExtension(change.Path) == ".mdl").ToArray();
+        plan.Inputs.Keys.Where(path => path.EndsWith(".mdl.ascii", StringComparison.OrdinalIgnoreCase))
+            .Should().BeEquivalentTo(banks.Select(bank => AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path)),
+                "editing a clip must not retain large editable companions for untouched banks");
     }
 
     [TestCaseSource(nameof(Names))]

@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            AnimationService.AbilityAnimationBinding.Apply(_abilities, AnimationService.ActiveAbilityAnimationCatalog.Entries);
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
             AbilityTargeting.CacheData(_abilities);
         }

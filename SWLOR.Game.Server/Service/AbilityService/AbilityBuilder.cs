@@ -100,6 +100,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Retains native action ordering when impact scripts perform movement or their own animation.</summary>
+        public AbilityBuilder PreservesNativeAnimationChoreography()
+        {
+            _activeAbility.PreservesNativeAnimationChoreography = true;
+            return this;
+        }
+
         /// <summary>
         /// Assigns an animation to the caster of the ability. This will be played when the creature uses the ability.
         /// Calling this more than once will replace the previous animation.

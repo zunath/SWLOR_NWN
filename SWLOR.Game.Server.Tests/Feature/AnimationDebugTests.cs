@@ -65,24 +65,28 @@ public class AnimationDebugTests
             new AbilityDetail { SkillType = SkillType.Vibroblade, QueuedAttackAnimation = AuthoredAnimation.RiotBlade },
             new AbilityDetail { SkillType = SkillType.Lightsaber, AuthoredAnimation = AuthoredAnimation.RiotBlade },
             new AbilityDetail { SkillType = SkillType.Vibroblade, AuthoredAnimation = AuthoredAnimation.RiotBlade },
-        });
+        }, authoredEntries: Array.Empty<AbilityAnimationEntry>());
         var riot = entries.Single(entry => entry.Id == "RiotBlade");
         riot.Categories.Should().BeEquivalentTo("Vibroblade", "Lightsaber");
         AnimationPreviewCatalog.Search("riot", "Vibroblade", entries).Should().ContainSingle();
         AnimationPreviewCatalog.Search("riot", "Lightsaber", entries).Should().ContainSingle();
         AnimationPreviewCatalog.Search("riot", "Other", entries).Should().BeEmpty();
-        AnimationPreviewCatalog.Search("shield", "Other", entries).Should().HaveCount(2);
+        AnimationPreviewCatalog.Search("shield", "Other", entries).Select(entry => entry.Id)
+            .Should().Contain("ShieldBash").And.Contain("ShieldWall");
     }
 
     [Test]
-    public void CurrentClipsDeriveVibrobladeCategoryFromTheirAbilityBindings()
+    public void EveryGeneratedClipHasItsReadableNameAndCategoryWithoutRequiringPlaybackOverrides()
     {
         var abilities = typeof(IAbilityListDefinition).Assembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
             .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities().Values);
         var entries = AnimationPreviewCatalog.CreateEntries(abilities,
             AnimationPlanningTests.CurrentPerks().ToDictionary(perk => perk.Type));
-        entries.Should().NotBeEmpty().And.OnlyContain(entry => entry.Categories.Contains("Vibroblade"));
+        entries.Should().NotBeEmpty();
+        foreach (var entry in ActiveAbilityAnimationCatalog.Entries)
+            entries.Should().ContainSingle(preview => preview.Id == entry.Id && preview.DisplayName == entry.DisplayName &&
+                preview.Categories.Contains(entry.Category));
     }
 
     [Test]

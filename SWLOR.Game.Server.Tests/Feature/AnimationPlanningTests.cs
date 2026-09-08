@@ -2,6 +2,7 @@
 using System.IO.Compression;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
@@ -92,23 +93,81 @@ public class AnimationPlanningTests
             new[] { "Combat", "Stance", "Toggle", "Aura" }.Contains(row["Type"]))).ToArray();
         var plan = Csv("design/animations/animation-plan.csv");
         plan.Select(row => row["PerkId"]).Should().OnlyHaveUniqueItems().And.BeEquivalentTo(requirements.Select(perk => perk.Type.ToString()));
+        using var registry = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "design/animations/registry.json")));
+        var installedIds = registry.RootElement.EnumerateArray().Select(entry => entry.GetProperty("Name").GetString()).ToHashSet();
         foreach (var perk in requirements)
         {
             var row = plan.Single(row => row["PerkId"] == perk.Type.ToString());
             row["Name"].Should().Be(perk.Name);
             row["Category"].Should().Be(Category(perk));
             var active = Active(perk);
-            var installed = active.Any(ability => ability.AuthoredAnimation != null || ability.QueuedAttackAnimation != null);
+            var installed = installedIds.Contains(perk.Type.ToString());
             row["Status"].Should().Be(installed ? "Installed" : active.Length > 0 ? "Needed" : "Native");
             foreach (var file in row["DefinitionFiles"].Split("; ", StringSplitOptions.RemoveEmptyEntries))
                 File.Exists(Path.Combine(Root, file)).Should().BeTrue($"{perk.Name} must point to its current ability source");
         }
     }
 
+    private sealed record PlannedAnimation(string Id, string Name, string InternalName, string Category,
+        string PerkId, string[] Feats, string[] DefinitionFiles, string Reference);
+
+    private static PlannedAnimation[] ActivePlan() => JsonSerializer.Deserialize<PlannedAnimation[]>(
+        File.ReadAllText(Path.Combine(Root, "design/animations/active-abilities.json")))!;
+
+    [Test]
+    public void ActiveManifestCoversPlayerAbilitiesIncludingLearnedTechniques()
+    {
+        var definitions = typeof(IAbilityListDefinition).Assembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities())
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        var perks = CurrentPerks();
+        var granted = perks.SelectMany(perk => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats))
+            .Distinct().Where(feat => definitions.TryGetValue(feat, out var ability) && !ability.IsMimicryTrait);
+        var techniques = definitions.Where(pair => pair.Value.IsMimicryTechnique && !pair.Value.IsMimicryTrait)
+            .Select(pair => pair.Key);
+        var expected = granted.Concat(techniques).Distinct().Select(feat => feat.ToString()).ToArray();
+        var plan = ActivePlan();
+        plan.Select(entry => entry.Id).Should().OnlyHaveUniqueItems();
+        plan.SelectMany(entry => entry.Feats).Should().OnlyHaveUniqueItems().And.BeEquivalentTo(expected);
+        plan.Single(entry => entry.Id == "CallBeast").Feats.Should().Equal("CallBeast");
+        plan.Single(entry => entry.Id == "Tame").Feats.Should().NotContain("CallBeast");
+        plan.Single(entry => entry.Id == "Stealth").Feats.Should().BeEmpty("stealth is a native action mode");
+        plan.Where(entry => entry.Feats.Length == 0).Select(entry => entry.Id).Should().Equal("Stealth");
+        var perkIds = perks.Select(perk => perk.Type.ToString()).ToHashSet();
+        foreach (var entry in plan)
+        {
+            perkIds.Should().Contain(entry.PerkId);
+            foreach (var file in entry.DefinitionFiles)
+                File.Exists(Path.Combine(Root, file)).Should().BeTrue($"{entry.Id} references a current definition");
+            foreach (var feat in entry.Feats)
+                definitions[Enum.Parse<FeatType>(feat)].IsMimicryTrait.Should().BeFalse();
+        }
+    }
+
+    [Test]
+    public void AnimatorNamesAreStableUniqueAndLeaveRoomForPlaybackPhases()
+    {
+        var names = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(
+            Path.Combine(Root, "design/animations/animation-names.json")))!;
+        var plan = ActivePlan();
+        names.Keys.Should().BeEquivalentTo(plan.Select(entry => entry.Id));
+        names.Values.Should().OnlyHaveUniqueItems();
+        foreach (var entry in plan)
+        {
+            entry.InternalName.Should().Be(names[entry.Id]);
+            entry.InternalName.Should().MatchRegex(@"\Asw_[a-z0-9_]{1,9}\z");
+            (entry.InternalName + "_out").Length.Should().BeLessThanOrEqualTo(16);
+        }
+        using var registry = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "design/animations/registry.json")));
+        foreach (var entry in registry.RootElement.EnumerateArray())
+            names[entry.GetProperty("Name").GetString()!].Should().Be(entry.GetProperty("AnimationName").GetString());
+    }
+
     [Test]
     public void BibleRetainsOnlyUsedPlansAndEveryReferenceMatchesItsNewRow()
     {
-        var plan = Csv("design/animations/animation-plan.csv");
+        var plan = ActivePlan();
         using var zip = ZipFile.OpenRead(Path.Combine(Root, "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx"));
         XDocument Read(string path) { using var stream = zip.GetEntry(path)!.Open(); return XDocument.Load(stream); }
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -126,6 +185,9 @@ public class AnimationPlanningTests
             "inlineStr" => string.Concat(cell.Descendants(ns + "t").Select(t => t.Value)),
             _ => cell.Element(ns + "v")?.Value ?? ""
         };
+        var header = xml.Descendants(ns + "row").Single(row => (int)row.Attribute("r")! == 1);
+        var internalNameColumn = Regex.Replace((string)header.Elements(ns + "c")
+            .Single(cell => Normalize(Text(cell)) == "internalname").Attribute("r")!, "[0-9]", "");
         var rows = xml.Descendants(ns + "row").Select(row => new
         {
             Number = (int)row.Attribute("r")!,
@@ -135,11 +197,12 @@ public class AnimationPlanningTests
         rows.Select(row => row.Number).Should().Equal(Enumerable.Range(2, rows.Length));
         foreach (var row in rows)
         {
-            var entry = plan.Single(p => p["Category"] == row.Cells["B"] && p["Name"] == row.Cells["C"]);
-            entry["BibleAnimationRow"].Should().Be(row.Number.ToString());
-            entry["Reference"].Should().Be(row.Cells.GetValueOrDefault("E", ""));
+            var entry = plan.Single(p => p.Category == row.Cells["B"] && p.Name == row.Cells["C"]);
+            entry.Reference.Should().Be(row.Cells.GetValueOrDefault("E", ""));
+            row.Cells.GetValueOrDefault(internalNameColumn, "").Should().Be(entry.InternalName);
         }
-        plan.Count(p => p["BibleAnimationRow"] != "").Should().Be(rows.Length);
+        rows.Should().HaveCount(plan.Length);
+        rows.Select(row => (row.Cells["B"], row.Cells["C"])).Should().OnlyHaveUniqueItems();
         var links = xml.Descendants(ns + "hyperlink").ToArray();
         links.Should().HaveCount(rows.Count(row => row.Cells.GetValueOrDefault("E", "") != ""));
         var relationships = Read("xl/worksheets/_rels/" + Path.GetFileName(path) + ".rels").Root!.Elements()

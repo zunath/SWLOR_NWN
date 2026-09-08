@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -176,7 +177,7 @@ namespace SWLOR.Game.Server.Feature
             if (activation.IsAwaitingImpact)
                 Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);
 
-            if (activation.Ability.AuthoredAnimation != null)
+            if (AbilityAnimationBinding.ActivationClip(activation.Ability, GetIsPC(activator)) != null)
                 NamedAnimation.Stop(activator, cancelQueuedAnimation: true);
 
             _activeAbilityActivations.Remove(activator);
@@ -511,10 +512,10 @@ namespace SWLOR.Game.Server.Feature
                 /// </summary>
                 void PlayActivationAnimation(float animationLength)
                 {
-                    if (ability.AuthoredAnimation != null)
+                    if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null)
                     {
-                        NamedAnimation.Queue(activator, ability.AuthoredAnimation,
-                            Math.Max(ability.AuthoredAnimation.Duration, animationLength));
+                        NamedAnimation.Queue(activator, AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)),
+                            Math.Max(AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)).Duration, animationLength));
                         return;
                     }
 
@@ -528,7 +529,7 @@ namespace SWLOR.Game.Server.Feature
                         {
                             PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
                                 activator,
-                                ability.AnimationType,
+                                AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator)),
                                 1.0f,
                                 animationLength,
                                 sourceAnimationName,
@@ -542,7 +543,7 @@ namespace SWLOR.Game.Server.Feature
                         activator,
                         () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
                             activator,
-                            ability.AnimationType,
+                            AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator)),
                             1.0f,
                             animationLength));
                 }
@@ -581,7 +582,7 @@ namespace SWLOR.Game.Server.Feature
 
                 // Casted types play an animation of casting.
                 if (ability.ActivationType == AbilityActivationType.Casted &&
-                    ability.AnimationType != Animation.Invalid)
+                    AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator)) != Animation.Invalid)
                 {
                     var animationLength = delay - 0.2f;
                     if (animationLength < 0f)
@@ -653,7 +654,7 @@ namespace SWLOR.Game.Server.Feature
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
                 if (!activatorIsAlive)
                 {
-                    if (ability.AuthoredAnimation != null)
+                    if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null)
                         NamedAnimation.Stop(activator);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(false);
@@ -709,7 +710,7 @@ namespace SWLOR.Game.Server.Feature
                             ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null);
                     // NPCs must clear their combat state before reattacking. Queue that reset
                     // after the authored clip, so it cannot erase the animation at impact.
-                    if (ability.AuthoredAnimation != null && !GetIsPC(activator))
+                    if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null && !GetIsPC(activator))
                         AssignCommand(activator, () => ActionDoCommand(() =>
                             ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)));
                     else
@@ -873,7 +874,7 @@ namespace SWLOR.Game.Server.Feature
             SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
             SuppressQueuedAbilityFeedback(activator);
 
-            QueuedAttackAnimation.Begin(activator, ability.QueuedAttackAnimation);
+            QueuedAttackAnimation.Begin(activator, AbilityAnimationBinding.QueuedClip(ability, GetIsPC(activator)));
 
             ApplyRequirementEffects(activator, ability);
 

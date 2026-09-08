@@ -30,6 +30,7 @@
   <ItemGroup>
     <!-- Exercise the generator's pose validation without referencing its executable layer. -->
     <Compile Include="..\tools\SWLOR.AnimationDrafts\MotionAuthor.cs" Link="AnimationDrafts\MotionAuthor.cs" />
+    <Compile Include="..\tools\SWLOR.AnimationDrafts\BulkMotionAuthor.cs" Link="AnimationDrafts\BulkMotionAuthor.cs" />
     <ProjectReference Include="..\SWLOR.Toolset.Domain\SWLOR.Toolset.Domain.csproj" />
     <!-- The settings store lives in the app project. Referenced so its persistence can be tested
          against a real file rather than inferred from the serializer's behaviour; nothing here

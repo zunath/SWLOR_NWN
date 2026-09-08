@@ -227,16 +227,18 @@ public static class AnimationInstall
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configPath)!, layer.GetProperty("Path").GetString()!))).ToArray();
 
     public static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths,
-        string? sourceProjectPath = null)
-        => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes, sourceProjectPath: sourceProjectPath);
+        string? sourceProjectPath = null, string? internalName = null)
+        => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes, sourceProjectPath: sourceProjectPath, internalName: internalName);
 
     internal static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths, int inputBudget,
-        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null, int bankBudget = AnimationProject.MaximumFileBytes)
+        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null, int bankBudget = AnimationProject.MaximumFileBytes, string? internalName = null)
     {
         if (inputBudget < 1 || inputBudget > MaximumInputBytes) throw new ArgumentOutOfRangeException(nameof(inputBudget));
         if (outputBudget < 1 || outputBudget > MaximumOutputBytes) throw new ArgumentOutOfRangeException(nameof(outputBudget));
         if (bankBudget < 1 || bankBudget > AnimationProject.MaximumFileBytes) throw new ArgumentOutOfRangeException(nameof(bankBudget));
         project.Validate();
+        if (internalName != null && (internalName.Length > AnimationClip.MaxNameLength || !Regex.IsMatch(internalName, @"\Asw_[a-z0-9_]+\z")))
+            throw new InvalidDataException("An explicit internal animation name must start with sw_ and contain at most twelve lowercase letters, digits or underscores.");
         if (project.Name == "AuthoredAnimation" || !Regex.IsMatch(project.Name, @"\A[A-Z][A-Za-z0-9_]*\z"))
             throw new InvalidDataException("Use a C# constant name beginning with an uppercase letter, such as SaluteWithSaber.");
         var root = Path.GetFullPath(repositoryRoot);
@@ -321,8 +323,12 @@ public static class AnimationInstall
             ? legacyProjectPath : $"design/animations/uncategorized/{project.Name}.swlanim";
         var projectPath = Path.GetFullPath(Path.Combine(root, relativeProjectPath));
         var stem = "sw_" + project.Name.ToLowerInvariant(); stem = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength)];
-        var animationName = registration?.AnimationName ?? stem;
+        if (registration != null && internalName != null && registration.AnimationName != internalName)
+            throw new InvalidDataException("The requested internal name differs from the installed animation. Existing animation identities cannot be renamed during installation.");
+        var animationName = registration?.AnimationName ?? internalName ?? stem;
         var usedNames = registrations.SelectMany(r => new[] { r.AnimationName, r.AnimationName + "_in", r.AnimationName + "_out" }).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (registration == null && internalName != null && new[] { animationName, animationName + "_in", animationName + "_out" }.Any(usedNames.Contains))
+            throw new InvalidDataException("The requested internal name collides with an installed animation or transition. Choose another explicit name.");
         for (var suffix = 1; registration == null && (usedNames.Contains(animationName) || usedNames.Contains(animationName + "_in") || usedNames.Contains(animationName + "_out")); suffix++)
         {
             var number = suffix.ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -404,12 +410,26 @@ public static class AnimationInstall
                 var contents = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(BankText(path)).Span);
                 return contents.StartsWith(header + "\n", StringComparison.Ordinal) || contents.StartsWith(header + "\r\n", StringComparison.Ordinal);
             }
+            bool IsBankCandidate(string path)
+            {
+                if (!AnimationBankSource.IsBinary(Read(path))) return IsOwnedBank(path);
+                // Find a bank using its already parsed native metadata. Reading every large
+                // editable companion merely to discover ownership exhausted the aggregate
+                // budget once the library rolled over into multiple banks. This is only a
+                // candidate check: every bank we actually edit is fully hash/header verified.
+                var name = models[path].Name;
+                var shortName = model.Name[..Math.Min(model.Name.Length, 8)];
+                return (name.Equals("an_" + model.Name, StringComparison.OrdinalIgnoreCase) ||
+                        name.StartsWith("an_" + shortName + "_", StringComparison.OrdinalIgnoreCase) ||
+                        name.StartsWith("ab_" + shortName + "_", StringComparison.OrdinalIgnoreCase)) &&
+                    File.Exists(AnimationBankSource.PathFor(hakRoot, path));
+            }
             var targetName = Path.GetFileNameWithoutExtension(target);
             AnimationProject.ValidateToken(targetName, 16);
             var overlayName = "an_" + targetName;
             if (registeredTarget)
             {
-                if (chains[target].Count < 2 || !IsOwnedBank(chains[target][1]))
+                if (chains[target].Count < 2 || !IsBankCandidate(chains[target][1]))
                     throw new InvalidDataException("Registered target is missing its authored animation bank.");
                 overlayName = model.SuperModel;
             }
@@ -435,8 +455,8 @@ public static class AnimationInstall
             var linkPath = target;
             if (existingOverlay != null)
             {
-                if (!IsOwnedBank(existingOverlay)) throw new InvalidDataException("Existing overlay is not an authored animation source.");
-                var banks = chains[target].Skip(1).TakeWhile(IsOwnedBank).ToArray();
+                if (!IsBankCandidate(existingOverlay)) throw new InvalidDataException("Existing overlay is not an authored animation source.");
+                var banks = chains[target].Skip(1).TakeWhile(IsBankCandidate).ToArray();
                 var selected = registration != null
                     ? banks.SingleOrDefault(path => models[path].Animations.Any(a => a.Name.Equals(animationName, StringComparison.OrdinalIgnoreCase)))
                     : banks.FirstOrDefault(path => models[path].Animations.Count < ClipsPerBank * 3 &&
@@ -448,6 +468,7 @@ public static class AnimationInstall
                 }
                 else
                 {
+                    if (!IsOwnedBank(selected)) throw new InvalidDataException("Selected overlay is not an authored animation source.");
                     existingOverlay = overlayPath = selected;
                     overlayName = models[selected].Name;
                 }
@@ -456,6 +477,7 @@ public static class AnimationInstall
             {
                 if (chains[target].Count >= MaximumModelChainDepth) throw new InvalidDataException("Animation banks would exceed the supported supermodel chain depth. Split the library by target rig.");
                 linkPath = chains[target][1];
+                if (!IsOwnedBank(linkPath)) throw new InvalidDataException("The animation bank link is not an authored animation source.");
                 // Extra banks retain a fixed-size resref and are inserted behind the first
                 // overlay. Native model payloads and the existing animation chain stay intact.
                 var prefix = "ab_" + model.Name[..Math.Min(model.Name.Length, 8)] + "_";

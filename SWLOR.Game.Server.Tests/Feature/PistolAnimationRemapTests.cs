@@ -213,7 +213,7 @@ public class PistolAnimationRemapTests
             "fallback activation animations must bypass the persistent pistol remap for explicit throws");
         System.Text.RegularExpressions.Regex.IsMatch(
             activationSource,
-            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*ability\.AnimationType,\s*1\.0f,\s*animationLength,\s*sourceAnimationName,\s*replacementAnimationName,\s*ability\.AnimationRestoreDelaySeconds\s*\)")
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*AbilityAnimationBinding\.ActivationType\(ability,\s*GetIsPC\(activator\)\),\s*1\.0f,\s*animationLength,\s*sourceAnimationName,\s*replacementAnimationName,\s*ability\.AnimationRestoreDelaySeconds\s*\)")
             .Should().BeTrue(
                 "configured activation replacements must bypass the persistent pistol remap for explicit throws");
         impactSource.Should().Contain(

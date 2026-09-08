@@ -66,10 +66,10 @@ public class AuthoredCombatAnimationTests
     }
 
     [Test]
-    public void PreviewIncludesOnlyTheSevenMovesWithCurrentPerks()
+    public void PreviewIncludesAllCatalogMovesWithCurrentAbilities()
     {
-        AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(new[] {
-            "ShieldBash", "ShieldWall", "CoveringStrike", "Invincible", "RiotBlade", "RendingStrike", "SavageCleave" });
+        AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(
+            ActiveAbilityAnimationCatalog.Entries.Select(entry => entry.Id));
     }
 
     [Test]

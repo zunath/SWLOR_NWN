@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequiresTarget()
                 .HasImpactAction(ForceLeap1ImpactAction)
                 .IsCastedAbility()
+                .PreservesNativeAnimationChoreography()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementFP(3);
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequiresTarget()
                 .HasImpactAction(ForceLeap2ImpactAction)
                 .IsCastedAbility()
+                .PreservesNativeAnimationChoreography()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementFP(4);

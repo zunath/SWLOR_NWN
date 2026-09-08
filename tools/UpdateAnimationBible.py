@@ -1,0 +1,245 @@
+"""Synchronize the Animations sheet without rewriting unrelated workbook entries.
+
+The animation manifest is the authoring contract; the installed registry supplies
+actual resource names. Existing reference rows keep their positions and image links.
+"""
+from __future__ import annotations
+
+import argparse
+import copy
+import csv
+import io
+import json
+import os
+import re
+import tempfile
+import zipfile
+from pathlib import Path
+from xml.etree import ElementTree as ET
+from xml.sax.saxutils import escape
+
+ROOT = Path(__file__).resolve().parents[1]
+NS = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+
+
+def normalize(value):
+    return re.sub(r"[^a-z0-9]", "", value.lower())
+
+
+def cell(column, row, value, style="4"):
+    return f'<c r="{column}{row}" s="{style}" t="inlineStr"><is><t>{escape(str(value))}</t></is></c>'
+
+
+def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
+    installed = {e["Name"]: e for e in registry}
+    if len(installed) != len(registry):
+        raise ValueError("Duplicate registry animation identity")
+    ids = [e["Id"] for e in entries]
+    names = [e["InternalName"] for e in entries]
+    if len(set(ids)) != len(ids) or len(set(names)) != len(names):
+        raise ValueError("Animation identifiers and internal names must be unique")
+    for entry in entries:
+        if not re.fullmatch(r"[a-z][a-z0-9_]{0,11}", entry["InternalName"]):
+            raise ValueError(f"Invalid internal name: {entry['InternalName']}")
+        record = installed.get(entry["Id"])
+        if record is None or record["AnimationName"] != entry["InternalName"]:
+            raise ValueError(f"Animation is not installed with its assigned name: {entry['Id']}")
+    with zipfile.ZipFile(workbook) as source:
+        infos = source.infolist()
+        original = {i.filename: source.read(i.filename) for i in infos}
+    sheets = ET.fromstring(original["xl/workbook.xml"])
+    sheet = next(s for s in sheets.findall("s:sheets/s:sheet", NS) if s.get("name") == "Animations")
+    links = ET.fromstring(original["xl/_rels/workbook.xml.rels"])
+    target = next(r.get("Target") for r in links if r.get("Id") == sheet.get(f"{{{REL}}}id"))
+    path = target.lstrip("/") if target.startswith("/") else "xl/" + target
+    xml = original[path].decode("utf-8-sig")
+    root = ET.fromstring(xml)
+    if root.findall(".//s:f", NS):
+        raise ValueError("Animation formulas require explicit migration before synchronization")
+    hyperlink_nodes = root.findall("s:hyperlinks/s:hyperlink", NS)
+    hyperlink_targets = {}
+    if hyperlink_nodes:
+        relpath = str(Path(path).parent / "_rels" / (Path(path).name + ".rels")).replace("\\", "/")
+        relationships = {r.get("Id"): r.get("Target") for r in ET.fromstring(original[relpath])}
+        hyperlink_targets = {h.get("ref"): relationships[h.get(f"{{{REL}}}id")] for h in hyperlink_nodes}
+    strings = []
+    if "xl/sharedStrings.xml" in original:
+        strings = ["".join(e.itertext()) for e in ET.fromstring(original["xl/sharedStrings.xml"])]
+
+    def value(c):
+        if c.get("t") == "s":
+            return strings[int(c.find("s:v", NS).text)]
+        return "".join(c.itertext())
+
+    lookup = {(normalize(e["Category"]), normalize(e.get("Name", e.get("DisplayName", e["Id"])))): e for e in entries}
+    if len(lookup) != len(entries):
+        raise ValueError("Duplicate display names within an animation category")
+    seen = set()
+    last = 1
+    rows = []
+    for match in re.finditer(r"<row\b[^>]*(?:/>|>.*?</row>)", xml, re.S):
+        text = match.group()
+        node = ET.fromstring('<root xmlns="' + NS["s"] + '">' + text + '</root>')[0]
+        number = int(node.get("r"))
+        cells = {re.sub(r"\d", "", c.get("r")): value(c) for c in node}
+        if number == 1:
+            extra = {"F": "Internal Name", "G": "Base Motion", "H": "Status", "I": "Source Project"}
+        elif cells.get("C"):
+            key = normalize(cells.get("B", "")), normalize(cells["C"])
+            if key not in lookup:
+                raise ValueError(f"Existing Bible row has no active animation: {cells['C']}")
+            entry = lookup[key]
+            if cells.get("E", "") != entry.get("Reference", ""):
+                raise ValueError(f"Reference mismatch for {entry['Id']}; update image and hyperlink together")
+            if entry.get("Reference") and hyperlink_targets.get(f"E{number}") != entry["Reference"]:
+                raise ValueError(f"Hyperlink mismatch for {entry['Id']}")
+            if entry["Id"] in seen:
+                raise ValueError(f"Duplicate Bible animation: {entry['Id']}")
+            seen.add(entry["Id"])
+            entry["BibleAnimationRow"] = number
+            extra = details(entry, installed[entry["Id"]])
+        else:
+            continue
+        last = max(last, number)
+        for column, content in extra.items():
+            text = re.sub(rf'<c\b[^>]*\br="{column}{number}"[^>]*(?:/>|>.*?</c>)', '', text, flags=re.S)
+        if text.endswith('/>'):
+            text = text[:-2] + '></row>'
+        text = text.replace('</row>', ''.join(cell(c, number, v, "17" if number == 1 else "4") for c, v in extra.items()) + '</row>')
+        fragments = re.findall(r'<c\b[^>]*(?:/>|>.*?</c>)', text, re.S)
+        def cell_order(fragment):
+            letters = re.search(r'\br="([A-Z]+)\d+"', fragment)[1]
+            return len(letters), letters
+        text = re.sub(r'(?<=\>).*?(?=</row>)', lambda _: ''.join(sorted(fragments, key=cell_order)), text, count=1, flags=re.S)
+        rows.append(text)
+    for entry in entries:
+        if entry["Id"] in seen:
+            continue
+        last += 1
+        entry["BibleAnimationRow"] = last
+        values = {"A": "Ability", "B": entry["Category"], "C": entry.get("Name", entry.get("DisplayName", entry["Id"])),
+                  "D": entry.get("Description", ""), "E": entry.get("Reference", ""), **details(entry, installed[entry["Id"]])}
+        if values["E"]:
+            raise ValueError("New image references must be added with a hyperlink relationship")
+        rows.append(f'<row r="{last}">' + ''.join(cell(c, last, v) for c, v in values.items()) + '</row>')
+    xml = re.sub(r'<sheetData\b[^>]*>.*?</sheetData>', '<sheetData>' + ''.join(rows) + '</sheetData>', xml, flags=re.S)
+    xml = re.sub(r'<dimension\b[^>]*/>', f'<dimension ref="A1:I{last}"/>', xml)
+    xml = re.sub(r'(<autoFilter\b[^>]*\bref=")[^"]+', lambda m: m[1] + f'A1:I{last}', xml)
+    output = io.BytesIO()
+    with zipfile.ZipFile(output, "w") as dest:
+        for info in infos:
+            dest.writestr(copy.copy(info), xml.encode("utf-8") if info.filename == path else original[info.filename])
+    with zipfile.ZipFile(io.BytesIO(output.getvalue())) as check:
+        for name, payload in original.items():
+            if name != path and check.read(name) != payload:
+                raise AssertionError(f"Unrelated workbook entry changed: {name}")
+    return output.getvalue()
+
+
+def replace_outputs(outputs: dict[Path, bytes]):
+    """Stage every replacement and rollback copy before replacing any existing file."""
+    paths = [path.resolve() for path in outputs]
+    if len(set(paths)) != len(paths):
+        raise ValueError("Output paths must be distinct")
+    staged = {}
+    backups = {}
+    committed = []
+    temporary = []
+
+    def stage(path, payload):
+        with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".animation-sync-", delete=False) as stream:
+            temporary.append(Path(stream.name))
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        return temporary[-1]
+
+    try:
+        for path, payload in outputs.items():
+            backups[path] = stage(path, path.read_bytes())
+            staged[path] = stage(path, payload)
+        try:
+            for path in outputs:
+                os.replace(staged[path], path)
+                committed.append(path)
+        except Exception as failure:
+            rollback_failures = []
+            for path in reversed(committed):
+                try:
+                    os.replace(backups[path], path)
+                except Exception as rollback_failure:
+                    # Retain this recovery copy if the filesystem also rejects rollback.
+                    temporary.remove(backups[path])
+                    rollback_failures.append(OSError(f"Could not restore {path}; original saved at {backups[path]}: {rollback_failure}"))
+            if rollback_failures:
+                raise ExceptionGroup("Animation synchronization and rollback failed", [failure, *rollback_failures])
+            raise
+    finally:
+        for path in temporary:
+            path.unlink(missing_ok=True)
+
+
+def synchronize(workbook: Path, entries: list[dict], registry: list[dict]):
+    replace_outputs({workbook: render_workbook(workbook, entries, registry)})
+    return entries
+
+
+def details(entry, installed):
+    base = entry.get("Profile") or "Authored poses"
+    source = entry.get("SourceModel", "")
+    animation = entry.get("SourceAnimation")
+    if source and animation:
+        base += f" ({source}/{animation})"
+    return {"F": entry["InternalName"], "G": base,
+            "H": "Installed; in-game visual review required", "I": installed["ProjectPath"]}
+
+
+def synchronize_files(manifest_path, workbook_path, registry_path, provenance_path, plan_path):
+    data = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+    source_entries = data if isinstance(data, list) else data["Animations"]
+    entries = copy.deepcopy(source_entries)
+    provenance = {e["Id"]: e for e in json.loads(provenance_path.read_text(encoding="utf-8-sig"))["Animations"]}
+    for entry in entries:
+        if entry["Id"] not in provenance:
+            raise ValueError(f"Missing generation provenance: {entry['Id']}")
+        for key in ("SourceModel", "SourceAnimation", "Profile"):
+            entry[key] = provenance[entry["Id"]].get(key)
+    workbook_bytes = render_workbook(workbook_path, entries, json.loads(registry_path.read_text(encoding="utf-8-sig")))
+    rows = {e["Id"]: e["BibleAnimationRow"] for e in entries}
+    for entry in source_entries:
+        entry["BibleAnimationRow"] = rows[entry["Id"]]
+    with plan_path.open(encoding="utf-8-sig", newline="") as stream:
+        reader = csv.DictReader(stream)
+        fields = list(reader.fieldnames)
+        plan = list(reader)
+    if "InternalName" not in fields:
+        fields.append("InternalName")
+    by_id = {e["Id"]: e for e in entries}
+    for row in plan:
+        entry = by_id[row["PerkId"]]
+        row.update(Status="Installed", InternalName=entry["InternalName"], BibleAnimationRow=entry["BibleAnimationRow"])
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=fields)
+    writer.writeheader()
+    writer.writerows(plan)
+    replace_outputs({workbook_path: workbook_bytes,
+                     manifest_path: (json.dumps(data, indent=2, ensure_ascii=False) + "\n").encode("utf-8"),
+                     plan_path: stream.getvalue().encode("utf-8")})
+    return len(entries)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("manifest", type=Path)
+    parser.add_argument("--workbook", type=Path, default=ROOT / "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx")
+    parser.add_argument("--registry", type=Path, default=ROOT / "design/animations/registry.json")
+    parser.add_argument("--provenance", type=Path, default=ROOT / "design/animations/active-manifest.json")
+    args = parser.parse_args()
+    count = synchronize_files(args.manifest, args.workbook, args.registry, args.provenance,
+                              ROOT / "design/animations/animation-plan.csv")
+    print(f"Documented {count} installed animations; unrelated workbook entries preserved.")
+
+
+if __name__ == "__main__":
+    main()

@@ -10,17 +10,37 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class NamedAnimationPlaybackTests
 {
-    [Test] public void CancellationBeforeQueuedBeginPreventsTheClipFromStarting()
+    [TestCase(false)] [TestCase(true)]
+    public void CancellationWithoutCurrentOwnershipPreservesUnrelatedQueuedWork(bool completed)
     {
         var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
-        runtime.Actions.Enqueue(() => playback.Begin(1, new AnimationClip("sw_cancelled", 2), 2));
-        runtime.Token.Should().BeEmpty("the native begin action has not executed yet");
+        if (completed)
+        {
+            var token = playback.Begin(1, new AnimationClip("sw_finished", 2), 2);
+            playback.Complete(1, token);
+            runtime.Callbacks[^1]();
+        }
+        var continued = false;
+        runtime.Actions.Enqueue(() => continued = true);
         playback.Stop(1, cancelQueuedAnimation: true);
         runtime.RunActions();
-        runtime.ClearedActions.Should().Be(1);
+        continued.Should().BeTrue();
+        runtime.ClearedActions.Should().Be(0);
         runtime.Token.Should().BeEmpty();
-        runtime.Replacements.Should().BeEmpty("the cancelled begin must never map or play its clip");
-        runtime.Callbacks.Should().BeEmpty();
+    }
+
+    [Test]
+    public void RepeatedCancellationDuringExitDoesNotClearNewQueuedWork()
+    {
+        var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_finished", 2), 2);
+        playback.Stop(1, cancelQueuedAnimation: true);
+        var continued = false;
+        runtime.Actions.Enqueue(() => continued = true);
+        playback.Stop(1, cancelQueuedAnimation: true);
+        runtime.RunActions();
+        continued.Should().BeTrue();
+        runtime.ClearedActions.Should().Be(1);
     }
 
     [TestCase(ActionType.MoveToPoint, true)]

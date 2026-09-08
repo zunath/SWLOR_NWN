@@ -215,11 +215,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        public string TemporaryHP
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
         public string HitPointTooltip
         {
             get => Get<string>();
@@ -1306,9 +1301,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshHitPoints()
         {
-            HP = ObjectPlugin.GetCurrentHitPoints(_target) + " / " + GetMaxHitPoints(_target);
-            TemporaryHP = TemporaryHitPointEffects.GetRemaining(_target).ToString();
-            HitPointTooltip = $"HP: {HP}\nTemporary HP: {TemporaryHP}";
+            var normalHP = ObjectPlugin.GetCurrentHitPoints(_target);
+            var maxHP = GetMaxHitPoints(_target);
+            var temporaryHP = TemporaryHitPointEffects.GetRemaining(_target);
+            HP = $"{normalHP + temporaryHP} / {maxHP}";
+            HitPointTooltip = $"Normal HP: {normalHP} / {maxHP}\nTemporary HP: {temporaryHP}\nTemporary HP absorbs damage before normal HP.";
         }
 
         public override Action OnWindowClosed() => () => ++_hitPointRefreshGeneration;

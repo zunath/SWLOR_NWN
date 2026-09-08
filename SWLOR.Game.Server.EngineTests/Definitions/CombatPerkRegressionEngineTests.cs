@@ -82,12 +82,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(AIScore.Ability(ability)(context) > 0, $"{feat} scores with one enemy");
                 if (aimed)
                 {
+                    ctx.MakeHostile(edgeTarget);
+                    Enmity.ClearEnmityTable(beast);
+                    Enmity.ModifyEnmity(edgeTarget, beast, 10);
                     var edgeContext = new AIContext(beast, AITriggerType.Heartbeat, edgeTarget,
                         context.Profile, new AIState(), Array.Empty<uint>());
+                    ctx.AssertEqual(edgeTarget, ability.AITargetSelector(edgeContext), $"{feat} can reach beyond 5m within its 6m cone");
+                    ChangeToStandardFaction(edgeTarget, StandardFaction.Defender);
+
+                    ctx.MakeHostile(farTarget);
+                    Enmity.ClearEnmityTable(beast);
+                    Enmity.ModifyEnmity(farTarget, beast, 10);
                     var farContext = new AIContext(beast, AITriggerType.Heartbeat, farTarget,
                         context.Profile, new AIState(), Array.Empty<uint>());
-                    ctx.AssertEqual(edgeTarget, ability.AITargetSelector(edgeContext), $"{feat} can reach beyond 5m within its 6m cone");
                     ctx.AssertEqual(OBJECT_INVALID, ability.AITargetSelector(farContext), $"{feat} rejects enemies beyond cone reach");
+                    ChangeToStandardFaction(farTarget, StandardFaction.Defender);
+                    Enmity.ClearEnmityTable(beast);
+                    Enmity.ModifyEnmity(target, beast, 10);
                 }
             }
         }

@@ -61,6 +61,55 @@ public class BulkAnimationAuthoringTests
         finally { Directory.Delete(folder, true); }
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void DuplicateFeatAssignmentsAreRejectedBeforeAnyGeneration(bool acrossEntries)
+    {
+        var feat = Enum.GetNames<SWLOR.NWN.API.NWScript.Enum.FeatType>()[0];
+        var entries = acrossEntries
+            ? new[] { new ActiveMotion("First", "sw_first", "Force", "Combat", "", Feats: [feat]),
+                new ActiveMotion("Second", "sw_second", "Force", "Combat", "", Feats: [feat]) }
+            : new[] { new ActiveMotion("First", "sw_first", "Force", "Combat", "", Feats: [feat, feat]) };
+        Action validate = () => BulkMotionAuthor.ValidateEntries(entries);
+        validate.Should().Throw<InvalidDataException>().WithMessage("Duplicate feat assignment:*");
+    }
+
+    [Test]
+    public void LateCatalogPublicationFailureRestoresTheEntireGeneratedLibrary()
+    {
+        if (!OperatingSystem.IsWindows()) Assert.Ignore("Windows sharing modes enforce the publication lock.");
+        var model = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
+        if (!File.Exists(model)) Assert.Ignore("Initialize HAK sources.");
+        var folder = Path.Combine(Path.GetTempPath(), "swlor-bulk-transaction-" + Guid.NewGuid().ToString("N"));
+        var output = Path.Combine(folder, "design/animations");
+        var catalog = Path.Combine(folder, "SWLOR.Game.Server/Service/AnimationService/ActiveAbilityAnimationCatalog.cs");
+        Directory.CreateDirectory(Path.GetDirectoryName(catalog)!);
+        Directory.CreateDirectory(Path.Combine(output, "pistol"));
+        try
+        {
+            var projectPath = Path.Combine(output, "pistol/NewShot.swlanim");
+            var original = File.ReadAllBytes(Path.Combine(Root, "design/animations/bases/Pistolaimandrecoil.swlanim"));
+            File.WriteAllBytes(projectPath, original);
+            var manifest = Path.Combine(output, "active-manifest.json");
+            const string manifestText = "{\"Animations\":[]}";
+            File.WriteAllText(manifest, manifestText);
+            File.WriteAllText(catalog, "// Original catalog");
+            var input = Path.Combine(folder, "input.json");
+            File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.") }));
+            using (var locked = new FileStream(catalog, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                Action generate = () => BulkMotionAuthor.Generate(model, input, output, true);
+                generate.Should().Throw<IOException>();
+            }
+            File.ReadAllBytes(projectPath).Should().Equal(original);
+            File.ReadAllText(manifest).Should().Be(manifestText);
+            File.ReadAllText(catalog).Should().Be("// Original catalog");
+            File.Exists(Path.Combine(output, "bases/Pistolaimandrecoil.swlanim")).Should().BeFalse();
+            Directory.GetFiles(folder, "*.tmp", SearchOption.AllDirectories).Should().BeEmpty();
+        }
+        finally { Directory.Delete(folder, true); }
+    }
+
     private static string Root
     {
         get

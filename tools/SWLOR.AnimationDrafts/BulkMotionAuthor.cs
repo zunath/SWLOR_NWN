@@ -174,6 +174,7 @@ internal static class BulkMotionAuthor
     {
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var assignedFeats = new HashSet<SWLOR.NWN.API.NWScript.Enum.FeatType>();
         foreach (var entry in entries)
         {
             if (entry == null || string.IsNullOrEmpty(entry.Id) || string.IsNullOrEmpty(entry.InternalName) ||
@@ -181,8 +182,12 @@ internal static class BulkMotionAuthor
                 !names.Add(entry.InternalName) || !ids.Add(entry.Id))
                 throw new InvalidDataException("Invalid or duplicate animation identity: " + entry?.Id);
             foreach (var feat in entry.Feats ?? [])
+            {
                 if (!Enum.IsDefined(typeof(SWLOR.NWN.API.NWScript.Enum.FeatType), feat))
                     throw new InvalidDataException("Unknown feat: " + feat);
+                if (!assignedFeats.Add(Enum.Parse<SWLOR.NWN.API.NWScript.Enum.FeatType>(feat)))
+                    throw new InvalidDataException("Duplicate feat assignment: " + feat);
+            }
         }
         var resources = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in entries)
@@ -193,14 +198,32 @@ internal static class BulkMotionAuthor
 
     internal static void Generate(string modelPath, string inputPath, string output, bool overwrite, IReadOnlySet<string>? replaceIds = null)
     {
-        var entries = JsonSerializer.Deserialize<ActiveMotion[]>(File.ReadAllText(inputPath), Json) ?? throw new InvalidDataException("Empty inventory.");
+        var inputs = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+        var absent = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        long snapshotBytes = 0;
+        byte[]? Capture(string path)
+        {
+            path = Path.GetFullPath(path);
+            if (inputs.TryGetValue(path, out var priorBytes)) return priorBytes;
+            if (absent.Contains(path)) return null;
+            if (!File.Exists(path)) { absent.Add(path); return null; }
+            var bytes = AnimationSourceFile.ReadBytes(path, AnimationProject.MaximumFileBytes, "Authoring input");
+            snapshotBytes += bytes.Length;
+            if (snapshotBytes > AnimationInstallBatch.MaximumSnapshotBytes)
+                throw new InvalidDataException("Animation authoring snapshots exceed the 512 MiB budget.");
+            inputs.Add(path, bytes);
+            return bytes;
+        }
+        static string Text(byte[] bytes) => System.Text.Encoding.UTF8.GetString(bytes).TrimStart('\uFEFF');
+        var entries = JsonSerializer.Deserialize<ActiveMotion[]>(Text(Capture(inputPath) ?? throw new FileNotFoundException("Missing inventory.", inputPath)), Json) ?? throw new InvalidDataException("Empty inventory.");
         var ids = ValidateEntries(entries);
         if (replaceIds != null && replaceIds.Any(id => !ids.Contains(id))) throw new InvalidDataException("A requested replacement ID is absent from the inventory.");
         var manifestPath = Path.Combine(output, "active-manifest.json");
-        using var previousManifest = File.Exists(manifestPath) ? JsonDocument.Parse(File.ReadAllText(manifestPath)) : null;
+        var previousBytes = Capture(manifestPath);
+        using var previousManifest = previousBytes != null ? JsonDocument.Parse(Text(previousBytes)) : null;
         var previous = previousManifest?.RootElement.GetProperty("Animations").EnumerateArray()
             .ToDictionary(a => a.GetProperty("Id").GetString()!) ?? new Dictionary<string, JsonElement>();
-        var modelBytes = AnimationSourceFile.ReadBytes(modelPath, AnimationProject.MaximumFileBytes, "Base model");
+        var modelBytes = Capture(modelPath) ?? throw new FileNotFoundException("Missing base model.", modelPath);
         var model = new MdlReader().Parse(modelBytes);
         var reports = new List<object>();
         var pending = new Dictionary<string, string>();
@@ -214,10 +237,11 @@ internal static class BulkMotionAuthor
             var profile = Select(entry);
             AnimationProject project;
             string contents;
-            bool preserved = File.Exists(path) && !(overwrite && (replaceIds == null || replaceIds.Contains(entry.Id)));
+            var projectBytes = Capture(path);
+            bool preserved = projectBytes != null && !(overwrite && (replaceIds == null || replaceIds.Contains(entry.Id)));
             if (preserved)
             {
-                contents = File.ReadAllText(path); project = AnimationProject.Deserialize(contents);
+                contents = Text(projectBytes!); project = AnimationProject.Deserialize(contents);
                 if (project.Name != entry.Id) throw new InvalidDataException("Project identity mismatch: " + path);
             }
             else { project = Bake(model, entry, profile); contents = project.Serialize() + "\n"; pending.Add(path, contents); }
@@ -236,19 +260,32 @@ internal static class BulkMotionAuthor
             var id = Regex.Replace(profile.Name, "[^A-Za-z0-9]", "");
             var baseMotion = new ActiveMotion(id, "sw_base", "Bases", "Base", "Reusable procedural base: " + profile.Name);
             var basePath = Path.Combine(output, "bases", id + ".swlanim");
-            if ((overwrite && replaceIds == null) || !File.Exists(basePath))
+            var existingBase = Capture(basePath);
+            if ((overwrite && replaceIds == null) || existingBase == null)
                 pending.Add(basePath, Bake(model, baseMotion, profile).Serialize() + "\n");
         }
-        foreach (var (path, contents) in pending) { Directory.CreateDirectory(Path.GetDirectoryName(path)!); File.WriteAllText(path, contents); }
-        Directory.CreateDirectory(output);
-        File.WriteAllText(manifestPath, JsonSerializer.Serialize(new { Version = 1,
+        var projectCount = pending.Count;
+        pending.Add(manifestPath, JsonSerializer.Serialize(new { Version = 1,
             SourceModelSha256 = Convert.ToHexString(SHA256.HashData(modelBytes)).ToLowerInvariant(), Animations = reports }, Json) + "\n");
         var root = Directory.GetParent(Path.GetFullPath(output))?.Parent?.FullName;
-        if (root != null && Directory.Exists(Path.Combine(root, "SWLOR.Game.Server"))) WriteCatalog(root, entries);
-        Console.WriteLine($"Wrote {pending.Count} projects including {baseProfiles.Count} reusable procedural bases. Inventory: {entries.Length} animations.");
+        if (root != null && Directory.Exists(Path.Combine(root, "SWLOR.Game.Server")))
+            pending.Add(Path.Combine(root, "SWLOR.Game.Server/Service/AnimationService/ActiveAbilityAnimationCatalog.cs"), RenderCatalog(entries));
+        var changes = pending.Select(pair =>
+        {
+            var before = Capture(pair.Key);
+            var after = System.Text.Encoding.UTF8.GetBytes(pair.Value);
+            snapshotBytes += after.Length;
+            if (snapshotBytes > AnimationInstallBatch.MaximumSnapshotBytes)
+                throw new InvalidDataException("Animation authoring snapshots exceed the 512 MiB budget.");
+            return new AnimationFileChange(Path.GetFullPath(pair.Key), before, after);
+        }).ToArray();
+        var plan = new AnimationInstallPlan { AnimationName = "Active ability library", ConstantName = "ActiveAbilities",
+            Changes = changes, Inputs = inputs, AbsentInputs = absent.ToArray() };
+        foreach (var backup in AnimationInstallBatch.Apply([() => plan])) Console.WriteLine("Retained recovery backup: " + backup);
+        Console.WriteLine($"Wrote {projectCount} projects. Inventory: {entries.Length} animations.");
     }
 
-    private static void WriteCatalog(string root, ActiveMotion[] entries)
+    private static string RenderCatalog(ActiveMotion[] entries)
     {
         static string Q(string value) => JsonSerializer.Serialize(value);
         var lines = new List<string> { "// Generated from design/animations/active-abilities.json and saved animation projects.",
@@ -263,7 +300,7 @@ internal static class BulkMotionAuthor
             lines.Add($"        new({Q(entry.Id)}, {Q(entry.DisplayName ?? entry.Id)}, {Q(entry.Category)}, AuthoredAnimation.{entry.Id}, new FeatType[] {{ {string.Join(", ", feats.Select(f => "FeatType." + f))} }}),");
         }
         lines.AddRange(["    };", "}"]);
-        File.WriteAllText(Path.Combine(root, "SWLOR.Game.Server/Service/AnimationService/ActiveAbilityAnimationCatalog.cs"), string.Join("\n", lines) + "\n");
+        return string.Join("\n", lines) + "\n";
     }
 }
 

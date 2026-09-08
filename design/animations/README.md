@@ -33,7 +33,9 @@ powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -Ref
 
 Generation preserves existing projects unless explicitly passed `--overwrite`; preserve
 manual edits before using that switch. `--replace <Id>` regenerates only the selected ability
-projects and preserves existing shared bases. Bulk installation validates all projects first
+projects and preserves existing shared bases. Generation stages projects, provenance, and the
+runtime catalog together and restores earlier outputs if publication fails. Duplicate feat
+bindings are rejected before generation or installation. Bulk installation validates all projects first
 and restores earlier changes if a later installation fails, preserving concurrent edits and
 reporting any retained recovery backups. Compile the changed HAK models and regenerate robe
 bridges using the workflow below before deployment. The generator's foot-floor and release

@@ -140,6 +140,38 @@ public class MigrationDataTests
         player.Perks[SWLOR.Game.Server.Service.PerkService.PerkType.BlastRadius].Should().Be(3);
     }
 
+    [TestCase("DualWield", 2, 1, 4)]
+    [TestCase("RiotBlade", 9, 3, 8)]
+    [TestCase("LegSweep", 42, 3, 9)]
+    [TestCase("CrossCut", 43, 3, 8)]
+    [TestCase("CircleSlash", 48, 3, 9)]
+    [TestCase("DoubleStrike", 49, 3, 8)]
+    [TestCase("Slam", 64, 3, 8)]
+    [TestCase("SpinningWhirl", 65, 3, 9)]
+    [TestCase("RapidShot", 66, 2, 8)]
+    [TestCase("QuickDraw", 75, 3, 9)]
+    [TestCase("DoubleShot", 76, 3, 8)]
+    [TestCase("ExplosiveToss", 81, 3, 9)]
+    [TestCase("PiercingToss", 82, 3, 8)]
+    [TestCase("CripplingShot", 94, 3, 8)]
+    [TestCase("ShieldBash", 242, 3, 8)]
+    [TestCase("Bulwark", 244, 1, 3)]
+    public void PerkNamesReusedAtNewIdsRefundTheHistoricalInvestmentOnce(string name, int legacyId, int rank, int expected)
+    {
+        var raw = PlayerJson();
+        raw["Perks"] = new JObject { [name] = rank, [legacyId.ToString()] = rank };
+        raw["UnlockedPerks"] = new JObject { [name] = DateTime.UtcNow, [legacyId.ToString()] = DateTime.UtcNow };
+        var player = MigratePlayer(raw, out var refund)!;
+        refund.Should().Be(expected);
+        player.UnallocatedSP.Should().Be(expected);
+        player.Perks.Should().BeEmpty();
+        player.UnlockedPerks.Should().BeEmpty();
+
+        var retried = MigratePlayer(JObject.FromObject(player), out refund)!;
+        refund.Should().Be(0);
+        retried.UnallocatedSP.Should().Be(expected);
+    }
+
     [Test]
     public void NumericResistanceKeysKeepTheirResistanceMeaning()
     {

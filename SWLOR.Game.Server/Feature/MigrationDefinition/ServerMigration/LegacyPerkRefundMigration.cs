@@ -299,7 +299,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     .Concat(Aliases.GetValueOrDefault(id) ?? Array.Empty<string>()).ToArray();
                 var rank = keys.Where(key => learned?[key] != null)
                     .Select(key => learned[key].Value<int>()).DefaultIfEmpty(0).Max();
-                var retired = !Enum.TryParse(name, out PerkType currentType) || removed.Contains(currentType);
+                // A reused name with a different ID identifies a replacement perk.
+                // Refund its historical investment before the full rebuild prices it
+                // using the new definition, just as for a removed perk.
+                var retired = !Enum.TryParse(name, out PerkType currentType) ||
+                              (int)currentType != id || removed.Contains(currentType);
                 if (retired)
                 {
                     refund += prices.Take(Math.Max(0, rank)).Sum();
@@ -311,8 +315,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 }
                 else
                 {
-                    // Retained perks must keep their historical meaning when their
-                    // numeric ID now refers to a different perk in the current enum.
+                    // Canonicalize aliases for perks whose identity is unchanged.
                     if (rank > 0)
                         learned[name] = rank;
                     foreach (var key in keys.Where(key => key != name))

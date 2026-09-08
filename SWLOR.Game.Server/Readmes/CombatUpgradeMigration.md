@@ -17,7 +17,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Uses the combat-upgrade skill-cap model: 400 total skill ranks, with Armor contributing normally to the cap and SP progression.
   - Refunds removed or materially changed combat perks during `MigratePlayerData`, before obsolete keys are discarded. Numeric and named aliases count as one investment; legacy blueprint refunds use their original purchase prices.
   - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.
-  - Uses `LegacyPerkRefundMigration` to resolve all 265 historical player perk definitions from pre-upgrade master commit `ce4f91749c2e`. Retired proficiencies, styles, and weapon-focus perks receive their original SP investments, including numeric and named aliases. New perk names never inherit refunds from a reused legacy numeric ID.
+  - Uses `LegacyPerkRefundMigration` to resolve all 265 historical player perk definitions from pre-upgrade master commit `ce4f91749c2e`. Retired proficiencies, styles, and weapon-focus perks receive their original SP investments, including numeric and named aliases. Historical perks whose names are reused at new `PerkType` IDs also refund their original purchase costs. New perk names never inherit refunds from a reused legacy numeric ID.
   - Forces every player through a full rebuild by setting `Player.RebuildComplete = false` in the same save as refunds.
   - Grants each existing player one `CurrencyType.RebuildToken` through player migration 15 on login, in addition to the forced rebuild, so players keep a spare respec for later use.
   - Updates stored item requirement properties to the combat-upgrade skill requirement model.

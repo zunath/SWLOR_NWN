@@ -70,6 +70,45 @@ public class AnimationInstallBatchTests
     }
 
     [Test]
+    public void ConcurrentEditOfAnUnchangedSourceFailsAndRollsBackGeneratedOutputs()
+    {
+        var source = Path.Combine(_folder, "source.swlanim"); File.WriteAllBytes(source, [1]);
+        var bank = Path.Combine(_folder, "bank.mdl"); File.WriteAllBytes(bank, [2]);
+        var later = Path.Combine(_folder, "later.mdl");
+        Action apply = () => AnimationInstallBatch.Apply([
+            () => new AnimationInstallPlan
+            {
+                AnimationName = "sw_test", ConstantName = "Test", Inputs = new Dictionary<string, byte[]>(),
+                Changes = [new(source, [1], [1]), new(bank, [2], [3])]
+            },
+            () => { File.WriteAllBytes(source, [9]); return Change(later, [4]); }
+        ]);
+        apply.Should().Throw<IOException>().WithMessage("*changed during the animation batch*");
+        File.ReadAllBytes(source).Should().Equal(9);
+        File.ReadAllBytes(bank).Should().Equal(2);
+        File.Exists(later).Should().BeFalse();
+        Directory.GetFiles(_folder).Should().BeEquivalentTo([source, bank]);
+    }
+
+    [Test]
+    public void VerificationOnlySourcesConsumeOnlyOneCopyOfTheSnapshotBudget()
+    {
+        var source = Path.Combine(_folder, "source.swlanim"); File.WriteAllBytes(source, [1, 2, 3]);
+        AnimationInstallBatch.Apply([() => Change(source, [1, 2, 3])], 3).Should().BeEmpty();
+        File.ReadAllBytes(source).Should().Equal(1, 2, 3);
+    }
+
+    [Test]
+    public void NoOpAfterAChangedOutputStillRestoresTheOriginalOnFailure()
+    {
+        var path = Path.Combine(_folder, "bank.mdl"); File.WriteAllBytes(path, [1]);
+        Action apply = () => AnimationInstallBatch.Apply([() => Change(path, [2]), () => Change(path, [2]),
+            () => throw new InvalidDataException("Later failure")]);
+        apply.Should().Throw<InvalidDataException>();
+        File.ReadAllBytes(path).Should().Equal(1);
+    }
+
+    [Test]
     public void SuccessfulBatchPublishesTheFinalStateOfRepeatedPaths()
     {
         var path = Path.Combine(_folder, "registry.json"); File.WriteAllBytes(path, [1]);

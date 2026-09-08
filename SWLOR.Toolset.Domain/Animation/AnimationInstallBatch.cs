@@ -6,7 +6,10 @@ namespace SWLOR.Toolset.Domain.Animation;
 public static class AnimationInstallBatch
 {
     public const int MaximumSnapshotBytes = 512 * 1024 * 1024;
-    private sealed record Snapshot(byte[]? Original, byte[] Published);
+    private sealed record Snapshot(byte[]? Original, byte[] Published, bool Modified)
+    {
+        public long ByteCount => Published.LongLength + (ReferenceEquals(Original, Published) ? 0 : Original?.LongLength ?? 0);
+    }
 
     public static IReadOnlyList<string> Apply(IEnumerable<Func<AnimationInstallPlan>> preparePlans) =>
         Apply(preparePlans, MaximumSnapshotBytes);
@@ -28,14 +31,18 @@ public static class AnimationInstallBatch
                 {
                     if (snapshots.TryGetValue(change.Path, out var previous) && !Equal(previous.Published, change.Before))
                         throw new IOException($"'{change.Path}' changed between batch steps. The external change will be preserved.");
-                    if (Equal(change.Before, change.After)) continue;
+                    // Unchanged project sources still certify the generated bank contents.
+                    // Keep verifying them until the whole batch finishes, but never restore
+                    // a verification-only file over an animator's concurrent edit.
+                    var modified = previous?.Modified == true || !Equal(change.Before, change.After);
                     // A file created earlier in the batch must still be removed on rollback.
                     var original = previous == null ? change.Before : previous.Original;
-                    nextBytes -= previous == null ? 0 : (previous.Original?.LongLength ?? 0) + previous.Published.LongLength;
-                    nextBytes += (original?.LongLength ?? 0) + change.After.LongLength;
+                    nextBytes -= previous?.ByteCount ?? 0;
+                    nextBytes += change.After.LongLength + (modified ? original?.LongLength ?? 0 : 0);
                     if (nextBytes > snapshotBudget)
                         throw new InvalidDataException("The animation batch exceeds its rollback snapshot budget. Install a smaller batch.");
-                    next.Add(change.Path, new(original?.ToArray(), change.After.ToArray()));
+                    var published = change.After.ToArray();
+                    next.Add(change.Path, new(modified ? original?.ToArray() : published, published, modified));
                 }
                 try { plan.Apply(); }
                 finally { backups.AddRange(plan.RetainedBackups); }
@@ -52,6 +59,7 @@ public static class AnimationInstallBatch
             var errors = new List<Exception> { failure };
             foreach (var (path, snapshot) in snapshots.Reverse())
             {
+                if (!snapshot.Modified) continue;
                 string? temporary = null;
                 try
                 {

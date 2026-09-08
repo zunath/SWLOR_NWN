@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(serialized))
                 return false;
 
-            var obj = ObjectPlugin.Deserialize(serialized);
+            var obj = MigrationObject.Deserialize(serialized);
             if (!GetIsObjectValid(obj))
                 return false;
 
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 : BaseItem.Invalid;
 
             if (normalizedCount > 0)
-                migrated = ObjectPlugin.Serialize(obj);
+                migrated = MigrationObject.Serialize(obj);
 
             DestroyObject(obj);
             return true;
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             droid.Inventory ??= new Dictionary<string, string>();
 
             var itemId = string.Empty;
-            var item = ObjectPlugin.Deserialize(serializedItem);
+            var item = MigrationObject.Deserialize(serializedItem);
             if (GetIsObjectValid(item))
             {
                 itemId = GetLocalString(item, DroidItemIdVariable);
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 {
                     itemId = Guid.NewGuid().ToString();
                     SetLocalString(item, DroidItemIdVariable, itemId);
-                    serializedItem = ObjectPlugin.Serialize(item);
+                    serializedItem = MigrationObject.Serialize(item);
                 }
 
                 DestroyObject(item);

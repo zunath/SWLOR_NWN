@@ -17,7 +17,8 @@ public static class AnimationRig
         {
             var name = joints[i].Name;
             if (!(name.Equals("lhand_g", StringComparison.OrdinalIgnoreCase) || name.Equals("rhand_g", StringComparison.OrdinalIgnoreCase) ||
-                  name.Equals("lfoot_g", StringComparison.OrdinalIgnoreCase) || name.Equals("rfoot_g", StringComparison.OrdinalIgnoreCase)) || joints[i].Parent < 0) continue;
+                  name.Equals("lfoot_g", StringComparison.OrdinalIgnoreCase) || name.Equals("rfoot_g", StringComparison.OrdinalIgnoreCase)) ||
+                joints[i].Parent < 0 || joints[joints[i].Parent].Parent < 0) continue;
             var ancestor = joints[i].Parent;
             while (ancestor >= 0 && ancestor != selected) ancestor = joints[ancestor].Parent;
             if (ancestor < 0) continue;

@@ -17,6 +17,8 @@ public static class NamedAnimation
     public static void Queue(uint creature, AnimationClip clip, float? durationSeconds = null)
     {
         var duration = Validate(clip, durationSeconds);
+        if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
+            throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         string token = null;
         AssignCommand(creature, () =>
         {

@@ -228,14 +228,20 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureBlocked()
         {
             var creature = OBJECT_SELF;
+            var blocker = GetBlockingDoor();
             if (!IsAIEnabled(creature) ||
                 IsLeashEvading(creature) ||
-                GetObjectType(GetBlockingDoor()) != ObjectType.Creature)
+                GetObjectType(blocker) != ObjectType.Creature)
             {
                 return;
             }
 
-            Enmity.AttackHighestEnmityTarget(creature);
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Recovering blocked creature movement using existing threat: Creature={Creature} Blocker={Blocker}",
+                creature,
+                blocker);
+            Enmity.ResumeAttackAfterActionsCleared(creature);
         }
 
         /// <summary>
@@ -879,6 +885,9 @@ namespace SWLOR.Game.Server.Service
             StopCombatAfterProximityLoss(enemy);
         }
 
+        /// <summary>
+        /// Stops a chase whose proximity threat has expired, using the normal return-home behavior.
+        /// </summary>
         public static void StopCombatAfterProximityLoss(uint enemy)
         {
             NPCAI.ClearState(enemy);

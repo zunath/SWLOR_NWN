@@ -532,6 +532,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Resumes existing combat after the caller clears the action queue. The previous attack
+        /// command is no longer pending, so its throttle must not delay the replacement command.
+        /// </summary>
+        public static void ResumeAttackAfterActionsCleared(uint creature)
+        {
+            _attackCommandTimes.Remove(creature);
+            AttackHighestEnmityTarget(creature);
+        }
+
+        /// <summary>
         /// Forces a creature to attack the highest enmity target.
         /// Stops an existing chase when its last proximity target is no longer in range.
         /// If creature did not have enmity, nothing will happen.

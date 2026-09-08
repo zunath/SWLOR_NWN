@@ -30,10 +30,10 @@ Get-ChildItem SWLOR_Haks/tools/SoundCompressionManifest*.json | ForEach-Object {
     if ($LASTEXITCODE -ne 0) { throw "A compressed sound is configured to loop." }
 }
 python -m unittest discover -s tools -p TestSoundCompressionAudit.py
-python -m unittest discover -s SWLOR_Haks/tools -p TestSoundCompression.py
+python SWLOR_Haks/tools/TestSoundCompression.py --ffmpeg "C:/Program Files/kdenlive/bin/ffmpeg.exe"
 ```
 
-Audit every historical conversion manifest for loop references, because a later batch records previously compressed resources as skipped. Validate deployed hashes and MP3 decoding against the new batch's manifest using the same path:
+Audit every historical conversion manifest for loop references, because a later batch records previously compressed resources as skipped. Validate the complete WAV file list, deployed hashes, and MP3 decoding against the new batch's manifest using the same path:
 
 ```powershell
 python SWLOR_Haks/tools/CompressSoundResources.py --ffmpeg "C:/Program Files/kdenlive/bin/ffmpeg.exe" --verify-manifest $soundManifestPath

@@ -108,6 +108,60 @@ public class AnimationInstallBatchTests
         File.ReadAllBytes(path).Should().Equal(1);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ReadOnlyInputChangesFailEvenWhenTheInputIsNotAnOutput(bool reusedByLaterPlan)
+    {
+        var source = Path.Combine(_folder, "hakbuilder.json"); File.WriteAllBytes(source, [1]);
+        var bank = Path.Combine(_folder, "bank.mdl"); File.WriteAllBytes(bank, [2]);
+        AnimationInstallPlan Plan() => new()
+        {
+            AnimationName = "sw_test", ConstantName = "Test",
+            Inputs = new Dictionary<string, byte[]> { [source] = File.ReadAllBytes(source) },
+            Changes = [new(bank, File.ReadAllBytes(bank), [3])]
+        };
+        Action apply = () => AnimationInstallBatch.Apply([Plan, () =>
+        {
+            File.WriteAllBytes(source, [9]);
+            return reusedByLaterPlan ? Plan() : Change(bank, [4]);
+        }]);
+        apply.Should().Throw<IOException>();
+        File.ReadAllBytes(source).Should().Equal(9);
+        File.ReadAllBytes(bank).Should().Equal(2);
+    }
+
+    [Test]
+    public void LaterBatchOwnedUpdatesAdvanceTheExpectedInputSnapshot()
+    {
+        var source = Path.Combine(_folder, "source.json"); File.WriteAllBytes(source, [1]);
+        AnimationInstallPlan Read() => new()
+        {
+            AnimationName = "sw_test", ConstantName = "Test", Changes = [],
+            Inputs = new Dictionary<string, byte[]> { [source] = File.ReadAllBytes(source) }
+        };
+        AnimationInstallBatch.Apply([Read, () => Change(source, [2]), Read]).Should().BeEmpty();
+        File.ReadAllBytes(source).Should().Equal(2);
+        Action fail = () => AnimationInstallBatch.Apply([Read, () => Change(source, [3]), Read,
+            () => throw new InvalidDataException("Failure")]);
+        fail.Should().Throw<InvalidDataException>();
+        File.ReadAllBytes(source).Should().Equal(2);
+    }
+
+    [Test]
+    public void APreviouslyAbsentDependencyCannotAppearExternallyDuringTheBatch()
+    {
+        var source = Path.Combine(_folder, "missing.json");
+        var bank = Path.Combine(_folder, "bank.json");
+        Action apply = () => AnimationInstallBatch.Apply([
+            () => new AnimationInstallPlan { AnimationName = "sw_test", ConstantName = "Test",
+                Inputs = new Dictionary<string, byte[]>(), AbsentInputs = [source], Changes = [new(bank, null, [1])] },
+            () => { File.WriteAllBytes(source, [9]); return Change(bank, [2]); }
+        ]);
+        apply.Should().Throw<IOException>();
+        File.ReadAllBytes(source).Should().Equal(9);
+        File.Exists(bank).Should().BeFalse();
+    }
+
     [Test]
     public void SuccessfulBatchPublishesTheFinalStateOfRepeatedPaths()
     {

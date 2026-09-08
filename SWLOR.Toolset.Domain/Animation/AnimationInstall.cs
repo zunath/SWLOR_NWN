@@ -159,7 +159,7 @@ public sealed class AnimationInstallPlan
                 throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
     }
 
-    private static void VerifyModelResolutions(IEnumerable<string> presentPaths, IEnumerable<string> absentPaths,
+    internal static void VerifyModelResolutions(IEnumerable<string> presentPaths, IEnumerable<string> absentPaths,
         IReadOnlySet<string>? allowedAbsentPaths)
     {
         var present = presentPaths.Where(AnimationInstall.IsModelPath).ToArray();

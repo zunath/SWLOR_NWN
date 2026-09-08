@@ -31,7 +31,7 @@ def cell(column, row, value, style="4"):
     return f'<c r="{column}{row}" s="{style}" t="inlineStr"><is><t>{escape(str(value))}</t></is></c>'
 
 
-def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
+def render_workbook(workbook: Path, entries: list[dict], registry: list[dict], captured_bytes=None):
     installed = {e["Name"]: e for e in registry}
     if len(installed) != len(registry):
         raise ValueError("Duplicate registry animation identity")
@@ -45,7 +45,7 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
         record = installed.get(entry["Id"])
         if record is None or record["AnimationName"] != entry["InternalName"]:
             raise ValueError(f"Animation is not installed with its assigned name: {entry['Id']}")
-    with zipfile.ZipFile(workbook) as source:
+    with zipfile.ZipFile(io.BytesIO(captured_bytes) if captured_bytes is not None else workbook) as source:
         infos = source.infolist()
         original = {i.filename: source.read(i.filename) for i in infos}
     sheets = ET.fromstring(original["xl/workbook.xml"])
@@ -203,15 +203,42 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
     return output.getvalue()
 
 
-def replace_outputs(outputs: dict[Path, bytes]):
-    """Stage every replacement and rollback copy before replacing any existing file."""
+def conditional_replace(path, staged, expected):
+    """Capture and verify the current version; publish only into an absent pathname."""
+    with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".animation-recovery-", delete=False) as stream:
+        captured = Path(stream.name)
+    captured.unlink()
+    moved = False
+    try:
+        os.rename(path, captured)
+        moved = True
+        if captured.read_bytes() != expected:
+            raise OSError(f"Concurrent edit detected: {path}")
+        # Atomic create-only publication never overwrites a file created after capture.
+        os.link(staged, path)
+    except Exception as failure:
+        if moved:
+            try:
+                os.link(captured, path)
+                captured.unlink()
+            except Exception as recovery:
+                raise OSError(f"Concurrent file preserved at {path}; captured version retained at {captured}") from ExceptionGroup(
+                    "Conditional publication failed", [failure, recovery])
+        raise
+    else:
+        return captured
+
+
+def replace_outputs(outputs: dict[Path, bytes], expected=None, dependencies=None):
+    """Conditionally publish captured inputs, rolling back only our own output versions."""
     paths = [path.resolve() for path in outputs]
     if len(set(paths)) != len(paths):
         raise ValueError("Output paths must be distinct")
-    staged = {}
-    backups = {}
-    committed = []
-    temporary = []
+    expected = dict(expected) if expected is not None else {path: path.read_bytes() for path in outputs}
+    dependencies = dict(dependencies or {})
+    if set(expected) != set(outputs):
+        raise ValueError("Every output requires its captured original bytes")
+    staged, backups, committed, temporary = {}, {}, [], []
 
     def stage(path, payload):
         with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".animation-sync-", delete=False) as stream:
@@ -221,21 +248,28 @@ def replace_outputs(outputs: dict[Path, bytes]):
             os.fsync(stream.fileno())
         return temporary[-1]
 
+    def verify(values):
+        for path, payload in values.items():
+            if path.read_bytes() != payload:
+                raise OSError(f"Concurrent edit detected: {path}")
+
     try:
+        verify({**dependencies, **expected})
         for path, payload in outputs.items():
-            backups[path] = stage(path, path.read_bytes())
+            backups[path] = stage(path, expected[path])
             staged[path] = stage(path, payload)
         try:
             for path in outputs:
-                os.replace(staged[path], path)
+                verify(dependencies)
+                temporary.append(conditional_replace(path, staged[path], expected[path]))
                 committed.append(path)
+            verify({**dependencies, **outputs})
         except Exception as failure:
             rollback_failures = []
             for path in reversed(committed):
                 try:
-                    os.replace(backups[path], path)
+                    temporary.append(conditional_replace(path, backups[path], outputs[path]))
                 except Exception as rollback_failure:
-                    # Retain this recovery copy if the filesystem also rejects rollback.
                     temporary.remove(backups[path])
                     rollback_failures.append(OSError(f"Could not restore {path}; original saved at {backups[path]}: {rollback_failure}"))
             if rollback_failures:
@@ -247,7 +281,8 @@ def replace_outputs(outputs: dict[Path, bytes]):
 
 
 def synchronize(workbook: Path, entries: list[dict], registry: list[dict]):
-    replace_outputs({workbook: render_workbook(workbook, entries, registry)})
+    original = workbook.read_bytes()
+    replace_outputs({workbook: render_workbook(workbook, entries, registry, original)}, {workbook: original})
     return entries
 
 
@@ -262,20 +297,21 @@ def details(entry, installed):
 
 
 def synchronize_files(manifest_path, workbook_path, registry_path, provenance_path, plan_path):
-    data = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+    captured = {path: path.read_bytes() for path in (manifest_path, workbook_path, registry_path, provenance_path, plan_path)}
+    data = json.loads(captured[manifest_path].decode("utf-8-sig"))
     source_entries = data if isinstance(data, list) else data["Animations"]
     entries = copy.deepcopy(source_entries)
-    provenance = {e["Id"]: e for e in json.loads(provenance_path.read_text(encoding="utf-8-sig"))["Animations"]}
+    provenance = {e["Id"]: e for e in json.loads(captured[provenance_path].decode("utf-8-sig"))["Animations"]}
     for entry in entries:
         if entry["Id"] not in provenance:
             raise ValueError(f"Missing generation provenance: {entry['Id']}")
         for key in ("SourceModel", "SourceAnimation", "Profile"):
             entry[key] = provenance[entry["Id"]].get(key)
-    workbook_bytes = render_workbook(workbook_path, entries, json.loads(registry_path.read_text(encoding="utf-8-sig")))
+    workbook_bytes = render_workbook(workbook_path, entries, json.loads(captured[registry_path].decode("utf-8-sig")), captured[workbook_path])
     rows = {e["Id"]: e["BibleAnimationRow"] for e in entries}
     for entry in source_entries:
         entry["BibleAnimationRow"] = rows[entry["Id"]]
-    with plan_path.open(encoding="utf-8-sig", newline="") as stream:
+    with io.StringIO(captured[plan_path].decode("utf-8-sig"), newline="") as stream:
         reader = csv.DictReader(stream)
         fields = list(reader.fieldnames)
         plan = list(reader)
@@ -291,7 +327,9 @@ def synchronize_files(manifest_path, workbook_path, registry_path, provenance_pa
     writer.writerows(plan)
     replace_outputs({workbook_path: workbook_bytes,
                      manifest_path: (json.dumps(data, indent=2, ensure_ascii=False) + "\n").encode("utf-8"),
-                     plan_path: stream.getvalue().encode("utf-8")})
+                     plan_path: stream.getvalue().encode("utf-8")},
+                    {path: captured[path] for path in (workbook_path, manifest_path, plan_path)},
+                    {path: captured[path] for path in (registry_path, provenance_path)})
     return len(entries)
 
 

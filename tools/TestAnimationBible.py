@@ -8,10 +8,76 @@ from xml.etree import ElementTree as ET
 from pathlib import Path
 from unittest.mock import patch
 
-from UpdateAnimationBible import synchronize, synchronize_files, replace_outputs
+from UpdateAnimationBible import synchronize, synchronize_files, replace_outputs, conditional_replace
 
 
 class AnimationBibleTests(unittest.TestCase):
+    def test_edits_after_render_to_any_captured_input_abort_without_overwrite(self):
+        for changed_name in ("bible.xlsx", "manifest.json", "plan.csv", "registry.json", "provenance.json"):
+            with self.subTest(changed_name=changed_name), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                workbook, manifest, registry, provenance, plan = [root / name for name in
+                    ("bible.xlsx", "manifest.json", "registry.json", "provenance.json", "plan.csv")]
+                workbook.write_bytes(b"captured workbook")
+                manifest.write_text(json.dumps([{"Id": "Push", "InternalName": "sw_push", "BibleAnimationRow": 2}]))
+                registry.write_text("[]")
+                provenance.write_text(json.dumps({"Animations": [{"Id": "Push"}]}))
+                plan.write_text("PerkId,Status,BibleAnimationRow\nPush,Needed,2\n")
+                originals = {path: path.read_bytes() for path in (workbook, manifest, registry, provenance, plan)}
+
+                def render(path, entries, records, captured):
+                    self.assertEqual(captured, originals[workbook])
+                    (root / changed_name).write_bytes(b"external edit")
+                    return b"rendered workbook"
+
+                with patch("UpdateAnimationBible.render_workbook", side_effect=render):
+                    with self.assertRaisesRegex(OSError, "Concurrent edit"):
+                        synchronize_files(manifest, workbook, registry, provenance, plan)
+                for path, payload in originals.items():
+                    self.assertEqual(path.read_bytes(), b"external edit" if path.name == changed_name else payload)
+                self.assertEqual(list(root.glob(".animation-*")), [])
+
+    def test_partial_publish_preserves_external_edit_and_restores_other_outputs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            paths = [Path(folder) / name for name in ("first", "second", "third")]
+            for path in paths:
+                path.write_bytes(b"original")
+            calls = 0
+
+            def race(path, staged, expected):
+                nonlocal calls
+                calls += 1
+                if calls == 3:
+                    paths[0].write_bytes(b"external first")
+                    raise PermissionError("third locked")
+                return conditional_replace(path, staged, expected)
+
+            with patch("UpdateAnimationBible.conditional_replace", side_effect=race):
+                with self.assertRaises(ExceptionGroup):
+                    replace_outputs({path: b"published" for path in paths})
+            self.assertEqual(paths[0].read_bytes(), b"external first")
+            self.assertEqual(paths[1].read_bytes(), b"original")
+            self.assertEqual(paths[2].read_bytes(), b"original")
+            retained = list(Path(folder).glob(".animation-sync-*"))
+            self.assertEqual(len(retained), 1)
+            self.assertEqual(retained[0].read_bytes(), b"original")
+
+    def test_atomic_capture_detects_edit_after_prepublication_check(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "bible.xlsx"
+            path.write_bytes(b"original")
+            native_rename = os.rename
+
+            def race(source, destination):
+                Path(source).write_bytes(b"racing writer")
+                return native_rename(source, destination)
+
+            with patch("UpdateAnimationBible.os.rename", side_effect=race):
+                with self.assertRaisesRegex(OSError, "Concurrent edit"):
+                    replace_outputs({path: b"published"}, {path: b"original"})
+            self.assertEqual(path.read_bytes(), b"racing writer")
+            self.assertEqual(list(Path(folder).glob(".animation-*")), [])
+
     def test_stale_plan_validation_does_not_write_workbook_or_manifest(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -36,17 +102,17 @@ class AnimationBibleTests(unittest.TestCase):
             for index, path in enumerate(paths):
                 path.write_bytes(f"original {index}".encode())
             originals = {path: path.read_bytes() for path in paths}
-            native_replace = os.replace
+            native_replace = conditional_replace
             calls = 0
 
-            def fail_second(source, target):
+            def fail_second(path, staged, expected):
                 nonlocal calls
                 calls += 1
                 if calls == 2:
                     raise PermissionError("simulated locked manifest")
-                return native_replace(source, target)
+                return native_replace(path, staged, expected)
 
-            with patch("UpdateAnimationBible.os.replace", side_effect=fail_second):
+            with patch("UpdateAnimationBible.conditional_replace", side_effect=fail_second):
                 with self.assertRaisesRegex(PermissionError, "locked manifest"):
                     replace_outputs({path: b"updated" for path in paths})
             for path, payload in originals.items():

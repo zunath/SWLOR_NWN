@@ -18,6 +18,7 @@ public static class AnimationInstallBatch
     {
         if (snapshotBudget < 1 || snapshotBudget > MaximumSnapshotBytes) throw new ArgumentOutOfRangeException(nameof(snapshotBudget));
         var snapshots = new Dictionary<string, Snapshot>(AnimationInstall.PathComparer);
+        var absent = new HashSet<string>(AnimationInstall.PathComparer);
         var backups = new List<string>();
         long retainedBytes = 0;
         try
@@ -25,11 +26,27 @@ public static class AnimationInstallBatch
             foreach (var prepare in preparePlans)
             {
                 var plan = prepare();
+                AnimationInstallPlan.VerifyModelResolutions(snapshots.Keys, absent, null);
                 var next = new Dictionary<string, Snapshot>(AnimationInstall.PathComparer);
                 var nextBytes = retainedBytes;
+                foreach (var (path, bytes) in plan.Inputs)
+                {
+                    if (absent.Contains(path) || snapshots.TryGetValue(path, out var dependency) && !Equal(dependency.Published, bytes))
+                        throw new IOException($"'{path}' changed between batch steps. The external change will be preserved.");
+                    if (snapshots.ContainsKey(path)) continue;
+                    nextBytes += bytes.LongLength;
+                    if (nextBytes > snapshotBudget)
+                        throw new InvalidDataException("The animation batch exceeds its rollback snapshot budget. Install a smaller batch.");
+                    var owned = bytes.ToArray();
+                    next.Add(path, new(owned, owned, false));
+                }
+                foreach (var path in plan.AbsentInputs)
+                    if (snapshots.ContainsKey(path))
+                        throw new IOException($"'{path}' disappeared between batch steps. The external change will be preserved.");
                 foreach (var change in plan.Changes)
                 {
-                    if (snapshots.TryGetValue(change.Path, out var previous) && !Equal(previous.Published, change.Before))
+                    var previous = next.GetValueOrDefault(change.Path) ?? snapshots.GetValueOrDefault(change.Path);
+                    if (previous != null && !Equal(previous.Published, change.Before) || absent.Contains(change.Path) && change.Before != null)
                         throw new IOException($"'{change.Path}' changed between batch steps. The external change will be preserved.");
                     // Unchanged project sources still certify the generated bank contents.
                     // Keep verifying them until the whole batch finishes, but never restore
@@ -42,16 +59,24 @@ public static class AnimationInstallBatch
                     if (nextBytes > snapshotBudget)
                         throw new InvalidDataException("The animation batch exceeds its rollback snapshot budget. Install a smaller batch.");
                     var published = change.After.ToArray();
-                    next.Add(change.Path, new(modified ? original?.ToArray() : published, published, modified));
+                    next[change.Path] = new(modified ? original?.ToArray() : published, published, modified);
                 }
+                if (absent.Concat(plan.AbsentInputs).Distinct(AnimationInstall.PathComparer).Count() > AnimationInstall.MaximumAbsentReservations)
+                    throw new InvalidDataException("The animation batch has too many absent dependencies. Install a smaller batch.");
                 try { plan.Apply(); }
                 finally { backups.AddRange(plan.RetainedBackups); }
                 foreach (var (path, snapshot) in next) snapshots[path] = snapshot;
+                absent.UnionWith(plan.AbsentInputs);
+                foreach (var change in plan.Changes) absent.Remove(change.Path);
                 retainedBytes = nextBytes;
             }
+            AnimationInstallPlan.VerifyModelResolutions(snapshots.Keys, absent, null);
             foreach (var (path, snapshot) in snapshots)
                 if (!File.Exists(path) || !AnimationSourceFile.Matches(path, snapshot.Published))
                     throw new IOException($"'{path}' changed during the animation batch. The external change will be preserved.");
+            foreach (var path in absent)
+                if (File.Exists(path) || Directory.Exists(path))
+                    throw new IOException($"'{path}' appeared during the animation batch. The external change will be preserved.");
             return backups.AsReadOnly();
         }
         catch (Exception failure)

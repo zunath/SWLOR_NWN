@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .SoundSetId(17)
                 .PortraitId(239)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
-                .Role(BeastRoleType.Bruiser)
+                .Role(BeastRoleType.Balanced)
 
                 .CanMutateInto(BeastType.GoldpeltSahrak)
 				.MutationWeight(90)

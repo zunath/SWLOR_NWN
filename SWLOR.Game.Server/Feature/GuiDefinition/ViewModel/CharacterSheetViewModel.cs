@@ -1,4 +1,6 @@
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -208,6 +210,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string HP
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string TemporaryHP
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string HitPointTooltip
         {
             get => Get<string>();
             set => Set(value);
@@ -728,7 +740,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshStats()
         {
-            HP = GetCurrentHitPoints(_target) + " / " + GetMaxHitPoints(_target);
+            RefreshHitPoints();
 
             if (GetClassByPosition(1, _target) == ClassType.Standard)
             {
@@ -1287,6 +1299,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
             WatchOnClient(model => model.TopTabId);
             WatchOnClient(model => model.BottomTabId);
+            Scheduler.Schedule(RefreshLiveHitPoints, TimeSpan.FromSeconds(1));
+        }
+
+        private void RefreshHitPoints()
+        {
+            HP = ObjectPlugin.GetCurrentHitPoints(_target) + " / " + GetMaxHitPoints(_target);
+            TemporaryHP = TemporaryHitPointEffects.GetRemaining(_target).ToString();
+            HitPointTooltip = $"HP: {HP}\nTemporary HP: {TemporaryHP}";
+        }
+
+        private void RefreshLiveHitPoints()
+        {
+            if (!GetIsObjectValid(Player) || !GetIsObjectValid(_target) ||
+                !Gui.IsWindowOpen(Player, WindowType) ||
+                !ReferenceEquals(Gui.GetPlayerWindow(Player, WindowType).ViewModel, this))
+                return;
+
+            RefreshHitPoints();
+            Scheduler.Schedule(RefreshLiveHitPoints, TimeSpan.FromSeconds(1));
         }
 
         public void Refresh(ChangePortraitRefreshEvent payload)

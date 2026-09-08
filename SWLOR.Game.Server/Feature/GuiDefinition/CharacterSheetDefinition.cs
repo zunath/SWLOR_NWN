@@ -103,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddSpacer();
                 row.AddImage()
                     .BindResref(model => model.PortraitResref)
+                    .BindTooltip(model => model.HitPointTooltip)
                     .SetVerticalAlign(NuiVerticalAlign.Top)
                     .SetHorizontalAlign(NuiHorizontalAlign.Center)
                     .SetAspect(NuiAspect.ExactScaled)
@@ -131,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     group.AddColumn(resourceCol =>
                     {
                         AddBoundValueRow(resourceCol, "HP", model => model.HP, "Health. At 0, you die.", null, 36f, GuiColor.HPColor);
+                        AddBoundValueRow(resourceCol, "Temp HP", model => model.TemporaryHP, "Remaining temporary hit points. Absorbs damage before health and expires with its granting effect.", null, 64f, GuiColor.HPColor);
                         AddBoundValueRow(resourceCol, "FP", model => model.FP, "Force ability resource.", null, 36f, GuiColor.FPColor);
                         AddBoundValueRow(resourceCol, "STM", model => model.STM, "Non-Force ability resource.", null, 36f, GuiColor.STMColor);
                         AddBoundValueRow(resourceCol, "Ranks", model => model.SkillRanks, $"Skill ranks contributing to the {Skill.SkillCap}-rank limit.", null, 36f, null, model => model.ShowSkillRanks);

@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                     Ability.ApplyCombatImpact(
                         activator, arc, GetLocation(arc),
-                        ResolveSkillType(activator, profile), ScaleForMimicryPotency(activator, profile, arcDamage), arcDuration, arcStatus, false,
+                        ResolveSkillType(activator, profile), arcDamage, arcDuration, arcStatus, false,
                         damageType: damageType, playImpactAnimation: false,
                         useNPCStatScaling: ShouldUseNPCStatScaling(activator));
 
@@ -241,24 +241,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             // Clamp unconscious targets so missing HP never grants more than the advertised cap.
             var missingHp = maxHp - Math.Clamp(currentHp, 0, maxHp);
             return (int)((long)maxPercentBonus * missingHp / maxHp);
-        }
-
-        /// <summary>
-        /// Applies combat-analyzer potency to a mimicked technique's base damage. Potency
-        /// (<see cref="StatType.MimicryPotencyPercent"/>) is granted by Combat Analyzer ranks, the
-        /// Overclocked Analyzer capstone's Overload, and damage-type set bonuses. Only the Mimicry
-        /// profile is affected, so shared innate-ability damage for other skills is unchanged.
-        /// </summary>
-        private static int ScaleForMimicryPotency(uint activator, InnateAbilityProfile profile, int baseDamage)
-        {
-            if (!ReferenceEquals(profile, InnateAbilityProfile.Mimicry))
-                return baseDamage;
-
-            var potency = Stat.GetStatAdjustment(activator, StatType.MimicryPotencyPercent);
-            if (potency <= 0)
-                return baseDamage;
-
-            return baseDamage + baseDamage * potency / 100;
         }
 
         public static AbilityBuilder BuildSingleTarget(
@@ -308,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    ScaleForMimicryPotency(activator, profile, baseDamage),
+                    baseDamage,
                     duration,
                     statusEffect,
                     false,
@@ -392,7 +374,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    ScaleForMimicryPotency(activator, profile, baseDamage),
+                    baseDamage,
                     duration,
                     statusEffect,
                     shape,

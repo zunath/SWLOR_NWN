@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Overload)
-                .Description("Overclocks the combat analyzer, granting 2 additional technique slots and an activated ability that briefly boosts your equipped techniques' potency and on-hit effect chance.")
+                .Description("Grants 2 additional technique slots and an activated self-buff. For 12 seconds, increases equipped technique potency by 50% and your on-hit Bleed, Freezing, Shock, Sunder, and Hemorrhage chances by 15 percentage points. Activate without choosing a target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Mimicry, 50)
                 .RequirementMustHavePerk(PerkType.CombatAnalyzer, 4);

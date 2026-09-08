@@ -21,6 +21,50 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private readonly record struct NativeTintRow(string Material, string Parameter, int Type, float Value);
 
+        [EngineTest("Tint Shuttle Pilot refresh installs authored helmet and chest dyes", Category = "Tint", TimeoutSeconds = 30f)]
+        public static async Task ShuttlePilotRefreshInstallsAuthoredRows(EngineTestContext ctx)
+        {
+            var pilot = GetObjectByTag("novapilot");
+            ctx.Assert(GetIsObjectValid(pilot), "The starter area's placed Shuttle Pilot must exist.");
+            var helmet = GetItemInSlot(InventorySlot.Head, pilot);
+            var armor = GetItemInSlot(InventorySlot.Chest, pilot);
+            ctx.AssertEqual(114, GetItemAppearance(helmet, ItemAppearanceType.SimpleModel, 0), "Pilot helmet model");
+            ctx.AssertEqual(249, GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), "Pilot chest model");
+            var originalHelmetColors = ReadArmorColors(helmet);
+            var originalArmorColors = ReadArmorColors(armor);
+            await RunAssignedAsync(ctx, GetArea(pilot), () => TintMapService.QueueRefresh(pilot));
+            await ctx.WaitUntilAsync(() => ReadNativeRows(ctx, pilot).Any(row => row.Material == "helm_114"),
+                5f, "the queued pilot tint refresh");
+            var rows = ReadNativeRows(ctx, pilot);
+            AssertNoResetRecords(ctx, rows);
+            AssertNativeRow(ctx, rows, "helm_114", "rowcloth1", (704f + 135f + 0.5f) / 2048f);
+            AssertNativeRow(ctx, rows, "helm_114", "rowleath1", (880f + 23f + 0.5f) / 2048f);
+            AssertNativeRow(ctx, rows, "pfh0_chest249", "rowmetal1", (352f + 133f + 0.5f) / 2048f);
+            AssertNativeRow(ctx, rows, "pfh0_chest249", "rowcloth1", (704f + 132f + 0.5f) / 2048f);
+            ctx.Assert(originalHelmetColors.SequenceEqual(ReadArmorColors(helmet)), "Untinted helmet palette fields remain authored.");
+            ctx.Assert(originalArmorColors.SequenceEqual(ReadArmorColors(armor)), "Untinted armor palette fields remain authored.");
+
+            var selection = TintMapModelResolver.GetCurrentSelections(pilot).Single(s => s.Material.Resref == "helm_114");
+            ctx.Assert(!RobeModelRenderer.SupportsRgb(selection), "The worn helmet cannot render exact RGB scalars.");
+            var color = new TintMapColor(255, 0, 0);
+            var layer = TintMapLayerType.Cloth1;
+            var channel = (int)AppearanceArmorColor.Cloth1;
+            await RunAssignedAsync(ctx, pilot, () =>
+            {
+                // Retain compatibility with RGB already persisted by older editor versions.
+                TintMapService.SetColor(pilot, selection, layer, color);
+                ctx.AssertEqual(TintMapPaletteColors.GetClosestColorId(layer, color),
+                    GetItemAppearance(helmet, ItemAppearanceType.ArmorColor, channel), "Legacy RGB reaches the native helmet scheme as a preset.");
+                ctx.AssertEqual(135, TintMapService.GetStandardColorId(pilot, selection, layer), "The authored helmet baseline survives projection.");
+                TintMapService.ApplyCurrentColors(pilot);
+                TintMapService.ResetColor(pilot, selection, layer);
+                ctx.AssertEqual(135, GetItemAppearance(helmet, ItemAppearanceType.ArmorColor, channel), "Reset restores the authored helmet dye.");
+                AssertProjectionCleared(ctx, helmet, channel);
+            });
+            ctx.Assert(originalArmorColors.SequenceEqual(ReadArmorColors(armor)), "Helmet projection never changes armor dyes.");
+            ctx.SetResultDetail("Placed pilot retains authored helmet114 and chest249 dyes after a queued refresh. Server state only; client rendering is not attached.");
+        }
+
         [EngineTest("Tint NPC spawn installs authored hair and clothing rows", Category = "Tint", TimeoutSeconds = 30f)]
         public static async Task CreatureSpawnInstallsAuthoredRows(EngineTestContext ctx)
         {

@@ -1021,6 +1021,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsCustomTintEditable = selections.Count > 0 &&
                                    selections.All(RobeModelRenderer.SupportsRgb);
             CustomTintTooltip = IsCustomTintEditable ? "Apply an RGB color."
+                : selections.Any(selection => selection.IsWornHelmet)
+                    ? "Worn helmets support preset colors only. Select a color from the palette above."
                 : selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe)
                     ? "This body and robe combination supports preset colors only. Select a color from the palette above."
                     : "This part has no visible material for this color.";

@@ -84,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static int GetBasePhenotype(uint creature) => _catalog.GetBasePhenotype((int)GetPhenoType(creature));
 
         public static bool SupportsRgb(TintMapMaterialSelection selection) =>
-            selection.ArmorPart != AppearanceArmor.Robe || _catalog.Supports(selection.ModelResref);
+            !selection.IsWornHelmet &&
+            (selection.ArmorPart != AppearanceArmor.Robe || _catalog.Supports(selection.ModelResref));
 
         public static bool Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections, bool hasRobeRgb)
         {

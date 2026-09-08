@@ -2371,7 +2371,6 @@ namespace SWLOR.Game.Server.Service
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
             var impactDamage = ResolveCombatImpactBaseDamage(
                 adjustedBaseDamage,
-                skillType,
                 trackedImpact?.Ability,
                 () => Combat.GetAbilityImpactBaseDamageBonus(
                           activator, target, trackedImpact?.Ability, skillType) +
@@ -2407,13 +2406,12 @@ namespace SWLOR.Game.Server.Service
 
         private static (int BaseDamage, bool DealsDamage) ResolveCombatImpactBaseDamage(
             int baseDamage,
-            SkillType skillType,
             AbilityDetail ability,
             Func<int> getDamageBonus)
         {
-            // Weapon damage and explicitly declared deferred damage remain eligible even
+            // Queued weapon damage and explicitly declared deferred damage remain eligible even
             // with zero immediate base damage. Control-only impacts must not consume bonuses.
-            var dealsDamage = baseDamage > 0 || Combat.IsWeaponSkillType(skillType) ||
+            var dealsDamage = baseDamage > 0 ||
                               ability?.ActivationType == AbilityActivationType.Weapon ||
                               ability?.DealsDeferredDamage == true;
             return dealsDamage ? (baseDamage + getDamageBonus(), true) : (0, false);

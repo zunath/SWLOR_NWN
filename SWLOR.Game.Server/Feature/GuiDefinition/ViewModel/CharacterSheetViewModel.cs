@@ -1,4 +1,6 @@
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -48,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string CraftingTabPartial = "CHARACTER_SHEET_CRAFTING_TAB";
 
         private uint _target;
+        private int _hitPointRefreshGeneration;
 
         // Tab registration: id -> partial view -> refresh action. Replaces
         // GetTabPartialName + the RefreshSelectedTabData switch statement that
@@ -728,7 +731,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshStats()
         {
-            HP = GetCurrentHitPoints(_target) + " / " + GetMaxHitPoints(_target);
+            RefreshHitPoints();
 
             if (GetClassByPosition(1, _target) == ClassType.Standard)
             {
@@ -1287,6 +1290,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
             WatchOnClient(model => model.TopTabId);
             WatchOnClient(model => model.BottomTabId);
+            var refreshGeneration = ++_hitPointRefreshGeneration;
+            Scheduler.Schedule(() => RefreshLiveHitPoints(refreshGeneration), TimeSpan.FromSeconds(1));
+        }
+
+        private void RefreshHitPoints()
+        {
+            var normalHP = ObjectPlugin.GetCurrentHitPoints(_target);
+            var maxHP = GetMaxHitPoints(_target);
+            var temporaryHP = TemporaryHitPointEffects.GetRemaining(_target);
+            HP = $"{normalHP + temporaryHP} / {maxHP}";
+        }
+
+        public override Action OnWindowClosed() => () => ++_hitPointRefreshGeneration;
+
+        private void RefreshLiveHitPoints(int refreshGeneration)
+        {
+            if (refreshGeneration != _hitPointRefreshGeneration ||
+                !GetIsObjectValid(Player) || !GetIsObjectValid(_target) ||
+                NuiFindWindow(Player, Gui.BuildWindowId(WindowType)) != WindowToken)
+                return;
+
+            RefreshHitPoints();
+            Scheduler.Schedule(() => RefreshLiveHitPoints(refreshGeneration), TimeSpan.FromSeconds(1));
         }
 
         public void Refresh(ChangePortraitRefreshEvent payload)

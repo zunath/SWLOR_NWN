@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     group.SetScrollbars(NuiScrollbars.Auto);
                     group.AddColumn(resourceCol =>
                     {
-                        AddBoundValueRow(resourceCol, "HP", model => model.HP, "Health. At 0, you die.", null, 36f, GuiColor.HPColor);
+                        AddBoundValueRow(resourceCol, "HP", model => model.HP, null, null, 36f, GuiColor.HPColor);
                         AddBoundValueRow(resourceCol, "FP", model => model.FP, "Force ability resource.", null, 36f, GuiColor.FPColor);
                         AddBoundValueRow(resourceCol, "STM", model => model.STM, "Non-Force ability resource.", null, 36f, GuiColor.STMColor);
                         AddBoundValueRow(resourceCol, "Ranks", model => model.SkillRanks, $"Skill ranks contributing to the {Skill.SkillCap}-rank limit.", null, 36f, null, model => model.ShowSkillRanks);

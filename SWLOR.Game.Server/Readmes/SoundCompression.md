@@ -18,7 +18,8 @@ python tools/AuditSoundCompression.py --write-exclusions artifacts/audio-audit/g
 The HAK converter defaults to a dry run and accepts an explicit FFmpeg executable. Run this after generating the exclusions, first omitting both `--apply` and `--manifest` to measure the candidate outputs. Use `SoundCompressionManifest-<batch>.json` for each later batch; the first conversion's manifest already exists and must be retained.
 
 ```powershell
-python SWLOR_Haks/tools/CompressSoundResources.py --ffmpeg "C:/Program Files/kdenlive/bin/ffmpeg.exe" --exclude-manifest artifacts/audio-audit/game-loop-exclusions.json --manifest SWLOR_Haks/tools/SoundCompressionManifest.json --apply
+$soundManifestPath = "SWLOR_Haks/tools/SoundCompressionManifest-$(Get-Date -Format 'yyyyMMdd-HHmmss-fff').json"
+python SWLOR_Haks/tools/CompressSoundResources.py --ffmpeg "C:/Program Files/kdenlive/bin/ffmpeg.exe" --exclude-manifest artifacts/audio-audit/game-loop-exclusions.json --manifest $soundManifestPath --apply
 ```
 
 Its `--apply` switch and exclusion manifest are required to replace audio; it stages and validates encoded payloads first, rechecks the entire WAV inventory before replacement and completion, preserves resource names, and refuses to overwrite an existing provenance manifest. The command above uses the encoder installed on the authoring machine; pass the path to your FFmpeg build with `libmp3lame` support. Run the current-corpus loop check against the resulting manifest:
@@ -32,11 +33,13 @@ python -m unittest discover -s tools -p TestSoundCompressionAudit.py
 python -m unittest discover -s SWLOR_Haks/tools -p TestSoundCompression.py
 ```
 
-Audit every historical conversion manifest for loop references, because a later batch records previously compressed resources as skipped. Validate deployed hashes and MP3 decoding against the latest complete inventory manifest (the first batch is shown below):
+Audit every historical conversion manifest for loop references, because a later batch records previously compressed resources as skipped. Validate deployed hashes and MP3 decoding against the new batch's manifest using the same path:
 
 ```powershell
-python SWLOR_Haks/tools/CompressSoundResources.py --ffmpeg "C:/Program Files/kdenlive/bin/ffmpeg.exe" --verify-manifest SWLOR_Haks/tools/SoundCompressionManifest.json
+python SWLOR_Haks/tools/CompressSoundResources.py --ffmpeg "C:/Program Files/kdenlive/bin/ffmpeg.exe" --verify-manifest $soundManifestPath
 ```
+
+To verify the currently committed batch without running a new conversion, set `$soundManifestPath` to `SWLOR_Haks/tools/SoundCompressionManifest.json` first.
 
 Generic media-file sniffing may not recognize very short BMU-wrapped clips; the verifier removes the wrapper and selects the MP3 demuxer explicitly, so this is not confused with a failed audio decode.
 

@@ -397,10 +397,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 // The retired single-step saber upgrade kits are replaced by the
                 // recipe-unlocked Chiro kits found through the same loot drops, so
                 // existing unlocks carry over to the replacement recipes.
-                { "LightsaberUpgradeKit1", "ChiroLightsaberUpgradeKit" },
-                { "SaberstaffUpgradeKit1", "ChiroSaberstaffUpgradeKit" },
-                { "367", "ChiroLightsaberUpgradeKit" },
-                { "368", "ChiroSaberstaffUpgradeKit" },
+                { nameof(RecipeType.LightsaberUpgradeKit1), nameof(RecipeType.ChiroLightsaberUpgradeKit) },
+                { nameof(RecipeType.SaberstaffUpgradeKit1), nameof(RecipeType.ChiroSaberstaffUpgradeKit) },
+                // Accept numeric enum keys as well as names in saved recipe dictionaries.
+                { RecipeType.LightsaberUpgradeKit1.ToString("D"), nameof(RecipeType.ChiroLightsaberUpgradeKit) },
+                { RecipeType.SaberstaffUpgradeKit1.ToString("D"), nameof(RecipeType.ChiroSaberstaffUpgradeKit) },
             };
 
         private const string SavingThrowPuritiesKey = "SavingThrowPurities";

@@ -158,17 +158,19 @@ public class MigrationDataTests
         });
     }
 
-    [TestCase("LightsaberUpgradeKit1")]
-    [TestCase("367")]
-    public void RetiredSaberRecipeUnlocksSurviveWithNameOrNumericKeys(string key)
+    [TestCase("LightsaberUpgradeKit1", RecipeType.ChiroLightsaberUpgradeKit)]
+    [TestCase("367", RecipeType.ChiroLightsaberUpgradeKit)]
+    [TestCase("SaberstaffUpgradeKit1", RecipeType.ChiroSaberstaffUpgradeKit)]
+    [TestCase("368", RecipeType.ChiroSaberstaffUpgradeKit)]
+    public void RetiredSaberRecipeUnlocksSurviveWithNameOrNumericKeys(string key, RecipeType replacement)
     {
         var raw = PlayerJson();
         var date = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         raw["UnlockedRecipes"] = new JObject { [key] = date };
         raw["CraftedRecipes"] = new JObject { [key] = date };
         var player = MigratePlayer(raw, out _)!;
-        player.UnlockedRecipes[RecipeType.ChiroLightsaberUpgradeKit].Should().Be(date);
-        player.CraftedRecipes[RecipeType.ChiroLightsaberUpgradeKit].Should().Be(date);
+        player.UnlockedRecipes[replacement].Should().Be(date);
+        player.CraftedRecipes[replacement].Should().Be(date);
     }
 
     [Test]

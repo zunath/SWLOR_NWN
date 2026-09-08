@@ -104,19 +104,23 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             return new HakArchiveCatalog(archivePath, entries);
         }
 
-        public bool TryGetBytes(ResourceIdentity identity, out byte[] bytes)
+        public bool TryGetBytes(ResourceIdentity identity, out byte[] bytes, int maximumBytes = int.MaxValue)
         {
+            ArgumentOutOfRangeException.ThrowIfNegative(maximumBytes);
             if (!_entries.TryGetValue(identity, out var entry))
             {
                 bytes = Array.Empty<byte>();
                 return false;
             }
 
+            if (entry.Size > maximumBytes)
+                throw new InvalidDataException($"Resource '{identity.ResRef}' exceeds the {maximumBytes}-byte read limit.");
             using var stream = new FileStream(
                 SourcePath,
                 FileMode.Open,
                 FileAccess.Read,
                 FileShare.ReadWrite | FileShare.Delete);
+            ValidateRange(stream.Length, entry.Offset, entry.Size, "Resource");
             stream.Position = entry.Offset;
             bytes = new byte[checked((int)entry.Size)];
             stream.ReadExactly(bytes);

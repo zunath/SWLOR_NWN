@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
@@ -10,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
     public class InvincibleAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
-        private const string ReplacementAnimationName = "Invincible";
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Name("Invincible")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
-                    .UsesAnimationOverwrite(ReplacementAnimationName),
+                    .UsesAnimation(AuthoredAnimation.Invincible),
                 typeof(InvincibleStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,

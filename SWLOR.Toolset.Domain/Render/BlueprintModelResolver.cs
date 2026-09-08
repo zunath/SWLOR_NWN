@@ -777,6 +777,10 @@ namespace SWLOR.Toolset.Domain.Render
             if (item == null)
                 return;
 
+            if (attachmentType == "weaponl" &&
+                (BaseItem?)item.GetIntOrNull("BaseItem") is BaseItem.SmallShield or BaseItem.LargeShield or BaseItem.TowerShield)
+                attachmentType = "shield";
+
             var tintMapOverrides = TintMapOverrides.Read(new VarTable(item));
 
             var reference = ResolveItem(

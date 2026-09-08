@@ -208,7 +208,8 @@ namespace SWLOR.Toolset.Domain.Render
             Func<string, MdlModel?> loadSuperModel,
             IReadOnlyDictionary<string, MdlNode>? bindPose = null,
             int framesPerSecond = 20,
-            int maxFrames = 60)
+            int maxFrames = 60,
+            int maxDepth = 8)
         {
             ArgumentNullException.ThrowIfNull(loadSuperModel);
             if (model == null)
@@ -218,7 +219,7 @@ namespace SWLOR.Toolset.Domain.Render
             var clips = new List<SampledAnimation>(3);
             foreach (var selector in new Func<MdlModel?, MdlAnimation?>[] { FindIdle, FindWalk, FindAttack })
             {
-                var (animation, owner) = FindAnimationInChain(model, loadSuperModel, selector);
+                var (animation, owner) = FindAnimationInChain(model, loadSuperModel, selector, maxDepth);
                 if (animation == null || owner == null ||
                     clips.Any(clip => string.Equals(clip.Name, animation.Name, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -478,16 +479,19 @@ namespace SWLOR.Toolset.Domain.Render
             if (seconds >= times[last])
                 return (last, last, 0f);
 
-            for (var i = 0; i < last; i++)
+            // Controllers are stored in time order. Find the first key at or after the sample
+            // without rescanning the whole track for every frame of a dense import or preview.
+            var low = 1;
+            var high = last;
+            while (low < high)
             {
-                if (seconds > times[i + 1])
-                    continue;
-
-                var span = times[i + 1] - times[i];
-                return (i, i + 1, span <= 0f ? 0f : (seconds - times[i]) / span);
+                var middle = low + (high - low) / 2;
+                if (seconds > times[middle]) low = middle + 1;
+                else high = middle;
             }
-
-            return (last, last, 0f);
+            var before = low - 1;
+            var span = times[low] - times[before];
+            return (before, low, span <= 0f ? 0f : (seconds - times[before]) / span);
         }
 
         private static float AnimationScale(MdlModel? model) =>

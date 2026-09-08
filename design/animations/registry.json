@@ -1,0 +1,72 @@
+[
+  {
+    "Name": "Invincible",
+    "AnimationName": "sw_invincibl",
+    "Duration": 1.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/Invincible.swlanim"
+  },
+  {
+    "Name": "RiotBlade",
+    "AnimationName": "sw_riotblade",
+    "Duration": 0.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/RiotBlade.swlanim"
+  },
+  {
+    "Name": "ShieldBash",
+    "AnimationName": "sw_shieldbas",
+    "Duration": 1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/ShieldBash.swlanim"
+  },
+  {
+    "Name": "ShieldWall",
+    "AnimationName": "sw_shieldwal",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/ShieldWall.swlanim"
+  },
+  {
+    "Name": "RendingStrike",
+    "AnimationName": "sw_rendingst",
+    "Duration": 1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/RendingStrike.swlanim"
+  },
+  {
+    "Name": "SavageCleave",
+    "AnimationName": "sw_savagecle",
+    "Duration": 1.12,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/SavageCleave.swlanim"
+  },
+  {
+    "Name": "CoveringStrike",
+    "AnimationName": "sw_coverings",
+    "Duration": 1.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/CoveringStrike.swlanim"
+  }
+]

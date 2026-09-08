@@ -66,18 +66,23 @@ SWLOR.Toolset.Domain/   headless lib  — all logic lives here (no UI dependency
 SWLOR.Toolset.Tests/    NUnit         — unit tests + full-corpus gates
 SWLOR.NWN.Formats/      headless lib  — standalone read-only Aurora resource formats
 tools/SWLOR.ConversationMigrator/     — one-shot dialog migration CLI
+tools/SWLOR.AnimationDrafts/          — authored-animation generation, preview, and installation CLI
 ```
 
 References flow strictly one way:
 
 ```
-{ SWLOR.Toolset, SWLOR.ConversationMigrator } → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
+{ SWLOR.Toolset, SWLOR.ConversationMigrator, SWLOR.AnimationDrafts }
+    → SWLOR.Toolset.Domain → { SWLOR.NWN.Formats, SWLOR.Game.Server }
 ```
 
-**Logic belongs in `Domain`, not in the app project.** The test project references `Domain` only —
-deliberately, so tests stay headless — so anything placed app-side is untestable. That boundary has
-already cost us once: `NewAreaWriter` started in the app layer and had to be moved before its
-file-writing path could be covered.
+**Shared authoring and data logic belongs in `Domain`.** The two CLI projects are reviewed executable
+leaf consumers of that headless library; shared libraries and the game server must not reference them.
+The animation CLI works independently of the desktop editor. See [LICENSE-NOTICE.md](LICENSE-NOTICE.md)
+for the source and dependency boundary.
+
+The NUnit project references both `Domain` and the app for domain tests, view-model tests, and
+headless Avalonia view checks. These test references do not change the production dependency direction.
 
 ### Where things live in `Domain`
 

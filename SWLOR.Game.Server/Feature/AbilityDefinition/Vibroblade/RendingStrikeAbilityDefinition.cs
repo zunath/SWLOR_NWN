@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name("Rending Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .UsesAnimation(Animation.CrossCut)
+                .UsesAnimation(AuthoredAnimation.RendingStrike)
                 .RequiresTarget()
                 .IsSingleTargetAbility()
                 .HasRecastDelay(RecastGroup.RendingStrike, 45f)
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name("Rending Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
-                .UsesAnimation(Animation.CrossCut)
+                .UsesAnimation(AuthoredAnimation.RendingStrike)
                 .RequiresTarget()
                 .IsSingleTargetAbility()
                 .HasRecastDelay(RecastGroup.RendingStrike, 45f)

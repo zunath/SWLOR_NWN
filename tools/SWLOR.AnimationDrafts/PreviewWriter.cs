@@ -29,7 +29,7 @@ internal static class PreviewWriter
             // cannot conceal a misplaced sword or a shield rotated by the forearm.
             var weapon = world[weaponIndex];
             var shield = world[shieldIndex];
-            points.Add(Vector3.Transform(new Vector3(0, .8f, 0), weapon));
+            points.Add(Vector3.Transform(new Vector3(0, motion.Activity == "Fishing" ? 1.72f : .8f, 0), weapon));
             foreach (var (x, z) in new[] { (-.19f, .49f), (.19f, .49f), (.28f, .34f), (.28f, -.34f),
                          (.19f, -.49f), (-.19f, -.49f), (-.28f, -.34f), (-.28f, .34f) })
                 points.Add(Vector3.Transform(new Vector3(-.09f, z, x), shield));
@@ -39,7 +39,7 @@ internal static class PreviewWriter
             points.Add(weapon.Translation);
             frames.Add(points.Select(v => new[] { v.X, v.Y, v.Z }).ToArray());
         }
-        return new { motion.Id, motion.Name, motion.Reference, motion.Observation, motion.Interpretation, motion.Shield,
+        return new { motion.Id, motion.Name, motion.Reference, motion.Observation, motion.Interpretation, motion.Shield, motion.Activity,
             project.Duration, Beats = motion.Beats.Select(b => new { b.Time, b.Label }), Frames = frames };
     }
 

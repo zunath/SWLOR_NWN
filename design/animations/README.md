@@ -1,7 +1,7 @@
 # Game animations
 
 This branch contains perk playback, the in-game animation tester, authored clips, and the
-current animation production plan. The command-line generator uses the shared headless
+current animation production plan, plus a standing fishing sequence. The command-line generator uses the shared headless
 animation library and works without the separate Avalonia animation editor.
 
 The Design Bible Animations tab retains 119 references matching current active player perks.
@@ -38,6 +38,28 @@ with a searchable [CSV](animation-plan.csv). It groups current active perks,
 preserves matching Bible image references, and identifies installed clips and shared-motion candidates.
 
 ## Authored clips and generation
+
+### Fishing activity
+
+`fishing/` contains the same cast, wait, reel, and idle sequence at six, seven, and eight
+seconds. Only the holding interval varies, preserving the activity's random wait time.
+Fishing selects the matching `AuthoredAnimation.Fishing6`, `Fishing7`, or `Fishing8` clip.
+Movement, combat, death, rod removal, and point exhaustion release only the animation
+owned by that attempt. Completion callbacks capture the attempt ID so an old timer cannot
+finish a restarted cast. Fish rewards, bait consumption, and catch odds are unchanged.
+
+The editable sources are installed on both humanoid supermodel chains. `/animations`
+lists them under **Other**; equip a fishing rod to check the actual attachment in game.
+The recipe uses `activity: "Fishing"` and an empty `abilityDefinition`. Activity recipes
+must name a real non-invalid `ActivityStatusType`; perk recipes still require a current
+ability definition. Generate and install with the same commands below, substituting the
+`fishing` folder and each `Fishing6`, `Fishing7`, and `Fishing8` project.
+
+The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, using the
+bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
+playback. After installing, compile the banks and regenerate the clothing bridges as below.
+
+### Library layout
 
 ```text
 design/animations/

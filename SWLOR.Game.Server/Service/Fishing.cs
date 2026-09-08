@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Service
         private const string FishingPointRemainingAttemptsVariable = "FISHING_POINT_REMAINING_ATTEMPTS";
         private const string FishingPointInitializedVariable = "FISHING_POINT_INITIALIZED";
         private const string FishingAttemptVariable = "FISHING_ATTEMPT_ID";
+        private const string FishingAnimationVariable = "FISHING_ANIMATION_TOKEN";
         public const string FishingPointLocationVariable = "FISHING_LOCATION_ID";
         public const string FishingRodTag = "FISHING_ROD";
 
@@ -220,10 +222,21 @@ namespace SWLOR.Game.Server.Service
         {
             void CheckPosition(uint player, Vector3 startPosition, string attemptId)
             {
-                var position = GetPosition(player);
-
-                if (attemptId != GetLocalString(player, FishingAttemptVariable))
+                if (!GetIsObjectValid(player) || attemptId != GetLocalString(player, FishingAttemptVariable))
                     return;
+
+                var position = GetPosition(player);
+                var equippedRod = GetItemInSlot(InventorySlot.RightHand, player);
+                var point = GetLocalObject(player, FishingPointVariable);
+                if (GetIsDead(player) || GetIsInCombat(player) ||
+                    Activity.GetBusyType(player) != ActivityStatusType.Fishing ||
+                    !GetIsObjectValid(equippedRod) || GetTag(equippedRod) != FishingRodTag ||
+                    !GetIsObjectValid(point) || GetIsDead(point))
+                {
+                    ClearFishingAttempt(player);
+                    PlayerPlugin.StopGuiTimingBar(player);
+                    return;
+                }
 
                 if (startPosition.X != position.X ||
                     startPosition.Y != position.Y ||
@@ -242,7 +255,6 @@ namespace SWLOR.Game.Server.Service
             InitializeFishingPoint(fishingPoint);
 
             var player = GetPlaceableLastClickedBy();
-            AssignCommand(player, () => ClearAllActions());
 
             var rod = GetItemInSlot(InventorySlot.RightHand, player);
             const float MaxDistance = 10f;
@@ -256,6 +268,12 @@ namespace SWLOR.Game.Server.Service
             if (Activity.IsBusy(player))
             {
                 SendMessageToPC(player, "You are busy.");
+                return;
+            }
+
+            if (GetIsDead(player) || GetIsInCombat(player))
+            {
+                SendMessageToPC(player, "You cannot fish right now.");
                 return;
             }
 
@@ -297,24 +315,46 @@ namespace SWLOR.Game.Server.Service
             SetLocalObject(player, FishingPointVariable, fishingPoint);
 
             var fishingDelay = 6 + Random.Next(3);
-            PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
+            PlayerPlugin.StartGuiTimingBar(player, fishingDelay);
+            // Capture this attempt: an old timer must never finish a restarted cast.
+            AssignCommand(GetModule(), () => DelayCommand(fishingDelay, () =>
+            {
+                if (GetIsObjectValid(player) && GetLocalString(player, FishingAttemptVariable) == attemptId)
+                    FinishFishing(player);
+            }));
 
             Activity.SetBusy(player, ActivityStatusType.Fishing);
             Messaging.SendMessageNearbyToPlayers(
                 player,
                 receiver => $"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.");
 
+            AssignCommand(player, () => ClearAllActions());
             BiowarePosition.TurnToFaceObject(fishingPoint, player);
-            CheckPosition(player, position, attemptId);
+            var clip = GetFishingAnimation(fishingDelay);
+            SetLocalString(player, FishingAnimationVariable, NamedAnimation.Play(player, clip));
+            AssignCommand(GetModule(), () => CheckPosition(player, position, attemptId));
         }
+
+        public static AnimationClip GetFishingAnimation(int seconds) => seconds switch
+        {
+            6 => AuthoredAnimation.Fishing6,
+            7 => AuthoredAnimation.Fishing7,
+            8 => AuthoredAnimation.Fishing8,
+            _ => throw new ArgumentOutOfRangeException(nameof(seconds))
+        };
 
         /// <summary>
         /// Runs when the fishing process completes.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnFinishFishing)]
-        public static void FinishFishing()
+        private static void FinishFishing(uint player)
         {
-            var player = OBJECT_SELF;
+            if (string.IsNullOrEmpty(GetLocalString(player, FishingAttemptVariable)))
+                return;
+            if (GetIsDead(player) || GetIsInCombat(player) || Activity.GetBusyType(player) != ActivityStatusType.Fishing)
+            {
+                ClearFishingAttempt(player);
+                return;
+            }
             var fishingPoint = GetLocalObject(player, FishingPointVariable);
             var startPosition = Vector3(
                 GetLocalFloat(player, FishingPositionVariableX),
@@ -450,7 +490,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void ClearFishingAttempt(uint player)
         {
-            Activity.ClearBusy(player);
+            NamedAnimation.StopIfCurrent(player, GetLocalString(player, FishingAnimationVariable));
+            DeleteLocalString(player, FishingAnimationVariable);
+            if (Activity.GetBusyType(player) == ActivityStatusType.Fishing)
+                Activity.ClearBusy(player);
             DeleteLocalFloat(player, FishingPositionVariableX);
             DeleteLocalFloat(player, FishingPositionVariableY);
             DeleteLocalFloat(player, FishingPositionVariableZ);

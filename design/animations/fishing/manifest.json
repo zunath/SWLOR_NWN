@@ -1,0 +1,254 @@
+{
+  "Version": 1,
+  "Workbook": "",
+  "Sheet": "Animations",
+  "Model": "a_ba",
+  "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
+  "RecipeSha256": "6c8dc1d0dcef2cec8603ebc23ceb43e13bf099b30c1acec2282bb434392a1a13",
+  "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
+  "Animations": [
+    {
+      "Id": "Fishing6",
+      "Name": "Fishing (6 seconds)",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Standing cast with an equipped right-hand fishing rod, a quiet wait, and a short reel-in.",
+      "Interpretation": "Planted feet; overhead cast; subtle rod motion while waiting; left hand circles the reel before returning to idle. The wait varies to match the activity timer.",
+      "Status": "Draft: visual review required",
+      "Project": "Fishing6.swlanim",
+      "Duration": 6,
+      "Keyframes": 126,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.585255E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Lift rod"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Back cast"
+        },
+        {
+          "Time": 1.18,
+          "Label": "Cast forward"
+        },
+        {
+          "Time": 1.6,
+          "Label": "Settle"
+        },
+        {
+          "Time": 2,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 3,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 3.7,
+          "Label": "Lift the line"
+        },
+        {
+          "Time": 4.05,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 4.27,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 4.49,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 4.71,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 4.93,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 5.3,
+          "Label": "Lower rod"
+        },
+        {
+          "Time": 6,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "832f9069c7e24fa710c68bf50ea4210671200a021399216abd8db35c18b6c6da"
+    },
+    {
+      "Id": "Fishing7",
+      "Name": "Fishing (7 seconds)",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Standing cast with an equipped right-hand fishing rod, a quiet wait, and a short reel-in.",
+      "Interpretation": "Planted feet; overhead cast; subtle rod motion while waiting; left hand circles the reel before returning to idle. The wait varies to match the activity timer.",
+      "Status": "Draft: visual review required",
+      "Project": "Fishing7.swlanim",
+      "Duration": 7,
+      "Keyframes": 146,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.637837E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Lift rod"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Back cast"
+        },
+        {
+          "Time": 1.18,
+          "Label": "Cast forward"
+        },
+        {
+          "Time": 1.6,
+          "Label": "Settle"
+        },
+        {
+          "Time": 2,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 3,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 4,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 4.7,
+          "Label": "Lift the line"
+        },
+        {
+          "Time": 5.05,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 5.27,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 5.49,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 5.71,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 5.93,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 6.3,
+          "Label": "Lower rod"
+        },
+        {
+          "Time": 7,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "0b05fc9c12595866bbeabf579c3ee47592346b1b4c61863ae635c461502952cc"
+    },
+    {
+      "Id": "Fishing8",
+      "Name": "Fishing (8 seconds)",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Standing cast with an equipped right-hand fishing rod, a quiet wait, and a short reel-in.",
+      "Interpretation": "Planted feet; overhead cast; subtle rod motion while waiting; left hand circles the reel before returning to idle. The wait varies to match the activity timer.",
+      "Status": "Draft: visual review required",
+      "Project": "Fishing8.swlanim",
+      "Duration": 8,
+      "Keyframes": 166,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.4586916E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.45,
+          "Label": "Lift rod"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Back cast"
+        },
+        {
+          "Time": 1.18,
+          "Label": "Cast forward"
+        },
+        {
+          "Time": 1.6,
+          "Label": "Settle"
+        },
+        {
+          "Time": 2,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 3,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 4,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 5,
+          "Label": "Wait for a bite"
+        },
+        {
+          "Time": 5.7,
+          "Label": "Lift the line"
+        },
+        {
+          "Time": 6.05,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 6.27,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 6.49,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 6.71,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 6.93,
+          "Label": "Reel in"
+        },
+        {
+          "Time": 7.3,
+          "Label": "Lower rod"
+        },
+        {
+          "Time": 8,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "e0c69aa95df8b2aa36e82cfbd30a4d96ce76cf0c28b7bfb6c30bccf074207cea"
+    }
+  ]
+}

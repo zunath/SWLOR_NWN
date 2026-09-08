@@ -178,7 +178,12 @@ try
     {
         var definition = typeof(IAbilityListDefinition).Assembly.GetType(
             "SWLOR.Game.Server.Feature.AbilityDefinition." + motion.AbilityDefinition);
-        if (definition == null || definition.IsAbstract || !typeof(IAbilityListDefinition).IsAssignableFrom(definition))
+        var activity = motion.Activity != null &&
+            System.Enum.TryParse<SWLOR.Game.Server.Service.ActivityService.ActivityStatusType>(motion.Activity, out var activityType) &&
+            System.Enum.IsDefined(activityType) && activityType != SWLOR.Game.Server.Service.ActivityService.ActivityStatusType.Invalid;
+        if (motion.Activity != null && (!activity || !string.IsNullOrEmpty(motion.AbilityDefinition)))
+            throw new InvalidDataException($"{motion.Id}: activity motions require a valid activity and no ability definition.");
+        if (!activity && (definition == null || definition.IsAbstract || !typeof(IAbilityListDefinition).IsAssignableFrom(definition)))
             throw new InvalidDataException($"{motion.Id}: no current ability definition matches '{motion.AbilityDefinition}'. Remove outdated Bible entries from the recipe before generating.");
         AnimationProject.ValidateToken(motion.Id, 63);
         if (files.ContainsKey(motion.Id + ".swlanim")) throw new InvalidDataException("Duplicate motion ID.");

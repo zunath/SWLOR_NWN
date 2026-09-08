@@ -75,14 +75,17 @@ public class AnimationDebugTests
     }
 
     [Test]
-    public void CurrentClipsDeriveVibrobladeCategoryFromTheirAbilityBindings()
+    public void PerkClipsDeriveVibrobladeCategoryAndFishingUsesOther()
     {
         var abilities = typeof(IAbilityListDefinition).Assembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
             .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities().Values);
         var entries = AnimationPreviewCatalog.CreateEntries(abilities,
             AnimationPlanningTests.CurrentPerks().ToDictionary(perk => perk.Type));
-        entries.Should().NotBeEmpty().And.OnlyContain(entry => entry.Categories.Contains("Vibroblade"));
+        entries.Where(entry => !entry.Id.StartsWith("Fishing", StringComparison.Ordinal))
+            .Should().NotBeEmpty().And.OnlyContain(entry => entry.Categories.Contains("Vibroblade"));
+        entries.Where(entry => entry.Id.StartsWith("Fishing", StringComparison.Ordinal))
+            .Should().HaveCount(3).And.OnlyContain(entry => entry.Categories.SequenceEqual(new[] { "Other" }));
     }
 
     [Test]

@@ -207,6 +207,35 @@ class AnimationBibleTests(unittest.TestCase):
             ns = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
             self.assertEqual(sheet.find('.//s:c[@r="F2"]/s:is/s:t', ns).text, "sw_push")
 
+    def test_notes_and_formatting_rows_survive_and_reserve_append_positions(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "bible.xlsx"
+            worksheet = '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:AC12"/><sheetData><row r="1"><c r="C1" t="inlineStr"><is><t>Name</t></is></c></row><row r="2" ht="30" customHeight="1"><c r="A2" s="8" t="inlineStr"><is><t>Animator note</t></is></c><c r="Z2" s="9" t="inlineStr"><is><t>Keep side note</t></is></c></row><row r="3"><c r="A3" s="18"/><c r="B3" t="inlineStr"><is><t>Force</t></is></c><c r="C3" t="inlineStr"><is><t>Push</t></is></c></row><row r="5" hidden="1" s="12" customFormat="1"><c r="AA5" s="7"/><extLst><ext uri="urn:animator-note"><note xmlns="urn:animator">Keep metadata</note></ext></extLst></row><row r="8" ht="24" customHeight="1"/><row r="12"><c r="AC12" s="10" t="inlineStr"><is><t>Footer notes</t></is></c></row></sheetData></worksheet>'
+            with zipfile.ZipFile(path, "w") as z:
+                z.writestr("xl/workbook.xml", '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Animations" r:id="rId2"/></sheets></workbook>')
+                z.writestr("xl/_rels/workbook.xml.rels", '<Relationships><Relationship Id="rId2" Target="worksheets/sheet2.xml"/></Relationships>')
+                z.writestr("xl/worksheets/sheet2.xml", worksheet)
+            entries = [{"Id": name, "Name": name, "Category": "Force", "InternalName": "sw_" + name.lower()} for name in ("Push", "Pull")]
+            registry = [{"Name": e["Id"], "AnimationName": e["InternalName"], "ProjectPath": e["Id"] + ".swlanim"} for e in entries]
+            ns = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+            original = ET.fromstring(worksheet)
+            synchronize(path, entries, registry)
+            with zipfile.ZipFile(path) as z:
+                first = z.read("xl/worksheets/sheet2.xml")
+            actual = ET.fromstring(first)
+            for number in (2, 5, 8, 12):
+                selector = f's:sheetData/s:row[@r="{number}"]'
+                self.assertEqual(ET.tostring(actual.find(selector, ns)), ET.tostring(original.find(selector, ns)))
+            self.assertEqual([e["BibleAnimationRow"] for e in entries], [3, 13])
+            numbers = [int(row.get("r")) for row in actual.findall('s:sheetData/s:row', ns)]
+            self.assertEqual(numbers, [1, 2, 3, 5, 8, 12, 13])
+            self.assertEqual(actual.find('s:dimension', ns).get("ref"), "A1:AC13")
+            self.assertEqual(actual.find('.//s:c[@r="A13"]', ns).get("s"), "18")
+            self.assertEqual(actual.find('.//s:c[@r="A3"]', ns).get("s"), "18")
+            synchronize(path, copy.deepcopy(entries), registry)
+            with zipfile.ZipFile(path) as z:
+                self.assertEqual(z.read("xl/worksheets/sheet2.xml"), first)
+
     def test_missing_sheet_data_fails_before_writing(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "bible.xlsx"

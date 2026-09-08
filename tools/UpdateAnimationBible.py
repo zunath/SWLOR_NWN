@@ -82,7 +82,13 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict], c
     data_styles = {}
     header_styles = {}
     for row in root.findall("s:sheetData/s:row", NS):
-        styles = header_styles if row.get("r") == "1" else data_styles
+        header = row.get("r") == "1"
+        if not header:
+            name_cell = next((c for c in row.findall("s:c", NS)
+                              if re.sub(r"\d", "", c.get("r")) == "C"), None)
+            if name_cell is None or not value(name_cell):
+                continue
+        styles = header_styles if header else data_styles
         for existing in row.findall("s:c", NS):
             column = re.sub(r"\d", "", existing.get("r"))
             if existing.get("s") is not None:
@@ -107,7 +113,9 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict], c
 
     for node in root.findall("s:sheetData/s:row", NS):
         number = int(node.get("r"))
-        cells = {re.sub(r"\d", "", c.get("r")): value(c) for c in node}
+        # Notes, separators and formatting-only rows also reserve their worksheet row.
+        last = max(last, number)
+        cells = {re.sub(r"\d", "", c.get("r")): value(c) for c in node.findall("s:c", NS)}
         if number == 1:
             extra = {"F": "Internal Name", "G": "Base Motion", "H": "Status", "I": "Source Project"}
         elif cells.get("C"):
@@ -125,8 +133,10 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict], c
             entry["BibleAnimationRow"] = number
             extra = details(entry, installed[entry["Id"]])
         else:
+            # Non-animation content is not managed by this synchronizer. Keep all its
+            # cells, extensions, row attributes and styles without normalization.
+            rows.append(ET.tostring(node, encoding="unicode"))
             continue
-        last = max(last, number)
         for existing in list(node.findall("s:c", NS)):
             column = re.sub(r"\d", "", existing.get("r"))
             if column in extra:

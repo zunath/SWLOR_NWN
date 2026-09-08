@@ -512,8 +512,8 @@ namespace SWLOR.Game.Server.Feature
                 /// </summary>
                 void PlayActivationAnimation(float animationLength)
                 {
-                    // Generated clips must fit inside the existing cast window. Instant or reduced
-                    // casts retain native playback so animation actions cannot delay resumed combat.
+                    // Queued generated clips must fit inside the existing cast window.
+                    // Explicit immediate gestures play once without delaying resumed combat.
                     var authoredClip = AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator), animationLength);
                     if (authoredClip != null)
                     {

@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
-        /// <summary>Plays the catalog motion once at impact, preserving native throw carriers.</summary>
+        /// <summary>Plays the catalog motion once at impact without adding an action-queue delay.</summary>
         public AbilityBuilder UsesAuthoredAnimationAtImpact()
         {
             _activeAbility.UsesAuthoredImpactAnimation = true;

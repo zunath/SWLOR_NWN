@@ -232,6 +232,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally { Ability.EndAbilityImpact(caster); }
                 await ctx.DelaySecondsAsync(0.75f);
+                ctx.Assert(StatusEffect.HasStatusEffect(target, typeof(FlashStatusEffect)),
+                    "Flash delayed impact resolves");
                 ctx.AssertEqual(hp, GetCurrentHitPoints(target), "Flash causes no direct damage");
                 ctx.AssertEqual(31, Combat.ConsumeNextAbilityDamageBonus(caster, PerkType.Flash), "Perk damage remains armed");
                 var skill = Combat.ConsumeNextSkillAbilityBonuses(caster, SkillType.HeavyVibroblade);

@@ -278,7 +278,7 @@ public class CombatUpgradeMigrationCoverageTests
             "EquipmentRequirementMigration.cs"));
 
         migrationSource.Should().Contain("CouldContainRequirementMigrationTarget(serializedObject)");
-        migrationSource.Should().Contain("ObjectPlugin.Deserialize(serializedObject)");
+        migrationSource.Should().Contain("MigrationObject.Deserialize(serializedObject)");
 
         var method = Type.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentRequirementMigration, SWLOR.Game.Server")!
             .GetMethod("CouldContainRequirementMigrationTarget", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;

@@ -195,6 +195,38 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                    ObsoleteItemConversions.TryGetValue(resref, out replacementResRef);
         }
 
+        public static uint ConvertItem(uint item, string replacementResRef)
+        {
+            var possessor = GetItemPossessor(item, true);
+            var target = GetIsObjectValid(possessor) ? possessor : GetObjectByTag("TEMP_ITEM_STORAGE");
+            var replacement = CreateItemOnObject(replacementResRef, target, GetItemStackSize(item));
+            if (!GetIsObjectValid(replacement))
+                throw new InvalidOperationException($"Could not create migration replacement '{replacementResRef}'.");
+
+            // Droid inventories use this local to identify the separately serialized item.
+            var droidItemId = GetLocalString(item, "DROID_ITEM_ID");
+            if (!string.IsNullOrWhiteSpace(droidItemId))
+                SetLocalString(replacement, "DROID_ITEM_ID", droidItemId);
+
+            RemoveItem(item);
+            return replacement;
+        }
+
+        private static void RemoveItem(uint item)
+        {
+            // DestroyObject is deferred until the script finishes. Move the item
+            // out now so serializing its container cannot save the retired item again.
+            var possessor = GetItemPossessor(item, true);
+            var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
+            if (GetIsObjectValid(possessor) && possessor != storage &&
+                (!GetIsObjectValid(storage) || !ItemPlugin.MoveTo(item, storage, true)))
+            {
+                throw new InvalidOperationException("Could not remove a retired item from its migration container.");
+            }
+
+            DestroyObject(item);
+        }
+
         public static int RemoveObsoleteItemsFromObject(uint obj)
         {
             var result = new MigrationResult();
@@ -227,17 +259,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 var resref = GetResRef(obj);
                 if (TryGetConversionResRef(resref, out var replacementResRef))
                 {
-                    var possessor = GetItemPossessor(obj);
-                    var target = GetIsObjectValid(possessor) ? possessor : GetObjectByTag("TEMP_ITEM_STORAGE");
-                    CreateItemOnObject(replacementResRef, target);
-                    DestroyObject(obj);
+                    ConvertItem(obj, replacementResRef);
                     result.RemovedItems++;
                     return;
                 }
 
                 if (IsObsoleteResRef(resref))
                 {
-                    DestroyObject(obj);
+                    RemoveItem(obj);
                     result.RemovedItems++;
                     return;
                 }
@@ -292,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(serializedObject))
                 return false;
 
-            var obj = ObjectPlugin.Deserialize(serializedObject);
+            var obj = MigrationObject.Deserialize(serializedObject);
             if (!GetIsObjectValid(obj))
                 return false;
 
@@ -301,10 +330,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 var resref = GetResRef(obj);
                 if (TryGetConversionResRef(resref, out var replacementResRef))
                 {
-                    DestroyObject(obj);
-                    var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
-                    var replacement = CreateItemOnObject(replacementResRef, tempStorage);
-                    migratedSerializedObject = ObjectPlugin.Serialize(replacement);
+                    var replacement = ConvertItem(obj, replacementResRef);
+                    migratedSerializedObject = MigrationObject.Serialize(replacement);
                     DestroyObject(replacement);
                     removedCount = 1;
                     return true;
@@ -329,7 +356,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 return false;
             }
 
-            migratedSerializedObject = ObjectPlugin.Serialize(obj);
+            migratedSerializedObject = MigrationObject.Serialize(obj);
             DestroyObject(obj);
             return true;
         }
@@ -522,7 +549,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var ip in existingProperties)
             {
-                RemoveItemProperty(item, ip);
+                MigrationObject.RemoveProperty(item, ip);
             }
 
             foreach (var perk in activePerks)

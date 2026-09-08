@@ -37,6 +37,7 @@ services:
         environment:
             - SWLOR_ENGINE_TESTS_ENABLED=true
             - SWLOR_ENVIRONMENT=test
+            - NWN_PUBLICSERVER=0
             # Match the deployed renderer's wildcard material transport even when
             # a developer's older test home predates this required setting.
             - NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true

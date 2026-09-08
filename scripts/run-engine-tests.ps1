@@ -112,6 +112,8 @@ function Write-Section($message) {
 
 function ConvertTo-Base64Utf8($text) {
     $utf8WithoutBom = [System.Text.UTF8Encoding]::new($false)
+    # Embedded bash scripts need Unix line endings even in a Windows checkout.
+    $text = $text.Replace("`r`n", "`n").Replace("`r", "`n")
     return [Convert]::ToBase64String($utf8WithoutBom.GetBytes($text))
 }
 

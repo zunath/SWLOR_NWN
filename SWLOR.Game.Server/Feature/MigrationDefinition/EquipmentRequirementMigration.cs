@@ -109,13 +109,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!CouldContainRequirementMigrationTarget(serializedObject))
                 return false;
 
-            var obj = ObjectPlugin.Deserialize(serializedObject);
+            var obj = MigrationObject.Deserialize(serializedObject);
             if (!GetIsObjectValid(obj))
                 return false;
 
             var wasMigrated = MigrateObject(obj);
             if (wasMigrated)
-                migratedSerializedObject = ObjectPlugin.Serialize(obj);
+                migratedSerializedObject = MigrationObject.Serialize(obj);
 
             DestroyObject(obj);
             return wasMigrated;
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in legacyProperties)
             {
-                RemoveItemProperty(item, property);
+                MigrationObject.RemoveProperty(item, property);
             }
 
             foreach (var (skillType, requiredRank) in legacyRequirements)
@@ -294,13 +294,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     (int)skillType,
                     migratedRequiredRank);
 
-                BiowareXP2.IPSafeAddItemProperty(
+                MigrationObject.AddProperty(
                     item,
-                    skillRequirement,
-                    0.0f,
-                    AddItemPropertyPolicy.ReplaceExisting,
-                    false,
-                    false);
+                    skillRequirement, AddItemPropertyPolicy.ReplaceExisting);
             }
 
             return true;

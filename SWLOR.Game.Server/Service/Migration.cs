@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const int ConsoleProgressMigrationVersion = 22;
         private static int _currentMigrationVersion;
-        private static int _newMigrationVersion;
+        private static ServerMigrationState _serverMigrationState = new(0);
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         {
             var config = GetServerConfiguration();
             _currentMigrationVersion = config.MigrationVersion;
+            _serverMigrationState = new ServerMigrationState(_currentMigrationVersion);
 
             LoadServerMigrations();
             LoadPlayerMigrations();
@@ -41,10 +42,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void UpdateMigrationVersion()
         {
-            if (_newMigrationVersion > _currentMigrationVersion)
+            if (!_serverMigrationState.Failed && _serverMigrationState.CompletedVersion > _currentMigrationVersion)
             {
                 var config = GetServerConfiguration();
-                config.MigrationVersion = _newMigrationVersion;
+                config.MigrationVersion = _serverMigrationState.CompletedVersion;
                 DB.Set(config);
             }
         }
@@ -80,9 +81,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void RunMigrations(MigrationExecutionType executionType)
         {
+            if (_serverMigrationState.Failed)
+                return;
+
             var sw = new Stopwatch();
             var migrations = GetMigrations(executionType).ToList();
-            var newVersion = 0;
 
             foreach (var migration in migrations)
             {
@@ -98,14 +101,14 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     sw.Start();
-                    migration.Migrate();
-                    newVersion = migration.Version;
+                    _serverMigrationState.Run(migration, pending => pending.Migrate());
                     sw.Stop();
 
                     Log.Write(LogGroup.Migration, $"Server migration ({executionType}) #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
                 }
                 catch (Exception ex)
                 {
+                    _serverMigrationState.MarkFailed();
                     // It's dangerous to proceed without a successful migration. Shut down the server in this situation.
                     Log.Write(LogGroup.Error, $"Server migration ({executionType}) #{migration.Version} failed to apply. Exception: {ex.ToMessageAndCompleteStacktrace()}. Shutting down server.", true);
                     AdministrationPlugin.ShutdownServer();
@@ -113,8 +116,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (_newMigrationVersion < newVersion)
-                _newMigrationVersion = newVersion;
         }
 
         private static void RunServerMigrationsPostDatabase()
@@ -161,6 +162,7 @@ namespace SWLOR.Game.Server.Service
                 catch (Exception ex)
                 {
                     Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} failed to apply for player {GetName(player)} [{playerId}]. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
+                    BootPC(player, "Your character update could not be completed. Please contact a server administrator.");
                     break;
                 }
             }
@@ -173,6 +175,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadServerMigrations()
         {
+            _serverMigrationsPostDatabase.Clear();
+            _serverMigrationsPostCache.Clear();
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IServerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -190,6 +194,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadPlayerMigrations()
         {
+            _playerMigrations.Clear();
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPlayerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);

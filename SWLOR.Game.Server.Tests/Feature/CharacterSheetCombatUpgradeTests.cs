@@ -28,6 +28,14 @@ public class CharacterSheetCombatUpgradeTests
         restore.Should().Contain("GetMaster(creature)");
         restore.Should().Contain("SendMessageToPC(receiver");
         restore.Should().Contain("PlayerName.GetDisplayName(receiver, creature)");
+
+        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var regeneration = ExtractMethod(stats, "private static void RestoreNPCStats(");
+        regeneration.Should().Contain("if (fp != previousFP)");
+        regeneration.Should().Contain("ExecuteScript(\"pc_fp_adjusted\", self)");
+        regeneration.Should().Contain("if (stm != previousSTM)");
+        regeneration.Should().Contain("ExecuteScript(\"pc_stm_adjusted\", self)");
+        regeneration.Should().NotContain("SendResourceRestored", "natural regeneration stays silent");
     }
 
     [Test]

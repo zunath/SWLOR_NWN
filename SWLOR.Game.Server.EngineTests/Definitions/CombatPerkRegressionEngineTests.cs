@@ -53,9 +53,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var beast = ctx.SpawnCreature("nw_bandit001");
             var target = ctx.SpawnCreature("nw_rat001", 2f);
+            var edgeTarget = ctx.SpawnCreature("nw_rat001", 5.5f);
+            var farTarget = ctx.SpawnCreature("nw_rat001", 8f);
             await ctx.WaitFrameAsync();
             Prepare(ctx, beast);
             Prepare(ctx, target);
+            Prepare(ctx, edgeTarget);
+            Prepare(ctx, farTarget);
             ctx.MakeHostile(target);
             Enmity.ModifyEnmity(target, beast, 10);
             foreach (var feat in new[]
@@ -76,7 +80,40 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(aimed ? target : beast, selected, $"{feat} target");
                 context.SetEvaluatedTarget(selected);
                 ctx.Assert(AIScore.Ability(ability)(context) > 0, $"{feat} scores with one enemy");
+                if (aimed)
+                {
+                    var edgeContext = new AIContext(beast, AITriggerType.Heartbeat, edgeTarget,
+                        context.Profile, new AIState(), Array.Empty<uint>());
+                    var farContext = new AIContext(beast, AITriggerType.Heartbeat, farTarget,
+                        context.Profile, new AIState(), Array.Empty<uint>());
+                    ctx.AssertEqual(edgeTarget, ability.AITargetSelector(edgeContext), $"{feat} can reach beyond 5m within its 6m cone");
+                    ctx.AssertEqual(OBJECT_INVALID, ability.AITargetSelector(farContext), $"{feat} rejects enemies beyond cone reach");
+                }
             }
+        }
+
+        [EngineTest("Companion natural regeneration preserves resource caps and stamina delay", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task CompanionRegeneration(EngineTestContext ctx)
+        {
+            var beast = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, beast);
+            ctx.SetNPCResources(beast, 10, 10);
+            var maxFP = Stat.GetMaxFP(beast);
+            var maxSTM = Stat.GetMaxStamina(beast);
+            SetLocalInt(beast, "FP", maxFP - 1);
+            SetLocalInt(beast, "STAMINA", maxSTM - 1);
+            DeleteLocalInt(beast, Stat.SuppressNaturalRegenVariable);
+            SetLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT", DateTime.UtcNow.AddMinutes(1).Ticks.ToString());
+            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP regenerates while stamina is delayed");
+            ctx.AssertEqual(maxSTM - 1, Stat.GetCurrentStamina(beast), "Spending stamina delays its regeneration");
+            DeleteLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT");
+            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina regenerates when its delay expires");
+            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP stays capped");
+            ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina stays capped");
         }
 
         [EngineTest("Beast defensive buffs retain their full reduction and Force Suppression reports the combined penalty", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
@@ -186,6 +223,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(32f);
                 for (var i = 0; i < targets.Length; i++)
                     ctx.AssertEqual(budgets[i], 1000 - GetCurrentHitPoints(targets[i]), $"{feats[i]} total WIL-scaled damage");
+
+                TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitDamageBonus, 75, 120f);
+                TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitMaximumCount, 1, 120f);
+                TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitCooldownSeconds, 90, 120f);
+                var choke = Ability.GetAbilityDetail(FeatType.ForceChoke1);
+                ctx.Assert(choke.DealsDeferredDamage, "Choke declares its damaging status effect");
+                ctx.AssertEqual(75, Combat.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
+                    "First Strike is initially available for Choke");
+                Ability.BeginAbilityImpact(caster, choke);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => choke.ImpactAction(caster, targets[0], 1, GetLocation(targets[0])));
+                }
+                finally { Ability.EndAbilityImpact(caster); }
+                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
+                    "Choke applies the hostile-hit damage bonus despite having no immediate base damage");
+                ctx.AssertEqual(0, Combat.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
+                    "Choke consumes the applied First Strike stack");
             }
             finally { Combat.SetAbilityHitResolutionOverride(null); }
         }

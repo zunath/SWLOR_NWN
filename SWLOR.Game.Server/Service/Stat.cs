@@ -2603,8 +2603,10 @@ namespace SWLOR.Game.Server.Service
 
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
-            var fp = GetLocalInt(self, "FP") + 1;
-            var stm = GetLocalInt(self, "STAMINA");
+            var previousFP = GetLocalInt(self, "FP");
+            var previousSTM = GetLocalInt(self, "STAMINA");
+            var fp = previousFP + 1;
+            var stm = previousSTM;
             var canRestoreStamina = !respectsStaminaRegenDelay || CanRestoreBeastStamina(self);
             if (canRestoreStamina)
                 stm++;
@@ -2616,6 +2618,11 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+
+            if (fp != previousFP)
+                ExecuteScript("pc_fp_adjusted", self);
+            if (stm != previousSTM)
+                ExecuteScript("pc_stm_adjusted", self);
 
             if (outOfCombatRegen)
             {

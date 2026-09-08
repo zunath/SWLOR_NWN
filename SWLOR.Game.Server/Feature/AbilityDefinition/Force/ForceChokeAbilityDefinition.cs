@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     ApplyForceChoke(activator, target, targetLocation, immobilizeSeconds, totalDamage))
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .DealsDeferredDamage()
                 .TriggersDarkForceConversion()
                 .BreaksStealth()
                 .RequirementFP(fp);

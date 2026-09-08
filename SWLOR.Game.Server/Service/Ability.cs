@@ -2372,7 +2372,8 @@ namespace SWLOR.Game.Server.Service
             // Control-only casts must stay non-damaging even when a passive adds flat damage.
             // Weapon abilities still deal their weapon damage when their added damage is zero.
             var dealsDamage = adjustedBaseDamage > 0 || Combat.IsWeaponSkillType(skillType) ||
-                              trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon;
+                              trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon ||
+                              trackedImpact?.Ability?.DealsDeferredDamage == true;
             if (dealsDamage)
             {
                 adjustedBaseDamage += Combat.GetAbilityImpactBaseDamageBonus(

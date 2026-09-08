@@ -12,7 +12,10 @@ Paths below are relative to the parent repository root.
    standalone CLI `-o` uses the Release output produced by `RunCLI.cmd`.
 2. Check source assets and `Build/hakbuilder.json`. `sw_weapon` uses
    `CompileModels: false` because the legacy MDL compiler can discard NWN:EE
-   material fields. Preserve exported ASCII MDL.
+   material fields. Ship precompiled MDLs produced by the installed NWN:EE
+   `compilemodel` command; the helper and verification steps are in the guide.
+   An ASCII header in a shipped replacement means the client must compile it
+   on first appearance, which can cause a hitch.
 3. Verify `debugserver/hak/sw_weapon.hak` from the testing checkout, then the HAK
    actually mounted by the server and loaded by the client. Read client content
    paths from its configuration instead of assuming the default Documents folder.

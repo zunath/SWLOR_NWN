@@ -109,7 +109,7 @@ authoring separate from gameplay stats and canonical manufacturer claims.
 meshes supplied as `(vertices, UVs, triangle faces)` tuples with matching vertex
 and UV counts. Split vertices at UV/hard-edge seams as needed before export.
 
-For later changes to an existing weapon, start from its committed ASCII MDL,
+For later changes to an existing weapon, start from its committed MDL,
 MTR and DDS maps. They contain the shipped geometry, UVs and material inputs. Work on
 a local copy, preserving resource names and UVs for a fit-only change. Apply
 position/pitch changes around the grip and retain the approved uniform scale.
@@ -121,8 +121,9 @@ NWN:EE PBR uses MTR `texture0` for base color, `texture1` for OpenGL tangent nor
 `texture2` for scalar specularity, and `texture3` for linear roughness. The standard
 `inc_material` shader derives metallicness as `clamp(3 * specularity - 0.6, 0, 1)`.
 Keep scalar maps linear. Use distinct responses for exposed metals, coatings,
-composite grips and glass; avoid strong baked highlights. Vesper-9 has four
-1024-square maps and 8,804 triangles. These are examples, not required sizes.
+composite grips and glass; avoid strong baked highlights. For new originals, aim for one 512-square material atlas and roughly 1,500–4,000
+triangles, increasing only when visible detail warrants it. Existing imported
+models may need larger maps; review at actual handheld size.
 
 Validate the exported maps themselves: MTR bindings, dimensions, scalar channels,
 normal lengths, UV assignment and visible material response. Review renders use
@@ -136,7 +137,11 @@ commit its executable, archive, logs or intermediate textures. The tested Window
 64-bit build is dated March 3, 2023. These are runtime DDS files, distinct from the
 original packed SWTOR DDS inputs kept outside Git.
 
-Prefer compression at the original resolution before reducing image dimensions.
+Use 512-square maps for compact originals and at most 1024-square maps for typical
+imported handheld blasters. Compare textured previews before reducing larger maps;
+filter color in linear light and reconstruct/renormalize tangent normals. Constant
+material maps can use 4x4 DDS with full mipmaps. Avoid allocating large maps to solid
+colors. Preserve approved fit and silhouette when optimizing.
 For opaque blaster maps, use these explicit options with `-fileformat dds
 -unflip -yflip -dropEmptyAlpha -dxtQuality uber`:
 
@@ -149,7 +154,7 @@ For opaque blaster maps, use these explicit options with `-fileformat dds
 
 NWN's normal shader reads RG and reconstructs Z, so BC5 preserves the channels it
 uses. Do not apply scalar conversion to colored specular maps. Linear-map mipmaps
-need gamma 1.0. Keep the generated mip chain for 3D weapon maps. The two small
+need gamma 1.0. Keep the generated mip chain for 3D weapon maps. Small
 64x64 inventory icons also use DDS. Use `-fileformat dds -unflip -yflip
 -A8R8G8B8 -mipMode None` for these icons: lossless RGBA keeps their artwork and
 soft alpha edges pixel-identical, with one image level and no mip chain. Each is
@@ -221,8 +226,32 @@ Verify that the target native slot maps to an entry in the appearance catalog
 and has both model and inventory resources. Validation must inspect game resources
 directly; it must not depend on committed source manifests or Blender files.
 
-Keep ASCII MDL. The legacy 2003 compiler can discard NWN:EE material fields;
-`sw_weapon` already has `CompileModels: false` in `Build/hakbuilder.json`.
+Ship **compiled NWN:EE MDLs**. ASCII models force the client to compile geometry on
+first load, which can cause a visible hitch. Use the installed game's native
+compiler, which retains EE material names and tangent data; the legacy 2003
+`nwnmdlcomp.exe` compiler can discard those fields. Keep `CompileModels: false`
+in `Build/hakbuilder.json` so that the legacy build step does not recompile them.
+
+Stage ASCII MDLs and all maps/MTRs in an ignored local resource folder, then run:
+
+```powershell
+python tools/CompileBlasterModels.py `
+  --nwmain 'C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights/bin/win32/nwmain.exe' `
+  --resources .tmp/blaster/review/resources --output .tmp/blaster/compiled
+```
+
+This invokes `compilemodel <resref>` with an isolated user directory, waits for each
+process to exit, and checks the engine success log and binary header. Optional
+`--models wbwsh_m_044` limits the selection. Use a fresh output directory. Copy only
+compiled MDLs into runtime staging; logs and ASCII intermediates stay local.
+Check compiled geometry, UVs, normals, EE material names and texture dependencies
+with the native reader before packing. Verify tangent data when changing export or
+compiler paths, and compare visible triangle corners and UVs against the staged
+ASCII to detect compiler changes. Native compilation may split seam vertices or
+remove degenerate triangles; vertex counts alone do not establish geometry loss.
+For later edits, read the binary with `MdlReader` and export a local editable mesh;
+do not use the legacy decompiler to round-trip EE material fields.
+
 The normal Windows server build deploys its initiating Debug/Release/custom
 output and rebuilds changed HAKs into `debugserver/hak`. Verification builds use
 `-p:RunPostBuildEvent=Never` to skip deployment. Standalone CLI `-o` uses the

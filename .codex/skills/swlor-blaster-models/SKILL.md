@@ -34,7 +34,7 @@ conversion, fitting and export helpers in the process tooling.
   guide's schema. Other material/animation requirements need explicit handling.
 - For original designs, author a distinct silhouette and material treatment in
   a local scene/script. Reuse `write_mdl` from the converter for static export.
-  For later edits, work from the committed ASCII MDL, MTR and DDS maps; do not require
+  For later edits, work from the committed MDL, MTR and DDS maps; do not require
   the original import files or procedural builder.
 
 ## Fit and review
@@ -51,13 +51,21 @@ conversion, fitting and export helpers in the process tooling.
   and material maps. Copy only reviewed game resources to `SWLOR_Haks/sw_weapon/`.
   Use unique meaningful texture resrefs within the 16-character limit.
 - Use NWN Crunch EE to compress large maps to DDS before copying, following the
-  guide's channel-specific presets and vertical flip. Keep full resolution first;
+  guide's channel-specific presets, handheld texture budgets and vertical flip;
   validate dimensions, mipmaps, decoded orientation and material quality. Replace
   the corresponding TGA rather than shipping duplicate formats. Use lossless RGBA
   DDS (`-A8R8G8B8 -mipMode None`) for small inventory icons, preserving their
   alpha and pixels exactly; check toolset decoding and icon composition. Compression tools and intermediate images stay local.
 
-## Verify and deliver
+## Compile and deliver
+
+- Ship compiled MDLs using `tools/CompileBlasterModels.py` and the installed NWN:EE
+  executable. Keep ASCII exports and compile logs local. The old HAK compiler can
+  discard EE fields; leave `CompileModels: false` and pack the precompiled assets.
+  See the guide for the command and binary/material verification. For later edits,
+  read the shipped binary with `MdlReader` into local authoring rather than relying
+  on a legacy decompiler to preserve EE materials.
+
 
 - Check the native slot against `PistolAppearanceDefinition.MiddleParts`, the
   model and inventory icon. Validate new geometry/export changes using the native

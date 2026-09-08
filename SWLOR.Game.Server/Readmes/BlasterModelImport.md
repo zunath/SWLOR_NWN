@@ -181,9 +181,15 @@ NWN's normal shader reads RG and reconstructs Z, so BC5 preserves the channels i
 uses. Do not apply scalar conversion to colored specular maps. Linear-map mipmaps
 need gamma 1.0. Keep the generated mip chain for 3D weapon maps. Small
 64x64 inventory icons also use DDS. Use `-fileformat dds -unflip -yflip
--A8R8G8B8 -mipMode None` for these icons: lossless RGBA keeps their artwork and
-soft alpha edges pixel-identical, with one image level and no mip chain. Each is
-16,512 bytes. Verify both decoding and layered icon composition in the toolset.
+-DXT5 -dxtQuality uber -gamma 2.2 -mipMode None` for these icons. DXT5 retains
+transparency and produces a 4,224-byte standard DDS with one image level. Do not
+use `-A8R8G8B8`: the native `CResDDS::GetChannelCount` recognizes DXT1, DXT5,
+ATI1 and ATI2, but returns zero for the uncompressed RGBA FourCC. A generic DDS
+decoder accepting the image does not establish game compatibility.
+Verify both decoding and layered icon composition in the toolset,
+then verify native inventory selection as described below. Keep new/replacement
+inventory artwork DDS-only; do not add TGA companions or registration stubs as an
+automatic workaround.
 
 For example, after extracting `nwn_crunch.exe` into `.tmp/blaster-tools/nwn-crunch/`:
 
@@ -204,8 +210,84 @@ Inspect texture details and the textured model; confirm game lighting in the cli
 Replace each runtime TGA, including inventory icons, with its DDS using the same basename. Do not keep
 both formats for the same map: texture lookup can prefer the TGA. MTR bindings are
 extensionless and do not change. Vesper-9 keeps four 1024-square maps; the imported
-blaster keeps two 1024-square maps and its 256-square specular map. Their combined
-texture payload is 5,637,112 bytes, versus 19,074,749 bytes as uncompressed TGAs.
+blaster keeps two 1024-square maps and its 256-square specular map.
+
+## Inventory lookup and unique artwork
+
+Every catalog appearance needs its own visible artwork matching the finished
+model. Replacing geometry in an occupied slot also requires reviewing that slot's
+icon. Audit the entire pistol catalog, including the transparent end layers:
+
+```powershell
+python -m unittest discover -s tools/tests -p test_pistol_inventory_icons.py
+```
+
+This requires Pillow and the initialized HAK submodule. It checks committed game
+resources without authoring inputs: model/icon presence, 64x64 dimensions,
+DXT5 encoding, transparency, distinct visible pixels and stale TGA shadows of DDS icons. Legacy
+TGA-only slots are included in the artwork audit; new/replacement icons use DDS.
+Review a labeled contact sheet and provide an icon preview with the handoff.
+
+**Resource validation is not native inventory validation.** A DDS can decode in
+the custom toolset and be packed correctly while the game still selects an old
+icon. Restart the client and switch between distinct appearances, including the
+starting pistol. Confirm the inventory/equipment icon changes with the held model.
+If it does not, inspect resource discovery and load precedence before redrawing
+artwork or changing item stats/appearance IDs.
+
+NWN:EE Windows x64 build **8193.37-17 / 26c6e573** has a second, separate issue:
+`CNWCItem::UpdateIcons` checks only TGA resource type 3 for each composite part.
+Without a same-named TGA in any loaded resource layer, it replaces that part's
+resref with the base item's generic icon, even when the requested DDS exists.
+The Basic Pistol's native slot 201 and Part #111 demonstrate this fallback.
+The artwork can be unique and correctly packed while the displayed icon is wrong.
+
+Keep new/replacement artwork DDS-only. Native inventory discovery requires a
+compatible client; rebuilding HAKs or changing server C# cannot alter this client
+check. Do not work around it by adding TGA artwork, registration stubs, or changing
+persisted weapon appearances. Broader engine background is available in the
+[texture notes](https://nwn.wiki/spaces/NWN1/pages/38174958/Textures).
+
+### Optional Windows client compatibility patch
+
+`tools/PatchDdsInventoryIcons.py` creates a separate client executable for the
+verified build. At the original composite-part lookup call, it preserves the TGA
+check, then tries DDS resource type 2033 for the **same resref** before allowing
+the original generic-icon fallback. Existing TGA icons and genuinely missing
+resources retain their old behavior. No TGA resources are added or fabricated.
+
+The tool validates the complete source SHA-256, refuses other builds and previously
+modified binaries, and refuses to overwrite either the source or an existing
+output. It preserves the entry point and original code apart from that call,
+adds a readable/executable section with Windows unwind metadata, and recalculates
+the PE checksum. It does not patch a running process, replace Steam's executable,
+change the server or distribute a game binary through Git/NWSync.
+
+To validate the supported executable without writing:
+
+```powershell
+python tools/PatchDdsInventoryIcons.py --source 'C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights/bin/win32/nwmain.exe' --check-only
+```
+
+To opt into the patch, use `--output` instead of `--check-only`, choosing a new
+filename such as `nwmain-dds.exe` **beside the original executable** so the normal
+game assets and DLLs resolve. Launch that separate executable directly to use the
+fix; the normal Steam launch still uses the original. Roll back by launching the
+original executable. Each affected player needs a compatible client, and any game
+update needs a fresh verification; do not bypass the version check.
+
+Native regression tests require `pefile`, `unicorn`, the initialized HAK submodule
+and `NWN_EE_NWMAIN` pointing to the original Windows executable:
+
+```powershell
+python -m unittest discover -s tools/tests -p test_dds_inventory_client_patch.py
+```
+
+These tests execute the original and patched lookup instructions with a simulated
+resource index, reproduce the fallback for the two reported slots, cover every
+shipped DDS pistol icon, and check native DDS format recognition, preserved TGA
+behavior, missing-resource fallback, PE integrity and unwind metadata. They do
+not exercise the GPU or inventory window; record live client verification separately.
 
 ## Hand fit
 

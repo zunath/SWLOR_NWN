@@ -13,6 +13,8 @@ do not automatically reach another checkout's build inputs.
 ## Repository contents
 
 Commit only each weapon's finished MDL, DDS textures, MTR and DDS inventory icon.
+Keep new and replacement inventory artwork DDS-only; do not add TGA companions
+or registration stubs as an automatic workaround for native lookup failures.
 Keep imported GR2/DDS inputs, manifests, Blender files, per-model authoring scripts,
 fit data, previews and reports in ignored local staging such as `.tmp/blaster/`.
 Do not add them to Git for reproducibility or make validation/builds depend on them.
@@ -56,9 +58,11 @@ conversion, fitting and export helpers in the process tooling.
 - Use NWN Crunch EE to compress large maps to DDS before copying, following the
   guide's channel-specific presets, handheld texture budgets and vertical flip;
   validate dimensions, mipmaps, decoded orientation and material quality. Replace
-  the corresponding TGA rather than shipping duplicate formats. Use lossless RGBA
-  DDS (`-A8R8G8B8 -mipMode None`) for small inventory icons, preserving their
-  alpha and pixels exactly; check toolset decoding and icon composition. Compression tools and intermediate images stay local.
+  the corresponding TGA rather than shipping duplicate formats. Use DXT5 DDS
+  (`-DXT5 -dxtQuality uber -gamma 2.2 -mipMode None`) for 64x64 inventory icons
+  to preserve transparency. Do not use uncompressed `-A8R8G8B8`: the native DDS
+  loader does not recognize it, even though generic DDS decoders do. Review
+  the compressed icon itself. Compression tools and intermediate images stay local.
 
 ## Compile and deliver
 
@@ -69,7 +73,12 @@ conversion, fitting and export helpers in the process tooling.
   read the shipped binary with `MdlReader` into local authoring rather than relying
   on a legacy decompiler to preserve EE materials.
 - Check the native slot against `PistolAppearanceDefinition.MiddleParts`, the
-  model and inventory icon. Validate new geometry/export changes using the native
+  model and inventory icon. Each appearance needs unique artwork matching its
+  finished model, including replacements of occupied slots. Run
+  `python -m unittest discover -s tools/tests -p test_pistol_inventory_icons.py`
+  to audit every catalog slot for missing, blank or duplicate artwork, DXT5 encoding, DDS/TGA
+  shadows and end layers that obscure the middle icon. Review a contact sheet
+  and provide an icon preview at handoff. Validate new geometry/export changes using the native
   model reader, and check all MTR/texture references directly. Run focused converter
   tests when changing the converter. Do not require source manifests for asset checks.
 - For requested deployment, use the normal build route and compare packed content
@@ -80,4 +89,16 @@ conversion, fitting and export helpers in the process tooling.
 - Report slot IDs, checks, deployment and outstanding client review in the PR.
   Offline renders do not establish live fit: check idle/attack grip, muzzle direction,
   body sizes, inventory and ground appearance after restarting NWN to clear its cache.
+  A decoded DDS, successful toolset preview or matching packed hash does not
+  establish that the native inventory selects that icon. Test switching between
+  distinct appearances (including the starting weapon) in a freshly restarted
+  client. If the model changes but its icon stays the same, inspect native icon
+  discovery and resource precedence; do not regenerate already-correct artwork
+  or claim the issue fixed from offline checks. See the guide's inventory lookup
+  section for the version-checked Windows client compatibility patch. Stock
+  8193.37-17 checks TGA presence for composite icons, so DDS-only slots need a
+  compatible client as well as correctly encoded artwork. A HAK/server update
+  alone cannot change that native check. Client patching is a separate opt-in;
+  do not silently modify an installed executable during model generation.
+  Report unresolved native lookup failures explicitly.
   Follow companion HAK PR rules when publishing; keep PR review artifacts local.

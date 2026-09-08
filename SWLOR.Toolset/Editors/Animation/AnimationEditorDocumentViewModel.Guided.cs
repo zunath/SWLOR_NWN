@@ -93,14 +93,20 @@ public sealed partial class AnimationEditorDocumentViewModel
             {
                 var model = _model;
                 var localFolder = _modelFolder;
+                ILookup<string, string>? adjacentModels = null;
                 var samples = await Task.Run(() => MdlAnimationPose.SampleCreaturePreviewAnimations(model, name =>
                 {
                     AnimationProject.ValidateToken(name, 16);
                     if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(name + ".mdl"), out var resource) == true)
                         return new MdlReader().Parse(resource.GetBytes(AnimationProject.MaximumFileBytes));
-                    var localPath = localFolder == null ? null : Path.Combine(localFolder, name + ".mdl");
-                    if (localPath != null && File.Exists(localPath))
-                        return new MdlReader().Parse(AnimationSourceFile.ReadBytes(localPath, AnimationMdl.MaximumFileBytes, "Supermodel"));
+                    if (localFolder == null) return null;
+                    adjacentModels ??= Directory.EnumerateFiles(localFolder)
+                        .Where(path => Path.GetExtension(path).Equals(".mdl", StringComparison.OrdinalIgnoreCase))
+                        .ToLookup(path => Path.GetFileNameWithoutExtension(path), StringComparer.OrdinalIgnoreCase);
+                    var matches = adjacentModels[name].Take(2).ToArray();
+                    if (matches.Length > 1) throw new InvalidDataException($"Ambiguous adjacent supermodel '{name}'.");
+                    if (matches.Length == 1)
+                        return new MdlReader().Parse(AnimationSourceFile.ReadBytes(matches[0], AnimationMdl.MaximumFileBytes, "Supermodel"));
                     return null;
                 }, framesPerSecond: 20, maxFrames: 240, maxDepth: AnimationInstall.MaximumModelChainDepth));
                 foreach (var sample in samples.Where(sample => sample.Length >= 0 && sample.Length <= 12 && sample.Frames.Count > 0))

@@ -549,15 +549,26 @@ namespace SWLOR.Toolset.Editors
         public void OpenAnimationEditor()
         {
             if (_animationEditor != null) { _factory.ActivateDocument(_animationEditor); return; }
-            var editor = new Animation.AnimationEditorDocumentViewModel(
-                _prompts, _log, _resourceIndex,
-                _tlkEditorSource?.RepositoryRoot ?? (_workspaceContext.Workspace is { } workspace
-                    ? Directory.GetParent(Path.TrimEndingDirectorySeparator(workspace.ModuleRoot))?.FullName : null),
-                _mutationLock);
-            editor.Closed += _ => _animationEditor = null;
-            editor.CloseRequested += _ => _factory.CloseDocument(editor);
-            _animationEditor = editor;
-            _factory.OpenDocument(editor);
+            try
+            {
+                var editor = new Animation.AnimationEditorDocumentViewModel(
+                    _prompts, _log, _resourceIndex,
+                    _tlkEditorSource?.RepositoryRoot ?? (_workspaceContext.Workspace is { } workspace
+                        ? Directory.GetParent(Path.TrimEndingDirectorySeparator(workspace.ModuleRoot))?.FullName : null),
+                    _mutationLock);
+                editor.Closed += closed =>
+                {
+                    if (ReferenceEquals(_animationEditor, closed)) _animationEditor = null;
+                };
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                _animationEditor = editor;
+                _factory.OpenDocument(editor);
+            }
+            catch (Exception ex)
+            {
+                _animationEditor = null;
+                _log.AppendLine($"Failed to open Animation Editor: {ex.GetBaseException().Message}");
+            }
         }
 
         /// <summary>

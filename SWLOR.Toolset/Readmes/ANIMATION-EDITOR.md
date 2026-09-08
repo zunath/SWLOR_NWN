@@ -18,7 +18,7 @@ The editor opens in a guided layout with **Start**, **Pose**, and **Use in game*
    work throughout. Use **Start**, **Middle**, and **Finish**, or click the timeline to choose a moment.
 4. Press **Play animation**. Add or remove poses as needed. Increasing the duration slows the movement.
 5. Save the project. In **Use in game**, choose the current character and review the installation.
-   The installation still needs rebuilt HAKs deployed to players and the server before in-game use.
+   Rebuild the HAKs and deploy them to the server and players before in-game use.
 
 Enable **Advanced** whenever you need raw joints, exact transforms, IK, retargeting, MDL exchange,
 or other target models. Switching layouts preserves the animation and its undo history.

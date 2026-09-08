@@ -1419,6 +1419,24 @@ public class AnimationEditorTests
             "the mounted base overrides the adjacent file, even after ten banks");
         vm.ApproveApplicationClose(); vm.OnClose();
     }
+    [AvaloniaTest] public async Task AdjacentStarterMovementResrefsIgnoreFilenameCase()
+    {
+        var target = InstallFixture();
+        File.WriteAllText(target, File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero BaSe"));
+        var rig = Rig(); rig.ModelName = "base"; rig.Joints[0] = rig.Joints[0] with { Name = "base" };
+        var last = rig.Sample(0); last[1] = last[1] with { Position = new Vector3(2, 0, 0) };
+        rig.SetKey(0, rig.Sample(0)); rig.SetKey(1, last);
+        Write("SWLOR_Haks/sw_cr_creature/base.MDL", "newmodel base\n" + AnimationMdl.ExportGeometry(rig) +
+            AnimationMdl.Export(rig, "walk") + "donemodel base\n");
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target);
+        await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.StarterMovements.Should().ContainSingle();
+        vm.UseMovementCommand.Execute(null); vm.Stop();
+        vm.Project.Sample(1)[1].Position.X.Should().BeApproximately(2, .00001f);
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
+
     [AvaloniaTest] public async Task ExternalReloadRetainsOnlyAMatchingPreviewModel()
     {
         var modelPath = InstallFixture(); var projectPath = Path.Combine(_folder, "project.swlanim");

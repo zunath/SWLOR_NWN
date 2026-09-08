@@ -19,6 +19,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         /// </summary>
         public string OverrideModelResref { get; }
 
+        // A worn helmet is a separate client attachment which does not receive
+        // creature shader parameters. Its native PLT scheme still carries dyes.
+        public bool IsWornHelmet => UsesItemColors && PaletteSource != CreaturePaletteSource &&
+            ModelResref.StartsWith("helm_", System.StringComparison.OrdinalIgnoreCase);
+
         public TintMapMaterialSelection(
             string modelResref,
             TintMapMaterialDefinition material,

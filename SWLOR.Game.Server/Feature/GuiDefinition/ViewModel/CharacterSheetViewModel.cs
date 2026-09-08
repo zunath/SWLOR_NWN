@@ -215,11 +215,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        public string HitPointTooltip
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
         public string FP
         {
             get => Get<string>();
@@ -1305,7 +1300,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxHP = GetMaxHitPoints(_target);
             var temporaryHP = TemporaryHitPointEffects.GetRemaining(_target);
             HP = $"{normalHP + temporaryHP} / {maxHP}";
-            HitPointTooltip = $"Normal HP: {normalHP} / {maxHP}\nTemporary HP: {temporaryHP}\nTemporary HP absorbs damage before normal HP.";
         }
 
         public override Action OnWindowClosed() => () => ++_hitPointRefreshGeneration;

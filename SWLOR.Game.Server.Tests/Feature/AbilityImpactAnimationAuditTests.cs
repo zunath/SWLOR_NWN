@@ -101,7 +101,7 @@ public class AbilityImpactAnimationAuditTests
 
         var helperCall = System.Text.RegularExpressions.Regex.Match(
             processAnimationBody,
-            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*AbilityAnimationBinding\.ActivationType\(ability,\s*GetIsPC\(activator\)\),\s*1\.0f,\s*animationLength,\s*sourceAnimationName,\s*replacementAnimationName,\s*ability\.AnimationRestoreDelaySeconds\s*\)",
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*AbilityAnimationBinding\.ActivationType\(ability,\s*GetIsPC\(activator\),\s*animationLength\),\s*1\.0f,\s*animationLength,\s*sourceAnimationName,\s*replacementAnimationName,\s*ability\.AnimationRestoreDelaySeconds\s*\)",
             System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
         helperCall.Success.Should().BeTrue(

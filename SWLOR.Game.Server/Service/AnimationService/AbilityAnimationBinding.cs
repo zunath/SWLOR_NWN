@@ -8,14 +8,17 @@ namespace SWLOR.Game.Server.Service.AnimationService;
 /// <summary>Connects catalog motions to exact feat ranks without changing ability mechanics.</summary>
 public static class AbilityAnimationBinding
 {
-    public static AnimationClip ActivationClip(AbilityDetail ability, bool isPlayer) =>
-        ability.HasGeneratedAnimationBinding && !isPlayer ? null : ability.AuthoredAnimation;
+    public static AnimationClip ActivationClip(AbilityDetail ability, bool isPlayer, float? animationWindow = null) =>
+        ability.HasGeneratedAnimationBinding && (!isPlayer || animationWindow.HasValue &&
+            (ability.AuthoredAnimation == null || ability.AuthoredAnimation.Duration > animationWindow.Value))
+            ? null : ability.AuthoredAnimation;
 
     public static AnimationClip QueuedClip(AbilityDetail ability, bool isPlayer) =>
         ability.HasGeneratedAnimationBinding && !isPlayer ? null : ability.QueuedAttackAnimation;
 
-    public static Animation ActivationType(AbilityDetail ability, bool isPlayer) =>
-        ability.HasGeneratedAnimationBinding && !isPlayer ? ability.NativeAnimationType : ability.AnimationType;
+    public static Animation ActivationType(AbilityDetail ability, bool isPlayer, float? animationWindow = null) =>
+        ability.HasGeneratedAnimationBinding && ActivationClip(ability, isPlayer, animationWindow) == null
+            ? ability.NativeAnimationType : ability.AnimationType;
 
     public static void Apply(IReadOnlyDictionary<FeatType, AbilityDetail> abilities,
         IEnumerable<AbilityAnimationEntry> entries)

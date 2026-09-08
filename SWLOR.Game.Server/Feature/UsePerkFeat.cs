@@ -512,12 +512,17 @@ namespace SWLOR.Game.Server.Feature
                 /// </summary>
                 void PlayActivationAnimation(float animationLength)
                 {
-                    if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null)
+                    // Generated clips must fit inside the existing cast window. Instant or reduced
+                    // casts retain native playback so animation actions cannot delay resumed combat.
+                    var authoredClip = AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator), animationLength);
+                    if (authoredClip != null)
                     {
-                        NamedAnimation.Queue(activator, AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)),
-                            Math.Max(AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)).Duration, animationLength));
+                        NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength));
                         return;
                     }
+
+                    if (AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator), animationLength) == Animation.Invalid)
+                        return;
 
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;
@@ -529,7 +534,7 @@ namespace SWLOR.Game.Server.Feature
                         {
                             PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
                                 activator,
-                                AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator)),
+                                AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator), animationLength),
                                 1.0f,
                                 animationLength,
                                 sourceAnimationName,
@@ -543,7 +548,7 @@ namespace SWLOR.Game.Server.Feature
                         activator,
                         () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
                             activator,
-                            AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator)),
+                            AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator), animationLength),
                             1.0f,
                             animationLength));
                 }

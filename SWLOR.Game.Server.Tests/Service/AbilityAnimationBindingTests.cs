@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
+using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -18,6 +19,38 @@ public class AbilityAnimationBindingTests
 {
     private static readonly AnimationClip Clip = new("sw_test", 1f);
     private static AbilityAnimationEntry Entry(params FeatType[] feats) => new("Test", "Test", "Force", Clip, feats);
+
+    [Test]
+    public void InstantBlazingSpikesKeepsNativePlaybackInsteadOfAddingAFullClipToTheActionQueue()
+    {
+        var abilities = new BlazingSpikesAbilityDefinition().BuildAbilities();
+        var ability = abilities[FeatType.BlazingSpikes1];
+        var native = ability.AnimationType;
+        var delay = ability.ActivationDelay(0, 0, ability.AbilityLevel);
+        delay.Should().Be(0);
+        AbilityAnimationBinding.Apply(abilities, ActiveAbilityAnimationCatalog.Entries.Where(entry => entry.Id == "BlazingSpikes"));
+        ability.PreviewAnimation.Should().NotBeNull();
+        var window = Math.Max(0, delay - .2f);
+        AbilityAnimationBinding.ActivationClip(ability, true, window).Should().BeNull();
+        AbilityAnimationBinding.ActivationType(ability, true, window).Should().Be(native);
+        ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(delay);
+    }
+
+    [TestCase(0f, false)]
+    [TestCase(.5f, false)]
+    [TestCase(1f, true)]
+    [TestCase(2f, true)]
+    public void GeneratedClipOnlyPlaysWhenItsFullDurationFitsTheCurrentCastWindow(float window, bool plays)
+    {
+        var ability = new AbilityDetail { ActivationType = AbilityActivationType.Casted, AnimationType = Animation.CastOutAnimation };
+        AbilityAnimationBinding.Apply(new Dictionary<FeatType, AbilityDetail> { [(FeatType)1] = ability }, new[] { Entry((FeatType)1) });
+        var selected = AbilityAnimationBinding.ActivationClip(ability, true, window);
+        (selected != null).Should().Be(plays);
+        if (selected != null) Math.Max(selected.Duration, window).Should().Be(window);
+        AbilityAnimationBinding.ActivationType(ability, true, window).Should().Be(plays ? Animation.PointForward : Animation.CastOutAnimation);
+        AbilityAnimationBinding.ActivationClip(new AbilityDetail { AuthoredAnimation = Clip }, true, window)
+            .Should().BeSameAs(Clip, "explicit authored playback contracts remain authoritative");
+    }
 
     [Test]
     public void NativeThrowSelectorsStillSuspendPistolRemappingForPlayersAndNpcs()

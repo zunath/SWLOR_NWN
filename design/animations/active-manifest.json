@@ -14,7 +14,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "73dd19c9814f2a34e7d4988577d366b921f3d9407160c270d4f38d7b9a01f82a"
+      "ProjectSha256": "bfd7c7d05e710b8a413abeb3b710a5e545daee930ebe55e08f58c407bfd96188"
     },
     {
       "Id": "GuardingBond",
@@ -28,7 +28,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f9efa11994dfd71703ab19eb07b502ceb89fb119b4d9c8de220e170e160f1773"
+      "ProjectSha256": "8e2e4e0d2ba153a54e380d39fd4bdc1be98c43d41848a7e29b2224f9c55e32cc"
     },
     {
       "Id": "PredatoryBond",
@@ -42,7 +42,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "dc886f2453f53717819edee7bfa6cb4ef56b385bfb600387734692832a225cce"
+      "ProjectSha256": "67aa2e8afdd648d3523b43566c058d0d31b7a001f9ca4ec1ec173c8c207381a2"
     },
     {
       "Id": "ReviveBeast",
@@ -56,7 +56,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4015e9342c81918df41e2ad4667952",
-      "ProjectSha256": "74a3db51ed34368f5b863e19f15353208889676a0c03562ca48d92bded9236f3"
+      "ProjectSha256": "e9bd2ed9ccfa32eee134ce54c3e42f7596a3e79de6a71cbec6aa85b01cfad402"
     },
     {
       "Id": "Reward",
@@ -70,7 +70,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a401601906c8191a1857b907fdd51e6",
-      "ProjectSha256": "a4199a40ff5ce5a25d9ddc0493dfffbf110302c0c9109505a1d76f1b1a10a517"
+      "ProjectSha256": "cdb204ad06b5b02ca8344c4c864488dd1d920d6fe85827e180094f3e760d81da"
     },
     {
       "Id": "SoothePet",
@@ -84,7 +84,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a401621c730819199d06dd7f9d9ebfa",
-      "ProjectSha256": "b54b22512287c9203836ac28dccd47dd1db5aee5efa01eff693135d7bf71e4aa"
+      "ProjectSha256": "7f1ebc618047154b7e3ef77fe55c94462900eed8765801b191409acba4d6f22a"
     },
     {
       "Id": "Tame",
@@ -98,7 +98,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4015d8dfa8819192c3e4a893e20446",
-      "ProjectSha256": "71d7bce41b5b30ab263e4dbe04125d2beb34254fc39c577f916e150045da4ec3"
+      "ProjectSha256": "9bf91235dad87495a539b596484fe354e6264128f2bb9d65be8e93eb7f3615bd"
     },
     {
       "Id": "AdhesiveGrenade",
@@ -112,7 +112,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400e9c692881918417ed815afebbf0",
-      "ProjectSha256": "aa63cc3231cbb80b54bd1a425a4c000ba69b9f578a7fffa7716367339b26aee4"
+      "ProjectSha256": "2d712ae4b916f00d581d4732b8b08895851b4e8f44f66d85443b3ea06f9a4773"
     },
     {
       "Id": "ArcProjector",
@@ -126,7 +126,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "b83e11e168b0f89b3272edacf06ed55916b620cb9968c6a210ffd04f83e7311f"
+      "ProjectSha256": "8b90a61f53bf92dfc8f9ab969ea54e93f4d7f4ce9d54b33eeaa2f9477213e431"
     },
     {
       "Id": "BlasterBeacon",
@@ -140,7 +140,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a401359343c81918ce3d5d9dc91bb4e",
-      "ProjectSha256": "ef4aa25725d1604cc3e7dc65423db8546f9677383a247d74b8b756281a3f8467"
+      "ProjectSha256": "a8cda3d2306b79276a400613e92d0ffe0d94f463bd98d45f1320841dc856b1bc"
     },
     {
       "Id": "ClusterGrenade",
@@ -154,7 +154,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400f1f20b08191b192bfb65246ba94",
-      "ProjectSha256": "55ac89cca18c2965f2ba9c8c3c943faf9eb51783882df4fa7226dc29b221423a"
+      "ProjectSha256": "4af8474cd3e90a707ecc5c5607cd0140b875266225152275f1cba15fbc19fff5"
     },
     {
       "Id": "ConcussionGrenade",
@@ -168,7 +168,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400ceec88c8191917b475a5abeeb8c",
-      "ProjectSha256": "bc363764cf343e1b42f28efdb5182e571cbc7f49b6b816b5f6814b965a6cb1a6"
+      "ProjectSha256": "cb17004722dcff5abb25aa6abffcf5dc9eeb94e3e78c2c1bd3aa7b5fd688f89f"
     },
     {
       "Id": "CryoSprayer",
@@ -182,7 +182,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "af63550838d4d80e71637e0f37b5aeffdd7c6b6e954cd02f6111e700371e1fbc"
+      "ProjectSha256": "9f5f3b7af27b115037e04619c4c89b538567cfcc2bcf85df86c59423ba550c9c"
     },
     {
       "Id": "DeflectorShield",
@@ -196,7 +196,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "a232387b4a42b8beab887662f70f45b9bb7b04b75155304cf7dbe5a1cc00c323"
+      "ProjectSha256": "f5b99a65d5e35e1d96256a78de62ab1a2440e5c9245d1f9ed835e0cb8bd4c14f"
     },
     {
       "Id": "DisruptionPulse",
@@ -210,7 +210,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4011a0c1e881919338e80d284504bd",
-      "ProjectSha256": "c592553a2fd7388ca3784d418b58b609367a769bbc5304d5c611ae41ac3b2b1c"
+      "ProjectSha256": "aab5b5163d62648a74b5036724570f08b991c8b4d05d415dcd854adf682e0ab6"
     },
     {
       "Id": "EmergencyBunker",
@@ -224,7 +224,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "bcc8d0c974138e0499505c576d68c1a39a9bb494522c3ae1d43305d923f49621"
+      "ProjectSha256": "a7068a10e52a3b593a42e97d87bd10b0d8d7ff0b6a2a97de4fa5c947f28b4452"
     },
     {
       "Id": "Flamethrower",
@@ -238,7 +238,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "babc35b25863a90f52ac0568ea764adddedac1aeb123093de3a6cc4855802a77"
+      "ProjectSha256": "5ee6d75e07f008bf02c2de8f990ffc1f50f687b4223c2b30e786806cd8ceb600"
     },
     {
       "Id": "FlashGrenade",
@@ -252,7 +252,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400d4bfca8819183e54a057e874df2",
-      "ProjectSha256": "77a8df0bcabd222b1673daa025c4151e320e8216b58c0c59ae0417aad63d7f4c"
+      "ProjectSha256": "9c7ec044b5e3a13d7ee353eae85201dc346a2aec7b79e1d4b01f40bbfc2101cf"
     },
     {
       "Id": "FragGrenade",
@@ -266,7 +266,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400b5991b481918ca4b286177de545",
-      "ProjectSha256": "1d39581fcaf3b430bac3aa9546622d5e7c559504069d1850dc05e53bfcb7446e"
+      "ProjectSha256": "96ee3178f33c18157d0ff3fee025c6ba391449e5667b759911eef065da8619a9"
     },
     {
       "Id": "GroupDeflector",
@@ -280,7 +280,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "942e13771b2bac85a3a354332fa810d0e97c9aa8768887acf14f89844abcc8c7"
+      "ProjectSha256": "fc9348264fc103a1ad1f5f19afd689727c459db34dd3435330691aea62fbaa6c"
     },
     {
       "Id": "IncendiaryField",
@@ -294,7 +294,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4013a2d2688191aa52829d0d598e03",
-      "ProjectSha256": "5b0b5dd8fa4a642df95549f23d74ed36ea2961742419332ed05fb80b6ffef53e"
+      "ProjectSha256": "dba9883dcb571150bfb82f2a26bf15fd9239b6cf99951f7129501ab4328a33c5"
     },
     {
       "Id": "IonGrenade",
@@ -308,7 +308,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400de548c08191a2e52e433e30159e",
-      "ProjectSha256": "4149bdadf3173639d5380d82fcf233907272c3223543c4367c53818e3059223c"
+      "ProjectSha256": "dabe70ae29ad9b1257247413698a67fedf051ce880a1292cc1a4f0db9c55fce3"
     },
     {
       "Id": "IonLance",
@@ -322,7 +322,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "505205e681ac27fc31fe0d6b661d711967dbedeb92b17e3f955fa80280bb64f5"
+      "ProjectSha256": "f0576887b1775639cd9ec9f06b9ef17f2e41c48eafc1b350bdb6fa24c1cf7334"
     },
     {
       "Id": "KillzoneBeacon",
@@ -336,7 +336,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40150693908191b2415f963e63031b",
-      "ProjectSha256": "87a40f1b67de4a268b131b97945363ad35d126f157bcb039daf93aa12a546d44"
+      "ProjectSha256": "28d3fdd7a92e0945181baa1b229642e491e9be47453d983a8623950b347487b9"
     },
     {
       "Id": "OverloadBarrage",
@@ -350,7 +350,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e86c34dfde23e7e87abf029f271309da130b3ecfbf9fcb01dec753701396dee7"
+      "ProjectSha256": "9f7ea6afbe0fb0d3de1166664c478d7487d0a584733e00093d821754ba2f78da"
     },
     {
       "Id": "PowerCell",
@@ -364,7 +364,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "28d8fe48dc2579553d95558309a219209298805635adb7c16e443190b46e1814"
+      "ProjectSha256": "2fa32d7a15e7aae1300a4574f27ea37e172a2923ba1b9f5e6860ebe20ed3438a"
     },
     {
       "Id": "RailDart",
@@ -378,7 +378,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "96811016c36b80b87c08fa0fec69c5fe3e175f1b0e2ea945491b10d98da34ddb"
+      "ProjectSha256": "f6edc65c0ec38a8d73ffdc0d0afd14c8b501a0f8f438a1e96ad67b89a4dc4c68"
     },
     {
       "Id": "RemoteCharge",
@@ -392,7 +392,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40142040b88191a83f31accd0f22a5",
-      "ProjectSha256": "17b3b768767fc027b21d1bc9e197093dd9912cd226db3b5c4ea3771b20b91ec4"
+      "ProjectSha256": "a9bcdc124caf37a0c491ee0082b636421ed0919b3a656806428d72face573980"
     },
     {
       "Id": "ShockBeacon",
@@ -406,7 +406,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4014c3a4888191b4342b40a181f3ec",
-      "ProjectSha256": "565ebcd5a6feaf0aee0f7aafddb44751b575b4e36c095f7212254c7ef88a6eb0"
+      "ProjectSha256": "923f098491f62ed4c909752e9e744a97536b45340b4c13e9b16b664e7290aa2d"
     },
     {
       "Id": "SignalJammer",
@@ -420,7 +420,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a401463a6508191ace7b88bbf18e6de",
-      "ProjectSha256": "7d2ba87a6e6464c050f562bb6f8a763909112b6dc6d0ed0be50dcb1515e9ac13"
+      "ProjectSha256": "1b0e03230755d3cad139c398d8f1bc179e2318fa1f2e47f09db665b5d722c6f8"
     },
     {
       "Id": "SonicBurst",
@@ -434,7 +434,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "03aeba1a68cb4eaa53548baead6720a8e5968b4949d0599aa50f4122620f5306"
+      "ProjectSha256": "ee9aba66b2133c7eb7c8b7dfd471687c973e2b28a4e9a9664c95e055b5e69033"
     },
     {
       "Id": "ThermalDetonator",
@@ -448,7 +448,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4013144efc8191b0243d89d47fe085",
-      "ProjectSha256": "c4929d66b59dcb814a5311e9206d5f94302a6a1aca7e37cfc1f15c7646993a9e"
+      "ProjectSha256": "9827c2b65a46936da8438ca8a1a6012e05eef897c5e4420e8560c9fbd1773dc2"
     },
     {
       "Id": "WeaponJam",
@@ -462,7 +462,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "231abaa0a045a11225a4c81a5a108327983bd7a2711623d4e4833d68125f8b3c"
+      "ProjectSha256": "cc7853142852c10aad2b260efb63d7956f4c259550c76a98a8e03105d9a0b096"
     },
     {
       "Id": "WristRocket",
@@ -476,7 +476,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "4446c8d9bd9a0b81a22fcb4fcfda2a22ad0cacd51ff4d0c85073bac3f317fd4b"
+      "ProjectSha256": "081fa29b74e3afe3eea2fdd26a69c72aa2544810e399fceaee3c3168062367e0"
     },
     {
       "Id": "GhostProtocol",
@@ -490,7 +490,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5d1aeb408c69714a62b412e6c3c951ac9bec3a29ab695359b1eec79f342ef1f1"
+      "ProjectSha256": "c6a5771fad6b4f2f02862c5acd5757efc023432e22cf43fd37c331b0512202c3"
     },
     {
       "Id": "RazorTrap",
@@ -504,7 +504,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "793dfc32b0485470d60aec83736252b04b9934fc077355b53e2313dbf6beda8a"
+      "ProjectSha256": "97f08b7239c02bf7dc67453833deb44b7d5bb8ebe26afc420309fe0509d0d0d5"
     },
     {
       "Id": "ShadowStep",
@@ -518,7 +518,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "6b433c53e5964addc4ecd809babde7aaf8f8cf22baf731d3e9c58c6eaf4b04ed"
+      "ProjectSha256": "701c45402d4456a6562d501f3c48dc09da58a0e1e719a167ca55590514cb6efc"
     },
     {
       "Id": "ShockTrap",
@@ -532,7 +532,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "540d7775965afdf7423bfc24712132e6d33e0af54723b45ee4297b2217226a5f"
+      "ProjectSha256": "266d6f4e45fd7d055bbe8a9165987ffb4c9a8a2ea61a16db66339f3d7fe39819"
     },
     {
       "Id": "Stealth",
@@ -546,7 +546,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "9bfeab633bf409fae34acc31d63846a57b06076dd65fcd11720798b95b2669cd"
+      "ProjectSha256": "ca5b120b356dffb9d9077901c3722efe2fceb09406e194f07fa6aadc761a16c4"
     },
     {
       "Id": "TacticalEscape",
@@ -560,7 +560,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "7286271ebfc800b3a1e393951d9f48944459dee8bfaec14ac35c6db74154c71f"
+      "ProjectSha256": "d9f5daa546a54f79e6c2278a5290151ebf6fba2df058e71c004c448f423f1631"
     },
     {
       "Id": "AdrenalStim",
@@ -574,7 +574,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a401866bc6881918bc72a506660384b",
-      "ProjectSha256": "127297370030b967910a911f8cf1b98bc82b8c3d4dd3a073e3302a91339c9b14"
+      "ProjectSha256": "66385cd2c3591fbd3a6fc60d85087ca0d09050e182658ae59fe9ba2043f1de45"
     },
     {
       "Id": "Antitoxin",
@@ -588,7 +588,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4018798aa08191b374588b7168c0e5",
-      "ProjectSha256": "187e63c455d813a43b85bacd37d38af571072adbe2834bbbf2c3a2a4775776b2"
+      "ProjectSha256": "820f7a3a9edc6b42941740f0eab52906147cfba1eddebcd3e292f8cd2b475850"
     },
     {
       "Id": "EmergencyCocktail",
@@ -602,7 +602,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4019777fb481918d23999e264a87a2",
-      "ProjectSha256": "bb5a4f52c5d536c60353609e4b28f2883bc8b389c3dc1bbff16506e1999ce5dd"
+      "ProjectSha256": "e54e673ecc15a8c8f8a71a0af54914f96ddc850e3d6253ec6c1d45e7922dca11"
     },
     {
       "Id": "EmergencyTriage",
@@ -616,7 +616,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40186099688191ae8ad66a6cb03015",
-      "ProjectSha256": "d0d3291be67c2bce47af42a78bd2f21c1bf53cc063b9381ef97d3e538dce43e9"
+      "ProjectSha256": "76d27817d3340f96660b28f9b773a64cb02c86793f958355ca5f2bbfd8f5459d"
     },
     {
       "Id": "FocusStim",
@@ -630,7 +630,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4019135b0081919a93ee984f30d508",
-      "ProjectSha256": "6f37944b23cf35aaf0bffc9f61e50bd911397884160eb85704a0c35983027ecb"
+      "ProjectSha256": "eb8e5ff7e7221235e3d994b7f6e81a18d331a7daf7343a14e80aa28c0348171b"
     },
     {
       "Id": "Infusion",
@@ -644,7 +644,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40185950b481919ddbdabbcd190525",
-      "ProjectSha256": "81d54f52de1ab1650b616f45d2308ff2a9c4631647d8e1f23e8711988cd3f939"
+      "ProjectSha256": "ceca4b5ab17af710f4f426f894e628080b840187305f5655b5abc478eec979d4"
     },
     {
       "Id": "KoltoMist",
@@ -658,7 +658,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40184cfbfc8191b803f7cff849403c",
-      "ProjectSha256": "e7814a1df320cd939eca22230aaf977ab1875e448e34d861c41c6112ecccaea7"
+      "ProjectSha256": "423c57e010e7024f052fda89247cceb0f6a9cceeebd62f9ede9bbb7c92e985f2"
     },
     {
       "Id": "MedKit",
@@ -672,7 +672,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40183d93a48191a3929bcfd7344425",
-      "ProjectSha256": "a07c1310982014d35877f6808fda1cfea62e0c60d8157e641ac05d5258fbb68e"
+      "ProjectSha256": "d1a10e459a0021cb18e892b148afe9d829fee006ec41f3e6fa13750d02735119"
     },
     {
       "Id": "PainSuppressant",
@@ -686,7 +686,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40187244bc819198879a733c235565",
-      "ProjectSha256": "72633477cee295f64c1fd1890fd3d135f030a2c2eeba51e9533162787ea76835"
+      "ProjectSha256": "4aa2f434e5cbc47fc95966a8bee1b0b4a4e1b2f346b921cf4f450de4951c6faf"
     },
     {
       "Id": "Resuscitation",
@@ -700,7 +700,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a401852c2508191a4d7763de334d77d",
-      "ProjectSha256": "269360f5a0d27fc697ff5ba04857271b6b06b165edec70e3b41d1c129e052f78"
+      "ProjectSha256": "3b66e193ce7629f9bd1451a761825bb33f5afffaea3be4b82f3ca3822e1f6603"
     },
     {
       "Id": "Shielding",
@@ -714,7 +714,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40186c9484819189f52f8d77a689ce",
-      "ProjectSha256": "a595364d3b582a7bc4536216d231d8d05ad6b54f8e143dba4185ec0b24919a93"
+      "ProjectSha256": "1382a660fe7e5a9856a7b161175e71658aee304e477a3ded5a50ec80b0e703b1"
     },
     {
       "Id": "TreatmentKit",
@@ -728,7 +728,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4018460ec08191b59719a93f7c4dea",
-      "ProjectSha256": "f510d278a3478fb4399879e6fbf40d786d45e2cc047581434f4c7ff172986faf"
+      "ProjectSha256": "b92db2b6daf229c6cbdf455a2072a7aa6c74f53304f734b8564a9c41aedc2328"
     },
     {
       "Id": "Benevolence",
@@ -742,7 +742,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40098b10d4819189fab42aad45880a",
-      "ProjectSha256": "f82b33270def9ced2fbdf3a0c6343c0e9574d9cac9ec8a5d94079951f4ade61f"
+      "ProjectSha256": "be41e5d4864ed3eb8b9d1139b6763bc1711fe1185ce3c8e7ae554c2b6951bffb"
     },
     {
       "Id": "CreepingTerror",
@@ -756,7 +756,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40095b45008191bc0fbd4ed33c7005",
-      "ProjectSha256": "a2d937ef7375024563c5488689eaf2dfeb0e26b09a132c945d22245645e96c0d"
+      "ProjectSha256": "7a7a466c391cce522cca9599a6382d24a2886aed9889ca59e71ac348679a0696"
     },
     {
       "Id": "EclipseOfResolve",
@@ -770,7 +770,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400af972b8819188653ba7aa1d6ebe",
-      "ProjectSha256": "05d4594d5202de60598a984b989de4f8452636ec31791ba424b776c829524388"
+      "ProjectSha256": "3a5b66f442a887d1ca6091d1efee4dea755244a60ab31e2fb723a503fa0f1345"
     },
     {
       "Id": "ForceBurst",
@@ -784,7 +784,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "679fdeef14761644abc408fa8b0ec738d5d4042b9f29145c6f4c163a13938a32"
+      "ProjectSha256": "4bc3ba1fff223ae106e507c93526021f1ae983fbbc21a2ced21e46bacc8c61db"
     },
     {
       "Id": "ForceChoke",
@@ -798,7 +798,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400968f6f081918c07dd5e20ea7419",
-      "ProjectSha256": "339f744b09c8f0487fbb6d16161de86c71d8de8d577ac354b941ebfca3147fe2"
+      "ProjectSha256": "105b09890b35b6be1a9f3c43e89960e3ff487a04179ff26c6e7801464e106f60"
     },
     {
       "Id": "ForceDrain",
@@ -812,7 +812,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4009776b308191b12aaa5344de7739",
-      "ProjectSha256": "a4459ee3e18c59737cd4fa940348418cf5551d59acc83222cba012e386bb9583"
+      "ProjectSha256": "06822982fbfa0f94a253a14cf1d53d488d07f7cfced2a0022e3773a63e4321cf"
     },
     {
       "Id": "ForceIntercept",
@@ -826,7 +826,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a8471988191b2d8af89668469cd",
-      "ProjectSha256": "3129f89f4a5de6605a3f7dcb657a2deb356f209ef7624594d8340c5d3b880bbf"
+      "ProjectSha256": "2cdea3b34e0bd2d322fc65218c6783ee9d78d044e9c22bc4d3423f95ee280e1d"
     },
     {
       "Id": "ForceJudgment",
@@ -840,7 +840,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a693b108191a1b9976451674119",
-      "ProjectSha256": "a5ee34dd05bb9ea4c0eaf6710d73eace6f68a3158f61d894a9460ecf932eea32"
+      "ProjectSha256": "c3104df8f6934a29c646f35b32e80a5a0b25a9a73fc7738a07743ac30b23b5d3"
     },
     {
       "Id": "ForceLeap",
@@ -854,7 +854,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "168fb026d6f3a5652ec6006dcd9fb476d78bcbff7fb887cc00189b8c78bf1a3d"
+      "ProjectSha256": "a5db9dc0aa725908c58011f607058069ae7002d79791a013b7c6715d9b873e20"
     },
     {
       "Id": "ForceLightning",
@@ -868,7 +868,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400970d3688191845ccb493ec939ba",
-      "ProjectSha256": "abe49a9f4ac32e3268f837693297d0a0e4bbee03455e2b15324c1c5960ab6be2"
+      "ProjectSha256": "96a4307aefd53c3e94aa63d02101d4c5a4abfd19391962fc7d2efc0a923f47f3"
     },
     {
       "Id": "ForcePush",
@@ -882,7 +882,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400962514c819182f205b88f37322b",
-      "ProjectSha256": "7d1ec3121f13e910b8e372b69c22faf2e66a78757dbf4d652f36015df57f36b9"
+      "ProjectSha256": "e77c73014ff373aa01646dc87e2eccbf3e1ab04910c69c27e7adb938b786f725"
     },
     {
       "Id": "ForceSanctuary",
@@ -896,7 +896,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a574ab48191b2b07106e8276349",
-      "ProjectSha256": "00801c2056d710246cd02dfe230c0c52a8b5b23fd17a6bc33edc8c0cb2606082"
+      "ProjectSha256": "a3732826bb2a62acca295c356a47895c13c7a8ed3535088ed0f3ed15be325069"
     },
     {
       "Id": "ForceSpark",
@@ -910,7 +910,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40094c0e908191b8a8f1febc24c55c",
-      "ProjectSha256": "f8643fa74143b8de5775997b002eed66a70d45c98c7b0caefb26a887c6123d6e"
+      "ProjectSha256": "2f7c813e38dac35f2b6296e085c80cb5a5fb3899eca92aabf324cde1541bc413"
     },
     {
       "Id": "FuryStance",
@@ -924,7 +924,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "b40ea05408405049f755e1a53204e259b85f426ac21598cc1435e6a5cdb2933e"
+      "ProjectSha256": "d08e7616170bed9a3282e48b59413d78409534cd58ca41b634f5937ab885251b"
     },
     {
       "Id": "GuardianWard",
@@ -938,7 +938,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a49ceb08191aee9fed87c0b0c30",
-      "ProjectSha256": "ef309a251fa4a93f71bcf18dcfae584cc8ac5ffe5fbdfa9143a924fe43555e05"
+      "ProjectSha256": "f8d05e87bdb01134c82ecff374520e8d052afa6a7d73624feccc6805f49a3182"
     },
     {
       "Id": "HungerOfTheDark",
@@ -952,7 +952,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a5d5ad4819198dfc336049032db",
-      "ProjectSha256": "89fb5032b5c94ed32b5f8ab69ea38611ca95d650296c558c4a9d14209c1840e3"
+      "ProjectSha256": "f082279c1364f78f74558ac23e449c8b36af2cf24e0b53c9bd53e483283e1f37"
     },
     {
       "Id": "LastStandOfTheLight",
@@ -966,7 +966,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400984230c81919d6e8c836dc07f32",
-      "ProjectSha256": "4d780fe08b2361ce474afe2d758a706c638d5fb9c797552e29c46ef4b766742c"
+      "ProjectSha256": "52215fc6218649f559b26edb828a032e889221123c2c9de73bcc6e0d22ab1464"
     },
     {
       "Id": "MindTrick",
@@ -980,7 +980,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a7614fc8191a6f932c5661cc4c0",
-      "ProjectSha256": "beeaee238bcfc8a080d09844aeb36156c0d01bb79d164b4eeffae22935ac4540"
+      "ProjectSha256": "a43b1328fd146debf12c3c740c9c53c3e5e4a6bd1dd7b6143ef0f462492eefe9"
     },
     {
       "Id": "NightmareField",
@@ -994,7 +994,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a7d61388191926547ac4ceab3ad",
-      "ProjectSha256": "9cb9c852d6d45235e56205eee8965bf3100e2f2a774f61ee61a205230d236523"
+      "ProjectSha256": "d78874da583caa87833ea34e0a7479a2fbdb7aadf3c7c5366412d7cbc92f2ae5"
     },
     {
       "Id": "PurifyingWave",
@@ -1008,7 +1008,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40097daae881919bdf9917c345ae1e",
-      "ProjectSha256": "13970b6efe6db09858f50a6a33cb023d51e8c5d564fb070400c93bf6c2fcccba"
+      "ProjectSha256": "b74cb1f30d470ba19db6492502865d011a4c464e4d0f44c3dbc6533265f537ad"
     },
     {
       "Id": "RadiantLance",
@@ -1022,7 +1022,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a6ed4e48191a8e11a2bfe1b2464",
-      "ProjectSha256": "92b1aa33bf87288adf33479f20e1adcb52fec63c49846b7717b45276404546ed"
+      "ProjectSha256": "eeb74074899c1a17d4207b22d899ebd9f83ab8749a1f30c4313d8348e8473a22"
     },
     {
       "Id": "Renewal",
@@ -1036,7 +1036,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a514d7c819181e47316026a28d0",
-      "ProjectSha256": "e78a209cfbbb790bd59ba2d9fc74fd48ba89fe8ecc9ac18647a11ca6ccb1770f"
+      "ProjectSha256": "2c943363f536efdc3ee4722019e975d9018bc02af51b94ac5e4a6a4572f292b5"
     },
     {
       "Id": "ThrowLightsaber",
@@ -1050,7 +1050,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "4841b18b9c36bec7cfb049c9c3a989da4776a058e1a7f938cfd0a2997a860607"
+      "ProjectSha256": "3296ba939bce0e60468dade1baef518aa8a4a226f46a3db85e7a0ad50f0e82ba"
     },
     {
       "Id": "ThrowRock",
@@ -1064,7 +1064,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400953c9188191a5966bb5d3cbae36",
-      "ProjectSha256": "6c657823f1e368d28ad36f2eb0f3a92c27a15a05ba197d066fd9cca040815219"
+      "ProjectSha256": "9f5046ab01a486d3db71c06c35ea7eb1d9b0c4348eb80ff669ffb6330f388803"
     },
     {
       "Id": "WeakenResolve",
@@ -1078,7 +1078,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400a639be881918c9e1a55d8896cbb",
-      "ProjectSha256": "a61d1d9af61d347f2c0dec4a5299fe4f2a7186a666bf1f0828eead97f07b288b"
+      "ProjectSha256": "c64926cb49d3630bb09e8f1fe88f90ab20d7603ac0629abc72c8733398be0d6f"
     },
     {
       "Id": "Provoke",
@@ -1092,7 +1092,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f83ee0ceaf009d83f118fa5a296570fa6f137151f98a64f67ae9ebb1d66673ca"
+      "ProjectSha256": "023174f54664e3b89fc0759d6d4e0eaf5cd5a4b9dbf17e38dc526ed295ede449"
     },
     {
       "Id": "AbsoluteDefense",
@@ -1106,7 +1106,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe7c6a37081919d42f7a0d219ff19",
-      "ProjectSha256": "2d846389c11b9132899572e15aa67547f15283b495059dbb98bcc5204ea56ea2"
+      "ProjectSha256": "42212e035fafbf358bb419c02e0c22344e2d9963c64d6f48d37b3fcad8d072cb"
     },
     {
       "Id": "BastionStance",
@@ -1120,7 +1120,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5501fb078da31d7fadf41f365301bab5aa8ed5dab9ebb321d8d6a14e55bb0bc0"
+      "ProjectSha256": "9f2fe70b86d7adbebea00f5334de668ceaf150e5f06279ec49df72f11c142ed7"
     },
     {
       "Id": "BlazingSpikes",
@@ -1134,7 +1134,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "33d7907f9a0491100c2790152df668673300487eadac56e62597633810d3c57c"
+      "ProjectSha256": "cd198bcc857e180afff9e9b52a26ced127924efd6c3071980bd4c45eb6bddc17"
     },
     {
       "Id": "Earthshatter",
@@ -1148,7 +1148,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe7bd01f0819198b545b822a5f39c",
-      "ProjectSha256": "e0ce12ab95a277e062de49f7925b0243646706807c256165d2e5c512aa6df0ff"
+      "ProjectSha256": "c4366bbf4585e64924cf400ee1128a686752e24f2d95fe5fd822839e4644aef2"
     },
     {
       "Id": "Flash",
@@ -1162,7 +1162,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe7aa0b688191bc1ffbae3f88fc70",
-      "ProjectSha256": "17224be908ce232272fe8a681328e12b7d99c4aca36f97ad6ae0365d20c8af98"
+      "ProjectSha256": "c42f310b9fd9c0b97c72b43d03ee81cf0ab4c150b5152edf35802ec86195c4bd"
     },
     {
       "Id": "FortressStrike",
@@ -1176,7 +1176,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe7a1be3c819197e428ac4ec63190",
-      "ProjectSha256": "7171e81052bcd55d8c988f5b4707a82ca98670205df72e11261ffc1bbf5306f9"
+      "ProjectSha256": "d7b2a1c3d0e89c2e9ea5d9b8a4e564cd03ed3073e88b3eeeaf06f3b98b495590"
     },
     {
       "Id": "Rampart",
@@ -1190,7 +1190,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe7b4d5f48191a3a293ad2a04bb2e",
-      "ProjectSha256": "aeebebcdbb77525185d1c38eaf5fecc93fdcffd751b0bb5091121e1298438949"
+      "ProjectSha256": "3b402f12d74c25a243b169fa01dc5ad6c7436c864ca12ad97d8cf4625f81e204"
     },
     {
       "Id": "SacrificialBlade",
@@ -1204,7 +1204,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe78ce94c8191923c385dce69df01",
-      "ProjectSha256": "dd4f0d0c0bcd9ab162fd4a2055a83978f117900946c75a054f2e4f6d38e7fc80"
+      "ProjectSha256": "735704cbdb4586233c180fbf81fdbe3c7e1a046c9ec95fe82eaea63d8fe73998"
     },
     {
       "Id": "SoulBurst",
@@ -1218,7 +1218,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe7935e0881919f9a8977f0355c6d",
-      "ProjectSha256": "057ed0d66574427a3d6f1e69d8e49028f22a7b4d9751f693928aaa9285d25299"
+      "ProjectSha256": "2b7189550aae3bec5cb054626429dd562000e4a5e6cd4215936acf13e1dcdcb0"
     },
     {
       "Id": "SoulDevourer",
@@ -1232,7 +1232,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e0e7b02dc8d2233ec09c2d928a9b14125e3539231321264cd25cd0b0df93cffb"
+      "ProjectSha256": "fc77b9ac7093754be561e5418649a4c3abbf5e467857562bc1fda6cdca7ea561"
     },
     {
       "Id": "SoulStorm",
@@ -1246,7 +1246,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe79af88881919763eacb51c9ec26",
-      "ProjectSha256": "4d023b8e96f36f280131dc07eca7ccfb1179bba32f04d9f9bb2a71c7b804b237"
+      "ProjectSha256": "9b8866304cd3bde5b896c885bfdc95bfd187ea9bd4341e0b37a57a85383eb8da"
     },
     {
       "Id": "SoulStrike",
@@ -1260,7 +1260,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe784c430819197b751a58dd7821e",
-      "ProjectSha256": "c54268b065e6839374acfc50785332d4e8c997c94f76185dcd8d4334f6e06a01"
+      "ProjectSha256": "76b672c1f285ef16ff5a7e1b83fcfe65062fcf841a2bc96d92b77994c1c17ede"
     },
     {
       "Id": "AdamantineGuard",
@@ -1274,7 +1274,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feed7eb30819199286c5ceb4124bc",
-      "ProjectSha256": "3b0802baca3d209660949573a0e1eaeb60c1f32108646a408024e2dfe03e6fa8"
+      "ProjectSha256": "df55af4c465b8d488e88fbf129ca38e534348a2c805b3be3f8a27d9e03d25cb7"
     },
     {
       "Id": "GuardCounter",
@@ -1288,7 +1288,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feebf76d8819188bcb73a39478976",
-      "ProjectSha256": "458f118658a578b65bb961fc72a88b97d79fa1619729c1eeadfeaffe8000c92e"
+      "ProjectSha256": "1f2741783d18826fa05e381b7e3d64759fe7b8c60671c77b209ed706c290ac26"
     },
     {
       "Id": "HookingStrike",
@@ -1302,7 +1302,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "156ed39aaeb3c80514d54cd223a3067a5d423c5768eb97fab35a310220d8e406"
+      "ProjectSha256": "2f066b09e96ce310315d157b072434ae28ca900af45ec527cb85f67a050a01d4"
     },
     {
       "Id": "InterruptingSweep",
@@ -1316,7 +1316,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "d845e520e214ddd7648f48367e84d8d3e58c7ee8e488992aa206de5178be4564"
+      "ProjectSha256": "b48a7daa681fb3b9b66e7d196adeb23192e9c4818798b5fc14dba163fcca998e"
     },
     {
       "Id": "IronWallStance",
@@ -1330,7 +1330,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5b6589d33ef7cec7efc7ee38420b42f05fd2d4698669833bea3a6bb318e4b577"
+      "ProjectSha256": "95bb6616d88e92ad233d0595de00d2a73e469e5a36ce1046390819f8d9056bd2"
     },
     {
       "Id": "JointLock",
@@ -1344,7 +1344,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "c39b36e7b632c30011c4f16a89b7d0976e4c3db6200e0e4593b931633e0a88bf"
+      "ProjectSha256": "60d83777023271f3449f00a19adfeccec72ce7760e19837705eb00bcc231a161"
     },
     {
       "Id": "ScrapheapLockdown",
@@ -1358,7 +1358,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "3f0ca518c9e8c0bf806b38f9afd943aad4d3e352bfc9f35131b528ca78c2f850"
+      "ProjectSha256": "29b2198758afaa83853af15942c4ca93ba6ca5b1b9de8a7f8cebfa1e2d7bad80"
     },
     {
       "Id": "ScrapperStance",
@@ -1372,7 +1372,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "7fd16fcc3d13870cffd532425f7e79ed535a055ae2cc073dd98b83a2c97a1e65"
+      "ProjectSha256": "3dad070601d165ff00f595704f5a079fe00b50282f4a154cef91d87aaa220d36"
     },
     {
       "Id": "TwinGuardStance",
@@ -1386,7 +1386,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "83fa9fc2958e07136c43962323bab12013a2fabd1f20de88f1d22cceab01c4ba"
+      "ProjectSha256": "80cf9efda4078805bca03fe7d3149a4dcce991772edd0ff5259921907dd207cb"
     },
     {
       "Id": "TwinIntercept",
@@ -1400,7 +1400,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "0b2ae11599e3f4761b576dbb92a727c2abb65c6e061fd4bf23e9ad47b10223bb"
+      "ProjectSha256": "69e3bbbde26dac85f3d71e3a2fd5c7ccbc77bd34637961ef37fd90de1e652738"
     },
     {
       "Id": "WhirlingGuard",
@@ -1414,7 +1414,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feed1190c81918f2c0d047cdf6d64",
-      "ProjectSha256": "932fe0d75908160c3a8fd4349e9b545a89203334854d23a9140bdc01f165fb17"
+      "ProjectSha256": "05058ea92e386022e40cb2416935858d4dc9f0acee649b17e915fb9ae018d426"
     },
     {
       "Id": "BreakMorale",
@@ -1428,7 +1428,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f5df2d7474dff74286b2ddffdff879cfb72fee1d4ebadaba633369a9c2d62f5d"
+      "ProjectSha256": "2d1f6d5038a17532efaec34aaa773ca537d3ec734a9d763960bf9abc8bb0222a"
     },
     {
       "Id": "ChargeOrder",
@@ -1442,7 +1442,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "9fea13ebe1fc5fef64224fd44854becc7d326af3bedb499eaf3af9254c580ff7"
+      "ProjectSha256": "95a6efb2c7ba20c045481d123dc103ed3fb4108df55fce3a948e66ce16d5c95f"
     },
     {
       "Id": "CleanseOrder",
@@ -1456,7 +1456,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5b81a3aec8f17d7ac2f883664b1d1823d033ff6fb7acd1f515cbdae5be5b1501"
+      "ProjectSha256": "c98335588f8766d855849dd94dd87054085cfb872f7103c92af9ded2aa3a493b"
     },
     {
       "Id": "CoordinatedFocus",
@@ -1470,7 +1470,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "df032afe20494e4b775b307d824a0fa17d45458550c7f51fb65487a081676e83"
+      "ProjectSha256": "571e7d917a8a4e0294a2ebbbf5101a8d9eb01186e393193852ed359390b16ff4"
     },
     {
       "Id": "DecisiveCommand",
@@ -1484,7 +1484,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e544a51d4783190328eddc2b0c100ff5fd03df130c2731849ee44a4a3521fe82"
+      "ProjectSha256": "0d87092f8a188939a65f18fd360222e2f8e27150820d7b942690f67e4575105e"
     },
     {
       "Id": "FieldRecovery",
@@ -1498,7 +1498,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "958d9ed3f60c9f22fe6d331b6099495883eac3d09424918b90825bd9b8483e50"
+      "ProjectSha256": "de713c69f6dabe5ddc639bb250238496c2f3cd3f5ab942b1a8eb18cdeced4235"
     },
     {
       "Id": "HoldTheLine",
@@ -1512,7 +1512,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f2e1f6974e7261b2bdc2022bd6de65df4c4a2aea4bf476c9250b1270efce3dcb"
+      "ProjectSha256": "6db1df1a076f3d5c1d9c4be820f08df2190cdccbc2bb761f232e833aa82b1882"
     },
     {
       "Id": "PressTheAttack",
@@ -1526,7 +1526,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "300dba250268eff6df988fe3c1bddaf0cb7d91bd6dcddb8f882dabdaffce14a8"
+      "ProjectSha256": "efcc925cb49b103342504c888d8e7cb15a7ea5ba392b1dba285d05c4ebabe7db"
     },
     {
       "Id": "RallyingStandard",
@@ -1540,7 +1540,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "95bd15fce5a8a7789aa30a7995bc9da6c7d0ffbdbdb679c76e323c40ca59007f"
+      "ProjectSha256": "04d23a437eb37d161dcfb81dddbd03e91d31960ec732f20c3806dfe72166959b"
     },
     {
       "Id": "RousingShout",
@@ -1554,7 +1554,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "06120f6e0c5c12fa3f9af4f791cbe9eefad375f0bdf5cab0d6cc28256ab28daa"
+      "ProjectSha256": "6514958a58a79eb05b970f45fae7ba5f99384ff9f5863953fd2bc6c4c5bc1bf5"
     },
     {
       "Id": "SteadyFormation",
@@ -1568,7 +1568,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "8bc5d3e61a69633c4ab93b8b9615699a69244190703efac93c99171f1faf7cbd"
+      "ProjectSha256": "38e37cf4b3d74adae3e024af578dc3ed1f0b9c6aedf910e376f2ec473797504c"
     },
     {
       "Id": "WatchfulPresence",
@@ -1582,7 +1582,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "4b7d20129b782ed61a26a0fea4ce4f965cf11ee8186fba971664e83bdd9c5ba7"
+      "ProjectSha256": "f8a24871e082c022832d91af99fbfa101d20b7aced6e124cddb22dd57c85779d"
     },
     {
       "Id": "AegisEternal",
@@ -1596,7 +1596,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "8d6721f11cf6af586f022817dcfeade2118915a2c2ea93b576cde285fb37dcdf"
+      "ProjectSha256": "e64665bec83476aed3923b322bb207ed08f89443fa0a3100ec0c543761b0bd3a"
     },
     {
       "Id": "Epicenter",
@@ -1610,7 +1610,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "01e12d124815412613e1dfa93c238e275ccdcf58bd5f1ec4eca2a16b73773cbf"
+      "ProjectSha256": "79699aa56e7b0459bb03c3b623d0cc748bff767ae99fc3d1152523ebc3f6c02f"
     },
     {
       "Id": "SaberForceLink",
@@ -1624,7 +1624,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "0aebef2729d184f63bac72436e6eb28946174170266416cf1c74ed20610335b0"
+      "ProjectSha256": "81bff34a7db39aa630d13c36cf117e0a4f852524c158c1b1e07dce520a364062"
     },
     {
       "Id": "ForceSheath",
@@ -1638,7 +1638,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "d33745432d5b8d24c66e339c663af8a54036f20c43ccc46001f078c05278e0a5"
+      "ProjectSha256": "abee2d4967ee46e22ab5efe184e4995def33c336bcf74c1906e77c9ccad8acd7"
     },
     {
       "Id": "GuardiansChallenge",
@@ -1652,7 +1652,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe5dbd65c8191bccdb46f63441053",
-      "ProjectSha256": "dd64d8a85bd50fbf8c4b1b79f216d9a46445efc2f7c45679449468875badea5c"
+      "ProjectSha256": "0f2c53653ac32ed881ce9af7a38460d2e06c061455f31bf13992f0277d52f19e"
     },
     {
       "Id": "ImbuementStance",
@@ -1666,7 +1666,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "032213d1ba67e70d8a03d59282a52ebf2d8536fd69e02e7aaf75c94bde1d7a4e"
+      "ProjectSha256": "8a314403f91a0138fa0841f89364a94728d2f2ec619038fc39db8f85d8495071"
     },
     {
       "Id": "ImmovableStance",
@@ -1680,7 +1680,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "c7ec89460e4ca20e1c49294954a1d577c99acd4a8392f170ecfb217b8bbe67d4"
+      "ProjectSha256": "e7f0047452e48cfd903ffcc680fa3ba4053682089ec8254a84a27fc9e3f8051f"
     },
     {
       "Id": "Reprisal",
@@ -1694,7 +1694,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "8d7595de00d8e115ba24fca6d8615e4347dc00cd6e3d6168480f12224d75732f"
+      "ProjectSha256": "aa290a7324c1abd8448d3850f169b839db29f32a1a4404334d7cabcb0fc46297"
     },
     {
       "Id": "SaberWard",
@@ -1708,7 +1708,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "450048aa364c2782b9f0022cbe8a519b9c4168520f585527bf8439aff10f1114"
+      "ProjectSha256": "81e94a1f964461d261a8fb071b31cc04e19f72b80e80d68c28edc65235a1e84e"
     },
     {
       "Id": "ShatteringStrike",
@@ -1722,7 +1722,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "b957ea789b2988d1547fdc72b1946248f9f04c400090dd173226134794a90107"
+      "ProjectSha256": "b710608430a19d0a3227c52e23aa612f5747242144bedc86261eb88b28c79310"
     },
     {
       "Id": "SunderingSweep",
@@ -1736,7 +1736,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "255a86f9e274c4938306e0f06831ac5231779e97618fdac549ef5644ee6f750e"
+      "ProjectSha256": "59ee12dae5aef0148e32656b2171cdd69248038e1922b8e4bb7996e7ff992906"
     },
     {
       "Id": "ApexCollapseTechnique",
@@ -1750,7 +1750,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "2120dd57fe8bda07144228781eaef55ebf58cac273bd68504d0a62231359baa7"
+      "ProjectSha256": "56f236a314e2edc4cf3054048801fd3746c9c95096c4c8b7630ac077977b7288"
     },
     {
       "Id": "ArcPulseTechnique",
@@ -1764,7 +1764,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "9676128a1833b06eddb2f8d66ffe215e48e26d18345ca64efb6bb7fd425948b0"
+      "ProjectSha256": "1b3acbdbf4b288fb845f2db2103bc8c0539a0d161a51d87bb3dd174fedbab422"
     },
     {
       "Id": "BarbedVolleyTechnique",
@@ -1778,7 +1778,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "92dfa71a4c90fd7db95ac38d1e7c55dd7a0cb02594fe40aa60b794b1c454ee12"
+      "ProjectSha256": "399be00449386c27d33766d6b893d51575e78f0920c7de80b7da5d694de032d4"
     },
     {
       "Id": "BloodFrenzyFlurryTechnique",
@@ -1792,7 +1792,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "d8d6be50e71229e6c4b60bc3134171273dbe868f8391652124935d83bebc411e"
+      "ProjectSha256": "d6497de673b20ebddebe9e7931beba57778a9bb98e58438234ab03b37155b04e"
     },
     {
       "Id": "BraceBreakerTechnique",
@@ -1806,7 +1806,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "0b3f1c3ac9dfb47b59c5682f0ff9d90501419ab30fd12b1e186e81a78bdc52ab"
+      "ProjectSha256": "2014ac7c2c40bf411ca01ff0d8d6abb3e22258900b55d9b8c34fb3b5be89f0de"
     },
     {
       "Id": "BrutalBashTechnique",
@@ -1820,7 +1820,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "0d29f26ae2e4141e37bf8f8894f96e4b051b76ee78f727cab071515953ec03ea"
+      "ProjectSha256": "6010aac96244fd18640e1d2fb0ea9ac9d60f6bffee3476bb946297d7a6e6e388"
     },
     {
       "Id": "CapacitorSurgeTechnique",
@@ -1834,7 +1834,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "66061a90496dc9ef753a03430ed7cc22c8a6f9268e4f92fd622f8d10f499ffc8"
+      "ProjectSha256": "006978f8dba8d8b232e0f6fb22514f9c94c70c3ddfe0aa1e0b7ea9029b336958"
     },
     {
       "Id": "ConcussiveChallengeTechnique",
@@ -1848,7 +1848,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "2ff72e7fd02d7b71f835ede3bbeb81023ff2e5419ef0401aaf257515838e4a57"
+      "ProjectSha256": "c7136dc864cefcddbed5d16cf2d6fdae00af2994b96670e686ff5b265a6ffb8d"
     },
     {
       "Id": "CrossfireDrillTechnique",
@@ -1862,7 +1862,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "9d5944aab7ca6c0ab9d1343822d96a078490a1bd86899503f0094e959de6bf56"
+      "ProjectSha256": "4e9d973b3217957df9cd0bc73d60348eb19be6da25e60cdf5b183d8dfeb0d20d"
     },
     {
       "Id": "CryoBileTechnique",
@@ -1876,7 +1876,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "215b62a09c1d187f3af96f22af3684b30214bd5fec1a5f790a0b6462366ee60b"
+      "ProjectSha256": "8004716e47004a9fb577dbb3af63697b96867dc2fde08db396cc7cb50f0f8543"
     },
     {
       "Id": "DarkShockTechnique",
@@ -1890,7 +1890,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "ee4fe94a0a4e32fc926add7356c14e5b85b5ad5a8f3af658b657ca7aa1ae383a"
+      "ProjectSha256": "a231333d738681c8b13f8a1692c8f2f97ff47a1c7efb8e8a744e21a465ae09a0"
     },
     {
       "Id": "DisorientingScreechTechnique",
@@ -1904,7 +1904,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "a4847b3869b76791d7f6ac20ce334e3e119c5424c3c697164fb6232ad167177d"
+      "ProjectSha256": "159e37ab7bff56869e0bbb56faa305a313ba5ba74a64119b4fb311b3bd722d5d"
     },
     {
       "Id": "DreadWaveTechnique",
@@ -1918,7 +1918,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "7aa8e5491989d887622e34881a9b86e47cf2d56b0ba1e65c4879b417fa40dc6a"
+      "ProjectSha256": "b6424ff071c8523c0ba0d34dfffe02d9dd005e4376d761a9f715a487beedb75e"
     },
     {
       "Id": "FinalEclipseTechnique",
@@ -1932,7 +1932,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "325a9f09edf9256158a0b8d4a262b750f3f67da0e6bbd3c1a90a04d817b0188e"
+      "ProjectSha256": "c7b7fa9dd94d312d5960f4e1cbbbdffb5f09f5271779ad79c58d76a4d3e44958"
     },
     {
       "Id": "FinalLineTechnique",
@@ -1946,7 +1946,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "ab0ec4874d51a36013905f20dd06af1d901f0d02c024f38fc52cce3e588c5b75"
+      "ProjectSha256": "71308a13f9f67d1f0eb237adcb6f8097de0d780711e4da2f9c6f87dcb13ca5f8"
     },
     {
       "Id": "FinalMandateTechnique",
@@ -1960,7 +1960,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "10f31a90fdea1ac2ad23b10057c6446fa9f56b04e8a607eb1b4de1291d872f86"
+      "ProjectSha256": "3d1a64eea8f663fb15711564aea0298a4e4b991d0effcc221293a790238a2420"
     },
     {
       "Id": "FinalSuppressionTechnique",
@@ -1974,7 +1974,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "efc2c2363a9ddc0858b59ecfcc5792838a76474ab12fda5c5d05b37cc11bbc56"
+      "ProjectSha256": "3a247e2b8189d5a0e578592a00ec7cedb36d46f842192ade1fd320cbfe4eb644"
     },
     {
       "Id": "FinishingDriveTechnique",
@@ -1988,7 +1988,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "67eb7f7a3951459de4208cfe0f87bff987f17751ba1c9ce79da5e561fbfcdfe4"
+      "ProjectSha256": "14cfad338fdbdb233d499b70dde2c11098fcb9313da45e5cd9581a79970c4c7d"
     },
     {
       "Id": "FrostSpitTechnique",
@@ -2002,7 +2002,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "180b9835eb29fab47de7b58abe98b94ed4f72ddbabb76896f29685b7564e4b60"
+      "ProjectSha256": "526ded91a8158089a4c193286757ed554749e029b777ff0d045cc402724964b8"
     },
     {
       "Id": "GoringChargeTechnique",
@@ -2016,7 +2016,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "7195316c3fc7e0435a725ddb0b1d9b2e7879c0050eabbf3135cebf9d2c6435f3"
+      "ProjectSha256": "a0a2161cb108c5afe41c23b9f589429808163bb40fd0c223aa6fa2ca305959d8"
     },
     {
       "Id": "GrenadeBurstTechnique",
@@ -2030,7 +2030,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "31520f34f29b1277b1d801388f3efb220931a27a2a9cac69e6322c1725a72344"
+      "ProjectSha256": "c882dfa5cb7f186936494dd4a0451d89dc0537060a3ebf87e96c2cb33d9dc9a8"
     },
     {
       "Id": "HoldfastSlamTechnique",
@@ -2044,7 +2044,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "020d2ead07e6dbaf21c70fc53912b03742f31eb1e7a79fa26bed77e5dba8f73c"
+      "ProjectSha256": "3486d30e11169d77e1a69c08d48a660c8f68d20efcade95a28c0f2a02ecf8ccf"
     },
     {
       "Id": "InfernoBlastTechnique",
@@ -2058,7 +2058,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "81d5464c88f97b16158aadbd4f3b9562545721147b687af5248ba9a9bb6615ee"
+      "ProjectSha256": "06e69467da705e39ce00becb57cd8a0258f34903e96543d9ad3fff8e9ca16720"
     },
     {
       "Id": "InnerCircleBindTechnique",
@@ -2072,7 +2072,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "c3ebbb93a7507ab4c8b9387126ed670a0b29180a4a9a4be7f2d2c443b518e259"
+      "ProjectSha256": "388f4d4c6d3098dcdc93ac245c99c5a11615e54ac6fd982a11789f6f57f5a9f9"
     },
     {
       "Id": "InnerCirclePounceTechnique",
@@ -2086,7 +2086,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "4cab2e83bd5909186db0b91211f4fa4e36456c8a7a587b843d8939fed5e424f2"
+      "ProjectSha256": "ecb82efbd40de6dd40cb185f7f0de1df916c71d81e51f1f4807e3f9c853181ca"
     },
     {
       "Id": "InnerCircleSurgeTechnique",
@@ -2100,7 +2100,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e3453f45dee9532fa3af989a22087199e9c664aef544184e9451b7cc68779e6f"
+      "ProjectSha256": "718813c024af627a43e4a4c8ac55cf0248a215ee7f6491c337481d5eddc21763"
     },
     {
       "Id": "InnerCircleVolleyTechnique",
@@ -2114,7 +2114,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "209df5cf644f45223faca6d1abccfe117e85e2ab955219691a1206796df9f50a"
+      "ProjectSha256": "5446a6afe3031d3ccc6b949f9143518bb599d42e370d147d7ad92f499daddec6"
     },
     {
       "Id": "InnerRingFlurryTechnique",
@@ -2128,7 +2128,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f184acb4336d12a487ddeaf53ec0b6910ea9bd6fb8306b006ecf02968120fca1"
+      "ProjectSha256": "9fd4dd30ea4666fb953b6cc8a88424bf485e1c1a2a2099b5e5195db8ffee6c53"
     },
     {
       "Id": "InnerVoidTechnique",
@@ -2142,7 +2142,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "b4772c1aefc03b9439011ef442e6b4c9499dbd53cac26b0ec0270b99e3b871dd"
+      "ProjectSha256": "a9f3efe26c45fb2a4826c1d73c63ab7d166eb081265c4de874538bcba8be5977"
     },
     {
       "Id": "IonBurstTechnique",
@@ -2156,7 +2156,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "2db431dffb7c9e7539d7779a44d13ada95ff67cef23c9d98be34905c8866a8ac"
+      "ProjectSha256": "36770f7443ac14296cf4f6f70f5bb0d35a0fd2ffa2bca97dcfe477c68fce45bb"
     },
     {
       "Id": "LastBastionTechnique",
@@ -2170,7 +2170,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "63184c24bb6d67f2a650db1e6e70fa52254fdd4baa7ed6ff9b667713338a8324"
+      "ProjectSha256": "39f075738d2b8a0e294eeb865ea6e76a0284b9818ebbc725e5d0e3048dce1a1e"
     },
     {
       "Id": "LockstepCrushTechnique",
@@ -2184,7 +2184,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "b8c3572125ddabd1a516a90b3f4d1e89c150fb0ce7bfe0d729726a4dbd7d2a2d"
+      "ProjectSha256": "35ed27741bf6dc1be4b611c05d8592e7ec4dc044ee8d68b2b07892d73cab1708"
     },
     {
       "Id": "MercilessAngleTechnique",
@@ -2198,7 +2198,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e0421859524b5a62e079c0d0cfaf3e7796d0d6e56c60e05ac5b5d9dcd5f82ea2"
+      "ProjectSha256": "4ba4eb1d80349ad0e4d12965149078edc63ff586fad4c19616e31cc8c308250e"
     },
     {
       "Id": "NullShockTechnique",
@@ -2212,7 +2212,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "3c36a76b3488b2d93de22c6739dfaa428ef5dadaf3ee327f5ab3927efd5564e5"
+      "ProjectSha256": "ff401c2c3de1fc22d2cba3d2f8570cd9d1e0835ce6b3c84102cb923dea0020cf"
     },
     {
       "Id": "OverclockedAnalyzer",
@@ -2226,7 +2226,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e87e954ac1000154007c94f3a5c579b04156b3d47405da7d987a0fa2b5d55987"
+      "ProjectSha256": "47f8172857fe4dd762ad5e4f1c048c755544f3f6acab3e108fc093023c1cd4a9"
     },
     {
       "Id": "PackHarrierTechnique",
@@ -2240,7 +2240,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "faa365c548362dd87eee53baf87762ee2ba105c2f57c594bda94bf0371482731"
+      "ProjectSha256": "f8a48779ec2f5dbf85cb8285de9c860f671e7c203eadab8c01ebc92a6e9ce30e"
     },
     {
       "Id": "PermafrostRuptureTechnique",
@@ -2254,7 +2254,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "84acb1ca2b94f10dcfe3d2e7a780d8902bbf5de33739073e34aa77dc972cf126"
+      "ProjectSha256": "362fb7e91d602c8f771de58c57e7482cd0d6aebf4b6bb254e18aa1994cc89dc4"
     },
     {
       "Id": "PiercingQuillsTechnique",
@@ -2268,7 +2268,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "bc5f4a2168dc2908999098a0c2233cbf49f9a399eabb222426c8c50c46949d98"
+      "ProjectSha256": "091df5eb89b1c18cc2de9d720f2caa9d7f86b166b3f8e02740972065369cfd96"
     },
     {
       "Id": "PouncingStrikeTechnique",
@@ -2282,7 +2282,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f409991cca8e6e5fd39037112bec3541e2e490b9c34f8343eacf7a72f9b0a292"
+      "ProjectSha256": "ba33fcceed6ef61889bb581eb10654b2361797dceabbf8eaa83b8a1913dd07e7"
     },
     {
       "Id": "PressureLockTechnique",
@@ -2296,7 +2296,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e918aca527c767ba5cf7173db04c4b0292faf7cc40c4c78a3df7a7e69e03def1"
+      "ProjectSha256": "9179d08df612237afcdf44c47584a50a49ec849749f2e8c8d38422857284f627"
     },
     {
       "Id": "RakingClawsTechnique",
@@ -2310,7 +2310,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "fc79bf268cf8b2e444258ff39279c53591b1400044f97ad28340d3e2dcc4676b"
+      "ProjectSha256": "0d3ccc8a47ff355eaf16541e566d306369d8f2a50eb75f2dbf10ff6ce42841e0"
     },
     {
       "Id": "RallyBreakerTechnique",
@@ -2324,7 +2324,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "802bccaeb82423f519920a4234ab4d933cc697333774f525075321bbc1b11a4f"
+      "ProjectSha256": "b5a23e7b4824eb859e549ef54117f87efc62539c78228cc5c0d273e6a2516103"
     },
     {
       "Id": "RupturingQuakeTechnique",
@@ -2338,7 +2338,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "973fe2981105e9528c271f161c9beff3e74af9a22f71bfe4aa5670ce4b79c51a"
+      "ProjectSha256": "0e602de1ca6c93673936c046972b73d2acd1890e80aaaef710062be968a82f26"
     },
     {
       "Id": "SavageRoarTechnique",
@@ -2352,7 +2352,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "577e8da1a3f78fcc5d95b88346bcb737372a077d55d1e0b356589b0f008fd88b"
+      "ProjectSha256": "7c3f4d4c6f7337db7a68aea6d1e21cd988eb3775d349ecdabb6fb461144c4979"
     },
     {
       "Id": "ScorchingBreathTechnique",
@@ -2366,7 +2366,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "ef020fed4afdd4d6c26372986330772f0f63fcdc2184f3e6cb0efd8f19df216c"
+      "ProjectSha256": "66ecce0ab72eeb18dbacc39a95835fa957cae84753619328e109632b982e8f18"
     },
     {
       "Id": "SeismicSlamTechnique",
@@ -2380,7 +2380,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "3dd847a575ab0cdb0fdce25e4f519acc615db26494bb3d9e4940a80cbf3f12ae"
+      "ProjectSha256": "fa79e1eaa2a7abe7a125e6b5a7ca824ad7cf6d50739eebf5a3b25375abc07dae"
     },
     {
       "Id": "ShrapnelBurstTechnique",
@@ -2394,7 +2394,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "b9849f95e3ac8c9366183eb9d735d12799451049cbb1ec134501c66ce9480507"
+      "ProjectSha256": "2902c727b9d71413eeebcee3077dd2de9e221c166e360337736c33b9b6fa4df2"
     },
     {
       "Id": "SignalSnareTechnique",
@@ -2408,7 +2408,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "be38b88d38125ec63a49eee2d3924a299e2459db918bc9679d76714034ec34e8"
+      "ProjectSha256": "01636d2e3bbecae7e108da6a80674c810c21fd9a068f46427f6a8ef186bdade5"
     },
     {
       "Id": "SnapRushTechnique",
@@ -2422,7 +2422,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "36239d8d5b8a550dbaba79ec1d93aac5bc4a41543b99b1c07f17352b91f963fe"
+      "ProjectSha256": "32439bda30ef914a2e111f68396953be66ce91bba3ab0ae93f76409874780d31"
     },
     {
       "Id": "SonicShriekTechnique",
@@ -2436,7 +2436,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "8784c04c3fa9048bd7f6c30a9313cac8b4ca75846c77d7cb0c69f22944271648"
+      "ProjectSha256": "cedc71e7c135be887dd33ec77f6fcf9e476aed75a7a1ed0939935a1836e91b75"
     },
     {
       "Id": "StaticBurstTechnique",
@@ -2450,7 +2450,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "fdb55d5fd9fc1b87cc289b0616b9caf177d8cc22f29fa7271e9efae229b18ad3"
+      "ProjectSha256": "4532c9df837ada2c96e1ecb38edc517f351df5b2f572bce9a9b17bdcab01785c"
     },
     {
       "Id": "StaticWebTechnique",
@@ -2464,7 +2464,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f9f2a006e7bbaf441db53c0262e9b0cd829f9627776441719d72ff684e68c4c8"
+      "ProjectSha256": "e807544e9b37d30fc48d0149d907f4de1f4f24284ac2c008c7328faf5c10c19f"
     },
     {
       "Id": "StimCanisterTechnique",
@@ -2478,7 +2478,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "575370e2b10d9b1575b8a1d5a6fa441e6e21a3247b2d92bf2a75b3f9279b84ff"
+      "ProjectSha256": "2fa63ae43a900ee95c4fad665400caadf8714317d90ad9dfd3a886b20d6dd13a"
     },
     {
       "Id": "SuppressingShotTechnique",
@@ -2492,7 +2492,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "269f89d9eb5c7f85ad7cb71779ab12bc1f46808dcd9b6c1c7e349a132be51a64"
+      "ProjectSha256": "6c866468693a61cc1f729be6a1a73e399f090257ede8873a1ab170277d44f76c"
     },
     {
       "Id": "SustainBurnTechnique",
@@ -2506,7 +2506,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "25a990db200856fec08f4a133056b93aea5ba0ba12e44a24efd61f7faf7ebde4"
+      "ProjectSha256": "1740efdae2ad44b618712ff696b0677dac39e2758036a356f02e17ed721541f1"
     },
     {
       "Id": "TailSweepTechnique",
@@ -2520,7 +2520,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "7339ca195532c1a2767603468427e23ade7bbac16405dee94f756a820ad81260"
+      "ProjectSha256": "f6c3ade1d3fab80cb76df2cb4995b73df3fc69002fcabd49b96444ce7ca61821"
     },
     {
       "Id": "TerrifyingBellowTechnique",
@@ -2534,7 +2534,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "19448c658943167f8b28883a1f8b0ddbe462e917196d38137e945672d87fcf2f"
+      "ProjectSha256": "2ce661f1a4167016fee4663d34cfb7e543d82c8a5cfd0bc0831b5f41b77a850a"
     },
     {
       "Id": "ToxicCloudTechnique",
@@ -2548,7 +2548,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "72f70d9fba102fe433edd70acc773eda4903fe5f562697b769801039c30b4023"
+      "ProjectSha256": "7f4d07199fda32ff367081408b9dce927e83911a5c851e9f78d655bf01f63f99"
     },
     {
       "Id": "ToxicSpitTechnique",
@@ -2562,7 +2562,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "cbb6c55fcffc91e9065fd87c14904a09f50efb1b0fbab1702e93f833e0642730"
+      "ProjectSha256": "c24d729845c93cfafa8c73becfe760c2e627bd09eba63161c2069a84d92d0c82"
     },
     {
       "Id": "VenomSprayTechnique",
@@ -2576,7 +2576,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "fa5d9f63c1e6b243fb6dfe0919b10ad79ee30f5d070971ad286694cbf6d39e1e"
+      "ProjectSha256": "7cf12e9be24c0274e93fcd000c5b28125d66e4af9bc3077229cc2534f5558d14"
     },
     {
       "Id": "WardenClampTechnique",
@@ -2590,7 +2590,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "d10a82b2396ba995afbc850e949bf30935b7f4619f34fcc470413e5928380b1c"
+      "ProjectSha256": "4e4911d91e7b318e7899a20aec47977d82a4ade999b5bbe25187b4227a03e507"
     },
     {
       "Id": "WardenMarkTechnique",
@@ -2604,7 +2604,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "98862abd2d1991fcc5e8fa58d59d356dd93dc30d987cbd892a9a239f3dd959ee"
+      "ProjectSha256": "a1106af033395314cd4cb7dd32efb9837cdb02ed3c933aa38f582e8aa9adafb0"
     },
     {
       "Id": "WardenMaulTechnique",
@@ -2618,7 +2618,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "44737d2e9aaa2c3a1622691be658322e8617fa861303fb1e84af8de6feed42d3"
+      "ProjectSha256": "c7ab888ad126a0c66a1bbd34d67123aa31906e696a0e397a78d13486bf6b6247"
     },
     {
       "Id": "WardenOrderTechnique",
@@ -2632,7 +2632,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "a4b61e5d87377d2ef9f51a6d3e8349c6841032fbf4b61a8550b530681c2d9501"
+      "ProjectSha256": "57528c62f9f594fd342c3472a203c1bb8fc240019ed0dc887d53e8c1b4d259fc"
     },
     {
       "Id": "WardenRendTechnique",
@@ -2646,7 +2646,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "95fd23763380d2bddc149595ee165070b88c8a4b0f23280f2d1bf96ad80454b8"
+      "ProjectSha256": "7227ae15d0c9afeec071de03db18b0e142cc9e5850fc21839a5c1234ed98e251"
     },
     {
       "Id": "WardenSweepTechnique",
@@ -2660,7 +2660,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "87991d3b8fd8d4cdd634b28a49dd283144afb637bd10ca32703114b3c6610a08"
+      "ProjectSha256": "268b1dd2b737e20a8ce04355e801a830a195d39aa0dcced24980cfe63311192d"
     },
     {
       "Id": "WardenWallTechnique",
@@ -2674,7 +2674,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "2b2ba49adf9fdfef7c1e9bdfa00d85d7c30588b5da60f84356060f11b0073041"
+      "ProjectSha256": "d42370b5fe54f3faea3e6054bf140a7b1695f37c88fbc30097b34b8137e3f3b5"
     },
     {
       "Id": "WillFractureTechnique",
@@ -2688,7 +2688,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "4d88f74dda13835035913f105f11318b7736c3d7573a738f274839e72a4293ef"
+      "ProjectSha256": "c3f19a1672c7c33eefa8a04bdc4d9a087de8083704229513743f98c1e7b2b0d1"
     },
     {
       "Id": "DeadMansHand",
@@ -2702,7 +2702,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff489b4948191ae682f2f17d1ba23",
-      "ProjectSha256": "1bbcfad8043db4cf06fafae51911ea51c6eca1861186aaf9a8f3ca40b4209566"
+      "ProjectSha256": "55a3b8fcad81db6313467b11e2072cbb3c4ce6a06f80364c9e6b00652956326d"
     },
     {
       "Id": "DisarmingShot",
@@ -2716,7 +2716,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff5571f5881918a8f6b9b5378bec4",
-      "ProjectSha256": "0b886e691c917808697353ee75ea398d70f05265ec40102be65a7ea6789ecb6b"
+      "ProjectSha256": "e51596e278fa3101bf03385ada003c358f88f5f6074c81738c5981d30abbcf45"
     },
     {
       "Id": "DoubleShot",
@@ -2730,7 +2730,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff37a1db08191bae5a69dbfa57476",
-      "ProjectSha256": "53e52a2eed753701891b1aa74055aab0c55fde088a488ad0137ad1b14095ee7a"
+      "ProjectSha256": "83e189552e3e9101076451d35aa347cd0efa7b2e013a2aec610306a0657ab322"
     },
     {
       "Id": "FanTheHammer",
@@ -2744,7 +2744,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff3f1963c8191a6a7e92cc6bd1d19",
-      "ProjectSha256": "fd4bd29a73a76f28fbe314f98ad0286e0fd4e949eaa01384b858f81d453b2d0e"
+      "ProjectSha256": "8d0bfc056be8ce2b08431cc71676c2c196039aff8bce61f72c32486e1cec9f9f"
     },
     {
       "Id": "GamblerStance",
@@ -2758,7 +2758,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "af213a5a80308188baf4a1d34b750151f65765b0dc61d5eb398a05abfdc0e957"
+      "ProjectSha256": "b85eaa2b6c5303d9721bc3f5b2c94bd59deb2055dc8bff7816e341f802290c6c"
     },
     {
       "Id": "InterruptingShot",
@@ -2772,7 +2772,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff55ebe0c81918e686b927544c95e",
-      "ProjectSha256": "fb5c9bb79804e32659f7bdd9bfe556729c7f9f1d2f3154d722d42659e2f95fd6"
+      "ProjectSha256": "3d937f4c8b21c8373467d85f5145cb4136b29b4a49473862399d00802b12503f"
     },
     {
       "Id": "LastWord",
@@ -2786,7 +2786,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff7d3ae4c81918c21c16da3970181",
-      "ProjectSha256": "d5f44d7cc557a3c2e3e1a23951a2e1779aa55ef73f192ac91a56fb3c88afcf42"
+      "ProjectSha256": "926e8f0a045acaac625187bce2167f116cdef9e23542f710498bd4df784388ab"
     },
     {
       "Id": "PointBlankBurst",
@@ -2800,7 +2800,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff56613808191a298ad6413e3e2f5",
-      "ProjectSha256": "0aceaf33093cc484d42c31e3040d732d77850b136434885f2cb83e3556b20451"
+      "ProjectSha256": "258e592d91ff9d265ca30763cb822d5d1e2441d811c2bc1a04b5629277dfb07f"
     },
     {
       "Id": "QuickDraw",
@@ -2814,7 +2814,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff2c1b5c481919e430baf9844a155",
-      "ProjectSha256": "b46096462ba16cdb8b87d826acf069d3e1f0d32befe244a8e3cd99193f815202"
+      "ProjectSha256": "efe184c8c4a1e2b88f9be576ef334e37568fe88b333350128f121b4d1650ef09"
     },
     {
       "Id": "SkirmisherStance",
@@ -2828,7 +2828,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "25083e475fd85987c3376de5dc7d7f57cde0297371b387beaba0053fd9b28434"
+      "ProjectSha256": "67665f550acf071124c6c13dabe36c8f11820f439e5de457b9642a2aa858f56f"
     },
     {
       "Id": "AimedShot",
@@ -2842,7 +2842,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff929e9f081919edfe50f6a9bc5bd",
-      "ProjectSha256": "3032ebbe80bb4e612ca1549accbbe9de7aeb57d59ff65ba92dfe3d1c0aaac561"
+      "ProjectSha256": "9023f08a13cafc71773017aeeb9ab8ffe9b9f882f11049d7e3f93f9cd9b813ef"
     },
     {
       "Id": "CripplingShot",
@@ -2856,7 +2856,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff959cff8819195f3e521c2094032",
-      "ProjectSha256": "e5422c813f38952e7c01b5da7bfd4d3e31b40d0e87e85de69e1434d1b3188f0c"
+      "ProjectSha256": "f4ed5b1504c2efd817c3e18750ec6c85de7051234dbec8095d59c5562cf734eb"
     },
     {
       "Id": "Headshot",
@@ -2870,7 +2870,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff9421f988191a70ab53a7cecaebc",
-      "ProjectSha256": "377f6fd7678b1d6f4704a4a6ea5258eb4280b28a439918e7e37e217d8573ecaf"
+      "ProjectSha256": "fcac7f1503306b8ebdcd3a6af1dab72d9ab0f17d2ddee8be01c90a7494781dad"
     },
     {
       "Id": "KillBox",
@@ -2884,7 +2884,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "ea40cc5e205565fa9d46ba4e7bb9ebdac59612dfb785d5c173dc3770175854d5"
+      "ProjectSha256": "4a33b77b59639e07276001e4347a7b57391448b1cf4e4fc6cb9fc903bcb35f5e"
     },
     {
       "Id": "OneShot",
@@ -2898,7 +2898,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff9494ef08191b725662a6b7db435",
-      "ProjectSha256": "c2591d2356b2d18e97b4c3700473a0ae7f8d80bb7d9938dc7e171e12cb20bf8c"
+      "ProjectSha256": "6b31134ee9e04f690042d458488e5042f9632721f1ccfec6e273409c3bd6ad8d"
     },
     {
       "Id": "PiercingRound",
@@ -2912,7 +2912,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff93387f88191ba24c62c9810a099",
-      "ProjectSha256": "83ba747099bf1282c7c7f30fcb337b13fbc8b3aeaba1a311c19bcce5ca43c9ff"
+      "ProjectSha256": "78f659ee0628716674a32c9c295ccd2301c8794e2c13ab55f09e1ef81be43b64"
     },
     {
       "Id": "SniperStance",
@@ -2926,7 +2926,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "1e3f6ff44d31accb76d15085969b1f86594e0bc9e0b015c727005a22b5c460c5"
+      "ProjectSha256": "f75190e34c044094e924e0787f66fee0f9b9bc1382a8cd5b1cfbdc03323788d6"
     },
     {
       "Id": "SuppressingShot",
@@ -2940,7 +2940,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e6cfbc98c42344792fd83279d380b1b3928f75b5646cf32c3e45fec098ff5315"
+      "ProjectSha256": "46b45076618247bcfb2ec5561b69dd839f7d66c5c0b884254bfa9b9783fe4344"
     },
     {
       "Id": "SuppressionStance",
@@ -2954,7 +2954,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "0e0f59131c9e2f4ffb7e3dee870de638758860180f6588b57f4180ad2fadb7c5"
+      "ProjectSha256": "55d944d42448e05fcd145301966090474269bd8773ff9ebe4fec134c7693d0c2"
     },
     {
       "Id": "SuppressiveLine",
@@ -2968,7 +2968,7 @@
       "Procedural": true,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff93ab4f08191aca5d7136d5b2830",
-      "ProjectSha256": "08dc1a58da06318228e8a7f5de59a86301d3c01bc7a2ea6d7ddf155cf0813e65"
+      "ProjectSha256": "f0bab25d204bbe0fa40ae237a74ebfe816ef8a870e7cae131b6101d89e080300"
     },
     {
       "Id": "CircleSlash",
@@ -2982,7 +2982,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fed315eb4819195d121b9e931ee33",
-      "ProjectSha256": "dae6cafc0fb9eb7cc2de5f412db4ae8c653c6684101367aabb006e86b9660d35"
+      "ProjectSha256": "30efa3d8a4b237f266559d3b3003c6b535d1688a6bf5daf6af111dbd9008b70e"
     },
     {
       "Id": "ConduitStance",
@@ -2996,7 +2996,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e642fe3a505db5c488a8e1e962138f64b472c9450c90927f5a44b9a384f292d0"
+      "ProjectSha256": "2f5dab8abd1c77def89700e95b48dd7bd022e60f5ecb564168fc4e196cd7ce23"
     },
     {
       "Id": "DoubleStrike",
@@ -3010,7 +3010,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fecf4fa2c81918c225fa425db24f2",
-      "ProjectSha256": "2834532e8476b5ec6404f271276aabd0f711178ab2948f96384af0d505763395"
+      "ProjectSha256": "38f6de1e8dced9390e3759193a8011be446f1a900dbab9a99918312ce9e7b71c"
     },
     {
       "Id": "FocusedArc",
@@ -3024,7 +3024,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fed1db99c81918c206e57f8d9278d",
-      "ProjectSha256": "fce17f37e531dff8ff1434a515ecd18f07b5593df74911b4f4b967d26805ddf4"
+      "ProjectSha256": "8c6abf60dafbf5869ce89f6766f8e3bc471587ff25e9ac875f16ee748c26baf5"
     },
     {
       "Id": "GuardedChannel",
@@ -3038,7 +3038,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fed2441348191876b215fa365c80b",
-      "ProjectSha256": "03014b0504483b49c0c5e052f13e7ab7a50dbbf68dcb3526dc21b87ae96dd3cc"
+      "ProjectSha256": "51b357f021b822910017ea4a5edc10a7ab07285fb0947cb159fca4075f7b87df"
     },
     {
       "Id": "InfiniteConduit",
@@ -3052,7 +3052,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fed0138f88191bce1e1ce63928598",
-      "ProjectSha256": "5008785e4ac67a2940f70bf16c1b2882e235771de833510594c6c7d3ccb61cf1"
+      "ProjectSha256": "950d4e07de5aaf5738dfdbec07d54bca6fce349acf65ac151292f0008960b0bb"
     },
     {
       "Id": "MaelstromArc",
@@ -3066,7 +3066,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fed10e6e481919b13b472c15510a7",
-      "ProjectSha256": "e3b20c5e357f398aef4b12a87824fec26b310bd10ecbe75c2f4dcda74e1f9be0"
+      "ProjectSha256": "e8024b64afba7d6d3b0aad6d8cd4c79b27e6498d6eaf09f0c343cc6cd71f367e"
     },
     {
       "Id": "SaberCyclone",
@@ -3080,7 +3080,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fed37bd988191b63f6fb90f4504b4",
-      "ProjectSha256": "a1eaff0a5f66cf3ae8e3a1fbdcd908b0cc1408fa128bd2f07f975d45ea84bf6b"
+      "ProjectSha256": "906cad03d0ed546ef7ce5f03047b70cce79a1851133e8c43444da4b9281a4a6d"
     },
     {
       "Id": "SeverFocus",
@@ -3094,7 +3094,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fed2c09788191a4341f85af19a06f",
-      "ProjectSha256": "d7725665dca5f7ce62968a5a64dfabf758dde462f4a6bde3da344dbaf388fbcc"
+      "ProjectSha256": "7acc358273fdbce738857d01f62efa5b1eaf9810ef88182dceef8888f118bdd9"
     },
     {
       "Id": "TempestStance",
@@ -3108,7 +3108,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "196fc6e6a7c580f99da3593ae1b91ee2ab163363024741ff7dfaac7e21e4bda3"
+      "ProjectSha256": "c8d63571d900867fbedfd7d5fe4dbc4c037f2237cd80e921af2e3fcd9641f848"
     },
     {
       "Id": "CripplingDefense",
@@ -3122,7 +3122,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "71415658db9ea05f8ec84e62f2226a4fda13c316b764170796abc506f1e05a06"
+      "ProjectSha256": "59f4bbb2d5e4075776795b2e25951db436a4337a0f79651d74b66e204d2830b0"
     },
     {
       "Id": "DisablingStrike",
@@ -3136,7 +3136,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe871140081918c87ef4e2429460a",
-      "ProjectSha256": "fe57298327c94a454dae9a72834c9ed3db3afc3eed5d9ef918505ffc285ae4c4"
+      "ProjectSha256": "7c1ecc7d9ae678133b48107cbe1df54459a7f414bb4390c0434d0121782cd8d6"
     },
     {
       "Id": "DisruptionField",
@@ -3150,7 +3150,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe8905f688191b14ae04d2c3db16e",
-      "ProjectSha256": "6f8da478b4c1f6ff9826951fa3c57e9bb9965ce256aa84d17acc556d0deab2ff"
+      "ProjectSha256": "095572da0626384dfc67ee9df73c2ac22fd87ea16ed5edf891d7d16ef47f40ed"
     },
     {
       "Id": "Forcebane",
@@ -3164,7 +3164,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "35647dd9d43691900036423a4c6dcd8529cd4f9b3f875bb486030800cf1b8710"
+      "ProjectSha256": "bdd4cdf7c35d67af42ff0a8aaa87b5525b7b330f12b5011cc41d8d701829128c"
     },
     {
       "Id": "HamperingBarrage",
@@ -3178,7 +3178,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe8b8c3848191a3aac508f6c58844",
-      "ProjectSha256": "2a4edb56850f9476303b803de6a72a4be6667d56bc305a7a6381a19f8295b9ed"
+      "ProjectSha256": "36a5a27e37b1f8baed1e7ed4d56a538447b594ce05516b7a9029183118c38f20"
     },
     {
       "Id": "InterruptionStrike",
@@ -3192,7 +3192,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe88072d48191a75a90cd774757b6",
-      "ProjectSha256": "c5c36d1a670503d18562caac2a5cb1f0f3cdf6d63f61839b0918d6214aea9dc8"
+      "ProjectSha256": "5f40fa519c5d25882fbe1275cf1cec32428f92df94971abc94de80fbbd65a2c6"
     },
     {
       "Id": "PerceptiveStance",
@@ -3206,7 +3206,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "9d142502a03d25bf548cddcbf68d4faa3f45bd051a41ffd5032fecc4e842f79c"
+      "ProjectSha256": "11ce21dc633b8c47881a6d2404ed6ac53e4e1265f0fffb74f4aa1d1563cd01db"
     },
     {
       "Id": "SweepingFlank",
@@ -3220,7 +3220,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe8b1d0c88191ab583f1203b76d96",
-      "ProjectSha256": "697da2e5274f5144690e06455c0a6777ca2c7cabc442715ee28c8c48ae4b0244"
+      "ProjectSha256": "329fc7222b550fa531338d0659870302ee2b7b9dc363999a2385c266eaa8d0c9"
     },
     {
       "Id": "VigorStance",
@@ -3234,7 +3234,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "2ffb775f7cfb8005c9450018fbd1a6c058afe415248d3d9feb1555d39d3b05c2"
+      "ProjectSha256": "03d04b283ceddfc73af000336ed09e17617d18dc024dc1400571d9a3da8c546f"
     },
     {
       "Id": "VigorThrust",
@@ -3248,7 +3248,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "bc728c91a5d634a5ba82e2be9cff652912685b68101cc7d3aa03a9cb94f42d6a"
+      "ProjectSha256": "760476e7dd7144e3c5fac1dba0e67e0463dcf5e4a916bd951cd7df815fedaf74"
     },
     {
       "Id": "CrusherStance",
@@ -3262,7 +3262,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "352beed34c46e7bcef67ab74df2bdb064ea8585485883bc7eeaddfd886883d1d"
+      "ProjectSha256": "bf2dccafe523ed280d38a1f44646c55ec09a29befa90aa305d689098bca59ec9"
     },
     {
       "Id": "GroundQuake",
@@ -3276,7 +3276,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff0488754819184e0403c1c74ae77",
-      "ProjectSha256": "39026fa30b5ff5b513dce409b453a3ca0a80f2da4d63a1197c8a4860e611c1e1"
+      "ProjectSha256": "7a5d22019c8b17d9296c4512859735d5e1fbfc9f959a27772242c6f910566dbf"
     },
     {
       "Id": "LegSweep",
@@ -3290,7 +3290,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fefe794008191b8615bb2e87149ad",
-      "ProjectSha256": "6393397b180bb877e3e98912bdf59dedef806720c4f9d9df4422136e98d704e7"
+      "ProjectSha256": "7b848c56229e26f8471ad93daa3d3237b529dae03f3a24eac1e3bfed2ecb36c7"
     },
     {
       "Id": "LineBreaker",
@@ -3304,7 +3304,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff00a3b6481918127ff80a66682d3",
-      "ProjectSha256": "396572cd1096d6988e75f1b2b5757355d373e22e4ecccb49066b5fe3dd4cbb19"
+      "ProjectSha256": "002b464c284473b53835b0ab18f8187041f5be45a2d8a8a6359302909e843ca8"
     },
     {
       "Id": "RibBreaker",
@@ -3318,7 +3318,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff051ae6881918e2ad558fedf815a",
-      "ProjectSha256": "46f8dc9dd57e9b8bb836e236634bf7721ed54b381575a20f14e8a11e0e431dd6"
+      "ProjectSha256": "a2800f439fd190122d8d10874321b850da4f7f808ada68632ad8a2270b580094"
     },
     {
       "Id": "SentinelStance",
@@ -3332,7 +3332,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "99458632eca53b189eab0fbf93659dfaad3780ae9ab752cf2fa5fbbbca1d51db"
+      "ProjectSha256": "57425dc15cae708bb3b2b3cdbd83d2212253bd4be5422f202296184a795becad"
     },
     {
       "Id": "ShelterCircle",
@@ -3346,7 +3346,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff0114d788191a14c2825cb423b4b",
-      "ProjectSha256": "50000a602c10cb63ac1ce54dcfab03861cb9293157b3591e22cd2371babb8211"
+      "ProjectSha256": "172cc92b5e169e1450569885461f5baa1c998bc3c6d1b8dcc8162cdeb7df879f"
     },
     {
       "Id": "Slam",
@@ -3360,7 +3360,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff0290324819199c87607d710dd83",
-      "ProjectSha256": "013142bbbd694b5b5715815feca172d75fdeaf8f9a942af3cc89808b3ee562db"
+      "ProjectSha256": "ce7c25ee53e13c5abc055d9a992eb76c1511ba221af06ed776e9b783c37f378d"
     },
     {
       "Id": "SweepingGuard",
@@ -3374,7 +3374,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feff0f6c08191ab91239ef0a61bd1",
-      "ProjectSha256": "0fc2e4226aef82cbd103422f4d8166fc7924c0bf129a4b23bf2faec1c1bb148f"
+      "ProjectSha256": "8cacdd4fff25b3a1652f054936d9ff8edc14b7f374e06241974e34323a12396c"
     },
     {
       "Id": "UnmovingCenter",
@@ -3388,7 +3388,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feff740e081918630adc8a76cad6f",
-      "ProjectSha256": "324ad996f135a5f5d88c736a725321cff6873a2e6ba03f1ae2a7f16e10af6fab"
+      "ProjectSha256": "94e70b953b7fc096951a23f96eac5b07af75f64e66aa68ae0ad31eaeec0a0608"
     },
     {
       "Id": "Worldbreaker",
@@ -3402,7 +3402,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ff01958588191844f832d8d688922",
-      "ProjectSha256": "d4aabff8bc900e31a792fd87fa5093ffd0a559756379256a85b9454fc6e03740"
+      "ProjectSha256": "fca679d730a5e681966056420b997ecb96303a1720cc492977e504fbf27481e2"
     },
     {
       "Id": "ConcussiveToss",
@@ -3416,7 +3416,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40070080208191a579612616aaff9c",
-      "ProjectSha256": "6f8a43eb3854a746c6f9b6b25da41c6ea3c7d7d2a32baed28155063143b4d72c"
+      "ProjectSha256": "20994ded7bb828f97186a2f87deba6bb01ed68aabc656af76b514563568ae777"
     },
     {
       "Id": "ExplosiveToss",
@@ -3430,7 +3430,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3ffe6945a08191bcf51a9e8427fd41",
-      "ProjectSha256": "90d8b079b9670b837fa934eb145f21796980b4ce6af8085ad0fde1aca2407dcc"
+      "ProjectSha256": "cea314b40b61310c84e3c5c0d419c29dd41e67b92ed26a8e3d74a8b2feac99ee"
     },
     {
       "Id": "FlashToss",
@@ -3444,7 +3444,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4007412ea48191b692312556342a6e",
-      "ProjectSha256": "920bb1bb94b1dd5426b71f71fc0b268e67364e78195386722fc7989d88fac419"
+      "ProjectSha256": "8dc742735fdc179fc7215434a728771d4c07a3bc5bca9416290a487e41e2251e"
     },
     {
       "Id": "FlurryStance",
@@ -3458,7 +3458,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "243a88325c783a7a7da7281646da0cd8b5d9d0804aa88ce5df6af8bbba63dc36"
+      "ProjectSha256": "131916d6eb92242232306785ba66a54063b5885192e69407c594324ab38da403"
     },
     {
       "Id": "OrdnanceStance",
@@ -3472,7 +3472,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5c6c9f0a151a3e99c8fd476f973925402b83f61b502262785711c3e4d6075a80"
+      "ProjectSha256": "d45608c0235b30f0cd893dd525f7aab31a2449db5a2a442c7bc1efe1fa2e1888"
     },
     {
       "Id": "PerfectFlurry",
@@ -3486,7 +3486,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "074f21febc2240fc61f044e874e20d7f172ac20bb742c5b2499d0d6d3a9d4617"
+      "ProjectSha256": "0e42b7912148c0145b246532ef4eec4531f072ecb6ff1144ef5d76581e7e1d26"
     },
     {
       "Id": "PiercingToss",
@@ -3500,7 +3500,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40073b0444819197ab073f888024dd",
-      "ProjectSha256": "1e98096e357020c1884a8b0c7ed75e7cc15e21c0330d51ba3e39bafe53f66d3f"
+      "ProjectSha256": "f6ef468aab0254c3656dfc26ab8a68446a3d664c21ebc00420e06d812356b6f4"
     },
     {
       "Id": "PinningToss",
@@ -3514,7 +3514,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40072b849c819185dda0a37c68b941",
-      "ProjectSha256": "69ecb2388e74d2212d7732a344670f4a1f8184e0fcddfa87c9ec57382458471b"
+      "ProjectSha256": "b5d8f1287a1e84efd4f7668ead26e02203d9a1f01a198ae9c48b9f49d864d160"
     },
     {
       "Id": "RainOfSteel",
@@ -3528,7 +3528,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40071269fc8191bcfe7a571de155ea",
-      "ProjectSha256": "cc44937943c17231c1e9003197be77d3a70cfb3aeac382ed7ed54441879688ed"
+      "ProjectSha256": "1d4afe422aa2d132277c119b98cdf97e66fb53d06243d25f8697f36a3d6382ef"
     },
     {
       "Id": "SeveringToss",
@@ -3542,7 +3542,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400733b3b0819183b7edfbb348bc2d",
-      "ProjectSha256": "438842fbcbcbb9f8008971db736dc662e3a73a61516c9e21cf03854d8feb50e2"
+      "ProjectSha256": "735dfeb69a54856da1dea3e2d90b7d4ce75abb9ad38171366095853f6ecb535b"
     },
     {
       "Id": "BladeVortex",
@@ -3556,7 +3556,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feb60a5f48191ab43313be342cfb3",
-      "ProjectSha256": "e3193af6548749c5c119f8a9f70d34db67042e90483a4cc5ae640b3973b6a51f"
+      "ProjectSha256": "62b7014b1b005483a70645b44216c00fe98f266d6585f2f0ee5d3c03bb08826b"
     },
     {
       "Id": "CrossCut",
@@ -3570,7 +3570,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feb52ed80819195c17d3ba5a7dab7",
-      "ProjectSha256": "45c74ebf48c07ad3baddb3c3927964d180bd3464abb4145f2ebf07ae757234b2"
+      "ProjectSha256": "77bad36d46e00ab32b29f3c9c44876432f308f358277e417773cb30172c0a296"
     },
     {
       "Id": "CycloneStance",
@@ -3584,7 +3584,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "1726f6e732ef55daaf2899a5343dce54b536f88022793211b83199fc6f73703f"
+      "ProjectSha256": "c9ff4e5af03629940e64317b3886dbafb4cb931d4785ea9647f94243d1a36104"
     },
     {
       "Id": "LaceratingTwinCut",
@@ -3598,7 +3598,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "7432c3f29596177176e98003d683234409a41d1262c113ffface55da467957f2"
+      "ProjectSha256": "cbde93a0789a3505df451d7430e941870ab0cfe8e95b0bf3572f120f58a7532e"
     },
     {
       "Id": "LaceratorStance",
@@ -3612,7 +3612,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f19741a8255dad0963d05ad65715546d108a14d422fdf8d8ecffe335f5da49db"
+      "ProjectSha256": "d2d0176ab3b4512b7013cbdc403ac07a3f3514120deb869f4ac6dd2de80aeb9f"
     },
     {
       "Id": "RedBloom",
@@ -3626,7 +3626,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "adccd7336e14fc63bf933a7344a0d1e3a5bc986ac728da66acdc5a941098abfa"
+      "ProjectSha256": "76b95c7b46f7448988a2a666d2a818d0df198cc8be89fa0964ec3301337cd1f0"
     },
     {
       "Id": "SerratedArc",
@@ -3640,7 +3640,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "52abcb6fc1719c3671ada5ca0afffb513df12dccad2ab26f038ae593ec53d5fa"
+      "ProjectSha256": "901548d69b5d878f244e1b20cc61233a8566c9d46bf90a4b3e1878e58d4610fc"
     },
     {
       "Id": "SpinningWhirl",
@@ -3654,7 +3654,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feb595e8881919865af1495a6aadf",
-      "ProjectSha256": "b0d23da71b225e15a1e68bfdc910427337e62bee6a4c7acff3af7cfefa678886"
+      "ProjectSha256": "c927ab1a26a99fc7623ea71e64050547840c5bf74a9ddeea52c885c8d39c1c7d"
     },
     {
       "Id": "TempestBloom",
@@ -3668,7 +3668,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3feb6f01608191afeabf6292bfb388",
-      "ProjectSha256": "cd1bdd32140e970ebd5694c3fa01e37b97c3cb53b2b10dcb397fb23cf1538f92"
+      "ProjectSha256": "f6c3629d073b984f4756542ab3eb6ea61c78accb8554530cf542f0a2869c58c2"
     },
     {
       "Id": "TwinRupture",
@@ -3682,7 +3682,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "667473378c7f75094e578d44cb8bc58836acfef55a3d81cb800af1cc889d0840"
+      "ProjectSha256": "50dc6ab61b0b886603862f083f66c23c70843bec90997d803562df83f26e5bf8"
     },
     {
       "Id": "BerserkerStance",
@@ -3696,7 +3696,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "81e40e482a978e353bc9f345afadaf36664547c6a43366147182f8433f6e8712"
+      "ProjectSha256": "6033d96fed429968bae8b5857ea2077ea866b432e59cb9195468621dd8b39179"
     },
     {
       "Id": "CoveringStrike",
@@ -3710,7 +3710,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fde0e8a34819181290c21cdf5dc91",
-      "ProjectSha256": "e0e5c94ce4f5f189f156abba7de3c2db896f7eaaa77981c7ebbe20e4269d5d0f"
+      "ProjectSha256": "6cddd56f96861e27197d26a311b69d9b9f87da045b65a75a4efbd74239f22bf8"
     },
     {
       "Id": "DefensiveStance",
@@ -3724,7 +3724,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e9ef93e15e1fb4cd13c7aa30200f489ba43d8ccca05a9ffec2b0f5df6fec105a"
+      "ProjectSha256": "4dae573caf29b245812004eb184b8ff7c2e54dd55b880f14c13b0f693dfb8659"
     },
     {
       "Id": "Invincible",
@@ -3738,7 +3738,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fde75a0d48191afd875e8ee2478e4",
-      "ProjectSha256": "02f6907f0331ed98d56e2258a22e287a28e1aa98867142d9d3862d14a5db8acb"
+      "ProjectSha256": "662e9bb498f929b5bc4676cb870e576cb437527d818ab69030c57771b13c335b"
     },
     {
       "Id": "RendingStrike",
@@ -3752,7 +3752,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
-      "ProjectSha256": "db3d41cf39d69a03befddc2aa8a8facb934e26799a16d9e0faec62a09903954e"
+      "ProjectSha256": "9978bddc8ffdb8d2ac939f4e3ca92ef4a067824ecf8fc391ae164aaf88131077"
     },
     {
       "Id": "RiotBlade",
@@ -3766,7 +3766,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
-      "ProjectSha256": "39880dad55c8445a8a3c8281c7012f00011b9dd66861d2a1045516cca9cb6c67"
+      "ProjectSha256": "2ca5bb47c8312539c158331d84285f570f72f8e787eefdb3dfff5f940c8a362c"
     },
     {
       "Id": "SavageCleave",
@@ -3780,7 +3780,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
-      "ProjectSha256": "d360606e7712ac11e35979ca406e2704b8d76ab9c584b725c6a84516b211849b"
+      "ProjectSha256": "37c4924178f71350d847af5fd2718e636dcd80107611dc6d6a470af5ee68e427"
     },
     {
       "Id": "ShieldBash",
@@ -3794,7 +3794,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fdd47b8f88191a44d7c29b566f837",
-      "ProjectSha256": "fc36cf2aea19a6fffc4fc385cbe38cc9ef46f12e0ee96bea25c2911c0b7daf44"
+      "ProjectSha256": "8ea9ef1fbacac808e2f8d6258615498d577f4141823d3c85ed1409598a474fa1"
     },
     {
       "Id": "ShieldWall",
@@ -3808,7 +3808,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fdd84a41c8191ab3fcad9d97786f7",
-      "ProjectSha256": "30fd6b9a9e97f5c3584be1da4222993c33609faa4855eeb49b56b9a235b3e60d"
+      "ProjectSha256": "9872f882272b4f15906a9bdcf3a1d60954ed05270eb386c93fae3a63504513a1"
     },
     {
       "Id": "AssassinsStance",
@@ -3822,7 +3822,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "6cfd4556bf11e446e03014fb9d834135d54dd9a94861e1c5138af241b0a4ba9b"
+      "ProjectSha256": "467ff991b18d5ee48377dde8f0fd37abfa831e32ff71ded5d2fee79d325292f7"
     },
     {
       "Id": "Backstab",
@@ -3836,7 +3836,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a3fe24b167c8191bd0127d264800c95",
-      "ProjectSha256": "42cbbfb2836029c707b9aa980e6ec8f187058ff11f3950f40820ae91aae64ff0"
+      "ProjectSha256": "2052fbd5e4aaeb0b88d03207848f0af9569074f5e2b0d4f00a234dcab9e3bd16"
     },
     {
       "Id": "CripplingSlice",
@@ -3850,7 +3850,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5abc654c304839b1ab1d95e17fb45270e4799420e13d527d6a3ab947adb5d52e"
+      "ProjectSha256": "ffc14e292900bcdc0554616b0ea99b83dfe71fc65be7a7798019577d27fe120f"
     },
     {
       "Id": "EscapeArtist",
@@ -3864,7 +3864,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "d52446a8f49790f948d759addbc5eaf43c2bc677e6690cbe2a3069b33b838a7b"
+      "ProjectSha256": "154f596aec465d161249ddf024b56300635a7736c2c7b81af355ae6cee07c537"
     },
     {
       "Id": "PathogenStrike",
@@ -3878,7 +3878,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f0c71a691d901b92003bf684362cf863511cca4539f080ae00e244a3ea5cc8f7"
+      "ProjectSha256": "231033c234c5aad5b4f72a4c869e8b9c80df4956f9a15c612b39851d37a2be8b"
     },
     {
       "Id": "ShadowflowStance",
@@ -3892,7 +3892,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "7c07718b870683d576468ed1462787ed8c44b379d89456dd448d59be7372d4b6"
+      "ProjectSha256": "994d5ef8036e1644302a338273573a77242f89649e3b50305d44426416d75f5c"
     },
     {
       "Id": "VeiledStrike",
@@ -3906,7 +3906,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "fb86831444998b18b96080e886da12fe112270ee4be026eb140c09e493ffab79"
+      "ProjectSha256": "8f995654534c342407651417a58fcabfef01f99de0a9d3406e3ba99a4ba60b85"
     },
     {
       "Id": "ViralCascade",
@@ -3920,7 +3920,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "1bee1e7ff84c1c550a3d7fb54c23e3991309fcaa9b1c4c1fdfaa2a00383a8b85"
+      "ProjectSha256": "336150e2d9ee2b74da92649c4c9bfbcae465bab8907b60ddccba2e0c20a5eb77"
     },
     {
       "Id": "VirulentBlade",
@@ -3934,7 +3934,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "1c1b7d24a8d728626239778334bd9b98c3b8bb4964445fc2777be64c6412ce53"
+      "ProjectSha256": "8d6e7b1e705936baacb70d2025a12c52aac8e2ec65626e6d35300de03820e9c7"
     },
     {
       "Id": "VolatileCompound",
@@ -3948,7 +3948,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "df0e0c1a2832f00c178e94419dc74f59505327c4909712d7dc2cd190f965dcfe"
+      "ProjectSha256": "ae8687ddc5e559a1ff5ab90560dac9b4183fc991aab5313a07d93b10d8d6e934"
     }
   ]
 }

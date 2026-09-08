@@ -165,6 +165,24 @@ public class AnimationPlanningTests
     }
 
     [Test]
+    public void ProjectProvenanceHashesArePortableAcrossGitLineEndings()
+    {
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root,
+            "design/animations/active-manifest.json")));
+        var rows = manifest.RootElement.GetProperty("Animations").EnumerateArray().ToArray();
+        rows.Select(row => row.GetProperty("Id").GetString()).Should().BeEquivalentTo(ActivePlan().Select(entry => entry.Id));
+        foreach (var row in rows)
+        {
+            var path = Path.Combine(Root, "design/animations", row.GetProperty("Project").GetString()!);
+            var normalized = File.ReadAllText(path).Replace("\r\n", "\n");
+            var expected = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
+                System.Text.Encoding.UTF8.GetBytes(normalized))).ToLowerInvariant();
+            row.GetProperty("ProjectSha256").GetString().Should().Be(expected,
+                $"{row.GetProperty("Id").GetString()} provenance must survive Git LF/CRLF conversion");
+        }
+    }
+
+    [Test]
     public void BibleRetainsOnlyUsedPlansAndEveryReferenceMatchesItsNewRow()
     {
         var plan = ActivePlan();

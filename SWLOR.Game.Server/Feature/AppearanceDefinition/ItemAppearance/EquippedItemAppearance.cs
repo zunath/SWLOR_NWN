@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                     continue;
 
                 var appearance = lastUpdate.m_cAppearance;
+                var handItem = appearance.m_oidLeftHandItem == item || appearance.m_oidRightHandItem == item;
                 var changed = false;
                 if (appearance.m_oidHeadItem == item)
                 {
@@ -95,6 +96,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 // Match NWNX_Item_SetItemAppearance's observer refresh, including hands.
                 // Only the client's cached item is discarded; ownership and equipment stay put.
                 message.SendServerPlayerItemUpdate_DestroyItem(player, item);
+                if (handItem)
+                {
+                    // The inventory GUI tracks equipment independently of creature appearance.
+                    // After destroying the client's item, also resend its inventory-slot add.
+                    InvalidateInventorySlot(player.m_pInventoryGUI, creature, item);
+                    InvalidateInventorySlot(player.m_pOtherInventoryGUI, creature, item);
+                }
                 refreshedClient = true;
             }
 
@@ -104,6 +112,46 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 
             if (refreshedClient && GetIsPC(creature))
                 DelayCommand(QuickbarRefreshDelaySeconds, () => RestoreQuickbarReferences(creature, item));
+
+            if (refreshedClient && (GetItemInSlot(InventorySlot.RightHand, creature) == item ||
+                                    GetItemInSlot(InventorySlot.LeftHand, creature) == item))
+                DelayCommand(QuickbarRefreshDelaySeconds, () => RefreshHandAppearance(creature, item));
+        }
+
+        private static void InvalidateInventorySlot(CNWSPlayerInventoryGUI gui, uint creature, uint item)
+        {
+            if (gui == null || gui.m_oidInventoryOwner != creature || gui.m_pcLastUpdateInventory == null)
+                return;
+
+            var slots = gui.m_pcLastUpdateInventory.m_oidInventorySlots;
+            for (var index = 0; index < 18; index++)
+                if (slots[index] == item)
+                    slots[index] = OBJECT_INVALID;
+        }
+
+        private static void RefreshHandAppearance(uint creature, uint item)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(item) ||
+                (GetItemInSlot(InventorySlot.RightHand, creature) != item &&
+                 GetItemInSlot(InventorySlot.LeftHand, creature) != item))
+                return;
+
+            // Rebuild the hand attachment after the client's replacement item has replicated.
+            // No item movement or equipment events: rapid clicks use the latest model, and
+            // an item genuinely unequipped during the delay is left alone.
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            foreach (var player in server.GetPlayerList())
+            {
+                var appearance = player.GetLastUpdateObject(creature)?.m_cAppearance;
+                if (appearance == null)
+                    continue;
+                if (appearance.m_oidLeftHandItem == item)
+                    appearance.m_oidLeftHandItem = OBJECT_INVALID;
+                if (appearance.m_oidRightHandItem == item)
+                    appearance.m_oidRightHandItem = OBJECT_INVALID;
+            }
+            server.SetForceUpdate();
+            TintMapService.ApplyCurrentColors(creature);
         }
 
         public static void ApplyOutfit(uint creature, uint item, uint template)

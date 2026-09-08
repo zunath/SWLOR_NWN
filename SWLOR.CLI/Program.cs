@@ -47,6 +47,10 @@ namespace SWLOR.CLI
                 "--outputDeploy",
                 "-o",
                 "Deploys DLLs in the bin folder to the NWN dotnet directory.");
+            var serverOutputOption = new Option<string>("--server-output")
+            {
+                Description = "Server build output to deploy. MSBuild supplies its TargetDir; standalone deployment defaults to the Release build produced by RunCLI.cmd."
+            };
             var modulePackerOption = CreateValueOption(
                 "--pack",
                 "-p",
@@ -93,6 +97,7 @@ namespace SWLOR.CLI
             rootCommand.Options.Add(hakBuilderOption);
             rootCommand.Options.Add(languageBuilderOption);
             rootCommand.Options.Add(deployOption);
+            rootCommand.Options.Add(serverOutputOption);
             rootCommand.Options.Add(modulePackerOption);
             rootCommand.Options.Add(recipeOption);
             rootCommand.Options.Add(structureOption);
@@ -159,7 +164,7 @@ namespace SWLOR.CLI
 
                 if (parseResult.GetValue(deployOption))
                 {
-                    _deployBuild.Process();
+                    _deployBuild.Process(parseResult.GetValue(serverOutputOption));
                 }
 
                 if (parseResult.GetValue(beastBuilderOption))

@@ -116,9 +116,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var editor = BindEditor(creature);
                 editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
                 ctx.Assert(editor.IsCustomTintEditable, "RGB safety fixture has a tintable armor material.");
+                editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(205, 228, 197);
                 editor.OnMouseUpTintPicker()();
                 editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(1, 17, 91);
                 editor.OnMouseUpTintPicker()();
                 var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(part =>
@@ -184,6 +186,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     editor.OnClickColorTarget(copyToRight ? AppearanceEditorViewModel.ColorTarget.LeftForearm :
                         AppearanceEditorViewModel.ColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
                     ctx.Assert(editor.IsCustomTintEditable, "The source forearm has a custom Leather2 channel.");
+                    editor.OnMouseDownTintPicker()();
                     editor.SelectedTintColor = new GuiColor(1, 17, 91);
                     editor.OnMouseUpTintPicker()();
                     if (typed)
@@ -193,6 +196,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         editor.CustomTintBlue = expected.Blue.ToString();
                     }
                     else
+                        editor.OnMouseDownTintPicker()();
                         editor.SelectedTintColor = new GuiColor(expected.Red, expected.Green, expected.Blue);
 
                     if (copyToRight)

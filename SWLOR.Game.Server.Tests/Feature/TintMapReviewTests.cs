@@ -112,7 +112,8 @@ public class TintMapReviewTests
         var definitionRoot = CSharpSyntaxTree.ParseText(definition).GetRoot();
         var definitionMethods = definitionRoot.DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
-            .ToDictionary(method => method.Identifier.ValueText);
+            .GroupBy(method => method.Identifier.ValueText)
+            .ToDictionary(group => group.Key, group => string.Join("\n", group.Select(method => method.ToString())));
 
         definition.Should().Contain("row.AddColorPicker()");
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
@@ -2358,6 +2359,7 @@ public class TintMapReviewTests
 
     [TestCase(nameof(TintMapService.ApplyCurrentColors))]
     [TestCase(nameof(TintMapService.ApplyCurrentItemColors))]
+    [TestCase("ApplyEquippedHelmetColors")]
     public void CompleteTintRefreshResetsOnceBeforeWritingAnyRows(string refreshMethodName)
     {
         var source = ReadSource(
@@ -2383,6 +2385,11 @@ public class TintMapReviewTests
                     continue;
 
                 var name = identifier.Identifier.ValueText;
+                // The creature refresh delegates the helmet item's independent row list.
+                // Its reset/write ordering is checked by its own case, not counted as a
+                // second reset of the creature. Shared row helpers remain traversed.
+                if (name == "ApplyEquippedHelmetColors" && name != refreshMethodName)
+                    continue;
                 if (name == "ResetMaterialShaderUniforms")
                     resets.Add((method, call));
                 else if (name == "SetMaterialShaderUniformVec4")
@@ -2420,12 +2427,13 @@ public class TintMapReviewTests
             .OfType<InvocationExpressionSyntax>()
             .Where(call => GetInvokedMethodName(call) == "ResetMaterialShaderUniforms")
             .ToArray();
-        resets.Should().HaveCount(2,
-            "legacy shader parameters must be cleared only by complete creature and world-item refreshes");
+        resets.Should().HaveCount(3,
+            "legacy shader parameters must be cleared only by complete creature, equipped-helmet and world-item refreshes");
         resets.Select(call => call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText)
             .Should().BeEquivalentTo(new[]
             {
-                nameof(TintMapService.ApplyCurrentColors), nameof(TintMapService.ApplyCurrentItemColors)
+                nameof(TintMapService.ApplyCurrentColors), nameof(TintMapService.ApplyCurrentItemColors),
+                "ApplyEquippedHelmetColors"
             });
         foreach (var reset in resets)
         {

@@ -202,6 +202,49 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { Combat.SetAbilityHitResolutionOverride(null); }
         }
 
+        [EngineTest("Flash preserves armed activation bonuses through its delayed impact", Category = "CombatPerkRegression", TimeoutSeconds = 15f)]
+        public static async Task FlashPreservesActivationBonuses(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var target = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            Prepare(ctx, target);
+            ctx.MakeHostile(target);
+            Combat.GrantNextAbilityDamageBonus(caster, (int)PerkType.Flash, 31, 120);
+            Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.HeavyVibroblade, 37, 11, 120);
+            TemporaryStatModifier.Add(caster, StatType.NextAttackGuardedHitDMGBonus, 41, 120,
+                StatType.NextAttackGuardedHitDMGBonus);
+            TemporaryStatModifier.Add(caster, StatType.NextAttackGuardedHitCriticalRatePercentAdjustment, 13, 120,
+                StatType.NextAttackGuardedHitDMGBonus);
+            TemporaryStatModifier.Add(caster, StatType.NextAttackGuardedHitEnmityBonus, 43, 120,
+                StatType.NextAttackGuardedHitDMGBonus);
+            var ability = Ability.GetAbilityDetail(FeatType.Flash1);
+            var hp = GetCurrentHitPoints(target);
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                Ability.BeginAbilityImpact(caster, ability);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => ability.ImpactAction(caster, target, 1, GetLocation(target)));
+                }
+                finally { Ability.EndAbilityImpact(caster); }
+                await ctx.DelaySecondsAsync(0.75f);
+                ctx.AssertEqual(hp, GetCurrentHitPoints(target), "Flash causes no direct damage");
+                ctx.AssertEqual(31, Combat.ConsumeNextAbilityDamageBonus(caster, PerkType.Flash), "Perk damage remains armed");
+                var skill = Combat.ConsumeNextSkillAbilityBonuses(caster, SkillType.HeavyVibroblade);
+                ctx.AssertEqual(37, skill.DamageBonus, "Skill damage remains armed");
+                ctx.AssertEqual(11, skill.CriticalRatePercentAdjustment, "Skill critical rate remains armed");
+                var guarded = Combat.ConsumeNextAttackGuardedHitBonuses(caster);
+                ctx.AssertEqual(41, guarded.DMGBonus, "Guarded damage remains armed");
+                ctx.AssertEqual(13, guarded.CriticalRatePercentAdjustment, "Guarded critical rate remains armed");
+                ctx.AssertEqual(43, guarded.EnmityBonus, "Guarded enmity remains armed");
+            }
+            finally { Combat.SetAbilityHitResolutionOverride(null); }
+        }
+
         [EngineTest("Force Choke applies its full scaled damage budget over thirty seconds", Category = "CombatPerkRegression", TimeoutSeconds = 55f)]
         public static async Task ForceChokeDamageBudget(EngineTestContext ctx)
         {

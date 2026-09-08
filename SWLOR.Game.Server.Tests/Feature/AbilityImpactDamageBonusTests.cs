@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.TelegraphService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -78,5 +79,36 @@ public class AbilityImpactDamageBonusTests
     {
         var bash = new ShieldBashAbilityDefinition().BuildAbilities()[feat];
         Apply(0, bash, () => 75).Should().Be((75, true));
+    }
+
+    [Test]
+    public void ImpactPreparation_LeavesControlBonusesArmedAndConsumesOnceForDamage()
+    {
+        var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
+        var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
+        var impact = impactType.GetConstructors().Single().Invoke(new object[]
+        {
+            flash, 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null
+        });
+        var calls = 0;
+        impactType.GetProperty("ResolveDamageBonuses")!.SetValue(impact, (Action)(() => calls++));
+        var impacts = (System.Collections.IDictionary)typeof(Ability)
+            .GetField("_trackedAbilityImpacts", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var prepare = typeof(Ability).GetMethod("PrepareCombatImpactDamageBonuses", BindingFlags.NonPublic | BindingFlags.Static)!
+            .CreateDelegate<Action<uint, int>>();
+        const uint caster = 0xFFFFFFFE;
+        impacts.Add(caster, impact);
+        try
+        {
+            prepare(caster, 0);
+            calls.Should().Be(0, "control impacts must not invoke activation bonus consumers");
+            prepare(caster, 100);
+            prepare(caster, 100);
+            calls.Should().Be(1, "multiple targets and phases share one consumption");
+        }
+        finally
+        {
+            impacts.Remove(caster);
+        }
     }
 }

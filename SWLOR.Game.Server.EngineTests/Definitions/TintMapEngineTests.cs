@@ -486,10 +486,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var layer in selection.Material.Layers)
                 {
                     var definition = TintMapMaterialRegistry.GetLayer(layer);
-                    var material = TintMapVariable.IsCreatureColorLayer(layer) ? string.Empty : selection.Material.Resref.ToLowerInvariant();
+                    var material = selection.Material.Resref.ToLowerInvariant();
                     var paletteId = TintMapService.GetStandardColorId(civilian, selection, layer);
-                    expected[(material, definition.UniformName.ToLowerInvariant())] =
-                        (definition.PaletteBaseRow + paletteId + 0.5f) / 2048f;
+                    var uniform = definition.UniformName.ToLowerInvariant();
+                    var coordinate = (definition.PaletteBaseRow + paletteId + 0.5f) / 2048f;
+                    expected[(material, uniform)] = coordinate;
+                    // Semantic colors also have named attachment records so replacements
+                    // receive the same dye after the client's wildcard update.
+                    if (TintMapVariable.IsCreatureColorLayer(layer))
+                        expected[(string.Empty, uniform)] = coordinate;
                 }
             }
 

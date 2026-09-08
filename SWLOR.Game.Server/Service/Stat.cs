@@ -1220,17 +1220,21 @@ namespace SWLOR.Game.Server.Service
 
         private static int ApplyPostAttackStatusModifiers(uint creature, int attack, SkillType skillType)
         {
-            var adjustment = GetStatAdjustment(creature, StatType.AttackPercentAdjustment);
-            if (skillType == SkillType.Force)
-            {
-                adjustment += GetStatAdjustment(creature, StatType.ForceAttackPercentAdjustment);
-            }
+            var adjustment = GetAttackPercentAdjustment(creature, skillType);
 
             adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
             adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(creature);
             adjustment += Combat.GetLowHPAttackAdjustment(creature);
             adjustment += Combat.GetLowFPAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
+        }
+
+        public static int GetAttackPercentAdjustment(uint creature, SkillType skillType)
+        {
+            return GetStatAdjustment(creature, StatType.AttackPercentAdjustment) +
+                   (skillType == SkillType.Force
+                       ? GetStatAdjustment(creature, StatType.ForceAttackPercentAdjustment)
+                       : 0);
         }
 
         private static int GetHighFPAndStaminaAttackAdjustment(uint creature)

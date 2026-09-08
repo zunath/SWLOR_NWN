@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string CraftingTabPartial = "CHARACTER_SHEET_CRAFTING_TAB";
 
         private uint _target;
+        private int _hitPointRefreshGeneration;
 
         // Tab registration: id -> partial view -> refresh action. Replaces
         // GetTabPartialName + the RefreshSelectedTabData switch statement that
@@ -1299,7 +1300,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
             WatchOnClient(model => model.TopTabId);
             WatchOnClient(model => model.BottomTabId);
-            Scheduler.Schedule(RefreshLiveHitPoints, TimeSpan.FromSeconds(1));
+            var refreshGeneration = ++_hitPointRefreshGeneration;
+            Scheduler.Schedule(() => RefreshLiveHitPoints(refreshGeneration), TimeSpan.FromSeconds(1));
         }
 
         private void RefreshHitPoints()
@@ -1309,15 +1311,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HitPointTooltip = $"HP: {HP}\nTemporary HP: {TemporaryHP}";
         }
 
-        private void RefreshLiveHitPoints()
+        public override Action OnWindowClosed() => () => ++_hitPointRefreshGeneration;
+
+        private void RefreshLiveHitPoints(int refreshGeneration)
         {
-            if (!GetIsObjectValid(Player) || !GetIsObjectValid(_target) ||
-                !Gui.IsWindowOpen(Player, WindowType) ||
-                !ReferenceEquals(Gui.GetPlayerWindow(Player, WindowType).ViewModel, this))
+            if (refreshGeneration != _hitPointRefreshGeneration ||
+                !GetIsObjectValid(Player) || !GetIsObjectValid(_target) ||
+                NuiFindWindow(Player, Gui.BuildWindowId(WindowType)) != WindowToken)
                 return;
 
             RefreshHitPoints();
-            Scheduler.Schedule(RefreshLiveHitPoints, TimeSpan.FromSeconds(1));
+            Scheduler.Schedule(() => RefreshLiveHitPoints(refreshGeneration), TimeSpan.FromSeconds(1));
         }
 
         public void Refresh(ChangePortraitRefreshEvent payload)

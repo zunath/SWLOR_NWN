@@ -11,6 +11,21 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class CharacterSheetCombatUpgradeTests
 {
     [Test]
+    public void ClosedCharacterSheet_RejectsItsPendingHitPointRefreshBeforeReadingTheEngine()
+    {
+        var viewModel = new CharacterSheetViewModel();
+        viewModel.OnWindowClosed().Invoke();
+
+        // An old callback can arrive after the same view model has been reopened.
+        // It must exit before any native calls, which are unavailable in this test.
+        var refresh = typeof(CharacterSheetViewModel).GetMethod(
+            "RefreshLiveHitPoints", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        Action invokeOldRefresh = () => refresh.Invoke(viewModel, new object[] { 0 });
+
+        invokeOldRefresh.Should().NotThrow();
+    }
+
+    [Test]
     public void CharacterSheet_DisplaysDefenseAndResistanceAsSeparateSurfaces()
     {
         var root = FindRepositoryRoot();

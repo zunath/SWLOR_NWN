@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MimicryPotencyTests
 {
+    /// <summary>Checks stack replacement, the three-stack cap, and independent expiry of Momentum and Overload.</summary>
     [Test]
     public void MomentumReplacementAndExpiry_PreserveOtherPotencySources()
     {
@@ -38,6 +39,7 @@ public class MimicryPotencyTests
             "Momentum expiry must remove its complete bonus");
     }
 
+    /// <summary>Ensures other skills and auto-attacks bypass potency without querying native creature state.</summary>
     [Test]
     public void PotencyDamageModifier_ExcludesEveryOtherSkillAndAutoAttacks()
     {
@@ -54,6 +56,7 @@ public class MimicryPotencyTests
         }
     }
 
+    /// <summary>Ensures potency cannot turn a zero-damage control or immune impact into damage.</summary>
     [Test]
     public void PotencyDamageModifier_PreservesControlOnlyAndImmuneImpacts()
     {

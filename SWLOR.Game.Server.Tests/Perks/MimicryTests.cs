@@ -728,6 +728,7 @@ public class MimicryTests
         }
     }
 
+    /// <summary>Checks that the ability and client targeting tables agree on cursor-free self activation.</summary>
     [Test]
     public void OverclockedAnalyzer_ActivatesOnSelfWithoutTargetSelection()
     {

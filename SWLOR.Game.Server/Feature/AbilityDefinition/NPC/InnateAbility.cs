@@ -243,6 +243,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return (int)((long)maxPercentBonus * missingHp / maxHp);
         }
 
+        /// <summary>
+        /// Builds a hostile single-target ability with profile-specific scaling, status effects,
+        /// and successful-hit callbacks routed through the shared combat impact pipeline.
+        /// </summary>
         public static AbilityBuilder BuildSingleTarget(
             AbilityBuilder builder,
             FeatType feat,
@@ -310,6 +314,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return ability;
         }
 
+        /// <summary>
+        /// Builds a hostile area ability with targeting geometry and profile-specific combat impacts.
+        /// The shared damage pipeline applies outgoing modifiers to each struck target.
+        /// </summary>
         public static AbilityBuilder BuildArea(
             AbilityBuilder builder,
             FeatType feat,

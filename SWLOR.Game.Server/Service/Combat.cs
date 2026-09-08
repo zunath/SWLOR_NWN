@@ -1015,6 +1015,10 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, attack + (int)Math.Ceiling(attack * (adjustment / 100f)));
         }
 
+        /// <summary>
+        /// Rejects immune hits, then applies outgoing ability, skill, damage-type, and target
+        /// modifiers to a damage roll while enforcing the shared percentage bonus cap.
+        /// </summary>
         public static int ApplyDamageDealtModifiers(
             uint attacker,
             uint defender,

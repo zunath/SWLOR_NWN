@@ -101,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
 
 
+        /// <summary>Registers the analyzer capstone that expands memory and unlocks the temporary self-buff.</summary>
         private void OverclockedAnalyzer()
         {
             _builder.Create(PerkCategoryType.Mimicry, PerkType.OverclockedAnalyzer)

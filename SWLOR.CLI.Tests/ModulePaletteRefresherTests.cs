@@ -57,6 +57,8 @@ public sealed class ModulePaletteRefresherTests
         deployBuild.Should().NotContain("../SWLOR.Game.Server/bin/Debug/net10.0/");
         packCommand.Should().Contain("RunCLI.cmd");
         serverProject.Should().Contain("RunCLI.cmd");
+        serverProject.Should().Contain("--server-output &quot;$(TargetDir).&quot;");
+        serverProject.Should().Contain("AfterTargets=\"Build\"");
         serverProject.Should().NotContain("tools\\SWLOR.CLI\\SWLOR.CLI.exe");
         File.Exists(Path.Combine(repositoryRoot, "tools", "SWLOR.CLI", "SWLOR.CLI.exe"))
             .Should().BeFalse("the committed executable can silently fall behind the CLI source");

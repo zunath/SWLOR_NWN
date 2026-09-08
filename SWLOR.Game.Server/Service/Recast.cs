@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
@@ -111,14 +110,12 @@ namespace SWLOR.Game.Server.Service
             // NPCs and DM-possessed NPCs
             else
             {
-                var unlockDate = GetLocalString(creature, $"ABILITY_RECAST_ID_{(int)recastGroup}");
-                if (string.IsNullOrWhiteSpace(unlockDate))
+                if (!TryGetNpcRecastTime(creature, recastGroup, out var dateTime))
                 {
                     return (false, string.Empty);
                 }
                 else
                 {
-                    var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                     var timeToWait = Time.GetTimeToWaitLongIntervals(now, dateTime, false);
                     return (now < dateTime, timeToWait);
                 }
@@ -142,7 +139,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
                 var recastDate = now.AddSeconds(delaySeconds);
-                var recastDateString = recastDate.ToString("yyyy-MM-dd HH:mm:ss");
+                var recastDateString = RecastTimestamp.Format(recastDate);
                 SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
             }
             // Players
@@ -174,11 +171,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
                 var localName = $"ABILITY_RECAST_ID_{(int)group}";
-                var unlockDate = GetLocalString(activator, localName);
-                if (string.IsNullOrWhiteSpace(unlockDate))
+                if (!TryGetNpcRecastTime(activator, group, out var dateTime))
                     return;
 
-                var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 if (dateTime <= now)
                 {
                     DeleteLocalString(activator, localName);
@@ -192,7 +187,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    SetLocalString(activator, localName, reducedDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                    SetLocalString(activator, localName, RecastTimestamp.Format(reducedDate));
                 }
             }
             else if (GetIsPC(activator) && !GetIsDM(activator))
@@ -231,6 +226,20 @@ namespace SWLOR.Game.Server.Service
 
                 DB.Set(dbPlayer);
             }
+        }
+
+        private static bool TryGetNpcRecastTime(uint creature, RecastGroup group, out DateTime endsAt)
+        {
+            var localName = $"ABILITY_RECAST_ID_{(int)group}";
+            var value = GetLocalString(creature, localName);
+            if (RecastTimestamp.TryParse(value, out endsAt))
+                return true;
+
+            // A malformed local must not interrupt the creature's ability processing.
+            if (!string.IsNullOrEmpty(value))
+                DeleteLocalString(creature, localName);
+
+            return false;
         }
     }
 }

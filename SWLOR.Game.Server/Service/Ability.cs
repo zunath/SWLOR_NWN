@@ -2369,16 +2369,24 @@ namespace SWLOR.Game.Server.Service
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
-            adjustedBaseDamage += Combat.GetAbilityImpactBaseDamageBonus(
-                activator,
-                target,
-                trackedImpact?.Ability,
-                skillType);
-            adjustedBaseDamage += Combat.GetAbilityStatusCategoryDamageBonus(
-                activator,
-                skillType,
-                appliedStatusCategories);
-            var damage = useUnscaledDamage
+            // Control-only casts must stay non-damaging even when a passive adds flat damage.
+            // Weapon abilities still deal their weapon damage when their added damage is zero.
+            var dealsDamage = adjustedBaseDamage > 0 || Combat.IsWeaponSkillType(skillType) ||
+                              trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon ||
+                              trackedImpact?.Ability?.DealsDeferredDamage == true;
+            if (dealsDamage)
+            {
+                adjustedBaseDamage += Combat.GetAbilityImpactBaseDamageBonus(
+                    activator,
+                    target,
+                    trackedImpact?.Ability,
+                    skillType);
+                adjustedBaseDamage += Combat.GetAbilityStatusCategoryDamageBonus(
+                    activator,
+                    skillType,
+                    appliedStatusCategories);
+            }
+            var damage = !dealsDamage ? 0 : useUnscaledDamage
                 ? CalculateUnscaledCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType)
                 : usesNPCStatScaling
                     ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
@@ -2402,7 +2410,7 @@ namespace SWLOR.Game.Server.Service
                 beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
                 effectDamageType,
-                firstHostileAbilityHitDamageBonusApplied: true);
+                firstHostileAbilityHitDamageBonusApplied: dealsDamage);
         }
 
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)

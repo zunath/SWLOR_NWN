@@ -950,8 +950,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
             AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Weapon Accuracy and Force Accuracy ratings shown on the Attributes tab.");
             AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
-            AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "Bonus or penalty applied to Attack when using physical attacks and abilities.");
-            AddStat("Force Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities.");
+            AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "General bonus or penalty applied to Attack, including Force Attack.");
+            AddStat("Force Attack %", FormatPercent(Stat.GetAttackPercentAdjustment(_target, SkillType.Force)), "Combined general and Force-specific Attack bonus or penalty. Already included in Force Attack on the Attributes tab.");
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
             AddStat("Next Ability Crit", FormatPercent(Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)), "Conditional Critical Rate reserved for the next matching ability. It does not affect ordinary auto-attacks and is consumed only when the ability critically hits.");
             AddStat("Assault Gadget Crit", FormatPercent(GetAssaultGadgetCriticalRate()), "Current Assault Gadget ability critical chance before target-specific bonuses. Includes the 5% baseline, Gadget Harness, Tactical Uplink, and other Devices ability bonuses; capped at 50%.");
@@ -1393,7 +1393,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         void IGuiRefreshable<PlayerStatusRefreshEvent>.Refresh(PlayerStatusRefreshEvent payload)
         {
-            if (!GetIsPC(_target))
+            if (!GetIsObjectValid(_target))
                 return;
 
             switch (payload.Type)

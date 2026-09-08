@@ -3410,14 +3410,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 2465,
+    "Line": 2472,
     "Member": "SendCombatImpactResultMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 2484,
+    "Line": 2491,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
@@ -4397,10 +4397,10 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 87,
+    "Line": 94,
     "Member": "SendResourceRestored",
     "Delivery": "Shared transport; policy at caller",
-    "Call": "SendMessageToPC(creature, ColorToken.Combat(BuildResourceRestoredMessage(restored, resource)))"
+    "Call": "SendMessageToPC(receiver, ColorToken.Combat(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerMarket.cs",

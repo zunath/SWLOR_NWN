@@ -93,12 +93,13 @@ public sealed class NamedAnimationPlayback
     public void Stop(uint creature, bool cancelQueuedAnimation = false)
     {
         if (!_runtime.IsValid(creature)) return;
-        // The queued begin action may not have established playback ownership yet. Honor
-        // cancellation before reading its token. Invalid is the native scripted-animation action;
-        // movement and combat may have interrupted the cast and must keep their own actions.
+        var token = _runtime.GetToken(creature);
+        if (!IsCurrent(creature, token)) return;
+        // Only a started, owned clip may cancel its scripted action. An idle creature can
+        // also have unrelated queued script work, so action type alone is not ownership.
         if (cancelQueuedAnimation && _runtime.CurrentAction(creature) == ActionType.Invalid)
             _runtime.ClearActions(creature);
-        Complete(creature, _runtime.GetToken(creature));
+        Complete(creature, token);
     }
 
     /// <summary>Death must clear ownership immediately, without playing a recovery on resurrection.</summary>

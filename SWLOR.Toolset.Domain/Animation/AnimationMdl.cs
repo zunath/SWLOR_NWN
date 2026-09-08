@@ -180,6 +180,10 @@ public static class AnimationMdl
         var bind = rig.Joints.ToDictionary(j => j.Name, j => new MdlNode
             { Name = j.Name, Position = j.Rest.Position, Orientation = j.Rest.Orientation, Scale = j.Rest.Scale }, StringComparer.OrdinalIgnoreCase);
         times.Add(project.Duration);
+        // Exporters can round length and the last controller time differently. Sample the
+        // original curve at length, allowing only float roundoff beyond that endpoint.
+        var endTolerance = Math.Max(0.000001f, project.Duration * 0.000001f);
+        times.RemoveWhere(time => time > project.Duration && time - project.Duration <= endTolerance);
         if (times.Count > AnimationProject.MaxKeyframes || (long)times.Count * rig.Joints.Count > 2_000_000)
             throw new InvalidDataException("Animation contains too many sampled transforms.");
         foreach (var time in times)

@@ -17,6 +17,8 @@ public static class NamedAnimation
     public static void Queue(uint creature, AnimationClip clip, float? durationSeconds = null)
     {
         var duration = Validate(clip, durationSeconds);
+        if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
+            throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         string token = null;
         AssignCommand(creature, () =>
         {
@@ -51,7 +53,10 @@ public static class NamedAnimation
 
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
-    /// <summary>Releases an authored pose; optionally cancels the current scripted animation action.</summary>
+    /// <summary>
+    /// Releases a started authored pose; optionally cancels its current scripted animation action.
+    /// Clips still waiting for their queued begin have not claimed playback ownership.
+    /// </summary>
     public static void Stop(uint creature, bool cancelQueuedAnimation = false) =>
         Playback.Stop(creature, cancelQueuedAnimation);
 

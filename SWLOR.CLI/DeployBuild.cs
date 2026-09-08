@@ -17,10 +17,25 @@ namespace SWLOR.CLI
 
         private readonly HakBuilder _hakBuilder = new();
 
-        public void Process()
+        public void Process(string serverOutputPath = null)
         {
+            // RunCLI builds Release for standalone invocations. Post-build deployment
+            // explicitly passes the initiating build's TargetDir (including Debug/custom output).
+            var source = new DirectoryInfo(string.IsNullOrWhiteSpace(serverOutputPath)
+                ? "../SWLOR.Game.Server/bin/Release/net10.0/"
+                : serverOutputPath);
+            foreach (var filename in new[]
+                     {
+                         "SWLOR.Game.Server.dll", "SWLOR.Game.Server.deps.json",
+                         "SWLOR.Game.Server.runtimeconfig.json"
+                     })
+            {
+                if (!File.Exists(Path.Combine(source.FullName, filename)))
+                    throw new FileNotFoundException($"Server build output is incomplete: {Path.Combine(source.FullName, filename)}");
+            }
+
             CreateDebugServerDirectory();
-            CopyBinaries();
+            CopyBinaries(source);
             BuildHaks();
             BuildModule();
         }
@@ -43,13 +58,10 @@ namespace SWLOR.CLI
                 MaterialNameNullTweakValue);
         }
 
-        private void CopyBinaries()
+        private void CopyBinaries(DirectoryInfo source)
         {
-            var binPath = "../SWLOR.Game.Server/bin/Release/net10.0/";
-
-            var source = new DirectoryInfo(binPath);
             var target = new DirectoryInfo(DotnetPath);
-
+            Console.WriteLine($"Deploying server binaries: {source.FullName} -> {target.FullName}");
             CopyAll(source, target, string.Empty);
         }
 

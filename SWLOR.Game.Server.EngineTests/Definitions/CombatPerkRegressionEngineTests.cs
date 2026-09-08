@@ -245,6 +245,34 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { Combat.SetAbilityHitResolutionOverride(null); }
         }
 
+        [EngineTest("Repeated damage uses captured bonuses once and preserves newer bonuses", Category = "CombatPerkRegression", TimeoutSeconds = 15f)]
+        public static async Task RepeatedDamageUsesCapturedBonuses(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var target = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            Prepare(ctx, target);
+            ctx.MakeHostile(target);
+            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            var ability = new AbilityDetail { SkillType = SkillType.Force, IsHostileAbility = true,
+                ActivationType = AbilityActivationType.Casted };
+            Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
+            Ability.BeginAbilityImpact(caster, ability);
+            var pulse = Ability.CaptureRepeatedAbilityImpact(caster, () => Ability.ApplyCombatImpact(
+                caster, target, GetLocation(target), SkillType.Force, 10, 0, null, false,
+                resolvesHit: false, canCritical: false, useUnscaledDamage: true), baseDamage: 10);
+            Ability.EndAbilityImpact(caster);
+            Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 101, 0, 120);
+            await ctx.ExecuteInCreatureContextAsync(caster, pulse);
+            var first = Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
+            await ctx.ExecuteInCreatureContextAsync(caster, pulse);
+            var second = Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
+            ctx.Assert(first > second && second > 0, "Only the first impacting pulse uses the captured damage");
+            ctx.AssertEqual(101, Combat.ConsumeNextSkillAbilityBonuses(caster, SkillType.Force).DamageBonus,
+                "Pulses preserve bonuses granted after the originating cast");
+        }
+
         [EngineTest("Force Choke applies its full scaled damage budget over thirty seconds", Category = "CombatPerkRegression", TimeoutSeconds = 55f)]
         public static async Task ForceChokeDamageBudget(EngineTestContext ctx)
         {
@@ -296,6 +324,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "Choke applies the hostile-hit damage bonus despite having no immediate base damage");
                 ctx.AssertEqual(0, Combat.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "Choke consumes the applied First Strike stack");
+                Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
+                Ability.BeginAbilityImpact(caster, choke);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => choke.ImpactAction(caster, targets[0], 1, GetLocation(targets[0])));
+                }
+                finally { Ability.EndAbilityImpact(caster); }
+                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
+                    "Choke applies captured flat damage even without a separate base-damage rider");
             }
             finally { Combat.SetAbilityHitResolutionOverride(null); }
         }

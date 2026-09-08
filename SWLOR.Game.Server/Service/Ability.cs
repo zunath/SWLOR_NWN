@@ -247,11 +247,13 @@ namespace SWLOR.Game.Server.Service
 
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence);
+                GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
                 {
                     impactAction();
                     var summary = EndAbilityImpact(activator);
+                    originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 }
@@ -2452,6 +2454,20 @@ namespace SWLOR.Game.Server.Service
                    ability?.DealsDeferredDamage == true;
         }
 
+        private static bool HasCombatImpactDamage(int baseDamage, int capturedDamageBonus, bool usesWeaponDamage)
+        {
+            return baseDamage > 0 || capturedDamageBonus > 0 || usesWeaponDamage;
+        }
+
+        /// <summary>
+        /// Adds this impact's captured flat bonus to an already-scaled damage payload before
+        /// target mitigation. Control-only payloads remain zero.
+        /// </summary>
+        public static int ApplyCapturedAbilityDamageBonus(uint activator, int damage)
+        {
+            return damage > 0 ? damage + (GetTrackedAbilityImpact(activator)?.NextAbilityDamageBonus ?? 0) : 0;
+        }
+
         private static void PrepareCombatImpactDamageBonuses(uint activator, int baseDamage)
         {
             var impact = GetTrackedAbilityImpact(activator);
@@ -2657,10 +2673,10 @@ namespace SWLOR.Game.Server.Service
             int baseDamage,
             CombatDamageType damageType)
         {
-            if (baseDamage <= 0)
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0, false))
                 return 0;
 
-            var trackedImpact = GetTrackedAbilityImpact(activator);
             var damage = baseDamage + (trackedImpact?.NextAbilityDamageBonus ?? 0);
             damage = Combat.ApplyDamageDealtModifiers(
                 activator,
@@ -2698,9 +2714,8 @@ namespace SWLOR.Game.Server.Service
             var usesQueuedNaturalWeapon =
                 trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
                 skillType == SkillType.BeastMastery;
-            if (baseDamage <= 0 &&
-                !Combat.IsWeaponSkillType(skillType) &&
-                !usesQueuedNaturalWeapon)
+            if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
+                    Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {
                 return 0;
             }
@@ -2930,9 +2945,8 @@ namespace SWLOR.Game.Server.Service
             var usesQueuedNaturalWeapon =
                 trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
                 skillType == SkillType.BeastMastery;
-            if (baseDamage <= 0 &&
-                !Combat.IsWeaponSkillType(skillType) &&
-                !usesQueuedNaturalWeapon)
+            if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
+                    Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {
                 return 0;
             }
@@ -3393,6 +3407,26 @@ namespace SWLOR.Game.Server.Service
             public Action ResolveDamageBonuses { get; set; }
             public bool DarkForceConversionApplied { get; set; }
             private bool _statusAppliedNextAttackDamageBonusConsumed;
+            private bool _repeatedDamageBonusesConsumed;
+
+            public void CopyRepeatedDamageBonusesFrom(TrackedAbilityImpact source)
+            {
+                if (source._repeatedDamageBonusesConsumed)
+                    return;
+
+                AddDamageBonuses(
+                    source.NextAbilityDamageBonus - source.StatusAppliedNextAttackDamageBonus,
+                    source.NextAbilityCriticalRatePercentAdjustment,
+                    source.NextAbilityDefenseIgnorePercentAdjustment,
+                    source.NextAttackEnmityBonus,
+                    0,
+                    source.NextAbilityCriticalDamagePercentAdjustment);
+            }
+
+            public void CompleteRepeatedDamageBonusImpact(bool impactedTarget)
+            {
+                _repeatedDamageBonusesConsumed |= impactedTarget;
+            }
 
             public void EnsureDamageBonuses()
             {

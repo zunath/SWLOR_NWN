@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyCreepingTerrorDamage(uint activator, uint target, int scaledPulseDamage)
         {
-            var damage = scaledPulseDamage;
+            var damage = Ability.ApplyCapturedAbilityDamageBonus(activator, scaledPulseDamage);
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
             damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force);
             damage = Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force);

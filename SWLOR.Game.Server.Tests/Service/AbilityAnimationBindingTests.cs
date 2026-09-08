@@ -21,6 +21,27 @@ public class AbilityAnimationBindingTests
     private static AbilityAnimationEntry Entry(params FeatType[] feats) => new("Test", "Test", "Force", Clip, feats);
 
     [Test]
+    [TestCase("ForceSheath")]
+    [TestCase("VeiledStrike")]
+    [TestCase("PathogenStrike")]
+    [TestCase("VirulentBlade")]
+    public void QueuedMeleeRanksUseTheirClipDespiteUnusedImpactAnimationMetadata(string id)
+    {
+        var type = typeof(IAbilityListDefinition).Assembly.GetTypes().Single(type => type.Name == id + "AbilityDefinition");
+        var abilities = ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities();
+        var entry = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == id);
+        AbilityAnimationBinding.Apply(abilities, new[] { entry });
+        abilities.Should().NotBeEmpty();
+        foreach (var ability in abilities.Values)
+        {
+            ability.ActivationType.Should().Be(AbilityActivationType.Weapon);
+            ability.ImpactAnimationType.Should().Be(Animation.DoubleStrike);
+            ability.QueuedAttackAnimation.Should().BeSameAs(entry.Clip);
+            ability.AuthoredAnimation.Should().BeNull("queued hit resolution must not append an extra cast or impact swing");
+        }
+    }
+
+    [Test]
     public void InstantBlazingSpikesKeepsNativePlaybackInsteadOfAddingAFullClipToTheActionQueue()
     {
         var abilities = new BlazingSpikesAbilityDefinition().BuildAbilities();

@@ -42,8 +42,9 @@ public static class AbilityAnimationBinding
                 ability.AnimationType == Animation.ThrowGrenade ||
                 ability.SkillType is SkillType.Pistol or SkillType.Rifle or SkillType.Throwing or SkillType.Katar ||
                 !string.IsNullOrEmpty(ability.AnimationReplacementAnimationName) ||
-                ability.ImpactAnimationType != Animation.Invalid ||
-                !string.IsNullOrEmpty(ability.ImpactAnimationReplacementAnimationName)) continue;
+                ability.ActivationType != AbilityActivationType.Weapon &&
+                (ability.ImpactAnimationType != Animation.Invalid ||
+                 !string.IsNullOrEmpty(ability.ImpactAnimationReplacementAnimationName))) continue;
             if (ability.ActivationType == AbilityActivationType.Weapon)
             {
                 // QueuedAttackAnimation owns melee swing keys only. Native ranged fire/throw and

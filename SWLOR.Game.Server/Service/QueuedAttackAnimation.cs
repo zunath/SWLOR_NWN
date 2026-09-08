@@ -42,7 +42,7 @@ public sealed class QueuedAttackAnimationPlayback
     public QueuedAttackAnimationPlayback(INamedAnimationRuntime runtime) => this.runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
 
     public static IReadOnlyList<string> SwingKeys { get; } = Array.AsReadOnly(
-        new[] { "1h", "2h", "2w" }.SelectMany(prefix =>
+        new[] { "1h", "2h", "2w", "pl" }.SelectMany(prefix =>
             new[] { "slashl", "slashr", "slasho", "stab", "closeh", "closel", "reach" }.Select(suffix => prefix + suffix)).ToArray());
 
     public string Begin(uint creature, AnimationClip clip)

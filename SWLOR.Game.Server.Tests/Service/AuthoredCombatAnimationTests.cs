@@ -42,6 +42,22 @@ public class AuthoredCombatAnimationTests
     }
 
     [Test]
+    public void PolearmSwingsPlayQueuedClipsAndRestoreWithoutChangingReadyOrParry()
+    {
+        var runtime = new Runtime();
+        runtime.Maps["plreadyr"] = "native_ready";
+        runtime.Maps["plparryl"] = "native_parry";
+        var playback = new QueuedAttackAnimationPlayback(runtime);
+        var token = playback.Begin(1, AuthoredAnimation.ShieldBash);
+        var swings = new[] { "plslashl", "plslashr", "plslasho", "plstab", "plcloseh", "plclosel", "plreach" };
+        foreach (var swing in swings) runtime.Maps[swing].Should().Be(AuthoredAnimation.ShieldBash.Name);
+        playback.Complete(1, token);
+        foreach (var swing in swings) runtime.Maps[swing].Should().BeEmpty();
+        runtime.Maps["plreadyr"].Should().Be("native_ready");
+        runtime.Maps["plparryl"].Should().Be("native_parry");
+    }
+
+    [Test]
     public void QueuedSwingsRestoreOnConsumptionAndIgnoreSupersededTimeouts()
     {
         var runtime = new Runtime(); var playback = new QueuedAttackAnimationPlayback(runtime);

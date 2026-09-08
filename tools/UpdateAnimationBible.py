@@ -149,9 +149,49 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict]):
         added = ET.fromstring(f'<row xmlns="{NS["s"]}" r="{last}">' +
             ''.join(cell(c, last, v, style(c)) for c, v in values.items()) + '</row>')
         rows.append(serialize_row(added))
-    xml = re.sub(r'<sheetData\b[^>]*>.*?</sheetData>', '<sheetData>' + ''.join(rows) + '</sheetData>', xml, flags=re.S)
-    xml = re.sub(r'<dimension\b[^>]*/>', f'<dimension ref="A1:I{last}"/>', xml)
-    xml = re.sub(r'(<autoFilter\b[^>]*\bref=")[^"]+', lambda m: m[1] + f'A1:I{last}', xml)
+    # ElementTree reads both default and explicit spreadsheet prefixes. Replace exactly the
+    # corresponding serialized sheetData element; never report success on a zero-match edit.
+    prefixes = {prefix + ":" if prefix else "" for _, (prefix, uri) in
+                ET.iterparse(io.StringIO(xml), events=("start-ns",)) if uri == NS["s"]}
+    tag_prefix = "(?:" + "|".join(re.escape(prefix) for prefix in sorted(prefixes)) + ")"
+    pattern = rf'<(?P<data_tag>{tag_prefix}sheetData)\b[^>]*(?:/>|>.*?</(?P=data_tag)\s*>)'
+    def replace_sheet_data(match):
+        opening = match[0].split(">", 1)[0]
+        if opening.endswith("/"):
+            opening = opening[:-1]
+        return opening + ">" + ''.join(rows) + '</' + match["data_tag"] + '>'
+
+    xml, replacements = re.subn(pattern, replace_sheet_data, xml, flags=re.S)
+    if replacements != 1:
+        raise ValueError("Expected exactly one spreadsheet sheetData element")
+
+    # Retained cells outside the managed A:I columns still belong to the worksheet's
+    # used range. Preserve an existing larger range as well as newly added rows.
+    def column_number(letters):
+        result = 0
+        for letter in letters:
+            result = result * 26 + ord(letter) - ord("A") + 1
+        return result
+
+    used_column, used_row = 9, last
+    references = [c.get("r", "") for row in rows for c in ET.fromstring(row).findall("s:c", NS)]
+    dimension = root.find("s:dimension", NS)
+    if dimension is not None:
+        references.extend(dimension.get("ref", "").split(":"))
+    for reference in references:
+        match = re.fullmatch(r"([A-Z]+)([1-9][0-9]*)", reference)
+        if match:
+            used_column = max(used_column, column_number(match[1]))
+            used_row = max(used_row, int(match[2]))
+    letters = ""
+    while used_column:
+        used_column, remainder = divmod(used_column - 1, 26)
+        letters = chr(ord("A") + remainder) + letters
+    dimension_ref = f"A1:{letters}{used_row}"
+    xml = re.sub(rf'(<{tag_prefix}dimension\b[^>]*\bref=")[^"]+',
+                 lambda m: m[1] + dimension_ref, xml)
+    xml = re.sub(rf'(<{tag_prefix}autoFilter\b[^>]*\bref=")[^"]+',
+                 lambda m: m[1] + f'A1:I{last}', xml)
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w") as dest:
         for info in infos:

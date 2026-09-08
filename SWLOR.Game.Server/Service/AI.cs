@@ -227,6 +227,15 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureBlockedAfter)]
         public static void CreatureBlocked()
         {
+            var creature = OBJECT_SELF;
+            if (!IsAIEnabled(creature) ||
+                IsLeashEvading(creature) ||
+                GetObjectType(GetBlockingDoor()) != ObjectType.Creature)
+            {
+                return;
+            }
+
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -867,6 +876,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            StopCombatAfterProximityLoss(enemy);
+        }
+
+        public static void StopCombatAfterProximityLoss(uint enemy)
+        {
             NPCAI.ClearState(enemy);
             if (TryReturnHomeAfterCombat(enemy))
                 return;

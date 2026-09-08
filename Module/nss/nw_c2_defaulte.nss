@@ -24,15 +24,11 @@ void main()
         SetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED", GetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED") + 1);
         if (GetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED") > 3)
         {
-            //SpeakString("Blocked by creature");
             SetLocalInt(OBJECT_SELF, "X2_NUMTIMES_BLOCKED",0);
             ClearAllActions();
-            object oEnemy = GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY);
-            if (GetIsObjectValid(oEnemy) == TRUE)
-            {
-                ActionEquipMostDamagingRanged(oEnemy);
-                ActionAttack(oEnemy);
-            }
+            // Resume an existing fight through the server's enmity system.
+            // Being blocked must not acquire a new hostile target.
+            ExecuteScript("crea_block_aft", OBJECT_SELF);
             return;
         }
         return;

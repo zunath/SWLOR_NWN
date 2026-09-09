@@ -121,6 +121,8 @@ try
         var source = new MdlReader().Parse(ReadBytes(args[1]));
         var sourceRig = AnimationProject.FromModel(source);
         MdlModel? overlay = null;
+        string? overlayPath = null;
+        long loadedBankBytes = 0;
         AnimationRegistration[]? registry = null;
         var equipment = new List<(string Bone, MdlModel Model)>();
         for (var i = 4; i < args.Length; i++)
@@ -130,7 +132,13 @@ try
             {
                 var option = args[i];
                 if (++i == args.Length) throw new ArgumentException(option + " requires a path.");
-                if (option == "--overlay") overlay = new MdlReader().Parse(ReadBytes(args[i]));
+                if (option == "--overlay")
+                {
+                    overlayPath = Path.GetFullPath(args[i]);
+                    var bytes = ReadBytes(overlayPath);
+                    loadedBankBytes = bytes.Length;
+                    overlay = new MdlReader().Parse(bytes);
+                }
                 else registry = JsonSerializer.Deserialize<AnimationRegistration[]>(await ReadText(args[i]));
                 continue;
             }
@@ -140,6 +148,30 @@ try
             equipment.Add((bone, new MdlReader().Parse(ReadBytes(args[i]))));
         }
         if ((overlay == null) != (registry == null)) throw new ArgumentException("Installed rendering requires both --overlay and --registry.");
+        InstalledMotionLibrary? installed = null;
+        if (overlay != null)
+        {
+            var folder = Path.GetDirectoryName(overlayPath!)!;
+            var repository = new DirectoryInfo(folder);
+            while (repository != null && !File.Exists(Path.Combine(repository.FullName, "Build", "hakbuilder.json")))
+                repository = repository.Parent;
+            // Repository overlays follow mounted resource precedence. Standalone exports
+            // resolve their parent banks beside the explicitly supplied overlay file.
+            var adjacent = repository == null ? Directory.EnumerateFiles(folder)
+                .Where(path => Path.GetExtension(path).Equals(".mdl", StringComparison.OrdinalIgnoreCase))
+                .ToDictionary(path => Path.GetFileNameWithoutExtension(path), StringComparer.OrdinalIgnoreCase) : null;
+            installed = new InstalledMotionLibrary(overlay, name =>
+            {
+                var path = repository != null ? AnimationInstall.FindTargetSource(repository.FullName, name)
+                    : adjacent!.GetValueOrDefault(name);
+                if (path == null) return null;
+                var bytes = ReadBytes(path);
+                loadedBankBytes += bytes.Length;
+                if (loadedBankBytes > AnimationInstall.MaximumInputBytes)
+                    throw new InvalidDataException("Installed animation banks exceed the rendering input budget.");
+                return new MdlReader().Parse(bytes);
+            });
+        }
         using var manifest = JsonDocument.Parse(await ReadText(Path.Combine(args[2], "manifest.json")));
         var poses = new List<object>();
         foreach (var entry in manifest.RootElement.GetProperty("Animations").EnumerateArray())
@@ -148,6 +180,9 @@ try
             var activity = entry.TryGetProperty("Activity", out var activityValue) ? activityValue.GetString() : null;
             AnimationProject.ValidateToken(id, 63);
             var project = AnimationProject.Deserialize(await ReadText(Path.Combine(args[2], id + ".swlanim")));
+            var registered = installed == null ? null : registry!.Single(r => r.Name == id);
+            var resolved = registered == null ? ((MdlModel Owner, MdlAnimation Animation)?)null
+                : installed!.Resolve(registered.AnimationName);
             var snapshots = new List<object>();
             var beats = entry.GetProperty("Beats").EnumerateArray().ToArray();
             var times = args.Contains("--frames")
@@ -161,9 +196,7 @@ try
                 if (overlay == null) pose = project.Sample(time);
                 else
                 {
-                    var registered = registry!.Single(r => r.Name == id);
-                    var animation = overlay.Animations.Single(a => a.Name == registered.AnimationName);
-                    var sampled = MdlAnimationPose.Sample(animation, time, MdlAnimationPose.BindPose(source));
+                    var sampled = MdlAnimationPose.Sample(resolved!.Value.Animation, time, MdlAnimationPose.BindPose(source));
                     // NWN scales inherited translations for the target model. Render the installed
                     // clip against that model, rather than reusing the authored project's transforms.
                     pose = sampleRig.Joints.Select(j => sampled.TryGetValue(j.Name, out var p)
@@ -196,7 +229,7 @@ try
                         .49f * MathF.Sin(i * MathF.PI / 4), .29f * MathF.Cos(i * MathF.PI / 4)))).ToArray(), EquipmentMeshes = equipment.Count > 0 });
             }
             poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), Activity = activity, project.Duration,
-                PoseSource = overlay == null ? "Editable project" : "Installed MDL: " + overlay.Name, Snapshots = snapshots });
+                PoseSource = resolved == null ? "Editable project" : "Installed MDL: " + resolved.Value.Owner.Name, Snapshots = snapshots });
         }
         var renderOutput = Path.GetFullPath(args[3]);
         Directory.CreateDirectory(Path.GetDirectoryName(renderOutput)!);

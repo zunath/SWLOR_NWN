@@ -263,7 +263,10 @@ dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll r
 ```
 
 Add `--overlay SWLOR_Haks/sw_cr_creature/an_a_ba.mdl --registry design/animations/registry.json`
-to sample the installed animation file against the target model's skeleton and animation scale.
+to sample installed clips against the target model's skeleton and animation scale. The renderer
+follows the overlay's supermodel chain, so a manifest may span several rebalanced banks; each
+clip's `PoseSource` identifies the bank that supplied it. Repository overlays resolve parent
+resources through the configured HAK layers; standalone exports resolve sibling MDL files.
 For female validation use `a_fa.mdl` and `an_a_fa.mdl`. These are offline renders of game assets;
 they do not verify the live client's playback, model cache, equipment choice, or transitions.
 

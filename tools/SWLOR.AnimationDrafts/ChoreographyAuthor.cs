@@ -185,9 +185,13 @@ internal static class ChoreographyAuthor
             var weightShift = first.RootOffset != null || second.RootOffset != null;
             // A held source phase contains no native in-between motion. Preserve the
             // previously reviewed interpolation unless a weight shift was authored.
+            // Directed decreasing phases reset to an earlier pose for recovery or
+            // another action. Blend those poses, retaining legacy native reverse
+            // playback only when neither endpoint supplies hand/torso direction.
+            var directed = first.LeftHand != null || second.LeftHand != null || first.RightHand != null || second.RightHand != null ||
+                first.TorsoDegrees != null || second.TorsoDegrees != null;
             var nativeSpan = first.SourceAnimation == second.SourceAnimation && first.SourceModel == second.SourceModel &&
-                (weightShift || first.SourceTime != second.SourceTime || first.LeftHand == null && second.LeftHand == null &&
-                    first.RightHand == null && second.RightHand == null && first.TorsoDegrees == null && second.TorsoDegrees == null);
+                (!directed || second.SourceTime >= first.SourceTime && (weightShift || first.SourceTime != second.SourceTime));
             if (nativeSpan) pose = Native(first.SourceAnimation, float.Lerp(first.SourceTime, second.SourceTime, fraction), first.SourceModel);
             else
             {

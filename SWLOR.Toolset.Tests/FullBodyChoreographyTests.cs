@@ -104,6 +104,111 @@ public class FullBodyChoreographyTests
         }
     }
 
+    [TestCase(false, 1f, 0f)]
+    [TestCase(true, 1f, 0f)]
+    [TestCase(false, .8f, .2f)]
+    [TestCase(true, .8f, .2f)]
+    public void ResetSourcePhasesRecoverDirectlyWithoutReplayingTheAttack(bool shiftWeight, float firstPhase, float lastPhase)
+    {
+        var model = NativeModel();
+        var rig = AnimationProject.FromModel(model);
+        var idle = MdlAnimationPose.Sample(model.Animations.Single(clip => clip.Name == "pause1"), 0, MdlAnimationPose.BindPose(model));
+        var source = new MdlNode { Name = "test_attack" };
+        foreach (var joint in rig.Joints)
+        {
+            var rest = idle.GetValueOrDefault(joint.Name, joint.Rest);
+            var node = new MdlNode { Name = joint.Name, PositionTimes = [0], PositionValues = [rest.Position],
+                OrientationTimes = [0], OrientationValues = [rest.Orientation], ScaleTimes = [0], ScaleValues = [rest.Scale] };
+            if (joint.Name == "rforearm_g")
+            {
+                Quaternion Turn(float degrees) => Quaternion.Normalize(rest.Orientation * Quaternion.CreateFromAxisAngle(Vector3.UnitX, degrees * MathF.PI / 180));
+                node.OrientationTimes = [0, .2f, .5f, .8f, 1];
+                node.OrientationValues = [Turn(0), Turn(0), Turn(90), Turn(20), Turn(20)];
+            }
+            source.Children.Add(node);
+        }
+        model.Animations.Add(new MdlAnimation { Name = "test_attack", Length = 1, GeometryRoot = source });
+        var idlePose = rig.Joints.Select(joint => idle.GetValueOrDefault(joint.Name, joint.Rest)).ToArray();
+        var idleWorld = AnimationRig.World(rig.Joints, idlePose);
+        var hand = rig.Joints.FindIndex(joint => joint.Name == "lhand_g");
+        var handTarget = idleWorld[hand].Translation + new Vector3(0, .025f, .01f);
+        var recipe = new Choreography("RecoverAttack", "Return directly from follow-through to ready, without repeating the attack in reverse.", 1.4f,
+            [new(0, "Idle", "pause1"),
+                new(.2f, "Follow through", "test_attack", firstPhase, RootOffset: shiftWeight ? [.02f, .025f, -.03f] : null),
+                new(1.2f, "Ready", "test_attack", lastPhase, LeftHand: [handTarget.X, handTarget.Y, handTarget.Z],
+                    RootOffset: shiftWeight ? [-.015f, .015f, -.02f] : null),
+                new(1.4f, "Idle", "pause1")]);
+        var project = ChoreographyAuthor.Bake(model, recipe);
+        var elbow = rig.Joints.FindIndex(joint => joint.Name == "rforearm_g");
+        var previousAngle = 21f;
+        foreach (var key in project.Keys.Where(key => key.Time >= .2f && key.Time <= 1.2f))
+        {
+            var angle = 2 * MathF.Acos(Math.Clamp(Math.Abs(Quaternion.Dot(Quaternion.Normalize(key.Pose[elbow].Orientation),
+                Quaternion.Normalize(idlePose[elbow].Orientation))), 0, 1)) * 180 / MathF.PI;
+            angle.Should().BeLessThanOrEqualTo(previousAngle + .01f,
+                "recovery must lower the forearm monotonically, without visiting the source attack's 90-degree interior pose");
+            previousAngle = angle;
+            if (!shiftWeight) continue;
+            var world = AnimationRig.World(project.Joints, key.Pose);
+            foreach (var name in new[] { "lfoot_g", "rfoot_g" })
+            {
+                var foot = rig.Joints.FindIndex(joint => joint.Name == name);
+                Vector3.Distance(world[foot].Translation, idleWorld[foot].Translation).Should().BeLessThan(.001f,
+                    "resetting a source phase must still compensate the authored body shift at the planted feet");
+            }
+        }
+        Vector3.Distance(AnimationRig.World(project.Joints, project.Sample(1.2f))[hand].Translation, handTarget).Should().BeLessThan(.001f);
+        foreach (var key in project.Keys)
+            Math.Abs(Quaternion.Dot(key.Pose[hand].Orientation, idlePose[hand].Orientation)).Should().BeGreaterThan(.99999f,
+                "the direct recovery and hand fade must preserve the local equipment grip");
+    }
+
+    [Test]
+    public void QuickDrawLowersTheMuzzleWithoutReplayingTheShotBackward()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln"))) directory = directory.Parent;
+        var root = directory?.FullName ?? throw new DirectoryNotFoundException();
+        var recipe = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(root, "design/animations/pistol/choreographies.json")))
+            .Single(entry => entry.Id == "QuickDraw");
+        var sources = recipe.Beats.Where(beat => beat.SourceModel != null).Select(beat => beat.SourceModel!).Distinct()
+            .ToDictionary(name => name, name => new MdlReader().Parse(File.ReadAllBytes(Path.Combine(root, "SWLOR_Haks/sw_cr_creature", name + ".mdl"))));
+        var project = ChoreographyAuthor.Bake(NativeModel(), recipe, sources);
+        var recover = recipe.Beats.Single(beat => beat.Label == "Recover sight line");
+        var lower = recipe.Beats.Single(beat => beat.Label == "Lower muzzle");
+        recover.SourceTime.Should().BeGreaterThan(lower.SourceTime, "this recipe must exercise a reset from the completed shot to its ready pose");
+        var forearm = project.Joints.FindIndex(joint => joint.Name == "rforearm_g");
+        var first = Quaternion.Normalize(project.Sample(recover.Time)[forearm].Orientation);
+        var next = Quaternion.Normalize(project.Sample(recover.Time + 1 / 30f)[forearm].Orientation);
+        var angle = 2 * MathF.Acos(Math.Clamp(Math.Abs(Quaternion.Dot(first, next)), 0, 1)) * 180 / MathF.PI;
+        TestContext.Progress.WriteLine($"QuickDraw forearm recovery, first 33 ms: {angle:F3} degrees.");
+        angle.Should().BeLessThan(10, "lowering the muzzle must not replay the native recoil backward by over 40 degrees in the first 33 ms");
+        var hand = project.Joints.FindIndex(joint => joint.Name == "rhand_g");
+        Vector3.Distance(AnimationRig.World(project.Joints, project.Sample(lower.Time))[hand].Translation,
+            new Vector3(lower.RightHand![0], lower.RightHand[1], lower.RightHand[2])).Should().BeLessThan(.005f,
+                "the recovery must reach its authored lowered-muzzle target, allowing the existing ground-clearance correction");
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void UndirectedNativeReverseMotionRemainsAvailable(bool shiftWeight)
+    {
+        var model = NativeModel();
+        var recipe = new Choreography("ReverseNative", "Use a native downward action in reverse to create a rising strike.", 1.4f,
+            [new(0, "Idle", "pause1"), new(.2f, "Low", "2hslashr", 1, RootOffset: shiftWeight ? [0, 0, -.015f] : null),
+                new(1.2f, "Rise", "2hslashr", 0, RootOffset: shiftWeight ? [0, 0, -.015f] : null), new(1.4f, "Idle", "pause1")]);
+        var project = ChoreographyAuthor.Bake(model, recipe);
+        var native = model.Animations.Single(clip => clip.Name == "2hslashr");
+        var bind = MdlAnimationPose.BindPose(model);
+        var forearm = project.Joints.FindIndex(joint => joint.Name == "rforearm_g");
+        foreach (var key in project.Keys.Where(key => key.Time >= .2f && key.Time <= 1.2f))
+        {
+            var expected = MdlAnimationPose.Sample(native, (1 - (key.Time - .2f)) * native.Length, bind);
+            Math.Abs(Quaternion.Dot(key.Pose[forearm].Orientation, expected["rforearm_g"].Orientation)).Should().BeGreaterThan(.99999f,
+                "pure native phase traversal is an existing authoring feature, including rising strikes and loop wraps");
+        }
+    }
+
     [Test]
     public void AnUnreachableBodyLiftIsRestrictedInsteadOfDraggingTheFeet()
     {

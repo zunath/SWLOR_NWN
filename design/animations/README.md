@@ -111,9 +111,11 @@ within `SourceAnimation`. An optional per-beat `SourceModel` selects another mod
 The recipe-level `InPlace` option removes horizontal root travel for a stationary preview,
 while preserving vertical motion and joint rotations; native gameplay still owns movement.
 Optional `LeftHand` and `RightHand` targets use absolute model-space
-metres; `TorsoDegrees` supplies the torso adjustment. Spans using the same native animation
-continue sampling its intermediate motion even when hand or torso controls are present.
-This retains the underlying leg, hip, and recoil movement instead of blending only two poses.
+metres; `TorsoDegrees` supplies the torso adjustment. Forward spans using the same native
+animation continue sampling its intermediate motion even when hand or torso controls are
+present. This retains the underlying leg, hip, and recoil movement. When a directed span
+resets to an earlier source phase, it blends the endpoint poses for recovery. Spans without
+hand or torso controls retain native reverse playback for deliberate rising cuts and loop wraps.
 Hand direction retains the native local wrist grip for equipped weapons. When a hand target
 starts or ends, the arm rotations blend between the native pose and the solved target pose
 so the constraint does not snap the arm into position.

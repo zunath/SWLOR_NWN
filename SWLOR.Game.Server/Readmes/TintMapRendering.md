@@ -221,6 +221,30 @@ vertex attributes before any generated resource is installed. Run
 `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRobe*.py"` for focused
 regressions, and run the complete generator for corpus validation.
 
+Robe generation is a deterministic Python batch; it does not call an AI service.
+Ordinary separate robes can inherit animation from their phenotype supermodel.
+The RGB roots described above additionally contain independent garment skeletons:
+changing only their supermodel would leave the renamed garment joints without
+their animation tracks. A catalog audit found different shared-bone rest transforms
+in 1,517 of 1,596 original robes, plus cloth bones and local animation overrides.
+Do not remove those tracks or merge skeletons without compiled binding and motion
+validation; a matching joint name alone is insufficient for this conversion.
+
+Run `python -B tools/GenerateRobeRgbModels.py --apply --game-data "<NWN data>"`
+from `SWLOR_Haks`. A current catalog exits after verifying all repository and stock
+source/output hashes. `--force` bypasses that no-op for an explicit generation run.
+The generator writes `model_builds` records only after validation succeeds. Reuse
+requires exact generated source, compiler, immediate compiled parent, validation
+code, original inverse-bind source, canonical body, and owned output hashes. An
+edited source, output, compiler, or validator invalidates the corresponding proof.
+Whole-chain body-pose checks still run during generation even when models are reused.
+Each shared bridge source is generated once, then its model-name token is replaced
+for the allocated resource; controller curves are not regenerated a second time.
+The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared
+with approximately 121 minutes for the preceding full rebuild. This is a no-op
+measurement, not a changed-build benchmark. All 3,256 compiled outputs remained
+byte-identical when adopting the validated build cache.
+
 The legacy model compiler adds inverse local translations without composing
 their rotations. A rotated skin beneath a translated parent therefore receives
 incorrect inverse bone translations; robe 116 was displaced by roughly 1.7m

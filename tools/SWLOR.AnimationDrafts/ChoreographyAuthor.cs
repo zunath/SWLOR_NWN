@@ -90,14 +90,26 @@ internal static class ChoreographyAuthor
                 if (start == null && finish == null || blend == 0 && start == null || blend == 1 && finish == null) continue;
                 var hand = Joint(name);
                 var grip = pose[hand].Orientation;
-                var nativePosition = AnimationRig.World(rig.Joints, pose)[hand].Translation;
-                var position = Vector3.Lerp(start == null ? nativePosition : V(start), finish == null ? nativePosition : V(finish), blend);
+                var world = AnimationRig.World(rig.Joints, pose);
+                var influence = start == null ? blend : finish == null ? 1 - blend : 1;
+                // A missing target means native arm motion. Solve the full authored
+                // target, then fade the arm rotations as a layer; moving the target
+                // first would ease it twice and still snap the elbow's bend plane.
+                var position = start == null ? V(finish!) : finish == null ? V(start) : Vector3.Lerp(V(start), V(finish), blend);
                 // Elbows remain below the wrist, with a stable lateral bend plane.
-                var shoulder = rig.Joints[rig.Joints[hand].Parent].Parent;
-                var shoulderHeight = AnimationRig.World(rig.Joints, pose)[shoulder].Translation.Z;
+                var elbow = rig.Joints[hand].Parent;
+                var shoulder = rig.Joints[elbow].Parent;
+                var shoulderHeight = world[shoulder].Translation.Z;
                 var minimumPoleHeight = Math.Min(.85f, shoulderHeight - .18f);
-                pose = AnimationRig.SolveLimb(rig.Joints, pose, hand, position,
-                    new Vector3(side * .48f, .06f, Math.Max(minimumPoleHeight, position.Z - .28f)));
+                var pole = new Vector3(side * .48f, .06f, Math.Max(minimumPoleHeight, position.Z - .28f));
+                var nativeShoulder = pose[shoulder].Orientation;
+                var nativeElbow = pose[elbow].Orientation;
+                pose = AnimationRig.SolveLimb(rig.Joints, pose, hand, position, pole);
+                if (influence < 1)
+                {
+                    pose[shoulder] = pose[shoulder] with { Orientation = Quaternion.Slerp(nativeShoulder, pose[shoulder].Orientation, influence) };
+                    pose[elbow] = pose[elbow] with { Orientation = Quaternion.Slerp(nativeElbow, pose[elbow].Orientation, influence) };
+                }
                 // SolveLimb normally compensates wrist rotation to preserve world orientation.
                 // For equipped characters preserve the sampled native LOCAL grip instead.
                 pose[hand] = pose[hand] with { Orientation = grip };
@@ -224,4 +236,5 @@ internal static class ChoreographyAuthor
         BulkMotionAuthor.ValidateMotion(result, neutral, floor);
         return result;
     }
+
 }

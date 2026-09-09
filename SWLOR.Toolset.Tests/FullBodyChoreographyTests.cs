@@ -158,4 +158,83 @@ public class FullBodyChoreographyTests
         hash.Should().Be(manifest.RootElement.GetProperty("Animations").EnumerateArray().Single(entry => entry.GetProperty("Id").GetString() == recipe.Id)
             .GetProperty("ChoreographySha256").GetString(), "adding an optional authoring control must not invalidate preserved native choreography provenance");
     }
+
+    [Test]
+    public void HandOverridesFadeTheElbowPlaneDuringEntryAndRecoveryWithoutWeakeningFullTargets()
+    {
+        var model = NativeModel();
+        var recipe = new Choreography("SoftEntry", "Raise and lower the hands without snapping the elbows into a different bend plane.", 1.4f,
+            [new(0, "Idle", "pause1"),
+                new(.5f, "Reach", "pause1", LeftHand: [-.21f, .24f, 1.2f], RightHand: [.21f, .24f, 1.2f], RootOffset: [.02f, .02f, -.035f]),
+                new(.9f, "Hold", "pause1", LeftHand: [-.21f, .24f, 1.2f], RightHand: [.21f, .24f, 1.2f], RootOffset: [.02f, .02f, -.035f]),
+                new(1.4f, "Recover", "pause1")]);
+        var project = ChoreographyAuthor.Bake(model, recipe);
+        float Angle(Quaternion a, Quaternion b) => 2 * MathF.Acos(Math.Clamp(Math.Abs(Quaternion.Dot(
+            Quaternion.Normalize(a), Quaternion.Normalize(b))), 0, 1)) * 180 / MathF.PI;
+        foreach (var name in new[] { "lbicep_g", "lforearm_g", "rbicep_g", "rforearm_g" })
+        {
+            var joint = project.Joints.FindIndex(joint => joint.Name == name);
+            Angle(project.Sample(0)[joint].Orientation, project.Sample(1 / 30f)[joint].Orientation).Should().BeLessThan(10,
+                name + " must not switch immediately from its native bend plane to the authored pole");
+            Angle(project.Sample(project.Duration - 1 / 30f)[joint].Orientation, project.Sample(project.Duration)[joint].Orientation)
+                .Should().BeLessThan(10, name + " must fade its bend plane back to native recovery");
+        }
+        var grip = project.Sample(0);
+        foreach (var (name, target) in new[] { ("lhand_g", new Vector3(-.21f, .24f, 1.2f)), ("rhand_g", new Vector3(.21f, .24f, 1.2f)) })
+        {
+            var joint = project.Joints.FindIndex(joint => joint.Name == name);
+            foreach (var time in new[] { .5f, .7f, .9f })
+                Vector3.Distance(AnimationRig.World(project.Joints, project.Sample(time))[joint].Translation, target).Should().BeLessThan(.001f,
+                    "fading a missing endpoint must not weaken fully authored hand contact");
+            foreach (var key in project.Keys)
+                Math.Abs(Quaternion.Dot(key.Pose[joint].Orientation, grip[joint].Orientation)).Should().BeGreaterThan(.99999f,
+                    "elbow blending must not alter the native local wrist grip");
+        }
+    }
+
+    [Test]
+    public void NearlyStraightArmsFadeIntoAndOutOfTheAuthoredPoseWithoutFlipping()
+    {
+        var model = NativeModel();
+        var rig = AnimationProject.FromModel(model);
+        var native = MdlAnimationPose.Sample(model.Animations.Single(clip => clip.Name == "pause1"), 0, MdlAnimationPose.BindPose(model));
+        var idle = rig.Joints.Select(joint => native.GetValueOrDefault(joint.Name, joint.Rest)).ToArray();
+        var world = AnimationRig.World(rig.Joints, idle);
+        var hand = rig.Joints.FindIndex(joint => joint.Name == "rhand_g");
+        var elbow = rig.Joints[hand].Parent; var shoulder = rig.Joints[elbow].Parent;
+        var length = Vector3.Distance(world[shoulder].Translation, world[elbow].Translation) +
+            Vector3.Distance(world[elbow].Translation, world[hand].Translation);
+        var target = world[shoulder].Translation + Vector3.Normalize(world[hand].Translation - world[shoulder].Translation) * (length - .000001f);
+        var recipe = new Choreography("StraightArm", "Reach near full extension and recover smoothly.", 2,
+            [new(0, "Idle", "pause1"), new(1, "Extend", "pause1", RightHand: [target.X, target.Y, target.Z], RootOffset: [0, 0, 0]),
+                new(2, "Recover", "pause1")]);
+        var project = ChoreographyAuthor.Bake(model, recipe);
+        for (var frame = 1; frame <= 240; frame++)
+        foreach (var joint in new[] { shoulder, elbow })
+        {
+            var before = Quaternion.Normalize(project.Sample((frame - 1) / 120f)[joint].Orientation);
+            var after = Quaternion.Normalize(project.Sample(frame / 120f)[joint].Orientation);
+            Math.Abs(Quaternion.Dot(before, after)).Should().BeGreaterThan(.999f,
+                "a nearly collinear arm must not switch abruptly between bend directions");
+        }
+        Vector3.Distance(AnimationRig.World(project.Joints, project.Sample(1))[hand].Translation, target).Should().BeLessThan(.001f);
+    }
+
+    [TestCase("beast-mastery", "CallBeast", 0f, 1 / 30f)]
+    [TestCase("vibroknife", "AssassinsStance", .65f, 2 / 3f)]
+    [TestCase("katar", "GuardCounter", 5 / 6f, .85f)]
+    public void AbilityHandOverrideBoundariesDoNotSnapTheForearm(string category, string id, float before, float after)
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln"))) directory = directory.Parent;
+        var root = directory?.FullName ?? throw new DirectoryNotFoundException();
+        var recipe = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(root, "design/animations", category, "choreographies.json")))
+            .Single(entry => entry.Id == id);
+        var project = ChoreographyAuthor.Bake(NativeModel(), recipe);
+        var joint = project.Joints.FindIndex(joint => joint.Name == "rforearm_g");
+        var first = Quaternion.Normalize(project.Sample(before)[joint].Orientation);
+        var second = Quaternion.Normalize(project.Sample(after)[joint].Orientation);
+        var angle = 2 * MathF.Acos(Math.Clamp(Math.Abs(Quaternion.Dot(first, second)), 0, 1)) * 180 / MathF.PI;
+        angle.Should().BeLessThan(10, id + " previously snapped its forearm by 35–142 degrees when hand control appeared or disappeared");
+    }
 }

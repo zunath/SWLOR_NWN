@@ -114,7 +114,9 @@ Optional `LeftHand` and `RightHand` targets use absolute model-space
 metres; `TorsoDegrees` supplies the torso adjustment. Spans using the same native animation
 continue sampling its intermediate motion even when hand or torso controls are present.
 This retains the underlying leg, hip, and recoil movement instead of blending only two poses.
-Hand direction retains the native local wrist grip for equipped weapons.
+Hand direction retains the native local wrist grip for equipped weapons. When a hand target
+starts or ends, the arm rotations blend between the native pose and the solved target pose
+so the constraint does not snap the arm into position.
 
 Optional per-beat `RootOffset` supplies a body displacement in model-space metres
 (X lateral, Y forward, Z up). Use it to load a stance, drive a release, absorb recoil, or

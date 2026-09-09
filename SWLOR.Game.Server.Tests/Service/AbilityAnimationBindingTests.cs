@@ -42,7 +42,7 @@ public class AbilityAnimationBindingTests
     }
 
     [Test]
-    public void InstantBlazingSpikesKeepsNativePlaybackInsteadOfAddingAFullClipToTheActionQueue()
+    public void InstantBlazingSpikesUsesImmediatePlaybackWithoutAddingACastDelay()
     {
         var abilities = new BlazingSpikesAbilityDefinition().BuildAbilities();
         var ability = abilities[FeatType.BlazingSpikes1];
@@ -52,8 +52,10 @@ public class AbilityAnimationBindingTests
         AbilityAnimationBinding.Apply(abilities, ActiveAbilityAnimationCatalog.Entries.Where(entry => entry.Id == "BlazingSpikes"));
         ability.PreviewAnimation.Should().NotBeNull();
         var window = Math.Max(0, delay - .2f);
-        AbilityAnimationBinding.ActivationClip(ability, true, window).Should().BeNull();
-        AbilityAnimationBinding.ActivationType(ability, true, window).Should().Be(native);
+        ability.UsesImmediateAuthoredAnimation.Should().BeTrue();
+        AbilityAnimationBinding.ActivationClip(ability, true, window).Should().BeSameAs(ability.PreviewAnimation);
+        AbilityAnimationBinding.ActivationClip(ability, false, window).Should().BeNull();
+        AbilityAnimationBinding.ActivationType(ability, false, window).Should().Be(native);
         ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(delay);
     }
 

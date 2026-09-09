@@ -90,126 +90,6 @@
     "ProjectPath": "design/animations/general/Provoke.swlanim"
   },
   {
-    "Name": "AbsoluteDefense",
-    "AnimationName": "sw_abs_defen",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/AbsoluteDefense.swlanim"
-  },
-  {
-    "Name": "BastionStance",
-    "AnimationName": "sw_baststn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/BastionStance.swlanim"
-  },
-  {
-    "Name": "BlazingSpikes",
-    "AnimationName": "sw_blaz_spik",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/BlazingSpikes.swlanim"
-  },
-  {
-    "Name": "Earthshatter",
-    "AnimationName": "sw_earthshtr",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/Earthshatter.swlanim"
-  },
-  {
-    "Name": "Flash",
-    "AnimationName": "sw_flash",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/Flash.swlanim"
-  },
-  {
-    "Name": "FortressStrike",
-    "AnimationName": "sw_fort_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/FortressStrike.swlanim"
-  },
-  {
-    "Name": "Rampart",
-    "AnimationName": "sw_rampart",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/Rampart.swlanim"
-  },
-  {
-    "Name": "SacrificialBlade",
-    "AnimationName": "sw_sacr_blad",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/SacrificialBlade.swlanim"
-  },
-  {
-    "Name": "SoulBurst",
-    "AnimationName": "sw_soulburst",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/SoulBurst.swlanim"
-  },
-  {
-    "Name": "SoulDevourer",
-    "AnimationName": "sw_soul_devo",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/SoulDevourer.swlanim"
-  },
-  {
-    "Name": "SoulStorm",
-    "AnimationName": "sw_soulstorm",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/SoulStorm.swlanim"
-  },
-  {
-    "Name": "SoulStrike",
-    "AnimationName": "sw_soul_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/heavy-vibroblade/SoulStrike.swlanim"
-  },
-  {
     "Name": "AdamantineGuard",
     "AnimationName": "sw_adamguard",
     "Duration": 1.2,
@@ -2838,5 +2718,125 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/force/WeakenResolve.swlanim"
+  },
+  {
+    "Name": "AbsoluteDefense",
+    "AnimationName": "sw_abs_defen",
+    "Duration": 3.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/AbsoluteDefense.swlanim"
+  },
+  {
+    "Name": "BastionStance",
+    "AnimationName": "sw_baststn",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/BastionStance.swlanim"
+  },
+  {
+    "Name": "BlazingSpikes",
+    "AnimationName": "sw_blaz_spik",
+    "Duration": 3.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/BlazingSpikes.swlanim"
+  },
+  {
+    "Name": "Earthshatter",
+    "AnimationName": "sw_earthshtr",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/Earthshatter.swlanim"
+  },
+  {
+    "Name": "Flash",
+    "AnimationName": "sw_flash",
+    "Duration": 2.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/Flash.swlanim"
+  },
+  {
+    "Name": "FortressStrike",
+    "AnimationName": "sw_fort_stri",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/FortressStrike.swlanim"
+  },
+  {
+    "Name": "Rampart",
+    "AnimationName": "sw_rampart",
+    "Duration": 3.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/Rampart.swlanim"
+  },
+  {
+    "Name": "SacrificialBlade",
+    "AnimationName": "sw_sacr_blad",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/SacrificialBlade.swlanim"
+  },
+  {
+    "Name": "SoulBurst",
+    "AnimationName": "sw_soulburst",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/SoulBurst.swlanim"
+  },
+  {
+    "Name": "SoulDevourer",
+    "AnimationName": "sw_soul_devo",
+    "Duration": 3.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/SoulDevourer.swlanim"
+  },
+  {
+    "Name": "SoulStorm",
+    "AnimationName": "sw_soulstorm",
+    "Duration": 3.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/SoulStorm.swlanim"
+  },
+  {
+    "Name": "SoulStrike",
+    "AnimationName": "sw_soul_stri",
+    "Duration": 2.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/heavy-vibroblade/SoulStrike.swlanim"
   }
 ]

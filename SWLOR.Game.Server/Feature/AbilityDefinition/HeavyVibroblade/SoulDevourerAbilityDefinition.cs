@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulDevourer1, PerkType.SoulDevourer)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Soul Devourer")
                 .Level(1)
                 .HasActivationDelay(2f)

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SacrificialBlade1, PerkType.SacrificialBlade)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Sacrificial Blade")
                 .Level(1)
                 .HasActivationDelay(0f)

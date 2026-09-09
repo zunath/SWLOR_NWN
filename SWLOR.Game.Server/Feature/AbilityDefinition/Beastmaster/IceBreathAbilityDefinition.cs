@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -38,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.IceBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
+                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
                 .HasImpactAction(IceBreath1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -56,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.IceBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
+                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
                 .HasImpactAction(IceBreath2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -74,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.IceBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
+                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
                 .HasImpactAction(IceBreath3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

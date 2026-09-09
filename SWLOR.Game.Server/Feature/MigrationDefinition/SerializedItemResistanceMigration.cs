@@ -134,13 +134,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(serializedObject))
                 return false;
 
-            var obj = ObjectPlugin.Deserialize(serializedObject);
+            var obj = MigrationObject.Deserialize(serializedObject);
             if (!GetIsObjectValid(obj))
                 return false;
 
             var wasMigrated = MigrateObject(obj);
             if (wasMigrated)
-                migratedSerializedObject = ObjectPlugin.Serialize(obj);
+                migratedSerializedObject = MigrationObject.Serialize(obj);
 
             DestroyObject(obj);
             return wasMigrated;
@@ -222,16 +222,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in matchingProperties)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
-            BiowareXP2.IPSafeAddItemProperty(
+            MigrationObject.AddProperty(
                 item,
-                ItemPropertyCustom(propertyType, subType, amount),
-                0.0f,
-                AddItemPropertyPolicy.ReplaceExisting,
-                false,
-                false);
+                ItemPropertyCustom(propertyType, subType, amount), AddItemPropertyPolicy.ReplaceExisting);
 
             return true;
         }
@@ -275,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     ip,
                     GetItemPropertyType(ip),
                     GetItemPropertySubType(ip),
-                    GetItemPropertyCostTableValue(ip)));
+                    GetMigrationPropertyValue(GetItemPropertyType(ip), GetItemPropertyCostTableValue(ip))));
             }
 
             var replacements = new Dictionary<(ItemPropertyType Type, int SubType), int>();
@@ -313,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in propertiesToRemove)
             {
-                RemoveItemProperty(item, property);
+                MigrationObject.RemoveProperty(item, property);
             }
 
             foreach (var ((type, subType), value) in replacements)
@@ -322,13 +318,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     ? Resistance.EncodeItemPropertyCostTableValue(value)
                     : value;
 
-                BiowareXP2.IPSafeAddItemProperty(
+                MigrationObject.AddProperty(
                     item,
-                    ItemPropertyCustom(type, subType, costTableValue),
-                    0.0f,
-                    AddItemPropertyPolicy.ReplaceExisting,
-                    false,
-                    false);
+                    ItemPropertyCustom(type, subType, costTableValue), AddItemPropertyPolicy.ReplaceExisting);
             }
 
             return true;
@@ -384,6 +376,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return false;
         }
 
+        private static int GetMigrationPropertyValue(ItemPropertyType type, int costTableValue)
+        {
+            return type == ItemPropertyType.Resistance
+                ? Resistance.DecodeItemPropertyCostTableValue(costTableValue)
+                : costTableValue;
+        }
+
         private static bool ShouldRemoveLegacySavingThrowProperty(ItemPropertyType propertyType)
         {
             return propertyType == ItemPropertyType.SavingThrowBonus ||
@@ -417,13 +416,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 if (existingResistanceSubTypes.Contains(subType))
                     continue;
 
-                BiowareXP2.IPSafeAddItemProperty(
-                    item,
-                    ItemPropertyCustom(ItemPropertyType.DroidStat, (int)subType, 0),
-                    0.0f,
-                    AddItemPropertyPolicy.ReplaceExisting,
-                    false,
-                    false);
+                var zeroResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)subType, 0);
+                // An absent droid resistance is already zero. Some cost tables do
+                // not expose a constructible zero row, so keep the default absent.
+                if (!GetIsItemPropertyValid(zeroResistance))
+                    continue;
+
+                MigrationObject.AddProperty(item, zeroResistance, AddItemPropertyPolicy.ReplaceExisting);
                 wasMigrated = true;
             }
 

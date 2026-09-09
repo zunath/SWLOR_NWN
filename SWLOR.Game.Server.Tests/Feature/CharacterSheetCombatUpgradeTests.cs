@@ -11,6 +11,60 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class CharacterSheetCombatUpgradeTests
 {
     [Test]
+    public void ClosedCharacterSheet_RejectsItsPendingHitPointRefreshBeforeReadingTheEngine()
+    {
+        var viewModel = new CharacterSheetViewModel();
+        viewModel.OnWindowClosed().Invoke();
+
+        // An old callback can arrive after the same view model has been reopened.
+        // It must exit before any native calls, which are unavailable in this test.
+        var refresh = typeof(CharacterSheetViewModel).GetMethod(
+            "RefreshLiveHitPoints", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        Action invokeOldRefresh = () => refresh.Invoke(viewModel, new object[] { 0 });
+
+        invokeOldRefresh.Should().NotThrow();
+    }
+
+    [Test]
+    public void CompanionResources_RefreshOpenTargetSheetsAndReportGainsToTheirOwner()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var viewModel = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
+        var refresh = ExtractMethod(viewModel, "void IGuiRefreshable<PlayerStatusRefreshEvent>.Refresh");
+        refresh.Should().NotContain("GetIsPC(_target)", "inspected beasts must receive resource updates");
+        refresh.Should().Contain("RefreshStats()");
+
+        var publisher = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "PlayerStatusWindow.cs"));
+        foreach (var method in new[] { "public static void PlayerFPAdjusted()", "public static void PlayerSTMAdjusted()" })
+            ExtractMethod(publisher, method).Should().Contain("Gui.PublishCharacterSheetRefreshEvent(player");
+
+        var feedback = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "PlayerFeedback.cs"));
+        var restore = ExtractMethod(feedback, "public static void SendResourceRestored(");
+        restore.Should().Contain("GetMaster(creature)");
+        restore.Should().Contain("SendMessageToPC(receiver");
+        restore.Should().Contain("PlayerName.GetDisplayName(receiver, creature)");
+
+        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var regeneration = ExtractMethod(stats, "private static void RestoreNPCStats(");
+        regeneration.Should().Contain("if (fp != previousFP)");
+        regeneration.Should().Contain("ExecuteScript(\"pc_fp_adjusted\", self)");
+        regeneration.Should().Contain("if (stm != previousSTM)");
+        regeneration.Should().Contain("ExecuteScript(\"pc_stm_adjusted\", self)");
+        regeneration.Should().NotContain("SendResourceRestored", "natural regeneration stays silent");
+    }
+
+    [Test]
+    public void ForceAttackPercentage_UsesTheSameCombinedModifierAsCombat()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var viewModel = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
+        viewModel.Should().Contain("Stat.GetAttackPercentAdjustment(_target, SkillType.Force)");
+        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        ExtractMethod(stats, "private static int ApplyPostAttackStatusModifiers(")
+            .Should().Contain("GetAttackPercentAdjustment(creature, skillType)");
+    }
+
+    [Test]
     public void CharacterSheet_DisplaysDefenseAndResistanceAsSeparateSurfaces()
     {
         var root = FindRepositoryRoot();

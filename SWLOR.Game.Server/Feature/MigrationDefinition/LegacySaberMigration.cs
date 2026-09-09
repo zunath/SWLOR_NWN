@@ -122,21 +122,21 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         {
             var isSaberstaff = GetBaseItemType(item) == BaseItem.Saberstaff;
 
+            var propertiesToRemove = new List<SWLOR.NWN.API.Engine.ItemProperty>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-            {
                 if (NormalizedPropertyTypes.Contains(GetItemPropertyType(ip)))
-                {
-                    RemoveItemProperty(item, ip);
-                }
-            }
+                    propertiesToRemove.Add(ip);
+
+            foreach (var property in propertiesToRemove)
+                MigrationObject.RemoveProperty(item, property);
 
             var damage = isSaberstaff ? SaberstaffTierDamage : LightsaberTierDamage;
             var delay = isSaberstaff ? SaberstaffDelay : LightsaberDelay;
             var skillSubtype = isSaberstaff ? SaberstaffSkillSubtype : LightsaberSkillSubtype;
 
-            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.DMG, -1, damage), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)delay), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.RequiresSkill, skillSubtype, TierRequiredSkill), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.DMG, -1, damage), AddItemPropertyPolicy.ReplaceExisting);
+            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)delay), AddItemPropertyPolicy.ReplaceExisting);
+            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.RequiresSkill, skillSubtype, TierRequiredSkill), AddItemPropertyPolicy.ReplaceExisting);
 
             SetLocalInt(item, SaberTierVariable, NormalizedTier);
         }
@@ -264,18 +264,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(serialized))
                 return false;
 
-            var obj = ObjectPlugin.Deserialize(serialized);
+            var obj = MigrationObject.Deserialize(serialized);
             if (!GetIsObjectValid(obj))
                 return false;
 
-            if (!IsLegacySaber(obj))
+            if (NormalizeSabersOnObject(obj) <= 0)
             {
                 DestroyObject(obj);
                 return false;
             }
 
-            NormalizeSaber(obj);
-            migrated = ObjectPlugin.Serialize(obj);
+            migrated = MigrationObject.Serialize(obj);
             DestroyObject(obj);
             return true;
         }

@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
@@ -15,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class SerializedItemWeaponDamageTypeMigration
     {
+        private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
         private static readonly HashSet<BaseItem> WeaponBaseItemTypes = BuildWeaponBaseItemTypes();
 
@@ -123,13 +126,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(serializedObject))
                 return false;
 
-            var obj = ObjectPlugin.Deserialize(serializedObject);
+            var obj = MigrationObject.Deserialize(serializedObject);
             if (!GetIsObjectValid(obj))
                 return false;
 
             var wasMigrated = MigrateObject(obj);
             if (wasMigrated)
-                migratedSerializedObject = ObjectPlugin.Serialize(obj);
+                migratedSerializedObject = MigrationObject.Serialize(obj);
 
             DestroyObject(obj);
             return wasMigrated;
@@ -174,7 +177,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static bool MigrateItem(uint item)
         {
-            var wasMigrated = MigrateEnhancementItem(item);
+            var wasMigrated = MigrateConstructedDroidLocalVariable(item);
+            wasMigrated |= MigrateEnhancementItem(item);
             var baseItem = GetBaseItemType(item);
             if (!WeaponBaseItemTypes.Contains(baseItem))
                 return wasMigrated;
@@ -218,32 +222,24 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in damageProperties)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
             foreach (var property in damageTypeProperties)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
-            BiowareXP2.IPSafeAddItemProperty(
+            MigrationObject.AddProperty(
                 item,
-                ItemPropertyCustom(ItemPropertyType.DMG, -1, damage),
-                0.0f,
-                AddItemPropertyPolicy.IgnoreExisting,
-                false,
-                false);
+                ItemPropertyCustom(ItemPropertyType.DMG, -1, damage), AddItemPropertyPolicy.IgnoreExisting);
 
             if (!ShouldRemoveWeaponDamageType(baseItem) &&
                 !damageType.IsPhysicalDamageType())
             {
-                BiowareXP2.IPSafeAddItemProperty(
+                MigrationObject.AddProperty(
                     item,
-                    ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType, 0),
-                    0.0f,
-                    AddItemPropertyPolicy.IgnoreExisting,
-                    false,
-                    false);
+                    ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType, 0), AddItemPropertyPolicy.IgnoreExisting);
             }
 
             return true;
@@ -276,16 +272,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in damageProperties)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
-            BiowareXP2.IPSafeAddItemProperty(
+            MigrationObject.AddProperty(
                 item,
-                ItemPropertyCustom(ItemPropertyType.DMG, -1, targetDamage),
-                0.0f,
-                AddItemPropertyPolicy.ReplaceExisting,
-                false,
-                false);
+                ItemPropertyCustom(ItemPropertyType.DMG, -1, targetDamage), AddItemPropertyPolicy.ReplaceExisting);
 
             return true;
         }
@@ -311,16 +303,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in delayProperties)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
-            BiowareXP2.IPSafeAddItemProperty(
+            MigrationObject.AddProperty(
                 item,
-                ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)targetDelayCost.Value),
-                0.0f,
-                AddItemPropertyPolicy.ReplaceExisting,
-                false,
-                false);
+                ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)targetDelayCost.Value), AddItemPropertyPolicy.ReplaceExisting);
 
             return true;
         }
@@ -464,12 +452,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in damageEnhancements)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
             foreach (var property in damageTypeProperties)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
             var selectedEnhancements = damageEnhancements
@@ -489,23 +477,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     ? ConvertRawEnhancementDamage(item, property.Value)
                     : property.Value;
 
-                BiowareXP2.IPSafeAddItemProperty(
+                MigrationObject.AddProperty(
                     item,
-                    ItemPropertyCustom(ItemPropertyType.WeaponEnhancement, (int)EnhancementSubType.DMG, amount),
-                    0.0f,
-                    AddItemPropertyPolicy.IgnoreExisting,
-                    false,
-                    false);
+                    ItemPropertyCustom(ItemPropertyType.WeaponEnhancement, (int)EnhancementSubType.DMG, amount), AddItemPropertyPolicy.IgnoreExisting);
 
                 if (!property.DamageType.IsPhysicalDamageType())
                 {
-                    BiowareXP2.IPSafeAddItemProperty(
+                    MigrationObject.AddProperty(
                         item,
-                        ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)property.DamageType, 0),
-                        0.0f,
-                        AddItemPropertyPolicy.IgnoreExisting,
-                        false,
-                        false);
+                        ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)property.DamageType, 0), AddItemPropertyPolicy.IgnoreExisting);
                 }
             }
 
@@ -571,7 +551,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             {
                 foreach (var property in damageTypeProperties)
                 {
-                    RemoveItemProperty(item, property.Property);
+                    MigrationObject.RemoveProperty(item, property.Property);
                 }
 
                 return true;
@@ -587,19 +567,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in damageTypeProperties)
             {
-                RemoveItemProperty(item, property.Property);
+                MigrationObject.RemoveProperty(item, property.Property);
             }
 
             if (damageType.IsPhysicalDamageType())
                 return damageTypeProperties.Count > 0;
 
-            BiowareXP2.IPSafeAddItemProperty(
+            MigrationObject.AddProperty(
                 item,
-                ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType, 0),
-                0.0f,
-                AddItemPropertyPolicy.IgnoreExisting,
-                false,
-                false);
+                ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType, 0), AddItemPropertyPolicy.IgnoreExisting);
 
             return true;
         }
@@ -695,6 +671,62 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return damageType.IsCharacterDamageType();
         }
 
+        private static bool MigrateConstructedDroidLocalVariable(uint item)
+        {
+            var serialized = GetLocalString(item, ConstructedDroidVariable);
+            if (string.IsNullOrWhiteSpace(serialized))
+                return false;
+
+            var droid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
+            if (droid == null)
+                return false;
+
+            var migrated = false;
+            migrated |= MigrateSerializedObjectField(droid.SerializedCPU, value => droid.SerializedCPU = value);
+            migrated |= MigrateSerializedObjectField(droid.SerializedHead, value => droid.SerializedHead = value);
+            migrated |= MigrateSerializedObjectField(droid.SerializedBody, value => droid.SerializedBody = value);
+            migrated |= MigrateSerializedObjectField(droid.SerializedArms, value => droid.SerializedArms = value);
+            migrated |= MigrateSerializedObjectField(droid.SerializedLegs, value => droid.SerializedLegs = value);
+
+            if (droid.EquippedItems != null)
+            {
+                foreach (var key in droid.EquippedItems.Keys.ToList())
+                {
+                    if (!MigrateSerializedObject(droid.EquippedItems[key], out var migratedValue))
+                        continue;
+
+                    droid.EquippedItems[key] = migratedValue;
+                    migrated = true;
+                }
+            }
+
+            if (droid.Inventory != null)
+            {
+                foreach (var key in droid.Inventory.Keys.ToList())
+                {
+                    if (!MigrateSerializedObject(droid.Inventory[key], out var migratedValue))
+                        continue;
+
+                    droid.Inventory[key] = migratedValue;
+                    migrated = true;
+                }
+            }
+
+            if (!migrated)
+                return false;
+
+            SetLocalString(item, ConstructedDroidVariable, JsonConvert.SerializeObject(droid));
+            return true;
+        }
+
+        private static bool MigrateSerializedObjectField(string serializedObject, Action<string> setSerializedObject)
+        {
+            if (!MigrateSerializedObject(serializedObject, out var migratedSerializedObject))
+                return false;
+
+            setSerializedObject(migratedSerializedObject);
+            return true;
+        }
         private sealed record WeaponDamageScale(
             IReadOnlyCollection<BaseItem> BaseItems,
             IReadOnlyList<int> OldDamage,

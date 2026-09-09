@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Consumes the activator's pending combat bonuses and starts impact tracking,
+        /// Starts impact tracking and defers pending damage bonuses until a damaging payload,
         /// retaining any activation-marker snapshots for the impact flash decision.
         /// </summary>
         public static void BeginAbilityImpact(
@@ -113,40 +113,44 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
-            var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
-            var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
-            var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
-            var persistentCriticalRate = Combat.GetPersistentNextSkillAbilityCriticalRateBonus(
-                activator,
-                abilitySkillType);
-            var queuedWeaponBonuses = ability.ActivationType == AbilityActivationType.Weapon
-                ? Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)
-                : default;
-            var guardedHitBonuses = ability.IsHostileAbility
-                ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
-                : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
-            var statusAppliedNextAttackDamageBonus = ability.IsHostileAbility
-                ? Combat.GetStatusAppliedNextAttackDamageBonus(activator)
-                : 0;
-            BeginAbilityImpact(
-                activator,
-                ability,
-                nextAbilityDamageBonus +
-                nextSkillAbilityBonuses.DamageBonus +
-                guardedHitBonuses.DMGBonus +
-                statusAppliedNextAttackDamageBonus +
-                queuedWeaponBonuses.DamageBonus,
-                nextSkillAbilityBonuses.CriticalRatePercentAdjustment +
-                persistentCriticalRate +
-                queuedWeaponBonuses.CriticalRatePercentAdjustment +
-                guardedHitBonuses.CriticalRatePercentAdjustment,
-                nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
-                guardedHitBonuses.EnmityBonus,
-                statusAppliedNextAttackDamageBonus,
-                countsAsAttackAttempt,
-                queuedWeaponBonuses.CriticalDamagePercentAdjustment,
-                activationAreaTelegraphs,
-                sequence);
+            BeginAbilityImpact(activator, ability, 0, 0,
+                countsAsAttackAttempt: countsAsAttackAttempt,
+                activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            trackedImpact.ResolveDamageBonuses = () =>
+            {
+                var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
+                var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
+                var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+                var persistentCriticalRate = Combat.GetPersistentNextSkillAbilityCriticalRateBonus(
+                    activator,
+                    abilitySkillType);
+                var queuedWeaponBonuses = ability.ActivationType == AbilityActivationType.Weapon
+                    ? Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)
+                    : default;
+                var guardedHitBonuses = ability.IsHostileAbility
+                    ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
+                    : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
+                var statusAppliedNextAttackDamageBonus = ability.IsHostileAbility
+                    ? Combat.GetStatusAppliedNextAttackDamageBonus(activator)
+                    : 0;
+                trackedImpact.AddDamageBonuses(
+                    nextAbilityDamageBonus +
+                    nextSkillAbilityBonuses.DamageBonus +
+                    guardedHitBonuses.DMGBonus +
+                    statusAppliedNextAttackDamageBonus +
+                    queuedWeaponBonuses.DamageBonus,
+                    nextSkillAbilityBonuses.CriticalRatePercentAdjustment +
+                    persistentCriticalRate +
+                    queuedWeaponBonuses.CriticalRatePercentAdjustment +
+                    guardedHitBonuses.CriticalRatePercentAdjustment,
+                    nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
+                    guardedHitBonuses.EnmityBonus,
+                    statusAppliedNextAttackDamageBonus,
+                    queuedWeaponBonuses.CriticalDamagePercentAdjustment);
+            };
+            if (CanDealCombatImpactDamage(0, ability))
+                trackedImpact.EnsureDamageBonuses();
         }
 
         /// <summary>
@@ -164,7 +168,8 @@ namespace SWLOR.Game.Server.Service
             int nextAbilityCriticalDamagePercentAdjustment = 0,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
             AbilityImpactSequence sequence = null,
-            TrackedAbilityImpact sequenceOwner = null)
+            TrackedAbilityImpact sequenceOwner = null,
+            bool resolveDamageBonusesFromOwner = false)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -183,6 +188,21 @@ namespace SWLOR.Game.Server.Service
             {
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner
             };
+            if (resolveDamageBonusesFromOwner && sequenceOwner != null)
+            {
+                var impact = _trackedAbilityImpacts[activator];
+                impact.ResolveDamageBonuses = () =>
+                {
+                    sequenceOwner.EnsureDamageBonuses();
+                    impact.AddDamageBonuses(
+                        sequenceOwner.NextAbilityDamageBonus - sequenceOwner.StatusAppliedNextAttackDamageBonus,
+                        sequenceOwner.NextAbilityCriticalRatePercentAdjustment,
+                        sequenceOwner.NextAbilityDefenseIgnorePercentAdjustment,
+                        sequenceOwner.NextAttackEnmityBonus,
+                        0,
+                        sequenceOwner.NextAbilityCriticalDamagePercentAdjustment);
+                };
+            }
         }
 
         public static AbilityImpactSequence GetAbilityImpactSequence(uint activator)
@@ -209,9 +229,12 @@ namespace SWLOR.Game.Server.Service
         /// Retains the originating ability and cast sequence for recurring impacts without
         /// consuming another activation's pending bonuses or replacing its impact tracker.
         /// </summary>
-        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction)
+        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction, int baseDamage = 0)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
+            // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
+            // later pulses cannot consume bonuses earned after the field was created.
+            PrepareCombatImpactDamageBonuses(activator, baseDamage);
             var originatingImpact = GetTrackedAbilityImpact(activator);
             if (originatingImpact == null)
                 return impactAction;
@@ -225,11 +248,13 @@ namespace SWLOR.Game.Server.Service
 
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence);
+                GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
                 {
                     impactAction();
                     var summary = EndAbilityImpact(activator);
+                    originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 }
@@ -1264,6 +1289,7 @@ namespace SWLOR.Game.Server.Service
             bool useUnscaledDamage = false,
             Action<uint> beforeImpact = null)
         {
+            PrepareCombatImpactDamageBonuses(activator, baseDamage);
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
 
@@ -1396,6 +1422,7 @@ namespace SWLOR.Game.Server.Service
             float impactFlashDuration = DefaultImpactFlashDuration,
             bool useUnscaledDamage = false)
         {
+            PrepareCombatImpactDamageBonuses(activator, baseDamage);
             RecordAbilityImpactShape(activator, skillType, true);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var backOffsetOrigin = trackedImpact?.Ability.Targeting?.Flags
@@ -1762,6 +1789,7 @@ namespace SWLOR.Game.Server.Service
             bool canCritical,
             bool useUnscaledDamage)
         {
+            var resolveDamageBonusesFromOwner = sequenceOwner?.ResolveDamageBonuses != null;
             return (creator, creatures) =>
             {
                 var impactStarted = false;
@@ -1812,7 +1840,8 @@ namespace SWLOR.Game.Server.Service
                             nextAttackEnmityBonus,
                             statusAppliedNextAttackDamageBonus,
                             countsAsAttackAttempt: false,
-                            sequenceOwner: sequenceOwner);
+                            sequenceOwner: sequenceOwner,
+                            resolveDamageBonusesFromOwner: resolveDamageBonusesFromOwner);
                         impactStarted = true;
                         RecordAbilityImpactShape(creator, skillType, true);
                     }
@@ -2386,16 +2415,19 @@ namespace SWLOR.Game.Server.Service
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
-            adjustedBaseDamage += Combat.GetAbilityImpactBaseDamageBonus(
-                activator,
-                target,
+            var impactDamage = ResolveCombatImpactBaseDamage(
+                adjustedBaseDamage,
                 trackedImpact?.Ability,
-                skillType);
-            adjustedBaseDamage += Combat.GetAbilityStatusCategoryDamageBonus(
-                activator,
-                skillType,
-                appliedStatusCategories);
-            var damage = useUnscaledDamage
+                () =>
+                {
+                    trackedImpact?.EnsureDamageBonuses();
+                    return Combat.GetAbilityImpactBaseDamageBonus(
+                          activator, target, trackedImpact?.Ability, skillType) +
+                      Combat.GetAbilityStatusCategoryDamageBonus(
+                          activator, skillType, appliedStatusCategories);
+                });
+            adjustedBaseDamage = impactDamage.BaseDamage;
+            var damage = !impactDamage.DealsDamage ? 0 : useUnscaledDamage
                 ? CalculateUnscaledCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType)
                 : usesNPCStatScaling
                     ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
@@ -2419,7 +2451,45 @@ namespace SWLOR.Game.Server.Service
                 beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
                 effectDamageType,
-                firstHostileAbilityHitDamageBonusApplied: true);
+                firstHostileAbilityHitDamageBonusApplied: impactDamage.DealsDamage);
+        }
+
+        private static (int BaseDamage, bool DealsDamage) ResolveCombatImpactBaseDamage(
+            int baseDamage,
+            AbilityDetail ability,
+            Func<int> getDamageBonus)
+        {
+            // Queued weapon damage and explicitly declared deferred damage remain eligible even
+            // with zero immediate base damage. Control-only impacts must not consume bonuses.
+            var dealsDamage = CanDealCombatImpactDamage(baseDamage, ability);
+            return dealsDamage ? (baseDamage + getDamageBonus(), true) : (0, false);
+        }
+
+        private static bool CanDealCombatImpactDamage(int baseDamage, AbilityDetail ability)
+        {
+            return baseDamage > 0 || ability?.ActivationType == AbilityActivationType.Weapon ||
+                   ability?.DealsDeferredDamage == true;
+        }
+
+        private static bool HasCombatImpactDamage(int baseDamage, int capturedDamageBonus, bool usesWeaponDamage)
+        {
+            return baseDamage > 0 || capturedDamageBonus > 0 || usesWeaponDamage;
+        }
+
+        /// <summary>
+        /// Adds this impact's captured flat bonus to an already-scaled damage payload before
+        /// target mitigation. Control-only payloads remain zero.
+        /// </summary>
+        public static int ApplyCapturedAbilityDamageBonus(uint activator, int damage)
+        {
+            return damage > 0 ? damage + (GetTrackedAbilityImpact(activator)?.NextAbilityDamageBonus ?? 0) : 0;
+        }
+
+        private static void PrepareCombatImpactDamageBonuses(uint activator, int baseDamage)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            if (impact != null && CanDealCombatImpactDamage(baseDamage, impact.Ability))
+                impact.EnsureDamageBonuses();
         }
 
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)
@@ -2620,10 +2690,10 @@ namespace SWLOR.Game.Server.Service
             int baseDamage,
             CombatDamageType damageType)
         {
-            if (baseDamage <= 0)
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0, false))
                 return 0;
 
-            var trackedImpact = GetTrackedAbilityImpact(activator);
             var damage = baseDamage + (trackedImpact?.NextAbilityDamageBonus ?? 0);
             damage = Combat.ApplyDamageDealtModifiers(
                 activator,
@@ -2661,9 +2731,8 @@ namespace SWLOR.Game.Server.Service
             var usesQueuedNaturalWeapon =
                 trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
                 skillType == SkillType.BeastMastery;
-            if (baseDamage <= 0 &&
-                !Combat.IsWeaponSkillType(skillType) &&
-                !usesQueuedNaturalWeapon)
+            if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
+                    Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {
                 return 0;
             }
@@ -2893,9 +2962,8 @@ namespace SWLOR.Game.Server.Service
             var usesQueuedNaturalWeapon =
                 trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
                 skillType == SkillType.BeastMastery;
-            if (baseDamage <= 0 &&
-                !Combat.IsWeaponSkillType(skillType) &&
-                !usesQueuedNaturalWeapon)
+            if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
+                    Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {
                 return 0;
             }
@@ -3348,13 +3416,53 @@ namespace SWLOR.Game.Server.Service
             public bool CountsAsAttackAttempt { get; }
             public IReadOnlyList<TelegraphGeometry> ActivationAreaTelegraphs { get; }
             public int NextAbilityDamageBonus { get; private set; }
-            public int NextAbilityCriticalRatePercentAdjustment { get; }
-            public int NextAbilityCriticalDamagePercentAdjustment { get; }
+            public int NextAbilityCriticalRatePercentAdjustment { get; private set; }
+            public int NextAbilityCriticalDamagePercentAdjustment { get; private set; }
             public int NextAbilityDefenseIgnorePercentAdjustment { get; private set; }
-            public int NextAttackEnmityBonus { get; }
-            public int StatusAppliedNextAttackDamageBonus { get; }
+            public int NextAttackEnmityBonus { get; private set; }
+            public int StatusAppliedNextAttackDamageBonus { get; private set; }
+            public Action ResolveDamageBonuses { get; set; }
             public bool DarkForceConversionApplied { get; set; }
             private bool _statusAppliedNextAttackDamageBonusConsumed;
+            private bool _repeatedDamageBonusesConsumed;
+
+            public void CopyRepeatedDamageBonusesFrom(TrackedAbilityImpact source)
+            {
+                if (source._repeatedDamageBonusesConsumed)
+                    return;
+
+                AddDamageBonuses(
+                    source.NextAbilityDamageBonus - source.StatusAppliedNextAttackDamageBonus,
+                    source.NextAbilityCriticalRatePercentAdjustment,
+                    source.NextAbilityDefenseIgnorePercentAdjustment,
+                    source.NextAttackEnmityBonus,
+                    0,
+                    source.NextAbilityCriticalDamagePercentAdjustment);
+            }
+
+            public void CompleteRepeatedDamageBonusImpact(bool impactedTarget)
+            {
+                _repeatedDamageBonusesConsumed |= impactedTarget;
+            }
+
+            public void EnsureDamageBonuses()
+            {
+                var resolve = ResolveDamageBonuses;
+                ResolveDamageBonuses = null;
+                resolve?.Invoke();
+            }
+
+            public void AddDamageBonuses(
+                int damage, int criticalRate, int defenseIgnore, int enmity,
+                int statusAppliedDamage, int criticalDamage)
+            {
+                NextAbilityDamageBonus += damage;
+                NextAbilityCriticalRatePercentAdjustment += criticalRate;
+                NextAbilityDefenseIgnorePercentAdjustment += defenseIgnore;
+                NextAttackEnmityBonus += enmity;
+                StatusAppliedNextAttackDamageBonus += statusAppliedDamage;
+                NextAbilityCriticalDamagePercentAdjustment += criticalDamage;
+            }
 
             /// <summary>
             /// Initializes per-impact bonuses, summary classification, and the activation

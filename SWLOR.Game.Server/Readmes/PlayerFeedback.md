@@ -29,7 +29,7 @@ settings are cached at startup. Gameplay and server audit logs are unaffected.
 
 | Source | Optional detail | What Production still receives |
 | --- | --- | --- |
-| `Stat`, weapon ability restoration | Actual positive STM/FP restoration amounts, including Double Shot's named restoration popup. | Resource values update normally. All ship restoration messages remain enabled. |
+| `Stat`, weapon ability restoration | Actual positive STM/FP restoration amounts, including Double Shot's named restoration popup. Companion restoration amounts go to the owner with the companion's display name. | Resource values and open companion character sheets update normally. All ship restoration messages remain enabled. |
 | Weapon ability base | Supplemental flanking/idle/behind damage adjustments and conditional critical-rate calculation popups. | Ability outcomes, final damage, status extension, and consumed setup messages. |
 | `Combat` | High Noon critical-damage percentage, automatic attack-cycle critical-rate percentage, and Overwatch accuracy arithmetic. | Actual attack results/damage and the Overwatch activation popup. |
 | `Combat` | Duplicate overhead versions of Guard, Critical Ward, Pinning Fire, and First Strike messages. | The corresponding combat log message, including mitigation amounts and First Strike readiness/stacks/recharge details. |

@@ -9,6 +9,34 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class BeastAttackCadenceTests
 {
     [Test]
+    public void Garral_UsesBalancedProgressionAcrossAllLevels()
+    {
+        var beasts = BuildAllBeasts();
+        var garral = beasts[BeastType.Garral];
+        var balanced = beasts[BeastType.BinarianSabercat];
+
+        garral.Role.Should().Be(BeastRoleType.Balanced);
+        foreach (var (level, actual) in garral.Levels)
+        {
+            var expected = balanced.Levels[level];
+            actual.STM.Should().Be(expected.STM);
+            actual.FP.Should().Be(expected.FP);
+            actual.DMG.Should().Be(expected.DMG);
+            actual.MaxAttackBonus.Should().Be(expected.MaxAttackBonus);
+            actual.MaxAccuracyBonus.Should().Be(expected.MaxAccuracyBonus);
+            actual.MaxEvasionBonus.Should().Be(expected.MaxEvasionBonus);
+            actual.MaxDefenseBonuses.Should().BeEquivalentTo(expected.MaxDefenseBonuses);
+            actual.MaxResistanceBonuses.Should().BeEquivalentTo(expected.MaxResistanceBonuses);
+            actual.AttackDelay.Should().Be(ItemPropertyAttackDelay.Delay210);
+        }
+
+        garral.Levels[1].HP.Should().Be(101);
+        garral.Levels[50].HP.Should().Be(640);
+        garral.Levels[1].Stats.Values.Should().Equal(18, 21, 29, 13, 18, 14);
+        garral.Levels[50].Stats.Values.Should().Equal(31, 30, 35, 20, 24, 21);
+    }
+
+    [Test]
     public void EveryBeast_HasOneExplicitConstantAttackDelayAcrossAllLevels()
     {
         var beasts = BuildAllBeasts();

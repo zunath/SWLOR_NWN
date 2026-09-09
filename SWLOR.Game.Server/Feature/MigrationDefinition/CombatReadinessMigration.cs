@@ -44,13 +44,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(serializedObject))
                 return false;
 
-            var obj = ObjectPlugin.Deserialize(serializedObject);
+            var obj = MigrationObject.Deserialize(serializedObject);
             if (!GetIsObjectValid(obj))
                 return false;
 
             var wasMigrated = MigrateObject(obj);
             if (wasMigrated)
-                migratedSerializedObject = ObjectPlugin.Serialize(obj);
+                migratedSerializedObject = MigrationObject.Serialize(obj);
 
             DestroyObject(obj);
             return wasMigrated;

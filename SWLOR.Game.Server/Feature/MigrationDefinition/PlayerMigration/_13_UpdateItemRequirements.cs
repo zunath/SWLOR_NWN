@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         public override void Migrate(uint player)
         {
             EquipmentRequirementMigration.MigrateObject(player);
+            ServerMigration.StoredItemDataMigration.MigrateDroidItems(player);
         }
     }
 }

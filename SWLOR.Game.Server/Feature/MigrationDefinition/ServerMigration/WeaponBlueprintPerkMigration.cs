@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var foundLegacy = false;
             var highestRank = 0;
             var legacyCost = 0;
+            var existingConsolidatedCost = 0;
 
             foreach (var keyGroup in LegacyKeyGroups)
             {
@@ -99,13 +100,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             {
                 found = true;
                 highestRank = Math.Max(highestRank, perks[NewKey].Value<int>());
+                existingConsolidatedCost = GetCumulativeCost(ConsolidatedCumulativeCosts, perks[NewKey].Value<int>());
             }
 
             if (!found || !foundLegacy)
                 return false;
 
             var consolidatedCost = GetCumulativeCost(ConsolidatedCumulativeCosts, highestRank);
-            refundDelta = Math.Max(legacyCost - consolidatedCost, 0);
+            // The consolidated perk is refunded by the full cleanup immediately
+            // afterward. Offset its price so the combined refund equals actual investment.
+            refundDelta = legacyCost + existingConsolidatedCost - consolidatedCost;
 
             RemoveKeys(perks);
 

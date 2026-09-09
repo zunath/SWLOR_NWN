@@ -109,10 +109,11 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the possessor of the specified item.
         /// </summary>
         /// <param name="oItem">The item to get the possessor for</param>
+        /// <param name="returnBags">Return the containing bag instead of the object holding that bag.</param>
         /// <returns>The possessor of the item. Returns OBJECT_INVALID on error</returns>
-        public static uint GetItemPossessor(uint oItem)
+        public static uint GetItemPossessor(uint oItem, bool returnBags = false)
         {
-            return global::NWN.Core.NWScript.GetItemPossessor(oItem);
+            return global::NWN.Core.NWScript.GetItemPossessor(oItem, returnBags ? 1 : 0);
         }
 
         /// <summary>

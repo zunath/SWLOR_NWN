@@ -617,6 +617,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder DealsDeferredDamage()
+        {
+            _activeAbility.DealsDeferredDamage = true;
+            return this;
+        }
+
         public AbilityBuilder SuppressesSourceStatusStackRiders()
         {
             _activeAbility.SuppressesSourceStatusStackRiders = true;

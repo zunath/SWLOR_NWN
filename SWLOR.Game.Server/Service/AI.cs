@@ -227,6 +227,16 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureBlockedAfter)]
         public static void CreatureBlocked()
         {
+            var creature = OBJECT_SELF;
+            var blocker = GetBlockingDoor();
+            if (!IsAIEnabled(creature) ||
+                IsLeashEvading(creature) ||
+                GetObjectType(blocker) != ObjectType.Creature)
+            {
+                return;
+            }
+
+            Enmity.ResumeAttackAfterActionsCleared(creature);
         }
 
         /// <summary>
@@ -867,6 +877,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            StopCombatAfterProximityLoss(enemy);
+        }
+
+        /// <summary>
+        /// Stops a chase whose proximity threat has expired, using the normal return-home behavior.
+        /// </summary>
+        public static void StopCombatAfterProximityLoss(uint enemy)
+        {
             NPCAI.ClearState(enemy);
             if (TryReturnHomeAfterCombat(enemy))
                 return;

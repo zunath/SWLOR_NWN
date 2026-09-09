@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         protected void WipeVariables(uint item)
         {
             var variableCount = ObjectPlugin.GetLocalVariableCount(item);
-            for (var variableIndex = 0; variableIndex < variableCount - 1; variableIndex++)
+            for (var variableIndex = variableCount - 1; variableIndex >= 0; variableIndex--)
             {
                 var stCurVar = ObjectPlugin.GetLocalVariable(item, variableIndex);
 

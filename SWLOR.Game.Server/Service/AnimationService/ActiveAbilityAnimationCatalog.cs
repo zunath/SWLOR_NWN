@@ -46,7 +46,6 @@ public static class ActiveAbilityAnimationCatalog
         new("RazorTrap", "Razor Trap", "Espionage", AuthoredAnimation.RazorTrap, new FeatType[] { FeatType.RazorTrap1, FeatType.RazorTrap2 }),
         new("ShadowStep", "Shadow Step", "Espionage", AuthoredAnimation.ShadowStep, new FeatType[] { FeatType.ShadowStep1, FeatType.ShadowStep2 }),
         new("ShockTrap", "Shock Trap", "Espionage", AuthoredAnimation.ShockTrap, new FeatType[] { FeatType.ShockTrap }),
-        new("Stealth", "Stealth", "Espionage", AuthoredAnimation.Stealth, new FeatType[] {  }),
         new("TacticalEscape", "Tactical Escape", "Espionage", AuthoredAnimation.TacticalEscape, new FeatType[] { FeatType.TacticalEscape1, FeatType.TacticalEscape2 }),
         new("AdrenalStim", "Adrenal Stim", "First Aid", AuthoredAnimation.AdrenalStim, new FeatType[] { FeatType.AdrenalStim1, FeatType.AdrenalStim2, FeatType.AdrenalStim3 }),
         new("Antitoxin", "Antitoxin", "First Aid", AuthoredAnimation.Antitoxin, new FeatType[] { FeatType.Antitoxin1 }),

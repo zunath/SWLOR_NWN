@@ -74,7 +74,7 @@ public class AbilityAnimationBindingTests
     }
 
     [Test]
-    public void NativeThrowSelectorsStillSuspendPistolRemappingForPlayersAndNpcs()
+    public void NativeThrowFallbackRemainsUnlessAnExplicitPlayerGestureOwnsActivation()
     {
         foreach (var definition in new IAbilityListDefinition[]
                  { new KoltoMistAbilityDefinition(), new PiercingQuillsTechniqueAbilityDefinition() })
@@ -86,6 +86,12 @@ public class AbilityAnimationBindingTests
             foreach (var isPlayer in new[] { true, false })
             {
                 ability.PreviewAnimation.Should().NotBeNull();
+                if (isPlayer && ability.UsesImmediateAuthoredAnimation)
+                {
+                    AbilityAnimationBinding.ActivationClip(ability, true).Should().BeSameAs(ability.PreviewAnimation);
+                    AbilityAnimationBinding.ActivationType(ability, true).Should().Be(Animation.PointForward);
+                    continue;
+                }
                 AbilityAnimationBinding.ActivationClip(ability, isPlayer).Should().BeNull();
                 var selected = AbilityAnimationBinding.ActivationType(ability, isPlayer);
                 selected.Should().Be(Animation.ThrowGrenade);

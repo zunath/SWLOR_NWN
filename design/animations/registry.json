@@ -40,16 +40,6 @@
     "ProjectPath": "design/animations/beast-mastery/Tame.swlanim"
   },
   {
-    "Name": "GhostProtocol",
-    "AnimationName": "sw_ghos_prot",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/espionage/GhostProtocol.swlanim"
-  },
-  {
     "Name": "RazorTrap",
     "AnimationName": "sw_razortrap",
     "Duration": 1.2,
@@ -80,16 +70,6 @@
     "ProjectPath": "design/animations/espionage/ShockTrap.swlanim"
   },
   {
-    "Name": "Stealth",
-    "AnimationName": "sw_stealth",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/espionage/Stealth.swlanim"
-  },
-  {
     "Name": "TacticalEscape",
     "AnimationName": "sw_tact_esca",
     "Duration": 1.2,
@@ -98,126 +78,6 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/espionage/TacticalEscape.swlanim"
-  },
-  {
-    "Name": "AdrenalStim",
-    "AnimationName": "sw_adrenstim",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/AdrenalStim.swlanim"
-  },
-  {
-    "Name": "Antitoxin",
-    "AnimationName": "sw_antitox",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/Antitoxin.swlanim"
-  },
-  {
-    "Name": "EmergencyCocktail",
-    "AnimationName": "sw_emer_cock",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/EmergencyCocktail.swlanim"
-  },
-  {
-    "Name": "EmergencyTriage",
-    "AnimationName": "sw_emer_tria",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/EmergencyTriage.swlanim"
-  },
-  {
-    "Name": "FocusStim",
-    "AnimationName": "sw_focusstim",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/FocusStim.swlanim"
-  },
-  {
-    "Name": "Infusion",
-    "AnimationName": "sw_infusion",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/Infusion.swlanim"
-  },
-  {
-    "Name": "KoltoMist",
-    "AnimationName": "sw_koltomist",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/KoltoMist.swlanim"
-  },
-  {
-    "Name": "MedKit",
-    "AnimationName": "sw_medkit",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/MedKit.swlanim"
-  },
-  {
-    "Name": "PainSuppressant",
-    "AnimationName": "sw_painsuppr",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/PainSuppressant.swlanim"
-  },
-  {
-    "Name": "Resuscitation",
-    "AnimationName": "sw_resusc",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/Resuscitation.swlanim"
-  },
-  {
-    "Name": "Shielding",
-    "AnimationName": "sw_shield",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/Shielding.swlanim"
-  },
-  {
-    "Name": "TreatmentKit",
-    "AnimationName": "sw_treatkit",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/first-aid/TreatmentKit.swlanim"
   },
   {
     "Name": "Benevolence",
@@ -2818,5 +2678,135 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/devices/WristRocket.swlanim"
+  },
+  {
+    "Name": "GhostProtocol",
+    "AnimationName": "sw_ghos_prot",
+    "Duration": 2.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/espionage/GhostProtocol.swlanim"
+  },
+  {
+    "Name": "AdrenalStim",
+    "AnimationName": "sw_adrenstim",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/AdrenalStim.swlanim"
+  },
+  {
+    "Name": "Antitoxin",
+    "AnimationName": "sw_antitox",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/Antitoxin.swlanim"
+  },
+  {
+    "Name": "EmergencyCocktail",
+    "AnimationName": "sw_emer_cock",
+    "Duration": 3.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/EmergencyCocktail.swlanim"
+  },
+  {
+    "Name": "EmergencyTriage",
+    "AnimationName": "sw_emer_tria",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/EmergencyTriage.swlanim"
+  },
+  {
+    "Name": "Infusion",
+    "AnimationName": "sw_infusion",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/Infusion.swlanim"
+  },
+  {
+    "Name": "KoltoMist",
+    "AnimationName": "sw_koltomist",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/KoltoMist.swlanim"
+  },
+  {
+    "Name": "MedKit",
+    "AnimationName": "sw_medkit",
+    "Duration": 2.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/MedKit.swlanim"
+  },
+  {
+    "Name": "PainSuppressant",
+    "AnimationName": "sw_painsuppr",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/PainSuppressant.swlanim"
+  },
+  {
+    "Name": "Shielding",
+    "AnimationName": "sw_shield",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/Shielding.swlanim"
+  },
+  {
+    "Name": "TreatmentKit",
+    "AnimationName": "sw_treatkit",
+    "Duration": 3.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/TreatmentKit.swlanim"
+  },
+  {
+    "Name": "FocusStim",
+    "AnimationName": "sw_focusstim",
+    "Duration": 2.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/FocusStim.swlanim"
+  },
+  {
+    "Name": "Resuscitation",
+    "AnimationName": "sw_resusc",
+    "Duration": 3.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/first-aid/Resuscitation.swlanim"
   }
 ]

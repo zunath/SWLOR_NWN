@@ -4,8 +4,10 @@ This branch contains perk playback, the in-game animation tester, authored clips
 current animation production plan. The command-line generator uses the shared headless
 animation library and works without the separate Avalonia animation editor.
 
-The active library covers 282 animation entries and 506 ability-rank bindings: the 214
+The active library covers 281 animation entries and 506 ability-rank bindings: 213 custom
 perk requirements, 67 active Mimicry techniques, and Call Beast as its own action.
+Stealth retains its native toggle and has no custom project, installed clip, or tester entry.
+The perk plan keeps its explicit `Native` exclusion without an internal animation name.
 Beast abilities are excluded because their models have separate animation sets; player
 Beast Mastery actions remain included. The Animations tab retains all 119 image references
 and documents every entry's internal name, base motion, source project, and review status.
@@ -73,6 +75,19 @@ dependency hashes, and editable project hashes.
 
 These revisions have offline generation checks, but no live NWN visual approval. Review them
 in `/animations` with the intended weapon and shield after deploying both body and robe HAKs.
+
+## First Aid and Ghost Protocol
+
+The twelve First Aid abilities have individual recipes in `first-aid/choreographies.json`.
+Stim motions distinguish forearm injection, inhalation, shoulder compression, defensive
+bracing, and multiple doses. Kits use dressing, infusion, cleansing, or urgent stabilization
+gestures. Kolto Mist has an underarm canister motion; Resuscitation lowers beside the patient,
+performs two compressions, and rises. Ghost Protocol's recipe in
+`espionage/choreographies.json` operates a wrist cloaking control and settles into a low
+escape posture. These recipes use the same generation and provenance workflow described above.
+The native Stealth toggle has no custom animation and remains separate from Ghost Protocol.
+Review the new motions with equipped items in the live game; the skeletal clips do not
+create medical props or alter healing, resource costs, or stealth mechanics.
 
 ## Animation tester
 
@@ -241,6 +256,34 @@ animation blocks and hashes of both source text and compiled bytes so subsequent
 installs can update compiled banks without discarding other clips. Missing or mismatched pairs
 are rejected. The `.swlanim` files remain the canonical pose projects; these bank sources are
 the reproducible inputs for the compiled model resources. Recompile after each installation.
+
+### Rebalance growing banks before installing updated clips
+
+Banks are limited to 128 clips and 24 MiB of editable MDL text. Older, larger banks can be
+split without resampling any animation. Run one rig at a time from the game repository;
+each command verifies source hashes and commits its chain atomically under the existing
+128 MiB transaction budgets. Registrations and internal animation names stay unchanged.
+
+```powershell
+dotnet run --no-build --project tools/SWLOR.AnimationDrafts -- rebalance-banks . a_ba
+```
+
+Compile the changed and newly created male banks from `SWLOR_Haks` using `CompileModels.py`
+as above, then run the female transaction and compile its outputs:
+
+```powershell
+dotnet run --no-build --project tools/SWLOR.AnimationDrafts -- rebalance-banks . a_fa
+```
+
+Compile between rigs because the female chain inherits male banks. Only after compilation,
+install the updated clips and compile again. Rebalancing
+preserves complete main/start/end animation groups and the original native supermodel chain.
+If one animation group alone exceeds the bank limit, the command rejects it without writing.
+
+For an update that would outgrow an already packed bank, add `--clips-per-bank 64` to make
+more room before reinstalling. The default remains 128. A limit of `1` is a diagnostic
+option for small libraries; it still obeys the 32-model chain limit and will usually be
+rejected for large libraries. Neither option changes any motion keys or raises byte limits.
 
 RGB robe phenotypes also have generated animation bridges for their separate garment joints.
 Publish generated robe updates in a separate HAK PR from the humanoid animation banks.

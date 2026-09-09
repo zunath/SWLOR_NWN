@@ -6,10 +6,10 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip AbsoluteDefense = new("sw_abs_defen", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip AdamantineGuard = new("sw_adamguard", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip AdhesiveGrenade = new("sw_adhe_gren", 1.64999998f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip AdrenalStim = new("sw_adrenstim", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip AdrenalStim = new("sw_adrenstim", 2.1500001f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip AegisEternal = new("sw_aegi_eter", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip AimedShot = new("sw_aimedshot", 1.10000002f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Antitoxin = new("sw_antitox", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Antitoxin = new("sw_antitox", 2.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ApexCollapseTechnique = new("sw_apex_coll", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ArcProjector = new("sw_arc_proje", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ArcPulseTechnique = new("sw_arcpulse", 1.35000002f);
@@ -64,8 +64,8 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Earthshatter = new("sw_earthshtr", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip EclipseOfResolve = new("sw_eclp_resl", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip EmergencyBunker = new("sw_emer_bunk", 2.20000005f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip EmergencyCocktail = new("sw_emer_cock", 1.20000005f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip EmergencyTriage = new("sw_emer_tria", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip EmergencyCocktail = new("sw_emer_cock", 3.3499999f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip EmergencyTriage = new("sw_emer_tria", 1.64999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Epicenter = new("sw_epicenter", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip EscapeArtist = new("sw_esca_arti", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ExplosiveToss = new("sw_expl_toss", 1.10000002f);
@@ -81,7 +81,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FlashGrenade = new("sw_flashgren", 1.14999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FlashToss = new("sw_flashtoss", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FlurryStance = new("sw_flrystn", 1f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FocusStim = new("sw_focusstim", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FocusStim = new("sw_focusstim", 2.54999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FocusedArc = new("sw_focus_arc", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ForceBurst = new("sw_forc_burs", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ForceChoke = new("sw_forc_chok", 1.10000002f);
@@ -100,7 +100,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FrostSpitTechnique = new("sw_frostspit", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FuryStance = new("sw_furystn", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip GamblerStance = new("sw_gambl_stn", 1f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip GhostProtocol = new("sw_ghos_prot", 1f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip GhostProtocol = new("sw_ghos_prot", 2.8499999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip GoringChargeTechnique = new("sw_gori_char", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip GrenadeBurstTechnique = new("sw_grenburst", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip GroundQuake = new("sw_grou_quak", 0.949999988f);
@@ -121,7 +121,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip IncendiaryField = new("sw_ince_fiel", 1.85000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip InfernoBlastTechnique = new("sw_infe_blas", 1.25f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip InfiniteConduit = new("sw_infcond", 0.949999988f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Infusion = new("sw_infusion", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Infusion = new("sw_infusion", 3f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip InnerCircleBindTechnique = new("sw_inr_bind", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip InnerCirclePounceTechnique = new("sw_inr_pounc", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip InnerCircleSurgeTechnique = new("sw_inr_surge", 1.35000002f);
@@ -139,7 +139,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip JointLock = new("sw_jointlock", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip KillBox = new("sw_killbox", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip KillzoneBeacon = new("sw_kill_beac", 2.04999995f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip KoltoMist = new("sw_koltomist", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip KoltoMist = new("sw_koltomist", 2.3499999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LaceratingTwinCut = new("sw_lacer_cut", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LaceratorStance = new("sw_lacrstn", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LastBastionTechnique = new("sw_lastbast", 1.20000005f);
@@ -149,7 +149,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LineBreaker = new("sw_line_brea", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip LockstepCrushTechnique = new("sw_lockcrush", 1.25f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip MaelstromArc = new("sw_maelarc", 0.949999988f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip MedKit = new("sw_medkit", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip MedKit = new("sw_medkit", 2.8499999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip MercilessAngleTechnique = new("sw_merc_angl", 1.25f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip MindTrick = new("sw_mindtrick", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip NightmareField = new("sw_nigh_fiel", 1.35000002f);
@@ -159,7 +159,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip OverclockedAnalyzer = new("sw_overanlyz", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip OverloadBarrage = new("sw_over_barr", 2.3499999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PackHarrierTechnique = new("sw_pack_harr", 1.10000002f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PainSuppressant = new("sw_painsuppr", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PainSuppressant = new("sw_painsuppr", 2.5999999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PathogenStrike = new("sw_path_stri", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PerceptiveStance = new("sw_perce_stn", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PerfectFlurry = new("sw_perf_flry", 1.10000002f);
@@ -190,7 +190,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RendingStrike = new("sw_rendingst", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Renewal = new("sw_renewal", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Reprisal = new("sw_reprisal", 0.949999988f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Resuscitation = new("sw_resusc", 1.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Resuscitation = new("sw_resusc", 3.9000001f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ReviveBeast = new("sw_revi_beas", 1.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Reward = new("sw_reward", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RibBreaker = new("sw_rib_break", 0.949999988f);
@@ -217,7 +217,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShelterCircle = new("sw_shel_circ", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShieldBash = new("sw_shieldbas", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShieldWall = new("sw_shieldwal", 2.0999999f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Shielding = new("sw_shield", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Shielding = new("sw_shield", 2.45000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShockBeacon = new("sw_shoc_beac", 1.64999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShockTrap = new("sw_shocktrap", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ShrapnelBurstTechnique = new("sw_shra_burs", 1.25f);
@@ -238,7 +238,6 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StaticBurstTechnique = new("sw_stat_burs", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StaticWebTechnique = new("sw_staticweb", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip SteadyFormation = new("sw_stea_form", 1.20000005f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Stealth = new("sw_stealth", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip StimCanisterTechnique = new("sw_stim_cani", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip SunderingSweep = new("sw_sund_swee", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip SuppressingShot = new("sw_supprshot", 1.10000002f);
@@ -259,7 +258,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ThrowRock = new("sw_throwrock", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ToxicCloudTechnique = new("sw_toxi_clou", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip ToxicSpitTechnique = new("sw_toxicspit", 1.10000002f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TreatmentKit = new("sw_treatkit", 1.20000005f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TreatmentKit = new("sw_treatkit", 3.04999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TwinGuardStance = new("sw_steelshld", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TwinIntercept = new("sw_tagin", 0.949999988f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TwinRupture = new("sw_twin_rupt", 0.949999988f);

@@ -329,6 +329,9 @@ def synchronize_files(manifest_path, workbook_path, registry_path, provenance_pa
         fields.append("InternalName")
     by_id = {e["Id"]: e for e in entries}
     for row in plan:
+        if row["PerkId"] not in by_id and row.get("Status") == "Native":
+            row.update(InternalName="", BibleAnimationRow="")
+            continue
         entry = by_id[row["PerkId"]]
         row.update(Status="Installed", InternalName=entry["InternalName"], BibleAnimationRow=entry["BibleAnimationRow"])
     stream = io.StringIO(newline="")

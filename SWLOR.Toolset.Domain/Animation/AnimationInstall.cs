@@ -201,7 +201,8 @@ public static class AnimationInstall
                 throw new InvalidDataException($"Ambiguous model resource '{Path.GetFileNameWithoutExtension(path)}': source filenames differ only by case.");
         return models;
     }
-    public const int ClipsPerBank = 256;
+    public const int ClipsPerBank = 128;
+    public const int MaximumBankBytes = 24 * 1024 * 1024;
     public const int MaximumModelChainDepth = 32;
     public const int MaximumInputBytes = 128 * 1024 * 1024;
     public const int MaximumOutputBytes = 128 * 1024 * 1024;
@@ -231,7 +232,7 @@ public static class AnimationInstall
         => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes, sourceProjectPath: sourceProjectPath, internalName: internalName);
 
     internal static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths, int inputBudget,
-        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null, int bankBudget = AnimationProject.MaximumFileBytes, string? internalName = null)
+        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null, int bankBudget = MaximumBankBytes, string? internalName = null)
     {
         if (inputBudget < 1 || inputBudget > MaximumInputBytes) throw new ArgumentOutOfRangeException(nameof(inputBudget));
         if (outputBudget < 1 || outputBudget > MaximumOutputBytes) throw new ArgumentOutOfRangeException(nameof(outputBudget));
@@ -591,7 +592,7 @@ public static class AnimationInstall
                 (overlay, blocks) = BuildOverlay();
             }
             if (Encoding.ASCII.GetByteCount(overlay) > bankBudget)
-                throw new InvalidDataException("Completed animation bank exceeds its input size limit. Simplify the clip before installing it.");
+                throw new InvalidDataException("Completed animation bank exceeds its input size limit. Rebalance the target's banks before updating this clip.");
             EnsureOutputCapacity(Encoding.ASCII.GetByteCount(overlay));
             var overlayBytes = Encoding.ASCII.GetBytes(overlay);
             Add(overlayPath, overlayBytes);

@@ -75,6 +75,67 @@ public class ChoreographyAuthorTests
     }
 
     [Test]
+    public void FirstAidAndGhostProtocolChoreographiesPreserveGripAndRecovery()
+    {
+        var path = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
+        if (!File.Exists(path)) Assert.Ignore("Initialize native models.");
+        var model = new MdlReader().Parse(File.ReadAllBytes(path));
+        var firstAid = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(Root, "design/animations/first-aid/choreographies.json")));
+        var inventory = JsonSerializer.Deserialize<ActiveMotion[]>(File.ReadAllText(Path.Combine(Root, "design/animations/active-abilities.json")), BulkMotionAuthor.Json)!;
+        firstAid.Select(r => r.Id).Should().BeEquivalentTo(inventory.Where(e => e.Category == "First Aid").Select(e => e.Id));
+        var ghost = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(Root, "design/animations/espionage/choreographies.json"))).Single(r => r.Id == "GhostProtocol");
+        ghost.Duration.Should().BeGreaterThanOrEqualTo(2.5f);
+        foreach (var recipe in firstAid.Append(ghost))
+        {
+            TestContext.Progress.WriteLine("Validating medical/escape choreography " + recipe.Id);
+            var project = ChoreographyAuthor.Bake(model, recipe);
+            project.Keys.Count.Should().BeLessThanOrEqualTo((int)Math.Ceiling(recipe.Duration * 30) + recipe.Beats.Length);
+            foreach (var beat in recipe.Beats)
+            {
+                var clip = model.Animations.Single(a => a.Name == beat.SourceAnimation);
+                var native = SWLOR.Toolset.Domain.Render.MdlAnimationPose.Sample(clip, beat.SourceTime * clip.Length,
+                    SWLOR.Toolset.Domain.Render.MdlAnimationPose.BindPose(model));
+                foreach (var (name, target) in new[] { ("lhand_g", beat.LeftHand), ("rhand_g", beat.RightHand) })
+                {
+                    if (target == null) continue;
+                    var index = project.Joints.FindIndex(j => j.Name == name);
+                    Math.Abs(Quaternion.Dot(project.Sample(beat.Time)[index].Orientation, native[name].Orientation)).Should().BeGreaterThan(.99999f,
+                        recipe.Id + " must not twist the native wrist grip during " + beat.Label);
+                }
+            }
+            if (recipe.Id == "Resuscitation")
+            {
+                var root = project.Joints.FindIndex(j => j.Name == "rootdummy");
+                var hand = project.Joints.FindIndex(j => j.Name == "rhand_g");
+                var compressed = AnimationRig.World(project.Joints, project.Sample(1.30f));
+                var released = AnimationRig.World(project.Joints, project.Sample(1.63f));
+                compressed[root].Translation.Z.Should().BeLessThan(project.Sample(0)[root].Position.Z - .15f);
+                released[hand].Translation.Z.Should().BeGreaterThan(compressed[hand].Translation.Z + .05f,
+                    "resuscitation needs visible compression release before the second push");
+            }
+        }
+    }
+
+    [Test]
+    public void CrouchAwareElbowPolesPreservePreviouslyReviewedStandingProjects()
+    {
+        var path = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
+        if (!File.Exists(path)) Assert.Ignore("Initialize native models.");
+        var model = new MdlReader().Parse(File.ReadAllBytes(path));
+        foreach (var category in new[] { "devices", "beast-mastery", "first-aid", "espionage" })
+        foreach (var recipe in ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(Root, "design/animations", category, "choreographies.json"))))
+        {
+            if (recipe.Id == "Resuscitation") continue;
+            var sourceModels = recipe.Beats.Where(b => b.SourceModel != null).Select(b => b.SourceModel!).Distinct()
+                .ToDictionary(name => name, name => new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root, "SWLOR_Haks/sw_cr_creature", name + ".mdl"))));
+            var project = ChoreographyAuthor.Bake(model, recipe, sourceModels);
+            (project.Serialize() + "\n").Replace("\r\n", "\n").Should().Be(
+                File.ReadAllText(Path.Combine(Root, "design/animations", category, recipe.Id + ".swlanim")).Replace("\r\n", "\n"),
+                "the crouched elbow fix must not alter the previously reviewed standing choreography " + recipe.Id);
+        }
+    }
+
+    [Test]
     public void EditingOneRecipeInvalidatesOnlyItsOwnPreservedProvenance()
     {
         var model = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");

@@ -777,23 +777,6 @@
     "Profile": "Place trap"
   },
   {
-    "Id": "Stealth",
-    "Name": "Stealth",
-    "DisplayName": "Stealth",
-    "InternalName": "sw_stealth",
-    "Category": "Espionage",
-    "Type": "Toggle",
-    "Description": "Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.",
-    "Reference": "",
-    "BibleAnimationRow": 141,
-    "PerkId": "Stealth",
-    "Feats": [],
-    "DefinitionFiles": [],
-    "CurrentPlayback": "Native stealth",
-    "SourceAnimation": "getlow",
-    "Profile": "Concealment entry"
-  },
-  {
     "Id": "TacticalEscape",
     "Name": "Tactical Escape",
     "DisplayName": "Tactical Escape",

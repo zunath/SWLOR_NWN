@@ -87,8 +87,11 @@ internal static class ChoreographyAuthor
                 var grip = pose[hand].Orientation;
                 var position = V(target);
                 // Elbows remain below the wrist, with a stable lateral bend plane.
+                var shoulder = rig.Joints[rig.Joints[hand].Parent].Parent;
+                var shoulderHeight = AnimationRig.World(rig.Joints, pose)[shoulder].Translation.Z;
+                var minimumPoleHeight = Math.Min(.85f, shoulderHeight - .18f);
                 pose = AnimationRig.SolveLimb(rig.Joints, pose, hand, position,
-                    new Vector3(side * .48f, .06f, Math.Max(.85f, position.Z - .28f)));
+                    new Vector3(side * .48f, .06f, Math.Max(minimumPoleHeight, position.Z - .28f)));
                 // SolveLimb normally compensates wrist rotation to preserve world orientation.
                 // For equipped characters preserve the sampled native LOCAL grip instead.
                 pose[hand] = pose[hand] with { Orientation = grip };

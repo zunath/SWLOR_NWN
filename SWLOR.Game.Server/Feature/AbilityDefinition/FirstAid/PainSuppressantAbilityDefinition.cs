@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.PainSuppressant1, PerkType.PainSuppressant)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Pain Suppressant I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.PainSuppressant2, PerkType.PainSuppressant)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Pain Suppressant II")
                 .Level(2)
                 .HasActivationDelay(1f)

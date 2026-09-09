@@ -142,7 +142,15 @@ public class AnimationDraftAssetTests
         {
             var source = Path.Combine(Root, entry.ProjectPath!);
             var project = AnimationProject.Deserialize(File.ReadAllText(source));
-            var plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+            AnimationInstallPlan plan;
+            try
+            {
+                plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidDataException($"Could not prepare registered animation '{entry.Name}' against compiled banks.", exception);
+            }
             var banks = plan.Changes.Where(change => Path.GetExtension(change.Path) == ".mdl").ToArray();
             banks.Should().HaveCount(entry.Targets.Length);
             foreach (var bank in banks)
@@ -150,6 +158,29 @@ public class AnimationDraftAssetTests
                 AnimationBankSource.IsBinary(bank.Before!).Should().BeTrue();
                 AnimationBankSource.IsBinary(bank.After).Should().BeFalse("the preview produces editable text for the subsequent native compilation step");
                 plan.Inputs.Should().ContainKey(AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path));
+            }
+        }
+    }
+
+    [Test]
+    public void CompiledBodyChainsContainNoCustomStealthPhases()
+    {
+        var forbidden = new HashSet<string>(new[] { "sw_stealth", "sw_stealth_in", "sw_stealth_out" }, StringComparer.OrdinalIgnoreCase);
+        var checkedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var target in new[] { "a_ba", "a_fa" })
+        {
+            var name = target;
+            var chain = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            while (!string.IsNullOrEmpty(name) && !name.Equals("NULL", StringComparison.OrdinalIgnoreCase))
+            {
+                chain.Add(name).Should().BeTrue("the native body model chain must not cycle");
+                var path = AnimationInstall.FindTargetSource(Root, name);
+                path.Should().NotBeNull("every model in the humanoid animation chain must be available");
+                var model = new MdlReader().Parse(File.ReadAllBytes(path!));
+                if (checkedPaths.Add(path!))
+                    model.Animations.Select(a => a.Name).Should().NotContain(name => forbidden.Contains(name),
+                        "Stealth uses native stealth mode and has no custom animation phases in " + name);
+                name = model.SuperModel;
             }
         }
     }

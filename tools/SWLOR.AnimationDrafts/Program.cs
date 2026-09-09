@@ -12,6 +12,20 @@ using SWLOR.Game.Server.Service.AbilityService;
 using var logger = new LoggerConfiguration().WriteTo.Console(standardErrorFromLevel: LogEventLevel.Verbose).CreateLogger();
 try
 {
+    if (args.Length > 0 && args[0] == "rebalance-banks")
+    {
+        var clipsPerBank = AnimationInstall.ClipsPerBank;
+        if (args.Length != 3 && (args.Length != 5 || args[3] != "--clips-per-bank" ||
+            !int.TryParse(args[4], System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out clipsPerBank)))
+            throw new ArgumentException("Usage: rebalance-banks <repository> <rig> [--clips-per-bank <1-128>]");
+        // Each rig chain is an independent transaction; registration and native model payloads stay unchanged.
+        var plan = AnimationBankRebalance.Prepare(args[1], args[2], clipsPerBank);
+        foreach (var change in plan.Changes) Console.WriteLine(change.Path);
+        plan.Apply();
+        foreach (var backup in plan.RetainedBackups) logger.Warning("Backup cleanup failed; retained {BackupPath}.", backup);
+        Console.WriteLine($"Rebalanced {args[2]} into bounded banks ({plan.Changes.Count} model files). Compile the changed models before installing clips.");
+        return 0;
+    }
     if (args.Length >= 4 && args[0] == "generate-active")
     {
         if (args.Length > 4 && !(args.Length == 5 && args[4] == "--overwrite") && !(args.Length >= 6 && args[4] == "--replace"))

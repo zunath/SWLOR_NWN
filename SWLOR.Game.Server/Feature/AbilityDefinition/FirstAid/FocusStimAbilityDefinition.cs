@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.FocusStim1, PerkType.FocusStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Focus Stim I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.FocusStim2, PerkType.FocusStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Focus Stim II")
                 .Level(2)
                 .HasActivationDelay(1f)

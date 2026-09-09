@@ -132,8 +132,8 @@ public class AnimationPlanningTests
         plan.SelectMany(entry => entry.Feats).Should().OnlyHaveUniqueItems().And.BeEquivalentTo(expected);
         plan.Single(entry => entry.Id == "CallBeast").Feats.Should().Equal("CallBeast");
         plan.Single(entry => entry.Id == "Tame").Feats.Should().NotContain("CallBeast");
-        plan.Single(entry => entry.Id == "Stealth").Feats.Should().BeEmpty("stealth is a native action mode");
-        plan.Where(entry => entry.Feats.Length == 0).Select(entry => entry.Id).Should().Equal("Stealth");
+        plan.Should().NotContain(entry => entry.Id == "Stealth", "stealth uses the native action mode without a custom clip");
+        plan.Should().OnlyContain(entry => entry.Feats.Length > 0);
         var perkIds = perks.Select(perk => perk.Type.ToString()).ToHashSet();
         foreach (var entry in plan)
         {
@@ -143,6 +143,28 @@ public class AnimationPlanningTests
             foreach (var feat in entry.Feats)
                 definitions[Enum.Parse<FeatType>(feat)].IsMimicryTrait.Should().BeFalse();
         }
+    }
+
+    [Test]
+    public void NativeStealthIsExcludedWhileAllActiveFirstAidAbilitiesRemainCovered()
+    {
+        var plan = ActivePlan();
+        CurrentPerks().Should().Contain(perk => perk.Type == PerkType.Stealth);
+        var stealth = Csv("design/animations/animation-plan.csv").Single(row => row["PerkId"] == "Stealth");
+        stealth["Status"].Should().Be("Native");
+        stealth["InternalName"].Should().BeEmpty();
+        stealth["BibleAnimationRow"].Should().BeEmpty();
+        plan.Should().NotContain(entry => entry.Id == "Stealth");
+        File.Exists(Path.Combine(Root, "design/animations/espionage/Stealth.swlanim")).Should().BeFalse();
+        var firstAid = CurrentPerks().Where(perk => Category(perk) == "First Aid")
+            .SelectMany(perk => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats)).ToHashSet();
+        var definitions = typeof(IAbilityListDefinition).Assembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
+            .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities())
+            .Where(pair => firstAid.Contains(pair.Key) && !pair.Value.IsMimicryTrait)
+            .Select(pair => pair.Key.ToString()).Distinct().ToArray();
+        plan.Where(entry => entry.Category == "First Aid").SelectMany(entry => entry.Feats)
+            .Should().BeEquivalentTo(definitions);
     }
 
     [Test]

@@ -12,6 +12,22 @@ from UpdateAnimationBible import synchronize, synchronize_files, replace_outputs
 
 
 class AnimationBibleTests(unittest.TestCase):
+    def test_explicit_native_perk_stays_out_of_custom_animation_rows(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            workbook, manifest, registry, provenance, plan = [root / name for name in
+                ("bible.xlsx", "manifest.json", "registry.json", "provenance.json", "plan.csv")]
+            workbook.write_bytes(b"original workbook")
+            manifest.write_text(json.dumps([{"Id": "Push", "InternalName": "sw_push", "BibleAnimationRow": 2}]))
+            registry.write_text("[]")
+            provenance.write_text(json.dumps({"Animations": [{"Id": "Push"}]}))
+            plan.write_text("PerkId,Status,BibleAnimationRow,InternalName\nPush,Needed,2,sw_push\nStealth,Native,99,sw_stealth\n")
+            with patch("UpdateAnimationBible.render_workbook", return_value=b"new workbook") as render:
+                synchronize_files(manifest, workbook, registry, provenance, plan)
+            self.assertEqual([e["Id"] for e in render.call_args.args[1]], ["Push"])
+            self.assertIn("Stealth,Native,,", plan.read_text())
+            self.assertNotIn("sw_stealth", plan.read_text())
+
     def test_edits_after_render_to_any_captured_input_abort_without_overwrite(self):
         for changed_name in ("bible.xlsx", "manifest.json", "plan.csv", "registry.json", "provenance.json"):
             with self.subTest(changed_name=changed_name), tempfile.TemporaryDirectory() as folder:

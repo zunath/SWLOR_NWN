@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Resuscitation1, PerkType.Resuscitation)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Resuscitation I")
                 .Level(1)
                 .HasActivationDelay(4f)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Resuscitation2, PerkType.Resuscitation)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Resuscitation II")
                 .Level(2)
                 .HasActivationDelay(4f)

@@ -89,20 +89,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void MindTrick2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            var playedImpactAnimation = false;
             foreach (var hostileTarget in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, Radius, MindTrick2MaxTargets, target, IsNonMechanical))
             {
-                ApplyMindTrickImpact(activator, hostileTarget, GetLocation(hostileTarget));
+                if (ApplyMindTrickImpact(activator, hostileTarget, GetLocation(hostileTarget), !playedImpactAnimation))
+                    playedImpactAnimation = true;
             }
             LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
-        private static void ApplyMindTrickImpact(uint activator, uint target, Location targetLocation)
+        private static bool ApplyMindTrickImpact(uint activator, uint target, Location targetLocation, bool playImpactAnimation = true)
         {
             var duration = CalculateMindTrickDuration(activator, target);
             if (duration <= 0)
             {
                 SendMessageToPC(activator, "Your mind trick was resisted.");
-                return;
+                return false;
             }
 
             Ability.ApplyCombatImpact(
@@ -116,7 +118,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 damageType: CombatDamageType.Force,
                 statusResistanceType: ResistanceType.Mind,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                playImpactAnimation: playImpactAnimation);
+            return true;
         }
 
         private static int CalculateMindTrickDuration(uint activator, uint target)

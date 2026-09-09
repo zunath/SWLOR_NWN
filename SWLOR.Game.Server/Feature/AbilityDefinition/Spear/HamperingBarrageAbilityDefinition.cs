@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.HamperingBarrage1, PerkType.HamperingBarrage)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Hampering Barrage I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.HamperingBarrage, 30.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.HamperingBarrage2, PerkType.HamperingBarrage)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Hampering Barrage II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.HamperingBarrage, 30.0f),

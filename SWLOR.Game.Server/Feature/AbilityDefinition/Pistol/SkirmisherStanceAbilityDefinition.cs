@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SkirmisherStance1, PerkType.SkirmisherStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Skirmisher Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SkirmisherStance, 30.0f),

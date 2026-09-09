@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CripplingDefense1, PerkType.CripplingDefense)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Crippling Defense")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

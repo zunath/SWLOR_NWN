@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam1, PerkType.Slam)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Slam I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Slam, 18.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam2, PerkType.Slam)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Slam II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.Slam, 18.0f),
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam3, PerkType.Slam)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Slam III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.Slam, 18.0f),
@@ -106,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam4, PerkType.Slam)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Slam IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.Slam, 18.0f),

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.TempestBloom1, PerkType.TempestBloom)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Tempest Bloom")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

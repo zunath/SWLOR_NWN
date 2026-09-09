@@ -16,6 +16,59 @@ public class AnimationInstallBatchTests
         Changes = [new(path, File.Exists(path) ? File.ReadAllBytes(path) : null, bytes)]
     };
 
+    private AnimationInstallPlan WithFingerprint(string dependency, params AnimationFileChange[] changes) => new()
+    {
+        AnimationName = "sw_test", ConstantName = "Test", Inputs = new Dictionary<string, byte[]>(),
+        ReadOnlyInputs = new Dictionary<string, AnimationInputFingerprint>
+        { [dependency] = AnimationInputFingerprint.FromBytes(File.ReadAllBytes(dependency)) },
+        Changes = changes
+    };
+
+    [Test]
+    public void ReadOnlyFingerprintIsLeasedDuringPublicationAndRejectsStalePreview()
+    {
+        var dependency = Path.Combine(_folder, "native.mdl"); File.WriteAllBytes(dependency, [1, 2]);
+        var output = Path.Combine(_folder, "result.json");
+        var plan = WithFingerprint(dependency, new AnimationFileChange(output, null, [3]));
+        plan.Apply(_ => ((Action)(() => File.WriteAllBytes(dependency, [9]))).Should().Throw<IOException>());
+        File.WriteAllBytes(dependency, [9, 9]);
+        ((Action)(() => plan.Apply())).Should().Throw<IOException>();
+    }
+
+    [Test]
+    public void ReadOnlyFingerprintChangeBetweenStepsRollsBackOnlyPublishedOutputs()
+    {
+        var dependency = Path.Combine(_folder, "native.mdl"); File.WriteAllBytes(dependency, [1, 2]);
+        var output = Path.Combine(_folder, "result.json");
+        ((Action)(() => AnimationInstallBatch.Apply([
+            () => WithFingerprint(dependency, new AnimationFileChange(output, null, [3])),
+            () => { File.WriteAllBytes(dependency, [9, 9]); return Change(output, [4]); }
+        ]))).Should().Throw<IOException>();
+        File.ReadAllBytes(dependency).Should().Equal(9, 9);
+        File.Exists(output).Should().BeFalse();
+    }
+
+    [Test]
+    public void FingerprintedDependencyCanBecomeAnIntentionalBatchOutput()
+    {
+        var dependency = Path.Combine(_folder, "native.mdl"); File.WriteAllBytes(dependency, [1, 2]);
+        AnimationInstallBatch.Apply([
+            () => WithFingerprint(dependency),
+            () => Change(dependency, [3, 4]),
+            () => WithFingerprint(dependency)
+        ]);
+        File.ReadAllBytes(dependency).Should().Equal(3, 4);
+    }
+
+    [Test]
+    public void ReadOnlyFingerprintsDoNotConsumeTheRollbackPayloadBudget()
+    {
+        var dependency = Path.Combine(_folder, "native.mdl"); File.WriteAllBytes(dependency, new byte[4096]);
+        var output = Path.Combine(_folder, "result.json");
+        AnimationInstallBatch.Apply([() => WithFingerprint(dependency, new AnimationFileChange(output, null, [3]))], 2);
+        File.ReadAllBytes(output).Should().Equal(3);
+    }
+
     [Test]
     public void LaterPreparationFailureRestoresOriginalFilesAndRemovesNewBanks()
     {

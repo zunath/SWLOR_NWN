@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.TwinRupture1, PerkType.TwinRupture)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Twin Rupture I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.TwinRupture, 30.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.TwinRupture2, PerkType.TwinRupture)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Twin Rupture II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.TwinRupture, 30.0f),

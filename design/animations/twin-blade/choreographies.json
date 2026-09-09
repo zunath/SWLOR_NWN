@@ -1,0 +1,622 @@
+[
+  {
+    "Id": "BladeVortex",
+    "Description": "Clear the front with one end of the double blade, reverse across the opposite side and gather the blade from the vortex",
+    "Duration": 2.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.6,
+        "Label": "Wind the leading vortex end",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.95,
+        "Label": "Clear the leading arc",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 1.35,
+        "Label": "Reverse into the trailing end",
+        "SourceAnimation": "plslashl",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.75,
+        "Label": "Clear the trailing arc",
+        "SourceAnimation": "plslashl",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 2.2,
+        "Label": "Gather the vortex low",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 2.4000000000000004,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CrossCut",
+    "Description": "Deliver a crossing pair of diagonal cuts with opposing ends of the double blade, with a clear reversal between hits",
+    "Duration": 2.2,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.55,
+        "Label": "Chamber the first crossing cut",
+        "SourceAnimation": "plslashl",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.85,
+        "Label": "Deliver the first diagonal",
+        "SourceAnimation": "plslashl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.1,
+        "Label": "Chamber the opposing end",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.4,
+        "Label": "Deliver the crossing diagonal",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.7,
+        "Label": "Gather the crossed cuts",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.9000000000000001,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.2,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CycloneStance",
+    "Description": "Roll the held double blade from low to high across the body, then settle in an open forward guard",
+    "Duration": 2.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.7,
+        "Label": "Set the low cyclone chamber",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.3,
+        "Label": "Roll the blade into the high guard",
+        "SourceAnimation": "plparryr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 1.9,
+        "Label": "Open the quick attacking posture",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0,
+        "TorsoDegrees": [
+          12,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "LaceratingTwinCut",
+    "Description": "Drive the forward edge into a short puncture, then draw the opposing edge diagonally down through a second close tearing cut before recovering",
+    "Duration": 2.4,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.6,
+        "Label": "Chamber a short forward puncture",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.9,
+        "Label": "Drive the forward edge into the first wound",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.55
+      },
+      {
+        "Time": 1.2,
+        "Label": "Gather the opposing edge for the tearing cut",
+        "SourceAnimation": "plcloseh",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.5,
+        "Label": "Drive the second edge down through the wound",
+        "SourceAnimation": "plcloseh",
+        "SourceTime": 0.55
+      },
+      {
+        "Time": 1.95,
+        "Label": "Keep the edges clear after the pair",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.45
+      },
+      {
+        "Time": 2.1,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.4,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "LaceratorStance",
+    "Description": "Lower both cutting ends into an angled predatory guard, tilt the shaft across the opposite flank and settle with the body forward",
+    "Duration": 2.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.75,
+        "Label": "Lower the predatory double blade",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          0,
+          0,
+          -16
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Angle the shaft across the opposite flank",
+        "SourceAnimation": "plparryr",
+        "SourceTime": 0.35,
+        "TorsoDegrees": [
+          0,
+          0,
+          16
+        ]
+      },
+      {
+        "Time": 2.05,
+        "Label": "Settle behind the cutting ends",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0,
+        "TorsoDegrees": [
+          15,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.4000000000000004,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RedBloom",
+    "Description": "Gather the double blade low, raise it sharply and release a broad bloodletting sweep before opening the finish",
+    "Duration": 2.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.6,
+        "Label": "Gather the low red bloom",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1,
+        "Label": "Raise the gathered blade",
+        "SourceAnimation": "plparryr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 1.35,
+        "Label": "Wind the bloodletting sweep",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.7,
+        "Label": "Release the red bloom arc",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 2.25,
+        "Label": "Open the released bloom",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.45,
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.45,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SerratedArc",
+    "Description": "Turn the double blade through one low-to-high cutting arc and withdraw the serrated edges from the surrounding targets",
+    "Duration": 2.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.6,
+        "Label": "Set the low serrated edge",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 0.98,
+        "Label": "Lift through the serrated arc",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.35,
+        "Label": "Carry the edge across the frontage",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.6,
+        "Label": "Withdraw the cutting edges",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.7499999999999998,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SpinningWhirl",
+    "Description": "Clear three directions with alternating ends of the shaft, visibly resetting the cutting angle before each directional strike",
+    "Duration": 3.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.55,
+        "Label": "Wind the first directional strike",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.85,
+        "Label": "Clear the first direction",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          0,
+          0,
+          -18
+        ]
+      },
+      {
+        "Time": 1.15,
+        "Label": "Reverse for the second direction",
+        "SourceAnimation": "plslashl",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.5,
+        "Label": "Clear the second direction",
+        "SourceAnimation": "plslashl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.8,
+        "Label": "Wind the third direction",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 2.15,
+        "Label": "Clear the third direction",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          0,
+          0,
+          18
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Gather the three-direction whirl",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.8000000000000003,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 3.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "TempestBloom",
+    "Description": "Uncoil into a broad double-blade sweep and finish by raising a level pulsing ward across the chest",
+    "Duration": 2.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.65,
+        "Label": "Coil the tempest release",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.05,
+        "Label": "Release the surrounding sweep",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 1.6,
+        "Label": "Raise the pulsing bloom ward",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.45
+      },
+      {
+        "Time": 2.15,
+        "Label": "Brace the empowered ward",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.45,
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.4000000000000004,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "TwinRupture",
+    "Description": "Drive a single short double-blade thrust, draw the shaft down through a tearing finish and recover without a second stab",
+    "Duration": 2.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.6,
+        "Label": "Chamber the rupturing point",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.95,
+        "Label": "Drive the rupture into the target",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.45,
+        "Label": "Draw down through the tearing finish",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.7,
+        "Label": "Gather the rupturing blade",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.7499999999999998,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

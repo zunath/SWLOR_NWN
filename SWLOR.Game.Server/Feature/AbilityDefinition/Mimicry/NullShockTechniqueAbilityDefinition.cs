@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.NullShock, 48, 3)
                 .HasTargetingSphere(
                     Spell.NullShockTechnique,

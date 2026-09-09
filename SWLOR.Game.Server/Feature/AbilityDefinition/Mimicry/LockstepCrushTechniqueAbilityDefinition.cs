@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.LockstepCrush, 43, 3)
                 .HasTargetingCone(
                     Spell.LockstepCrushTechnique,

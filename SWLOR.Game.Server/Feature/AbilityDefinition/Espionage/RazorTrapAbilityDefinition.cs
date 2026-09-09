@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(2f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasRecastDelay(RecastGroup.RazorTrap, 12f)
                 .SkillType(SkillType.Espionage)

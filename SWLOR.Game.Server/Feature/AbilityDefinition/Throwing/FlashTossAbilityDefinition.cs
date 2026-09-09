@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FlashToss1, PerkType.FlashToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Flash Toss I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.FlashToss, 24.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FlashToss2, PerkType.FlashToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Flash Toss II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.FlashToss, 24.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FlashToss3, PerkType.FlashToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Flash Toss III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.FlashToss, 24.0f),

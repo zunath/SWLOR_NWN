@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.EscapeArtist1, PerkType.EscapeArtist)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Escape Artist")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

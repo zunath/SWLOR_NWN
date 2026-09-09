@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressiveLine1, PerkType.SuppressiveLine)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Suppressive Line I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SuppressiveLine, 30.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressiveLine2, PerkType.SuppressiveLine)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Suppressive Line II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SuppressiveLine, 30.0f),

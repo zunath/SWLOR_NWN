@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.AssassinsStance1, PerkType.AssassinsStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Assassin's Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.AssassinsStance, 30.0f),

@@ -55,12 +55,11 @@ public static class AbilityAnimationBinding
             }
             // Explicit authored bindings remain authoritative. Native replacements carry projectile,
             // equipment and channel semantics which an ordinary pose must not overwrite.
-            // Katar equipment owns 1h-to-unarmed mappings; queued cleanup cannot restore that layer.
             if (ability.AuthoredAnimation != null || ability.QueuedAttackAnimation != null ||
                 ability.IsChanneled || ability.CanBeUsedInSpace || ability.PreservesStealthDuringActivation ||
                 ability.PreservesNativeAnimationChoreography ||
                 ability.AnimationType == Animation.ThrowGrenade ||
-                ability.SkillType is SkillType.Pistol or SkillType.Rifle or SkillType.Throwing or SkillType.Katar ||
+                ability.SkillType is SkillType.Pistol or SkillType.Rifle or SkillType.Throwing ||
                 !string.IsNullOrEmpty(ability.AnimationReplacementAnimationName) ||
                 ability.ActivationType != AbilityActivationType.Weapon &&
                 (ability.ImpactAnimationType != Animation.Invalid ||

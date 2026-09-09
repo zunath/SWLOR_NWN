@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SentinelStance1, PerkType.SentinelStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Sentinel Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SentinelStance, 30.0f),

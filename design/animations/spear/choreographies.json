@@ -1,0 +1,585 @@
+[
+  {
+    "Id": "CripplingDefense",
+    "Description": "Deflect low with the shaft, draw the spear back and deliver one guarded counterthrust",
+    "Duration": 2.15,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.6,
+        "Label": "Deflect low with the shaft",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 0.95,
+        "Label": "Chamber the guarded point",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.3,
+        "Label": "Deliver the guarded counterthrust",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.75,
+        "Label": "Recover behind the shaft",
+        "SourceAnimation": "plparryr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 1.8499999999999999,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.15,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DisablingStrike",
+    "Description": "Raise the spear into a high levering position and drive a compact downward shaft strike against the target",
+    "Duration": 1.95,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.65,
+        "Label": "Raise the disabling lever",
+        "SourceAnimation": "plclosel",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.95,
+        "Label": "Drive the compact shaft strike",
+        "SourceAnimation": "plclosel",
+        "SourceTime": 0.5
+      },
+      {
+        "Time": 1.4,
+        "Label": "Draw back the disabling strike",
+        "SourceAnimation": "plclosel",
+        "SourceTime": 0.85
+      },
+      {
+        "Time": 1.65,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.95,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DisruptionField",
+    "Description": "Turn the shaft through a broad low clearance and plant the spear butt to release a surrounding disruption field",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.65,
+        "Label": "Wind the low field clearance",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.05,
+        "Label": "Clear the space around the caster",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.45,
+        "Label": "Set the spear butt for the field",
+        "SourceAnimation": "plclosel",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 2.05,
+        "Label": "Hold the grounded disruption release",
+        "SourceAnimation": "plclosel",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 2.35,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "Forcebane",
+    "Description": "Sweep the spear across one flank, reverse to the opposite flank and finish with an upright disruptive barrier",
+    "Duration": 2.9,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.65,
+        "Label": "Wind the first forcebane sweep",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1,
+        "Label": "Clear the first flank",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.45,
+        "Label": "Reverse the shaft across the second flank",
+        "SourceAnimation": "plslashl",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 2,
+        "Label": "Raise the disruptive barrier",
+        "SourceAnimation": "plparryr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 2.35,
+        "Label": "Hold the final barrier",
+        "SourceAnimation": "plparryr",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 2.6,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.9,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "HamperingBarrage",
+    "Description": "Deliver three short spear drives across the aimed cone, retracting between each strike before recovering",
+    "Duration": 2.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.55,
+        "Label": "Chamber the first spear drive",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.85,
+        "Label": "Drive into the left cone edge",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 1.1,
+        "Label": "Retract for the center drive",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.4,
+        "Label": "Drive through the cone center",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.65,
+        "Label": "Retract for the final drive",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.95,
+        "Label": "Drive into the right cone edge",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          0,
+          0,
+          12
+        ]
+      },
+      {
+        "Time": 2.3,
+        "Label": "Withdraw the final drive",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.9
+      },
+      {
+        "Time": 2.45,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InterruptionStrike",
+    "Description": "Keep the spear poised at chest height, snap the point forward once and pull it back immediately to break the target action",
+    "Duration": 1.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.5,
+        "Label": "Poise the interrupting point",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.4
+      },
+      {
+        "Time": 0.78,
+        "Label": "Snap the point through the action",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.1,
+        "Label": "Pull the point back immediately",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.9
+      },
+      {
+        "Time": 1.3,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PerceptiveStance",
+    "Description": "Raise a level observing shaft guard, scan from one flank to the other and settle into the open perceptive stance",
+    "Duration": 2.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.75,
+        "Label": "Raise the observing shaft",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.45,
+        "TorsoDegrees": [
+          0,
+          0,
+          -17
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Scan the opposite flank",
+        "SourceAnimation": "plparryl",
+        "SourceTime": 0.45,
+        "TorsoDegrees": [
+          0,
+          0,
+          17
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Settle the perceptive guard",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0,
+        "TorsoDegrees": [
+          0,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SweepingFlank",
+    "Description": "Wind the spear to the side, swing broadly across the flank and finish around the far side of the body",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.65,
+        "Label": "Wind the flanking sweep",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.05,
+        "Label": "Sweep across the target flank",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.55,
+        "Label": "Finish around the far flank",
+        "SourceAnimation": "plslashr",
+        "SourceTime": 0.78
+      },
+      {
+        "Time": 1.8,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "VigorStance",
+    "Description": "Lift the spear into a compact chest brace, open the body with the shaft and settle into a forward vigorous guard",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.75,
+        "Label": "Lift the vigorous chest brace",
+        "SourceAnimation": "plcloseh",
+        "SourceTime": 0.45
+      },
+      {
+        "Time": 1.35,
+        "Label": "Open the body behind the shaft",
+        "SourceAnimation": "plcloseh",
+        "SourceTime": 0.45,
+        "TorsoDegrees": [
+          -12,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2,
+        "Label": "Set the forward spear guard",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0,
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "VigorThrust",
+    "Description": "Dip behind the spear, drive a committed long thrust and lean away into an evasive recovery",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Establish the weapon grip",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.6,
+        "Label": "Dip behind the chambered spear",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.3,
+        "TorsoDegrees": [
+          12,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Drive the vigorous thrust",
+        "SourceAnimation": "plstab",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.5,
+        "Label": "Lean away into evasive recovery",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0,
+        "TorsoDegrees": [
+          -13,
+          0,
+          12
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Gather directly into ready",
+        "SourceAnimation": "plreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

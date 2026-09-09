@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .Name("Shock Trap")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasRecastDelay(RecastGroup.ShockTrap, 18f)
                 .SkillType(SkillType.Espionage)

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.TwinIntercept1, PerkType.TwinIntercept)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Tag In")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.TwinIntercept, 18.0f),

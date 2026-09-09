@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LastWord1, PerkType.LastWord)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Last Word")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FlurryStance1, PerkType.FlurryStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Flurry Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.FlurryStance, 30.0f),

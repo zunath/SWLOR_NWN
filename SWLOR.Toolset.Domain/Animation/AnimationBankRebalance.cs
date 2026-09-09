@@ -10,16 +10,17 @@ public static class AnimationBankRebalance
 {
     private static readonly Regex Blocks = new(@"(?ms)^newanim (\S+) (\S+)\r?\n.*?^doneanim \1 \2\r?\n");
 
-    public static AnimationInstallPlan Prepare(string repositoryRoot, string targetName, int clipsPerBank = AnimationInstall.ClipsPerBank)
-        => Prepare(repositoryRoot, targetName, AnimationInstall.MaximumBankBytes, clipsPerBank);
+    public static AnimationInstallPlan Prepare(string repositoryRoot, string targetName, int clipsPerBank = AnimationInstall.ClipsPerBank, string? bankName = null)
+        => Prepare(repositoryRoot, targetName, AnimationInstall.MaximumBankBytes, clipsPerBank, bankName);
 
-    internal static AnimationInstallPlan Prepare(string repositoryRoot, string targetName, int bankBudget, int clipsPerBank)
+    internal static AnimationInstallPlan Prepare(string repositoryRoot, string targetName, int bankBudget, int clipsPerBank, string? bankName = null)
     {
         if (bankBudget < 1 || bankBudget > AnimationInstall.MaximumBankBytes)
             throw new ArgumentOutOfRangeException(nameof(bankBudget));
         if (clipsPerBank < 1 || clipsPerBank > AnimationInstall.ClipsPerBank)
             throw new ArgumentOutOfRangeException(nameof(clipsPerBank));
         AnimationProject.ValidateToken(targetName, 16);
+        if (bankName != null) AnimationProject.ValidateToken(bankName, 16);
         var root = Path.GetFullPath(repositoryRoot);
         var hakRoot = Path.Combine(root, "SWLOR_Haks");
         var configPath = Path.Combine(root, "Build", "hakbuilder.json");
@@ -80,6 +81,7 @@ public static class AnimationBankRebalance
         var outputBytes = 0;
         var newBankNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var seenClips = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var selectedBankFound = false;
         foreach (var (bankPath, model) in chain.Skip(1))
         {
             // A female rig can inherit male banks. Discovery already has their compiled
@@ -88,17 +90,34 @@ public static class AnimationBankRebalance
             if (!model.Name.Equals("an_" + targetName, StringComparison.OrdinalIgnoreCase) &&
                 !model.Name.StartsWith("an_" + shortTarget + "_", StringComparison.OrdinalIgnoreCase) &&
                 !model.Name.StartsWith("ab_" + shortTarget + "_", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!Path.GetFullPath(bankPath).StartsWith(hakRoot + Path.DirectorySeparatorChar,
+                    OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                throw new InvalidDataException("Owned bank lies outside SWLOR_Haks.");
+            // All bank binaries remain transaction inputs: validate complete registration coverage
+            // and protect chain links even when only one bank's editable source is needed.
+            var nativeNames = model.Animations.Select(a => a.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            if (nativeNames.Count != model.Animations.Count)
+                throw new InvalidDataException("Duplicate animation keys in " + bankPath);
+            var nativeClips = nativeNames.Where(names.Contains).ToArray();
+            foreach (var name in nativeClips)
+                if (!seenClips.Add(name) || !nativeNames.Contains(name + "_in") || !nativeNames.Contains(name + "_out"))
+                    throw new InvalidDataException("Missing or duplicate registered animation phases: " + name);
+            if (nativeClips.Length * 3 != nativeNames.Count)
+                throw new InvalidDataException("Owned bank contains unregistered or orphaned animation phases.");
+            if (bankName != null && !model.Name.Equals(bankName, StringComparison.OrdinalIgnoreCase)) continue;
             var compiled = Read(bankPath);
             var sourcePath = AnimationBankSource.PathFor(hakRoot, bankPath);
             if (AnimationBankSource.IsBinary(compiled) && !File.Exists(sourcePath))
             {
                 absent.Add(sourcePath);
-                continue;
+                throw new InvalidDataException("Owned bank is missing its editable companion: " + model.Name);
             }
             var source = AnimationBankSource.IsBinary(compiled) ? AnimationBankSource.Decode(Read(sourcePath), compiled) : compiled;
             var text = Encoding.UTF8.GetString(AnimationSourceFile.Utf8Content(source).Span);
             if (!text.StartsWith($"# SWLOR authored animations for {targetName}\n", StringComparison.Ordinal) &&
-                !text.StartsWith($"# SWLOR authored animations for {targetName}\r\n", StringComparison.Ordinal)) continue;
+                !text.StartsWith($"# SWLOR authored animations for {targetName}\r\n", StringComparison.Ordinal))
+                throw new InvalidDataException("Selected bank is not an authored bank for " + targetName);
+            selectedBankFound = true;
             if (!Path.GetFullPath(bankPath).StartsWith(hakRoot + Path.DirectorySeparatorChar,
                     OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                 throw new InvalidDataException("Owned bank lies outside SWLOR_Haks.");
@@ -112,7 +131,7 @@ public static class AnimationBankRebalance
             {
                 var name = match.Groups[1].Value;
                 if (!names.Contains(name)) continue;
-                if (!seenClips.Add(name) || !blocks.TryGetValue(name + "_in", out var start) || !blocks.TryGetValue(name + "_out", out var end))
+                if (!blocks.TryGetValue(name + "_in", out var start) || !blocks.TryGetValue(name + "_out", out var end))
                     throw new InvalidDataException("Missing or duplicate registered animation phases: " + name);
                 triples.Add(blocks[name] + start + end);
             }
@@ -175,6 +194,8 @@ public static class AnimationBankRebalance
             }
         }
         if (!seenClips.SetEquals(names)) throw new InvalidDataException("Registered animations are missing from the owned bank chain.");
+        if (bankName != null && !selectedBankFound)
+            throw new InvalidDataException("Selected bank is not in this rig's owned bank chain: " + bankName);
         return new AnimationInstallPlan
         {
             AnimationName = "rebalance", ConstantName = "Rebalance", Inputs = inputs,

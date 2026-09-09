@@ -33,7 +33,10 @@ public class ChoreographyAuthorTests
         }
         var recipes = new[] { "devices", "beast-mastery" }.SelectMany(category => ChoreographyAuthor.Read(
             File.ReadAllText(Path.Combine(Root, "design/animations", category, "choreographies.json")))).ToArray();
-        recipes.Should().HaveCount(30);
+        using var inventory = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "design/animations/active-abilities.json")));
+        recipes.Select(recipe => recipe.Id).Should().BeEquivalentTo(inventory.RootElement.EnumerateArray()
+            .Where(entry => entry.GetProperty("Category").GetString() is "Devices" or "Beast Mastery")
+            .Select(entry => entry.GetProperty("Id").GetString()));
         foreach (var recipe in recipes)
         {
             TestContext.Progress.WriteLine("Validating " + recipe.Id);

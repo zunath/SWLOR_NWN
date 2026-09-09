@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep1, PerkType.SunderingSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sundering Sweep I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SunderingSweep, 24.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep2, PerkType.SunderingSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sundering Sweep II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SunderingSweep, 24.0f),
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep3, PerkType.SunderingSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sundering Sweep III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.SunderingSweep, 24.0f),

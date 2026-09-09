@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Vitality)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.HoldfastSlam, 44, 3)
                 .MimicryElement(CombatDamageType.Physical);
 

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PerceptiveStance1, PerkType.PerceptiveStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Perceptive Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.PerceptiveStance, 30.0f),

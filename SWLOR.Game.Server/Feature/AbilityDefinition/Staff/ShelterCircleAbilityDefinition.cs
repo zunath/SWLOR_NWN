@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ShelterCircle1, PerkType.ShelterCircle)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Shelter Circle")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ShelterCircle, 60.0f),

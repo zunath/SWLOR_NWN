@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.RedBloom1, PerkType.RedBloom)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Red Bloom")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

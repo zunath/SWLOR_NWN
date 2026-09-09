@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasRecastDelay(RecastGroup.StimCanister, 45f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.StimCanister, 43, 3)
                 .MimicryUtility()
                 .HasImpactAction((activator, target, level, location) =>

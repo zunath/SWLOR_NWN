@@ -52,15 +52,16 @@ public static class NamedAnimation
     public static bool StopIfCurrent(uint creature, string token) => Playback.StopIfCurrent(creature, token);
 
     /// <summary>Previews a native one-shot with the same stop and supersession ownership as named clips.</summary>
-    public static string PlayNativePreview(uint creature, Animation animation)
+    public static string PlayNativePreview(uint creature, Animation animation, float speed = 1f)
     {
+        if (!float.IsFinite(speed) || speed <= 0f) throw new ArgumentOutOfRangeException(nameof(speed));
         var token = Playback.BeginNative(creature);
         try
         {
             AssignCommand(creature, () =>
             {
                 if (!Playback.IsCurrent(creature, token)) return;
-                try { PlayAnimation(animation); }
+                try { PlayAnimation(animation, speed); }
                 catch
                 {
                     if (Playback.IsCurrent(creature, token)) Playback.ReleaseForNativePlayback(creature);

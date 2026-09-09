@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Numerics;
+using System.Security.Cryptography;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Toolset.Domain.Render;
@@ -10,6 +11,21 @@ namespace SWLOR.Toolset.Domain.Animation;
 
 public sealed record AnimationFileChange(string Path, byte[]? Before, byte[] After);
 public sealed record AnimationRegistration(string Name, string AnimationName, float Duration, string[] Targets, string? ProjectPath = null);
+public sealed record AnimationInputFingerprint(long Length, string Sha256)
+{
+    public static AnimationInputFingerprint FromBytes(byte[] bytes) => new(bytes.LongLength, Convert.ToHexString(SHA256.HashData(bytes)));
+    public bool Matches(byte[] bytes) => Length == bytes.LongLength && Sha256 == Convert.ToHexString(SHA256.HashData(bytes));
+    public bool Matches(Stream stream)
+    {
+        stream.Position = 0;
+        return stream.Length == Length && Sha256 == Convert.ToHexString(SHA256.HashData(stream));
+    }
+    public void Verify(string path)
+    {
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        if (!Matches(stream)) throw new IOException($"'{path}' changed after the installation preview. Prepare a new preview.");
+    }
+}
 
 /// <summary>A reviewable installation transaction. Existing model payloads are retained byte for byte.</summary>
 public sealed class AnimationInstallPlan
@@ -18,6 +34,7 @@ public sealed class AnimationInstallPlan
     public required string ConstantName { get; init; }
     public required IReadOnlyList<AnimationFileChange> Changes { get; init; }
     public required IReadOnlyDictionary<string, byte[]> Inputs { get; init; }
+    public IReadOnlyDictionary<string, AnimationInputFingerprint> ReadOnlyInputs { get; init; } = new Dictionary<string, AnimationInputFingerprint>();
     public IReadOnlyCollection<string> AbsentInputs { get; init; } = [];
     /// <summary>Backup files whose cleanup failed during the most recent Apply call.</summary>
     public IReadOnlyList<string> RetainedBackups { get; private set; } = [];
@@ -44,10 +61,13 @@ public sealed class AnimationInstallPlan
         // Own the transaction's bytes as well as its ordering through commit and rollback.
         var changes = Changes.Select(change => new AnimationFileChange(change.Path, change.Before?.ToArray(), change.After.ToArray())).ToArray();
         var inputs = Inputs.ToDictionary(input => input.Key, input => input.Value.ToArray(), AnimationInstall.PathComparer);
+        var readOnlyInputs = ReadOnlyInputs.ToDictionary(input => input.Key, input => input.Value, AnimationInstall.PathComparer);
         var absentInputs = AbsentInputs.ToArray();
         var absentReservations = GetAbsentReservationPaths(changes, absentInputs);
         // The caller holds the module mutation lock. Every input is checked again after confirmation.
         VerifyInputs(inputs, absentInputs);
+        VerifyModelResolutions(readOnlyInputs.Keys, absentInputs, null);
+        foreach (var input in readOnlyInputs) input.Value.Verify(input.Key);
         foreach (var change in changes) Verify(change);
         var staged = new Dictionary<string, string>(AnimationInstall.PathComparer);
         var applied = new List<AnimationFileChange>();
@@ -68,6 +88,13 @@ public sealed class AnimationInstallPlan
             // dependency stable through the entire commit/rollback sequence, including config.
             var outputs = new HashSet<string>(AnimationInstall.PathComparer);
             for (var i = 0; i < changes.Length; i++) outputs.Add(changes[i].Path);
+            foreach (var input in readOnlyInputs)
+            {
+                if (outputs.Contains(input.Key)) throw new InvalidDataException("Read-only dependencies cannot also be outputs.");
+                var lease = new FileStream(input.Key, FileMode.Open, FileAccess.Read, FileShare.Read);
+                inputLeases.Add(lease);
+                if (!input.Value.Matches(lease)) throw new IOException($"'{input.Key}' changed after the installation preview.");
+            }
             foreach (var input in inputs)
             {
                 if (outputs.Contains(input.Key)) continue;
@@ -109,7 +136,7 @@ public sealed class AnimationInstallPlan
             }
             // A case-sensitive filesystem can admit another spelling beside a reserved
             // path. Check NWN resource identities again before reporting success.
-            VerifyModelResolutions(inputs.Keys.Concat(outputs), absentInputs,
+            VerifyModelResolutions(inputs.Keys.Concat(readOnlyInputs.Keys).Concat(outputs), absentInputs,
                 reservedAbsentInputs.Concat(outputs).ToHashSet(AnimationInstall.PathComparer));
         }
         catch (Exception failure)
@@ -260,6 +287,7 @@ public static class AnimationInstall
         var registryPath = Path.Combine(root, "design", "animations", "registry.json");
         var constantsPath = Path.Combine(root, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
         var inputs = new Dictionary<string, byte[]>(PathComparer);
+        var readOnlyInputs = new Dictionary<string, AnimationInputFingerprint>(PathComparer);
         var absentInputs = new HashSet<string>(PathComparer);
         var inputBytes = 0;
         byte[] Read(string path)
@@ -269,6 +297,9 @@ public static class AnimationInstall
                 data = AnimationSourceFile.ReadBytes(path, Math.Min(AnimationProject.MaximumFileBytes, inputBudget - inputBytes),
                     "Animation installation input (remaining aggregate budget)");
                 inputBytes += data.Length;
+                if (readOnlyInputs.TryGetValue(path, out var fingerprint) && !fingerprint.Matches(data))
+                    throw new IOException($"'{path}' changed while preparing the installation.");
+                readOnlyInputs.Remove(path); // Edited banks need full before bytes for rollback.
                 inputs[path] = data;
             }
             return data;
@@ -350,6 +381,24 @@ public static class AnimationInstall
         var targets = targetPaths.Select(Path.GetFullPath).Distinct(PathComparer).ToArray();
         if (targets.Length is < 1 or > 32) throw new InvalidDataException("Select 1–32 target model files.");
         var models = new Dictionary<string, MdlModel>(PathComparer);
+        var binaryModels = new HashSet<string>(PathComparer);
+        var parsedModelBytes = 0;
+        MdlModel ReadModel(string path)
+        {
+            if (models.TryGetValue(path, out var cached)) return cached;
+            // Parsed models remain resident even when their source bytes only need a
+            // fingerprint. Bound that distinct-model corpus separately from rollback data.
+            var remainingModelBytes = inputBudget - parsedModelBytes;
+            var bytes = inputs.TryGetValue(path, out var retained) ? retained :
+                AnimationSourceFile.ReadBytes(path, Math.Min(AnimationProject.MaximumFileBytes,
+                    Math.Min(inputBudget - inputBytes, remainingModelBytes)), "Animation model dependency (remaining parsed-model budget)");
+            if (bytes.Length > remainingModelBytes)
+                throw new InvalidDataException("Animation model dependency exceeds the remaining parsed-model budget.");
+            parsedModelBytes += bytes.Length;
+            if (!inputs.ContainsKey(path)) readOnlyInputs.Add(path, AnimationInputFingerprint.FromBytes(bytes));
+            if (AnimationBankSource.IsBinary(bytes)) binaryModels.Add(path);
+            return models[path] = new MdlReader().Parse(bytes);
+        }
         var chains = new Dictionary<string, List<string>>(PathComparer);
         foreach (var target in targets)
         {
@@ -366,7 +415,7 @@ public static class AnimationInstall
             while (currentPath != null)
             {
                 if (!visited.Add(currentPath) || visited.Count > MaximumModelChainDepth) throw new InvalidDataException("Cyclic or excessively deep supermodel chain.");
-                var model = new MdlReader().Parse(Read(currentPath)); models[currentPath] = model;
+                var model = ReadModel(currentPath);
                 chain.Add(currentPath);
                 foreach (var animation in model.Animations)
                 {
@@ -419,13 +468,13 @@ public static class AnimationInstall
             var header = $"# SWLOR authored animations for {model.Name}";
             bool IsOwnedBank(string path)
             {
-                if (AnimationBankSource.IsBinary(Read(path)) && !File.Exists(AnimationBankSource.PathFor(hakRoot, path))) return false;
+                if (binaryModels.Contains(path) && !File.Exists(AnimationBankSource.PathFor(hakRoot, path))) return false;
                 var contents = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(BankText(path)).Span);
                 return contents.StartsWith(header + "\n", StringComparison.Ordinal) || contents.StartsWith(header + "\r\n", StringComparison.Ordinal);
             }
             bool IsBankCandidate(string path)
             {
-                if (!AnimationBankSource.IsBinary(Read(path))) return IsOwnedBank(path);
+                if (!binaryModels.Contains(path)) return IsOwnedBank(path);
                 // Find a bank using its already parsed native metadata. Reading every large
                 // editable companion merely to discover ownership exhausted the aggregate
                 // budget once the library rolled over into multiple banks. This is only a
@@ -473,7 +522,8 @@ public static class AnimationInstall
                 var selected = registration != null
                     ? banks.SingleOrDefault(path => models[path].Animations.Any(a => a.Name.Equals(animationName, StringComparison.OrdinalIgnoreCase)))
                     : banks.FirstOrDefault(path => models[path].Animations.Count < ClipsPerBank * 3 &&
-                        CountNodes(models[path]) + project.Joints.Count * 3 < 90_000 && Read(path).Length < 32 * 1024 * 1024);
+                        CountNodes(models[path]) + project.Joints.Count * 3 < 90_000 &&
+                        (inputs.TryGetValue(path, out var retained) ? retained.LongLength : readOnlyInputs[path].Length) < 32 * 1024 * 1024);
                 if (registration != null && selected == null) throw new InvalidDataException("Registered animation is missing from its target's banks.");
                 if (selected == null)
                 {
@@ -657,7 +707,7 @@ public static class AnimationInstall
                 projectBytes = existing;
         }
         Add(projectPath, projectBytes);
-        var plan = new AnimationInstallPlan { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, AbsentInputs = absentInputs };
+        var plan = new AnimationInstallPlan { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, ReadOnlyInputs = readOnlyInputs, AbsentInputs = absentInputs };
         _ = plan.GetAbsentReservationPaths(); // Reject an oversized transaction before presenting its installation preview.
         return plan;
     }

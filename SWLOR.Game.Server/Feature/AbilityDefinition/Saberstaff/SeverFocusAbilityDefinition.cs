@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SeverFocus1, PerkType.SeverFocus)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sever Focus I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SeverFocus, 30.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SeverFocus2, PerkType.SeverFocus)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sever Focus II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SeverFocus, 30.0f),

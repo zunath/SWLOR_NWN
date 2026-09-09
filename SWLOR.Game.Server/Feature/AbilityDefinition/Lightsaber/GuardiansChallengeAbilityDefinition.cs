@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.GuardiansChallenge)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name(name)
                     .Level(level)
                     .HasRecastDelay(RecastGroup.GuardiansChallenge, 24.0f),

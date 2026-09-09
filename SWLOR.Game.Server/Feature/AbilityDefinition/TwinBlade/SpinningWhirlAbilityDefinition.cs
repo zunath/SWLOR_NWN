@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Spinning Whirl I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SpinningWhirl, 24.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Spinning Whirl II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SpinningWhirl, 24.0f),
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Spinning Whirl III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.SpinningWhirl, 24.0f),

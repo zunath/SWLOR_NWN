@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.SeismicSlam, 27, 3)
                 .MimicryElement(CombatDamageType.Physical)
                 .HasTargetingSphere(

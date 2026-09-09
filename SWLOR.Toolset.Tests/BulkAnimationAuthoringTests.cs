@@ -11,6 +11,46 @@ namespace SWLOR.Toolset.Tests;
 
 public class BulkAnimationAuthoringTests
 {
+    private static byte[] ExistingProjectFixture(string name)
+    {
+        var rest = new PosedNode(Vector3.Zero, Quaternion.Identity, 1);
+        var project = new AnimationProject
+        {
+            Name = name, ModelName = "a_ba", AnimationRoot = "a_ba", Duration = 1,
+            Joints = [new("a_ba", -1, rest)]
+        };
+        project.SetKey(0, [rest]);
+        project.SetKey(1, [rest]);
+        return System.Text.Encoding.UTF8.GetBytes(project.Serialize() + "\n");
+    }
+
+    [Test]
+    public void RecipesDoNotRepeatTheSameNativePoseSequenceWithDifferentTiming()
+    {
+        var duplicates = new List<string>();
+        var signatures = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(Root, "design/animations"), "choreographies.json", SearchOption.AllDirectories))
+        {
+            var recipes = ChoreographyAuthor.Read(File.ReadAllText(path));
+            foreach (var recipe in recipes)
+            {
+                var signature = JsonSerializer.Serialize(new
+                {
+                    recipe.InPlace,
+                    Beats = recipe.Beats.Select(beat => new
+                    {
+                        beat.SourceAnimation, beat.SourceModel, beat.SourceTime,
+                        beat.LeftHand, beat.RightHand, beat.TorsoDegrees
+                    })
+                });
+                if (signatures.TryGetValue(signature, out var previous))
+                    duplicates.Add($"{Path.GetFileName(Path.GetDirectoryName(path))}: {previous} and {recipe.Id}");
+                else signatures.Add(signature, recipe.Id);
+            }
+        }
+        duplicates.Should().BeEmpty("changing duration or beat labels does not create a distinct motion");
+    }
+
     [Test]
     public void ProjectProvenanceIgnoresCheckoutLineEndingsButDetectsContentChanges()
     {
@@ -47,16 +87,46 @@ public class BulkAnimationAuthoringTests
         try
         {
             var basePath = Path.Combine(folder, "output/bases/Pistolaimandrecoil.swlanim");
-            var saved = File.ReadAllBytes(Path.Combine(Root, "design/animations/bases/Pistolaimandrecoil.swlanim"));
+            var saved = ExistingProjectFixture("Pistolaimandrecoil");
             // A harmless trailing newline represents an animator-owned file revision.
             var edited = saved.Concat(new byte[] { (byte)'\n' }).ToArray();
             File.WriteAllBytes(basePath, edited);
             var input = Path.Combine(folder, "input.json");
-            File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.") }));
+            File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.", SourceAnimation: "1hreadyr", Profile: "Pistol aim and recoil") }));
             BulkMotionAuthor.Generate(model, input, Path.Combine(folder, "output"), targetedReplacement,
                 targetedReplacement ? new HashSet<string> { "NewShot" } : null);
             File.ReadAllBytes(basePath).Should().Equal(edited);
             File.Exists(Path.Combine(folder, "output/pistol/NewShot.swlanim")).Should().BeTrue();
+        }
+        finally { Directory.Delete(folder, true); }
+    }
+
+    [Test]
+    public void NewOrReplacedMotionRequiresIndividualDirectionButExistingMotionCanBePreserved()
+    {
+        var model = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
+        if (!File.Exists(model)) Assert.Ignore("Initialize HAK sources.");
+        var folder = Path.Combine(Path.GetTempPath(), "swlor-authored-direction-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        try
+        {
+            var input = Path.Combine(folder, "input.json");
+            var output = Path.Combine(folder, "output");
+            var motion = new ActiveMotion("Example", "sw_example", "Force", "Combat", "Blast an enemy.");
+            File.WriteAllText(input, JsonSerializer.Serialize(new[] { motion }));
+            Action missing = () => BulkMotionAuthor.Generate(model, input, output, false);
+            missing.Should().Throw<InvalidDataException>().WithMessage("*individual choreography*SourceAnimation*");
+            Directory.Exists(output).Should().BeFalse();
+            File.WriteAllText(input, JsonSerializer.Serialize(new[] { motion with { SourceAnimation = "castout" } }));
+            BulkMotionAuthor.Generate(model, input, output, false);
+            var path = Path.Combine(output, "force/Example.swlanim");
+            var authored = File.ReadAllBytes(path);
+            File.WriteAllText(input, JsonSerializer.Serialize(new[] { motion }));
+            BulkMotionAuthor.Generate(model, input, output, false);
+            File.ReadAllBytes(path).Should().Equal(authored);
+            Action overwrite = () => BulkMotionAuthor.Generate(model, input, output, true);
+            overwrite.Should().Throw<InvalidDataException>().WithMessage("*individual choreography*SourceAnimation*");
+            File.ReadAllBytes(path).Should().Equal(authored);
         }
         finally { Directory.Delete(folder, true); }
     }
@@ -88,14 +158,14 @@ public class BulkAnimationAuthoringTests
         try
         {
             var projectPath = Path.Combine(output, "pistol/NewShot.swlanim");
-            var original = File.ReadAllBytes(Path.Combine(Root, "design/animations/bases/Pistolaimandrecoil.swlanim"));
+            var original = ExistingProjectFixture("NewShot");
             File.WriteAllBytes(projectPath, original);
             var manifest = Path.Combine(output, "active-manifest.json");
             const string manifestText = "{\"Animations\":[]}";
             File.WriteAllText(manifest, manifestText);
             File.WriteAllText(catalog, "// Original catalog");
             var input = Path.Combine(folder, "input.json");
-            File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.") }));
+            File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.", SourceAnimation: "1hreadyr", Profile: "Pistol aim and recoil") }));
             using (var locked = new FileStream(catalog, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 Action generate = () => BulkMotionAuthor.Generate(model, input, output, true);

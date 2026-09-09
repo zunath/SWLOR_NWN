@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.WardenSweep, 30f)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.WardenSweep, 48, 3)
                 .MimicryUtility();
 

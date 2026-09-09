@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Epicenter1, PerkType.Epicenter)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Epicenter")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

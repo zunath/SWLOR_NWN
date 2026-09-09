@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Double Strike I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Double Strike II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Double Strike III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),
@@ -109,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike4, PerkType.DoubleStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Double Strike IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),

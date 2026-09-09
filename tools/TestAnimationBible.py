@@ -13,13 +13,17 @@ from UpdateAnimationBible import synchronize, synchronize_files, replace_outputs
 
 class AnimationBibleTests(unittest.TestCase):
     def test_native_preview_uses_definition_instead_of_historical_motion_source(self):
-        for concurrent_edit in (False, True):
-            with self.subTest(concurrent_edit=concurrent_edit), tempfile.TemporaryDirectory() as folder:
+        for concurrent_edit, declaration, expected_source in (
+                (False, "Animation.FireForgetTaunt", "Base NWN FireForgetTaunt"),
+                (True, "Animation.FireForgetTaunt", "Base NWN FireForgetTaunt"),
+                (False, "Animation.SaberThrow, 2f", "Master lightsaber throw (CUSTOM46 / 68) at 2x speed"),
+                (True, "Animation.SaberThrow, 2f", "Master lightsaber throw (CUSTOM46 / 68) at 2x speed")):
+            with self.subTest(concurrent_edit=concurrent_edit, declaration=declaration), tempfile.TemporaryDirectory() as folder:
                 root = Path(folder)
                 workbook, manifest, registry, provenance, plan = [root / name for name in
                     ("bible.xlsx", "manifest.json", "registry.json", "provenance.json", "plan.csv")]
                 definition = root / "TauntAbilityDefinition.cs"
-                definition.write_text(".UsesNativeAnimationPreview(Animation.FireForgetTaunt)")
+                definition.write_text(f".UsesNativeAnimationPreview({declaration})")
                 workbook.write_bytes(b"original workbook")
                 manifest.write_text(json.dumps([{"Id": "Taunt", "InternalName": "sw_taunt",
                     "BibleAnimationRow": 2, "DefinitionFiles": [definition.name]}]))
@@ -29,9 +33,14 @@ class AnimationBibleTests(unittest.TestCase):
 
                 def render(path, entries, records, original):
                     cells = details(entries[0], {"ProjectPath": "old.swlanim"})
-                    self.assertEqual(cells["G"], "Base NWN FireForgetTaunt")
-                    self.assertEqual(cells["H"], "Native playback in game and tester")
-                    self.assertNotIn("old.swlanim", cells.values())
+                    self.assertEqual(cells["G"], expected_source)
+                    if "SaberThrow" in declaration:
+                        self.assertEqual(cells["H"], "Master custom animation in game and tester")
+                        self.assertIn("Requires master a_ba_non_combat custom46start/custom46lp/custom46end", cells["I"])
+                        self.assertIn("authoring reference: old.swlanim", cells["I"])
+                    else:
+                        self.assertEqual(cells["H"], "Native playback in game and tester")
+                        self.assertNotIn("old.swlanim", cells.values())
                     if concurrent_edit:
                         definition.write_text("changed while rendering")
                     return b"new workbook"

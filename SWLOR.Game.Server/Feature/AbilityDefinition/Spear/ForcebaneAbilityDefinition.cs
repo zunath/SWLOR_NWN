@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Forcebane1, PerkType.Forcebane)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Forcebane")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

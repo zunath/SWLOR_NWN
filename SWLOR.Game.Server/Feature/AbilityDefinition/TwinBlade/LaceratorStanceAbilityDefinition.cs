@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratorStance1, PerkType.LaceratorStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Lacerator Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.LaceratorStance, 30.0f),

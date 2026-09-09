@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.RainOfSteel1, PerkType.RainOfSteel)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Rain of Steel")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

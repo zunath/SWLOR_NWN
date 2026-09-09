@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Name("Defensive Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.DefensiveStance, 30f)
+                    .UsesImmediateAuthoredAnimation()
                     .UsesAnimation(Animation.ShieldWall),
                 typeof(DefensiveStanceStatusEffect),
                 () => new DefensiveStanceStatusEffect());

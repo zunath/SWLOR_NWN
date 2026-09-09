@@ -172,6 +172,47 @@ public class AnimationBankRebalanceTests
     }
 
     [Test]
+    public void ExactBankSelectionDoesNotReadOtherOwnedCompanionsButLeasesTheirBinaries()
+    {
+        var (_, unselectedSource) = CompiledFixture();
+        var unselectedBank = Path.Combine(_models, "an_hero.mdl");
+        File.WriteAllText(unselectedSource, "Deliberately invalid: this unselected companion must not be decoded.");
+        File.WriteAllText(Path.Combine(_models, "hero.mdl"), Model("hero", "ab_hero_001", ""));
+        var selected = Path.Combine(_models, "ab_hero_001.mdl");
+        File.WriteAllText(selected, Model("ab_hero_001", "an_hero", Triplet("sw_one") + Triplet("sw_two"))
+            .Replace("an_a_ba", "ab_hero_001").Replace("authored animations for a_ba", "authored animations for hero"));
+        File.WriteAllText(Path.Combine(_root, "design", "animations", "registry.json"), JsonSerializer.Serialize(new[]
+        {
+            new AnimationRegistration("Wave", "sw_wave", 1, ["SWLOR_Haks/models/hero.mdl"]),
+            new AnimationRegistration("One", "sw_one", 1, ["SWLOR_Haks/models/hero.mdl"]),
+            new AnimationRegistration("Two", "sw_two", 1, ["SWLOR_Haks/models/hero.mdl"])
+        }));
+        var plan = AnimationBankRebalance.Prepare(_root, "hero", 1, "ab_hero_001");
+        plan.Inputs.Should().NotContainKey(unselectedSource).And.ContainKey(unselectedBank);
+        plan.Changes.Should().HaveCount(2).And.NotContain(change => change.Path == unselectedBank);
+        new MdlReader().Parse(plan.Changes[^1].After).SuperModel.Should().Be("an_hero");
+        File.AppendAllText(unselectedBank, "external binary edit");
+        ((Action)(() => plan.Apply())).Should().Throw<IOException>();
+        File.ReadAllText(selected).Should().Contain("sw_two");
+    }
+
+    [TestCase("an_absent")]
+    [TestCase("a_ba")]
+    public void ExactBankSelectorRejectsMissingOrNonOwnedModels(string bank)
+        => ((Action)(() => AnimationBankRebalance.Prepare(_root, "a_ba", 1, bank)))
+            .Should().Throw<InvalidDataException>().WithMessage("*Selected bank*");
+
+    [Test]
+    public void ExactBankSelectionStillRejectsOrphanPhasesInAnUnselectedBank()
+    {
+        File.WriteAllText(Path.Combine(_models, "an_a_ba.mdl"), Model("an_a_ba", "ab_a_ba_001", Triplet("sw_one")));
+        File.WriteAllText(Path.Combine(_models, "ab_a_ba_001.mdl"),
+            Model("ab_a_ba_001", "NULL", Triplet("sw_two").Replace("sw_two_out", "sw_orphan").Replace("an_a_ba", "ab_a_ba_001")));
+        ((Action)(() => AnimationBankRebalance.Prepare(_root, "a_ba", 1, "an_a_ba")))
+            .Should().Throw<InvalidDataException>().WithMessage("*phases*");
+    }
+
+    [Test]
     public void SplitBanksSortNativeLookupTablesWithoutRewritingAnimationPayloads()
     {
         File.WriteAllText(Path.Combine(_models, "an_a_ba.mdl"), Model("an_a_ba", "NULL", Triplet("sw_two") + Triplet("sw_one") + Triplet("sw_three")));

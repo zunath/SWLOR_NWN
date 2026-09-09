@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PinningToss1, PerkType.PinningToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Pinning Toss I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.PinningToss, 24.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PinningToss2, PerkType.PinningToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Pinning Toss II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.PinningToss, 24.0f),
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PinningToss3, PerkType.PinningToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Pinning Toss III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.PinningToss, 24.0f),

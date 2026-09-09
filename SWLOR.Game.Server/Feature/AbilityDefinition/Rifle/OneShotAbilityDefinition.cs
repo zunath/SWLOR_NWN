@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.OneShot1, PerkType.OneShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("One Shot")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

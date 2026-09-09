@@ -124,7 +124,7 @@ public class AbilityAnimationBindingTests
     }
 
     [Test]
-    public void KatarGuardCounterKeepsEquipmentOwnedSwingMappingsAndRemainsPreviewable()
+    public void KatarGuardCounterBindsItsQueuedClipWithEquipmentRestoration()
     {
         var abilities = new GuardCounterAbilityDefinition().BuildAbilities();
         var before = abilities.ToDictionary(pair => pair.Key, pair => pair.Value.AnimationType);
@@ -135,8 +135,8 @@ public class AbilityAnimationBindingTests
         {
             ability.SkillType.Should().Be(SkillType.Katar);
             ability.PreviewAnimation.Should().BeSameAs(entries[0].Clip);
-            ability.QueuedAttackAnimation.Should().BeNull("Katar owns 1h-to-unarmed replacements which queued cleanup would erase");
-            ability.HasGeneratedAnimationBinding.Should().BeFalse();
+            ability.QueuedAttackAnimation.Should().BeSameAs(entries[0].Clip);
+            ability.HasGeneratedAnimationBinding.Should().BeTrue();
             ability.AnimationType.Should().Be(before[feat]);
         }
     }

@@ -1,0 +1,155 @@
+[
+  {
+    "Id": "BerserkerStance",
+    "Description": "Open the shield side, draw the sword back beside the hip and lean into an exposed aggressive ready posture; hold the threat without making an attack",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Establish sword ready",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.75,
+        "Label": "Open the guarded flank",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.08,
+          1.1
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 1.2,
+        "Label": "Draw the sword into an aggressive chamber",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          -0.1,
+          1.03
+        ],
+        "LeftHand": [
+          -0.52,
+          0.17,
+          1.04
+        ],
+        "TorsoDegrees": [
+          -10,
+          0,
+          -18
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Hold the exposed forward threat",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          -0.06,
+          1.06
+        ],
+        "LeftHand": [
+          -0.5,
+          0.22,
+          1.07
+        ],
+        "TorsoDegrees": [
+          -14,
+          0,
+          -18
+        ]
+      },
+      {
+        "Time": 2,
+        "Label": "Gather the weapon safely",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DefensiveStance",
+    "Description": "Set a low sword-side brace, bring the shield squarely forward and settle behind it with the sword held close; absorb pressure without swinging or thrusting",
+    "Duration": 2.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Set the defensive base",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.8,
+        "Label": "Lower behind a compact guard",
+        "SourceAnimation": "1hparryr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.25,
+        "Label": "Present the shield while keeping the blade close",
+        "SourceAnimation": "1hparryr",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.29,
+          0.44,
+          1.18
+        ]
+      },
+      {
+        "Time": 1.75,
+        "Label": "Absorb pressure behind the shield",
+        "SourceAnimation": "1hparryr",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.28,
+          0.35,
+          1.19
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Rise into a settled guard",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

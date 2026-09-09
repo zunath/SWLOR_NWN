@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptionStrike1, PerkType.InterruptionStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Interruption Strike I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.InterruptionStrike, 24.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptionStrike2, PerkType.InterruptionStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Interruption Strike II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.InterruptionStrike, 24.0f),
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptionStrike3, PerkType.InterruptionStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Interruption Strike III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.InterruptionStrike, 24.0f),

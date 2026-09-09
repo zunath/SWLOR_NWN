@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ImbuementStance1, PerkType.ImbuementStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Imbuement Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ImbuementStance, 30.0f),

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.TwinGuardStance1, PerkType.TwinGuardStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Steel Shoulder")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.TwinGuardStance, 18.0f),

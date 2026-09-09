@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ConcussiveToss1, PerkType.ConcussiveToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Concussive Toss I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ConcussiveToss, 30.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ConcussiveToss2, PerkType.ConcussiveToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Concussive Toss II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.ConcussiveToss, 30.0f),

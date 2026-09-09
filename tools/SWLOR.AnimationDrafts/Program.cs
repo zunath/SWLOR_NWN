@@ -15,11 +15,20 @@ try
     if (args.Length > 0 && args[0] == "rebalance-banks")
     {
         var clipsPerBank = AnimationInstall.ClipsPerBank;
-        if (args.Length != 3 && (args.Length != 5 || args[3] != "--clips-per-bank" ||
-            !int.TryParse(args[4], System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out clipsPerBank)))
-            throw new ArgumentException("Usage: rebalance-banks <repository> <rig> [--clips-per-bank <1-128>]");
+        string? bankName = null;
+        var options = new HashSet<string>(StringComparer.Ordinal);
+        if (args.Length < 3 || args.Length % 2 != 1)
+            throw new ArgumentException("Usage: rebalance-banks <repository> <rig> [--clips-per-bank <1-128>] [--bank <owned-resref>]");
+        for (var index = 3; index < args.Length; index += 2)
+        {
+            if (!options.Add(args[index])) throw new ArgumentException("Duplicate rebalance option: " + args[index]);
+            if (args[index] == "--bank") bankName = args[index + 1];
+            else if (args[index] != "--clips-per-bank" ||
+                !int.TryParse(args[index + 1], System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out clipsPerBank))
+                throw new ArgumentException("Invalid rebalance option: " + args[index]);
+        }
         // Each rig chain is an independent transaction; registration and native model payloads stay unchanged.
-        var plan = AnimationBankRebalance.Prepare(args[1], args[2], clipsPerBank);
+        var plan = AnimationBankRebalance.Prepare(args[1], args[2], clipsPerBank, bankName);
         foreach (var change in plan.Changes) Console.WriteLine(change.Path);
         plan.Apply();
         foreach (var backup in plan.RetainedBackups) logger.Warning("Backup cleanup failed; retained {BackupPath}.", backup);

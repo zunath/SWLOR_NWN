@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptingSweep1, PerkType.InterruptingSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Interrupting Sweep I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.InterruptingSweep, 30.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptingSweep2, PerkType.InterruptingSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Interrupting Sweep II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.InterruptingSweep, 30.0f),

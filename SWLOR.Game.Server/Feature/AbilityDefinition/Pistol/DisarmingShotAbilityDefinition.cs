@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot1, PerkType.DisarmingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disarming Shot I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.DisarmingShot, 18.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot2, PerkType.DisarmingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disarming Shot II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.DisarmingShot, 18.0f),
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot3, PerkType.DisarmingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disarming Shot III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.DisarmingShot, 18.0f),
@@ -106,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot4, PerkType.DisarmingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disarming Shot IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.DisarmingShot, 18.0f),

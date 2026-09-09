@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.InnerVoid, 46, 3)
                 .MimicryElement(CombatDamageType.Force);
 

@@ -71,6 +71,36 @@ public class AuthoredCombatAnimationTests
         runtime.Token.Should().BeEmpty();
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void QueuedReleaseRestoresCurrentEquipmentAndOldTimersCannotRestoreOverNewMoves(bool equipmentChanged)
+    {
+        var runtime = new Runtime();
+        var hasKatar = true;
+        var restores = 0;
+        var playback = new QueuedAttackAnimationPlayback(runtime, creature =>
+        {
+            restores++;
+            runtime.Maps["1hslashl"] = hasKatar ? "nwslashl" : "";
+        });
+        var first = playback.Begin(1, AuthoredAnimation.GuardCounter);
+        hasKatar = !equipmentChanged;
+        playback.Stop(1);
+        runtime.Maps["1hslashl"].Should().Be(hasKatar ? "nwslashl" : "",
+            "release must resolve current equipment, never restore the equipment captured at activation");
+        var second = playback.Begin(1, AuthoredAnimation.ShieldBash);
+        playback.Complete(1, first);
+        runtime.Timeouts[0]();
+        restores.Should().Be(1);
+        runtime.Maps["1hslashl"].Should().Be(AuthoredAnimation.ShieldBash.Name);
+        runtime.Timeouts[1]();
+        restores.Should().Be(2);
+        runtime.Maps["1hslashl"].Should().Be(hasKatar ? "nwslashl" : "");
+        playback.Complete(1, second);
+        restores.Should().Be(2);
+        runtime.Token.Should().BeEmpty();
+    }
+
     [Test]
     public void InterruptedQueueStillRestoresItsSwingKeys()
     {

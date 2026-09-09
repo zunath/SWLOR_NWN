@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Backstab1, PerkType.Backstab)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Backstab I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Backstab, 45.0f),
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Backstab2, PerkType.Backstab)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Backstab II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.Backstab, 45.0f),

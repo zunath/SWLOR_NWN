@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.Worldbreaker1, PerkType.Worldbreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Worldbreaker")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

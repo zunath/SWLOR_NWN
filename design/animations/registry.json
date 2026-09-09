@@ -1,85 +1,5 @@
 [
   {
-    "Name": "ReviveBeast",
-    "AnimationName": "sw_revi_beas",
-    "Duration": 1.5,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/beast-mastery/ReviveBeast.swlanim"
-  },
-  {
-    "Name": "Reward",
-    "AnimationName": "sw_reward",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/beast-mastery/Reward.swlanim"
-  },
-  {
-    "Name": "SoothePet",
-    "AnimationName": "sw_soothepet",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/beast-mastery/SoothePet.swlanim"
-  },
-  {
-    "Name": "Tame",
-    "AnimationName": "sw_tame",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/beast-mastery/Tame.swlanim"
-  },
-  {
-    "Name": "RazorTrap",
-    "AnimationName": "sw_razortrap",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/espionage/RazorTrap.swlanim"
-  },
-  {
-    "Name": "ShadowStep",
-    "AnimationName": "sw_shad_step",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/espionage/ShadowStep.swlanim"
-  },
-  {
-    "Name": "ShockTrap",
-    "AnimationName": "sw_shocktrap",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/espionage/ShockTrap.swlanim"
-  },
-  {
-    "Name": "TacticalEscape",
-    "AnimationName": "sw_tact_esca",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/espionage/TacticalEscape.swlanim"
-  },
-  {
     "Name": "Provoke",
     "AnimationName": "sw_provoke",
     "Duration": 0.95,
@@ -90,1746 +10,6 @@
     "ProjectPath": "design/animations/general/Provoke.swlanim"
   },
   {
-    "Name": "AdamantineGuard",
-    "AnimationName": "sw_adamguard",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/AdamantineGuard.swlanim"
-  },
-  {
-    "Name": "GuardCounter",
-    "AnimationName": "sw_guar_coun",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/GuardCounter.swlanim"
-  },
-  {
-    "Name": "HookingStrike",
-    "AnimationName": "sw_hook_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/HookingStrike.swlanim"
-  },
-  {
-    "Name": "InterruptingSweep",
-    "AnimationName": "sw_intr_swee",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/InterruptingSweep.swlanim"
-  },
-  {
-    "Name": "IronWallStance",
-    "AnimationName": "sw_ironwall",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/IronWallStance.swlanim"
-  },
-  {
-    "Name": "JointLock",
-    "AnimationName": "sw_jointlock",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/JointLock.swlanim"
-  },
-  {
-    "Name": "ScrapheapLockdown",
-    "AnimationName": "sw_scra_lock",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/ScrapheapLockdown.swlanim"
-  },
-  {
-    "Name": "ScrapperStance",
-    "AnimationName": "sw_scrapstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/ScrapperStance.swlanim"
-  },
-  {
-    "Name": "TwinGuardStance",
-    "AnimationName": "sw_steelshld",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/TwinGuardStance.swlanim"
-  },
-  {
-    "Name": "TwinIntercept",
-    "AnimationName": "sw_tagin",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/TwinIntercept.swlanim"
-  },
-  {
-    "Name": "WhirlingGuard",
-    "AnimationName": "sw_whir_guar",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/katar/WhirlingGuard.swlanim"
-  },
-  {
-    "Name": "BreakMorale",
-    "AnimationName": "sw_brea_mora",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/BreakMorale.swlanim"
-  },
-  {
-    "Name": "ChargeOrder",
-    "AnimationName": "sw_char_orde",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/ChargeOrder.swlanim"
-  },
-  {
-    "Name": "CleanseOrder",
-    "AnimationName": "sw_clea_orde",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/CleanseOrder.swlanim"
-  },
-  {
-    "Name": "CoordinatedFocus",
-    "AnimationName": "sw_coor_focu",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/CoordinatedFocus.swlanim"
-  },
-  {
-    "Name": "DecisiveCommand",
-    "AnimationName": "sw_decis_cmd",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/DecisiveCommand.swlanim"
-  },
-  {
-    "Name": "FieldRecovery",
-    "AnimationName": "sw_fiel_reco",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/FieldRecovery.swlanim"
-  },
-  {
-    "Name": "HoldTheLine",
-    "AnimationName": "sw_holdline",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/HoldTheLine.swlanim"
-  },
-  {
-    "Name": "PressTheAttack",
-    "AnimationName": "sw_pres_atta",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/PressTheAttack.swlanim"
-  },
-  {
-    "Name": "RallyingStandard",
-    "AnimationName": "sw_rall_stan",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/RallyingStandard.swlanim"
-  },
-  {
-    "Name": "RousingShout",
-    "AnimationName": "sw_rous_shou",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/RousingShout.swlanim"
-  },
-  {
-    "Name": "SteadyFormation",
-    "AnimationName": "sw_stea_form",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/SteadyFormation.swlanim"
-  },
-  {
-    "Name": "WatchfulPresence",
-    "AnimationName": "sw_watc_pres",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/leadership/WatchfulPresence.swlanim"
-  },
-  {
-    "Name": "AegisEternal",
-    "AnimationName": "sw_aegi_eter",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/AegisEternal.swlanim"
-  },
-  {
-    "Name": "Epicenter",
-    "AnimationName": "sw_epicenter",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/Epicenter.swlanim"
-  },
-  {
-    "Name": "SaberForceLink",
-    "AnimationName": "sw_forcelink",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/SaberForceLink.swlanim"
-  },
-  {
-    "Name": "ForceSheath",
-    "AnimationName": "sw_forc_shea",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/ForceSheath.swlanim"
-  },
-  {
-    "Name": "GuardiansChallenge",
-    "AnimationName": "sw_guar_chal",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/GuardiansChallenge.swlanim"
-  },
-  {
-    "Name": "ImbuementStance",
-    "AnimationName": "sw_imbuestn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/ImbuementStance.swlanim"
-  },
-  {
-    "Name": "ImmovableStance",
-    "AnimationName": "sw_immovstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/ImmovableStance.swlanim"
-  },
-  {
-    "Name": "Reprisal",
-    "AnimationName": "sw_reprisal",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/Reprisal.swlanim"
-  },
-  {
-    "Name": "SaberWard",
-    "AnimationName": "sw_saberward",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/SaberWard.swlanim"
-  },
-  {
-    "Name": "ShatteringStrike",
-    "AnimationName": "sw_shat_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/ShatteringStrike.swlanim"
-  },
-  {
-    "Name": "SunderingSweep",
-    "AnimationName": "sw_sund_swee",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/lightsaber/SunderingSweep.swlanim"
-  },
-  {
-    "Name": "ApexCollapseTechnique",
-    "AnimationName": "sw_apex_coll",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/ApexCollapseTechnique.swlanim"
-  },
-  {
-    "Name": "ArcPulseTechnique",
-    "AnimationName": "sw_arcpulse",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/ArcPulseTechnique.swlanim"
-  },
-  {
-    "Name": "BarbedVolleyTechnique",
-    "AnimationName": "sw_barb_voll",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/BarbedVolleyTechnique.swlanim"
-  },
-  {
-    "Name": "BloodFrenzyFlurryTechnique",
-    "AnimationName": "sw_bloodflry",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/BloodFrenzyFlurryTechnique.swlanim"
-  },
-  {
-    "Name": "BraceBreakerTechnique",
-    "AnimationName": "sw_brac_brea",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/BraceBreakerTechnique.swlanim"
-  },
-  {
-    "Name": "BrutalBashTechnique",
-    "AnimationName": "sw_brut_bash",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/BrutalBashTechnique.swlanim"
-  },
-  {
-    "Name": "CapacitorSurgeTechnique",
-    "AnimationName": "sw_capa_surg",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/CapacitorSurgeTechnique.swlanim"
-  },
-  {
-    "Name": "ConcussiveChallengeTechnique",
-    "AnimationName": "sw_conc_chal",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/ConcussiveChallengeTechnique.swlanim"
-  },
-  {
-    "Name": "CrossfireDrillTechnique",
-    "AnimationName": "sw_cros_dril",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/CrossfireDrillTechnique.swlanim"
-  },
-  {
-    "Name": "CryoBileTechnique",
-    "AnimationName": "sw_cryobile",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/CryoBileTechnique.swlanim"
-  },
-  {
-    "Name": "DarkShockTechnique",
-    "AnimationName": "sw_darkshock",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/DarkShockTechnique.swlanim"
-  },
-  {
-    "Name": "DisorientingScreechTechnique",
-    "AnimationName": "sw_diso_scre",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/DisorientingScreechTechnique.swlanim"
-  },
-  {
-    "Name": "DreadWaveTechnique",
-    "AnimationName": "sw_dreadwave",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/DreadWaveTechnique.swlanim"
-  },
-  {
-    "Name": "FinalEclipseTechnique",
-    "AnimationName": "sw_fina_eclp",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/FinalEclipseTechnique.swlanim"
-  },
-  {
-    "Name": "FinalLineTechnique",
-    "AnimationName": "sw_finalline",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/FinalLineTechnique.swlanim"
-  },
-  {
-    "Name": "FinalMandateTechnique",
-    "AnimationName": "sw_fina_mand",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/FinalMandateTechnique.swlanim"
-  },
-  {
-    "Name": "FinalSuppressionTechnique",
-    "AnimationName": "sw_fina_supp",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/FinalSuppressionTechnique.swlanim"
-  },
-  {
-    "Name": "FinishingDriveTechnique",
-    "AnimationName": "sw_fini_driv",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/FinishingDriveTechnique.swlanim"
-  },
-  {
-    "Name": "FrostSpitTechnique",
-    "AnimationName": "sw_frostspit",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/FrostSpitTechnique.swlanim"
-  },
-  {
-    "Name": "GoringChargeTechnique",
-    "AnimationName": "sw_gori_char",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/GoringChargeTechnique.swlanim"
-  },
-  {
-    "Name": "GrenadeBurstTechnique",
-    "AnimationName": "sw_grenburst",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/GrenadeBurstTechnique.swlanim"
-  },
-  {
-    "Name": "HoldfastSlamTechnique",
-    "AnimationName": "sw_hold_slam",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/HoldfastSlamTechnique.swlanim"
-  },
-  {
-    "Name": "InfernoBlastTechnique",
-    "AnimationName": "sw_infe_blas",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/InfernoBlastTechnique.swlanim"
-  },
-  {
-    "Name": "InnerCircleBindTechnique",
-    "AnimationName": "sw_inr_bind",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/InnerCircleBindTechnique.swlanim"
-  },
-  {
-    "Name": "InnerCirclePounceTechnique",
-    "AnimationName": "sw_inr_pounc",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/InnerCirclePounceTechnique.swlanim"
-  },
-  {
-    "Name": "InnerCircleSurgeTechnique",
-    "AnimationName": "sw_inr_surge",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/InnerCircleSurgeTechnique.swlanim"
-  },
-  {
-    "Name": "InnerCircleVolleyTechnique",
-    "AnimationName": "sw_inr_volly",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/InnerCircleVolleyTechnique.swlanim"
-  },
-  {
-    "Name": "InnerRingFlurryTechnique",
-    "AnimationName": "sw_inr_flury",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/InnerRingFlurryTechnique.swlanim"
-  },
-  {
-    "Name": "InnerVoidTechnique",
-    "AnimationName": "sw_inrvoid",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/InnerVoidTechnique.swlanim"
-  },
-  {
-    "Name": "IonBurstTechnique",
-    "AnimationName": "sw_ionburst",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/IonBurstTechnique.swlanim"
-  },
-  {
-    "Name": "LastBastionTechnique",
-    "AnimationName": "sw_lastbast",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/LastBastionTechnique.swlanim"
-  },
-  {
-    "Name": "LockstepCrushTechnique",
-    "AnimationName": "sw_lockcrush",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/LockstepCrushTechnique.swlanim"
-  },
-  {
-    "Name": "MercilessAngleTechnique",
-    "AnimationName": "sw_merc_angl",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/MercilessAngleTechnique.swlanim"
-  },
-  {
-    "Name": "NullShockTechnique",
-    "AnimationName": "sw_nullshock",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/NullShockTechnique.swlanim"
-  },
-  {
-    "Name": "OverclockedAnalyzer",
-    "AnimationName": "sw_overanlyz",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/OverclockedAnalyzer.swlanim"
-  },
-  {
-    "Name": "PackHarrierTechnique",
-    "AnimationName": "sw_pack_harr",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/PackHarrierTechnique.swlanim"
-  },
-  {
-    "Name": "PermafrostRuptureTechnique",
-    "AnimationName": "sw_perm_rupt",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/PermafrostRuptureTechnique.swlanim"
-  },
-  {
-    "Name": "PiercingQuillsTechnique",
-    "AnimationName": "sw_pier_quil",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/PiercingQuillsTechnique.swlanim"
-  },
-  {
-    "Name": "PouncingStrikeTechnique",
-    "AnimationName": "sw_poun_stri",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/PouncingStrikeTechnique.swlanim"
-  },
-  {
-    "Name": "PressureLockTechnique",
-    "AnimationName": "sw_pres_lock",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/PressureLockTechnique.swlanim"
-  },
-  {
-    "Name": "RakingClawsTechnique",
-    "AnimationName": "sw_raki_claw",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/RakingClawsTechnique.swlanim"
-  },
-  {
-    "Name": "RallyBreakerTechnique",
-    "AnimationName": "sw_rall_brea",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/RallyBreakerTechnique.swlanim"
-  },
-  {
-    "Name": "RupturingQuakeTechnique",
-    "AnimationName": "sw_ruptquake",
-    "Duration": 1.15,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/RupturingQuakeTechnique.swlanim"
-  },
-  {
-    "Name": "SavageRoarTechnique",
-    "AnimationName": "sw_sava_roar",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/SavageRoarTechnique.swlanim"
-  },
-  {
-    "Name": "ScorchingBreathTechnique",
-    "AnimationName": "sw_scor_brea",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/ScorchingBreathTechnique.swlanim"
-  },
-  {
-    "Name": "SeismicSlamTechnique",
-    "AnimationName": "sw_seis_slam",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/SeismicSlamTechnique.swlanim"
-  },
-  {
-    "Name": "ShrapnelBurstTechnique",
-    "AnimationName": "sw_shra_burs",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/ShrapnelBurstTechnique.swlanim"
-  },
-  {
-    "Name": "SignalSnareTechnique",
-    "AnimationName": "sw_sign_snar",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/SignalSnareTechnique.swlanim"
-  },
-  {
-    "Name": "SnapRushTechnique",
-    "AnimationName": "sw_snaprush",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/SnapRushTechnique.swlanim"
-  },
-  {
-    "Name": "SonicShriekTechnique",
-    "AnimationName": "sw_soni_shri",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/SonicShriekTechnique.swlanim"
-  },
-  {
-    "Name": "StaticBurstTechnique",
-    "AnimationName": "sw_stat_burs",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/StaticBurstTechnique.swlanim"
-  },
-  {
-    "Name": "StaticWebTechnique",
-    "AnimationName": "sw_staticweb",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/StaticWebTechnique.swlanim"
-  },
-  {
-    "Name": "StimCanisterTechnique",
-    "AnimationName": "sw_stim_cani",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/StimCanisterTechnique.swlanim"
-  },
-  {
-    "Name": "SuppressingShotTechnique",
-    "AnimationName": "sw_mim_suppr",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/SuppressingShotTechnique.swlanim"
-  },
-  {
-    "Name": "SustainBurnTechnique",
-    "AnimationName": "sw_sust_burn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/SustainBurnTechnique.swlanim"
-  },
-  {
-    "Name": "TailSweepTechnique",
-    "AnimationName": "sw_tailsweep",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/TailSweepTechnique.swlanim"
-  },
-  {
-    "Name": "TerrifyingBellowTechnique",
-    "AnimationName": "sw_terr_bell",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/TerrifyingBellowTechnique.swlanim"
-  },
-  {
-    "Name": "ToxicCloudTechnique",
-    "AnimationName": "sw_toxi_clou",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/ToxicCloudTechnique.swlanim"
-  },
-  {
-    "Name": "ToxicSpitTechnique",
-    "AnimationName": "sw_toxicspit",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/ToxicSpitTechnique.swlanim"
-  },
-  {
-    "Name": "VenomSprayTechnique",
-    "AnimationName": "sw_veno_spra",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/VenomSprayTechnique.swlanim"
-  },
-  {
-    "Name": "WardenClampTechnique",
-    "AnimationName": "sw_ward_clam",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WardenClampTechnique.swlanim"
-  },
-  {
-    "Name": "WardenMarkTechnique",
-    "AnimationName": "sw_ward_mark",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WardenMarkTechnique.swlanim"
-  },
-  {
-    "Name": "WardenMaulTechnique",
-    "AnimationName": "sw_ward_maul",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WardenMaulTechnique.swlanim"
-  },
-  {
-    "Name": "WardenOrderTechnique",
-    "AnimationName": "sw_ward_orde",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WardenOrderTechnique.swlanim"
-  },
-  {
-    "Name": "WardenRendTechnique",
-    "AnimationName": "sw_ward_rend",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WardenRendTechnique.swlanim"
-  },
-  {
-    "Name": "WardenSweepTechnique",
-    "AnimationName": "sw_ward_swee",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WardenSweepTechnique.swlanim"
-  },
-  {
-    "Name": "WardenWallTechnique",
-    "AnimationName": "sw_ward_wall",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WardenWallTechnique.swlanim"
-  },
-  {
-    "Name": "WillFractureTechnique",
-    "AnimationName": "sw_will_frac",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/mimicry/WillFractureTechnique.swlanim"
-  },
-  {
-    "Name": "DeadMansHand",
-    "AnimationName": "sw_deadhand",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/DeadMansHand.swlanim"
-  },
-  {
-    "Name": "DisarmingShot",
-    "AnimationName": "sw_disa_shot",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/DisarmingShot.swlanim"
-  },
-  {
-    "Name": "DoubleShot",
-    "AnimationName": "sw_doub_shot",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/DoubleShot.swlanim"
-  },
-  {
-    "Name": "FanTheHammer",
-    "AnimationName": "sw_fanhammer",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/FanTheHammer.swlanim"
-  },
-  {
-    "Name": "GamblerStance",
-    "AnimationName": "sw_gambl_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/GamblerStance.swlanim"
-  },
-  {
-    "Name": "InterruptingShot",
-    "AnimationName": "sw_intr_shot",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/InterruptingShot.swlanim"
-  },
-  {
-    "Name": "LastWord",
-    "AnimationName": "sw_lastword",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/LastWord.swlanim"
-  },
-  {
-    "Name": "PointBlankBurst",
-    "AnimationName": "sw_ptblkbst",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/PointBlankBurst.swlanim"
-  },
-  {
-    "Name": "QuickDraw",
-    "AnimationName": "sw_quickdraw",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/QuickDraw.swlanim"
-  },
-  {
-    "Name": "SkirmisherStance",
-    "AnimationName": "sw_skirmstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/pistol/SkirmisherStance.swlanim"
-  },
-  {
-    "Name": "AimedShot",
-    "AnimationName": "sw_aimedshot",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/AimedShot.swlanim"
-  },
-  {
-    "Name": "CripplingShot",
-    "AnimationName": "sw_criplshot",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/CripplingShot.swlanim"
-  },
-  {
-    "Name": "Headshot",
-    "AnimationName": "sw_headshot",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/Headshot.swlanim"
-  },
-  {
-    "Name": "KillBox",
-    "AnimationName": "sw_killbox",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/KillBox.swlanim"
-  },
-  {
-    "Name": "OneShot",
-    "AnimationName": "sw_oneshot",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/OneShot.swlanim"
-  },
-  {
-    "Name": "PiercingRound",
-    "AnimationName": "sw_pier_roun",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/PiercingRound.swlanim"
-  },
-  {
-    "Name": "SniperStance",
-    "AnimationName": "sw_sniperstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/SniperStance.swlanim"
-  },
-  {
-    "Name": "SuppressingShot",
-    "AnimationName": "sw_supprshot",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/SuppressingShot.swlanim"
-  },
-  {
-    "Name": "SuppressionStance",
-    "AnimationName": "sw_supprstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/SuppressionStance.swlanim"
-  },
-  {
-    "Name": "SuppressiveLine",
-    "AnimationName": "sw_supprline",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/rifle/SuppressiveLine.swlanim"
-  },
-  {
-    "Name": "CircleSlash",
-    "AnimationName": "sw_circslash",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/CircleSlash.swlanim"
-  },
-  {
-    "Name": "ConduitStance",
-    "AnimationName": "sw_condstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/ConduitStance.swlanim"
-  },
-  {
-    "Name": "DoubleStrike",
-    "AnimationName": "sw_doub_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/DoubleStrike.swlanim"
-  },
-  {
-    "Name": "FocusedArc",
-    "AnimationName": "sw_focus_arc",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/FocusedArc.swlanim"
-  },
-  {
-    "Name": "GuardedChannel",
-    "AnimationName": "sw_guar_chan",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/GuardedChannel.swlanim"
-  },
-  {
-    "Name": "InfiniteConduit",
-    "AnimationName": "sw_infcond",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/InfiniteConduit.swlanim"
-  },
-  {
-    "Name": "MaelstromArc",
-    "AnimationName": "sw_maelarc",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/MaelstromArc.swlanim"
-  },
-  {
-    "Name": "SaberCyclone",
-    "AnimationName": "sw_sabe_cycl",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/SaberCyclone.swlanim"
-  },
-  {
-    "Name": "SeverFocus",
-    "AnimationName": "sw_seve_focu",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/SeverFocus.swlanim"
-  },
-  {
-    "Name": "TempestStance",
-    "AnimationName": "sw_tempe_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/saberstaff/TempestStance.swlanim"
-  },
-  {
-    "Name": "CripplingDefense",
-    "AnimationName": "sw_crip_defe",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/CripplingDefense.swlanim"
-  },
-  {
-    "Name": "DisablingStrike",
-    "AnimationName": "sw_disa_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/DisablingStrike.swlanim"
-  },
-  {
-    "Name": "DisruptionField",
-    "AnimationName": "sw_disr_fiel",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/DisruptionField.swlanim"
-  },
-  {
-    "Name": "Forcebane",
-    "AnimationName": "sw_forcebane",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/Forcebane.swlanim"
-  },
-  {
-    "Name": "HamperingBarrage",
-    "AnimationName": "sw_hamp_barr",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/HamperingBarrage.swlanim"
-  },
-  {
-    "Name": "InterruptionStrike",
-    "AnimationName": "sw_intr_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/InterruptionStrike.swlanim"
-  },
-  {
-    "Name": "PerceptiveStance",
-    "AnimationName": "sw_perce_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/PerceptiveStance.swlanim"
-  },
-  {
-    "Name": "SweepingFlank",
-    "AnimationName": "sw_swee_flan",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/SweepingFlank.swlanim"
-  },
-  {
-    "Name": "VigorStance",
-    "AnimationName": "sw_vigorstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/VigorStance.swlanim"
-  },
-  {
-    "Name": "VigorThrust",
-    "AnimationName": "sw_vigo_thru",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/spear/VigorThrust.swlanim"
-  },
-  {
-    "Name": "CrusherStance",
-    "AnimationName": "sw_crush_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/CrusherStance.swlanim"
-  },
-  {
-    "Name": "GroundQuake",
-    "AnimationName": "sw_grou_quak",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/GroundQuake.swlanim"
-  },
-  {
-    "Name": "LegSweep",
-    "AnimationName": "sw_legsweep",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/LegSweep.swlanim"
-  },
-  {
-    "Name": "LineBreaker",
-    "AnimationName": "sw_line_brea",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/LineBreaker.swlanim"
-  },
-  {
-    "Name": "RibBreaker",
-    "AnimationName": "sw_rib_break",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/RibBreaker.swlanim"
-  },
-  {
-    "Name": "SentinelStance",
-    "AnimationName": "sw_senti_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/SentinelStance.swlanim"
-  },
-  {
-    "Name": "ShelterCircle",
-    "AnimationName": "sw_shel_circ",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/ShelterCircle.swlanim"
-  },
-  {
-    "Name": "Slam",
-    "AnimationName": "sw_slam",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/Slam.swlanim"
-  },
-  {
-    "Name": "SweepingGuard",
-    "AnimationName": "sw_swee_guar",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/SweepingGuard.swlanim"
-  },
-  {
-    "Name": "UnmovingCenter",
-    "AnimationName": "sw_unmo_cent",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/UnmovingCenter.swlanim"
-  },
-  {
-    "Name": "Worldbreaker",
-    "AnimationName": "sw_worldbrk",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/staff/Worldbreaker.swlanim"
-  },
-  {
-    "Name": "ConcussiveToss",
-    "AnimationName": "sw_conc_toss",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/ConcussiveToss.swlanim"
-  },
-  {
-    "Name": "ExplosiveToss",
-    "AnimationName": "sw_expl_toss",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/ExplosiveToss.swlanim"
-  },
-  {
-    "Name": "FlashToss",
-    "AnimationName": "sw_flashtoss",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/FlashToss.swlanim"
-  },
-  {
-    "Name": "FlurryStance",
-    "AnimationName": "sw_flrystn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/FlurryStance.swlanim"
-  },
-  {
-    "Name": "OrdnanceStance",
-    "AnimationName": "sw_ordna_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/OrdnanceStance.swlanim"
-  },
-  {
-    "Name": "PerfectFlurry",
-    "AnimationName": "sw_perf_flry",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/PerfectFlurry.swlanim"
-  },
-  {
-    "Name": "PiercingToss",
-    "AnimationName": "sw_pier_toss",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/PiercingToss.swlanim"
-  },
-  {
-    "Name": "PinningToss",
-    "AnimationName": "sw_pinn_toss",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/PinningToss.swlanim"
-  },
-  {
-    "Name": "RainOfSteel",
-    "AnimationName": "sw_rainsteel",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/RainOfSteel.swlanim"
-  },
-  {
-    "Name": "SeveringToss",
-    "AnimationName": "sw_seve_toss",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/throwing/SeveringToss.swlanim"
-  },
-  {
-    "Name": "BladeVortex",
-    "AnimationName": "sw_blad_vort",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/BladeVortex.swlanim"
-  },
-  {
-    "Name": "CrossCut",
-    "AnimationName": "sw_crosscut",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/CrossCut.swlanim"
-  },
-  {
-    "Name": "CycloneStance",
-    "AnimationName": "sw_cyclo_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/CycloneStance.swlanim"
-  },
-  {
-    "Name": "LaceratingTwinCut",
-    "AnimationName": "sw_lacer_cut",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/LaceratingTwinCut.swlanim"
-  },
-  {
-    "Name": "LaceratorStance",
-    "AnimationName": "sw_lacrstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/LaceratorStance.swlanim"
-  },
-  {
-    "Name": "RedBloom",
-    "AnimationName": "sw_redbloom",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/RedBloom.swlanim"
-  },
-  {
-    "Name": "SerratedArc",
-    "AnimationName": "sw_serra_arc",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/SerratedArc.swlanim"
-  },
-  {
-    "Name": "SpinningWhirl",
-    "AnimationName": "sw_spin_whir",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/SpinningWhirl.swlanim"
-  },
-  {
-    "Name": "TempestBloom",
-    "AnimationName": "sw_temp_bloo",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/TempestBloom.swlanim"
-  },
-  {
-    "Name": "TwinRupture",
-    "AnimationName": "sw_twin_rupt",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/twin-blade/TwinRupture.swlanim"
-  },
-  {
-    "Name": "BerserkerStance",
-    "AnimationName": "sw_berse_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroblade/BerserkerStance.swlanim"
-  },
-  {
     "Name": "CoveringStrike",
     "AnimationName": "sw_coverings",
     "Duration": 1.4,
@@ -1838,16 +18,6 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/vibroblade/CoveringStrike.swlanim"
-  },
-  {
-    "Name": "DefensiveStance",
-    "AnimationName": "sw_defstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroblade/DefensiveStance.swlanim"
   },
   {
     "Name": "Invincible",
@@ -1908,106 +78,6 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/vibroblade/ShieldWall.swlanim"
-  },
-  {
-    "Name": "AssassinsStance",
-    "AnimationName": "sw_assnstn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/AssassinsStance.swlanim"
-  },
-  {
-    "Name": "Backstab",
-    "AnimationName": "sw_backstab",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/Backstab.swlanim"
-  },
-  {
-    "Name": "CripplingSlice",
-    "AnimationName": "sw_crip_slic",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/CripplingSlice.swlanim"
-  },
-  {
-    "Name": "EscapeArtist",
-    "AnimationName": "sw_esca_arti",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/EscapeArtist.swlanim"
-  },
-  {
-    "Name": "PathogenStrike",
-    "AnimationName": "sw_path_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/PathogenStrike.swlanim"
-  },
-  {
-    "Name": "ShadowflowStance",
-    "AnimationName": "sw_shadf_stn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/ShadowflowStance.swlanim"
-  },
-  {
-    "Name": "VeiledStrike",
-    "AnimationName": "sw_veil_stri",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/VeiledStrike.swlanim"
-  },
-  {
-    "Name": "ViralCascade",
-    "AnimationName": "sw_vira_casc",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/ViralCascade.swlanim"
-  },
-  {
-    "Name": "VirulentBlade",
-    "AnimationName": "sw_viru_blad",
-    "Duration": 0.95,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/VirulentBlade.swlanim"
-  },
-  {
-    "Name": "VolatileCompound",
-    "AnimationName": "sw_vola_comp",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/vibroknife/VolatileCompound.swlanim"
   },
   {
     "Name": "CallBeast",
@@ -2838,5 +908,1935 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/heavy-vibroblade/SoulStrike.swlanim"
+  },
+  {
+    "Name": "ReviveBeast",
+    "AnimationName": "sw_revi_beas",
+    "Duration": 3.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/beast-mastery/ReviveBeast.swlanim"
+  },
+  {
+    "Name": "RazorTrap",
+    "AnimationName": "sw_razortrap",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/espionage/RazorTrap.swlanim"
+  },
+  {
+    "Name": "ShadowStep",
+    "AnimationName": "sw_shad_step",
+    "Duration": 1.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/espionage/ShadowStep.swlanim"
+  },
+  {
+    "Name": "ShockTrap",
+    "AnimationName": "sw_shocktrap",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/espionage/ShockTrap.swlanim"
+  },
+  {
+    "Name": "TacticalEscape",
+    "AnimationName": "sw_tact_esca",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/espionage/TacticalEscape.swlanim"
+  },
+  {
+    "Name": "AdamantineGuard",
+    "AnimationName": "sw_adamguard",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/AdamantineGuard.swlanim"
+  },
+  {
+    "Name": "GuardCounter",
+    "AnimationName": "sw_guar_coun",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/GuardCounter.swlanim"
+  },
+  {
+    "Name": "HookingStrike",
+    "AnimationName": "sw_hook_stri",
+    "Duration": 1.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/HookingStrike.swlanim"
+  },
+  {
+    "Name": "InterruptingSweep",
+    "AnimationName": "sw_intr_swee",
+    "Duration": 2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/InterruptingSweep.swlanim"
+  },
+  {
+    "Name": "IronWallStance",
+    "AnimationName": "sw_ironwall",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/IronWallStance.swlanim"
+  },
+  {
+    "Name": "JointLock",
+    "AnimationName": "sw_jointlock",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/JointLock.swlanim"
+  },
+  {
+    "Name": "ScrapheapLockdown",
+    "AnimationName": "sw_scra_lock",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/ScrapheapLockdown.swlanim"
+  },
+  {
+    "Name": "ScrapperStance",
+    "AnimationName": "sw_scrapstn",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/ScrapperStance.swlanim"
+  },
+  {
+    "Name": "TwinGuardStance",
+    "AnimationName": "sw_steelshld",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/TwinGuardStance.swlanim"
+  },
+  {
+    "Name": "TwinIntercept",
+    "AnimationName": "sw_tagin",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/TwinIntercept.swlanim"
+  },
+  {
+    "Name": "WhirlingGuard",
+    "AnimationName": "sw_whir_guar",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/katar/WhirlingGuard.swlanim"
+  },
+  {
+    "Name": "BreakMorale",
+    "AnimationName": "sw_brea_mora",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/BreakMorale.swlanim"
+  },
+  {
+    "Name": "ChargeOrder",
+    "AnimationName": "sw_char_orde",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/ChargeOrder.swlanim"
+  },
+  {
+    "Name": "CleanseOrder",
+    "AnimationName": "sw_clea_orde",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/CleanseOrder.swlanim"
+  },
+  {
+    "Name": "CoordinatedFocus",
+    "AnimationName": "sw_coor_focu",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/CoordinatedFocus.swlanim"
+  },
+  {
+    "Name": "DecisiveCommand",
+    "AnimationName": "sw_decis_cmd",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/DecisiveCommand.swlanim"
+  },
+  {
+    "Name": "FieldRecovery",
+    "AnimationName": "sw_fiel_reco",
+    "Duration": 3.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/FieldRecovery.swlanim"
+  },
+  {
+    "Name": "HoldTheLine",
+    "AnimationName": "sw_holdline",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/HoldTheLine.swlanim"
+  },
+  {
+    "Name": "PressTheAttack",
+    "AnimationName": "sw_pres_atta",
+    "Duration": 2.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/PressTheAttack.swlanim"
+  },
+  {
+    "Name": "RallyingStandard",
+    "AnimationName": "sw_rall_stan",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/RallyingStandard.swlanim"
+  },
+  {
+    "Name": "RousingShout",
+    "AnimationName": "sw_rous_shou",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/RousingShout.swlanim"
+  },
+  {
+    "Name": "SteadyFormation",
+    "AnimationName": "sw_stea_form",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/SteadyFormation.swlanim"
+  },
+  {
+    "Name": "WatchfulPresence",
+    "AnimationName": "sw_watc_pres",
+    "Duration": 3.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/leadership/WatchfulPresence.swlanim"
+  },
+  {
+    "Name": "AegisEternal",
+    "AnimationName": "sw_aegi_eter",
+    "Duration": 3.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/AegisEternal.swlanim"
+  },
+  {
+    "Name": "Epicenter",
+    "AnimationName": "sw_epicenter",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/Epicenter.swlanim"
+  },
+  {
+    "Name": "SaberForceLink",
+    "AnimationName": "sw_forcelink",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/SaberForceLink.swlanim"
+  },
+  {
+    "Name": "ForceSheath",
+    "AnimationName": "sw_forc_shea",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/ForceSheath.swlanim"
+  },
+  {
+    "Name": "GuardiansChallenge",
+    "AnimationName": "sw_guar_chal",
+    "Duration": 2.25,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/GuardiansChallenge.swlanim"
+  },
+  {
+    "Name": "ImbuementStance",
+    "AnimationName": "sw_imbuestn",
+    "Duration": 2.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/ImbuementStance.swlanim"
+  },
+  {
+    "Name": "ImmovableStance",
+    "AnimationName": "sw_immovstn",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/ImmovableStance.swlanim"
+  },
+  {
+    "Name": "Reprisal",
+    "AnimationName": "sw_reprisal",
+    "Duration": 1.95,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/Reprisal.swlanim"
+  },
+  {
+    "Name": "SaberWard",
+    "AnimationName": "sw_saberward",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/SaberWard.swlanim"
+  },
+  {
+    "Name": "ShatteringStrike",
+    "AnimationName": "sw_shat_stri",
+    "Duration": 1.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/ShatteringStrike.swlanim"
+  },
+  {
+    "Name": "SunderingSweep",
+    "AnimationName": "sw_sund_swee",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/lightsaber/SunderingSweep.swlanim"
+  },
+  {
+    "Name": "ApexCollapseTechnique",
+    "AnimationName": "sw_apex_coll",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/ApexCollapseTechnique.swlanim"
+  },
+  {
+    "Name": "ArcPulseTechnique",
+    "AnimationName": "sw_arcpulse",
+    "Duration": 2.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/ArcPulseTechnique.swlanim"
+  },
+  {
+    "Name": "BarbedVolleyTechnique",
+    "AnimationName": "sw_barb_voll",
+    "Duration": 2.25,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/BarbedVolleyTechnique.swlanim"
+  },
+  {
+    "Name": "BloodFrenzyFlurryTechnique",
+    "AnimationName": "sw_bloodflry",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/BloodFrenzyFlurryTechnique.swlanim"
+  },
+  {
+    "Name": "BraceBreakerTechnique",
+    "AnimationName": "sw_brac_brea",
+    "Duration": 1.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/BraceBreakerTechnique.swlanim"
+  },
+  {
+    "Name": "BrutalBashTechnique",
+    "AnimationName": "sw_brut_bash",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/BrutalBashTechnique.swlanim"
+  },
+  {
+    "Name": "CapacitorSurgeTechnique",
+    "AnimationName": "sw_capa_surg",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/CapacitorSurgeTechnique.swlanim"
+  },
+  {
+    "Name": "ConcussiveChallengeTechnique",
+    "AnimationName": "sw_conc_chal",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/ConcussiveChallengeTechnique.swlanim"
+  },
+  {
+    "Name": "CrossfireDrillTechnique",
+    "AnimationName": "sw_cros_dril",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/CrossfireDrillTechnique.swlanim"
+  },
+  {
+    "Name": "CryoBileTechnique",
+    "AnimationName": "sw_cryobile",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/CryoBileTechnique.swlanim"
+  },
+  {
+    "Name": "DarkShockTechnique",
+    "AnimationName": "sw_darkshock",
+    "Duration": 2.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/DarkShockTechnique.swlanim"
+  },
+  {
+    "Name": "DisorientingScreechTechnique",
+    "AnimationName": "sw_diso_scre",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/DisorientingScreechTechnique.swlanim"
+  },
+  {
+    "Name": "DreadWaveTechnique",
+    "AnimationName": "sw_dreadwave",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/DreadWaveTechnique.swlanim"
+  },
+  {
+    "Name": "FinalEclipseTechnique",
+    "AnimationName": "sw_fina_eclp",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/FinalEclipseTechnique.swlanim"
+  },
+  {
+    "Name": "FinalLineTechnique",
+    "AnimationName": "sw_finalline",
+    "Duration": 2.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/FinalLineTechnique.swlanim"
+  },
+  {
+    "Name": "FinalMandateTechnique",
+    "AnimationName": "sw_fina_mand",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/FinalMandateTechnique.swlanim"
+  },
+  {
+    "Name": "FinalSuppressionTechnique",
+    "AnimationName": "sw_fina_supp",
+    "Duration": 2.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/FinalSuppressionTechnique.swlanim"
+  },
+  {
+    "Name": "FinishingDriveTechnique",
+    "AnimationName": "sw_fini_driv",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/FinishingDriveTechnique.swlanim"
+  },
+  {
+    "Name": "FrostSpitTechnique",
+    "AnimationName": "sw_frostspit",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/FrostSpitTechnique.swlanim"
+  },
+  {
+    "Name": "GoringChargeTechnique",
+    "AnimationName": "sw_gori_char",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/GoringChargeTechnique.swlanim"
+  },
+  {
+    "Name": "GrenadeBurstTechnique",
+    "AnimationName": "sw_grenburst",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/GrenadeBurstTechnique.swlanim"
+  },
+  {
+    "Name": "HoldfastSlamTechnique",
+    "AnimationName": "sw_hold_slam",
+    "Duration": 2.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/HoldfastSlamTechnique.swlanim"
+  },
+  {
+    "Name": "InfernoBlastTechnique",
+    "AnimationName": "sw_infe_blas",
+    "Duration": 3.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/InfernoBlastTechnique.swlanim"
+  },
+  {
+    "Name": "InnerCircleBindTechnique",
+    "AnimationName": "sw_inr_bind",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/InnerCircleBindTechnique.swlanim"
+  },
+  {
+    "Name": "InnerCirclePounceTechnique",
+    "AnimationName": "sw_inr_pounc",
+    "Duration": 2.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/InnerCirclePounceTechnique.swlanim"
+  },
+  {
+    "Name": "InnerCircleSurgeTechnique",
+    "AnimationName": "sw_inr_surge",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/InnerCircleSurgeTechnique.swlanim"
+  },
+  {
+    "Name": "InnerCircleVolleyTechnique",
+    "AnimationName": "sw_inr_volly",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/InnerCircleVolleyTechnique.swlanim"
+  },
+  {
+    "Name": "InnerRingFlurryTechnique",
+    "AnimationName": "sw_inr_flury",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/InnerRingFlurryTechnique.swlanim"
+  },
+  {
+    "Name": "InnerVoidTechnique",
+    "AnimationName": "sw_inrvoid",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/InnerVoidTechnique.swlanim"
+  },
+  {
+    "Name": "IonBurstTechnique",
+    "AnimationName": "sw_ionburst",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/IonBurstTechnique.swlanim"
+  },
+  {
+    "Name": "LastBastionTechnique",
+    "AnimationName": "sw_lastbast",
+    "Duration": 3.25,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/LastBastionTechnique.swlanim"
+  },
+  {
+    "Name": "LockstepCrushTechnique",
+    "AnimationName": "sw_lockcrush",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/LockstepCrushTechnique.swlanim"
+  },
+  {
+    "Name": "MercilessAngleTechnique",
+    "AnimationName": "sw_merc_angl",
+    "Duration": 2.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/MercilessAngleTechnique.swlanim"
+  },
+  {
+    "Name": "NullShockTechnique",
+    "AnimationName": "sw_nullshock",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/NullShockTechnique.swlanim"
+  },
+  {
+    "Name": "OverclockedAnalyzer",
+    "AnimationName": "sw_overanlyz",
+    "Duration": 2.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/OverclockedAnalyzer.swlanim"
+  },
+  {
+    "Name": "PackHarrierTechnique",
+    "AnimationName": "sw_pack_harr",
+    "Duration": 1.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/PackHarrierTechnique.swlanim"
+  },
+  {
+    "Name": "PermafrostRuptureTechnique",
+    "AnimationName": "sw_perm_rupt",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/PermafrostRuptureTechnique.swlanim"
+  },
+  {
+    "Name": "PiercingQuillsTechnique",
+    "AnimationName": "sw_pier_quil",
+    "Duration": 2.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/PiercingQuillsTechnique.swlanim"
+  },
+  {
+    "Name": "PouncingStrikeTechnique",
+    "AnimationName": "sw_poun_stri",
+    "Duration": 2.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/PouncingStrikeTechnique.swlanim"
+  },
+  {
+    "Name": "PressureLockTechnique",
+    "AnimationName": "sw_pres_lock",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/PressureLockTechnique.swlanim"
+  },
+  {
+    "Name": "RakingClawsTechnique",
+    "AnimationName": "sw_raki_claw",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/RakingClawsTechnique.swlanim"
+  },
+  {
+    "Name": "RallyBreakerTechnique",
+    "AnimationName": "sw_rall_brea",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/RallyBreakerTechnique.swlanim"
+  },
+  {
+    "Name": "RupturingQuakeTechnique",
+    "AnimationName": "sw_ruptquake",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/RupturingQuakeTechnique.swlanim"
+  },
+  {
+    "Name": "SavageRoarTechnique",
+    "AnimationName": "sw_sava_roar",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/SavageRoarTechnique.swlanim"
+  },
+  {
+    "Name": "ScorchingBreathTechnique",
+    "AnimationName": "sw_scor_brea",
+    "Duration": 2.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/ScorchingBreathTechnique.swlanim"
+  },
+  {
+    "Name": "SeismicSlamTechnique",
+    "AnimationName": "sw_seis_slam",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/SeismicSlamTechnique.swlanim"
+  },
+  {
+    "Name": "ShrapnelBurstTechnique",
+    "AnimationName": "sw_shra_burs",
+    "Duration": 2.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/ShrapnelBurstTechnique.swlanim"
+  },
+  {
+    "Name": "SignalSnareTechnique",
+    "AnimationName": "sw_sign_snar",
+    "Duration": 2.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/SignalSnareTechnique.swlanim"
+  },
+  {
+    "Name": "SnapRushTechnique",
+    "AnimationName": "sw_snaprush",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/SnapRushTechnique.swlanim"
+  },
+  {
+    "Name": "SonicShriekTechnique",
+    "AnimationName": "sw_soni_shri",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/SonicShriekTechnique.swlanim"
+  },
+  {
+    "Name": "StaticBurstTechnique",
+    "AnimationName": "sw_stat_burs",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/StaticBurstTechnique.swlanim"
+  },
+  {
+    "Name": "StaticWebTechnique",
+    "AnimationName": "sw_staticweb",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/StaticWebTechnique.swlanim"
+  },
+  {
+    "Name": "StimCanisterTechnique",
+    "AnimationName": "sw_stim_cani",
+    "Duration": 2.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/StimCanisterTechnique.swlanim"
+  },
+  {
+    "Name": "SuppressingShotTechnique",
+    "AnimationName": "sw_mim_suppr",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/SuppressingShotTechnique.swlanim"
+  },
+  {
+    "Name": "SustainBurnTechnique",
+    "AnimationName": "sw_sust_burn",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/SustainBurnTechnique.swlanim"
+  },
+  {
+    "Name": "TailSweepTechnique",
+    "AnimationName": "sw_tailsweep",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/TailSweepTechnique.swlanim"
+  },
+  {
+    "Name": "TerrifyingBellowTechnique",
+    "AnimationName": "sw_terr_bell",
+    "Duration": 3.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/TerrifyingBellowTechnique.swlanim"
+  },
+  {
+    "Name": "ToxicCloudTechnique",
+    "AnimationName": "sw_toxi_clou",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/ToxicCloudTechnique.swlanim"
+  },
+  {
+    "Name": "ToxicSpitTechnique",
+    "AnimationName": "sw_toxicspit",
+    "Duration": 1.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/ToxicSpitTechnique.swlanim"
+  },
+  {
+    "Name": "VenomSprayTechnique",
+    "AnimationName": "sw_veno_spra",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/VenomSprayTechnique.swlanim"
+  },
+  {
+    "Name": "WardenClampTechnique",
+    "AnimationName": "sw_ward_clam",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WardenClampTechnique.swlanim"
+  },
+  {
+    "Name": "WardenMarkTechnique",
+    "AnimationName": "sw_ward_mark",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WardenMarkTechnique.swlanim"
+  },
+  {
+    "Name": "WardenMaulTechnique",
+    "AnimationName": "sw_ward_maul",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WardenMaulTechnique.swlanim"
+  },
+  {
+    "Name": "WardenOrderTechnique",
+    "AnimationName": "sw_ward_orde",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WardenOrderTechnique.swlanim"
+  },
+  {
+    "Name": "WardenRendTechnique",
+    "AnimationName": "sw_ward_rend",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WardenRendTechnique.swlanim"
+  },
+  {
+    "Name": "WardenSweepTechnique",
+    "AnimationName": "sw_ward_swee",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WardenSweepTechnique.swlanim"
+  },
+  {
+    "Name": "WardenWallTechnique",
+    "AnimationName": "sw_ward_wall",
+    "Duration": 3.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WardenWallTechnique.swlanim"
+  },
+  {
+    "Name": "WillFractureTechnique",
+    "AnimationName": "sw_will_frac",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/mimicry/WillFractureTechnique.swlanim"
+  },
+  {
+    "Name": "DeadMansHand",
+    "AnimationName": "sw_deadhand",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/DeadMansHand.swlanim"
+  },
+  {
+    "Name": "DisarmingShot",
+    "AnimationName": "sw_disa_shot",
+    "Duration": 1.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/DisarmingShot.swlanim"
+  },
+  {
+    "Name": "DoubleShot",
+    "AnimationName": "sw_doub_shot",
+    "Duration": 1.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/DoubleShot.swlanim"
+  },
+  {
+    "Name": "FanTheHammer",
+    "AnimationName": "sw_fanhammer",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/FanTheHammer.swlanim"
+  },
+  {
+    "Name": "GamblerStance",
+    "AnimationName": "sw_gambl_stn",
+    "Duration": 1.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/GamblerStance.swlanim"
+  },
+  {
+    "Name": "InterruptingShot",
+    "AnimationName": "sw_intr_shot",
+    "Duration": 1.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/InterruptingShot.swlanim"
+  },
+  {
+    "Name": "LastWord",
+    "AnimationName": "sw_lastword",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/LastWord.swlanim"
+  },
+  {
+    "Name": "PointBlankBurst",
+    "AnimationName": "sw_ptblkbst",
+    "Duration": 1.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/PointBlankBurst.swlanim"
+  },
+  {
+    "Name": "QuickDraw",
+    "AnimationName": "sw_quickdraw",
+    "Duration": 1.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/QuickDraw.swlanim"
+  },
+  {
+    "Name": "SkirmisherStance",
+    "AnimationName": "sw_skirmstn",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/pistol/SkirmisherStance.swlanim"
+  },
+  {
+    "Name": "AimedShot",
+    "AnimationName": "sw_aimedshot",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/AimedShot.swlanim"
+  },
+  {
+    "Name": "CripplingShot",
+    "AnimationName": "sw_criplshot",
+    "Duration": 1.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/CripplingShot.swlanim"
+  },
+  {
+    "Name": "Headshot",
+    "AnimationName": "sw_headshot",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/Headshot.swlanim"
+  },
+  {
+    "Name": "KillBox",
+    "AnimationName": "sw_killbox",
+    "Duration": 2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/KillBox.swlanim"
+  },
+  {
+    "Name": "OneShot",
+    "AnimationName": "sw_oneshot",
+    "Duration": 2.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/OneShot.swlanim"
+  },
+  {
+    "Name": "PiercingRound",
+    "AnimationName": "sw_pier_roun",
+    "Duration": 1.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/PiercingRound.swlanim"
+  },
+  {
+    "Name": "SniperStance",
+    "AnimationName": "sw_sniperstn",
+    "Duration": 1.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/SniperStance.swlanim"
+  },
+  {
+    "Name": "SuppressingShot",
+    "AnimationName": "sw_supprshot",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/SuppressingShot.swlanim"
+  },
+  {
+    "Name": "SuppressionStance",
+    "AnimationName": "sw_supprstn",
+    "Duration": 1.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/SuppressionStance.swlanim"
+  },
+  {
+    "Name": "SuppressiveLine",
+    "AnimationName": "sw_supprline",
+    "Duration": 2.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/rifle/SuppressiveLine.swlanim"
+  },
+  {
+    "Name": "CircleSlash",
+    "AnimationName": "sw_circslash",
+    "Duration": 2.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/CircleSlash.swlanim"
+  },
+  {
+    "Name": "ConduitStance",
+    "AnimationName": "sw_condstn",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/ConduitStance.swlanim"
+  },
+  {
+    "Name": "DoubleStrike",
+    "AnimationName": "sw_doub_stri",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/DoubleStrike.swlanim"
+  },
+  {
+    "Name": "FocusedArc",
+    "AnimationName": "sw_focus_arc",
+    "Duration": 1.95,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/FocusedArc.swlanim"
+  },
+  {
+    "Name": "GuardedChannel",
+    "AnimationName": "sw_guar_chan",
+    "Duration": 2.25,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/GuardedChannel.swlanim"
+  },
+  {
+    "Name": "InfiniteConduit",
+    "AnimationName": "sw_infcond",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/InfiniteConduit.swlanim"
+  },
+  {
+    "Name": "MaelstromArc",
+    "AnimationName": "sw_maelarc",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/MaelstromArc.swlanim"
+  },
+  {
+    "Name": "SaberCyclone",
+    "AnimationName": "sw_sabe_cycl",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/SaberCyclone.swlanim"
+  },
+  {
+    "Name": "SeverFocus",
+    "AnimationName": "sw_seve_focu",
+    "Duration": 1.95,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/SeverFocus.swlanim"
+  },
+  {
+    "Name": "TempestStance",
+    "AnimationName": "sw_tempe_stn",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/saberstaff/TempestStance.swlanim"
+  },
+  {
+    "Name": "CripplingDefense",
+    "AnimationName": "sw_crip_defe",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/CripplingDefense.swlanim"
+  },
+  {
+    "Name": "DisablingStrike",
+    "AnimationName": "sw_disa_stri",
+    "Duration": 1.95,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/DisablingStrike.swlanim"
+  },
+  {
+    "Name": "DisruptionField",
+    "AnimationName": "sw_disr_fiel",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/DisruptionField.swlanim"
+  },
+  {
+    "Name": "Forcebane",
+    "AnimationName": "sw_forcebane",
+    "Duration": 2.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/Forcebane.swlanim"
+  },
+  {
+    "Name": "HamperingBarrage",
+    "AnimationName": "sw_hamp_barr",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/HamperingBarrage.swlanim"
+  },
+  {
+    "Name": "InterruptionStrike",
+    "AnimationName": "sw_intr_stri",
+    "Duration": 1.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/InterruptionStrike.swlanim"
+  },
+  {
+    "Name": "PerceptiveStance",
+    "AnimationName": "sw_perce_stn",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/PerceptiveStance.swlanim"
+  },
+  {
+    "Name": "SweepingFlank",
+    "AnimationName": "sw_swee_flan",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/SweepingFlank.swlanim"
+  },
+  {
+    "Name": "VigorStance",
+    "AnimationName": "sw_vigorstn",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/VigorStance.swlanim"
+  },
+  {
+    "Name": "VigorThrust",
+    "AnimationName": "sw_vigo_thru",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/spear/VigorThrust.swlanim"
+  },
+  {
+    "Name": "CrusherStance",
+    "AnimationName": "sw_crush_stn",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/CrusherStance.swlanim"
+  },
+  {
+    "Name": "GroundQuake",
+    "AnimationName": "sw_grou_quak",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/GroundQuake.swlanim"
+  },
+  {
+    "Name": "LegSweep",
+    "AnimationName": "sw_legsweep",
+    "Duration": 2.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/LegSweep.swlanim"
+  },
+  {
+    "Name": "LineBreaker",
+    "AnimationName": "sw_line_brea",
+    "Duration": 1.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/LineBreaker.swlanim"
+  },
+  {
+    "Name": "RibBreaker",
+    "AnimationName": "sw_rib_break",
+    "Duration": 1.95,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/RibBreaker.swlanim"
+  },
+  {
+    "Name": "SentinelStance",
+    "AnimationName": "sw_senti_stn",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/SentinelStance.swlanim"
+  },
+  {
+    "Name": "ShelterCircle",
+    "AnimationName": "sw_shel_circ",
+    "Duration": 3.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/ShelterCircle.swlanim"
+  },
+  {
+    "Name": "Slam",
+    "AnimationName": "sw_slam",
+    "Duration": 2.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/Slam.swlanim"
+  },
+  {
+    "Name": "SweepingGuard",
+    "AnimationName": "sw_swee_guar",
+    "Duration": 2.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/SweepingGuard.swlanim"
+  },
+  {
+    "Name": "UnmovingCenter",
+    "AnimationName": "sw_unmo_cent",
+    "Duration": 2.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/UnmovingCenter.swlanim"
+  },
+  {
+    "Name": "Worldbreaker",
+    "AnimationName": "sw_worldbrk",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/staff/Worldbreaker.swlanim"
+  },
+  {
+    "Name": "ConcussiveToss",
+    "AnimationName": "sw_conc_toss",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/ConcussiveToss.swlanim"
+  },
+  {
+    "Name": "ExplosiveToss",
+    "AnimationName": "sw_expl_toss",
+    "Duration": 1.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/ExplosiveToss.swlanim"
+  },
+  {
+    "Name": "FlashToss",
+    "AnimationName": "sw_flashtoss",
+    "Duration": 1.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/FlashToss.swlanim"
+  },
+  {
+    "Name": "FlurryStance",
+    "AnimationName": "sw_flrystn",
+    "Duration": 1.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/FlurryStance.swlanim"
+  },
+  {
+    "Name": "OrdnanceStance",
+    "AnimationName": "sw_ordna_stn",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/OrdnanceStance.swlanim"
+  },
+  {
+    "Name": "PerfectFlurry",
+    "AnimationName": "sw_perf_flry",
+    "Duration": 2.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/PerfectFlurry.swlanim"
+  },
+  {
+    "Name": "PiercingToss",
+    "AnimationName": "sw_pier_toss",
+    "Duration": 1.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/PiercingToss.swlanim"
+  },
+  {
+    "Name": "PinningToss",
+    "AnimationName": "sw_pinn_toss",
+    "Duration": 1.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/PinningToss.swlanim"
+  },
+  {
+    "Name": "RainOfSteel",
+    "AnimationName": "sw_rainsteel",
+    "Duration": 2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/RainOfSteel.swlanim"
+  },
+  {
+    "Name": "SeveringToss",
+    "AnimationName": "sw_seve_toss",
+    "Duration": 1.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/throwing/SeveringToss.swlanim"
+  },
+  {
+    "Name": "BladeVortex",
+    "AnimationName": "sw_blad_vort",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/BladeVortex.swlanim"
+  },
+  {
+    "Name": "CrossCut",
+    "AnimationName": "sw_crosscut",
+    "Duration": 2.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/CrossCut.swlanim"
+  },
+  {
+    "Name": "CycloneStance",
+    "AnimationName": "sw_cyclo_stn",
+    "Duration": 2.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/CycloneStance.swlanim"
+  },
+  {
+    "Name": "LaceratingTwinCut",
+    "AnimationName": "sw_lacer_cut",
+    "Duration": 2.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/LaceratingTwinCut.swlanim"
+  },
+  {
+    "Name": "LaceratorStance",
+    "AnimationName": "sw_lacrstn",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/LaceratorStance.swlanim"
+  },
+  {
+    "Name": "RedBloom",
+    "AnimationName": "sw_redbloom",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/RedBloom.swlanim"
+  },
+  {
+    "Name": "SerratedArc",
+    "AnimationName": "sw_serra_arc",
+    "Duration": 2.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/SerratedArc.swlanim"
+  },
+  {
+    "Name": "SpinningWhirl",
+    "AnimationName": "sw_spin_whir",
+    "Duration": 3.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/SpinningWhirl.swlanim"
+  },
+  {
+    "Name": "TempestBloom",
+    "AnimationName": "sw_temp_bloo",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/TempestBloom.swlanim"
+  },
+  {
+    "Name": "TwinRupture",
+    "AnimationName": "sw_twin_rupt",
+    "Duration": 2.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/twin-blade/TwinRupture.swlanim"
+  },
+  {
+    "Name": "AssassinsStance",
+    "AnimationName": "sw_assnstn",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/AssassinsStance.swlanim"
+  },
+  {
+    "Name": "Backstab",
+    "AnimationName": "sw_backstab",
+    "Duration": 1.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/Backstab.swlanim"
+  },
+  {
+    "Name": "CripplingSlice",
+    "AnimationName": "sw_crip_slic",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/CripplingSlice.swlanim"
+  },
+  {
+    "Name": "EscapeArtist",
+    "AnimationName": "sw_esca_arti",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/EscapeArtist.swlanim"
+  },
+  {
+    "Name": "PathogenStrike",
+    "AnimationName": "sw_path_stri",
+    "Duration": 1.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/PathogenStrike.swlanim"
+  },
+  {
+    "Name": "ShadowflowStance",
+    "AnimationName": "sw_shadf_stn",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/ShadowflowStance.swlanim"
+  },
+  {
+    "Name": "VeiledStrike",
+    "AnimationName": "sw_veil_stri",
+    "Duration": 1.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/VeiledStrike.swlanim"
+  },
+  {
+    "Name": "ViralCascade",
+    "AnimationName": "sw_vira_casc",
+    "Duration": 2.25,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/ViralCascade.swlanim"
+  },
+  {
+    "Name": "VirulentBlade",
+    "AnimationName": "sw_viru_blad",
+    "Duration": 2.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/VirulentBlade.swlanim"
+  },
+  {
+    "Name": "VolatileCompound",
+    "AnimationName": "sw_vola_comp",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroknife/VolatileCompound.swlanim"
+  },
+  {
+    "Name": "Reward",
+    "AnimationName": "sw_reward",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/beast-mastery/Reward.swlanim"
+  },
+  {
+    "Name": "SoothePet",
+    "AnimationName": "sw_soothepet",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/beast-mastery/SoothePet.swlanim"
+  },
+  {
+    "Name": "Tame",
+    "AnimationName": "sw_tame",
+    "Duration": 4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/beast-mastery/Tame.swlanim"
+  },
+  {
+    "Name": "BerserkerStance",
+    "AnimationName": "sw_berse_stn",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/BerserkerStance.swlanim"
+  },
+  {
+    "Name": "DefensiveStance",
+    "AnimationName": "sw_defstn",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/vibroblade/DefensiveStance.swlanim"
   }
 ]

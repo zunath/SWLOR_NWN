@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.AdamantineGuard1, PerkType.AdamantineGuard)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Adamantine Guard")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

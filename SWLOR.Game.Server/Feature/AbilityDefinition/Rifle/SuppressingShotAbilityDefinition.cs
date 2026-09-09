@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot1, PerkType.SuppressingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Suppressing Shot I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot2, PerkType.SuppressingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Suppressing Shot II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot3, PerkType.SuppressingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Suppressing Shot III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),
@@ -112,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot4, PerkType.SuppressingShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Suppressing Shot IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),

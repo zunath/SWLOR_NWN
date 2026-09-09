@@ -1631,7 +1631,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
                                 activator,
                                 target,
-                                activationIdleBonusSnapshot));
+                                activationIdleBonusSnapshot),
+                            playImpactAnimation: hit == 0);
                         totalDamage += hitDamage;
                         if (hitDamage > 0)
                             successfulHitCount++;

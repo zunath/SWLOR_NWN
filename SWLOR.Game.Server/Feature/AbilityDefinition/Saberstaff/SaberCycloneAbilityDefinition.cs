@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SaberCyclone1, PerkType.SaberCyclone)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Saber Cyclone")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

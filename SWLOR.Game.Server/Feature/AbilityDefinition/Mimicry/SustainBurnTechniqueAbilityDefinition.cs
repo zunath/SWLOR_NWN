@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SustainBurn, 30f)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryStance(FeatType.SustainBurn, 45, 3);
 
             ConfigureToggle(ability, typeof(SustainBurnStatusEffect));

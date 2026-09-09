@@ -1,0 +1,697 @@
+[
+  {
+    "Id": "AimedShot",
+    "Description": "Raise from low ready, settle a sustained sight picture, fire one careful round and lower",
+    "Duration": 1.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.2,
+        "Label": "Low ready",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.52,
+        "Label": "Align sights",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.94,
+        "Label": "Settle breath",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.13,
+        "Label": "Precision shot",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.48,
+        "Label": "Lower rifle",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CripplingShot",
+    "Description": "Lower the supported muzzle toward the legs, fire, then deliberately raise back to center mass",
+    "Duration": 1.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.22,
+        "Label": "Shoulder rifle",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.53,
+        "Label": "Track legs",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -20,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Low shot",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -20,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.08,
+        "Label": "Return to center mass",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.34,
+        "Label": "Low ready",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "Headshot",
+    "Description": "Shoulder immediately, make a small upward correction and deliver a single elevated precision shot",
+    "Duration": 1.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.2,
+        "Label": "Shoulder rifle",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.49,
+        "Label": "Track head line",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          9,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.72,
+        "Label": "Head-line recoil",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          9,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.96,
+        "Label": "Maintain high cover",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.68,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          9,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.23,
+        "Label": "Lower rifle",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "KillBox",
+    "Description": "Scan the left and right limits from low ready, then send two braced rounds across the designated zone",
+    "Duration": 2.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.23,
+        "Label": "Survey left boundary",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          -18
+        ]
+      },
+      {
+        "Time": 0.48,
+        "Label": "Survey right boundary",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          18
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Shoulder toward zone",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          12
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "First covering round",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          12
+        ]
+      },
+      {
+        "Time": 1.22,
+        "Label": "Track opposite side",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 1.42,
+        "Label": "Second covering round",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ]
+      },
+      {
+        "Time": 1.73,
+        "Label": "Lower after zone marking",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 2.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "OneShot",
+    "Description": "Check the rifle power selector with the support hand, regrip into an unwavering aim and deliver one committed shot",
+    "Duration": 2.2,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.2,
+        "Label": "Lowered carry",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.4,
+        "Label": "Set power selector",
+        "SourceAnimation": "xbowrdy",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.14,
+          0.27,
+          1.08
+        ]
+      },
+      {
+        "Time": 0.64,
+        "Label": "Build sight picture",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.22,
+        "Label": "Hold perfect sight picture",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.46,
+        "Label": "Committed recoil",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.67,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.83,
+        "Label": "Release aim",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 2.2,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PiercingRound",
+    "Description": "Brace into a straight penetrating firing lane, keep the rifle level through the shot and retract to low ready",
+    "Duration": 1.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.22,
+        "Label": "Brace lane",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.54,
+        "Label": "Drive into straight aim",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.43,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -9,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.78,
+        "Label": "Penetrating round recoil",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -9,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.04,
+        "Label": "Follow the lane",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.68,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.31,
+        "Label": "Retract rifle",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SuppressingShot",
+    "Description": "Two brisk supported shots with a visible sight reset keep pressure on one target",
+    "Duration": 1.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.2,
+        "Label": "Shoulder",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.44,
+        "Label": "First suppression round",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.67,
+        "Label": "Reset on target",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.86,
+        "Label": "Second suppression round",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.13,
+        "Label": "Hold target down",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.68,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.39,
+        "Label": "Lower",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SuppressiveLine",
+    "Description": "Track a shallow firing lane in three separated bursts while retaining both hands on the rifle",
+    "Duration": 2.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.22,
+        "Label": "Acquire lane left",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          -10
+        ]
+      },
+      {
+        "Time": 0.46,
+        "Label": "Left burst",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          -10
+        ]
+      },
+      {
+        "Time": 0.7,
+        "Label": "Center lane",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.94,
+        "Label": "Center burst",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.2,
+        "Label": "Lane right",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          10
+        ]
+      },
+      {
+        "Time": 1.43,
+        "Label": "Right burst",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.62,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          10
+        ]
+      },
+      {
+        "Time": 1.77,
+        "Label": "Lower after sweep",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 2.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SniperStance",
+    "Description": "Raise from low carry into a quiet sustained shouldered watch; no firing recoil",
+    "Duration": 1.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.22,
+        "Label": "Low carry",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.64,
+        "Label": "Shoulder into watch",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.22,
+        "Label": "Hold quiet sight line",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.46,
+        "Label": "Lower calmly",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SuppressionStance",
+    "Description": "Check both flanks with the rifle carried low, then brace forward in an alert supported ready; no shot",
+    "Duration": 1.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.22,
+        "Label": "Check left flank",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          -20
+        ]
+      },
+      {
+        "Time": 0.55,
+        "Label": "Check right flank",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          0,
+          0,
+          20
+        ]
+      },
+      {
+        "Time": 0.92,
+        "Label": "Set forward brace",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.37,
+        "Label": "Hold pressure stance",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
+        "SourceModel": "a_ba_med_weap",
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.61,
+        "Label": "Lower",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

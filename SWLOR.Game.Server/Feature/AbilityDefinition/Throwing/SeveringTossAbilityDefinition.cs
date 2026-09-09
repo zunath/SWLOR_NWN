@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SeveringToss1, PerkType.SeveringToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Severing Toss I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SeveringToss, 30.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SeveringToss2, PerkType.SeveringToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Severing Toss II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SeveringToss, 30.0f),

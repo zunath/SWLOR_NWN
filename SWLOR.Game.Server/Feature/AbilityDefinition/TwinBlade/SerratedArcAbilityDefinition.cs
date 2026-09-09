@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SerratedArc1, PerkType.SerratedArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Serrated Arc I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SerratedArc, 24.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SerratedArc2, PerkType.SerratedArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Serrated Arc II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SerratedArc, 24.0f),
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SerratedArc3, PerkType.SerratedArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Serrated Arc III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.SerratedArc, 24.0f),

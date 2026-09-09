@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss1, PerkType.PiercingToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Piercing Toss I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss2, PerkType.PiercingToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Piercing Toss II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss3, PerkType.PiercingToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Piercing Toss III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),
@@ -97,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss4, PerkType.PiercingToss)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Piercing Toss IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),

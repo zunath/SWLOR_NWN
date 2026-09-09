@@ -11,6 +11,55 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class NativeAnimationPreviewTests
 {
     [Test]
+    public void ThrowLightsaberRanksAndTesterRetainMastersNativeThrowAtDoubleSpeed()
+    {
+        var abilities = new ThrowLightsaberAbilityDefinition().BuildAbilities();
+        var entry = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == "ThrowLightsaber");
+        abilities.Should().HaveCount(3);
+        AbilityAnimationBinding.Apply(abilities, new[] { entry });
+        foreach (var ability in abilities.Values)
+        {
+            ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(1.5f);
+            ability.ImpactAnimationType.Should().Be(Animation.SaberThrow);
+            ability.PreservesNativeAnimationChoreography.Should().BeTrue();
+            ability.AuthoredAnimation.Should().BeNull();
+            ability.AuthoredImpactAnimation.Should().BeNull();
+            ability.NativeAnimationPreview.Should().Be(Animation.SaberThrow);
+            ability.NativeAnimationPreviewSpeed.Should().Be(2f);
+        }
+        var preview = AnimationPreviewCatalog.CreateEntries(abilities.Values).Single(item => item.Id == entry.Id);
+        preview.NativeAnimation.Should().Be(Animation.SaberThrow);
+        preview.NativeAnimationSpeed.Should().Be(2f);
+        preview.DurationText.Should().Be("Native");
+    }
+
+    [TestCase(0f)]
+    [TestCase(-1f)]
+    [TestCase(float.NaN)]
+    [TestCase(float.PositiveInfinity)]
+    public void NativePreviewRejectsInvalidSpeed(float speed)
+    {
+        var builder = new AbilityBuilder().Create(FeatType.ThrowLightsaber1, SWLOR.Game.Server.Service.PerkService.PerkType.ThrowLightsaber);
+        Action configure = () => builder.UsesNativeAnimationPreview(Animation.SaberThrow, speed);
+        configure.Should().Throw<ArgumentOutOfRangeException>();
+        Action preview = () => SWLOR.Game.Server.Service.NamedAnimation.PlayNativePreview(0, Animation.SaberThrow, speed);
+        preview.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Test]
+    public void DifferentNativeSpeedsAcrossRanksAreRejected()
+    {
+        var clip = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == "ThrowLightsaber").Clip;
+        var abilities = new[]
+        {
+            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.SaberThrow, NativeAnimationPreviewSpeed = 1f },
+            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.SaberThrow, NativeAnimationPreviewSpeed = 2f }
+        };
+        Action create = () => AnimationPreviewCatalog.CreateEntries(abilities);
+        create.Should().Throw<InvalidOperationException>();
+    }
+
+    [Test]
     public void BothProvokeRanksKeepNativeTauntAndTheirTesterEntryOverridesTheHistoricalClip()
     {
         var abilities = new ProvokeAbilityDefinition().BuildAbilities();

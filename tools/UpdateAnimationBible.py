@@ -298,7 +298,15 @@ def synchronize(workbook: Path, entries: list[dict], registry: list[dict]):
 
 def details(entry, installed):
     if native := entry.get("NativeAnimationPreview"):
-        return {"F": entry["InternalName"], "G": f"Base NWN {native}",
+        speed = entry.get("NativeAnimationPreviewSpeed", 1.0)
+        speed_label = f" at {speed:g}x speed" if speed != 1.0 else ""
+        if native == "SaberThrow":
+            return {"F": entry["InternalName"],
+                    "G": f"Master lightsaber throw (CUSTOM46 / 68){speed_label}",
+                    "H": "Master custom animation in game and tester",
+                    "I": "Requires master a_ba_non_combat custom46start/custom46lp/custom46end; "
+                         f"authoring reference: {installed['ProjectPath']}"}
+        return {"F": entry["InternalName"], "G": f"Base NWN {native}{speed_label}",
                 "H": "Native playback in game and tester",
                 "I": "Native animation; no custom model required"}
     base = entry.get("Profile") or "Authored poses"
@@ -330,11 +338,14 @@ def synchronize_files(manifest_path, workbook_path, registry_path, provenance_pa
                 captured[path] = path.read_bytes()
             text = captured[path].decode("utf-8-sig")
             text = re.sub(r"/\*.*?\*/|//[^\n]*", "", text, flags=re.S)
-            native.update(re.findall(r"\.UsesNativeAnimationPreview\s*\(\s*Animation\.(\w+)\s*\)", text))
+            for animation, speed in re.findall(
+                    r"\.UsesNativeAnimationPreview\s*\(\s*Animation\.(\w+)"
+                    r"\s*(?:,\s*([0-9]+(?:\.[0-9]*)?)[fF]?)?\s*\)", text):
+                native.add((animation, float(speed) if speed else 1.0))
         if len(native) > 1:
             raise ValueError(f"Conflicting native previews for {entry['Id']}")
         if native:
-            entry["NativeAnimationPreview"] = native.pop()
+            entry["NativeAnimationPreview"], entry["NativeAnimationPreviewSpeed"] = native.pop()
     workbook_bytes = render_workbook(workbook_path, entries, json.loads(captured[registry_path].decode("utf-8-sig")), captured[workbook_path])
     rows = {e["Id"]: e["BibleAnimationRow"] for e in entries}
     for entry in source_entries:

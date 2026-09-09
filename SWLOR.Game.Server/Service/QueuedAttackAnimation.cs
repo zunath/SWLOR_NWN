@@ -9,7 +9,10 @@ namespace SWLOR.Game.Server.Service;
 public static class QueuedAttackAnimation
 {
     private const string TokenVariable = "_QUEUED_ATTACK_ANIMATION";
-    private static readonly QueuedAttackAnimationPlayback Playback = new(new NativeRuntime());
+    /// <summary>Equipment owners reapply their current mappings after temporary swings release.</summary>
+    public static event Action<uint> RestoreEquipmentAnimations;
+    private static readonly QueuedAttackAnimationPlayback Playback = new(new NativeRuntime(),
+        creature => RestoreEquipmentAnimations?.Invoke(creature));
 
     public static void Begin(uint creature, AnimationClip clip)
     {
@@ -39,7 +42,12 @@ public static class QueuedAttackAnimation
 public sealed class QueuedAttackAnimationPlayback
 {
     private readonly INamedAnimationRuntime runtime;
-    public QueuedAttackAnimationPlayback(INamedAnimationRuntime runtime) => this.runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+    private readonly Action<uint> restoreEquipmentAnimations;
+    public QueuedAttackAnimationPlayback(INamedAnimationRuntime runtime, Action<uint> restoreEquipmentAnimations = null)
+    {
+        this.runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+        this.restoreEquipmentAnimations = restoreEquipmentAnimations;
+    }
 
     public static IReadOnlyList<string> SwingKeys { get; } = Array.AsReadOnly(
         new[] { "1h", "2h", "2w", "pl" }.SelectMany(prefix =>
@@ -67,6 +75,7 @@ public sealed class QueuedAttackAnimationPlayback
         if (string.IsNullOrEmpty(token) || !runtime.IsValid(creature) || runtime.GetToken(creature) != token) return;
         foreach (var key in SwingKeys) runtime.Replace(creature, key, "");
         runtime.SetToken(creature, "");
+        restoreEquipmentAnimations?.Invoke(creature);
     }
 
     public void Stop(uint creature)

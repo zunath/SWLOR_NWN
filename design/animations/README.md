@@ -13,8 +13,11 @@ Beast Mastery actions remain included. The Animations tab retains all 119 image 
 and documents every entry's internal name, base motion, source project, and review status.
 The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
 clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
-The seven original Vibroblade clips are preserved. New clips are editable adaptations of
-native motion families or generated motion bases, and require in-game visual review.
+The seven original Vibroblade clips are preserved. The other custom ability motions have
+273 individual choreography recipes; Provoke uses stock NWN Taunt, while Throw Lightsaber
+uses the master branch's custom throw through its original animation slot in game and in the
+tester. The Throw Lightsaber recipe remains an authoring reference. Recipes
+combine observed native phases with directed poses and require in-game visual review.
 
 `active-abilities.json` is the explicit authoring and feat-binding contract;
 `animation-names.json` reserves the stable internal names. Names are at most 12 characters,
@@ -30,29 +33,66 @@ Generate and install through the headless CLI:
 ```powershell
 dotnet build tools/SWLOR.AnimationDrafts/SWLOR.AnimationDrafts.csproj -p:RunPostBuildEvent=Never
 dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate-active SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/active-abilities.json design/animations
-dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install-active . design/animations/active-abilities.json a_ba a_fa
+# Installation accepts a subset; generation above must always use the complete inventory.
+New-Item -ItemType Directory -Force artifacts/animations | Out-Null
+$animationEntries = Get-Content design/animations/active-abilities.json -Raw | ConvertFrom-Json
+ConvertTo-Json -InputObject @($animationEntries | Where-Object Id -eq 'IronWallStance') -Depth 30 | Set-Content artifacts/animations/install-batch.json
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install-active . artifacts/animations/install-batch.json a_ba a_fa
+python -B SWLOR_Haks/tools/CompileModels.py --since HEAD --apply
 python tools/UpdateAnimationBible.py design/animations/active-abilities.json
 powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible
 ```
+
+New or explicitly replaced animations require an individual recipe in the category's
+`choreographies.json`, or an explicit `SourceAnimation` in the input inventory. Generation
+rejects missing motion direction instead of choosing a generic animation from ability-name
+keywords. The separate legacy Vibroblade workflow remains available.
 
 Generation preserves existing projects unless explicitly passed `--overwrite`; preserve
 manual edits before using that switch. `--replace <Id>` regenerates only the selected ability
 projects and preserves existing shared bases. Generation stages projects, provenance, and the
 runtime catalog together and restores earlier outputs if publication fails. Duplicate feat
-bindings are rejected before generation or installation. Bulk installation validates all projects first
+bindings are rejected before generation or installation. Authoring transactions have a 512 MiB
+snapshot budget covering the existing library and the new output bytes. For large revisions,
+run several `generate-active ... --replace Id1 Id2 ...` commands with small groups (for example,
+16 animations), always using the complete inventory. Each command publishes its own complete
+manifest and catalog atomically; the commands together are not one transaction. A budget
+failure leaves that command's outputs unchanged. Reduce the replacement group and retry;
+if the existing library itself reaches the budget, stop and use a separately designed bounded
+publication workflow rather than increasing the guard or passing a partial inventory.
+
+Bulk installation validates all projects first
 and restores earlier changes if a later installation fails, preserving concurrent edits and
-reporting any retained recovery backups. Compile the changed HAK models and regenerate robe
+reporting any retained recovery backups. Install large revisions in small subsets, compiling
+between batches so the next transaction reads compact native banks. A subset only updates its
+clips; it preserves the rest of the registry. Rebalance banks if their editable sources still
+exceed the per-transaction budget. Compile the changed HAK models and regenerate robe
 bridges using the workflow below before deployment. The generator's foot-floor and release
 checks do not replace testing with actual equipment in NWN.
 
-Generated gameplay playback is limited to player creatures. Native ranged/projectile,
-channel, space, stealth, and explicit animation contracts remain authoritative; their
-generated clips remain available in the tester. NPCs retain their native playback.
+Installation retains SHA-256 and length fingerprints for untouched model dependencies,
+instead of accumulating the complete inherited bank binaries in the 128 MiB input budget.
+The complete parsed model corpus has a separate 128 MiB input limit, checked before each
+allocation. An edited bank is promoted to a verified full before snapshot, and its editable
+companion remains a full transaction input. Apply verifies
+the fingerprints and holds read leases through publication; a batch rechecks earlier model
+dependencies between steps and at completion. Rollback restores only files published by the
+batch, never a concurrently changed read-only source.
+
+Generated gameplay playback is limited to player creatures. Scripted ranged attacks use
+their authored impact gesture independently of damage resolution; ranged stances use a
+single entry gesture. Queued ranged attacks, channels, space, stealth, and explicitly
+preserved native choreography retain their native contracts. Where an authored preview
+exists, it remains available in the tester; native-mode Stealth has no tester entry.
+NPCs retain their native playback.
 
 ## Device and companion choreography
 
-All 27 Devices clips and Call Beast, Guarding Bond, and Predatory Bond have individual
+All 27 Devices clips and all seven Beast Mastery actions have individual
 timed recipes in `devices/choreographies.json` and `beast-mastery/choreographies.json`.
+Reward presents an offering, Soothe Pet gives a slow calming signal, Tame gives a cautious
+invitation, and Revive Beast kneels to assist before rising. These are humanoid gestures;
+they do not assume a particular beast model's size or animate the beast itself.
 Grenades use throwing preparation, release, and follow-through. Projectors, beacons,
 support devices, and companion commands have separate gestures. Emergency Bunker deploys
 from a standing pose. Flamethrower follows the master branch's `CastOutAnimation`
@@ -102,9 +142,13 @@ All 25 Force entries have individual recipes in `force/choreographies.json`. Dir
 precise lances, inward drains, mind gestures, target wards, and area releases use different
 hand paths and timing. Force Lightning reuses the original `a_ba_casts` CUSTOM64 start and
 loop at native speed; gameplay restores its three-second native discharge. The tester's
-leap and saber-throw sequences use the original CUSTOM65 and CUSTOM46 phases at their
-existing playback speeds. Native gameplay retains travel, weapon attachment, and projectile
-handling for Force Leap, Force Intercept, and Throw Lightsaber.
+leap sequences use the original CUSTOM65 phases at their existing playback speed.
+Native gameplay retains movement for Force Leap and Force Intercept. Throw Lightsaber
+uses the master's `Animation.SaberThrow` alias for `ANIMATION_LOOPING_CUSTOM46` (68)
+at 2x speed in both gameplay and the tester. This requires the master model's
+`custom46start`, `custom46lp`, and `custom46end` in `a_ba_non_combat`; it is not a stock
+NWN throw. Its `sw_thro_sabe` name and editable project remain
+available as an authoring reference; the generated clip is not selected for playback.
 
 Ordinary Force gestures play at their declared activation or impact stage without extending
 cast timers. Creeping Terror's field creation uses activation playback; it does not replay
@@ -176,7 +220,6 @@ design/animations/
   active-abilities.json         Active actions and exact feat bindings
   animation-names.json          Stable internal names reserved for animators
   active-manifest.json          Generated motion provenance and source hashes
-  bases/                       Reusable generated motion bases
   <skill-category>/            Editable sources for each skill group
   vibroblade/
     *.swlanim                  One editable source per animation
@@ -334,6 +377,12 @@ Compile between rigs because the female chain inherits male banks. Only after co
 install the updated clips and compile again. Rebalancing
 preserves complete main/start/end animation groups and the original native supermodel chain.
 If one animation group alone exceeds the bank limit, the command rejects it without writing.
+
+If a whole-rig rebalance exceeds its input budget, select one existing owned bank with
+`--bank an_a_fa` (substitute the exact bank resref) and compile before selecting the next.
+The transaction still validates and protects the complete compiled chain and registration;
+only the selected bank's editable companion is loaded. This lets large libraries split
+banks incrementally without raising memory limits or dropping concurrent-edit checks.
 
 For an update that would outgrow an already packed bank, add `--clips-per-bank 64` to make
 more room before reinstalling. The default remains 128. A limit of `1` is a diagnostic

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PerfectFlurry1, PerkType.PerfectFlurry)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Perfect Flurry")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

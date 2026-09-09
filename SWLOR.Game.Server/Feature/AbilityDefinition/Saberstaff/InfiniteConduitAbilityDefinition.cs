@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.InfiniteConduit1, PerkType.InfiniteConduit)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Infinite Conduit")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LineBreaker1, PerkType.LineBreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Line Breaker I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.LineBreaker, 18.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LineBreaker2, PerkType.LineBreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Line Breaker II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.LineBreaker, 18.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LineBreaker3, PerkType.LineBreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Line Breaker III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.LineBreaker, 18.0f),
@@ -97,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LineBreaker4, PerkType.LineBreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Line Breaker IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.LineBreaker, 18.0f),

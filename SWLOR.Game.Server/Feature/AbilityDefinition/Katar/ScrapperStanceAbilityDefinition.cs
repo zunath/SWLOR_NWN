@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ScrapperStance1, PerkType.ScrapperStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Scrapper Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ScrapperStance, 30.0f),

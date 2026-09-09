@@ -268,7 +268,14 @@ internal static class BulkMotionAuthor
                 contents = Text(projectBytes!); project = AnimationProject.Deserialize(contents);
                 if (project.Name != entry.Id) throw new InvalidDataException("Project identity mismatch: " + path);
             }
-            else { project = choreography == null ? Bake(model, entry, profile) : ChoreographyAuthor.Bake(model, choreography, choreographyModels); contents = project.Serialize() + "\n"; pending.Add(path, contents); }
+            else
+            {
+                if (choreography == null && string.IsNullOrWhiteSpace(entry.SourceAnimation))
+                    throw new InvalidDataException($"{entry.Id}: supply an individual choreography or an explicit SourceAnimation before generating a new motion. Existing projects may be preserved.");
+                project = choreography == null ? Bake(model, entry, profile) : ChoreographyAuthor.Bake(model, choreography, choreographyModels);
+                contents = project.Serialize() + "\n";
+                pending.Add(path, contents);
+            }
             if (profile.Procedural && choreography == null && !preserved) baseProfiles.TryAdd(profile.Name, profile);
             var hash = ProjectHash(contents);
             var hasProvenance = preserved && previous.TryGetValue(entry.Id, out var prior) && prior.GetProperty("ProjectSha256").GetString() == hash;

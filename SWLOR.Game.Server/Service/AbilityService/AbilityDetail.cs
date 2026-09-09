@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <summary>Catalog motion for this rank, including abilities retaining native gameplay playback.</summary>
         public AnimationService.AnimationClip PreviewAnimation { get; set; }
         public Animation? NativeAnimationPreview { get; set; }
+        public float NativeAnimationPreviewSpeed { get; set; } = 1f;
         public AnimationService.AnimationClip AuthoredImpactAnimation { get; set; }
         public bool UsesImmediateAuthoredAnimation { get; set; }
         public bool UsesAuthoredImpactAnimation { get; set; }

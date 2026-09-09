@@ -18,6 +18,7 @@ public static class AnimationInstallBatch
     {
         if (snapshotBudget < 1 || snapshotBudget > MaximumSnapshotBytes) throw new ArgumentOutOfRangeException(nameof(snapshotBudget));
         var snapshots = new Dictionary<string, Snapshot>(AnimationInstall.PathComparer);
+        var readOnly = new Dictionary<string, AnimationInputFingerprint>(AnimationInstall.PathComparer);
         var absent = new HashSet<string>(AnimationInstall.PathComparer);
         var backups = new List<string>();
         long retainedBytes = 0;
@@ -26,13 +27,26 @@ public static class AnimationInstallBatch
             foreach (var prepare in preparePlans)
             {
                 var plan = prepare();
-                AnimationInstallPlan.VerifyModelResolutions(snapshots.Keys, absent, null);
+                AnimationInstallPlan.VerifyModelResolutions(snapshots.Keys.Concat(readOnly.Keys), absent, null);
+                foreach (var dependency in readOnly) dependency.Value.Verify(dependency.Key);
                 var next = new Dictionary<string, Snapshot>(AnimationInstall.PathComparer);
+                var nextReadOnly = new Dictionary<string, AnimationInputFingerprint>(readOnly, AnimationInstall.PathComparer);
                 var nextBytes = retainedBytes;
+                foreach (var (path, fingerprint) in plan.ReadOnlyInputs)
+                {
+                    if (absent.Contains(path) || snapshots.TryGetValue(path, out var snapshot) && !fingerprint.Matches(snapshot.Published) ||
+                        readOnly.TryGetValue(path, out var prior) && prior != fingerprint)
+                        throw new IOException($"'{path}' changed between batch steps. The external change will be preserved.");
+                    if (!snapshots.ContainsKey(path)) nextReadOnly[path] = fingerprint;
+                }
+                if (nextReadOnly.Count > AnimationInstall.MaximumModelChainDepth * 32)
+                    throw new InvalidDataException("The animation batch has too many read-only dependencies.");
                 foreach (var (path, bytes) in plan.Inputs)
                 {
-                    if (absent.Contains(path) || snapshots.TryGetValue(path, out var dependency) && !Equal(dependency.Published, bytes))
+                    if (absent.Contains(path) || snapshots.TryGetValue(path, out var dependency) && !Equal(dependency.Published, bytes) ||
+                        nextReadOnly.TryGetValue(path, out var fingerprint) && !fingerprint.Matches(bytes))
                         throw new IOException($"'{path}' changed between batch steps. The external change will be preserved.");
+                    nextReadOnly.Remove(path);
                     if (snapshots.ContainsKey(path)) continue;
                     nextBytes += bytes.LongLength;
                     if (nextBytes > snapshotBudget)
@@ -41,13 +55,15 @@ public static class AnimationInstallBatch
                     next.Add(path, new(owned, owned, false));
                 }
                 foreach (var path in plan.AbsentInputs)
-                    if (snapshots.ContainsKey(path))
+                    if (snapshots.ContainsKey(path) || nextReadOnly.ContainsKey(path))
                         throw new IOException($"'{path}' disappeared between batch steps. The external change will be preserved.");
                 foreach (var change in plan.Changes)
                 {
                     var previous = next.GetValueOrDefault(change.Path) ?? snapshots.GetValueOrDefault(change.Path);
-                    if (previous != null && !Equal(previous.Published, change.Before) || absent.Contains(change.Path) && change.Before != null)
+                    if (previous != null && !Equal(previous.Published, change.Before) || absent.Contains(change.Path) && change.Before != null ||
+                        nextReadOnly.TryGetValue(change.Path, out var fingerprint) && (change.Before == null || !fingerprint.Matches(change.Before)))
                         throw new IOException($"'{change.Path}' changed between batch steps. The external change will be preserved.");
+                    nextReadOnly.Remove(change.Path);
                     // Unchanged project sources still certify the generated bank contents.
                     // Keep verifying them until the whole batch finishes, but never restore
                     // a verification-only file over an animator's concurrent edit.
@@ -66,11 +82,13 @@ public static class AnimationInstallBatch
                 try { plan.Apply(); }
                 finally { backups.AddRange(plan.RetainedBackups); }
                 foreach (var (path, snapshot) in next) snapshots[path] = snapshot;
+                readOnly = nextReadOnly;
                 absent.UnionWith(plan.AbsentInputs);
                 foreach (var change in plan.Changes) absent.Remove(change.Path);
                 retainedBytes = nextBytes;
             }
-            AnimationInstallPlan.VerifyModelResolutions(snapshots.Keys, absent, null);
+            AnimationInstallPlan.VerifyModelResolutions(snapshots.Keys.Concat(readOnly.Keys), absent, null);
+            foreach (var dependency in readOnly) dependency.Value.Verify(dependency.Key);
             foreach (var (path, snapshot) in snapshots)
                 if (!File.Exists(path) || !AnimationSourceFile.Matches(path, snapshot.Published))
                     throw new IOException($"'{path}' changed during the animation batch. The external change will be preserved.");

@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             int droidBonusPercent,
             Type statusEffect)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             var location = GetImpactLocation(activator, target, targetLocation);
             ApplyEffectAtLocation(
                 DurationType.Instant,
@@ -124,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         Array.Empty<Type>(),
                         damageType: CombatDamageType.Electrical,
                         targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
-                        damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0);
+                        damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0,
+                        playImpactAnimation: false);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f), location, true);

@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ClusterGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             var location = GetImpactLocation(activator, target, targetLocation);
             var blastLocations = GetClusterBlastLocations(activator, location);
             var blastRadius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, SmallBlastRadius);
@@ -94,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.None,
-                sendsNoTargetMessage: sendsNoTargetMessage);
+                sendsNoTargetMessage: sendsNoTargetMessage,
+                playImpactAnimation: false);
         }
 
         private static Location[] GetClusterBlastLocations(uint activator, Location impactLocation)

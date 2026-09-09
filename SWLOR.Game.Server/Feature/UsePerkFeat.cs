@@ -527,6 +527,9 @@ namespace SWLOR.Game.Server.Feature
                     if (AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator), animationLength) == Animation.Invalid)
                         return;
 
+                    // Native fallback must not inherit the previous named clip's custom1 phases.
+                    NamedAnimation.ReleaseForNativePlayback(activator);
+
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;
 

@@ -2199,6 +2199,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Native impact carriers must not reuse a preceding named clip's replacements.
+            NamedAnimation.ReleaseForNativePlayback(activator);
+
             if (trackedAbility?.ImmediateNativeImpactAnimationDuration > 0f)
             {
                 AssignCommand(activator, () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(

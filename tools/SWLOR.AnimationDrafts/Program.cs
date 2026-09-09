@@ -152,9 +152,7 @@ try
         if (overlay != null)
         {
             var folder = Path.GetDirectoryName(overlayPath!)!;
-            var repository = new DirectoryInfo(folder);
-            while (repository != null && !File.Exists(Path.Combine(repository.FullName, "Build", "hakbuilder.json")))
-                repository = repository.Parent;
+            var repository = InstalledMotionLibrary.FindMountedRepository(overlayPath!);
             // Repository overlays follow mounted resource precedence. Standalone exports
             // resolve their parent banks beside the explicitly supplied overlay file.
             var adjacent = repository == null ? Directory.EnumerateFiles(folder)
@@ -162,13 +160,10 @@ try
                 .ToDictionary(path => Path.GetFileNameWithoutExtension(path), StringComparer.OrdinalIgnoreCase) : null;
             installed = new InstalledMotionLibrary(overlay, name =>
             {
-                var path = repository != null ? AnimationInstall.FindTargetSource(repository.FullName, name)
+                var path = repository != null ? AnimationInstall.FindTargetSource(repository, name)
                     : adjacent!.GetValueOrDefault(name);
                 if (path == null) return null;
-                var bytes = ReadBytes(path);
-                loadedBankBytes += bytes.Length;
-                if (loadedBankBytes > AnimationInstall.MaximumInputBytes)
-                    throw new InvalidDataException("Installed animation banks exceed the rendering input budget.");
+                var bytes = InstalledMotionLibrary.ReadBank(path, ref loadedBankBytes);
                 return new MdlReader().Parse(bytes);
             });
         }

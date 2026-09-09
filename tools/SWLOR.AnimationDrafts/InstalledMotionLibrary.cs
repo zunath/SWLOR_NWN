@@ -1,11 +1,46 @@
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
+using System.Text.Json;
 
 namespace SWLOR.AnimationDrafts;
 
 /// <summary>Resolves installed clips with the same child-before-parent precedence as model inheritance.</summary>
 public sealed class InstalledMotionLibrary
 {
+    public static string? FindMountedRepository(string overlayPath)
+    {
+        var folder = Path.GetDirectoryName(Path.GetFullPath(overlayPath))!;
+        var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        for (var directory = new DirectoryInfo(folder); directory != null; directory = directory.Parent)
+        {
+            var configPath = Path.Combine(directory.FullName, "Build", "hakbuilder.json");
+            if (!File.Exists(configPath)) continue;
+            using var reader = new StreamReader(new MemoryStream(AnimationSourceFile.ReadBytes(
+                configPath, AnimationProject.MaximumFileBytes, "HAK configuration")));
+            using var config = JsonDocument.Parse(reader.ReadToEnd());
+            foreach (var layer in config.RootElement.GetProperty("HakList").EnumerateArray())
+            {
+                var layerPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Path.Combine(
+                    Path.GetDirectoryName(configPath)!, layer.GetProperty("Path").GetString()!)));
+                // HAK source indexing is nonrecursive: a nested export folder is not mounted.
+                if (folder.Equals(layerPath, comparison)) return directory.FullName;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    public static byte[] ReadBank(string path, ref long loadedBytes)
+    {
+        if (loadedBytes < 0 || loadedBytes > AnimationInstall.MaximumInputBytes)
+            throw new InvalidDataException("Invalid installed animation input budget.");
+        var remaining = (int)(AnimationInstall.MaximumInputBytes - loadedBytes);
+        var bytes = AnimationSourceFile.ReadBytes(path, Math.Min(AnimationProject.MaximumFileBytes, remaining),
+            "Installed animation banks");
+        loadedBytes += bytes.Length;
+        return bytes;
+    }
+
     private readonly MdlModel _overlay;
     private readonly Func<string, MdlModel?> _loadSuperModel;
     private readonly Dictionary<string, MdlModel> _models = new(StringComparer.OrdinalIgnoreCase);

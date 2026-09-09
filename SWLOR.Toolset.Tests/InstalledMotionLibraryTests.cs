@@ -2,11 +2,92 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.AnimationDrafts;
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.Toolset.Domain.Animation;
 
 namespace SWLOR.Toolset.Tests;
 
 public class InstalledMotionLibraryTests
 {
+    private string _directory = null!;
+
+    [SetUp]
+    public void SetUp() => _directory = Directory.CreateDirectory(
+        Path.Combine(Path.GetTempPath(), "swlor-installed-library-" + Guid.NewGuid().ToString("N"))).FullName;
+
+    [TearDown]
+    public void TearDown() => Directory.Delete(_directory, true);
+
+    private (string Repository, string MountedOverlay) MountedFixture()
+    {
+        var repository = Directory.CreateDirectory(Path.Combine(_directory, "repository")).FullName;
+        Directory.CreateDirectory(Path.Combine(repository, "Build"));
+        var mounted = Directory.CreateDirectory(Path.Combine(repository, "SWLOR_Haks", "models")).FullName;
+        File.WriteAllText(Path.Combine(repository, "SWLOR.Game.Server.sln"), "");
+        File.WriteAllText(Path.Combine(repository, "Build", "hakbuilder.json"),
+            "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"}]}");
+        var overlay = Path.Combine(mounted, "bank.mdl");
+        File.WriteAllText(overlay, "mounted bank");
+        return (repository, overlay);
+    }
+
+    [Test]
+    public void DirectlyMountedOverlayFindsItsRepository()
+    {
+        var fixture = MountedFixture();
+        InstalledMotionLibrary.FindMountedRepository(fixture.MountedOverlay).Should().Be(fixture.Repository);
+    }
+
+    [Test]
+    public void RepositoryArtifactDoesNotResolveThroughASameNamedMountedBank()
+    {
+        var fixture = MountedFixture();
+        var artifacts = Directory.CreateDirectory(Path.Combine(fixture.Repository, "artifacts")).FullName;
+        var overlay = Path.Combine(artifacts, "bank.mdl");
+        File.WriteAllText(overlay, "standalone bank");
+        InstalledMotionLibrary.FindMountedRepository(overlay).Should().BeNull();
+    }
+
+    [Test]
+    public void SubdirectoryOfMountedLayerIsNotItselfMounted()
+    {
+        var fixture = MountedFixture();
+        var nested = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(fixture.MountedOverlay)!, "nested")).FullName;
+        var overlay = Path.Combine(nested, "bank.mdl");
+        File.WriteAllText(overlay, "unindexed bank");
+        InstalledMotionLibrary.FindMountedRepository(overlay).Should().BeNull();
+    }
+
+    [Test]
+    public void OutsideRepositoryOverlayRemainsStandalone()
+    {
+        MountedFixture();
+        var overlay = Path.Combine(_directory, "bank.mdl");
+        File.WriteAllText(overlay, "standalone bank");
+        InstalledMotionLibrary.FindMountedRepository(overlay).Should().BeNull();
+    }
+
+    [Test]
+    public void RemainingReadBudgetIsCheckedWithoutChangingTheCounterOnFailure()
+    {
+        var path = Path.Combine(_directory, "bank.mdl");
+        File.WriteAllBytes(path, [1, 2]);
+        long loaded = AnimationInstall.MaximumInputBytes - 1;
+        var before = loaded;
+        Action read = () => InstalledMotionLibrary.ReadBank(path, ref loaded);
+        read.Should().Throw<InvalidDataException>();
+        loaded.Should().Be(before);
+    }
+
+    [Test]
+    public void SuccessfulReadConsumesOnlyTheBytesActuallyReturned()
+    {
+        var path = Path.Combine(_directory, "bank.mdl");
+        File.WriteAllBytes(path, [1, 2, 3]);
+        long loaded = 5;
+        InstalledMotionLibrary.ReadBank(path, ref loaded).Should().Equal(1, 2, 3);
+        loaded.Should().Be(8);
+    }
+
     private static MdlModel Model(string name, string parent, params string[] animations)
     {
         var model = new MdlModel { Name = name, SuperModel = parent };

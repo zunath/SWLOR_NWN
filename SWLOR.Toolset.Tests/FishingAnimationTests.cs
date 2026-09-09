@@ -11,6 +11,17 @@ namespace SWLOR.Toolset.Tests;
 
 public class FishingAnimationTests
 {
+    [Test]
+    public void LaterInstallsSortTheWholeBankWithoutChangingClipContents()
+    {
+        const string first = "newanim zebra bank\n  length 2\ndoneanim zebra bank\n";
+        const string second = "newanim apple bank\n  length 7\ndoneanim apple bank\n";
+        var source = "newmodel bank\n" + first + second + "donemodel bank\n";
+        var sorted = AnimationInstall.SortAnimationBlocks(source);
+        sorted.Should().Be("newmodel bank\n" + second + first + "donemodel bank\n");
+        AnimationInstall.SortAnimationBlocks(sorted).Should().Be(sorted);
+    }
+
     private static string Root
     {
         get
@@ -48,6 +59,8 @@ public class FishingAnimationTests
             var bankBytes = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(fullPath)!, target.SuperModel + ".mdl"));
             AnimationBankSource.IsBinary(bankBytes).Should().BeTrue();
             var bank = new MdlReader().Parse(bankBytes);
+            bank.Animations.Select(animation => animation.Name)
+                .Should().BeInAscendingOrder(StringComparer.OrdinalIgnoreCase);
             var installed = bank.Animations.Single(a => a.Name == clip.Name);
             installed.Length.Should().Be(seconds);
             bank.Animations.Should().Contain(a => a.Name == clip.StartName).And.Contain(a => a.Name == clip.EndName);

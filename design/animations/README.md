@@ -196,6 +196,12 @@ installs can update compiled banks without discarding other clips. Missing or mi
 are rejected. The `.swlanim` files remain the canonical pose projects; these bank sources are
 the reproducible inputs for the compiled model resources. Recompile after each installation.
 
+Keep bank animation blocks sorted by name; the installer now sorts the complete bank before
+compilation. Offline pose sampling alone does not validate native animation lookup or equipment
+overlays. Fishing rods use the standard wield setting in `baseitems.2da`: the polearm setting
+adds a shoulder-rest overlay that masks the right arm during the fishing clip. Validate fishing
+with the rod equipped after replacing the HAKs, restarting the server, and reopening the client.
+
 RGB robe phenotypes also have generated animation bridges for their separate garment joints.
 Publish generated robe updates in a separate HAK PR from the humanoid animation banks.
 Stack the robe PR on the body-animation branch, and keep the parent game's submodule pointer

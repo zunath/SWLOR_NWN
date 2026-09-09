@@ -4,6 +4,7 @@ Run inside Blender 4.0. --hand must be an ASCII pmh0_handr001 model;
 """
 import argparse
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -52,10 +53,10 @@ def main():
     scene.render.resolution_x=1400;scene.render.resolution_y=900;scene.render.resolution_percentage=100
     scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True
     camera=scene.camera;camera.data.type='ORTHO';camera.data.ortho_scale=.40
-    center=Vector((.02,0,0))
+    center=Vector((0,.025,-.05))
     for side,name in ((1,'grip-preview.png'),(-1,'grip-preview-reverse.png')):
-        camera.location=center+Vector((.03,side,.03))
-        camera.rotation_euler=(center-camera.location).to_track_quat('-Z','Y').to_euler()
+        camera.location=center+Vector((side,-.03,.06))
+        camera.rotation_euler=((center-camera.location).to_track_quat('-Z','Y') @ Quaternion((0,0,1),-side*math.pi/2)).to_euler()
         scene.render.filepath=str(output/name);bpy.ops.render.render(write_still=True)
     bpy.ops.wm.save_as_mainfile(filepath=str(output/'grip-review.blend'))
 

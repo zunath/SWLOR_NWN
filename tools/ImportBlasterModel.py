@@ -51,7 +51,9 @@ def validate_attachment(rotation, config, weapon="pistol"):
     # Verify authored landmarks rather than judging an upright inventory preview.
     from mathutils import Vector
     attachment = config["attachment"]
-    axes = ((0, 0, -1), (0, -1, 0)) if weapon == "pistol" else ((1, 0, 0), (0, 0, -1))
+    # Rifle reference vertices use +X/-Z before their mesh-node transform.
+    # The complete node transform maps them to the same -Z/-Y attachment axes.
+    axes = ((0, 0, -1), (0, -1, 0))
     for key, expected in zip(("source_muzzle_axis", "source_grip_axis"), axes):
         actual = (rotation.to_3x3() @ Vector(attachment[key])).normalized()
         if actual.dot(Vector(expected)) < .99:
@@ -279,10 +281,12 @@ def main(weapon="pistol"):
         light.data.energy = energy
         light.data.size = 2
         light.rotation_euler = (center - light.location).to_track_quat("-Z", "Y").to_euler()
-    direction = (1, -.25, .15) if weapon == "pistol" else (.15, -1, .15)
+    direction = (1, -.25, .15)
     bpy.ops.object.camera_add(location=center + Vector(direction))
     camera = bpy.context.object
     camera.rotation_euler = (center - camera.location).to_track_quat("-Z", "Y").to_euler()
+    if weapon == "rifle":
+        camera.rotation_euler = ((center - camera.location).to_track_quat("-Z", "Y") @ Quaternion((0, 0, 1), -math.pi / 2)).to_euler()
     camera.data.type = "ORTHO"
     camera.data.ortho_scale = span * 1.2
     scene.camera = camera
@@ -295,9 +299,9 @@ def main(weapon="pistol"):
     if weapon == "rifle":
         # Rifle composite layers fill a 2 x 4 inventory footprint (64 x 128).
         # Align the barrel with image vertical, preserving the entire silhouette.
-        camera.rotation_euler = ((center - camera.location).to_track_quat("-Z", "Y") @ Quaternion((0, 0, 1), -math.pi / 2)).to_euler()
+        camera.rotation_euler = ((center - camera.location).to_track_quat("-Z", "Y") @ Quaternion((0, 0, 1), math.pi)).to_euler()
         scene.render.resolution_y = 128
-        camera.data.ortho_scale = max((hi.x - lo.x) * 1.2, (hi.z - lo.z) * 2.4)
+        camera.data.ortho_scale = max((hi.z - lo.z) * 1.2, (hi.y - lo.y) * 2.4)
     scene.render.image_settings.file_format = "TARGA_RAW"
     scene.render.image_settings.color_mode = "RGBA"
     scene.render.filepath = str(resources / f"i{model}.tga")

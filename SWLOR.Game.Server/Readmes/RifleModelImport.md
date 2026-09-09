@@ -25,10 +25,16 @@ an inspected `source_material` matching the imported GR2 assignment, and
 and specular files independently: their variant names need not match. This rigid
 single-material preset rejects multiple material assignments instead of flattening them.
 
-Rifle attachment space is **barrel +X, grip -Z**, as seen in existing rifle parts.
+Rifle attachment space is **barrel -Z, grip -Y** after composing mesh-node transforms.
+The legacy `wbwxl_m_151` vertex arrays alone point +X with grip -Z; each mesh
+also has axis-angle rotation `[0.5773503, -0.5773503, -0.5773503, -2.0944]`
+and position `[-0.00521167, 0.0562191, -0.0280922]`. Ignoring those node fields
+leaves the weapon hanging below the hands. Always inspect complete node transforms,
+including ancestors, when deriving attachment conventions from an existing model.
 The supplied SWTOR rifles use source barrel +Y and grip +Z: Euler rotation
-`[180, 0, 90]` maps those axes correctly. Uniform scale `9.6` and translation
-`[0.03, 0, -0.02]` are the initial reviewed human-size fit, not a universal fit guarantee. Inspect grip/trigger
+`[90, 180, 0]` maps those axes correctly. Uniform scale `9.6` and translation
+`[-0.00521167, 0.0362191, -0.0580922]` compose the batch fit with that reference
+transform. These values are a starting fit, not a universal fit guarantee. Inspect grip/trigger
 contact, stock clearance and support-hand placement against rifle animation poses;
 never reuse the pistol bowshot fixture unchanged. Retain proportions and fit around
 the grip rather than normalizing rifles and long sniper barrels to equal lengths.

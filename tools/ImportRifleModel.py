@@ -1,7 +1,7 @@
 """Import a reviewed rigid GR2 rifle using base item 7 / WBwXl attachment space.
 
 Run in Blender 4.0 with the same CLI arguments as ImportBlasterModel.py.
-Rifle manifests require source_material, +X muzzle / -Z grip after transformation,
+Rifle manifests require source_material, -Z muzzle / -Y grip after transformation,
 and preserve_emission=true to retain the SWTOR packed emission channel.
 Cannons are deliberately rejected, including both as_a0x and assaultcannon names.
 """

@@ -14,7 +14,7 @@ class RifleImportTests(unittest.TestCase):
     def setUp(self):
         self.config = dict(schema_version=1, base_item=7, middle_slot=151,
                            texture="rf_gs02", material_mode="opaque", scale=9.6,
-                           rotation_degrees=[180, 0, 90], translation=[0, 0, 0],
+                           rotation_degrees=[90, 180, 0], translation=[-.00521167, .0362191, -.0580922],
                            texture_size=1024, source_material="ranged_gs02_a01_v01",
                            preserve_emission=True,
                            attachment=dict(source_muzzle_axis=[0, 1, 0], source_grip_axis=[0, 0, 1]),
@@ -36,14 +36,14 @@ class RifleImportTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(ValueError):
                 validate_rifle(config)
 
-    def test_rifle_axes_reject_pistol_and_upside_down_fit(self):
+    def test_rifle_axes_reject_untransformed_reference_vertices(self):
         try:
             from mathutils import Euler
         except ImportError:
             self.skipTest("Run in Blender for attachment transforms")
         rotation = Euler(tuple(math.radians(v) for v in self.config["rotation_degrees"])).to_matrix().to_4x4()
         validate_attachment(rotation, self.config, "rifle")
-        for angles in ((90, 180, 0), (0, 0, -90)):
+        for angles in ((180, 0, 90), (0, 0, -90)):
             rotation = Euler(tuple(math.radians(v) for v in angles)).to_matrix().to_4x4()
             with self.subTest(angles=angles), self.assertRaises(ValueError):
                 validate_attachment(rotation, self.config, "rifle")

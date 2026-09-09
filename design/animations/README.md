@@ -1,7 +1,7 @@
 # Game animations
 
 This branch contains perk playback, the in-game animation tester, authored clips, and the
-current animation production plan. The command-line generator uses the shared headless
+current animation production plan, plus a standing fishing sequence. The command-line generator uses the shared headless
 animation library and works without the separate Avalonia animation editor.
 
 The Design Bible Animations tab retains 119 references matching current active player perks.
@@ -38,6 +38,28 @@ with a searchable [CSV](animation-plan.csv). It groups current active perks,
 preserves matching Bible image references, and identifies installed clips and shared-motion candidates.
 
 ## Authored clips and generation
+
+### Fishing activity
+
+`fishing/` contains the same cast, wait, reel, and idle sequence at six, seven, and eight
+seconds. Only the holding interval varies, preserving the activity's random wait time.
+Fishing selects the matching `AuthoredAnimation.Fishing6`, `Fishing7`, or `Fishing8` clip.
+Movement, combat, death, rod removal, and point exhaustion release only the animation
+owned by that attempt. Completion callbacks capture the attempt ID so an old timer cannot
+finish a restarted cast. Fish rewards, bait consumption, and catch odds are unchanged.
+
+The editable sources are installed on both humanoid supermodel chains. `/animations`
+lists them under **Other**; equip a fishing rod to check the actual attachment in game.
+The recipe uses `activity: "Fishing"` and an empty `abilityDefinition`. Activity recipes
+must name a real non-invalid `ActivityStatusType`; perk recipes still require a current
+ability definition. Generate and install with the same commands below, substituting the
+`fishing` folder and each `Fishing6`, `Fishing7`, and `Fishing8` project.
+
+The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, using the
+bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
+playback. After installing, compile the banks and regenerate the clothing bridges as below.
+
+### Library layout
 
 ```text
 design/animations/
@@ -90,7 +112,7 @@ for a longer cast/channel. Damage, costs, cooldowns, and movement rules are unch
 `/animtest ShieldBash` previews a clip on your character; `/animtest` lists all names. This debug
 command is available to DM/Admin accounts and everyone on a test server. Hacking Blade and Carve
 are outdated spreadsheet entries with no current matching abilities, so they are excluded
-from the recipe, installed models, registry, and preview list. Recipe entries must identify an
+from the recipe, installed models, registry, and preview list. Perk recipe entries must identify an
 existing `IAbilityListDefinition`; generation rejects stale entries instead of inventing perks.
 
 To update an installed draft from the command line, close the toolset and run this against an
@@ -173,6 +195,12 @@ animation blocks and hashes of both source text and compiled bytes so subsequent
 installs can update compiled banks without discarding other clips. Missing or mismatched pairs
 are rejected. The `.swlanim` files remain the canonical pose projects; these bank sources are
 the reproducible inputs for the compiled model resources. Recompile after each installation.
+
+Keep bank animation blocks sorted by name; the installer now sorts the complete bank before
+compilation. Offline pose sampling alone does not validate native animation lookup or equipment
+overlays. Fishing rods use the standard wield setting in `baseitems.2da`: the polearm setting
+adds a shoulder-rest overlay that masks the right arm during the fishing clip. Validate fishing
+with the rod equipped after replacing the HAKs, restarting the server, and reopening the client.
 
 RGB robe phenotypes also have generated animation bridges for their separate garment joints.
 Publish generated robe updates in a separate HAK PR from the humanoid animation banks.

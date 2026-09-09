@@ -92,6 +92,7 @@ try
         foreach (var entry in manifest.RootElement.GetProperty("Animations").EnumerateArray())
         {
             var id = entry.GetProperty("Id").GetString()!;
+            var activity = entry.TryGetProperty("Activity", out var activityValue) ? activityValue.GetString() : null;
             AnimationProject.ValidateToken(id, 63);
             var project = AnimationProject.Deserialize(await ReadText(Path.Combine(args[2], id + ".swlanim")));
             var snapshots = new List<object>();
@@ -137,11 +138,11 @@ try
                     return [p.X, p.Y, p.Z];
                 }
                 snapshots.Add(new { Time = time, Label = beat.GetProperty("Label").GetString(), Meshes = meshes.ToArray(),
-                    Hand = Point("rhand", Vector3.Zero), Tip = Point("rhand", new Vector3(0, .8f, 0)),
+                    Hand = Point("rhand", Vector3.Zero), Tip = Point("rhand", PreviewWriter.WeaponTipOffset(activity)),
                     Shield = Enumerable.Range(0, 8).Select(i => Point("lforearm", new Vector3(-.09f,
                         .49f * MathF.Sin(i * MathF.PI / 4), .29f * MathF.Cos(i * MathF.PI / 4)))).ToArray(), EquipmentMeshes = equipment.Count > 0 });
             }
-            poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), project.Duration,
+            poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), Activity = activity, project.Duration,
                 PoseSource = overlay == null ? "Editable project" : "Installed MDL: " + overlay.Name, Snapshots = snapshots });
         }
         var renderOutput = Path.GetFullPath(args[3]);
@@ -178,7 +179,12 @@ try
     {
         var definition = typeof(IAbilityListDefinition).Assembly.GetType(
             "SWLOR.Game.Server.Feature.AbilityDefinition." + motion.AbilityDefinition);
-        if (definition == null || definition.IsAbstract || !typeof(IAbilityListDefinition).IsAssignableFrom(definition))
+        var activity = motion.Activity != null &&
+            System.Enum.TryParse<SWLOR.Game.Server.Service.ActivityService.ActivityStatusType>(motion.Activity, out var activityType) &&
+            System.Enum.IsDefined(activityType) && activityType != SWLOR.Game.Server.Service.ActivityService.ActivityStatusType.Invalid;
+        if (motion.Activity != null && (!activity || !string.IsNullOrEmpty(motion.AbilityDefinition)))
+            throw new InvalidDataException($"{motion.Id}: activity motions require a valid activity and no ability definition.");
+        if (!activity && (definition == null || definition.IsAbstract || !typeof(IAbilityListDefinition).IsAssignableFrom(definition)))
             throw new InvalidDataException($"{motion.Id}: no current ability definition matches '{motion.AbilityDefinition}'. Remove outdated Bible entries from the recipe before generating.");
         AnimationProject.ValidateToken(motion.Id, 63);
         if (files.ContainsKey(motion.Id + ".swlanim")) throw new InvalidDataException("Duplicate motion ID.");
@@ -204,7 +210,7 @@ try
         files.Add(motion.Id + ".swlanim", serialized + "\n");
         reports.Add(new
         {
-            motion.Id, motion.Name, motion.BibleRow, motion.Reference, motion.Observation, motion.Interpretation,
+            motion.Id, motion.Name, motion.BibleRow, motion.Reference, motion.Observation, motion.Interpretation, motion.Activity,
             Status = "Draft: visual review required", Project = motion.Id + ".swlanim", project.Duration,
             Keyframes = project.Keys.Count, Joints = project.Joints.Count, MdlRoundTripMaximumErrorMetres = maximumError,
             Beats = motion.Beats.Select(b => new { b.Time, b.Label }),

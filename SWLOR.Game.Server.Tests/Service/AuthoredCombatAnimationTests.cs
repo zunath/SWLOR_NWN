@@ -65,11 +65,13 @@ public class AuthoredCombatAnimationTests
         runtime.Token.Should().BeEmpty();
     }
 
+    /// <summary>Checks that the preview catalog retains the installed perk and fishing clips.</summary>
     [Test]
-    public void PreviewIncludesOnlyTheSevenMovesWithCurrentPerks()
+    public void PreviewIncludesCurrentPerkMovesAndFishing()
     {
         AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(new[] {
-            "ShieldBash", "ShieldWall", "CoveringStrike", "Invincible", "RiotBlade", "RendingStrike", "SavageCleave" });
+            "ShieldBash", "ShieldWall", "CoveringStrike", "Invincible", "RiotBlade", "RendingStrike", "SavageCleave",
+            "Fishing6", "Fishing7", "Fishing8" });
     }
 
     [Test]

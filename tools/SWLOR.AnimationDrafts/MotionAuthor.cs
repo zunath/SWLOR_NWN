@@ -11,11 +11,13 @@ internal sealed record Recipe(string Workbook, string Model, JsonObject ReadyShi
     public static readonly JsonSerializerOptions Json = new() { PropertyNameCaseInsensitive = true, WriteIndented = true };
 }
 internal sealed record Motion(string Id, string Name, int BibleRow, string Reference, string Observation,
-    string Interpretation, bool Shield, Beat[] Beats, string AbilityDefinition, bool Loop = false, bool NaturalGrip = false);
+    string Interpretation, bool Shield, Beat[] Beats, string AbilityDefinition, bool Loop = false, bool NaturalGrip = false,
+    string? Activity = null);
 internal sealed record Beat(float Time, string Label, JsonObject Pose, bool Through = false);
 
 internal static class MotionAuthor
 {
+    /// <summary>Bakes pose controls into validated, interpolated skeletal keys with grounded feet and a closed exit.</summary>
     public static AnimationProject Bake(AnimationProject rig, PosedNode[] neutral, Recipe recipe, Motion motion)
     {
         var beats = motion.Beats;

@@ -4,6 +4,9 @@ namespace SWLOR.Game.Server.Service.AnimationService;
 public static class AuthoredAnimation
 {
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip CoveringStrike = new("sw_coverings", 1.39999998f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Fishing6 = new("sw_fishing6", 6f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Fishing7 = new("sw_fishing7", 7f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Fishing8 = new("sw_fishing8", 8f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Invincible = new("sw_invincibl", 1.70000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RendingStrike = new("sw_rendingst", 1f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip RiotBlade = new("sw_riotblade", 0.899999976f);

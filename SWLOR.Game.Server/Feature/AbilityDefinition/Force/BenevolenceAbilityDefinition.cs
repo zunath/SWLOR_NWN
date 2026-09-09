@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Benevolence1, PerkType.Benevolence)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Benevolence2, PerkType.Benevolence)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Benevolence3, PerkType.Benevolence)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence III")
                 .Level(3)
                 .HasActivationDelay(1f)

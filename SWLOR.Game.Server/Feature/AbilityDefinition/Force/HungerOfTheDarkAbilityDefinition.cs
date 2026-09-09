@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.HungerOfTheDark1, PerkType.HungerOfTheDark)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Hunger of the Dark")
                 .Level(1)
                 .HasActivationDelay(0f)

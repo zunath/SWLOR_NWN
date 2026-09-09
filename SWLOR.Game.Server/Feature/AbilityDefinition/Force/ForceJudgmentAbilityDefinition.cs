@@ -91,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var ability = builder
                 .Create(feat, PerkType.ForceJudgment)
+                .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1.5f)

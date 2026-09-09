@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceSpark1, PerkType.ForceSpark)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Force Spark I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceSpark2, PerkType.ForceSpark)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Force Spark II")
                 .Level(2)
                 .HasActivationDelay(1f)

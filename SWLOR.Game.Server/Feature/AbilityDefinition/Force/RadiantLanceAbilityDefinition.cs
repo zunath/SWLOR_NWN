@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.RadiantLance)
+                .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1.5f)

@@ -80,246 +80,6 @@
     "ProjectPath": "design/animations/espionage/TacticalEscape.swlanim"
   },
   {
-    "Name": "Benevolence",
-    "AnimationName": "sw_benevol",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/Benevolence.swlanim"
-  },
-  {
-    "Name": "CreepingTerror",
-    "AnimationName": "sw_cree_terr",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/CreepingTerror.swlanim"
-  },
-  {
-    "Name": "EclipseOfResolve",
-    "AnimationName": "sw_eclp_resl",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/EclipseOfResolve.swlanim"
-  },
-  {
-    "Name": "ForceBurst",
-    "AnimationName": "sw_forc_burs",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceBurst.swlanim"
-  },
-  {
-    "Name": "ForceChoke",
-    "AnimationName": "sw_forc_chok",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceChoke.swlanim"
-  },
-  {
-    "Name": "ForceDrain",
-    "AnimationName": "sw_forc_drai",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceDrain.swlanim"
-  },
-  {
-    "Name": "ForceIntercept",
-    "AnimationName": "sw_forc_inte",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceIntercept.swlanim"
-  },
-  {
-    "Name": "ForceJudgment",
-    "AnimationName": "sw_forc_judg",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceJudgment.swlanim"
-  },
-  {
-    "Name": "ForceLightning",
-    "AnimationName": "sw_forc_ligh",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceLightning.swlanim"
-  },
-  {
-    "Name": "ForcePush",
-    "AnimationName": "sw_forcepush",
-    "Duration": 1.25,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForcePush.swlanim"
-  },
-  {
-    "Name": "ForceSanctuary",
-    "AnimationName": "sw_forc_sanc",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceSanctuary.swlanim"
-  },
-  {
-    "Name": "ForceSpark",
-    "AnimationName": "sw_forc_spar",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceSpark.swlanim"
-  },
-  {
-    "Name": "FuryStance",
-    "AnimationName": "sw_furystn",
-    "Duration": 1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/FuryStance.swlanim"
-  },
-  {
-    "Name": "GuardianWard",
-    "AnimationName": "sw_guardward",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/GuardianWard.swlanim"
-  },
-  {
-    "Name": "HungerOfTheDark",
-    "AnimationName": "sw_hung_dark",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/HungerOfTheDark.swlanim"
-  },
-  {
-    "Name": "LastStandOfTheLight",
-    "AnimationName": "sw_lightlast",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/LastStandOfTheLight.swlanim"
-  },
-  {
-    "Name": "MindTrick",
-    "AnimationName": "sw_mindtrick",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/MindTrick.swlanim"
-  },
-  {
-    "Name": "NightmareField",
-    "AnimationName": "sw_nigh_fiel",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/NightmareField.swlanim"
-  },
-  {
-    "Name": "PurifyingWave",
-    "AnimationName": "sw_puri_wave",
-    "Duration": 1.35,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/PurifyingWave.swlanim"
-  },
-  {
-    "Name": "RadiantLance",
-    "AnimationName": "sw_radi_lanc",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/RadiantLance.swlanim"
-  },
-  {
-    "Name": "Renewal",
-    "AnimationName": "sw_renewal",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/Renewal.swlanim"
-  },
-  {
-    "Name": "ThrowLightsaber",
-    "AnimationName": "sw_thro_sabe",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ThrowLightsaber.swlanim"
-  },
-  {
-    "Name": "ThrowRock",
-    "AnimationName": "sw_throwrock",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ThrowRock.swlanim"
-  },
-  {
-    "Name": "WeakenResolve",
-    "AnimationName": "sw_weak_resl",
-    "Duration": 1.1,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/WeakenResolve.swlanim"
-  },
-  {
     "Name": "Provoke",
     "AnimationName": "sw_provoke",
     "Duration": 0.95,
@@ -2370,16 +2130,6 @@
     "ProjectPath": "design/animations/vibroknife/VolatileCompound.swlanim"
   },
   {
-    "Name": "ForceLeap",
-    "AnimationName": "sw_forceleap",
-    "Duration": 1.2,
-    "Targets": [
-      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
-      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
-    ],
-    "ProjectPath": "design/animations/force/ForceLeap.swlanim"
-  },
-  {
     "Name": "CallBeast",
     "AnimationName": "sw_callbeast",
     "Duration": 2.4,
@@ -2838,5 +2588,255 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/fishing/Fishing8.swlanim"
+  },
+  {
+    "Name": "Benevolence",
+    "AnimationName": "sw_benevol",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/Benevolence.swlanim"
+  },
+  {
+    "Name": "CreepingTerror",
+    "AnimationName": "sw_cree_terr",
+    "Duration": 2.85,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/CreepingTerror.swlanim"
+  },
+  {
+    "Name": "EclipseOfResolve",
+    "AnimationName": "sw_eclp_resl",
+    "Duration": 3.1,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/EclipseOfResolve.swlanim"
+  },
+  {
+    "Name": "ForceBurst",
+    "AnimationName": "sw_forc_burs",
+    "Duration": 2.15,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceBurst.swlanim"
+  },
+  {
+    "Name": "ForceChoke",
+    "AnimationName": "sw_forc_chok",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceChoke.swlanim"
+  },
+  {
+    "Name": "ForceDrain",
+    "AnimationName": "sw_forc_drai",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceDrain.swlanim"
+  },
+  {
+    "Name": "ForceIntercept",
+    "AnimationName": "sw_forc_inte",
+    "Duration": 2.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceIntercept.swlanim"
+  },
+  {
+    "Name": "ForceJudgment",
+    "AnimationName": "sw_forc_judg",
+    "Duration": 2.65,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceJudgment.swlanim"
+  },
+  {
+    "Name": "ForceLeap",
+    "AnimationName": "sw_forceleap",
+    "Duration": 1.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceLeap.swlanim"
+  },
+  {
+    "Name": "ForceLightning",
+    "AnimationName": "sw_forc_ligh",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceLightning.swlanim"
+  },
+  {
+    "Name": "ForcePush",
+    "AnimationName": "sw_forcepush",
+    "Duration": 1.45,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForcePush.swlanim"
+  },
+  {
+    "Name": "ForceSanctuary",
+    "AnimationName": "sw_forc_sanc",
+    "Duration": 3.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceSanctuary.swlanim"
+  },
+  {
+    "Name": "ForceSpark",
+    "AnimationName": "sw_forc_spar",
+    "Duration": 1.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ForceSpark.swlanim"
+  },
+  {
+    "Name": "FuryStance",
+    "AnimationName": "sw_furystn",
+    "Duration": 2.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/FuryStance.swlanim"
+  },
+  {
+    "Name": "GuardianWard",
+    "AnimationName": "sw_guardward",
+    "Duration": 2.55,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/GuardianWard.swlanim"
+  },
+  {
+    "Name": "HungerOfTheDark",
+    "AnimationName": "sw_hung_dark",
+    "Duration": 2.95,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/HungerOfTheDark.swlanim"
+  },
+  {
+    "Name": "LastStandOfTheLight",
+    "AnimationName": "sw_lightlast",
+    "Duration": 3.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/LastStandOfTheLight.swlanim"
+  },
+  {
+    "Name": "MindTrick",
+    "AnimationName": "sw_mindtrick",
+    "Duration": 2.75,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/MindTrick.swlanim"
+  },
+  {
+    "Name": "NightmareField",
+    "AnimationName": "sw_nigh_fiel",
+    "Duration": 2.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/NightmareField.swlanim"
+  },
+  {
+    "Name": "PurifyingWave",
+    "AnimationName": "sw_puri_wave",
+    "Duration": 2.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/PurifyingWave.swlanim"
+  },
+  {
+    "Name": "RadiantLance",
+    "AnimationName": "sw_radi_lanc",
+    "Duration": 2.25,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/RadiantLance.swlanim"
+  },
+  {
+    "Name": "Renewal",
+    "AnimationName": "sw_renewal",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/Renewal.swlanim"
+  },
+  {
+    "Name": "ThrowLightsaber",
+    "AnimationName": "sw_thro_sabe",
+    "Duration": 2.22,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ThrowLightsaber.swlanim"
+  },
+  {
+    "Name": "ThrowRock",
+    "AnimationName": "sw_throwrock",
+    "Duration": 2.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/ThrowRock.swlanim"
+  },
+  {
+    "Name": "WeakenResolve",
+    "AnimationName": "sw_weak_resl",
+    "Duration": 2.35,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/force/WeakenResolve.swlanim"
   }
 ]

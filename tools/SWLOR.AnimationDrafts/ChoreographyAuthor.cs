@@ -1,12 +1,14 @@
 using System.Numerics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.AnimationDrafts;
 
-internal sealed record Choreography(string Id, string Description, float Duration, ChoreographyBeat[] Beats);
+internal sealed record Choreography(string Id, string Description, float Duration, ChoreographyBeat[] Beats,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool InPlace = false);
 internal sealed record ChoreographyBeat(float Time, string Label, string SourceAnimation, float SourceTime = 0,
     float[]? LeftHand = null, float[]? RightHand = null, float[]? TorsoDegrees = null, string? SourceModel = null);
 
@@ -123,11 +125,36 @@ internal static class ChoreographyAuthor
                 pose[i] = new(Vector3.Lerp(poses[segment][i].Position, poses[segment + 1][i].Position, smooth),
                     Quaternion.Slerp(poses[segment][i].Orientation, poses[segment + 1][i].Orientation, smooth),
                     float.Lerp(poses[segment][i].Scale, poses[segment + 1][i].Scale, smooth));
+            if (recipe.InPlace)
+                pose[root] = pose[root] with { Position = new Vector3(neutral[root].Position.X,
+                    neutral[root].Position.Y, pose[root].Position.Z) };
             var world = AnimationRig.World(rig.Joints, pose);
             var penetration = floor - feet.Min(i => world[i].Translation.Z);
             if (penetration > 0 && time > 0 && time < result.Duration)
                 pose[root] = pose[root] with { Position = pose[root].Position + Vector3.UnitZ * penetration };
             result.SetKey(time, pose);
+        }
+        // Fast native leg rotations can arc below the floor between otherwise safe
+        // 30 Hz keys. Refine only clips that fail the existing clearance tolerance,
+        // preserving the bytes of previously reviewed choreography.
+        float Penetration(PosedNode[] pose)
+        {
+            var world = AnimationRig.World(rig.Joints, pose);
+            return floor - feet.Min(i => world[i].Translation.Z);
+        }
+        var sampleCount = (int)Math.Ceiling(result.Duration * 120);
+        if (Enumerable.Range(1, sampleCount - 1).Any(frame => Penetration(result.Sample(frame / 120f)) > .025f))
+        {
+            for (int pass = 0; pass < 3; pass++)
+            for (int frame = 1; frame < sampleCount; frame++)
+            {
+                var time = frame / 120f;
+                var pose = result.Sample(time);
+                var penetration = Penetration(pose);
+                if (penetration <= .002f) continue;
+                pose[root] = pose[root] with { Position = pose[root].Position + Vector3.UnitZ * penetration };
+                result.SetKey(time, pose);
+            }
         }
         result.Validate();
         BulkMotionAuthor.ValidateMotion(result, neutral, floor);

@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.FuryStance1, PerkType.FuryStance)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Fury Stance I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FuryStance, 30f)
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.FuryStance2, PerkType.FuryStance)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Fury Stance II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.FuryStance, 30f)

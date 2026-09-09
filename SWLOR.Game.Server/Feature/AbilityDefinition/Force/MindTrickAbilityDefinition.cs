@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.MindTrick1, PerkType.MindTrick)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Mind Trick I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.MindTrick2, PerkType.MindTrick)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Mind Trick II")
                 .Level(2)
                 .HasActivationDelay(1f)

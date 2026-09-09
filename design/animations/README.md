@@ -68,6 +68,8 @@ Existing gameplay timing remains separate from the authored throw's visual beats
 Each recipe contains an ability `Id`, a motion `Description`, `Duration` in seconds,
 and labeled `Beats`. Beat `Time` is in seconds and `SourceTime` is a normalized position
 within `SourceAnimation`. An optional per-beat `SourceModel` selects another model's motion.
+The recipe-level `InPlace` option removes horizontal root travel for a stationary preview,
+while preserving vertical motion and joint rotations; native gameplay still owns movement.
 Optional `LeftHand` and `RightHand` targets use absolute model-space
 metres; `TorsoDegrees` supplies the torso adjustment. Entry and recovery use native idle.
 The generator automatically reads each category's recipe file. Regenerate selected entries
@@ -93,6 +95,21 @@ create medical props or alter healing, resource costs, or stealth mechanics. Cur
 remains visible. Focus Stim and Resuscitation place the weapon hand forward and outward
 to clear the head in sampled equipped poses while preserving the native wrist grip. This
 is offline asset verification, not a claim of live NWN visual validation.
+
+## Force choreography
+
+All 25 Force entries have individual recipes in `force/choreographies.json`. Directed pushes,
+precise lances, inward drains, mind gestures, target wards, and area releases use different
+hand paths and timing. Force Lightning reuses the original `a_ba_casts` CUSTOM64 start and
+loop at native speed; gameplay restores its three-second native discharge. The tester's
+leap and saber-throw sequences use the original CUSTOM65 and CUSTOM46 phases at their
+existing playback speeds. Native gameplay retains travel, weapon attachment, and projectile
+handling for Force Leap, Force Intercept, and Throw Lightsaber.
+
+Ordinary Force gestures play at their declared activation or impact stage without extending
+cast timers. Creeping Terror's field creation uses activation playback; it does not replay
+the gesture on each damage pulse. Skeletal poses do not create lightning, stones, shields,
+or other visual effects. Test with actual equipment after deploying both body and robe assets.
 
 ## Animation tester
 

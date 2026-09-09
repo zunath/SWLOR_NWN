@@ -1,0 +1,2370 @@
+[
+  {
+    "Id": "Benevolence",
+    "Description": "Gather healing at the chest and offer it gently toward one ally with a sustained forward hand",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.38,
+        "Label": "Gather healing close to chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.24,
+          0.22,
+          1.26
+        ],
+        "LeftHand": [
+          -0.2,
+          0.22,
+          1.25
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Offer healing toward ally",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.28,
+          0.59,
+          1.35
+        ],
+        "LeftHand": [
+          -0.24,
+          0.24,
+          1.16
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Sustain focused healing",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.29,
+          0.61,
+          1.37
+        ],
+        "LeftHand": [
+          -0.26,
+          0.22,
+          1.17
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Release healing and draw back",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          0.32,
+          1.23
+        ],
+        "LeftHand": [
+          -0.28,
+          0.19,
+          1.15
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CreepingTerror",
+    "Description": "Designate distant ground then rake a low widening arc to spread a creeping hostile field",
+    "Duration": 2.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Gather low dark pressure",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.19,
+          1.04
+        ],
+        "LeftHand": [
+          -0.28,
+          0.17,
+          1.04
+        ]
+      },
+      {
+        "Time": 0.92,
+        "Label": "Mark the distant field center",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.66,
+          1.02
+        ],
+        "LeftHand": [
+          -0.3,
+          0.22,
+          1.09
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.42,
+        "Label": "Rake pressure across field edge",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          -0.12,
+          0.58,
+          0.99
+        ],
+        "LeftHand": [
+          -0.32,
+          0.25,
+          1.02
+        ],
+        "TorsoDegrees": [
+          5,
+          -8,
+          0
+        ]
+      },
+      {
+        "Time": 1.98,
+        "Label": "Spread terror along opposite edge",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.5,
+          0.49,
+          0.98
+        ],
+        "LeftHand": [
+          -0.42,
+          0.4,
+          1.04
+        ],
+        "TorsoDegrees": [
+          5,
+          8,
+          0
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Release the persistent ground field",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.37,
+          0.3,
+          1.08
+        ],
+        "LeftHand": [
+          -0.35,
+          0.27,
+          1.07
+        ]
+      },
+      {
+        "Time": 2.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "EclipseOfResolve",
+    "Description": "Close a high enclosing arc then press both arms down to impose a heavy self-centered suppression field",
+    "Duration": 3.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.48,
+        "Label": "Raise enclosing pressure",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.39,
+          0.32,
+          1.53
+        ],
+        "LeftHand": [
+          -0.39,
+          0.32,
+          1.53
+        ]
+      },
+      {
+        "Time": 1.02,
+        "Label": "Draw the eclipse inward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.24,
+          0.4,
+          1.47
+        ],
+        "LeftHand": [
+          -0.24,
+          0.4,
+          1.47
+        ]
+      },
+      {
+        "Time": 1.66,
+        "Label": "Press suppression around the caster",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.48,
+          0.35,
+          1.05
+        ],
+        "LeftHand": [
+          -0.48,
+          0.35,
+          1.05
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.3,
+        "Label": "Hold the oppressive field open",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.5,
+          0.3,
+          0.99
+        ],
+        "LeftHand": [
+          -0.5,
+          0.3,
+          0.99
+        ]
+      },
+      {
+        "Time": 2.7,
+        "Label": "Settle after the eclipse",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.35,
+          0.22,
+          1.08
+        ],
+        "LeftHand": [
+          -0.35,
+          0.22,
+          1.08
+        ]
+      },
+      {
+        "Time": 3.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForceBurst",
+    "Description": "Compress power between the hands and punch both forearms toward the selected distant burst center",
+    "Duration": 2.15,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.34,
+        "Label": "Compress a tight charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.22,
+          0.24,
+          1.3
+        ],
+        "LeftHand": [
+          -0.22,
+          0.24,
+          1.3
+        ]
+      },
+      {
+        "Time": 0.76,
+        "Label": "Draw charged arms back",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.12,
+          1.36
+        ],
+        "LeftHand": [
+          -0.36,
+          0.12,
+          1.36
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.04,
+        "Label": "Discharge the focused burst",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.27,
+          0.67,
+          1.28
+        ],
+        "LeftHand": [
+          -0.27,
+          0.67,
+          1.28
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.32,
+        "Label": "Absorb burst recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.46,
+          1.25
+        ],
+        "LeftHand": [
+          -0.36,
+          0.46,
+          1.25
+        ]
+      },
+      {
+        "Time": 1.76,
+        "Label": "Release the compressed charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.25,
+          1.13
+        ],
+        "LeftHand": [
+          -0.34,
+          0.25,
+          1.13
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForceChoke",
+    "Description": "Reach toward the target at throat height, lift the restraint and hold a steady one-handed telekinetic grip",
+    "Duration": 3.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Focus on the hostile target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.34,
+          1.35
+        ],
+        "LeftHand": [
+          -0.3,
+          0.19,
+          1.15
+        ]
+      },
+      {
+        "Time": 0.96,
+        "Label": "Catch the target in a high restraint",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.32,
+          0.6,
+          1.47
+        ],
+        "LeftHand": [
+          -0.31,
+          0.22,
+          1.12
+        ]
+      },
+      {
+        "Time": 1.48,
+        "Label": "Lift and tighten the restraint",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          0.57,
+          1.62
+        ],
+        "LeftHand": [
+          -0.31,
+          0.19,
+          1.1
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.22,
+        "Label": "Sustain the choking grip",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          0.57,
+          1.61
+        ],
+        "LeftHand": [
+          -0.3,
+          0.18,
+          1.12
+        ]
+      },
+      {
+        "Time": 2.63,
+        "Label": "Release the hand after establishing restraint",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.35,
+          0.32,
+          1.36
+        ],
+        "LeftHand": [
+          -0.3,
+          0.17,
+          1.1
+        ]
+      },
+      {
+        "Time": 3.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForceDrain",
+    "Description": "Reach outward to seize energy then pull it visibly inward toward the chest in two unequal draws",
+    "Duration": 2.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.5,
+        "Label": "Reach for the target vitality",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.63,
+          1.25
+        ],
+        "LeftHand": [
+          -0.3,
+          0.29,
+          1.21
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.02,
+        "Label": "Draw stolen energy toward the chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.24,
+          0.26,
+          1.27
+        ],
+        "LeftHand": [
+          -0.2,
+          0.24,
+          1.24
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Gather the remaining energy",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.51,
+          1.22
+        ],
+        "LeftHand": [
+          -0.25,
+          0.34,
+          1.18
+        ]
+      },
+      {
+        "Time": 1.92,
+        "Label": "Absorb the final inward draw",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.23,
+          0.23,
+          1.32
+        ],
+        "LeftHand": [
+          -0.23,
+          0.23,
+          1.27
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.38,
+        "Label": "Settle the restored energy",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.32,
+          0.19,
+          1.13
+        ],
+        "LeftHand": [
+          -0.32,
+          0.19,
+          1.13
+        ]
+      },
+      {
+        "Time": 2.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForceIntercept",
+    "Description": "In-place native leap followed by a protective guard, preserving vertical motion without preview translation; native gameplay owns travel to the ally",
+    "Duration": 2.45,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.15,
+        "Label": "Begin native interception leap",
+        "SourceAnimation": "custom65lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.4165,
+        "Label": "Land the native leap",
+        "SourceAnimation": "custom65lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.7,
+        "Label": "Raise a protective interception guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.26,
+          0.35,
+          1.3
+        ],
+        "LeftHand": [
+          -0.3,
+          0.54,
+          1.44
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.07,
+        "Label": "Settle between ally and danger",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.33,
+          0.32,
+          1.18
+        ],
+        "LeftHand": [
+          -0.32,
+          0.48,
+          1.34
+        ]
+      },
+      {
+        "Time": 2.45,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ],
+    "InPlace": true
+  },
+  {
+    "Id": "ForceJudgment",
+    "Description": "Raise one arm in judgment then deliver a decisive downward-forward verdict toward the selected target",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.44,
+        "Label": "Gather judgment at shoulder height",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.37,
+          0.28,
+          1.46
+        ],
+        "LeftHand": [
+          -0.26,
+          0.23,
+          1.22
+        ]
+      },
+      {
+        "Time": 0.96,
+        "Label": "Raise the charged verdict",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.42,
+          0.35,
+          1.78
+        ],
+        "LeftHand": [
+          -0.28,
+          0.21,
+          1.25
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.48,
+        "Label": "Strike the verdict down toward target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.32,
+          0.61,
+          1.05
+        ],
+        "LeftHand": [
+          -0.33,
+          0.35,
+          1.19
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.96,
+        "Label": "Hold the imposed judgment",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.33,
+          0.58,
+          1.08
+        ],
+        "LeftHand": [
+          -0.32,
+          0.29,
+          1.16
+        ]
+      },
+      {
+        "Time": 2.3,
+        "Label": "Withdraw the judging arm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.3,
+          1.18
+        ],
+        "LeftHand": [
+          -0.29,
+          0.2,
+          1.13
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForceLeap",
+    "Description": "In-place preview of the original CUSTOM65 leap at master speed, preserving vertical motion and joint rotations; native gameplay owns travel and impact",
+    "Duration": 1.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.15,
+        "Label": "Begin original leap",
+        "SourceAnimation": "custom65lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.4165,
+        "Label": "Complete native leap at double speed",
+        "SourceAnimation": "custom65lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ],
+    "InPlace": true
+  },
+  {
+    "Id": "ForceLightning",
+    "Description": "Preserve the master CUSTOM64 outward lightning extension and sustained discharge at natural native tempo, with a short idle recovery",
+    "Duration": 3.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.1,
+        "Label": "Begin original lightning extension",
+        "SourceAnimation": "custom64start",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 0.833,
+        "Label": "Complete original lightning entry",
+        "SourceAnimation": "custom64start",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 0.834,
+        "Label": "Begin native lightning discharge cycle 1",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.267,
+        "Label": "Complete native lightning discharge cycle 1",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.268,
+        "Label": "Begin native lightning discharge cycle 2",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.701,
+        "Label": "Complete native lightning discharge cycle 2",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 1.702,
+        "Label": "Begin native lightning discharge cycle 3",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 2.135,
+        "Label": "Complete native lightning discharge cycle 3",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 2.136,
+        "Label": "Begin native lightning discharge cycle 4",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 2.569,
+        "Label": "Complete native lightning discharge cycle 4",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 2.57,
+        "Label": "Sustain final lightning arc",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 2.8,
+        "Label": "End original lightning discharge",
+        "SourceAnimation": "custom64lp",
+        "SourceTime": 0.531178,
+        "SourceModel": "a_ba_casts"
+      },
+      {
+        "Time": 3.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForcePush",
+    "Description": "Brace, draw both elbows back and extend a broad two-handed shove into the forward cone",
+    "Duration": 1.45,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Plant and draw back for a shove",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.11,
+          1.3
+        ],
+        "LeftHand": [
+          -0.36,
+          0.11,
+          1.3
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.5,
+        "Label": "Drive both arms through the cone",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.66,
+          1.3
+        ],
+        "LeftHand": [
+          -0.36,
+          0.66,
+          1.3
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.72,
+        "Label": "Follow through on the forward push",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.43,
+          0.59,
+          1.24
+        ],
+        "LeftHand": [
+          -0.43,
+          0.59,
+          1.24
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.08,
+        "Label": "Recover balance after the shove",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.29,
+          1.14
+        ],
+        "LeftHand": [
+          -0.34,
+          0.29,
+          1.14
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForceSanctuary",
+    "Description": "Open a calm upward gathering gesture then lower both arms around the caster to establish a protective sanctuary",
+    "Duration": 3.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.52,
+        "Label": "Gather sanctuary light low",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.26,
+          0.28,
+          1.02
+        ],
+        "LeftHand": [
+          -0.26,
+          0.28,
+          1.02
+        ]
+      },
+      {
+        "Time": 1.16,
+        "Label": "Lift the protective enclosure",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.39,
+          0.4,
+          1.58
+        ],
+        "LeftHand": [
+          -0.39,
+          0.4,
+          1.58
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.9,
+        "Label": "Open the sanctuary around allies",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.59,
+          0.19,
+          1.35
+        ],
+        "LeftHand": [
+          -0.59,
+          0.19,
+          1.35
+        ]
+      },
+      {
+        "Time": 2.52,
+        "Label": "Lower protection around the area",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.51,
+          0.29,
+          1.06
+        ],
+        "LeftHand": [
+          -0.51,
+          0.29,
+          1.06
+        ]
+      },
+      {
+        "Time": 2.92,
+        "Label": "Settle within the sanctuary",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.33,
+          0.23,
+          1.12
+        ],
+        "LeftHand": [
+          -0.33,
+          0.23,
+          1.12
+        ]
+      },
+      {
+        "Time": 3.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ForceSpark",
+    "Description": "Prime a compact right-handed charge and release one quick pointed electrical snap at a single target",
+    "Duration": 1.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Prime a small electrical charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          0.21,
+          1.33
+        ],
+        "LeftHand": [
+          -0.3,
+          0.19,
+          1.14
+        ]
+      },
+      {
+        "Time": 0.64,
+        "Label": "Snap the spark toward the target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.29,
+          0.65,
+          1.36
+        ],
+        "LeftHand": [
+          -0.31,
+          0.21,
+          1.12
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.82,
+        "Label": "Take the brief discharge recoil",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.48,
+          1.38
+        ],
+        "LeftHand": [
+          -0.31,
+          0.2,
+          1.12
+        ]
+      },
+      {
+        "Time": 1.2,
+        "Label": "Lower the discharged hand",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.32,
+          1.16
+        ],
+        "LeftHand": [
+          -0.3,
+          0.17,
+          1.12
+        ]
+      },
+      {
+        "Time": 1.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FuryStance",
+    "Description": "Draw both arms inward, tense the chest and open into an aggressive ready stance before releasing to native idle",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.43,
+        "Label": "Pull fury inward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.21,
+          1.2
+        ],
+        "LeftHand": [
+          -0.25,
+          0.21,
+          1.2
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.96,
+        "Label": "Brace and gather aggressive power",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.22,
+          1.39
+        ],
+        "LeftHand": [
+          -0.25,
+          0.22,
+          1.39
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.56,
+        "Label": "Open the empowered fighting stance",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.46,
+          0.25,
+          1.16
+        ],
+        "LeftHand": [
+          -0.46,
+          0.25,
+          1.16
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.03,
+        "Label": "Settle the stance activation",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.27,
+          1.15
+        ],
+        "LeftHand": [
+          -0.34,
+          0.27,
+          1.15
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "GuardianWard",
+    "Description": "Brace one forearm across the chest then extend a single protective hand toward the warded ally",
+    "Duration": 2.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.43,
+        "Label": "Brace a compact protective seal",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.23,
+          0.29,
+          1.26
+        ],
+        "LeftHand": [
+          -0.26,
+          0.22,
+          1.25
+        ]
+      },
+      {
+        "Time": 0.98,
+        "Label": "Extend the ward toward an ally",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.33,
+          0.6,
+          1.42
+        ],
+        "LeftHand": [
+          -0.22,
+          0.25,
+          1.25
+        ]
+      },
+      {
+        "Time": 1.62,
+        "Label": "Set the ward firmly in place",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.62,
+          1.44
+        ],
+        "LeftHand": [
+          -0.22,
+          0.25,
+          1.25
+        ]
+      },
+      {
+        "Time": 2.12,
+        "Label": "Withdraw after fixing the ward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.34,
+          1.29
+        ],
+        "LeftHand": [
+          -0.28,
+          0.21,
+          1.18
+        ]
+      },
+      {
+        "Time": 2.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "HungerOfTheDark",
+    "Description": "Gather power from both sides and pull it toward the chest, finishing with a low hungry grasp",
+    "Duration": 2.95,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.46,
+        "Label": "Open to surrounding dark energy",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.53,
+          0.16,
+          1.13
+        ],
+        "LeftHand": [
+          -0.53,
+          0.16,
+          1.13
+        ]
+      },
+      {
+        "Time": 1.1,
+        "Label": "Draw darkness inward",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.24,
+          0.29,
+          1.27
+        ],
+        "LeftHand": [
+          -0.24,
+          0.29,
+          1.27
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.78,
+        "Label": "Seal the hunger within",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.22,
+          0.23,
+          1.36
+        ],
+        "LeftHand": [
+          -0.22,
+          0.23,
+          1.36
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.37,
+        "Label": "Lower into a predatory grasp",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.38,
+          0.35,
+          1.04
+        ],
+        "LeftHand": [
+          -0.38,
+          0.35,
+          1.04
+        ]
+      },
+      {
+        "Time": 2.95,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "LastStandOfTheLight",
+    "Description": "Lift a protective vow and place both hands toward the chosen ally in a sustained final safeguard",
+    "Duration": 3.4,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.5,
+        "Label": "Gather the final safeguard",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.26,
+          1.29
+        ],
+        "LeftHand": [
+          -0.25,
+          0.26,
+          1.29
+        ]
+      },
+      {
+        "Time": 1.13,
+        "Label": "Raise the protective vow",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.37,
+          0.35,
+          1.66
+        ],
+        "LeftHand": [
+          -0.37,
+          0.35,
+          1.66
+        ]
+      },
+      {
+        "Time": 1.91,
+        "Label": "Lay the safeguard upon the ally",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.32,
+          0.61,
+          1.4
+        ],
+        "LeftHand": [
+          -0.32,
+          0.61,
+          1.4
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Hold the final protective seal",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.57,
+          1.38
+        ],
+        "LeftHand": [
+          -0.34,
+          0.57,
+          1.38
+        ]
+      },
+      {
+        "Time": 3.01,
+        "Label": "Release the lasting safeguard",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.31,
+          1.24
+        ],
+        "LeftHand": [
+          -0.34,
+          0.31,
+          1.24
+        ]
+      },
+      {
+        "Time": 3.4,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "MindTrick",
+    "Description": "Use a restrained lateral right-arm pass across the target sightline, then a second smaller suggestion and calm withdrawal",
+    "Duration": 2.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.44,
+        "Label": "Raise a calm suggestive hand",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.4,
+          0.42,
+          1.46
+        ],
+        "LeftHand": [
+          -0.3,
+          0.18,
+          1.13
+        ]
+      },
+      {
+        "Time": 1.13,
+        "Label": "Pass suggestion across the sightline",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          -0.03,
+          0.57,
+          1.44
+        ],
+        "LeftHand": [
+          -0.31,
+          0.2,
+          1.13
+        ],
+        "TorsoDegrees": [
+          0,
+          -5,
+          0
+        ]
+      },
+      {
+        "Time": 1.74,
+        "Label": "Set the second subtle suggestion",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.28,
+          0.54,
+          1.43
+        ],
+        "LeftHand": [
+          -0.29,
+          0.18,
+          1.12
+        ],
+        "TorsoDegrees": [
+          0,
+          3,
+          0
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Withdraw without a forceful flourish",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.35,
+          0.33,
+          1.23
+        ],
+        "LeftHand": [
+          -0.3,
+          0.18,
+          1.12
+        ]
+      },
+      {
+        "Time": 2.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "NightmareField",
+    "Description": "Raise asymmetric threatening arms and spread them at shoulder height to radiate a self-centered nightmare",
+    "Duration": 2.9,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.46,
+        "Label": "Gather unsettling pressure",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.25,
+          1.33
+        ],
+        "LeftHand": [
+          -0.26,
+          0.27,
+          1.2
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.06,
+        "Label": "Lift an uneven threatening silhouette",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.42,
+          0.3,
+          1.69
+        ],
+        "LeftHand": [
+          -0.47,
+          0.31,
+          1.38
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.76,
+        "Label": "Spread nightmare around the caster",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.63,
+          0.18,
+          1.48
+        ],
+        "LeftHand": [
+          -0.57,
+          0.21,
+          1.49
+        ]
+      },
+      {
+        "Time": 2.38,
+        "Label": "Let the nightmare field persist",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.42,
+          0.24,
+          1.12
+        ],
+        "LeftHand": [
+          -0.43,
+          0.23,
+          1.17
+        ]
+      },
+      {
+        "Time": 2.9,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PurifyingWave",
+    "Description": "Gather light centrally and sweep both arms outward in a level self-centered cleansing wave",
+    "Duration": 2.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.43,
+        "Label": "Gather focused cleansing light",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.23,
+          0.25,
+          1.3
+        ],
+        "LeftHand": [
+          -0.23,
+          0.25,
+          1.3
+        ]
+      },
+      {
+        "Time": 0.97,
+        "Label": "Raise the wave to chest height",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.27,
+          0.4,
+          1.45
+        ],
+        "LeftHand": [
+          -0.27,
+          0.4,
+          1.45
+        ]
+      },
+      {
+        "Time": 1.51,
+        "Label": "Sweep purification around the caster",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.65,
+          0.23,
+          1.38
+        ],
+        "LeftHand": [
+          -0.65,
+          0.23,
+          1.38
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.12,
+        "Label": "Lower the released cleansing wave",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.43,
+          0.26,
+          1.14
+        ],
+        "LeftHand": [
+          -0.43,
+          0.26,
+          1.14
+        ]
+      },
+      {
+        "Time": 2.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RadiantLance",
+    "Description": "Align both forearms along a narrow forward line, draw a concentrated charge and drive one straight release",
+    "Duration": 2.25,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Align the narrow radiant line",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.25,
+          0.46,
+          1.33
+        ],
+        "LeftHand": [
+          -0.2,
+          0.39,
+          1.29
+        ]
+      },
+      {
+        "Time": 0.88,
+        "Label": "Draw the concentrated lance charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.24,
+          1.38
+        ],
+        "LeftHand": [
+          -0.23,
+          0.3,
+          1.32
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.19,
+        "Label": "Drive the lance straight forward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.23,
+          0.68,
+          1.36
+        ],
+        "LeftHand": [
+          -0.22,
+          0.55,
+          1.3
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Hold the line after discharge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.26,
+          0.62,
+          1.33
+        ],
+        "LeftHand": [
+          -0.24,
+          0.49,
+          1.27
+        ]
+      },
+      {
+        "Time": 1.92,
+        "Label": "Release the focused alignment",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.32,
+          1.19
+        ],
+        "LeftHand": [
+          -0.28,
+          0.24,
+          1.15
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "Renewal",
+    "Description": "Trace a slow rising spiral toward one ally and leave a gently sustained regenerative gesture",
+    "Duration": 3.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.45,
+        "Label": "Gather renewal below the chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.31,
+          0.3,
+          1.03
+        ],
+        "LeftHand": [
+          -0.23,
+          0.22,
+          1.21
+        ]
+      },
+      {
+        "Time": 1.02,
+        "Label": "Trace the first rising renewal arc",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.48,
+          0.46,
+          1.26
+        ],
+        "LeftHand": [
+          -0.26,
+          0.26,
+          1.24
+        ]
+      },
+      {
+        "Time": 1.62,
+        "Label": "Complete the rising regenerative spiral",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.23,
+          0.57,
+          1.51
+        ],
+        "LeftHand": [
+          -0.29,
+          0.29,
+          1.22
+        ]
+      },
+      {
+        "Time": 2.24,
+        "Label": "Leave the regenerative flow with the ally",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.3,
+          0.59,
+          1.38
+        ],
+        "LeftHand": [
+          -0.29,
+          0.24,
+          1.18
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Gently release the channeling hand",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.33,
+          0.32,
+          1.19
+        ],
+        "LeftHand": [
+          -0.3,
+          0.2,
+          1.14
+        ]
+      },
+      {
+        "Time": 3.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ThrowLightsaber",
+    "Description": "Original CUSTOM46 saber throw start, loop and recovery at master double speed; gameplay owns the traveling weapon",
+    "Duration": 2.22,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.12,
+        "Label": "Begin the original saber throw",
+        "SourceAnimation": "custom46start",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_non_combat"
+      },
+      {
+        "Time": 0.9535,
+        "Label": "Complete native saber release",
+        "SourceAnimation": "custom46start",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_non_combat"
+      },
+      {
+        "Time": 0.954,
+        "Label": "Begin native saber flight hold",
+        "SourceAnimation": "custom46lp",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_non_combat"
+      },
+      {
+        "Time": 1.3705,
+        "Label": "Complete native saber flight hold",
+        "SourceAnimation": "custom46lp",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_non_combat"
+      },
+      {
+        "Time": 1.371,
+        "Label": "Begin native saber return",
+        "SourceAnimation": "custom46end",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_non_combat"
+      },
+      {
+        "Time": 2.0375,
+        "Label": "Complete native saber catch",
+        "SourceAnimation": "custom46end",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_non_combat"
+      },
+      {
+        "Time": 2.22,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ThrowRock",
+    "Description": "Scoop a heavy invisible mass upward from low forward space then heave both arms toward the distant target",
+    "Duration": 2.9,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.45,
+        "Label": "Reach down for stone and debris",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.36,
+          0.51,
+          0.99
+        ],
+        "LeftHand": [
+          -0.36,
+          0.51,
+          0.99
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.03,
+        "Label": "Lift the telekinetic weight",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.4,
+          0.4,
+          1.43
+        ],
+        "LeftHand": [
+          -0.4,
+          0.4,
+          1.43
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Draw the heavy mass back",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.41,
+          0.19,
+          1.58
+        ],
+        "LeftHand": [
+          -0.41,
+          0.19,
+          1.58
+        ],
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.96,
+        "Label": "Heave the mass toward the target",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.37,
+          0.65,
+          1.22
+        ],
+        "LeftHand": [
+          -0.37,
+          0.65,
+          1.22
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.43,
+        "Label": "Follow through and release the weight",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.47,
+          0.45,
+          1.05
+        ],
+        "LeftHand": [
+          -0.47,
+          0.45,
+          1.05
+        ]
+      },
+      {
+        "Time": 2.9,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WeakenResolve",
+    "Description": "Mark one target with a level hand then draw the arm sharply down to break its resistance",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Mark the chosen target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.32,
+          0.52,
+          1.43
+        ],
+        "LeftHand": [
+          -0.29,
+          0.2,
+          1.18
+        ]
+      },
+      {
+        "Time": 0.94,
+        "Label": "Close pressure around its resolve",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.24,
+          0.59,
+          1.39
+        ],
+        "LeftHand": [
+          -0.25,
+          0.24,
+          1.21
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Pull the resistance downward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.34,
+          0.41,
+          1.0
+        ],
+        "LeftHand": [
+          -0.31,
+          0.24,
+          1.14
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.9,
+        "Label": "Release the weakening pressure",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.37,
+          0.29,
+          1.08
+        ],
+        "LeftHand": [
+          -0.31,
+          0.2,
+          1.12
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

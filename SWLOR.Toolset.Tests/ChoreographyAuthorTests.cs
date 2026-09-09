@@ -117,6 +117,139 @@ public class ChoreographyAuthorTests
     }
 
     [Test]
+    public void ForceChoreographiesCoverEveryAbilityWithNativeGripsRecoveryAndDistinctArmPaths()
+    {
+        var path = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
+        if (!File.Exists(path)) Assert.Ignore("Initialize native models.");
+        var model = new MdlReader().Parse(File.ReadAllBytes(path));
+        var recipes = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(Root, "design/animations/force/choreographies.json")));
+        var inventory = JsonSerializer.Deserialize<ActiveMotion[]>(File.ReadAllText(Path.Combine(Root,
+            "design/animations/active-abilities.json")), BulkMotionAuthor.Json)!;
+        recipes.Should().HaveCount(25);
+        recipes.Select(recipe => recipe.Id).Should().BeEquivalentTo(inventory.Where(entry => entry.Category == "Force").Select(entry => entry.Id));
+        var sources = recipes.SelectMany(recipe => recipe.Beats).Where(beat => beat.SourceModel != null)
+            .Select(beat => beat.SourceModel!).Distinct().ToDictionary(name => name,
+                name => new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root, "SWLOR_Haks/sw_cr_creature", name + ".mdl"))));
+        var trajectories = new Dictionary<string, Vector3[]>();
+        foreach (var recipe in recipes)
+        {
+            var project = ChoreographyAuthor.Bake(model, recipe, sources);
+            project.Keys.Count.Should().BeLessThanOrEqualTo((int)Math.Ceiling(recipe.Duration * 120) + recipe.Beats.Length,
+                "adaptive floor correction may refine samples but must remain within the dense verification budget");
+            var feet = new[] { "lfoot_g", "rfoot_g" }.Select(name => project.Joints.FindIndex(joint => joint.Name == name)).ToArray();
+            var idleWorld = AnimationRig.World(project.Joints, project.Sample(0));
+            var root = project.Joints.FindIndex(joint => joint.Name == "rootdummy");
+            var highestRoot = idleWorld[root].Translation.Z;
+            var floor = feet.Min(foot => idleWorld[foot].Translation.Z);
+            for (var frame = 0; frame <= (int)Math.Ceiling(project.Duration * 120); frame++)
+            {
+                var world = AnimationRig.World(project.Joints, project.Sample(Math.Min(project.Duration, frame / 120f)));
+                feet.Min(foot => world[foot].Translation.Z).Should().BeGreaterThanOrEqualTo(floor - .025f,
+                    recipe.Id + " must not sink between authored keys or during native leap recovery");
+                if (recipe.Id is "ForceLeap" or "ForceIntercept")
+                {
+                    Vector2.Distance(new(world[root].Translation.X, world[root].Translation.Y),
+                        new(idleWorld[root].Translation.X, idleWorld[root].Translation.Y)).Should().BeLessThan(.001f,
+                        "native leap translation must not send the tester offscreen or rewind the character");
+                    highestRoot = Math.Max(highestRoot, world[root].Translation.Z);
+                }
+            }
+            if (recipe.Id is "ForceLeap" or "ForceIntercept")
+                highestRoot.Should().BeGreaterThan(idleWorld[root].Translation.Z + .15f,
+                    "in-place playback must retain the airborne part of the native leap");
+            var hands = new[] { "lhand_g", "rhand_g" }.Select(name => project.Joints.FindIndex(joint => joint.Name == name)).ToArray();
+            foreach (var beat in recipe.Beats)
+            {
+                var owner = beat.SourceModel == null ? model : sources[beat.SourceModel];
+                var clip = owner.Animations.Single(animation => animation.Name == beat.SourceAnimation);
+                var native = SWLOR.Toolset.Domain.Render.MdlAnimationPose.Sample(clip, beat.SourceTime * clip.Length,
+                    SWLOR.Toolset.Domain.Render.MdlAnimationPose.BindPose(model));
+                foreach (var hand in hands)
+                    Math.Abs(Quaternion.Dot(project.Sample(beat.Time)[hand].Orientation,
+                        native[project.Joints[hand].Name].Orientation)).Should().BeGreaterThan(.99999f,
+                        recipe.Id + " must preserve its native local wrist grip at " + beat.Label);
+            }
+            var first = project.Sample(0); var last = project.Sample(project.Duration);
+            for (var i = 0; i < first.Length; i++)
+            {
+                Vector3.Distance(first[i].Position, last[i].Position).Should().BeLessThan(.00001f);
+                Math.Abs(Quaternion.Dot(first[i].Orientation, last[i].Orientation)).Should().BeGreaterThan(.99999f);
+            }
+            // Normalize time so merely stretching a reused motion cannot satisfy distinctness.
+            trajectories[recipe.Id] = Enumerable.Range(1, 19).SelectMany(frame =>
+            {
+                var world = AnimationRig.World(project.Joints, project.Sample(project.Duration * frame / 20f));
+                return hands.Select(hand => world[hand].Translation);
+            }).ToArray();
+        }
+        var ids = trajectories.Keys.ToArray();
+        for (var i = 0; i < ids.Length; i++)
+        for (var j = i + 1; j < ids.Length; j++)
+        {
+            var squaredDistance = trajectories[ids[i]].Zip(trajectories[ids[j]], Vector3.DistanceSquared).Average();
+            Math.Sqrt(squaredDistance).Should().BeGreaterThan(.02,
+                ids[i] + " and " + ids[j] + " need visibly distinct arm paths, not only different names or durations");
+        }
+    }
+
+    [Test]
+    public void InPlaceOptionOnlyChangesExplicitLeapRecipesAndDoesNotInvalidateOlderProvenance()
+    {
+        var force = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(Root, "design/animations/force/choreographies.json")));
+        force.Where(recipe => recipe.InPlace).Select(recipe => recipe.Id).Should().BeEquivalentTo("ForceLeap", "ForceIntercept");
+        foreach (var category in new[] { "devices", "beast-mastery", "first-aid", "espionage" })
+        foreach (var recipe in ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(Root,
+            "design/animations", category, "choreographies.json"))))
+        {
+            recipe.InPlace.Should().BeFalse();
+            JsonSerializer.Serialize(recipe, BulkMotionAuthor.Json).Should().NotContain("InPlace",
+                "an omitted default option must not change the hash of previously authored recipes");
+        }
+    }
+
+    [TestCase("ForceLightning", "a_ba_casts", "custom64start", 1f)]
+    [TestCase("ForceLightning", "a_ba_casts", "custom64lp", 1f)]
+    [TestCase("ForceLeap", "a_ba_casts", "custom65lp", 2f)]
+    [TestCase("ThrowLightsaber", "a_ba_non_combat", "custom46start", 2f)]
+    public void MasterForceMotionSpansRetainNativeInBetweenPoses(string id, string sourceModel, string sourceName, float speed)
+    {
+        var path = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
+        if (!File.Exists(path)) Assert.Ignore("Initialize native models.");
+        var model = new MdlReader().Parse(File.ReadAllBytes(path));
+        var recipe = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(Root,
+            "design/animations/force/choreographies.json"))).Single(recipe => recipe.Id == id);
+        var sources = recipe.Beats.Where(beat => beat.SourceModel != null).Select(beat => beat.SourceModel!).Distinct()
+            .ToDictionary(name => name, name => new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root,
+                "SWLOR_Haks/sw_cr_creature", name + ".mdl"))));
+        var project = ChoreographyAuthor.Bake(model, recipe, sources);
+        var native = sources[sourceModel].Animations.Single(animation => animation.Name == sourceName);
+        var spans = recipe.Beats.Zip(recipe.Beats.Skip(1)).Where(pair =>
+            pair.First.SourceModel == sourceModel && pair.Second.SourceModel == sourceModel &&
+            pair.First.SourceAnimation == sourceName && pair.Second.SourceAnimation == sourceName &&
+            pair.First.SourceTime == 0 && pair.Second.SourceTime == 1).ToArray();
+        spans.Should().HaveCount(sourceName == "custom64lp" ? 4 : 1);
+        foreach (var span in spans)
+        {
+            (span.Second.Time - span.First.Time).Should().BeApproximately(native.Length / speed, .002f);
+            // Root-only floor refinement inserts interpolated poses; compare the original
+            // 30 Hz source samples rather than treating added clearance keys as new native samples.
+            var frames = project.Keys.Where(key => key.Time > span.First.Time && key.Time < span.Second.Time &&
+                Math.Abs(key.Time * 30 - MathF.Round(key.Time * 30)) < .0001f).ToArray();
+            frames.Length.Should().BeGreaterThan(3);
+            foreach (var key in frames)
+            {
+                var fraction = (key.Time - span.First.Time) / (span.Second.Time - span.First.Time);
+                var pose = SWLOR.Toolset.Domain.Render.MdlAnimationPose.Sample(native, fraction * native.Length,
+                    SWLOR.Toolset.Domain.Render.MdlAnimationPose.BindPose(model));
+                var actual = project.Sample(key.Time);
+                for (var i = 0; i < project.Joints.Count; i++)
+                    Math.Abs(Quaternion.Dot(actual[i].Orientation, pose.GetValueOrDefault(project.Joints[i].Name, project.Joints[i].Rest).Orientation))
+                        .Should().BeGreaterThan(.99999f, id + " must sample real native motion between authored bookends");
+            }
+        }
+    }
+
+    [Test]
     public void CrouchAwareElbowPolesPreservePreviouslyReviewedStandingProjects()
     {
         var path = Path.Combine(Root, "SWLOR_Haks/sw_cr_creature/a_ba.mdl");

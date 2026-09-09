@@ -2166,6 +2166,10 @@ namespace SWLOR.Game.Server.Service
                    Math.Abs(rotatedY) <= width * 0.5f;
         }
 
+        /// <summary>Plays the current ability's declared impact gesture independently of target outcomes.</summary>
+        public static void PlayAbilityImpactAnimation(uint activator) =>
+            PlayCombatImpactAnimation(activator, Animation.Invalid);
+
         /// <summary>
         /// Plays a non-weapon combat impact animation while preserving explicit throw carriers.
         /// </summary>

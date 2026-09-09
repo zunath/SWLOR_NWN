@@ -82,29 +82,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void MindTrick1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             ApplyMindTrickImpact(activator, target, targetLocation);
             LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
         private static void MindTrick2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
-            var playedImpactAnimation = false;
             foreach (var hostileTarget in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, Radius, MindTrick2MaxTargets, target, IsNonMechanical))
             {
-                if (ApplyMindTrickImpact(activator, hostileTarget, GetLocation(hostileTarget), !playedImpactAnimation))
-                    playedImpactAnimation = true;
+                ApplyMindTrickImpact(activator, hostileTarget, GetLocation(hostileTarget));
             }
             LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
-        private static bool ApplyMindTrickImpact(uint activator, uint target, Location targetLocation, bool playImpactAnimation = true)
+        private static void ApplyMindTrickImpact(uint activator, uint target, Location targetLocation)
         {
             var duration = CalculateMindTrickDuration(activator, target);
             if (duration <= 0)
             {
                 SendMessageToPC(activator, "Your mind trick was resisted.");
-                return false;
+                return;
             }
 
             Ability.ApplyCombatImpact(
@@ -119,8 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 damageType: CombatDamageType.Force,
                 statusResistanceType: ResistanceType.Mind,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                playImpactAnimation: playImpactAnimation);
-            return true;
+                playImpactAnimation: false);
         }
 
         private static int CalculateMindTrickDuration(uint activator, uint target)

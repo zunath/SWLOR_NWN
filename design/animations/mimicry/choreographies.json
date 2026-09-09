@@ -1,7 +1,7 @@
 [
   {
     "Id": "ApexCollapseTechnique",
-    "Description": "Open a deliberately exposed predatory guard, pull the arms wide and lean into an aggressive challenge",
+    "Description": "Open a deliberately exposed predatory guard, pull the arms wide and lean into an aggressive challenge; expose the guard over a low planted base and lean the challenge through the hips before gathering again",
     "Duration": 2.65,
     "Beats": [
       {
@@ -14,7 +14,17 @@
         "Time": 0.35,
         "Label": "Take the fighting base",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
       },
       {
         "Time": 0.85,
@@ -30,6 +40,16 @@
           0.55,
           0.25,
           1.1
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -7
         ]
       },
       {
@@ -48,16 +68,31 @@
           1.4
         ],
         "TorsoDegrees": [
-          12,
+          10,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
         ]
       },
       {
         "Time": 2.15,
         "Label": "Gather the attacking guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
       },
       {
         "Time": 2.65,
@@ -69,7 +104,7 @@
   },
   {
     "Id": "ArcPulseTechnique",
-    "Description": "Draw a low charge into one palm then sweep a broad electrical arc across the surrounding line",
+    "Description": "Draw a low charge into one palm then sweep a broad electrical arc across the surrounding line; gather through the legs and carry the broad arc across the hips into an outward release",
     "Duration": 2.3,
     "Beats": [
       {
@@ -87,6 +122,16 @@
           -0.35,
           0.25,
           1.0
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -5
         ]
       },
       {
@@ -98,6 +143,16 @@
           -0.7,
           0.2,
           1.6
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -7
         ]
       },
       {
@@ -109,6 +164,16 @@
           0.15,
           0.8,
           1.45
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          8
         ]
       },
       {
@@ -120,6 +185,16 @@
           -0.65,
           0.4,
           1.15
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -3
         ]
       },
       {
@@ -132,7 +207,7 @@
   },
   {
     "Id": "BarbedVolleyTechnique",
-    "Description": "Cock a spread of barbs, then fan three short forward flicks across a cone",
+    "Description": "Cock a spread of barbs, then fan three short forward flicks across a cone; shift the planted throwing base across each spread lane and reload through the rear hip between flicks",
     "Duration": 2.25,
     "Beats": [
       {
@@ -150,6 +225,16 @@
           -0.3,
           0.15,
           1.55
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -5
         ]
       },
       {
@@ -161,6 +246,16 @@
           -0.65,
           0.7,
           1.4
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          6
         ]
       },
       {
@@ -172,6 +267,16 @@
           -0.25,
           0.3,
           1.45
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -4
         ]
       },
       {
@@ -183,6 +288,16 @@
           -0.1,
           0.85,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -194,6 +309,16 @@
           0.25,
           0.65,
           1.35
+        ],
+        "RootOffset": [
+          0.02,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -6
         ]
       },
       {
@@ -205,6 +330,16 @@
           -0.3,
           0.3,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -385,7 +520,7 @@
   },
   {
     "Id": "CapacitorSurgeTechnique",
-    "Description": "Compress charge between the palms and expand it sharply from the chest into a radial discharge",
+    "Description": "Compress charge between the palms and expand it sharply from the chest into a radial discharge; store the charge in a lowered core and let the radial release travel through the entire braced body",
     "Duration": 2.45,
     "Beats": [
       {
@@ -408,6 +543,16 @@
           0.18,
           0.4,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -424,6 +569,16 @@
           0.5,
           0.4,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {
@@ -440,6 +595,16 @@
           0.7,
           0.45,
           1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -456,6 +621,16 @@
           0.5,
           0.3,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -468,7 +643,7 @@
   },
   {
     "Id": "ConcussiveChallengeTechnique",
-    "Description": "Plant the feet, pound one fist into a guarded chest posture, then throw out an arresting challenge",
+    "Description": "Plant the feet, pound one fist into a guarded chest posture, then throw out an arresting challenge; root the chest preparation through flexed knees before the retained native challenge",
     "Duration": 2.5,
     "Beats": [
       {
@@ -481,7 +656,12 @@
         "Time": 0.35,
         "Label": "Plant the challenge",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.04
+        ]
       },
       {
         "Time": 0.9,
@@ -492,6 +672,11 @@
           -0.1,
           0.25,
           1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
         ]
       },
       {
@@ -521,7 +706,7 @@
   },
   {
     "Id": "CrossfireDrillTechnique",
-    "Description": "Mark one firing lane, traverse to the other and finish with a firm suppressive hold signal",
+    "Description": "Mark one firing lane, traverse to the other and finish with a firm suppressive hold signal; turn the firing-lane signals through deliberate lateral weight transfers and finish in a stable suppressive brace",
     "Duration": 2.35,
     "Beats": [
       {
@@ -539,6 +724,16 @@
           -0.65,
           0.55,
           1.45
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -7
         ]
       },
       {
@@ -550,6 +745,16 @@
           0.2,
           0.7,
           1.45
+        ],
+        "RootOffset": [
+          0.02,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          7
         ]
       },
       {
@@ -561,6 +766,16 @@
           -0.15,
           0.85,
           1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -572,6 +787,16 @@
           -0.2,
           0.65,
           1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -584,7 +809,7 @@
   },
   {
     "Id": "CryoBileTechnique",
-    "Description": "Gather a chilled breath near the jaw, lean forward and sustain a low spreading exhalation",
+    "Description": "Gather a chilled breath near the jaw, lean forward and sustain a low spreading exhalation; load the inhalation over the rear leg and support the sustained cold exhalation on a lowered forward base",
     "Duration": 2.6,
     "Beats": [
       {
@@ -604,9 +829,14 @@
           1.7
         ],
         "TorsoDegrees": [
-          -8,
+          -5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
         ]
       },
       {
@@ -620,9 +850,14 @@
           1.25
         ],
         "TorsoDegrees": [
-          16,
+          10,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -636,9 +871,14 @@
           1.1
         ],
         "TorsoDegrees": [
-          16,
+          10,
           0,
-          0
+          5
+        ],
+        "RootOffset": [
+          -0.02,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -652,9 +892,14 @@
           1.1
         ],
         "TorsoDegrees": [
-          5,
+          3,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
         ]
       },
       {
@@ -667,7 +912,7 @@
   },
   {
     "Id": "DarkShockTechnique",
-    "Description": "Draw a shadowed charge behind the shoulder and cast it downward around the caster",
+    "Description": "Draw a shadowed charge behind the shoulder and cast it downward around the caster; load the dark charge behind the hip and drop its pressure through both knees before sweeping it away",
     "Duration": 2.55,
     "Beats": [
       {
@@ -685,6 +930,16 @@
           -0.5,
           0.0,
           1.65
+        ],
+        "RootOffset": [
+          0.02,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -7
         ]
       },
       {
@@ -696,6 +951,16 @@
           -0.45,
           0.1,
           1.95
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          -7
         ]
       },
       {
@@ -709,9 +974,14 @@
           1.0
         ],
         "TorsoDegrees": [
-          10,
+          9,
           0,
-          0
+          4
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
         ]
       },
       {
@@ -723,6 +993,16 @@
           -0.75,
           0.2,
           1.05
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          8
         ]
       },
       {
@@ -735,7 +1015,7 @@
   },
   {
     "Id": "DisorientingScreechTechnique",
-    "Description": "Cover the side of the head, arch into a sustained shrill call, then release the sound across both flanks",
+    "Description": "Cover the side of the head, arch into a sustained shrill call, then release the sound across both flanks; support the sustained call with a firm low base that turns with the two flank releases",
     "Duration": 2.8,
     "Beats": [
       {
@@ -753,6 +1033,16 @@
           -0.32,
           0.1,
           1.8
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {
@@ -782,9 +1072,14 @@
           1.65
         ],
         "TorsoDegrees": [
-          -6,
+          5,
           0,
-          -14
+          -9
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -798,9 +1093,14 @@
           1.5
         ],
         "TorsoDegrees": [
+          5,
           0,
-          0,
-          12
+          9
+        ],
+        "RootOffset": [
+          0.02,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -813,7 +1113,7 @@
   },
   {
     "Id": "DreadWaveTechnique",
-    "Description": "Gather a deep chest-level resonance, broaden the shoulders and push a low sonic wave outward",
+    "Description": "Gather a deep chest-level resonance, broaden the shoulders and push a low sonic wave outward; gather resonance beneath the ribs and drive the low wave through a planted forward body brace",
     "Duration": 2.7,
     "Beats": [
       {
@@ -836,6 +1136,16 @@
           0.22,
           0.25,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -873,6 +1183,16 @@
           0.65,
           0.65,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          0
         ]
       },
       {
@@ -889,6 +1209,16 @@
           0.5,
           0.3,
           0.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -901,7 +1231,7 @@
   },
   {
     "Id": "FinalEclipseTechnique",
-    "Description": "Gather force above the lead shoulder and cut a decisive vertical line through the target corridor",
+    "Description": "Gather force above the lead shoulder and cut a decisive vertical line through the target corridor; load the high force line over the rear hip and cut downward through a grounded forward leg",
     "Duration": 2.8,
     "Beats": [
       {
@@ -914,7 +1244,17 @@
         "Time": 0.35,
         "Label": "Set the final line",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
       },
       {
         "Time": 0.95,
@@ -925,6 +1265,16 @@
           -0.4,
           0.15,
           2.0
+        ],
+        "RootOffset": [
+          0.01,
+          -0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          -7
         ]
       },
       {
@@ -938,9 +1288,14 @@
           1.05
         ],
         "TorsoDegrees": [
-          12,
+          10,
           0,
-          0
+          4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
         ]
       },
       {
@@ -952,13 +1307,33 @@
           -0.1,
           0.75,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          2
         ]
       },
       {
         "Time": 2.4,
         "Label": "Release the finishing force",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
       },
       {
         "Time": 2.8,
@@ -1024,7 +1399,7 @@
   },
   {
     "Id": "FinalMandateTechnique",
-    "Description": "Raise both arms to claim attention then direct a wide party rally into a firm forward order",
+    "Description": "Raise both arms to claim attention then direct a wide party rally into a firm forward order; resolve the native rally into a grounded forward command with the knees carrying the final order",
     "Duration": 3.0,
     "Beats": [
       {
@@ -1059,6 +1434,16 @@
           0.45,
           0.35,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -1070,6 +1455,16 @@
           -0.25,
           0.55,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -1082,7 +1477,7 @@
   },
   {
     "Id": "FinalSuppressionTechnique",
-    "Description": "A slow high stop sign closes into a sharp forward arresting palm held along the chosen line",
+    "Description": "A slow high stop sign closes into a sharp forward arresting palm held along the chosen line; place body weight behind the arresting palm and sustain the line without repeated knee pumping",
     "Duration": 2.55,
     "Beats": [
       {
@@ -1100,6 +1495,16 @@
           -0.4,
           0.15,
           1.95
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -1111,6 +1516,16 @@
           -0.1,
           0.85,
           1.75
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -1122,6 +1537,16 @@
           -0.1,
           0.85,
           1.75
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -1133,6 +1558,16 @@
           -0.25,
           0.4,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1145,7 +1580,7 @@
   },
   {
     "Id": "FinishingDriveTechnique",
-    "Description": "Gather momentum through a compact fighting bounce and pump the lead fist inward without striking a target",
+    "Description": "Gather momentum through a compact loaded fighting base and pump the lead fist inward without striking a target; load the drive through the rear hip and push from the supporting leg, avoiding an idle arms-only bounce",
     "Duration": 1.8,
     "Beats": [
       {
@@ -1158,7 +1593,17 @@
         "Time": 0.3,
         "Label": "Set the momentum base",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
       },
       {
         "Time": 0.65,
@@ -1171,9 +1616,14 @@
           1.05
         ],
         "TorsoDegrees": [
-          10,
+          5,
           0,
-          0
+          -5
+        ],
+        "RootOffset": [
+          0.01,
+          -0.03,
+          -0.05
         ]
       },
       {
@@ -1185,13 +1635,33 @@
           -0.22,
           0.3,
           1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          4
         ]
       },
       {
         "Time": 1.4,
         "Label": "Settle the stronger guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
       },
       {
         "Time": 1.8,
@@ -1203,7 +1673,7 @@
   },
   {
     "Id": "FrostSpitTechnique",
-    "Description": "Prepare a short chilled spit, snap the head and lead hand toward one target, then withdraw cleanly",
+    "Description": "Prepare a short chilled spit, snap the head and lead hand toward one target, then withdraw cleanly; make one restrained rear-to-front body impulse for the spit and then settle, without throwing the arms wildly",
     "Duration": 1.65,
     "Beats": [
       {
@@ -1226,6 +1696,11 @@
           -6,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
         ]
       },
       {
@@ -1242,6 +1717,11 @@
           14,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
         ]
       },
       {
@@ -1253,6 +1733,11 @@
           -0.35,
           0.3,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
         ]
       },
       {
@@ -1328,7 +1813,7 @@
   },
   {
     "Id": "GrenadeBurstTechnique",
-    "Description": "Draw a charge from the hip and cast it outward with a complete overarm release before recovering",
+    "Description": "Draw a charge from the hip and cast it outward with a complete overarm release before recovering; load the throwing hip, drive the release from the legs and absorb its follow-through before lowering the arm",
     "Duration": 2.15,
     "Beats": [
       {
@@ -1352,6 +1837,16 @@
           -0.4,
           -0.15,
           1.85
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          -9
         ]
       },
       {
@@ -1363,6 +1858,16 @@
           -0.15,
           0.85,
           1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          6
         ]
       },
       {
@@ -1379,6 +1884,11 @@
           10,
           0,
           8
+        ],
+        "RootOffset": [
+          -0.01,
+          0.03,
+          -0.03
         ]
       },
       {
@@ -1390,6 +1900,16 @@
           -0.3,
           0.25,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1402,7 +1922,7 @@
   },
   {
     "Id": "HoldfastSlamTechnique",
-    "Description": "Lift a heavy guard and hammer the lead hand down to pin the target in place",
+    "Description": "Lift a heavy guard and hammer the lead hand down to pin the target in place; lift over a loaded rear leg, hammer down through bent knees and maintain planted pressure while pinning",
     "Duration": 2.4,
     "Beats": [
       {
@@ -1415,7 +1935,17 @@
         "Time": 0.35,
         "Label": "Set the holdfast base",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
       },
       {
         "Time": 0.8,
@@ -1426,6 +1956,16 @@
           -0.32,
           0.25,
           1.9
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          -5
         ]
       },
       {
@@ -1439,9 +1979,14 @@
           0.85
         ],
         "TorsoDegrees": [
-          18,
+          12,
           0,
-          0
+          3
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
         ]
       },
       {
@@ -1453,13 +1998,33 @@
           -0.15,
           0.8,
           0.85
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
         ]
       },
       {
         "Time": 2.15,
         "Label": "Release the pin",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
       },
       {
         "Time": 2.4,
@@ -1471,7 +2036,7 @@
   },
   {
     "Id": "InfernoBlastTechnique",
-    "Description": "Draw a large breath with the arms open, then lean into a prolonged wide explosive exhalation",
+    "Description": "Draw a large breath with the arms open, then lean into a prolonged wide explosive exhalation; support the prolonged exhalation with a sustained forward knee brace after the retained native inhalation",
     "Duration": 3.1,
     "Beats": [
       {
@@ -1536,6 +2101,11 @@
           22,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
         ]
       },
       {
@@ -1557,6 +2127,11 @@
           10,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -1569,7 +2144,7 @@
   },
   {
     "Id": "InnerCircleBindTechnique",
-    "Description": "Reach around the target line with both hands and close an inward binding clamp",
+    "Description": "Reach around the target line with both hands and close an inward binding clamp; reach over the lead leg, close the clamp and draw the binding tension back through the hips",
     "Duration": 2.6,
     "Beats": [
       {
@@ -1592,6 +2167,16 @@
           0.65,
           0.5,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -1608,6 +2193,16 @@
           0.12,
           0.7,
           1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -1624,6 +2219,16 @@
           0.18,
           0.35,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
         ]
       },
       {
@@ -1640,6 +2245,16 @@
           0.18,
           0.35,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1706,7 +2321,7 @@
   },
   {
     "Id": "InnerCircleSurgeTechnique",
-    "Description": "Gather a focused electrical charge between close hands, thrust it forward then split its residual arcs to either side",
+    "Description": "Gather a focused electrical charge between close hands, thrust it forward then split its residual arcs to either side; drive the focused surge from a loaded core and let the returning arcs carry weight between the legs",
     "Duration": 2.7,
     "Beats": [
       {
@@ -1729,6 +2344,16 @@
           0.15,
           0.35,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -1745,6 +2370,16 @@
           0.18,
           0.82,
           1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
         ]
       },
       {
@@ -1761,6 +2396,16 @@
           0.2,
           0.65,
           1.45
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          -8
         ]
       },
       {
@@ -1777,6 +2422,16 @@
           0.7,
           0.45,
           1.55
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          8
         ]
       },
       {
@@ -1789,7 +2444,7 @@
   },
   {
     "Id": "InnerCircleVolleyTechnique",
-    "Description": "Build a tight sonic focus and release three compact forward pulses at one target",
+    "Description": "Build a tight sonic focus and release three compact forward pulses at one target; maintain a crouched base while three small forward weight impulses reinforce the timed pulses",
     "Duration": 2.65,
     "Beats": [
       {
@@ -1807,6 +2462,16 @@
           -0.25,
           0.3,
           1.5
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1818,6 +2483,16 @@
           -0.15,
           0.85,
           1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -1829,6 +2504,16 @@
           -0.25,
           0.4,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1840,6 +2525,16 @@
           -0.1,
           0.82,
           1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -1851,6 +2546,16 @@
           -0.3,
           0.35,
           1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1862,6 +2567,16 @@
           -0.2,
           0.85,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -1873,6 +2588,16 @@
           -0.35,
           0.3,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1987,7 +2712,7 @@
   },
   {
     "Id": "InnerVoidTechnique",
-    "Description": "Reach a narrow pulling hand toward the target then close the drawn force into the chest",
+    "Description": "Reach a narrow pulling hand toward the target then close the drawn force into the chest; follow the reaching hand with body weight, then transfer the drawn force back into the core",
     "Duration": 2.75,
     "Beats": [
       {
@@ -2005,6 +2730,16 @@
           -0.2,
           0.85,
           1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -2016,6 +2751,16 @@
           -0.2,
           0.7,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -2032,6 +2777,11 @@
           -8,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
         ]
       },
       {
@@ -2043,6 +2793,16 @@
           -0.12,
           0.2,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -2055,7 +2815,7 @@
   },
   {
     "Id": "IonBurstTechnique",
-    "Description": "Cross a charged forearm at the chest and unfold a broad ion fan from left to right",
+    "Description": "Cross a charged forearm at the chest and unfold a broad ion fan from left to right; carry the unfolding fan through a deliberate lateral hip transfer over a stable knee brace",
     "Duration": 2.35,
     "Beats": [
       {
@@ -2073,6 +2833,16 @@
           0.2,
           0.35,
           1.45
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -6
         ]
       },
       {
@@ -2084,6 +2854,16 @@
           -0.7,
           0.55,
           1.55
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          -8
         ]
       },
       {
@@ -2095,6 +2875,16 @@
           -0.05,
           0.85,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -2106,6 +2896,16 @@
           0.25,
           0.6,
           1.2
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          8
         ]
       },
       {
@@ -2118,7 +2918,7 @@
   },
   {
     "Id": "LastBastionTechnique",
-    "Description": "Plant a wide defensive base and extend both arms as a held barrier protecting the party",
+    "Description": "Plant a wide defensive base and extend both arms as a held barrier protecting the party; use a sustained grounded leg brace beneath the broad party barrier, easing the weight only as the hands lower",
     "Duration": 3.25,
     "Beats": [
       {
@@ -2131,7 +2931,17 @@
         "Time": 0.4,
         "Label": "Plant the final bastion",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
       },
       {
         "Time": 1.0,
@@ -2147,6 +2957,16 @@
           0.6,
           0.7,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -2168,6 +2988,11 @@
           10,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
         ]
       },
       {
@@ -2184,6 +3009,16 @@
           0.5,
           0.4,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2309,7 +3144,7 @@
   },
   {
     "Id": "NullShockTechnique",
-    "Description": "Pinpoint a distant field, close the suppressing grip and pull its drained charge into the lower chest",
+    "Description": "Pinpoint a distant field, close the suppressing grip and pull its drained charge into the lower chest; close the distant field over the lead knee and draw its energy backward through the hips",
     "Duration": 2.5,
     "Beats": [
       {
@@ -2327,6 +3162,16 @@
           -0.12,
           0.8,
           1.65
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -2338,6 +3183,16 @@
           -0.1,
           0.75,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -2349,6 +3204,16 @@
           -0.15,
           0.25,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
         ]
       },
       {
@@ -2360,6 +3225,16 @@
           -0.6,
           0.2,
           0.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -2372,7 +3247,7 @@
   },
   {
     "Id": "OverclockedAnalyzer",
-    "Description": "Raise the analyzer forearm, make two deliberate controls adjustments and confirm its increased output",
+    "Description": "Raise the analyzer forearm, make two deliberate controls adjustments and confirm its increased output; settle into a quiet working stance for both controls and straighten only after confirmation",
     "Duration": 2.9,
     "Beats": [
       {
@@ -2390,6 +3265,16 @@
           -0.25,
           0.4,
           1.25
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -2
         ]
       },
       {
@@ -2406,6 +3291,16 @@
           -0.05,
           0.5,
           1.35
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
         ]
       },
       {
@@ -2422,6 +3317,16 @@
           -0.15,
           0.45,
           1.15
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
         ]
       },
       {
@@ -2438,6 +3343,16 @@
           0.3,
           0.3,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2449,6 +3364,16 @@
           -0.3,
           0.3,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -2593,7 +3518,7 @@
   },
   {
     "Id": "PiercingQuillsTechnique",
-    "Description": "Draw the quill arm behind the body and extend a held piercing fan through the enemy cone",
+    "Description": "Draw the quill arm behind the body and extend a held piercing fan through the enemy cone; load the back hip beneath the drawn arm and drive the held quill fan through a braced forward leg",
     "Duration": 2.3,
     "Beats": [
       {
@@ -2611,6 +3536,16 @@
           -0.55,
           -0.1,
           1.4
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -9
         ]
       },
       {
@@ -2622,6 +3557,16 @@
           -0.4,
           0.65,
           1.5
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
         ]
       },
       {
@@ -2633,6 +3578,16 @@
           -0.1,
           0.88,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          6
         ]
       },
       {
@@ -2644,6 +3599,16 @@
           0.22,
           0.6,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          3
         ]
       },
       {
@@ -2705,7 +3670,7 @@
   },
   {
     "Id": "PressureLockTechnique",
-    "Description": "Frame the forward cone with wide hands then squeeze a sustained inward pressure seal",
+    "Description": "Frame the forward cone with wide hands then squeeze a sustained inward pressure seal; lower the whole body against the inward pressure seal and maintain the fixed brace while the lock holds",
     "Duration": 2.7,
     "Beats": [
       {
@@ -2728,6 +3693,16 @@
           0.75,
           0.5,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -2744,6 +3719,16 @@
           0.35,
           0.8,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -2760,6 +3745,16 @@
           0.12,
           0.75,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -2776,6 +3771,16 @@
           0.12,
           0.75,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -2788,7 +3793,7 @@
   },
   {
     "Id": "RakingClawsTechnique",
-    "Description": "Reach low into the target line and rake one claw diagonally back across the leg",
+    "Description": "Reach low into the target line and rake one claw diagonally back across the leg; reach the low target through the knees and transfer the rake across the hips before withdrawing",
     "Duration": 1.8,
     "Beats": [
       {
@@ -2806,6 +3811,16 @@
           -0.35,
           0.5,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -2819,9 +3834,14 @@
           0.85
         ],
         "TorsoDegrees": [
-          14,
+          12,
           0,
-          0
+          4
+        ],
+        "RootOffset": [
+          0.01,
+          0.04,
+          -0.05
         ]
       },
       {
@@ -2835,16 +3855,31 @@
           1.15
         ],
         "TorsoDegrees": [
-          10,
+          9,
           0,
           -10
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.05
         ]
       },
       {
         "Time": 1.45,
         "Label": "Withdraw the claw",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
       },
       {
         "Time": 1.8,
@@ -2856,7 +3891,7 @@
   },
   {
     "Id": "RallyBreakerTechnique",
-    "Description": "Mark the opposing rally point then snap a short dismissive strike across its signal",
+    "Description": "Mark the opposing rally point then snap a short dismissive strike across its signal; load the dismissive cut in the rear hip and carry it across the planted stance with controlled follow-through",
     "Duration": 2.1,
     "Beats": [
       {
@@ -2874,6 +3909,16 @@
           -0.15,
           0.75,
           1.65
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2885,6 +3930,16 @@
           -0.55,
           0.25,
           1.5
+        ],
+        "RootOffset": [
+          0.02,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -8
         ]
       },
       {
@@ -2896,6 +3951,16 @@
           0.15,
           0.75,
           1.25
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          9
         ]
       },
       {
@@ -2907,6 +3972,16 @@
           -0.65,
           0.35,
           1.0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          3
         ]
       },
       {
@@ -2998,7 +4073,7 @@
   },
   {
     "Id": "SavageRoarTechnique",
-    "Description": "Hunch into a predatory breath, spread the arms low and project a rough forward roar",
+    "Description": "Hunch into a predatory breath, spread the arms low and project a rough forward roar; gather the breath from a crouched predatory base and soften the knees after the retained native roar",
     "Duration": 2.5,
     "Beats": [
       {
@@ -3016,6 +4091,11 @@
           12,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.04
         ]
       },
       {
@@ -3059,7 +4139,12 @@
         "Time": 2.1,
         "Label": "Release the roar",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ]
       },
       {
         "Time": 2.5,
@@ -3071,7 +4156,7 @@
   },
   {
     "Id": "ScorchingBreathTechnique",
-    "Description": "Lift the chest for a hot inhalation then lean forward with lowered arms for a continuous scorching breath",
+    "Description": "Lift the chest for a hot inhalation then lean forward with lowered arms for a continuous scorching breath; plant the exhalation over a sustained low forward stance, then ease body pressure as the breath ends",
     "Duration": 2.85,
     "Beats": [
       {
@@ -3110,6 +4195,11 @@
           18,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -3131,6 +4221,11 @@
           18,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -3152,6 +4247,11 @@
           5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
         ]
       },
       {
@@ -3228,7 +4328,7 @@
   },
   {
     "Id": "ShrapnelBurstTechnique",
-    "Description": "Crack a held charge outward between the hands then fan its fragments low across the cone",
+    "Description": "Crack a held charge outward between the hands then fan its fragments low across the cone; brace beneath the charge break and transfer the low fragment fan across flexed knees",
     "Duration": 2.4,
     "Beats": [
       {
@@ -3251,6 +4351,16 @@
           0.12,
           0.4,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -3267,6 +4377,16 @@
           0.65,
           0.65,
           1.4
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -6
         ]
       },
       {
@@ -3283,6 +4403,16 @@
           0.75,
           0.4,
           0.95
+        ],
+        "RootOffset": [
+          0.02,
+          0.03,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          7
         ]
       },
       {
@@ -3299,6 +4429,16 @@
           0.4,
           0.25,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -3311,7 +4451,7 @@
   },
   {
     "Id": "SignalSnareTechnique",
-    "Description": "Find a target signal at the temple, hook it with a forward hand and draw it into a compact snare",
+    "Description": "Find a target signal at the temple, hook it with a forward hand and draw it into a compact snare; follow the hooking hand over the lead leg and draw the caught signal back into a lowered core",
     "Duration": 2.3,
     "Beats": [
       {
@@ -3329,6 +4469,16 @@
           -0.28,
           0.12,
           1.75
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -3
         ]
       },
       {
@@ -3340,6 +4490,16 @@
           -0.4,
           0.8,
           1.6
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -3351,6 +4511,16 @@
           -0.12,
           0.45,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {
@@ -3362,6 +4532,16 @@
           -0.25,
           0.3,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -3374,7 +4554,7 @@
   },
   {
     "Id": "SnapRushTechnique",
-    "Description": "A quick guarded weight shift and backward arm drive gather speed without a false projectile cast",
+    "Description": "A quick guarded weight shift and backward arm drive gather speed without a false projectile cast; alternate pressure between the planted legs with the running-arm drive rather than moving only the shoulders",
     "Duration": 1.65,
     "Beats": [
       {
@@ -3387,7 +4567,12 @@
         "Time": 0.25,
         "Label": "Gather the rush",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ]
       },
       {
         "Time": 0.55,
@@ -3408,6 +4593,11 @@
           12,
           0,
           0
+        ],
+        "RootOffset": [
+          0.02,
+          0.03,
+          -0.04
         ]
       },
       {
@@ -3429,13 +4619,23 @@
           8,
           0,
           0
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.04
         ]
       },
       {
         "Time": 1.3,
         "Label": "Settle the accelerated guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ]
       },
       {
         "Time": 1.65,
@@ -3447,7 +4647,7 @@
   },
   {
     "Id": "SonicShriekTechnique",
-    "Description": "Draw one hand beside the jaw, snap into a narrow forward sonic cry and hold its directed release",
+    "Description": "Draw one hand beside the jaw, snap into a narrow forward sonic cry and hold its directed release; load the breath over the rear leg, then keep the narrow cry supported by a sustained forward knee brace",
     "Duration": 2.35,
     "Beats": [
       {
@@ -3465,6 +4665,11 @@
           -0.28,
           0.25,
           1.72
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
         ]
       },
       {
@@ -3481,6 +4686,11 @@
           14,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -3497,6 +4707,11 @@
           14,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -3508,6 +4723,11 @@
           -0.4,
           0.3,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
         ]
       },
       {
@@ -3520,7 +4740,7 @@
   },
   {
     "Id": "StaticBurstTechnique",
-    "Description": "Build static at the waist, snap one radial discharge and follow with two alternating lateral arcs",
+    "Description": "Build static at the waist, snap one radial discharge and follow with two alternating lateral arcs; ground the initial discharge through both knees and transfer weight across the subsequent lateral arcs",
     "Duration": 2.65,
     "Beats": [
       {
@@ -3543,6 +4763,16 @@
           0.2,
           0.3,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -3559,6 +4789,16 @@
           0.65,
           0.5,
           1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
         ]
       },
       {
@@ -3575,6 +4815,16 @@
           0.25,
           0.35,
           1.25
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -8
         ]
       },
       {
@@ -3591,6 +4841,16 @@
           0.8,
           0.2,
           1.4
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          8
         ]
       },
       {
@@ -3607,6 +4867,16 @@
           0.4,
           0.3,
           0.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -3619,7 +4889,7 @@
   },
   {
     "Id": "StaticWebTechnique",
-    "Description": "Weave a crossed charge at waist height then separate the hands diagonally into a surrounding electrical web",
+    "Description": "Weave a crossed charge at waist height then separate the hands diagonally into a surrounding electrical web; carry the diagonal strands through opposing hip transfers and settle the completed web over both legs",
     "Duration": 2.75,
     "Beats": [
       {
@@ -3642,6 +4912,16 @@
           -0.15,
           0.35,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -3658,6 +4938,16 @@
           0.5,
           0.4,
           1.0
+        ],
+        "RootOffset": [
+          -0.03,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -7
         ]
       },
       {
@@ -3674,6 +4964,16 @@
           0.6,
           0.5,
           1.7
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          7
         ]
       },
       {
@@ -3690,6 +4990,16 @@
           0.65,
           0.55,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -3771,7 +5081,7 @@
   },
   {
     "Id": "SuppressingShotTechnique",
-    "Description": "Align a narrow forearm sight, release a short directed suppressive impulse and hold the lane",
+    "Description": "Align a narrow forearm sight, release a short directed suppressive impulse and hold the lane; support the narrow release with a compact forward weight impulse and hold its lane over a softened lead knee",
     "Duration": 2.15,
     "Beats": [
       {
@@ -3789,6 +5099,16 @@
           -0.2,
           0.55,
           1.55
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -3800,6 +5120,16 @@
           -0.12,
           0.87,
           1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -3811,6 +5141,16 @@
           -0.12,
           0.87,
           1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -3822,6 +5162,16 @@
           -0.3,
           0.35,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -3834,7 +5184,7 @@
   },
   {
     "Id": "SustainBurnTechnique",
-    "Description": "Touch a coating at the belt and wipe it along the held weapon arm before settling into an envenomed guard",
+    "Description": "Touch a coating at the belt and wipe it along the held weapon arm before settling into an envenomed guard; remain stable while coating the weapon arm, then settle body weight into the envenomed fighting guard",
     "Duration": 2.65,
     "Beats": [
       {
@@ -3852,6 +5202,16 @@
           -0.25,
           0.2,
           0.95
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
         ]
       },
       {
@@ -3863,6 +5223,16 @@
           0.15,
           0.42,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
         ]
       },
       {
@@ -3874,13 +5244,33 @@
           0.35,
           0.62,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
         ]
       },
       {
         "Time": 2.1,
         "Label": "Set the coated guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
       },
       {
         "Time": 2.65,
@@ -3989,7 +5379,7 @@
   },
   {
     "Id": "ToxicCloudTechnique",
-    "Description": "Gather a volatile vial near the hip and lob a high arc toward a distant poison field",
+    "Description": "Gather a volatile vial near the hip and lob a high arc toward a distant poison field; load the lob from the back hip, rise through release and absorb the descending follow-through in the knees",
     "Duration": 2.5,
     "Beats": [
       {
@@ -4007,6 +5397,16 @@
           -0.3,
           0.15,
           1.0
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
         ]
       },
       {
@@ -4018,6 +5418,16 @@
           -0.45,
           0.05,
           1.8
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          -8
         ]
       },
       {
@@ -4029,6 +5439,16 @@
           -0.2,
           0.75,
           1.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          6
         ]
       },
       {
@@ -4040,6 +5460,16 @@
           -0.15,
           0.8,
           1.2
+        ],
+        "RootOffset": [
+          -0.01,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          4
         ]
       },
       {
@@ -4051,6 +5481,16 @@
           -0.4,
           0.2,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -4063,7 +5503,7 @@
   },
   {
     "Id": "ToxicSpitTechnique",
-    "Description": "Gather a small poison spit at the jaw and snap it forward with a short low recoil",
+    "Description": "Gather a small poison spit at the jaw and snap it forward with a short low recoil; deliver one short whole-body spit impulse and catch the recoil through a soft knee bend",
     "Duration": 1.85,
     "Beats": [
       {
@@ -4086,6 +5526,11 @@
           -5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
         ]
       },
       {
@@ -4102,6 +5547,11 @@
           18,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
         ]
       },
       {
@@ -4118,13 +5568,23 @@
           -3,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
         ]
       },
       {
         "Time": 1.6,
         "Label": "Settle the head and chest",
         "SourceAnimation": "pause1",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ]
       },
       {
         "Time": 1.85,
@@ -4136,7 +5596,7 @@
   },
   {
     "Id": "VenomSprayTechnique",
-    "Description": "Prime a venom breath beside the jaw and sweep a sustained poisonous exhalation across the forward cone",
+    "Description": "Prime a venom breath beside the jaw and sweep a sustained poisonous exhalation across the forward cone; support the sustained venom cone on a lowered stance that transfers pressure with the sweep",
     "Duration": 2.65,
     "Beats": [
       {
@@ -4154,6 +5614,11 @@
           -0.3,
           0.3,
           1.65
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
         ]
       },
       {
@@ -4170,6 +5635,11 @@
           12,
           0,
           -12
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.04
         ]
       },
       {
@@ -4186,6 +5656,11 @@
           12,
           0,
           12
+        ],
+        "RootOffset": [
+          0.03,
+          0.03,
+          -0.04
         ]
       },
       {
@@ -4202,6 +5677,11 @@
           4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
         ]
       },
       {
@@ -4214,7 +5694,7 @@
   },
   {
     "Id": "WardenClampTechnique",
-    "Description": "Raise two separated warning hands then close and press a broad arresting clamp at chest height",
+    "Description": "Raise two separated warning hands then close and press a broad arresting clamp at chest height; close the arresting hands with a forward weight transfer and sustain downward pressure through the knees",
     "Duration": 2.7,
     "Beats": [
       {
@@ -4237,6 +5717,16 @@
           0.65,
           0.3,
           1.7
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -4253,6 +5743,16 @@
           0.3,
           0.75,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -4269,6 +5769,16 @@
           0.3,
           0.75,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
         ]
       },
       {
@@ -4285,6 +5795,16 @@
           0.3,
           0.75,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -4297,7 +5817,7 @@
   },
   {
     "Id": "WardenMarkTechnique",
-    "Description": "Trace a measured marking arc across nearby enemies and close the command with a pointed center signal",
+    "Description": "Trace a measured marking arc across nearby enemies and close the command with a pointed center signal; trace the marked arc through a measured lateral weight transfer and square the hips for the center signal",
     "Duration": 2.5,
     "Beats": [
       {
@@ -4315,6 +5835,16 @@
           -0.7,
           0.5,
           1.55
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -7
         ]
       },
       {
@@ -4326,6 +5856,16 @@
           -0.1,
           0.85,
           1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -4337,6 +5877,16 @@
           0.3,
           0.55,
           1.45
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          7
         ]
       },
       {
@@ -4348,6 +5898,16 @@
           -0.15,
           0.7,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -4449,7 +6009,7 @@
   },
   {
     "Id": "WardenOrderTechnique",
-    "Description": "Give a calm chest-level acknowledgement and lift a broad restorative command to the allied circle",
+    "Description": "Give a calm chest-level acknowledgement and lift a broad restorative command to the allied circle; lift the restorative order through a gentle knee extension and settle body weight with its return to center",
     "Duration": 2.8,
     "Beats": [
       {
@@ -4467,6 +6027,16 @@
           -0.15,
           0.25,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -4478,6 +6048,16 @@
           -0.55,
           0.6,
           1.6
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -1,
+          0,
+          -3
         ]
       },
       {
@@ -4494,6 +6074,11 @@
           0,
           0,
           -12
+        ],
+        "RootOffset": [
+          0.02,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -4505,6 +6090,16 @@
           -0.2,
           0.6,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -4517,7 +6112,7 @@
   },
   {
     "Id": "WardenRendTechnique",
-    "Description": "Hook both sides of a hostile field and tear them apart before gathering the recovered force",
+    "Description": "Hook both sides of a hostile field and tear them apart before gathering the recovered force; hook from the lead leg, tear across the hips and draw the recovered force into a loaded core",
     "Duration": 2.75,
     "Beats": [
       {
@@ -4540,6 +6135,16 @@
           0.2,
           0.8,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -4556,6 +6161,16 @@
           0.8,
           0.35,
           1.3
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -7
         ]
       },
       {
@@ -4572,6 +6187,16 @@
           0.15,
           0.3,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
         ]
       },
       {
@@ -4588,6 +6213,16 @@
           0.25,
           0.25,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -4600,7 +6235,7 @@
   },
   {
     "Id": "WardenSweepTechnique",
-    "Description": "Sweep the lead forearm around the body and settle into a held retaliatory counterguard",
+    "Description": "Sweep the lead forearm around the body and settle into a held retaliatory counterguard; turn the counterguard through the supporting hips and hold its final ready position on bent knees",
     "Duration": 2.8,
     "Beats": [
       {
@@ -4613,7 +6248,17 @@
         "Time": 0.35,
         "Label": "Take the retaliatory base",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
       },
       {
         "Time": 0.95,
@@ -4624,6 +6269,16 @@
           -0.75,
           0.5,
           1.3
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          -8
         ]
       },
       {
@@ -4635,6 +6290,16 @@
           -0.25,
           0.65,
           1.55
+        ],
+        "RootOffset": [
+          0.02,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          7
         ]
       },
       {
@@ -4646,6 +6311,16 @@
           -0.25,
           0.65,
           1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -4658,7 +6333,7 @@
   },
   {
     "Id": "WardenWallTechnique",
-    "Description": "Raise a high outward-facing ward from the waist and hold a wide upright protective wall",
+    "Description": "Raise a high outward-facing ward from the waist and hold a wide upright protective wall; raise the wall with the legs, then root its sustained protective hold in a firm knee brace",
     "Duration": 3.15,
     "Beats": [
       {
@@ -4681,6 +6356,16 @@
           0.4,
           0.4,
           1.0
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -4697,6 +6382,16 @@
           0.65,
           0.55,
           1.8
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -4713,6 +6408,16 @@
           0.65,
           0.55,
           1.8
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -4729,6 +6434,16 @@
           0.6,
           0.6,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -4741,7 +6456,7 @@
   },
   {
     "Id": "WillFractureTechnique",
-    "Description": "Touch the temple to find a mental seam, slice it outward and pull the fractured force back into the palm",
+    "Description": "Touch the temple to find a mental seam, slice it outward and pull the fractured force back into the palm; carry the mental cut across the hips and draw the fractured force back through the supporting legs",
     "Duration": 2.5,
     "Beats": [
       {
@@ -4759,6 +6474,16 @@
           -0.28,
           0.12,
           1.8
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -3
         ]
       },
       {
@@ -4770,6 +6495,16 @@
           -0.7,
           0.65,
           1.55
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          8
         ]
       },
       {
@@ -4781,6 +6516,16 @@
           -0.1,
           0.8,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -4792,6 +6537,16 @@
           -0.15,
           0.25,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {

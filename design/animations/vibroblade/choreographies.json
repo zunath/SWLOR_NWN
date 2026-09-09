@@ -14,7 +14,12 @@
         "Time": 0.3,
         "Label": "Establish sword ready",
         "SourceAnimation": "1hreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 0.75,
@@ -30,6 +35,11 @@
           0,
           0,
           -12
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.022
         ]
       },
       {
@@ -51,6 +61,11 @@
           -10,
           0,
           -18
+        ],
+        "RootOffset": [
+          0.02,
+          -0.02,
+          -0.028
         ]
       },
       {
@@ -72,13 +87,23 @@
           -14,
           0,
           -18
+        ],
+        "RootOffset": [
+          0.005,
+          0.04,
+          -0.032
         ]
       },
       {
         "Time": 2,
         "Label": "Gather the weapon safely",
         "SourceAnimation": "1hreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ]
       },
       {
         "Time": 2.35,
@@ -103,13 +128,23 @@
         "Time": 0.35,
         "Label": "Set the defensive base",
         "SourceAnimation": "1hreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 0.8,
         "Label": "Lower behind a compact guard",
         "SourceAnimation": "1hparryr",
-        "SourceTime": 0.3
+        "SourceTime": 0.3,
+        "RootOffset": [
+          -0.015,
+          0.015,
+          -0.035
+        ]
       },
       {
         "Time": 1.25,
@@ -120,6 +155,11 @@
           -0.29,
           0.44,
           1.18
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.035
         ]
       },
       {
@@ -136,13 +176,23 @@
           8,
           0,
           0
+        ],
+        "RootOffset": [
+          -0.01,
+          0.005,
+          -0.045
         ]
       },
       {
         "Time": 2.2,
         "Label": "Rise into a settled guard",
         "SourceAnimation": "1hreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.018
+        ]
       },
       {
         "Time": 2.6,

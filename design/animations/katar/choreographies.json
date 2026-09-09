@@ -14,7 +14,12 @@
         "Time": 0.3,
         "Label": "Set the fighting base",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 0.8,
@@ -30,6 +35,16 @@
           0.12,
           0.44,
           1.22
+        ],
+        "RootOffset": [
+          0.0,
+          0.015,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
         ]
       },
       {
@@ -51,6 +66,11 @@
           9,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.015,
+          -0.045
         ]
       },
       {
@@ -67,13 +87,28 @@
           0.25,
           0.48,
           1.22
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.025
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
         ]
       },
       {
         "Time": 2.25,
         "Label": "Settle the reinforced guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.015
+        ]
       },
       {
         "Time": 2.65,
@@ -98,7 +133,12 @@
         "Time": 0.25,
         "Label": "Set the counter guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 0.6,
@@ -114,25 +154,45 @@
           0.28,
           0.16,
           1.18
+        ],
+        "RootOffset": [
+          -0.015,
+          -0.025,
+          -0.03
         ]
       },
       {
         "Time": 0.85,
         "Label": "Chamber the counter",
         "SourceAnimation": "nwcloseh",
-        "SourceTime": 0.3
+        "SourceTime": 0.3,
+        "RootOffset": [
+          0.015,
+          -0.015,
+          -0.028
+        ]
       },
       {
         "Time": 1.1,
         "Label": "Deliver one counterpunch",
         "SourceAnimation": "nwcloseh",
-        "SourceTime": 0.6
+        "SourceTime": 0.6,
+        "RootOffset": [
+          -0.01,
+          0.045,
+          -0.03
+        ]
       },
       {
         "Time": 1.5,
         "Label": "Retract the counter into guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 1.8,
@@ -157,31 +217,56 @@
         "Time": 0.25,
         "Label": "Set the hooking stance",
         "SourceAnimation": "nwslashl",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.01,
+          -0.005,
+          -0.015
+        ]
       },
       {
         "Time": 0.6,
         "Label": "Wind outside the target",
         "SourceAnimation": "nwslashl",
-        "SourceTime": 0.3
+        "SourceTime": 0.3,
+        "RootOffset": [
+          0.035,
+          -0.015,
+          -0.03
+        ]
       },
       {
         "Time": 0.95,
         "Label": "Hook across the low flank",
         "SourceAnimation": "nwslashl",
-        "SourceTime": 0.6
+        "SourceTime": 0.6,
+        "RootOffset": [
+          -0.035,
+          0.03,
+          -0.038
+        ]
       },
       {
         "Time": 1.3,
         "Label": "Retract the hooking blade",
         "SourceAnimation": "nwslashl",
-        "SourceTime": 0.85
+        "SourceTime": 0.85,
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.025
+        ]
       },
       {
         "Time": 1.5,
         "Label": "Regain guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ]
       },
       {
         "Time": 1.75,
@@ -206,7 +291,12 @@
         "Time": 0.25,
         "Label": "Set the sweeping base",
         "SourceAnimation": "nwkicks",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ]
       },
       {
         "Time": 0.6,
@@ -224,13 +314,23 @@
         "Time": 1.3,
         "Label": "Land and gather the sweep",
         "SourceAnimation": "nwkicks",
-        "SourceTime": 0.85
+        "SourceTime": 0.85,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.018
+        ]
       },
       {
         "Time": 1.65,
         "Label": "Reestablish the katar guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ]
       },
       {
         "Time": 2.0,
@@ -255,7 +355,12 @@
         "Time": 0.3,
         "Label": "Plant the fighting stance",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.015
+        ]
       },
       {
         "Time": 0.85,
@@ -271,6 +376,11 @@
           0.23,
           0.37,
           1.37
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.035
         ]
       },
       {
@@ -292,6 +402,11 @@
           7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.012,
+          -0.045
         ]
       },
       {
@@ -313,13 +428,23 @@
           7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.012,
+          -0.045
         ]
       },
       {
         "Time": 2.5,
         "Label": "Lower the activation guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 2.75,
@@ -344,7 +469,12 @@
         "Time": 0.25,
         "Label": "Ready the trapping hands",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 0.65,
@@ -360,6 +490,16 @@
           0.3,
           0.23,
           1.2
+        ],
+        "RootOffset": [
+          -0.015,
+          0.04,
+          -0.022
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          -10
         ]
       },
       {
@@ -376,6 +516,16 @@
           0.1,
           0.57,
           1.16
+        ],
+        "RootOffset": [
+          0.015,
+          0.025,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -7,
+          0,
+          5
         ]
       },
       {
@@ -397,13 +547,23 @@
           12,
           0,
           0
+        ],
+        "RootOffset": [
+          0.03,
+          -0.02,
+          -0.045
         ]
       },
       {
         "Time": 1.8,
         "Label": "Release and gather the guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.015
+        ]
       },
       {
         "Time": 2.1,
@@ -428,7 +588,12 @@
         "Time": 0.25,
         "Label": "Set the low clearing stance",
         "SourceAnimation": "nwkickr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 0.7,
@@ -446,19 +611,34 @@
         "Time": 1.3,
         "Label": "Land into the close guard",
         "SourceAnimation": "nwkickr",
-        "SourceTime": 0.9
+        "SourceTime": 0.9,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ]
       },
       {
         "Time": 1.65,
         "Label": "Drive a short bladed body check",
         "SourceAnimation": "nwslashr",
-        "SourceTime": 0.45
+        "SourceTime": 0.45,
+        "RootOffset": [
+          0.015,
+          0.04,
+          -0.035
+        ]
       },
       {
         "Time": 2.2,
         "Label": "Draw both arms back from the lockdown",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 2.6,
@@ -483,7 +663,12 @@
         "Time": 0.3,
         "Label": "Take a loose fighting base",
         "SourceAnimation": "nwreadyl",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.015
+        ]
       },
       {
         "Time": 0.75,
@@ -504,6 +689,11 @@
           0,
           0,
           -12
+        ],
+        "RootOffset": [
+          0.03,
+          -0.005,
+          -0.025
         ]
       },
       {
@@ -525,6 +715,11 @@
           0,
           0,
           12
+        ],
+        "RootOffset": [
+          -0.03,
+          0.01,
+          -0.03
         ]
       },
       {
@@ -546,13 +741,23 @@
           9,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.035
         ]
       },
       {
         "Time": 2.15,
         "Label": "Settle the stance",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.015
+        ]
       },
       {
         "Time": 2.45,
@@ -577,7 +782,12 @@
         "Time": 0.3,
         "Label": "Establish the guard link",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 0.85,
@@ -593,6 +803,16 @@
           0.26,
           0.24,
           1.2
+        ],
+        "RootOffset": [
+          -0.03,
+          0.015,
+          -0.022
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          -10
         ]
       },
       {
@@ -609,6 +829,16 @@
           0.18,
           0.37,
           1.29
+        ],
+        "RootOffset": [
+          -0.04,
+          0.025,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          -14
         ]
       },
       {
@@ -625,13 +855,28 @@
           0.18,
           0.37,
           1.29
+        ],
+        "RootOffset": [
+          -0.04,
+          0.025,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          -14
         ]
       },
       {
         "Time": 2.4,
         "Label": "Gather the activation pose",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 2.65,
@@ -661,6 +906,11 @@
           0,
           0,
           -16
+        ],
+        "RootOffset": [
+          -0.015,
+          0.0,
+          -0.018
         ]
       },
       {
@@ -682,6 +932,11 @@
           0,
           0,
           -16
+        ],
+        "RootOffset": [
+          -0.045,
+          0.025,
+          -0.035
         ]
       },
       {
@@ -698,6 +953,16 @@
           0.08,
           0.53,
           1.3
+        ],
+        "RootOffset": [
+          -0.025,
+          0.04,
+          -0.038
+        ],
+        "TorsoDegrees": [
+          -8,
+          0,
+          -8
         ]
       },
       {
@@ -714,13 +979,28 @@
           0.18,
           0.35,
           1.25
+        ],
+        "RootOffset": [
+          -0.015,
+          0.01,
+          -0.028
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          -4
         ]
       },
       {
         "Time": 1.9,
         "Label": "Settle after the intercept",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.012
+        ]
       },
       {
         "Time": 2.15,
@@ -745,7 +1025,12 @@
         "Time": 0.3,
         "Label": "Open the circulating guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.015
+        ]
       },
       {
         "Time": 0.85,
@@ -761,6 +1046,16 @@
           0.4,
           0.34,
           1.48
+        ],
+        "RootOffset": [
+          0.035,
+          0.01,
+          -0.028
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          -12
         ]
       },
       {
@@ -777,6 +1072,16 @@
           0.4,
           0.4,
           1.07
+        ],
+        "RootOffset": [
+          -0.035,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -6,
+          0,
+          12
         ]
       },
       {
@@ -793,13 +1098,28 @@
           0.2,
           0.5,
           1.28
+        ],
+        "RootOffset": [
+          0.0,
+          0.025,
+          -0.025
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
         ]
       },
       {
         "Time": 2.4,
         "Label": "Return to the reflective guard",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.005,
+          -0.012
+        ]
       },
       {
         "Time": 2.75,

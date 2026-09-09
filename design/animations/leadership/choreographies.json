@@ -1,7 +1,7 @@
 [
   {
     "Id": "BreakMorale",
-    "Description": "A squared challenge followed by a broad downward dismissal of the hostile line",
+    "Description": "A squared challenge followed by a broad downward dismissal of the hostile line; carry the dismissive cut across the hips and down into the knees while retaining the native challenge",
     "Duration": 2.5,
     "Beats": [
       {
@@ -31,6 +31,16 @@
           -0.65,
           0.45,
           1.3
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -7
         ]
       },
       {
@@ -42,6 +52,16 @@
           -0.5,
           0.55,
           0.95
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          6
         ]
       },
       {
@@ -60,7 +80,7 @@
   },
   {
     "Id": "ChargeOrder",
-    "Description": "Raise a clear advance signal and drive the lead hand forward to send the party charging",
+    "Description": "Raise a clear advance signal and drive the lead hand forward to send the party charging; load behind the raised signal and commit body weight forward with the advance order",
     "Duration": 2.6,
     "Beats": [
       {
@@ -84,6 +104,16 @@
           -0.28,
           0.15,
           2.08
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          -5
         ]
       },
       {
@@ -95,6 +125,16 @@
           -0.18,
           0.85,
           1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          5
         ]
       },
       {
@@ -106,6 +146,16 @@
           -0.2,
           0.7,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          3
         ]
       },
       {
@@ -117,6 +167,16 @@
           -0.3,
           0.25,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -129,7 +189,7 @@
   },
   {
     "Id": "CleanseOrder",
-    "Description": "Sweep a clearing command across the party then offer a reassuring outward palm",
+    "Description": "Sweep a clearing command across the party then offer a reassuring outward palm; let the hips follow the clearing sweep and settle the reassuring palm over a softened lead knee",
     "Duration": 2.65,
     "Beats": [
       {
@@ -147,6 +207,16 @@
           0.12,
           0.3,
           1.3
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -4
         ]
       },
       {
@@ -158,6 +228,16 @@
           -0.68,
           0.5,
           1.25
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          5
         ]
       },
       {
@@ -169,6 +249,16 @@
           -0.35,
           0.65,
           1.4
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -2
         ]
       },
       {
@@ -180,6 +270,16 @@
           -0.4,
           0.35,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -192,7 +292,7 @@
   },
   {
     "Id": "CoordinatedFocus",
-    "Description": "Indicate the sight line then hold a precise forward focus marker for the party",
+    "Description": "Indicate the sight line then hold a precise forward focus marker for the party; settle into a precise stable sighting base and hold it without an unnecessary flourish",
     "Duration": 2.5,
     "Beats": [
       {
@@ -210,6 +310,16 @@
           -0.25,
           0.2,
           1.72
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -221,6 +331,16 @@
           -0.15,
           0.8,
           1.6
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -232,6 +352,16 @@
           -0.15,
           0.8,
           1.6
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -243,6 +373,16 @@
           -0.25,
           0.4,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -255,7 +395,7 @@
   },
   {
     "Id": "DecisiveCommand",
-    "Description": "A raised command fist resolves into a deliberate three-part rally, advance and commit signal",
+    "Description": "A raised command fist resolves into a deliberate three-part rally, advance and commit signal; gather the flank through a lateral weight shift, commit forward and ground the final command through the knees",
     "Duration": 3.0,
     "Beats": [
       {
@@ -279,6 +419,16 @@
           -0.7,
           0.2,
           1.6
+        ],
+        "RootOffset": [
+          -0.03,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -7
         ]
       },
       {
@@ -290,6 +440,16 @@
           -0.1,
           0.82,
           1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          3
         ]
       },
       {
@@ -301,6 +461,16 @@
           -0.12,
           0.72,
           1.15
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          4
         ]
       },
       {
@@ -312,6 +482,16 @@
           -0.28,
           0.3,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -324,7 +504,7 @@
   },
   {
     "Id": "FieldRecovery",
-    "Description": "Slow rising and lowering hand signals pace a controlled recovery breath for the formation",
+    "Description": "Slow rising and lowering hand signals pace a controlled recovery breath for the formation; a slow balanced knee extension and chest lift visibly pace the breath, without sharp repeated bobbing",
     "Duration": 3.2,
     "Beats": [
       {
@@ -342,6 +522,16 @@
           -0.45,
           0.45,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -353,6 +543,16 @@
           -0.3,
           0.4,
           1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.005
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {
@@ -364,6 +564,16 @@
           -0.5,
           0.55,
           1.0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -375,6 +585,16 @@
           -0.35,
           0.35,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -1,
+          0,
+          0
         ]
       },
       {
@@ -387,7 +607,7 @@
   },
   {
     "Id": "HoldTheLine",
-    "Description": "Plant the feet, present a firm stop signal and brace the formation behind it",
+    "Description": "Plant the feet, present a firm stop signal and brace the formation behind it; meet pressure with a firm sustained knee brace behind the stop signal, then ease out deliberately",
     "Duration": 3.0,
     "Beats": [
       {
@@ -400,7 +620,17 @@
         "Time": 0.35,
         "Label": "Plant against the incoming pressure",
         "SourceAnimation": "nwreadyr",
-        "SourceTime": 0
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
       },
       {
         "Time": 0.95,
@@ -411,6 +641,16 @@
           -0.32,
           0.72,
           1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -424,9 +664,14 @@
           1.65
         ],
         "TorsoDegrees": [
-          8,
+          6,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
         ]
       },
       {
@@ -438,6 +683,16 @@
           -0.3,
           0.55,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -450,7 +705,7 @@
   },
   {
     "Id": "PressTheAttack",
-    "Description": "Two decisive low-to-forward beckons urge the party to maintain offensive pressure",
+    "Description": "Two decisive low-to-forward beckons urge the party to maintain offensive pressure; drive both beckons through compact back-to-front weight transfers with controlled forward follow-through",
     "Duration": 2.3,
     "Beats": [
       {
@@ -468,6 +723,16 @@
           -0.4,
           0.12,
           1.05
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -5
         ]
       },
       {
@@ -479,6 +744,16 @@
           -0.25,
           0.8,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          4
         ]
       },
       {
@@ -490,6 +765,16 @@
           -0.4,
           0.2,
           1.2
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -4
         ]
       },
       {
@@ -501,6 +786,16 @@
           -0.2,
           0.85,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          4
         ]
       },
       {
@@ -512,6 +807,16 @@
           -0.35,
           0.35,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -524,7 +829,7 @@
   },
   {
     "Id": "RallyingStandard",
-    "Description": "Lift and hold a visible high rally marker then draw nearby allies toward its center",
+    "Description": "Lift and hold a visible high rally marker then draw nearby allies toward its center; keep the high marker supported over the legs, then gather the allies with a measured forward shift",
     "Duration": 3.0,
     "Beats": [
       {
@@ -548,6 +853,16 @@
           -0.5,
           0.05,
           2.0
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -559,6 +874,16 @@
           -0.7,
           0.25,
           1.8
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          5
         ]
       },
       {
@@ -570,6 +895,16 @@
           -0.18,
           0.42,
           1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -582,7 +917,7 @@
   },
   {
     "Id": "RousingShout",
-    "Description": "Cup the supporting hand beside the mouth, call to one ally and reach out in encouragement",
+    "Description": "Cup the supporting hand beside the mouth, call to one ally and reach out in encouragement; draw the breath over the back leg and project the encouraging call from the chest and supporting knees",
     "Duration": 2.7,
     "Beats": [
       {
@@ -600,6 +935,16 @@
           -0.26,
           0.25,
           1.73
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {
@@ -613,9 +958,14 @@
           1.73
         ],
         "TorsoDegrees": [
-          -8,
+          7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
         ]
       },
       {
@@ -627,6 +977,16 @@
           -0.45,
           0.7,
           1.45
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          3
         ]
       },
       {
@@ -638,6 +998,16 @@
           -0.35,
           0.35,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -650,7 +1020,7 @@
   },
   {
     "Id": "SteadyFormation",
-    "Description": "Trace a level lateral formation boundary and settle it into an even forward guard",
+    "Description": "Trace a level lateral formation boundary and settle it into an even forward guard; trace the formation with a level lateral transfer over softly flexed knees, then square the weight again",
     "Duration": 2.8,
     "Beats": [
       {
@@ -668,6 +1038,16 @@
           -0.28,
           0.4,
           1.18
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -679,6 +1059,16 @@
           -0.8,
           0.25,
           1.2
+        ],
+        "RootOffset": [
+          -0.03,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -5
         ]
       },
       {
@@ -690,6 +1080,16 @@
           -0.1,
           0.72,
           1.2
+        ],
+        "RootOffset": [
+          0.02,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          4
         ]
       },
       {
@@ -701,6 +1101,16 @@
           -0.45,
           0.4,
           1.08
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -713,7 +1123,7 @@
   },
   {
     "Id": "WatchfulPresence",
-    "Description": "Shade the eyes with the free hand, scan both flanks and finish with a protective warning signal",
+    "Description": "Shade the eyes with the free hand, scan both flanks and finish with a protective warning signal; turn the watch through the hips across both flanks and settle into the warning stance",
     "Duration": 3.15,
     "Beats": [
       {
@@ -731,6 +1141,16 @@
           -0.22,
           0.18,
           1.82
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          0
         ]
       },
       {
@@ -744,9 +1164,14 @@
           1.82
         ],
         "TorsoDegrees": [
+          2,
           0,
-          0,
-          -18
+          -9
+        ],
+        "RootOffset": [
+          -0.02,
+          0.0,
+          -0.02
         ]
       },
       {
@@ -760,9 +1185,14 @@
           1.82
         ],
         "TorsoDegrees": [
+          2,
           0,
-          0,
-          18
+          9
+        ],
+        "RootOffset": [
+          0.02,
+          0.0,
+          -0.02
         ]
       },
       {
@@ -774,6 +1204,16 @@
           -0.4,
           0.6,
           1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {

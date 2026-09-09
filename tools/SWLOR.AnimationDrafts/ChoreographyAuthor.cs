@@ -10,7 +10,8 @@ namespace SWLOR.AnimationDrafts;
 internal sealed record Choreography(string Id, string Description, float Duration, ChoreographyBeat[] Beats,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool InPlace = false);
 internal sealed record ChoreographyBeat(float Time, string Label, string SourceAnimation, float SourceTime = 0,
-    float[]? LeftHand = null, float[]? RightHand = null, float[]? TorsoDegrees = null, string? SourceModel = null);
+    float[]? LeftHand = null, float[]? RightHand = null, float[]? TorsoDegrees = null, string? SourceModel = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] float[]? RootOffset = null);
 
 /// <summary>Native pose choreography with explicit hand paths and native local grips.
 /// Recipes are editable motion direction, not inferred motion capture.</summary>
@@ -41,14 +42,16 @@ internal static class ChoreographyAuthor
                 throw new InvalidDataException("Invalid choreography beat: " + recipe.Id);
             if (beat.SourceModel != null && !System.Text.RegularExpressions.Regex.IsMatch(beat.SourceModel, "^[a-z0-9_]{1,16}$"))
                 throw new InvalidDataException("Source model must be a native resource name.");
-            foreach (var vector in new[] { beat.LeftHand, beat.RightHand, beat.TorsoDegrees })
+            foreach (var vector in new[] { beat.LeftHand, beat.RightHand, beat.TorsoDegrees, beat.RootOffset })
                 if (vector != null && (vector.Length != 3 || vector.Any(v => !float.IsFinite(v))))
                     throw new InvalidDataException("Choreography vectors require three finite coordinates.");
             if (beat.TorsoDegrees?.Any(v => Math.Abs(v) > 35) == true)
                 throw new InvalidDataException("Choreography torso adjustments must stay within 35 degrees.");
+            if (beat.RootOffset is { } offset && (Math.Abs(offset[0]) > .15f || Math.Abs(offset[1]) > .15f || Math.Abs(offset[2]) > .1f))
+                throw new InvalidDataException("Choreography root offsets must stay within 15 cm horizontally and 10 cm vertically.");
         }
         foreach (var beat in new[] { recipe.Beats[0], recipe.Beats[^1] })
-            if (beat.SourceAnimation != "pause1" || beat.SourceModel != null || beat.SourceTime != 0 || beat.LeftHand != null || beat.RightHand != null || beat.TorsoDegrees != null)
+            if (beat.SourceAnimation != "pause1" || beat.SourceModel != null || beat.SourceTime != 0 || beat.LeftHand != null || beat.RightHand != null || beat.TorsoDegrees != null || beat.RootOffset != null)
                 throw new InvalidDataException("Choreography endpoints must use unmodified native idle.");
     }
 
@@ -72,22 +75,23 @@ internal static class ChoreographyAuthor
             return rig.Joints.Select(j => sampled.TryGetValue(j.Name, out var node) ? node : j.Rest).ToArray();
         }
         static Vector3 V(float[] v) => new(v[0], v[1], v[2]);
-        PosedNode[] Pose(ChoreographyBeat beat)
+        PosedNode[] Overlays(PosedNode[] pose, ChoreographyBeat first, ChoreographyBeat second, float blend)
         {
-            var pose = Native(beat.SourceAnimation, beat.SourceTime, beat.SourceModel);
-            if (beat.TorsoDegrees != null)
+            if (first.TorsoDegrees != null || second.TorsoDegrees != null)
             {
-                var angle = V(beat.TorsoDegrees) * (MathF.PI / 180);
+                var angle = Vector3.Lerp(first.TorsoDegrees == null ? Vector3.Zero : V(first.TorsoDegrees),
+                    second.TorsoDegrees == null ? Vector3.Zero : V(second.TorsoDegrees), blend) * (MathF.PI / 180);
                 var torso = Joint("torso_g");
                 pose[torso] = pose[torso] with { Orientation = Quaternion.Normalize(pose[torso].Orientation *
                     Quaternion.CreateFromYawPitchRoll(angle.Y, angle.X, angle.Z)) };
             }
-            foreach (var (name, target, side) in new[] { ("lhand_g", beat.LeftHand, -1f), ("rhand_g", beat.RightHand, 1f) })
+            foreach (var (name, start, finish, side) in new[] { ("lhand_g", first.LeftHand, second.LeftHand, -1f), ("rhand_g", first.RightHand, second.RightHand, 1f) })
             {
-                if (target == null) continue;
+                if (start == null && finish == null || blend == 0 && start == null || blend == 1 && finish == null) continue;
                 var hand = Joint(name);
                 var grip = pose[hand].Orientation;
-                var position = V(target);
+                var nativePosition = AnimationRig.World(rig.Joints, pose)[hand].Translation;
+                var position = Vector3.Lerp(start == null ? nativePosition : V(start), finish == null ? nativePosition : V(finish), blend);
                 // Elbows remain below the wrist, with a stable lateral bend plane.
                 var shoulder = rig.Joints[rig.Joints[hand].Parent].Parent;
                 var shoulderHeight = AnimationRig.World(rig.Joints, pose)[shoulder].Translation.Z;
@@ -100,10 +104,58 @@ internal static class ChoreographyAuthor
             }
             return pose;
         }
-        var poses = recipe.Beats.Select(Pose).ToArray();
+        var nativePoses = recipe.Beats.Select(beat => Native(beat.SourceAnimation, beat.SourceTime, beat.SourceModel)).ToArray();
+        var poses = recipe.Beats.Select((beat, index) => Overlays((PosedNode[])nativePoses[index].Clone(), beat, beat, 0)).ToArray();
         var neutral = Native("pause1", 0);
         var root = Joint("rootdummy");
         var feet = new[] { Joint("lfoot_g"), Joint("rfoot_g") };
+        PosedNode[] ShiftWeight(PosedNode[] pose, Vector3 offset)
+        {
+            if (offset.LengthSquared() < 1e-12f) return pose;
+            var world = AnimationRig.World(rig.Joints, pose);
+            // A requested shift must not pull a foot beyond the leg's reach. Restrict
+            // the body displacement, rather than accepting the IK solver's foot slide.
+            bool Reachable(float amount)
+            {
+                foreach (var foot in feet)
+                {
+                    var knee = rig.Joints[foot].Parent; var hip = rig.Joints[knee].Parent;
+                    var upper = Vector3.Distance(world[hip].Translation, world[knee].Translation);
+                    var lower = Vector3.Distance(world[knee].Translation, world[foot].Translation);
+                    var distance = Vector3.Distance(world[hip].Translation + offset * amount, world[foot].Translation);
+                    if (distance > upper + lower + .000002f || distance < Math.Abs(upper - lower) - .000002f) return false;
+                }
+                return true;
+            }
+            if (!Reachable(1))
+            {
+                var low = 0f; var high = 1f;
+                for (var i = 0; i < 20; i++)
+                {
+                    var middle = (low + high) / 2;
+                    if (Reachable(middle)) low = middle; else high = middle;
+                }
+                offset *= low;
+            }
+            if (offset.LengthSquared() < 1e-12f) return pose;
+            var localOffset = offset;
+            if (rig.Joints[root].Parent >= 0)
+            {
+                if (!Matrix4x4.Invert(world[rig.Joints[root].Parent], out var inverse))
+                    throw new InvalidDataException("Choreography root parent transform is singular.");
+                localOffset = Vector3.TransformNormal(offset, inverse);
+            }
+            pose[root] = pose[root] with { Position = pose[root].Position + localOffset };
+            foreach (var foot in feet)
+            {
+                var knee = rig.Joints[foot].Parent;
+                // Move the native knee pole with the body. This retains the source's
+                // bend plane while the foot follows its original sampled trajectory.
+                pose = AnimationRig.SolveLimb(rig.Joints, pose, foot, world[foot].Translation,
+                    world[knee].Translation + offset);
+            }
+            return pose;
+        }
         var floor = feet.Min(i => AnimationRig.World(rig.Joints, neutral)[i].Translation.Z);
         var result = rig.Clone(); result.Name = recipe.Id; result.Duration = recipe.Duration; result.Transition = .12f;
         result.Keys.Clear(); result.Events.Clear();
@@ -118,16 +170,28 @@ internal static class ChoreographyAuthor
             var smooth = fraction * fraction * (3 - 2 * fraction);
             var pose = new PosedNode[neutral.Length];
             // Continuous native spans retain the source's real in-between motion (especially throws).
-            var nativeSpan = first.SourceAnimation == second.SourceAnimation && first.SourceModel == second.SourceModel && first.LeftHand == null && second.LeftHand == null &&
-                first.RightHand == null && second.RightHand == null && first.TorsoDegrees == null && second.TorsoDegrees == null;
+            var weightShift = first.RootOffset != null || second.RootOffset != null;
+            // A held source phase contains no native in-between motion. Preserve the
+            // previously reviewed interpolation unless a weight shift was authored.
+            var nativeSpan = first.SourceAnimation == second.SourceAnimation && first.SourceModel == second.SourceModel &&
+                (weightShift || first.SourceTime != second.SourceTime || first.LeftHand == null && second.LeftHand == null &&
+                    first.RightHand == null && second.RightHand == null && first.TorsoDegrees == null && second.TorsoDegrees == null);
             if (nativeSpan) pose = Native(first.SourceAnimation, float.Lerp(first.SourceTime, second.SourceTime, fraction), first.SourceModel);
-            else for (int i = 0; i < pose.Length; i++)
-                pose[i] = new(Vector3.Lerp(poses[segment][i].Position, poses[segment + 1][i].Position, smooth),
-                    Quaternion.Slerp(poses[segment][i].Orientation, poses[segment + 1][i].Orientation, smooth),
-                    float.Lerp(poses[segment][i].Scale, poses[segment + 1][i].Scale, smooth));
+            else
+            {
+                var frames = weightShift ? nativePoses : poses;
+                for (int i = 0; i < pose.Length; i++)
+                    pose[i] = new(Vector3.Lerp(frames[segment][i].Position, frames[segment + 1][i].Position, smooth),
+                        Quaternion.Slerp(frames[segment][i].Orientation, frames[segment + 1][i].Orientation, smooth),
+                        float.Lerp(frames[segment][i].Scale, frames[segment + 1][i].Scale, smooth));
+            }
             if (recipe.InPlace)
                 pose[root] = pose[root] with { Position = new Vector3(neutral[root].Position.X,
                     neutral[root].Position.Y, pose[root].Position.Z) };
+            if (weightShift)
+                pose = ShiftWeight(pose, Vector3.Lerp(first.RootOffset == null ? Vector3.Zero : V(first.RootOffset),
+                    second.RootOffset == null ? Vector3.Zero : V(second.RootOffset), smooth));
+            if (nativeSpan || weightShift) pose = Overlays(pose, first, second, smooth);
             var world = AnimationRig.World(rig.Joints, pose);
             var penetration = floor - feet.Min(i => world[i].Translation.Z);
             if (penetration > 0 && time > 0 && time < result.Duration)

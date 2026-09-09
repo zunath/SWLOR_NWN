@@ -1,7 +1,7 @@
 [
   {
     "Id": "Benevolence",
-    "Description": "Gather healing at the chest and offer it gently toward one ally with a sustained forward hand",
+    "Description": "Gather healing at the chest and offer it gently toward one ally with a sustained forward hand; a gentle forward weight offering rests on soft knees and remains steady through healing",
     "Duration": 2.65,
     "Beats": [
       {
@@ -24,6 +24,16 @@
           -0.2,
           0.22,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -40,6 +50,16 @@
           -0.24,
           0.24,
           1.16
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -58,9 +78,14 @@
           1.17
         ],
         "TorsoDegrees": [
-          -3,
+          4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
         ]
       },
       {
@@ -77,6 +102,16 @@
           -0.28,
           0.19,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -89,7 +124,7 @@
   },
   {
     "Id": "CreepingTerror",
-    "Description": "Designate distant ground then rake a low widening arc to spread a creeping hostile field",
+    "Description": "Designate distant ground then rake a low widening arc to spread a creeping hostile field; spread the low field by passing body weight across a crouched base, then release the pressure through the legs",
     "Duration": 2.85,
     "Beats": [
       {
@@ -112,6 +147,16 @@
           -0.28,
           0.17,
           1.04
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -133,6 +178,11 @@
           7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
         ]
       },
       {
@@ -151,9 +201,14 @@
           1.02
         ],
         "TorsoDegrees": [
-          5,
-          -8,
-          0
+          8,
+          0,
+          -8
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.05
         ]
       },
       {
@@ -172,9 +227,14 @@
           1.04
         ],
         "TorsoDegrees": [
-          5,
           8,
-          0
+          0,
+          8
+        ],
+        "RootOffset": [
+          0.03,
+          0.03,
+          -0.05
         ]
       },
       {
@@ -191,6 +251,16 @@
           -0.35,
           0.27,
           1.07
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -203,7 +273,7 @@
   },
   {
     "Id": "EclipseOfResolve",
-    "Description": "Close a high enclosing arc then press both arms down to impose a heavy self-centered suppression field",
+    "Description": "Close a high enclosing arc then press both arms down to impose a heavy self-centered suppression field; sink the enclosing gesture into a sustained full-body suppression brace rather than pressing with arms alone",
     "Duration": 3.1,
     "Beats": [
       {
@@ -226,6 +296,16 @@
           -0.39,
           0.32,
           1.53
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {
@@ -242,6 +322,16 @@
           -0.24,
           0.4,
           1.47
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -260,9 +350,14 @@
           1.05
         ],
         "TorsoDegrees": [
-          6,
+          8,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
         ]
       },
       {
@@ -279,6 +374,16 @@
           -0.5,
           0.3,
           0.99
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -295,6 +400,16 @@
           -0.35,
           0.22,
           1.08
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -307,7 +422,7 @@
   },
   {
     "Id": "ForceBurst",
-    "Description": "Compress power between the hands and punch both forearms toward the selected distant burst center",
+    "Description": "Compress power between the hands and punch both forearms toward the selected distant burst center; load the back leg, drive the compressed blast forward and catch the recoil with flexed knees",
     "Duration": 2.15,
     "Beats": [
       {
@@ -330,6 +445,16 @@
           -0.22,
           0.24,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -351,6 +476,11 @@
           -5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
         ]
       },
       {
@@ -369,9 +499,14 @@
           1.28
         ],
         "TorsoDegrees": [
-          7,
+          9,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.05,
+          -0.03
         ]
       },
       {
@@ -388,6 +523,16 @@
           -0.36,
           0.46,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -404,6 +549,16 @@
           -0.34,
           0.25,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -416,7 +571,7 @@
   },
   {
     "Id": "ForceChoke",
-    "Description": "Reach toward the target at throat height, lift the restraint and hold a steady one-handed telekinetic grip",
+    "Description": "Reach toward the target at throat height, lift the restraint and hold a steady one-handed telekinetic grip; settle body weight beneath the raised restraint and hold an intimidating stable base without repetitive bobbing",
     "Duration": 3.0,
     "Beats": [
       {
@@ -439,6 +594,16 @@
           -0.3,
           0.19,
           1.15
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -3
         ]
       },
       {
@@ -455,6 +620,16 @@
           -0.31,
           0.22,
           1.12
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -473,9 +648,14 @@
           1.1
         ],
         "TorsoDegrees": [
-          -4,
+          -2,
           0,
           0
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.03
         ]
       },
       {
@@ -492,6 +672,16 @@
           -0.3,
           0.18,
           1.12
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -508,6 +698,16 @@
           -0.3,
           0.17,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -520,7 +720,7 @@
   },
   {
     "Id": "ForceDrain",
-    "Description": "Reach outward to seize energy then pull it visibly inward toward the chest in two unequal draws",
+    "Description": "Reach outward to seize energy then pull it visibly inward toward the chest in two unequal draws; each unequal draw visibly transfers weight from the reaching leg back into the core",
     "Duration": 2.8,
     "Beats": [
       {
@@ -545,9 +745,14 @@
           1.21
         ],
         "TorsoDegrees": [
-          4,
+          7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
         ]
       },
       {
@@ -569,6 +774,11 @@
           -4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
         ]
       },
       {
@@ -585,6 +795,16 @@
           -0.25,
           0.34,
           1.18
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -603,9 +823,14 @@
           1.27
         ],
         "TorsoDegrees": [
-          -5,
+          -3,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
         ]
       },
       {
@@ -622,6 +847,16 @@
           -0.32,
           0.19,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          0
         ]
       },
       {
@@ -705,7 +940,7 @@
   },
   {
     "Id": "ForceJudgment",
-    "Description": "Raise one arm in judgment then deliver a decisive downward-forward verdict toward the selected target",
+    "Description": "Raise one arm in judgment then deliver a decisive downward-forward verdict toward the selected target; raise judgment over the loaded rear hip and drive the verdict down through a planted forward leg",
     "Duration": 2.65,
     "Beats": [
       {
@@ -728,6 +963,16 @@
           -0.26,
           0.23,
           1.22
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -4
         ]
       },
       {
@@ -746,9 +991,14 @@
           1.25
         ],
         "TorsoDegrees": [
-          -4,
+          -5,
           0,
-          0
+          -5
+        ],
+        "RootOffset": [
+          0.01,
+          -0.03,
+          -0.03
         ]
       },
       {
@@ -767,9 +1017,14 @@
           1.19
         ],
         "TorsoDegrees": [
-          8,
+          10,
           0,
-          0
+          4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
         ]
       },
       {
@@ -786,6 +1041,16 @@
           -0.32,
           0.29,
           1.16
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          2
         ]
       },
       {
@@ -802,6 +1067,16 @@
           -0.29,
           0.2,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -951,7 +1226,7 @@
   },
   {
     "Id": "ForcePush",
-    "Description": "Brace, draw both elbows back and extend a broad two-handed shove into the forward cone",
+    "Description": "Brace, draw both elbows back and extend a broad two-handed shove into the forward cone; push through the rear leg into the broad shove, then absorb its forward momentum in the knees",
     "Duration": 1.45,
     "Beats": [
       {
@@ -976,9 +1251,14 @@
           1.3
         ],
         "TorsoDegrees": [
-          -5,
+          -4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
         ]
       },
       {
@@ -1000,6 +1280,11 @@
           9,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.05,
+          -0.03
         ]
       },
       {
@@ -1018,9 +1303,14 @@
           1.24
         ],
         "TorsoDegrees": [
-          6,
+          7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -1037,6 +1327,16 @@
           -0.34,
           0.29,
           1.14
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1049,7 +1349,7 @@
   },
   {
     "Id": "ForceSanctuary",
-    "Description": "Open a calm upward gathering gesture then lower both arms around the caster to establish a protective sanctuary",
+    "Description": "Open a calm upward gathering gesture then lower both arms around the caster to establish a protective sanctuary; rise slowly with the protective enclosure and settle across both legs as its boundary lowers around the allies",
     "Duration": 3.35,
     "Beats": [
       {
@@ -1072,6 +1372,16 @@
           -0.26,
           0.28,
           1.02
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1090,9 +1400,14 @@
           1.58
         ],
         "TorsoDegrees": [
-          -3,
+          -2,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
         ]
       },
       {
@@ -1109,6 +1424,16 @@
           -0.59,
           0.19,
           1.35
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          3
         ]
       },
       {
@@ -1125,6 +1450,16 @@
           -0.51,
           0.29,
           1.06
+        ],
+        "RootOffset": [
+          0.02,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -3
         ]
       },
       {
@@ -1141,6 +1476,16 @@
           -0.33,
           0.23,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -1153,7 +1498,7 @@
   },
   {
     "Id": "ForceSpark",
-    "Description": "Prime a compact right-handed charge and release one quick pointed electrical snap at a single target",
+    "Description": "Prime a compact right-handed charge and release one quick pointed electrical snap at a single target; give the electrical snap a compact body impulse and catch its small recoil through the knees",
     "Duration": 1.7,
     "Beats": [
       {
@@ -1176,6 +1521,16 @@
           -0.3,
           0.19,
           1.14
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -4
         ]
       },
       {
@@ -1194,9 +1549,14 @@
           1.12
         ],
         "TorsoDegrees": [
-          3,
+          5,
           0,
-          0
+          3
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.02
         ]
       },
       {
@@ -1213,6 +1573,16 @@
           -0.31,
           0.2,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -1229,6 +1599,16 @@
           -0.3,
           0.17,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -1241,7 +1621,7 @@
   },
   {
     "Id": "FuryStance",
-    "Description": "Draw both arms inward, tense the chest and open into an aggressive ready stance before releasing to native idle",
+    "Description": "Draw both arms inward, tense the chest and open into an aggressive ready stance before releasing to native idle; compress the legs beneath gathered power and shift into a forward loaded fighting base",
     "Duration": 2.5,
     "Beats": [
       {
@@ -1266,9 +1646,14 @@
           1.2
         ],
         "TorsoDegrees": [
-          5,
+          3,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
         ]
       },
       {
@@ -1287,9 +1672,14 @@
           1.39
         ],
         "TorsoDegrees": [
-          7,
+          8,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.05
         ]
       },
       {
@@ -1308,9 +1698,14 @@
           1.16
         ],
         "TorsoDegrees": [
-          -5,
+          6,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
         ]
       },
       {
@@ -1327,6 +1722,16 @@
           -0.34,
           0.27,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1339,7 +1744,7 @@
   },
   {
     "Id": "GuardianWard",
-    "Description": "Brace one forearm across the chest then extend a single protective hand toward the warded ally",
+    "Description": "Brace one forearm across the chest then extend a single protective hand toward the warded ally; set the ward from a rear-to-front transfer, holding firm body pressure behind the protective palm",
     "Duration": 2.55,
     "Beats": [
       {
@@ -1362,6 +1767,16 @@
           -0.26,
           0.22,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -1378,6 +1793,16 @@
           -0.22,
           0.25,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -1394,6 +1819,16 @@
           -0.22,
           0.25,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -1410,6 +1845,16 @@
           -0.28,
           0.21,
           1.18
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1422,7 +1867,7 @@
   },
   {
     "Id": "HungerOfTheDark",
-    "Description": "Gather power from both sides and pull it toward the chest, finishing with a low hungry grasp",
+    "Description": "Gather power from both sides and pull it toward the chest, finishing with a low hungry grasp; gather darkness into a lowered core and let the knees support the final predatory grasp",
     "Duration": 2.95,
     "Beats": [
       {
@@ -1445,6 +1890,16 @@
           -0.53,
           0.16,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1463,9 +1918,14 @@
           1.27
         ],
         "TorsoDegrees": [
-          6,
+          -4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.04
         ]
       },
       {
@@ -1484,9 +1944,14 @@
           1.36
         ],
         "TorsoDegrees": [
-          -5,
+          2,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.04
         ]
       },
       {
@@ -1503,6 +1968,16 @@
           -0.38,
           0.35,
           1.04
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
         ]
       },
       {
@@ -1515,7 +1990,7 @@
   },
   {
     "Id": "LastStandOfTheLight",
-    "Description": "Lift a protective vow and place both hands toward the chosen ally in a sustained final safeguard",
+    "Description": "Lift a protective vow and place both hands toward the chosen ally in a sustained final safeguard; rise into the vow before planting a sustained forward protective brace for the ally",
     "Duration": 3.4,
     "Beats": [
       {
@@ -1538,6 +2013,16 @@
           -0.25,
           0.26,
           1.29
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1554,6 +2039,16 @@
           -0.37,
           0.35,
           1.66
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -1572,9 +2067,14 @@
           1.4
         ],
         "TorsoDegrees": [
-          3,
+          6,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
         ]
       },
       {
@@ -1591,6 +2091,16 @@
           -0.34,
           0.57,
           1.38
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -1607,6 +2117,16 @@
           -0.34,
           0.31,
           1.24
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1619,7 +2139,7 @@
   },
   {
     "Id": "MindTrick",
-    "Description": "Use a restrained lateral right-arm pass across the target sightline, then a second smaller suggestion and calm withdrawal",
+    "Description": "Use a restrained lateral right-arm pass across the target sightline, then a second smaller suggestion and calm withdrawal; a restrained transfer through soft knees follows the suggestion without turning a subtle mental gesture into a combat lunge",
     "Duration": 2.75,
     "Beats": [
       {
@@ -1642,6 +2162,16 @@
           -0.3,
           0.18,
           1.13
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -2
         ]
       },
       {
@@ -1660,9 +2190,14 @@
           1.13
         ],
         "TorsoDegrees": [
+          2,
           0,
-          -5,
-          0
+          3
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.015
         ]
       },
       {
@@ -1681,9 +2216,14 @@
           1.12
         ],
         "TorsoDegrees": [
+          1,
           0,
-          3,
-          0
+          -2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.015
         ]
       },
       {
@@ -1700,6 +2240,16 @@
           -0.3,
           0.18,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.005
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          0
         ]
       },
       {
@@ -1712,7 +2262,7 @@
   },
   {
     "Id": "NightmareField",
-    "Description": "Raise asymmetric threatening arms and spread them at shoulder height to radiate a self-centered nightmare",
+    "Description": "Raise asymmetric threatening arms and spread them at shoulder height to radiate a self-centered nightmare; build the threatening silhouette from a lowered base and settle the spreading field through alternating leg pressure",
     "Duration": 2.9,
     "Beats": [
       {
@@ -1737,9 +2287,14 @@
           1.2
         ],
         "TorsoDegrees": [
-          4,
+          5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.04
         ]
       },
       {
@@ -1760,7 +2315,12 @@
         "TorsoDegrees": [
           -3,
           0,
-          0
+          -5
+        ],
+        "RootOffset": [
+          -0.02,
+          0.0,
+          -0.03
         ]
       },
       {
@@ -1777,6 +2337,16 @@
           -0.57,
           0.21,
           1.49
+        ],
+        "RootOffset": [
+          0.02,
+          0.01,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          5
         ]
       },
       {
@@ -1793,6 +2363,16 @@
           -0.43,
           0.23,
           1.17
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1805,7 +2385,7 @@
   },
   {
     "Id": "PurifyingWave",
-    "Description": "Gather light centrally and sweep both arms outward in a level self-centered cleansing wave",
+    "Description": "Gather light centrally and sweep both arms outward in a level self-centered cleansing wave; gather through the knees, open the wave with the whole torso and ease the released weight across both feet",
     "Duration": 2.6,
     "Beats": [
       {
@@ -1828,6 +2408,16 @@
           -0.23,
           0.25,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1844,6 +2434,16 @@
           -0.27,
           0.4,
           1.45
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -1862,9 +2462,14 @@
           1.38
         ],
         "TorsoDegrees": [
-          -3,
+          4,
           0,
-          0
+          4
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -1881,6 +2486,16 @@
           -0.43,
           0.26,
           1.14
+        ],
+        "RootOffset": [
+          0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -1893,7 +2508,7 @@
   },
   {
     "Id": "RadiantLance",
-    "Description": "Align both forearms along a narrow forward line, draw a concentrated charge and drive one straight release",
+    "Description": "Align both forearms along a narrow forward line, draw a concentrated charge and drive one straight release; load the narrow line over the rear leg and drive the lance from the hip, holding the forward extension before recovery",
     "Duration": 2.25,
     "Beats": [
       {
@@ -1916,6 +2531,16 @@
           -0.2,
           0.39,
           1.29
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1936,7 +2561,12 @@
         "TorsoDegrees": [
           -4,
           0,
-          0
+          -4
+        ],
+        "RootOffset": [
+          0.01,
+          -0.03,
+          -0.04
         ]
       },
       {
@@ -1955,9 +2585,14 @@
           1.3
         ],
         "TorsoDegrees": [
-          6,
+          9,
           0,
-          0
+          3
+        ],
+        "RootOffset": [
+          0.0,
+          0.05,
+          -0.03
         ]
       },
       {
@@ -1974,6 +2609,16 @@
           -0.24,
           0.49,
           1.27
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -1990,6 +2635,16 @@
           -0.28,
           0.24,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -2002,7 +2657,7 @@
   },
   {
     "Id": "Renewal",
-    "Description": "Trace a slow rising spiral toward one ally and leave a gently sustained regenerative gesture",
+    "Description": "Trace a slow rising spiral toward one ally and leave a gently sustained regenerative gesture; a slow knee extension carries the rising spiral, then settles into a stable regenerative offering",
     "Duration": 3.0,
     "Beats": [
       {
@@ -2025,6 +2680,16 @@
           -0.23,
           0.22,
           1.21
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -2041,6 +2706,16 @@
           -0.26,
           0.26,
           1.24
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -2057,6 +2732,16 @@
           -0.29,
           0.29,
           1.22
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -1,
+          0,
+          3
         ]
       },
       {
@@ -2073,6 +2758,16 @@
           -0.29,
           0.24,
           1.18
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2089,6 +2784,16 @@
           -0.3,
           0.2,
           1.14
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -2162,7 +2867,7 @@
   },
   {
     "Id": "ThrowRock",
-    "Description": "Scoop a heavy invisible mass upward from low forward space then heave both arms toward the distant target",
+    "Description": "Scoop a heavy invisible mass upward from low forward space then heave both arms toward the distant target; lift the heavy telekinetic mass through the legs, load the hips behind it and heave from the whole body",
     "Duration": 2.9,
     "Beats": [
       {
@@ -2187,9 +2892,14 @@
           0.99
         ],
         "TorsoDegrees": [
-          8,
+          10,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.05
         ]
       },
       {
@@ -2208,9 +2918,14 @@
           1.43
         ],
         "TorsoDegrees": [
-          -5,
+          4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
         ]
       },
       {
@@ -2229,9 +2944,14 @@
           1.58
         ],
         "TorsoDegrees": [
-          -8,
+          -6,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.04,
+          -0.04
         ]
       },
       {
@@ -2250,9 +2970,14 @@
           1.22
         ],
         "TorsoDegrees": [
-          10,
+          12,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.05,
+          -0.03
         ]
       },
       {
@@ -2269,6 +2994,16 @@
           -0.47,
           0.45,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
         ]
       },
       {
@@ -2281,7 +3016,7 @@
   },
   {
     "Id": "WeakenResolve",
-    "Description": "Mark one target with a level hand then draw the arm sharply down to break its resistance",
+    "Description": "Mark one target with a level hand then draw the arm sharply down to break its resistance; set the target with forward weight and draw its resistance down into a loaded core",
     "Duration": 2.35,
     "Beats": [
       {
@@ -2304,6 +3039,16 @@
           -0.29,
           0.2,
           1.18
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2320,6 +3065,16 @@
           -0.25,
           0.24,
           1.21
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -2340,7 +3095,12 @@
         "TorsoDegrees": [
           6,
           0,
-          0
+          3
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.04
         ]
       },
       {
@@ -2357,6 +3117,16 @@
           -0.31,
           0.2,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {

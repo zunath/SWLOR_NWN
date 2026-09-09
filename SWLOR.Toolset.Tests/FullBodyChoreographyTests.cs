@@ -1,0 +1,161 @@
+using System.Numerics;
+using System.Text.Json;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.AnimationDrafts;
+using SWLOR.NWN.Formats.Mdl;
+using SWLOR.Toolset.Domain.Animation;
+using SWLOR.Toolset.Domain.Render;
+
+namespace SWLOR.Toolset.Tests;
+
+public class FullBodyChoreographyTests
+{
+    private static MdlModel NativeModel()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln"))) directory = directory.Parent;
+        var path = Path.Combine(directory?.FullName ?? throw new DirectoryNotFoundException(), "SWLOR_Haks/sw_cr_creature/a_ba.mdl");
+        if (!File.Exists(path)) Assert.Ignore("Initialize native models.");
+        return new MdlReader().Parse(File.ReadAllBytes(path));
+    }
+
+    [Test]
+    public void HandAndTorsoDirectionRetainTheNativeStrikeLegMotionBetweenBeats()
+    {
+        var model = NativeModel();
+        ChoreographyBeat[] beats = [new(0, "Idle", "pause1"), new(.2f, "Load", "2hslashr", 0),
+            new(1.2f, "Release", "2hslashr", 1), new(1.4f, "Recover", "pause1")];
+        var recipe = new Choreography("NativeLegs", "Keep the strike's real lower-body movement under arm direction.", 1.4f, beats);
+        var baseline = ChoreographyAuthor.Bake(model, recipe);
+        beats[1] = beats[1] with { RightHand = [.24f, .1f, 1.15f], TorsoDegrees = [3, 0, -5] };
+        beats[2] = beats[2] with { RightHand = [.28f, .4f, 1.2f], TorsoDegrees = [-4, 0, 6] };
+        var directed = ChoreographyAuthor.Bake(model, recipe);
+        var lower = new[] { "lthigh_g", "lshin_g", "lfoot_g", "rthigh_g", "rshin_g", "rfoot_g" }
+            .Select(name => directed.Joints.FindIndex(joint => joint.Name == name)).ToArray();
+        lower.Should().OnlyContain(index => index >= 0);
+        var native = model.Animations.Single(clip => clip.Name == "2hslashr");
+        var bind = MdlAnimationPose.BindPose(model);
+        var nonLinearMotion = 0f;
+        foreach (var key in directed.Keys.Where(key => key.Time > .2f && key.Time < 1.2f))
+        {
+            var expected = baseline.Sample(key.Time);
+            var actual = directed.Sample(key.Time);
+            var fraction = key.Time - .2f;
+            var sampled = MdlAnimationPose.Sample(native, fraction * native.Length, bind);
+            foreach (var joint in lower)
+            {
+                Vector3.Distance(expected[joint].Position, actual[joint].Position).Should().BeLessThan(.00001f);
+                Math.Abs(Quaternion.Dot(expected[joint].Orientation, actual[joint].Orientation)).Should().BeGreaterThan(.99999f,
+                    "arm direction must not replace the native leg curve with interpolation between just two poses");
+                var sparse = Quaternion.Slerp(baseline.Sample(.2f)[joint].Orientation,
+                    baseline.Sample(1.2f)[joint].Orientation, fraction * fraction * (3 - 2 * fraction));
+                nonLinearMotion = Math.Max(nonLinearMotion, 1 - Math.Abs(Quaternion.Dot(sparse, actual[joint].Orientation)));
+            }
+            var hand = directed.Joints.FindIndex(joint => joint.Name == "rhand_g");
+            Math.Abs(Quaternion.Dot(actual[hand].Orientation, sampled["rhand_g"].Orientation)).Should().BeGreaterThan(.99999f,
+                "a continuous hand path must keep the sampled local equipment grip throughout the span");
+        }
+        nonLinearMotion.Should().BeGreaterThan(.001f, "this source must exercise visible motion lost by sparse endpoint interpolation");
+    }
+
+    [Test]
+    public void ExplicitWeightShiftBendsTheLegsWhileFeetAndHandTargetsStayInPlace()
+    {
+        var model = NativeModel();
+        var rig = AnimationProject.FromModel(model);
+        var bind = MdlAnimationPose.BindPose(model);
+        var native = MdlAnimationPose.Sample(model.Animations.Single(clip => clip.Name == "pause1"), 0, bind);
+        var idle = rig.Joints.Select(joint => native.GetValueOrDefault(joint.Name, joint.Rest)).ToArray();
+        var before = AnimationRig.World(rig.Joints, idle);
+        int Joint(string name) => rig.Joints.FindIndex(joint => joint.Name == name);
+        var handTarget = before[Joint("rhand_g")].Translation + new Vector3(0, .025f, .01f);
+        var target = new[] { handTarget.X, handTarget.Y, handTarget.Z };
+        var recipe = new Choreography("WeightShift", "Load the stance while keeping the feet planted and the weapon steady.", 1,
+            [new(0, "Idle", "pause1"), new(.3f, "Load", "pause1", RightHand: target, RootOffset: [.035f, .045f, -.045f]),
+                new(.7f, "Hold", "pause1", RightHand: target, RootOffset: [.035f, .045f, -.045f]), new(1, "Recover", "pause1")]);
+        var project = ChoreographyAuthor.Bake(model, recipe);
+        var loaded = AnimationRig.World(project.Joints, project.Sample(.3f));
+        Vector3.Distance(loaded[Joint("rootdummy")].Translation - before[Joint("rootdummy")].Translation,
+            new(.035f, .045f, -.045f)).Should().BeLessThan(.0001f);
+        Vector3.Distance(loaded[Joint("rhand_g")].Translation, handTarget).Should().BeLessThan(.001f);
+        var shin = Joint("rshin_g");
+        Math.Abs(Quaternion.Dot(project.Sample(.3f)[shin].Orientation, idle[shin].Orientation)).Should().BeLessThan(.999f,
+            "the weight shift must visibly flex the knees instead of translating rigid legs");
+        foreach (var time in Enumerable.Range(0, 121).Select(frame => frame / 120f))
+        {
+            var world = AnimationRig.World(project.Joints, project.Sample(time));
+            foreach (var foot in new[] { Joint("lfoot_g"), Joint("rfoot_g") })
+            {
+                Vector3.Distance(world[foot].Translation, before[foot].Translation).Should().BeLessThan(.001f,
+                    "planted feet must not slide during weight shift, hold, or recovery");
+                Matrix4x4.Decompose(before[foot], out _, out var expectedRotation, out _);
+                Matrix4x4.Decompose(world[foot], out _, out var actualRotation, out _);
+                Math.Abs(Quaternion.Dot(expectedRotation, actualRotation)).Should().BeGreaterThan(.99999f,
+                    "ankles must counter-rotate to keep each sole at its native orientation");
+            }
+        }
+        foreach (var time in new[] { 0f, project.Duration })
+        for (var joint = 0; joint < idle.Length; joint++)
+        {
+            var actual = project.Sample(time)[joint];
+            Vector3.Distance(actual.Position, idle[joint].Position).Should().BeLessThan(.00001f);
+            Math.Abs(Quaternion.Dot(actual.Orientation, idle[joint].Orientation)).Should().BeGreaterThan(.99999f);
+        }
+    }
+
+    [Test]
+    public void AnUnreachableBodyLiftIsRestrictedInsteadOfDraggingTheFeet()
+    {
+        var model = NativeModel();
+        var recipe = new Choreography("ReachLimit", "Do not pull straight legs off their original contact points.", 1,
+            [new(0, "Idle", "pause1"), new(.5f, "Lift", "pause1", RootOffset: [0, 0, .1f]), new(1, "Recover", "pause1")]);
+        var project = ChoreographyAuthor.Bake(model, recipe);
+        var before = AnimationRig.World(project.Joints, project.Sample(0));
+        var after = AnimationRig.World(project.Joints, project.Sample(.5f));
+        var root = project.Joints.FindIndex(joint => joint.Name == "rootdummy");
+        (after[root].Translation.Z - before[root].Translation.Z).Should().BeLessThan(.1f);
+        foreach (var name in new[] { "lfoot_g", "rfoot_g" })
+        {
+            var foot = project.Joints.FindIndex(joint => joint.Name == name);
+            Vector3.Distance(before[foot].Translation, after[foot].Translation).Should().BeLessThan(.0001f);
+        }
+    }
+
+    [TestCase(.151f, 0, 0)]
+    [TestCase(0, -.151f, 0)]
+    [TestCase(0, 0, .101f)]
+    public void ExcessiveWeightShiftIsRejected(float x, float y, float z)
+    {
+        var recipe = new Choreography("BadShift", "Invalid authoring input.", 1,
+            [new(0, "Idle", "pause1"), new(.5f, "Move", "pause1", RootOffset: [x, y, z]), new(1, "Recover", "pause1")]);
+        Action read = () => ChoreographyAuthor.Read(JsonSerializer.Serialize(new[] { recipe }, BulkMotionAuthor.Json));
+        read.Should().Throw<InvalidDataException>().WithMessage("*15 cm*");
+    }
+
+    [Test]
+    public void RootOffsetCannotChangeNeutralEndpointsAndItsOmissionPreservesRecipeProvenance()
+    {
+        var beat = new ChoreographyBeat(0, "Idle", "pause1");
+        JsonSerializer.Serialize(beat, BulkMotionAuthor.Json).Should().NotContain("RootOffset");
+        var recipe = new Choreography("BadEndpoint", "Neutral bookends are required.", 1,
+            [beat with { RootOffset = [0, 0, 0] }, new(.5f, "Hold", "pause1"), new(1, "Recover", "pause1")]);
+        Action read = () => ChoreographyAuthor.Read(JsonSerializer.Serialize(new[] { recipe }, BulkMotionAuthor.Json));
+        read.Should().Throw<InvalidDataException>().WithMessage("*endpoints*");
+    }
+
+    [Test]
+    public void OptionalWeightShiftDoesNotInvalidateTheEndorsedAbsoluteDefenseRecipeHash()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln"))) directory = directory.Parent;
+        var root = directory?.FullName ?? throw new DirectoryNotFoundException();
+        var recipe = ChoreographyAuthor.Read(File.ReadAllText(Path.Combine(root, "design/animations/heavy-vibroblade/choreographies.json")))
+            .Single(entry => entry.Id == "AbsoluteDefense");
+        recipe.Beats.Should().OnlyContain(beat => beat.RootOffset == null);
+        var hash = BulkMotionAuthor.ProjectHash(JsonSerializer.Serialize(recipe, BulkMotionAuthor.Json));
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "design/animations/active-manifest.json")));
+        hash.Should().Be(manifest.RootElement.GetProperty("Animations").EnumerateArray().Single(entry => entry.GetProperty("Id").GetString() == recipe.Id)
+            .GetProperty("ChoreographySha256").GetString(), "adding an optional authoring control must not invalidate preserved native choreography provenance");
+    }
+}

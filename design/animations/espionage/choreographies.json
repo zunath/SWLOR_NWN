@@ -1,7 +1,7 @@
 [
   {
     "Id": "GhostProtocol",
-    "Description": "Deliberately arm a wrist cloaking control, conceal the control across the torso and settle into a low escape-ready posture before releasing",
+    "Description": "Deliberately arm a wrist cloaking control, conceal the control across the torso and settle into a low escape-ready posture before releasing; concealment flows into a genuinely lowered knee brace and a measured weight transfer while checking the escape direction",
     "Duration": 2.85,
     "Beats": [
       {
@@ -24,6 +24,16 @@
           -0.11,
           0.31,
           1.3
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -40,6 +50,16 @@
           -0.14,
           0.34,
           1.3
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -61,6 +81,11 @@
           0,
           0,
           8
+        ],
+        "RootOffset": [
+          -0.02,
+          0.0,
+          -0.03
         ]
       },
       {
@@ -82,6 +107,11 @@
           5,
           0,
           -5
+        ],
+        "RootOffset": [
+          -0.02,
+          -0.01,
+          -0.05
         ]
       },
       {
@@ -103,6 +133,11 @@
           4,
           0,
           5
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.04
         ]
       },
       {

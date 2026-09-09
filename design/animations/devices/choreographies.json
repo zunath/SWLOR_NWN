@@ -1,7 +1,7 @@
 [
   {
     "Id": "FragGrenade",
-    "Description": "Authored overarm throw arc from the native throwing guard: standard overarm grenade delivery",
+    "Description": "Authored overarm throw arc from the native throwing guard: standard overarm grenade delivery; load the rear hip, drive the authored throw across the planted legs and absorb the forward follow-through",
     "Duration": 1.35,
     "Beats": [
       {
@@ -24,6 +24,11 @@
           -0.28,
           0.27,
           1.24
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.01
         ]
       },
       {
@@ -45,6 +50,11 @@
           0,
           0,
           -14
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
         ]
       },
       {
@@ -66,6 +76,11 @@
           7,
           0,
           12
+        ],
+        "RootOffset": [
+          -0.01,
+          0.04,
+          -0.02
         ]
       },
       {
@@ -87,6 +102,11 @@
           9,
           0,
           7.800000000000001
+        ],
+        "RootOffset": [
+          -0.01,
+          0.02,
+          -0.02
         ]
       },
       {
@@ -99,7 +119,7 @@
   },
   {
     "Id": "ConcussionGrenade",
-    "Description": "Authored overarm throw arc from the native throwing guard: heavy cock and forceful direct grenade delivery",
+    "Description": "Authored overarm throw arc from the native throwing guard: heavy cock and forceful direct grenade delivery; sink deeper into the heavy windup, transfer weight forward through release and decelerate with bent knees",
     "Duration": 1.5,
     "Beats": [
       {
@@ -122,6 +142,11 @@
           -0.28,
           0.27,
           1.24
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
         ]
       },
       {
@@ -143,6 +168,11 @@
           0,
           0,
           -22
+        ],
+        "RootOffset": [
+          0.03,
+          -0.04,
+          -0.04
         ]
       },
       {
@@ -164,6 +194,11 @@
           7,
           0,
           18
+        ],
+        "RootOffset": [
+          -0.01,
+          0.05,
+          -0.03
         ]
       },
       {
@@ -185,6 +220,11 @@
           9,
           0,
           11.700000000000001
+        ],
+        "RootOffset": [
+          -0.01,
+          0.03,
+          -0.03
         ]
       },
       {
@@ -197,7 +237,7 @@
   },
   {
     "Id": "FlashGrenade",
-    "Description": "Authored overarm throw arc from the native throwing guard: compact quick overarm flash delivery",
+    "Description": "Authored overarm throw arc from the native throwing guard: compact quick overarm flash delivery; use a compact rear-to-front weight transfer matching the quick flash delivery",
     "Duration": 1.15,
     "Beats": [
       {
@@ -220,6 +260,11 @@
           -0.28,
           0.27,
           1.24
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
         ]
       },
       {
@@ -241,6 +286,11 @@
           0,
           0,
           -8
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.02
         ]
       },
       {
@@ -262,6 +312,11 @@
           7,
           0,
           7
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.015
         ]
       },
       {
@@ -283,6 +338,11 @@
           9,
           0,
           4.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
         ]
       },
       {
@@ -295,7 +355,7 @@
   },
   {
     "Id": "AdhesiveGrenade",
-    "Description": "Authored overarm throw arc from the native throwing guard: measured high lob with a deliberate aiming pause",
+    "Description": "Authored overarm throw arc from the native throwing guard: measured high lob with a deliberate aiming pause; hold the aiming pause over the rear leg, then transfer body weight forward with the authored lob",
     "Duration": 1.65,
     "Beats": [
       {
@@ -318,6 +378,11 @@
           -0.28,
           0.27,
           1.24
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.01
         ]
       },
       {
@@ -339,6 +404,11 @@
           0,
           0,
           -12
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
         ]
       },
       {
@@ -360,6 +430,11 @@
           0,
           0,
           -12
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
         ]
       },
       {
@@ -381,6 +456,11 @@
           7,
           0,
           9
+        ],
+        "RootOffset": [
+          -0.01,
+          0.03,
+          -0.02
         ]
       },
       {
@@ -402,6 +482,11 @@
           9,
           0,
           5.8500000000000005
+        ],
+        "RootOffset": [
+          -0.01,
+          0.02,
+          -0.015
         ]
       },
       {
@@ -414,7 +499,7 @@
   },
   {
     "Id": "IonGrenade",
-    "Description": "Authored overarm throw arc from the native throwing guard: chest preparation followed by a brisk overarm release",
+    "Description": "Authored overarm throw arc from the native throwing guard: chest preparation followed by a brisk overarm release; coil the hips behind the chest preparation and unwind the planted legs into the direct release",
     "Duration": 1.4,
     "Beats": [
       {
@@ -437,6 +522,11 @@
           -0.28,
           0.27,
           1.24
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.01
         ]
       },
       {
@@ -458,6 +548,11 @@
           0,
           0,
           -16
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.025
         ]
       },
       {
@@ -479,6 +574,11 @@
           7,
           0,
           14
+        ],
+        "RootOffset": [
+          -0.01,
+          0.04,
+          -0.02
         ]
       },
       {
@@ -500,6 +600,11 @@
           9,
           0,
           9.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.01
         ]
       },
       {
@@ -512,7 +617,7 @@
   },
   {
     "Id": "ThermalDetonator",
-    "Description": "Authored overarm throw arc from the native throwing guard: high windup and weighted forward follow-through",
+    "Description": "Authored overarm throw arc from the native throwing guard: high windup and weighted forward follow-through; brace under the high windup and drive from the rear leg before absorbing the heavy throw",
     "Duration": 1.75,
     "Beats": [
       {
@@ -535,6 +640,11 @@
           -0.28,
           0.27,
           1.24
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
         ]
       },
       {
@@ -556,6 +666,11 @@
           0,
           0,
           -24
+        ],
+        "RootOffset": [
+          0.03,
+          -0.04,
+          -0.04
         ]
       },
       {
@@ -577,6 +692,11 @@
           7,
           0,
           20
+        ],
+        "RootOffset": [
+          -0.01,
+          0.05,
+          -0.03
         ]
       },
       {
@@ -598,6 +718,11 @@
           9,
           0,
           13.0
+        ],
+        "RootOffset": [
+          -0.01,
+          0.03,
+          -0.03
         ]
       },
       {
@@ -610,7 +735,7 @@
   },
   {
     "Id": "ClusterGrenade",
-    "Description": "Three authored short overarm throw arcs from the native throwing guard, with separate recocking and releases",
+    "Description": "Three authored short overarm throw arcs from the native throwing guard, with separate recocking and releases; three compact reload-and-drive weight transfers follow the left, center and right release lanes instead of locking the pelvis",
     "Duration": 2.5,
     "Beats": [
       {
@@ -633,6 +758,11 @@
           -0.28,
           0.27,
           1.22
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.01
         ]
       },
       {
@@ -654,6 +784,11 @@
           0,
           0,
           -12
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.02
         ]
       },
       {
@@ -675,6 +810,11 @@
           6,
           0,
           11
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.02
         ]
       },
       {
@@ -696,6 +836,11 @@
           4,
           0,
           5
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.01
         ]
       },
       {
@@ -717,6 +862,11 @@
           0,
           0,
           -10
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.02
         ]
       },
       {
@@ -738,6 +888,11 @@
           6,
           0,
           9
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.02
         ]
       },
       {
@@ -759,6 +914,11 @@
           4,
           0,
           3
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
         ]
       },
       {
@@ -780,6 +940,11 @@
           0,
           0,
           -12
+        ],
+        "RootOffset": [
+          0.02,
+          -0.02,
+          -0.02
         ]
       },
       {
@@ -801,6 +966,11 @@
           7,
           0,
           -3
+        ],
+        "RootOffset": [
+          0.02,
+          0.03,
+          -0.02
         ]
       },
       {
@@ -822,6 +992,11 @@
           8,
           0,
           5
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.01
         ]
       },
       {
@@ -834,7 +1009,7 @@
   },
   {
     "Id": "ArcProjector",
-    "Description": "Supported right wrist electrical discharge and sharp recoil",
+    "Description": "Supported right wrist electrical discharge and sharp recoil; a braced knee bend absorbs electrical kickback before the body reacquires aim",
     "Duration": 1.35,
     "Beats": [
       {
@@ -857,6 +1032,16 @@
           0.32,
           0.28,
           1.28
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -873,6 +1058,16 @@
           0.27,
           0.62,
           1.37
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
         ]
       },
       {
@@ -894,6 +1089,11 @@
           -5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.04
         ]
       },
       {
@@ -910,6 +1110,16 @@
           0.27,
           0.6,
           1.37
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -922,7 +1132,7 @@
   },
   {
     "Id": "CryoSprayer",
-    "Description": "Braced right wrist cold spray traverses a narrow cone",
+    "Description": "Braced right wrist cold spray traverses a narrow cone; shift pressure across the planted legs with the spray sweep while maintaining a low stable spraying stance",
     "Duration": 1.9,
     "Beats": [
       {
@@ -945,6 +1155,16 @@
           0.28,
           0.43,
           1.32
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -966,6 +1186,11 @@
           0,
           0,
           8
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.04
         ]
       },
       {
@@ -987,6 +1212,11 @@
           0,
           0,
           -8
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.04
         ]
       },
       {
@@ -1003,6 +1233,16 @@
           0.29,
           0.35,
           1.28
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1015,7 +1255,7 @@
   },
   {
     "Id": "IonLance",
-    "Description": "Focused straight ion beam from the right wrist while the offhand remains guarded",
+    "Description": "Focused straight ion beam from the right wrist while the offhand remains guarded; set weight behind the straight beam, take the discharge through the knees and recover the forward line",
     "Duration": 1.45,
     "Beats": [
       {
@@ -1038,6 +1278,16 @@
           0.28,
           0.38,
           1.28
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -1054,6 +1304,16 @@
           0.2,
           0.67,
           1.37
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -1070,6 +1330,16 @@
           0.2,
           0.57,
           1.37
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
         ]
       },
       {
@@ -1086,6 +1356,16 @@
           0.2,
           0.65,
           1.37
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1098,7 +1378,7 @@
   },
   {
     "Id": "RailDart",
-    "Description": "Quick raised forearm aim with a tiny dart-release snap",
+    "Description": "Quick raised forearm aim with a tiny dart-release snap; use a small supported weight shift for precision rather than a large recoil inappropriate to a dart",
     "Duration": 1.12,
     "Beats": [
       {
@@ -1116,6 +1396,16 @@
           0.37,
           0.27,
           1.25
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -2
         ]
       },
       {
@@ -1127,6 +1417,16 @@
           0.27,
           0.61,
           1.48
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1138,6 +1438,16 @@
           0.27,
           0.55,
           1.5
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1149,6 +1459,11 @@
           0.34,
           0.34,
           1.24
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
         ]
       },
       {
@@ -1161,7 +1476,7 @@
   },
   {
     "Id": "WristRocket",
-    "Description": "Guarded right wrist rocket launch with pronounced shoulder recoil",
+    "Description": "Guarded right wrist rocket launch with pronounced shoulder recoil; brace the rear leg under launch recoil and let the pelvis settle after the shoulder kick",
     "Duration": 1.55,
     "Beats": [
       {
@@ -1184,6 +1499,16 @@
           0.36,
           0.31,
           1.34
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -4
         ]
       },
       {
@@ -1200,6 +1525,16 @@
           0.31,
           0.65,
           1.37
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -1221,6 +1556,11 @@
           -9,
           0,
           -4
+        ],
+        "RootOffset": [
+          0.01,
+          -0.04,
+          -0.05
         ]
       },
       {
@@ -1237,6 +1577,16 @@
           0.32,
           0.5,
           1.32
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -1249,7 +1599,7 @@
   },
   {
     "Id": "OverloadBarrage",
-    "Description": "Braced wrist fires three distinct discharges with separate recovery",
+    "Description": "Braced wrist fires three distinct discharges with separate recovery; maintain a crouched firing base while each distinct discharge shifts weight against its own recoil",
     "Duration": 2.35,
     "Beats": [
       {
@@ -1272,6 +1622,16 @@
           0.27,
           0.51,
           1.35
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1288,6 +1648,16 @@
           0.27,
           0.63,
           1.35
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1304,6 +1674,16 @@
           0.29,
           0.48,
           1.39
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
         ]
       },
       {
@@ -1320,6 +1700,16 @@
           0.27,
           0.64,
           1.35
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1341,6 +1731,11 @@
           -8,
           0,
           0
+        ],
+        "RootOffset": [
+          0.01,
+          -0.04,
+          -0.05
         ]
       },
       {
@@ -1357,6 +1752,16 @@
           0.27,
           0.62,
           1.35
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1373,6 +1778,16 @@
           0.28,
           0.49,
           1.39
+        ],
+        "RootOffset": [
+          0.01,
+          -0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
         ]
       },
       {
@@ -1389,6 +1804,16 @@
           0.31,
           0.3,
           1.27
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -1401,7 +1826,7 @@
   },
   {
     "Id": "SonicBurst",
-    "Description": "Compact chest charge snaps both forearms low and wide with backward torso recoil for a radial sonic pulse",
+    "Description": "Compact chest charge snaps both forearms low and wide with backward torso recoil for a radial sonic pulse; compress through the knees during charging and absorb the radial release through the whole body",
     "Duration": 1.5,
     "Beats": [
       {
@@ -1424,6 +1849,16 @@
           0.17,
           0.16,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -1445,6 +1880,11 @@
           -10,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.05
         ]
       },
       {
@@ -1461,6 +1901,16 @@
           0.34,
           0.29,
           1.16
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -1473,7 +1923,7 @@
   },
   {
     "Id": "DisruptionPulse",
-    "Description": "Raise disruption emitter then project a downward-forward pulse",
+    "Description": "Raise disruption emitter then project a downward-forward pulse; drive the downward pulse from a forward knee brace, then catch and release the loaded posture",
     "Duration": 1.5,
     "Beats": [
       {
@@ -1496,6 +1946,16 @@
           0.17,
           0.23,
           1.36
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -1512,6 +1972,11 @@
           5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -1523,6 +1988,16 @@
           0.29,
           0.47,
           1.22
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1534,6 +2009,16 @@
           0.23,
           0.28,
           1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          0
         ]
       },
       {
@@ -1621,7 +2106,7 @@
   },
   {
     "Id": "BlasterBeacon",
-    "Description": "Waist-arm beacon, forward delivery and target designation",
+    "Description": "Waist-arm beacon, forward delivery and target designation; shift from the belt-side leg into delivery and retain forward intent through target designation",
     "Duration": 1.65,
     "Beats": [
       {
@@ -1639,6 +2124,16 @@
           0.25,
           0.05,
           0.98
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -5
         ]
       },
       {
@@ -1655,6 +2150,16 @@
           0.18,
           0.23,
           1.19
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1666,6 +2171,16 @@
           0.32,
           0.56,
           1.08
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          4
         ]
       },
       {
@@ -1677,6 +2192,16 @@
           0.28,
           0.61,
           1.42
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1689,7 +2214,7 @@
   },
   {
     "Id": "ShockBeacon",
-    "Description": "Chest-level confirmation followed by low underarm beacon delivery",
+    "Description": "Chest-level confirmation followed by low underarm beacon delivery; load a low underarm cast from the back hip and soften the knees as the arm passes forward",
     "Duration": 1.65,
     "Beats": [
       {
@@ -1712,6 +2237,16 @@
           0.12,
           0.23,
           1.31
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1723,6 +2258,16 @@
           0.36,
           0.06,
           1.02
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -6
         ]
       },
       {
@@ -1734,6 +2279,16 @@
           0.36,
           0.57,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          6
         ]
       },
       {
@@ -1745,6 +2300,16 @@
           0.3,
           0.35,
           1.17
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          2
         ]
       },
       {
@@ -1757,7 +2322,7 @@
   },
   {
     "Id": "KillzoneBeacon",
-    "Description": "Two-stage beacon arming followed by broad target-zone designation",
+    "Description": "Two-stage beacon arming followed by broad target-zone designation; carry the boundary designation across a planted low base with the pelvis following the scan",
     "Duration": 2.05,
     "Beats": [
       {
@@ -1775,6 +2340,16 @@
           0.26,
           0.04,
           1.0
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
         ]
       },
       {
@@ -1791,6 +2366,16 @@
           0.12,
           0.25,
           1.23
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1807,6 +2392,11 @@
           0,
           0,
           7
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -1823,6 +2413,11 @@
           0,
           0,
           -8
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -1835,7 +2430,7 @@
   },
   {
     "Id": "SignalJammer",
-    "Description": "Activate belt jammer then sweep the raised forearm across its scan arc",
+    "Description": "Activate belt jammer then sweep the raised forearm across its scan arc; turn the scanning posture through a gentle lateral transfer between planted legs",
     "Duration": 1.8,
     "Beats": [
       {
@@ -1853,6 +2448,16 @@
           0.24,
           0.05,
           0.99
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -5
         ]
       },
       {
@@ -1864,6 +2469,16 @@
           0.33,
           0.23,
           1.52
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1880,6 +2495,11 @@
           0,
           0,
           8
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.03
         ]
       },
       {
@@ -1896,6 +2516,11 @@
           0,
           0,
           -6
+        ],
+        "RootOffset": [
+          0.02,
+          0.01,
+          -0.03
         ]
       },
       {
@@ -1972,7 +2597,7 @@
   },
   {
     "Id": "IncendiaryField",
-    "Description": "Low canister delivery followed by a horizontal ignition sweep",
+    "Description": "Low canister delivery followed by a horizontal ignition sweep; send the canister from the back hip and carry the ignition sweep across the supporting legs",
     "Duration": 1.85,
     "Beats": [
       {
@@ -1990,6 +2615,16 @@
           0.28,
           0.04,
           1.01
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -6
         ]
       },
       {
@@ -2001,6 +2636,16 @@
           0.38,
           0.57,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          6
         ]
       },
       {
@@ -2012,6 +2657,16 @@
           0.16,
           0.35,
           1.27
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -2028,6 +2683,11 @@
           0,
           0,
           -8
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -2040,7 +2700,7 @@
   },
   {
     "Id": "EmergencyBunker",
-    "Description": "Standing forearm-console operation opens a broad defensive projection",
+    "Description": "Standing forearm-console operation opens a broad defensive projection; remain standing at the console, then widen pressure across the knees to support the broad protective projection",
     "Duration": 2.2,
     "Beats": [
       {
@@ -2063,6 +2723,16 @@
           0.1,
           0.22,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -2079,6 +2749,16 @@
           0.02,
           0.29,
           1.28
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2095,6 +2775,16 @@
           0.17,
           0.27,
           1.27
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          5
         ]
       },
       {
@@ -2111,6 +2801,16 @@
           0.5,
           0.42,
           1.37
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -2127,6 +2827,16 @@
           0.38,
           0.39,
           1.27
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2139,7 +2849,7 @@
   },
   {
     "Id": "DeflectorShield",
-    "Description": "Chest brace extends a directed single-ally shield projection",
+    "Description": "Chest brace extends a directed single-ally shield projection; load behind the chest guard, place the shielding hand with a firm forward body brace and hold without bouncing",
     "Duration": 1.55,
     "Beats": [
       {
@@ -2162,6 +2872,16 @@
           0.03,
           0.22,
           1.35
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -2178,6 +2898,16 @@
           0.25,
           0.65,
           1.38
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
         ]
       },
       {
@@ -2194,6 +2924,16 @@
           0.27,
           0.57,
           1.33
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -2206,7 +2946,7 @@
   },
   {
     "Id": "GroupDeflector",
-    "Description": "Symmetrical chest guard opens into a wide group shield sweep",
+    "Description": "Symmetrical chest guard opens into a wide group shield sweep; settle into a broad knee brace and transfer pressure from the first shield edge to the expanded group boundary",
     "Duration": 1.85,
     "Beats": [
       {
@@ -2229,6 +2969,16 @@
           0.11,
           0.2,
           1.29
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -2245,6 +2995,16 @@
           0.43,
           0.36,
           1.46
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          4
         ]
       },
       {
@@ -2261,6 +3021,16 @@
           0.54,
           0.34,
           1.24
+        ],
+        "RootOffset": [
+          0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -4
         ]
       },
       {
@@ -2273,7 +3043,7 @@
   },
   {
     "Id": "PowerCell",
-    "Description": "Retrieve a power cell and transfer its charge through a forward-upward gesture",
+    "Description": "Retrieve a power cell and transfer its charge through a forward-upward gesture; rise gradually from retrieval into charge transfer rather than keeping both legs rigid",
     "Duration": 1.75,
     "Beats": [
       {
@@ -2291,6 +3061,16 @@
           0.22,
           0.03,
           0.99
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -4
         ]
       },
       {
@@ -2307,6 +3087,16 @@
           0.12,
           0.23,
           1.26
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -2323,6 +3113,16 @@
           0.24,
           0.56,
           1.26
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -2334,6 +3134,16 @@
           0.3,
           0.51,
           1.49
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -2346,7 +3156,7 @@
   },
   {
     "Id": "WeaponJam",
-    "Description": "Focused wrist targeting followed by a short elbow-driven locking sweep",
+    "Description": "Focused wrist targeting followed by a short elbow-driven locking sweep; support the sighting arm over the lead leg and carry the locking sweep through a compact hip transfer",
     "Duration": 1.45,
     "Beats": [
       {
@@ -2364,6 +3174,16 @@
           0.31,
           0.28,
           1.35
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -2375,6 +3195,16 @@
           0.28,
           0.61,
           1.4
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -2391,6 +3221,11 @@
           0,
           0,
           5
+        ],
+        "RootOffset": [
+          -0.01,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -2402,6 +3237,16 @@
           0.29,
           0.44,
           1.29
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {

@@ -1,7 +1,7 @@
 [
   {
     "Id": "CallBeast",
-    "Description": "Raised recall signal followed by two deliberate inward beckons",
+    "Description": "Raised recall signal followed by two deliberate inward beckons; a relaxed planted stance shifts toward each invitation and eases back through both knees",
     "Duration": 2.4,
     "Beats": [
       {
@@ -19,6 +19,16 @@
           0.35,
           0.21,
           1.66
+        ],
+        "RootOffset": [
+          -0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -4
         ]
       },
       {
@@ -30,6 +40,16 @@
           0.3,
           0.56,
           1.49
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          4
         ]
       },
       {
@@ -41,6 +61,16 @@
           0.24,
           0.22,
           1.37
+        ],
+        "RootOffset": [
+          -0.02,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -3
         ]
       },
       {
@@ -52,6 +82,16 @@
           0.3,
           0.52,
           1.45
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          4
         ]
       },
       {
@@ -63,6 +103,16 @@
           0.24,
           0.2,
           1.33
+        ],
+        "RootOffset": [
+          -0.02,
+          -0.01,
+          -0.015
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -3
         ]
       },
       {
@@ -74,6 +124,11 @@
           0.31,
           0.25,
           1.19
+        ],
+        "RootOffset": [
+          -0.01,
+          0.0,
+          -0.005
         ]
       },
       {
@@ -86,7 +141,7 @@
   },
   {
     "Id": "GuardingBond",
-    "Description": "Inward chest command settles into a low protective hold signal",
+    "Description": "Inward chest command settles into a low protective hold signal; settle weight behind the protective command with a soft knee brace rather than a rigid standing arm",
     "Duration": 1.8,
     "Beats": [
       {
@@ -109,6 +164,16 @@
           0.04,
           0.18,
           1.36
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
         ]
       },
       {
@@ -125,6 +190,16 @@
           0.27,
           0.56,
           1.16
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -141,6 +216,16 @@
           0.32,
           0.48,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -153,7 +238,7 @@
   },
   {
     "Id": "PredatoryBond",
-    "Description": "Assertive forward companion command with a sweeping advance signal",
+    "Description": "Assertive forward companion command with a sweeping advance signal; load the back hip before driving the advance command from the legs and settling the forward weight",
     "Duration": 1.65,
     "Beats": [
       {
@@ -171,6 +256,11 @@
           0.34,
           0.1,
           1.41
+        ],
+        "RootOffset": [
+          -0.02,
+          -0.02,
+          -0.02
         ]
       },
       {
@@ -187,6 +277,11 @@
           7,
           0,
           8
+        ],
+        "RootOffset": [
+          0.01,
+          0.04,
+          -0.03
         ]
       },
       {
@@ -203,6 +298,11 @@
           5,
           0,
           -6
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.02
         ]
       },
       {
@@ -214,6 +314,11 @@
           0.35,
           0.48,
           1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
         ]
       },
       {
@@ -311,7 +416,7 @@
   },
   {
     "Id": "Reward",
-    "Description": "Reach to the treat pouch with the free hand, present a low reward offering and withdraw the hand; current equipment remains held and no treat prop is added",
+    "Description": "Reach to the treat pouch with the free hand, present a low reward offering and withdraw the hand; current equipment remains held and no treat prop is added; lower through both knees to offer the reward, hold a stable base, then withdraw before standing",
     "Duration": 2.35,
     "Beats": [
       {
@@ -334,6 +439,16 @@
           0.43,
           0.25,
           1.04
+        ],
+        "RootOffset": [
+          -0.02,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -4
         ]
       },
       {
@@ -350,6 +465,11 @@
           0.43,
           0.25,
           1.04
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
         ]
       },
       {
@@ -366,6 +486,16 @@
           0.43,
           0.25,
           1.04
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -382,6 +512,16 @@
           0.43,
           0.25,
           1.04
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
         ]
       },
       {
@@ -398,6 +538,16 @@
           0.43,
           0.25,
           1.04
+        ],
+        "RootOffset": [
+          -0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -410,7 +560,7 @@
   },
   {
     "Id": "SoothePet",
-    "Description": "Show a calming hand signal, trace a slow downward reassurance stroke and ease the hand outward to release tension; no contact with a fixed beast height is assumed",
+    "Description": "Show a calming hand signal, trace a slow downward reassurance stroke and ease the hand outward to release tension; no contact with a fixed beast height is assumed; ease toward the companion with a sustained low reassuring stance and recover without a bounce",
     "Duration": 2.7,
     "Beats": [
       {
@@ -433,6 +583,16 @@
           0.44,
           0.3,
           1.04
+        ],
+        "RootOffset": [
+          -0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -449,6 +609,16 @@
           0.44,
           0.3,
           1.04
+        ],
+        "RootOffset": [
+          -0.01,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -3
         ]
       },
       {
@@ -465,6 +635,16 @@
           0.44,
           0.3,
           1.04
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          3
         ]
       },
       {
@@ -481,6 +661,16 @@
           0.44,
           0.3,
           1.04
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -497,6 +687,11 @@
           0.44,
           0.3,
           1.04
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
         ]
       },
       {
@@ -509,7 +704,7 @@
   },
   {
     "Id": "Tame",
-    "Description": "Lean cautiously toward the wild beast, hold the weapon outboard, repeat two broad slow calming signals and settle without an attack; this is the gesture portion of the longer native taming attempt",
+    "Description": "Lean cautiously toward the wild beast, hold the weapon outboard, repeat two broad slow calming signals and settle without an attack; this is the gesture portion of the longer native taming attempt; maintain a quiet knee-bent base throughout the invitation, then straighten gradually",
     "Duration": 4.0,
     "Beats": [
       {
@@ -534,9 +729,14 @@
           1.02
         ],
         "TorsoDegrees": [
-          -12,
+          3,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
         ]
       },
       {
@@ -555,9 +755,14 @@
           1.02
         ],
         "TorsoDegrees": [
-          -12,
+          7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
         ]
       },
       {
@@ -576,9 +781,14 @@
           1.02
         ],
         "TorsoDegrees": [
-          -12,
+          7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
         ]
       },
       {
@@ -597,9 +807,14 @@
           1.02
         ],
         "TorsoDegrees": [
-          -12,
+          7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
         ]
       },
       {
@@ -618,9 +833,14 @@
           1.02
         ],
         "TorsoDegrees": [
-          -12,
+          7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
         ]
       },
       {
@@ -639,9 +859,14 @@
           1.02
         ],
         "TorsoDegrees": [
-          -12,
+          3,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
         ]
       },
       {
@@ -658,6 +883,16 @@
           0.43,
           0.25,
           1.04
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.005
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          0
         ]
       },
       {

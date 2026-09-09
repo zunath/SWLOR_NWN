@@ -1,7 +1,7 @@
 [
   {
     "Id": "AdrenalStim",
-    "Description": "Retrieve a stim, give one compact forearm injection and pull the injector clear with an energized shoulder reset",
+    "Description": "Retrieve a stim, give one compact forearm injection and pull the injector clear with an energized shoulder reset; shift from kit-side weight into a stable injection base, then straighten after withdrawing the dose",
     "Duration": 2.15,
     "Beats": [
       {
@@ -19,6 +19,16 @@
           0.26,
           0.03,
           1.02
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
         ]
       },
       {
@@ -35,6 +45,16 @@
           -0.29,
           0.36,
           1.22
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          3
         ]
       },
       {
@@ -51,6 +71,16 @@
           -0.3,
           0.35,
           1.22
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          3
         ]
       },
       {
@@ -67,6 +97,16 @@
           -0.3,
           0.35,
           1.22
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          3
         ]
       },
       {
@@ -83,6 +123,16 @@
           -0.27,
           0.27,
           1.18
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -104,6 +154,11 @@
           -4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.005
         ]
       },
       {
@@ -116,7 +171,7 @@
   },
   {
     "Id": "Antitoxin",
-    "Description": "Inspect the low forearm, administer an antitoxin dose and wipe outward away from the injection site",
+    "Description": "Inspect the low forearm, administer an antitoxin dose and wipe outward away from the injection site; bend the knees for inspection and hold the body still throughout dosing, then transfer weight away with the wipe",
     "Duration": 2.5,
     "Beats": [
       {
@@ -144,6 +199,11 @@
           5,
           0,
           3
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.02
         ]
       },
       {
@@ -160,6 +220,16 @@
           -0.29,
           0.39,
           1.12
+        ],
+        "RootOffset": [
+          -0.01,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          3
         ]
       },
       {
@@ -176,6 +246,16 @@
           -0.29,
           0.39,
           1.12
+        ],
+        "RootOffset": [
+          -0.01,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          3
         ]
       },
       {
@@ -192,6 +272,16 @@
           -0.27,
           0.37,
           1.11
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -3
         ]
       },
       {
@@ -208,6 +298,16 @@
           -0.28,
           0.24,
           1.13
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -3
         ]
       },
       {
@@ -220,7 +320,7 @@
   },
   {
     "Id": "FocusStim",
-    "Description": "Prepare a compact inhaled stim, raise it toward the mouth and settle after a measured breath",
+    "Description": "Prepare a compact inhaled stim, raise it toward the mouth and settle after a measured breath; a restrained chest lift and balanced soft knees support the inhaled dose without exaggerated combat footwork",
     "Duration": 2.55,
     "Beats": [
       {
@@ -243,6 +343,16 @@
           -0.11,
           0.23,
           1.24
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -259,6 +369,16 @@
           -0.2,
           0.23,
           1.21
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -1,
+          0,
+          0
         ]
       },
       {
@@ -280,6 +400,11 @@
           -3,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.005
         ]
       },
       {
@@ -296,6 +421,16 @@
           -0.23,
           0.2,
           1.16
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -312,6 +447,11 @@
           -0.29,
           0.17,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.005
         ]
       },
       {
@@ -324,7 +464,7 @@
   },
   {
     "Id": "PainSuppressant",
-    "Description": "Press a shoulder dose and maintain a firm local compression hold before releasing the shoulder",
+    "Description": "Press a shoulder dose and maintain a firm local compression hold before releasing the shoulder; settle weight beneath the treated shoulder and maintain the compression stance before easing upright",
     "Duration": 2.6,
     "Beats": [
       {
@@ -347,6 +487,16 @@
           -0.23,
           0.2,
           1.13
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -3
         ]
       },
       {
@@ -368,6 +518,11 @@
           0,
           0,
           5
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.03
         ]
       },
       {
@@ -384,6 +539,16 @@
           -0.28,
           0.26,
           1.08
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          5
         ]
       },
       {
@@ -400,6 +565,16 @@
           -0.27,
           0.24,
           1.1
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          5
         ]
       },
       {
@@ -416,6 +591,16 @@
           -0.26,
           0.22,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -428,7 +613,7 @@
   },
   {
     "Id": "Shielding",
-    "Description": "Prime a chest-level protective stim then close both forearms in a compact defensive brace",
+    "Description": "Prime a chest-level protective stim then close both forearms in a compact defensive brace; after dosing, engage the knees and core in a protective brace instead of closing only the forearms",
     "Duration": 2.45,
     "Beats": [
       {
@@ -446,6 +631,16 @@
           0.25,
           0.04,
           1.03
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -3
         ]
       },
       {
@@ -462,6 +657,16 @@
           -0.2,
           0.2,
           1.22
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -478,6 +683,16 @@
           -0.18,
           0.28,
           1.28
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -496,9 +711,14 @@
           1.29
         ],
         "TorsoDegrees": [
-          -3,
+          4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.04
         ]
       },
       {
@@ -515,6 +735,16 @@
           -0.31,
           0.29,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -527,7 +757,7 @@
   },
   {
     "Id": "EmergencyCocktail",
-    "Description": "Prepare a multi-dose kit, administer separate forearm and chest doses, then recover in a controlled open stance",
+    "Description": "Prepare a multi-dose kit, administer separate forearm and chest doses, then recover in a controlled open stance; keep a low stable treatment base, transfer weight once between the two dose sites and straighten only after clearing the injectors",
     "Duration": 3.35,
     "Beats": [
       {
@@ -555,6 +785,11 @@
           4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
         ]
       },
       {
@@ -571,6 +806,16 @@
           -0.24,
           0.31,
           1.19
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -3
         ]
       },
       {
@@ -587,6 +832,16 @@
           -0.29,
           0.35,
           1.21
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          3
         ]
       },
       {
@@ -603,6 +858,16 @@
           -0.24,
           0.28,
           1.17
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          2
         ]
       },
       {
@@ -619,6 +884,16 @@
           -0.1,
           0.24,
           1.27
+        ],
+        "RootOffset": [
+          -0.01,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -635,6 +910,16 @@
           -0.19,
           0.24,
           1.24
+        ],
+        "RootOffset": [
+          -0.01,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -3
         ]
       },
       {
@@ -656,6 +941,11 @@
           -4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.01
         ]
       },
       {
@@ -672,6 +962,16 @@
           -0.28,
           0.2,
           1.14
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {
@@ -684,7 +984,7 @@
   },
   {
     "Id": "MedKit",
-    "Description": "Open a waist-height medical kit, prepare a dressing and make a deliberate two-handed forward treatment press",
+    "Description": "Open a waist-height medical kit, prepare a dressing and make a deliberate two-handed forward treatment press; lower through the knees at the kit and lean over a planted treatment base, preserving steady body pressure during contact",
     "Duration": 2.85,
     "Beats": [
       {
@@ -712,6 +1012,11 @@
           5,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
         ]
       },
       {
@@ -728,6 +1033,16 @@
           -0.29,
           0.31,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -749,6 +1064,11 @@
           6,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -770,6 +1090,11 @@
           8,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -786,6 +1111,16 @@
           -0.24,
           0.47,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -802,6 +1137,16 @@
           -0.12,
           0.27,
           1.08
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -814,7 +1159,7 @@
   },
   {
     "Id": "Infusion",
-    "Description": "Prime an infusion line at the waist, extend its delivery end and make two deliberate pump strokes while holding alignment",
+    "Description": "Prime an infusion line at the waist, extend its delivery end and make two deliberate pump strokes while holding alignment; hold a stable forward knee brace for both pump strokes and withdraw body weight only after the line is released",
     "Duration": 3.0,
     "Beats": [
       {
@@ -837,6 +1182,16 @@
           -0.11,
           0.26,
           1.08
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -3
         ]
       },
       {
@@ -853,6 +1208,16 @@
           -0.04,
           0.24,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -869,6 +1234,16 @@
           -0.02,
           0.32,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -885,6 +1260,16 @@
           -0.03,
           0.23,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -901,6 +1286,16 @@
           -0.02,
           0.33,
           1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -917,6 +1312,16 @@
           -0.08,
           0.27,
           1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -933,6 +1338,16 @@
           -0.22,
           0.25,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -945,7 +1360,7 @@
   },
   {
     "Id": "TreatmentKit",
-    "Description": "Prepare treatment tools, scan across the target, then apply a separate descending cleansing pass before stowing them",
+    "Description": "Prepare treatment tools, scan across the target, then apply a separate descending cleansing pass before stowing them; follow the diagnostic scan through the hips and lower into a stable treatment reach before stowing the tools",
     "Duration": 3.05,
     "Beats": [
       {
@@ -973,6 +1388,11 @@
           4,
           0,
           0
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
         ]
       },
       {
@@ -989,6 +1409,16 @@
           -0.16,
           0.28,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1010,6 +1440,11 @@
           0,
           0,
           6
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.03
         ]
       },
       {
@@ -1026,6 +1461,16 @@
           -0.15,
           0.28,
           1.13
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1047,6 +1492,11 @@
           7,
           0,
           0
+        ],
+        "RootOffset": [
+          0.01,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -1063,6 +1513,16 @@
           -0.2,
           0.31,
           1.12
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1079,6 +1539,16 @@
           -0.12,
           0.25,
           1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -2
         ]
       },
       {
@@ -1091,7 +1561,7 @@
   },
   {
     "Id": "EmergencyTriage",
-    "Description": "Quickly assess the patient, project one urgent treatment reach and make a short decisive stabilizing press",
+    "Description": "Quickly assess the patient, project one urgent treatment reach and make a short decisive stabilizing press; quickly plant body weight behind the stabilizing press and ease out after checking the patient",
     "Duration": 1.65,
     "Beats": [
       {
@@ -1114,6 +1584,16 @@
           -0.19,
           0.24,
           1.18
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
         ]
       },
       {
@@ -1135,6 +1615,11 @@
           8,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -1156,6 +1641,11 @@
           10,
           0,
           0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
         ]
       },
       {
@@ -1172,6 +1662,16 @@
           -0.15,
           0.32,
           1.16
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
         ]
       },
       {
@@ -1188,6 +1688,16 @@
           -0.27,
           0.25,
           1.16
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
         ]
       },
       {
@@ -1200,7 +1710,7 @@
   },
   {
     "Id": "KoltoMist",
-    "Description": "Retrieve a kolto canister, deliver it in a low underarm arc and open the nozzle-control gesture across the healing zone",
+    "Description": "Retrieve a kolto canister, deliver it in a low underarm arc and open the nozzle-control gesture across the healing zone; transfer weight with the low canister throw, then settle the hips behind the mist control rather than bouncing after release",
     "Duration": 2.35,
     "Beats": [
       {
@@ -1223,6 +1733,16 @@
           -0.23,
           0.22,
           1.12
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
         ]
       },
       {
@@ -1244,6 +1764,11 @@
           0,
           0,
           -8
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
         ]
       },
       {
@@ -1265,6 +1790,11 @@
           6,
           0,
           10
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
         ]
       },
       {
@@ -1281,6 +1811,16 @@
           -0.11,
           0.3,
           1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
         ]
       },
       {
@@ -1297,6 +1837,16 @@
           -0.38,
           0.42,
           1.28
+        ],
+        "RootOffset": [
+          -0.01,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          3
         ]
       },
       {
@@ -1313,6 +1863,16 @@
           -0.29,
           0.27,
           1.17
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
         ]
       },
       {

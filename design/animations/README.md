@@ -111,7 +111,19 @@ within `SourceAnimation`. An optional per-beat `SourceModel` selects another mod
 The recipe-level `InPlace` option removes horizontal root travel for a stationary preview,
 while preserving vertical motion and joint rotations; native gameplay still owns movement.
 Optional `LeftHand` and `RightHand` targets use absolute model-space
-metres; `TorsoDegrees` supplies the torso adjustment. Entry and recovery use native idle.
+metres; `TorsoDegrees` supplies the torso adjustment. Spans using the same native animation
+continue sampling its intermediate motion even when hand or torso controls are present.
+This retains the underlying leg, hip, and recoil movement instead of blending only two poses.
+Hand direction retains the native local wrist grip for equipped weapons.
+
+Optional per-beat `RootOffset` supplies a body displacement in model-space metres
+(X lateral, Y forward, Z up). Use it to load a stance, drive a release, absorb recoil, or
+settle a guard. The legs bend to retain the source pose's foot positions and sole orientations;
+native steps still follow their source trajectories. Unreachable displacements are reduced
+to preserve foot contact. Limits are 15 cm per horizontal axis and 10 cm vertically; current
+recipes generally use smaller shifts. Weight changes should follow the ability's effort,
+not repeat an unrelated bounce. Entry and recovery use unmodified native idle and cannot
+have offsets. Absolute Defense remains the unchanged visual benchmark for this pass.
 The generator automatically reads each category's recipe file. Regenerate selected entries
 with `generate-active ... --replace <Id>` and reinstall before compiling body and robe models.
 The provenance manifest records recipe paths, per-ability recipe hashes, additional model

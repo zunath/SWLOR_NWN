@@ -53,8 +53,8 @@ unpacks normal alpha/green once, preserves colored specular, and derives emissio
 from normal blue multiplied by diffuse in linear light. Zero-mask pixels stay black.
 The normal blue channel is not part of the decoded normal vector.
 
-Compress maps with the documented NWN Crunch channel presets; icons use lossless
-RGBA DDS without mipmaps. Replace the matching old icon TGA so it cannot override
+Compress maps with the documented NWN Crunch channel presets; icons use DXT5
+DDS with alpha and no mipmaps (`-fileformat dds -unflip -yflip -DXT5 -dxtQuality uber -gamma 2.2 -mipMode None`). Native CResDDS cannot decode uncompressed RGBA DDS. Replace the matching old icon TGA so it cannot override
 the DDS. Compile staged ASCII models with `tools/CompileBlasterModels.py` and the
 installed NWN:EE executable. It accepts `wbwxl` resrefs as well as pistol resrefs.
 Keep `CompileModels: false` when packing HAKs. Validate native-reader geometry,

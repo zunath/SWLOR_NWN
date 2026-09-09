@@ -95,6 +95,18 @@ def hand_geometry(text, side):
     return verts, faces, position, orientation
 
 
+def single_hand_hook(animation, pose):
+    from mathutils import Matrix, Quaternion, Vector
+    shot=required_block(r'newanim ' + re.escape(pose) + r' .*?\n(.*?)doneanim',animation,f'{pose} animation')
+    hook_node=required_block(r'node dummy rhand\s*\n(.*?)endnode',shot,'rhand animation node')
+    key=required_block(r'orientationkey \d+\s*\n([^\n]+)',hook_node,'rhand orientation key')
+    axis_angle=list(map(float,key.split()))[1:]
+    if len(axis_angle) != 4:
+        raise ValueError('Expected four axis-angle values in rhand orientation key')
+    hook=Matrix.Translation(Vector((.0110681,0,-.0961281))) @ Quaternion(Vector(axis_angle[:3]),axis_angle[3]).to_matrix().to_4x4()
+    return hook
+
+
 def main():
     import bpy
     from mathutils import Matrix, Quaternion, Vector
@@ -121,14 +133,9 @@ def main():
     hand=bpy.data.objects.new('Human right-hand reference',mesh);bpy.context.collection.objects.link(hand)
     # Apply the rifle animation hook rotation; the pistol bowshot hook is different.
     animation=args.animation.read_text()
-    shot=required_block(r'newanim xbowshot .*?\n(.*?)doneanim',animation,'xbowshot animation')
-    hook_node=required_block(r'node dummy rhand\s*\n(.*?)endnode',shot,'rhand animation node')
-    key=required_block(r'orientationkey \d+\s*\n([^\n]+)',hook_node,'rhand orientation key')
-    axis_angle=list(map(float,key.split()))[1:]
-    if len(axis_angle) != 4:
-        raise ValueError('Expected four axis-angle values in rhand orientation key')
-    hook=Matrix.Translation(Vector((.0110681,0,-.0961281))) @ Quaternion(Vector(axis_angle[:3]),axis_angle[3]).to_matrix().to_4x4()
-    hand.matrix_world=hook.inverted() @ Matrix.Translation(position) @ orientation.to_matrix().to_4x4()
+    if not args.skeleton:
+        hook=single_hand_hook(animation,args.pose)
+        hand.matrix_world=hook.inverted() @ Matrix.Translation(position) @ orientation.to_matrix().to_4x4()
     material=bpy.data.materials.new('Reference hand');material.use_nodes=True
     shader=material.node_tree.nodes.get('Principled BSDF');shader.inputs['Base Color'].default_value=(.32,.17,.085,1);shader.inputs['Roughness'].default_value=.75
     mesh.materials.append(material)

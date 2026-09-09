@@ -48,6 +48,20 @@ class RifleImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Missing hook'):
             required_block(r'node dummy rhand\n(.*?)endnode', '', 'hook')
 
+    def test_single_hand_uses_selected_pose(self):
+        from RenderRifleGrip import single_hand_hook
+        from mathutils import Vector
+        animation = ''
+        for pose, angle in (('xbowrdy', 0), ('xbowshot', math.pi / 2)):
+            animation += (f'newanim {pose} Rig\nnode dummy rhand\n'
+                          f'orientationkey 1\n0 0 0 1 {angle}\nendnode\ndoneanim\n')
+        ready = single_hand_hook(animation, 'xbowrdy').to_3x3() @ Vector((1, 0, 0))
+        shot = single_hand_hook(animation, 'xbowshot').to_3x3() @ Vector((1, 0, 0))
+        self.assertLess((ready - Vector((1, 0, 0))).length, 1e-6)
+        self.assertLess((shot - Vector((0, 1, 0))).length, 1e-6)
+        with self.assertRaisesRegex(ValueError, 'missing animation'):
+            single_hand_hook(animation, 'missing')
+
     def setUp(self):
         self.config = dict(schema_version=1, base_item=7, middle_slot=151,
                            texture="rf_gs02", material_mode="opaque", scale=9.6,

@@ -228,13 +228,16 @@ namespace SWLOR.Game.Server.Service
                 var position = GetPosition(player);
                 var equippedRod = GetItemInSlot(InventorySlot.RightHand, player);
                 var point = GetLocalObject(player, FishingPointVariable);
+                var ownsActivity = Activity.GetBusyType(player) == ActivityStatusType.Fishing;
                 if (GetIsDead(player) || GetIsInCombat(player) ||
-                    Activity.GetBusyType(player) != ActivityStatusType.Fishing ||
+                    !ownsActivity ||
                     !GetIsObjectValid(equippedRod) || GetTag(equippedRod) != FishingRodTag ||
                     !GetIsObjectValid(point) || GetIsDead(point))
                 {
                     ClearFishingAttempt(player);
-                    PlayerPlugin.StopGuiTimingBar(player);
+                    // A replacement activity may already own the player's progress bar.
+                    if (ownsActivity)
+                        PlayerPlugin.StopGuiTimingBar(player);
                     return;
                 }
 

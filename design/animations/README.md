@@ -112,7 +112,7 @@ for a longer cast/channel. Damage, costs, cooldowns, and movement rules are unch
 `/animtest ShieldBash` previews a clip on your character; `/animtest` lists all names. This debug
 command is available to DM/Admin accounts and everyone on a test server. Hacking Blade and Carve
 are outdated spreadsheet entries with no current matching abilities, so they are excluded
-from the recipe, installed models, registry, and preview list. Recipe entries must identify an
+from the recipe, installed models, registry, and preview list. Perk recipe entries must identify an
 existing `IAbilityListDefinition`; generation rejects stale entries instead of inventing perks.
 
 To update an installed draft from the command line, close the toolset and run this against an

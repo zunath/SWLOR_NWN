@@ -56,6 +56,45 @@ def hand_pose_transforms(skeleton_text, animation_text, pose='xbowrdy'):
     return {side: weapon @ world(side + 'hand_g') for side in ('r', 'l')}
 
 
+def required_block(pattern, text, description):
+    match = re.search(pattern, text, re.S | re.I)
+    if not match:
+        raise ValueError(f"Missing {description}")
+    return match[1]
+
+
+def hand_geometry(text, side):
+    from mathutils import Quaternion, Vector
+    model = 'pmh0_handr001' if side == 'right' else 'pmh0_handl001'
+    if not re.search(r'newmodel\s+' + model + r'\b', text, re.I):
+        raise ValueError(f'Expected ASCII human {side}-hand reference {model}')
+    block = required_block(r'node trimesh \S+\s*\n(.*?)endnode', text, f'{side}-hand trimesh')
+    lines = block.splitlines()
+    verts = faces = None
+    position, orientation = Vector(), Quaternion()
+    for i, line in enumerate(lines):
+        parts = line.split()
+        if not parts:
+            continue
+        key = parts[0].lower()
+        if key in ('verts', 'faces'):
+            count = int(parts[1])
+            rows = lines[i + 1:i + 1 + count]
+            if len(rows) != count:
+                raise ValueError(f'Incomplete {side}-hand {key} rows')
+            if key == 'verts':
+                verts = [tuple(map(float, row.split())) for row in rows]
+            else:
+                faces = [tuple(map(int, row.split()[:3])) for row in rows]
+        elif key == 'position':
+            position = Vector(tuple(map(float, parts[1:])))
+        elif key == 'orientation':
+            orientation = Quaternion(Vector(tuple(map(float, parts[1:4]))), float(parts[4]))
+    if not verts or not faces:
+        raise ValueError(f'{side}-hand reference trimesh has no verts/faces rows')
+    return verts, faces, position, orientation
+
+
 def main():
     import bpy
     from mathutils import Matrix, Quaternion, Vector
@@ -77,24 +116,17 @@ def main():
     if args.fit:
         fit=Matrix(json.loads(args.fit.read_text())['matrix'])
         for ob in scene.objects:ob.matrix_world=fit @ ob.matrix_world
-    text=args.hand.read_text()
-    if 'newmodel pmh0_handr001' not in text:raise ValueError('Expected ASCII human right-hand reference pmh0_handr001')
-    block=re.search(r'node trimesh Hand\s*\n(.*?)endnode',text,re.S)[1]
-    lines=block.splitlines();position=Vector((0,0,0));orientation=Quaternion()
-    for i,line in enumerate(lines):
-        p=line.split()
-        if not p:continue
-        if p[0]=='verts':verts=[tuple(map(float,l.split())) for l in lines[i+1:i+1+int(p[1])]]
-        if p[0]=='faces':faces=[tuple(map(int,l.split()))[:3] for l in lines[i+1:i+1+int(p[1])]]
-        if p[0]=='position':position=Vector(tuple(map(float,p[1:])))
-        if p[0]=='orientation':orientation=Quaternion(Vector(tuple(map(float,p[1:4]))),float(p[4]))
+    verts,faces,position,orientation=hand_geometry(args.hand.read_text(), 'right')
     mesh=bpy.data.meshes.new('Human right-hand reference');mesh.from_pydata(verts,[],faces);mesh.update()
     hand=bpy.data.objects.new('Human right-hand reference',mesh);bpy.context.collection.objects.link(hand)
     # Apply the rifle animation hook rotation; the pistol bowshot hook is different.
     animation=args.animation.read_text()
-    shot=re.search(r'newanim xbowshot .*?\n(.*?)doneanim',animation,re.S)[1]
-    hook_node=re.search(r'node dummy rhand\s*\n(.*?)endnode',shot,re.S)[1]
-    axis_angle=list(map(float,re.search(r'orientationkey \d+\s*\n([^\n]+)',hook_node)[1].split()))[1:]
+    shot=required_block(r'newanim xbowshot .*?\n(.*?)doneanim',animation,'xbowshot animation')
+    hook_node=required_block(r'node dummy rhand\s*\n(.*?)endnode',shot,'rhand animation node')
+    key=required_block(r'orientationkey \d+\s*\n([^\n]+)',hook_node,'rhand orientation key')
+    axis_angle=list(map(float,key.split()))[1:]
+    if len(axis_angle) != 4:
+        raise ValueError('Expected four axis-angle values in rhand orientation key')
     hook=Matrix.Translation(Vector((.0110681,0,-.0961281))) @ Quaternion(Vector(axis_angle[:3]),axis_angle[3]).to_matrix().to_4x4()
     hand.matrix_world=hook.inverted() @ Matrix.Translation(position) @ orientation.to_matrix().to_4x4()
     material=bpy.data.materials.new('Reference hand');material.use_nodes=True
@@ -103,19 +135,8 @@ def main():
     if args.skeleton:
         poses=hand_pose_transforms(args.skeleton.read_text(),animation,args.pose)
         hand.matrix_world=poses['r'] @ Matrix.Translation(position) @ orientation.to_matrix().to_4x4()
-        left_text=args.left_hand.read_text()
-        if 'newmodel pmh0_handl001' not in left_text:
-            raise ValueError('Expected ASCII human left-hand reference pmh0_handl001')
-        block=re.search(r'node trimesh \S+\s*\n(.*?)endnode',left_text,re.S)[1]
-        left_position=Vector();left_orientation=Quaternion();lines=block.splitlines()
-        for i,line in enumerate(lines):
-            parts=line.split()
-            if not parts:continue
-            if parts[0]=='verts':verts=[tuple(map(float,l.split())) for l in lines[i+1:i+1+int(parts[1])]]
-            if parts[0]=='faces':faces=[tuple(map(int,l.split()[:3])) for l in lines[i+1:i+1+int(parts[1])]]
-            if parts[0]=='position':left_position=Vector(tuple(map(float,parts[1:])))
-            if parts[0]=='orientation':left_orientation=Quaternion(Vector(tuple(map(float,parts[1:4]))),float(parts[4]))
-        left_mesh=bpy.data.meshes.new('Human left-hand reference');left_mesh.from_pydata(verts,[],faces);left_mesh.update()
+        left_verts,left_faces,left_position,left_orientation=hand_geometry(args.left_hand.read_text(), 'left')
+        left_mesh=bpy.data.meshes.new('Human left-hand reference');left_mesh.from_pydata(left_verts,[],left_faces);left_mesh.update()
         left=bpy.data.objects.new('Human left-hand reference',left_mesh);bpy.context.collection.objects.link(left)
         left.matrix_world=poses['l'] @ Matrix.Translation(left_position) @ left_orientation.to_matrix().to_4x4()
         left_mesh.materials.append(material)

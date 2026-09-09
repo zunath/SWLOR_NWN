@@ -138,6 +138,11 @@ def export_mesh(mesh, transform):
     return verts, uvs, faces, normals
 
 
+def validate_emission_dimensions(diffuse, packed_normal):
+    if diffuse.shape[:2] != packed_normal.shape[:2]:
+        raise ValueError("Emission needs diffuse and normal maps at the same resolution")
+
+
 def main(weapon="pistol"):
     import bpy
     import addon_utils
@@ -194,7 +199,6 @@ def main(weapon="pistol"):
     item_class = "wbwsh" if weapon == "pistol" else "wbwxl"
     model = f"{item_class}_m_{config['middle_slot']:03d}"
     texture = config["texture"]
-    write_mdl(resources / f"{model}.mdl", model, texture, meshes)
 
     def read_pixels(path, size=None):
         image = bpy.data.images.load(str(path), check_existing=False)
@@ -219,8 +223,12 @@ def main(weapon="pistol"):
         image.save()
         return image
 
-    diffuse = save_texture(texture, read_pixels(paths["diffuse"], config["texture_size"])[..., :3])
+    diffuse_rgb = read_pixels(paths["diffuse"], config["texture_size"])[..., :3]
     packed_normal = read_pixels(paths["normal"], config["texture_size"])
+    if config.get("preserve_emission"):
+        validate_emission_dimensions(diffuse_rgb, packed_normal)
+    write_mdl(resources / f"{model}.mdl", model, texture, meshes)
+    diffuse = save_texture(texture, diffuse_rgb)
     normal = save_texture(texture + "_n", unpack_normal(packed_normal, np))
     # Preserve colored specular RGB; SWTOR gloss alpha is not NWN roughness.
     specular = save_texture(texture + "_s", read_pixels(paths["specular"], config["texture_size"])[..., :3])
@@ -230,7 +238,7 @@ def main(weapon="pistol"):
     emission = None
     if config.get("preserve_emission") and np.max(packed_normal[..., 2]) > 0:
         # Source blue is emission intensity, independent of the packed normal XY.
-        rgb = read_pixels(paths["diffuse"], packed_normal.shape[0])[..., :3]
+        rgb = diffuse_rgb
         linear = np.where(rgb <= .04045, rgb / 12.92, ((rgb + .055) / 1.055) ** 2.4)
         linear *= packed_normal[..., 2:3]
         encoded = np.where(linear <= .0031308, linear * 12.92, 1.055 * linear ** (1 / 2.4) - .055)

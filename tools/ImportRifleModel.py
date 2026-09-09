@@ -5,6 +5,7 @@ Rifle manifests require source_material, -Z muzzle / -Y grip after transformatio
 and preserve_emission=true to retain the SWTOR packed emission channel.
 Cannons are deliberately rejected, including both as_a0x and assaultcannon names.
 """
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -22,8 +23,15 @@ def validate_rifle(config):
         raise ValueError("Inspect source_material and explicitly preserve source emission")
 
 
+def parse_manifest(arguments):
+    parser = argparse.ArgumentParser(description=__doc__, add_help=False)
+    parser.add_argument("--manifest", type=Path, required=True)
+    known, _ = parser.parse_known_args(arguments)
+    return known.manifest
+
+
 if __name__ == "__main__":
-    arguments = sys.argv[sys.argv.index("--") + 1:]
-    manifest = Path(arguments[arguments.index("--manifest") + 1])
+    arguments = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    manifest = parse_manifest(arguments)
     validate_rifle(json.loads(manifest.read_text(encoding="utf-8-sig")))
     main("rifle")

@@ -12,6 +12,42 @@ from RenderRifleGrip import hand_pose_transforms
 
 
 class RifleImportTests(unittest.TestCase):
+    def test_manifest_argument_forms_and_missing_values(self):
+        from ImportRifleModel import parse_manifest
+        from contextlib import redirect_stderr
+        from io import StringIO
+        for args in (['--manifest', 'rifle.json'], ['--manifest=rifle.json', '--output', 'out']):
+            self.assertEqual(parse_manifest(args), Path('rifle.json'))
+        for args in ([], ['--manifest']):
+            with redirect_stderr(StringIO()), self.assertRaises(SystemExit) as error:
+                parse_manifest(args)
+            self.assertEqual(error.exception.code, 2)
+
+    def test_emission_requires_matching_dimensions(self):
+        import numpy as np
+        from ImportBlasterModel import validate_emission_dimensions
+        validate_emission_dimensions(np.zeros((4, 4, 3)), np.zeros((4, 4, 4)))
+        with self.assertRaisesRegex(ValueError, 'same resolution'):
+            validate_emission_dimensions(np.zeros((2, 2, 3)), np.zeros((4, 4, 4)))
+
+    def test_hand_geometry_is_case_insensitive_and_requires_own_rows(self):
+        from RenderRifleGrip import hand_geometry, required_block
+        rows = 'verts 3\n0 0 0\n1 0 0\n0 1 0\nfaces 1\n0 1 2\n'
+        for side, model in (('right', 'PMH0_HANDR001'), ('left', 'PMH0_HANDL001')):
+            prefix = f'NEWMODEL {model}\nNODE TRIMESH HAND\n'
+            verts, faces, _, _ = hand_geometry(prefix + rows + 'ENDNODE', side)
+            self.assertEqual(len(verts), 3)
+            self.assertEqual(faces, [(0, 1, 2)])
+            for incomplete in ('verts 1\n0 0 0\n', 'faces 1\n0 0 0\n', ''):
+                with self.assertRaisesRegex(ValueError, 'verts/faces'):
+                    hand_geometry(prefix + incomplete + 'ENDNODE', side)
+            with self.assertRaisesRegex(ValueError, 'trimesh'):
+                hand_geometry(f'newmodel {model}', side)
+        self.assertEqual(required_block(r'node dummy rhand\n(.*?)endnode',
+                                       'NODE DUMMY RHAND\nkey\nENDNODE', 'hook'), 'key\n')
+        with self.assertRaisesRegex(ValueError, 'Missing hook'):
+            required_block(r'node dummy rhand\n(.*?)endnode', '', 'hook')
+
     def setUp(self):
         self.config = dict(schema_version=1, base_item=7, middle_slot=151,
                            texture="rf_gs02", material_mode="opaque", scale=9.6,

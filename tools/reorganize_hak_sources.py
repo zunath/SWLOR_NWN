@@ -285,6 +285,8 @@ TARGET_HAKS = [
     "sw_vfx",
     "sw_portrait",
     "sw_pt_root",
+    "sw_anim_m",
+    "sw_anim_f",
     "sw_pt_belt",
     "sw_pt_chest",
     "sw_pt_cloak",
@@ -772,6 +774,11 @@ def initial_owner(record: dict, exact: dict[str, str], sorted_prefixes: list[str
         prefix = match_prefix(minimap_ref, sorted(TILE_PREFIX_OWNERS.keys(), key=len, reverse=True))
         if prefix:
             return TILE_PREFIX_OWNERS[prefix]
+
+    # Large shared robe skeleton libraries must not be folded back into the
+    # wearable-root archive, whose combined payload exceeds the package budget.
+    if ext == "mdl" and re.fullmatch(r"p[fm][a-z]_ra\d{3}", stem):
+        return "sw_anim_f" if stem[1] == "f" else "sw_anim_m"
 
     part_owner = player_part_owner(stem)
     if part_owner:

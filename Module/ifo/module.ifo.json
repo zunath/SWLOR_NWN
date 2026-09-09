@@ -3284,6 +3284,20 @@
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
+          "value": "sw_anim_m"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_anim_f"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
           "value": "sw_pt_belt"
         }
       },

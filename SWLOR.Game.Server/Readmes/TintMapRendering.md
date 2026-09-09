@@ -222,6 +222,15 @@ vertex attributes before any generated resource is installed. Run
 regressions, and run the complete generator for corpus validation.
 
 Robe generation is a deterministic Python batch; it does not call an AI service.
+Compiled robe animation bridges are packaged in `sw_anim_m` and `sw_anim_f`,
+selected by their `pm*_raNNN` / `pf*_raNNN` resource names. Wearable body roots
+remain in `sw_pt_root`, and attachments remain in `sw_pt_robe`. Both HAK build
+configs and the module HAK list must mount these packages. This avoids packing
+the whole expanded bridge library into a single archive exceeding 2 GiB.
+The CLI rejects HAK inputs reaching that conservative compatibility budget,
+including archive tables, before deleting any previous build outputs.
+Splitting archives preserves model bytes and supermodel references; it does not
+reduce the total inherited animation data or establish in-game load performance.
 Ordinary separate robes can inherit animation from their phenotype supermodel.
 The RGB roots described above additionally contain independent garment skeletons:
 changing only their supermodel would leave the renamed garment joints without

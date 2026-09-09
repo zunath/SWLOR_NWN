@@ -15,9 +15,10 @@ import sys
 from pathlib import Path
 
 
-def validate_manifest(config):
-    if config.get("schema_version") != 1 or config.get("base_item") != 11:
-        raise ValueError("Expected schema_version 1 and pistol base_item 11")
+def validate_manifest(config, weapon="pistol"):
+    base_item = {"pistol": 11, "rifle": 7}[weapon]
+    if config.get("schema_version") != 1 or config.get("base_item") != base_item:
+        raise ValueError(f"Expected schema_version 1 and {weapon} base_item {base_item}")
     slot = config.get("middle_slot")
     if type(slot) is not int or not 1 <= slot <= 255:
         raise ValueError("middle_slot must be a native pistol part ID from 1 to 255")
@@ -45,15 +46,16 @@ def validate_manifest(config):
             raise ValueError(f"Missing SHA-256 for {key}")
 
 
-def validate_attachment(rotation, config):
+def validate_attachment(rotation, config, weapon="pistol"):
     # NWN pistols point down -Z in attachment space; their handles extend -Y.
     # Verify authored landmarks rather than judging an upright inventory preview.
     from mathutils import Vector
     attachment = config["attachment"]
-    for key, expected in (("source_muzzle_axis", (0, 0, -1)), ("source_grip_axis", (0, -1, 0))):
+    axes = ((0, 0, -1), (0, -1, 0)) if weapon == "pistol" else ((1, 0, 0), (0, 0, -1))
+    for key, expected in zip(("source_muzzle_axis", "source_grip_axis"), axes):
         actual = (rotation.to_3x3() @ Vector(attachment[key])).normalized()
         if actual.dot(Vector(expected)) < .99:
-            raise ValueError(f"Pistol attachment {key} does not match NWN axes: {tuple(actual)}")
+            raise ValueError(f"{weapon} attachment {key} does not match NWN axes: {tuple(actual)}")
 
 
 def unpack_normal(pixels, np):
@@ -134,11 +136,11 @@ def export_mesh(mesh, transform):
     return verts, uvs, faces, normals
 
 
-def main():
+def main(weapon="pistol"):
     import bpy
     import addon_utils
     import numpy as np
-    from mathutils import Euler, Matrix, Vector
+    from mathutils import Euler, Matrix, Quaternion, Vector
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
@@ -147,7 +149,7 @@ def main():
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
     manifest = args.manifest.resolve()
     config = json.loads(manifest.read_text(encoding="utf-8-sig"))
-    validate_manifest(config)
+    validate_manifest(config, weapon)
     paths = {key: (manifest.parent / value).resolve() for key, value in config["sources"].items()}
     for key, path in paths.items():
         if hashlib.sha256(path.read_bytes()).hexdigest() != config["sha256"][key]:
@@ -172,12 +174,14 @@ def main():
     if not objects or any(ob.type == "ARMATURE" for ob in bpy.context.scene.objects):
         raise ValueError("Expected rigid mesh geometry without a skeleton")
     rotation = Euler(tuple(math.radians(n) for n in config["rotation_degrees"])).to_matrix().to_4x4()
-    validate_attachment(rotation, config)
+    validate_attachment(rotation, config, weapon)
     transform = Matrix.Translation(Vector(config["translation"])) @ rotation @ Matrix.Scale(config["scale"], 4)
     meshes = []
     for ob in objects:
         if len(ob.data.materials) != 1 or ob.modifiers or not ob.data.uv_layers:
             raise ValueError("Only static single-material meshes with UVs are supported")
+        if weapon == "rifle" and ob.data.materials[0].name != config.get("source_material"):
+            raise ValueError("Rifle source material differs from the inspected manifest assignment")
         # The importer assigns a Blender-only +90 X object rotation. Manifest axes refer
         # to raw SWTOR vertex coordinates, not the importer's viewport conversion.
         ob.matrix_world = transform
@@ -185,7 +189,8 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     resources = output / "resources"
     resources.mkdir()
-    model = f"wbwsh_m_{config['middle_slot']:03d}"
+    item_class = "wbwsh" if weapon == "pistol" else "wbwxl"
+    model = f"{item_class}_m_{config['middle_slot']:03d}"
     texture = config["texture"]
     write_mdl(resources / f"{model}.mdl", model, texture, meshes)
 
@@ -213,12 +218,23 @@ def main():
         return image
 
     diffuse = save_texture(texture, read_pixels(paths["diffuse"], config["texture_size"])[..., :3])
-    normal = save_texture(texture + "_n", unpack_normal(read_pixels(paths["normal"], config["texture_size"]), np))
+    packed_normal = read_pixels(paths["normal"], config["texture_size"])
+    normal = save_texture(texture + "_n", unpack_normal(packed_normal, np))
     # Preserve colored specular RGB; SWTOR gloss alpha is not NWN roughness.
     specular = save_texture(texture + "_s", read_pixels(paths["specular"], config["texture_size"])[..., :3])
     (resources / (texture + ".mtr")).write_text(
         f"renderhint NormalAndSpecMapped\ntexture0 {texture}\ntexture1 {texture}_n\ntexture2 {texture}_s\n",
         encoding="ascii")
+    emission = None
+    if config.get("preserve_emission") and np.max(packed_normal[..., 2]) > 0:
+        # Source blue is emission intensity, independent of the packed normal XY.
+        rgb = read_pixels(paths["diffuse"], packed_normal.shape[0])[..., :3]
+        linear = np.where(rgb <= .04045, rgb / 12.92, ((rgb + .055) / 1.055) ** 2.4)
+        linear *= packed_normal[..., 2:3]
+        encoded = np.where(linear <= .0031308, linear * 12.92, 1.055 * linear ** (1 / 2.4) - .055)
+        emission = save_texture(texture + "_e", encoded)
+        with (resources / (texture + ".mtr")).open("a", encoding="ascii") as stream:
+            stream.write(f"texture5 {texture}_e\n")
 
     material = bpy.data.materials.new("NWN blaster preview")
     material.use_nodes = True
@@ -236,6 +252,12 @@ def main():
     links.new(normal_node.outputs["Normal"], shader.inputs["Normal"])
     spec = nodes.new("ShaderNodeTexImage"); spec.image = specular
     links.new(spec.outputs["Color"], shader.inputs["Specular IOR Level"])
+    if emission:
+        glow = nodes.new("ShaderNodeTexImage")
+        glow.image = bpy.data.images.load(emission.filepath_raw, check_existing=False)
+        glow.image.colorspace_settings.name = "sRGB"
+        links.new(glow.outputs["Color"], shader.inputs["Emission Color"])
+        shader.inputs["Emission Strength"].default_value = 1
     for ob in objects:
         ob.data.materials.clear()
         ob.data.materials.append(material)
@@ -257,7 +279,8 @@ def main():
         light.data.energy = energy
         light.data.size = 2
         light.rotation_euler = (center - light.location).to_track_quat("-Z", "Y").to_euler()
-    bpy.ops.object.camera_add(location=center + Vector((1, -.25, .15)))
+    direction = (1, -.25, .15) if weapon == "pistol" else (.15, -1, .15)
+    bpy.ops.object.camera_add(location=center + Vector(direction))
     camera = bpy.context.object
     camera.rotation_euler = (center - camera.location).to_track_quat("-Z", "Y").to_euler()
     camera.data.type = "ORTHO"
@@ -269,6 +292,12 @@ def main():
     bpy.ops.render.render(write_still=True)
     # Inventory composite middle layer: native 64 x 64 transparent TGA.
     scene.render.resolution_x = scene.render.resolution_y = 64
+    if weapon == "rifle":
+        # Rifle composite layers fill a 2 x 4 inventory footprint (64 x 128).
+        # Align the barrel with image vertical, preserving the entire silhouette.
+        camera.rotation_euler = ((center - camera.location).to_track_quat("-Z", "Y") @ Quaternion((0, 0, 1), -math.pi / 2)).to_euler()
+        scene.render.resolution_y = 128
+        camera.data.ortho_scale = max((hi.x - lo.x) * 1.2, (hi.z - lo.z) * 2.4)
     scene.render.image_settings.file_format = "TARGA_RAW"
     scene.render.image_settings.color_mode = "RGBA"
     scene.render.filepath = str(resources / f"i{model}.tga")

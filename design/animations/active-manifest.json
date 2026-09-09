@@ -68,7 +68,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a4015e9342c81918df41e2ad4667952",
-      "ProjectSha256": "131eb5cc9cd7f305de6f9e10eab1fc46e833ef052cdb1647043e84e77c6d768f"
+      "ProjectSha256": "c78389cfce2ca1ffe52e067738423cd08f0dd7a3d093cc0117743eb70227f354"
     },
     {
       "Id": "Reward",
@@ -629,7 +629,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5dbd9e2f4a022c9ad2526abdcc925c0b8945e85888708785c06e4de22ef59dfd"
+      "ProjectSha256": "0b4331a120ecf8377e91a045d99773a39f76fd7f142230c677b888c2494be789"
     },
     {
       "Id": "ShockTrap",
@@ -833,7 +833,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a401852c2508191a4d7763de334d77d",
-      "ProjectSha256": "2c13a958ff5188cca591ba1c5b5659dd26f73be3863dabfe291afc08e1b13e69"
+      "ProjectSha256": "f74cbf4a618fde023ccdb426851e594351bfcd64f48a20f59df0213add62e9d5"
     },
     {
       "Id": "Shielding",
@@ -2193,7 +2193,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "3f7d6008a69828038a530e17073b1f8a8871be9092614e975e197f9abf27bc87"
+      "ProjectSha256": "96f457a627a4f45526478f5c64236221bbaf6cb2faa4208770862c13fb2e8cba"
     },
     {
       "Id": "CapacitorSurgeTechnique",
@@ -2346,7 +2346,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f30e706040d0550783e1eab059c38c358f29571017970af2411902f2baf0f8ef"
+      "ProjectSha256": "18aa4c4588c890a708fba8764663c056fdf32cab89729a4a1ccd6ded754275bf"
     },
     {
       "Id": "FinalMandateTechnique",
@@ -2516,7 +2516,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "80f8e12bbc87f7ac2b835bd8b250c695dc1551419cc72cf2fb261b7ea5808513"
+      "ProjectSha256": "4627aac2af1367fb2258ef7c5f703195c771cedb7ea1d15f35cff94061cf9197"
     },
     {
       "Id": "InnerCircleSurgeTechnique",
@@ -2567,7 +2567,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "fb0fa5184d3f4423b1d02281383c9ca5c8ae40716cc81701519cb5ef9528bd00"
+      "ProjectSha256": "48f19a9887c79e4e98f46f1474935135d83bd0dd2422f87f40193cb4ea071b4e"
     },
     {
       "Id": "InnerVoidTechnique",
@@ -2652,7 +2652,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "af637f1edf7fa4d491f13330fc7422c85296ebe1d80b735eec5d3c8d351011c2"
+      "ProjectSha256": "3d418d56bf1ff174a5131808188b7c2443d9a7b41530b418abfe561b78a2c286"
     },
     {
       "Id": "NullShockTechnique",
@@ -3060,7 +3060,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "85c67ebfbab96edfa83f665e93f1e9f2e808daf516477a87b68d5b74fd1108b2"
+      "ProjectSha256": "8f5c8ea027de99d1620c8cfebf8a1f713c0a57ad6670de54bebe51420fe5f345"
     },
     {
       "Id": "ToxicCloudTechnique",

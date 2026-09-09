@@ -29,6 +29,17 @@ public class AnimationDraftAssetTests
     }
     private static string Folder => Path.Combine(Root, "design", "animations", "vibroblade");
 
+    private static InstalledMotionLibrary InstalledClips(MdlModel target)
+    {
+        long loadedBytes = 0;
+        return new InstalledMotionLibrary(target, name =>
+        {
+            var path = AnimationInstall.FindTargetSource(Root, name);
+            return path == null ? null : new MdlReader().Parse(InstalledMotionLibrary.ReadBank(path, ref loadedBytes));
+        });
+    }
+
+
     [Test]
     public void TwoBeatOneShotsAreRejectedBeforePosing()
     {
@@ -70,18 +81,18 @@ public class AnimationDraftAssetTests
         var sourcePath = AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bankPath);
         var bankSource = AnimationBankSource.Decode(File.ReadAllBytes(sourcePath), bankBytes);
         Encoding.UTF8.GetString(bankSource).Should().StartWith("# SWLOR authored animations for " + modelName);
-        var overlay = new MdlReader().Parse(bankBytes);
+        var installed = InstalledClips(target);
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
         foreach (var name in Names)
         {
             var entry = registry.Single(r => r.Name == name);
             entry.Targets.Should().Contain("SWLOR_Haks/sw_cr_creature/" + modelName + ".mdl");
-            overlay.Animations.Single(a => a.Name == entry.AnimationName).Length.Should().BeApproximately(entry.Duration, .0001f);
-            overlay.Animations.Should().Contain(a => a.Name == entry.AnimationName + "_in");
-            overlay.Animations.Should().Contain(a => a.Name == entry.AnimationName + "_out");
-            var exit = overlay.Animations.Single(a => a.Name == entry.AnimationName + "_out");
+            installed.Resolve(entry.AnimationName).Animation.Length.Should().BeApproximately(entry.Duration, .0001f);
+            installed.Resolve(entry.AnimationName + "_in").Animation.Name.Should().Be(entry.AnimationName + "_in");
+            installed.Resolve(entry.AnimationName + "_out").Animation.Name.Should().Be(entry.AnimationName + "_out");
+            var exit = installed.Resolve(entry.AnimationName + "_out").Animation;
             exit.Length.Should().BeApproximately(.2f, .0001f);
-            var exitPose = MdlAnimationPose.Sample(exit, exit.Length, MdlAnimationPose.BindPose(overlay));
+            var exitPose = MdlAnimationPose.Sample(exit, exit.Length, MdlAnimationPose.BindPose(target));
             var idle = MdlAnimationPose.SampleIdle(target, name =>
             {
                 var source = AnimationInstall.FindTargetSource(Root, name);
@@ -309,11 +320,10 @@ public class AnimationDraftAssetTests
             var targetPath = Path.Combine(Root, "SWLOR_Haks", "sw_cr_creature", installedModel + ".mdl");
             if (!File.Exists(targetPath)) Assert.Ignore("Initialize the HAK submodule to verify installed native assets.");
             var target = new MdlReader().Parse(File.ReadAllBytes(targetPath));
-            var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root,
-                "SWLOR_Haks", "sw_cr_creature", target.SuperModel + ".mdl")));
+            var installed = InstalledClips(target);
             var registered = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(
                 Path.Combine(Root, "design", "animations", "registry.json")))!.Single(r => r.Name == name);
-            var clip = overlay.Animations.Single(a => a.Name == registered.AnimationName);
+            var clip = installed.Resolve(registered.AnimationName).Animation;
             project = AnimationProject.FromModel(target);
             project.Keys.Clear(); project.Duration = clip.Length;
             foreach (var frame in MdlAnimationPose.SampleFrames(clip, 120, 240, MdlAnimationPose.BindPose(target)))
@@ -354,12 +364,12 @@ public class AnimationDraftAssetTests
         if (!File.Exists(path)) Assert.Ignore("Initialize the HAK submodule for native equipment verification.");
         var model = new MdlReader().Parse(File.ReadAllBytes(path));
         var rig = AnimationProject.FromModel(model);
-        var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(path)!, model.SuperModel + ".mdl")));
+        var installed = InstalledClips(model);
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
         var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Folder, "recipe.json")), Recipe.Json)!;
         foreach (var motion in recipe.Motions)
         {
-            var clip = overlay.Animations.Single(a => a.Name == registry.Single(r => r.Name == motion.Id).AnimationName);
+            var clip = installed.Resolve(registry.Single(r => r.Name == motion.Id).AnimationName).Animation;
             foreach (var beat in motion.Beats.Skip(1).SkipLast(1))
             {
                 var sample = MdlAnimationPose.Sample(clip, beat.Time, MdlAnimationPose.BindPose(model));

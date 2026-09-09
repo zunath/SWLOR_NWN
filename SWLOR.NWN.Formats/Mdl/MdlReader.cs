@@ -24,6 +24,7 @@ public sealed class MdlReader
     private const int MaximumFaces = 1_000_000;
     private const int MaximumControllerValues = 4_000_000;
     private const int MaximumDepth = 512;
+    private const long MaximumDecodedAllocationBytes = 192L * 1024 * 1024;
 
     private GuardedBinaryReader _reader = null!;
     private long _modelBase;
@@ -46,7 +47,11 @@ public sealed class MdlReader
     private MdlModel ParseBinary(byte[] data)
     {
         _reader = new GuardedBinaryReader(data);
-        _allocationBudget = new AllocationBudget("Binary MDL");
+        // Dense animation banks retain managed nodes as well as their controller
+        // arrays. Allow bounded expansion for large inputs while retaining the
+        // original budget for small files that alias tables to amplify allocations.
+        _allocationBudget = new AllocationBudget("Binary MDL", Math.Clamp(data.LongLength * 3,
+            AllocationBudget.DefaultMaximumBytes, MaximumDecodedAllocationBytes));
         _nodes.Clear();
         _activeNodes.Clear();
 

@@ -8,6 +8,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ImportRifleModel import validate_rifle
 from ImportBlasterModel import validate_attachment
+from RenderRifleGrip import hand_pose_transforms
 
 
 class RifleImportTests(unittest.TestCase):
@@ -47,6 +48,46 @@ class RifleImportTests(unittest.TestCase):
             rotation = Euler(tuple(math.radians(v) for v in angles)).to_matrix().to_4x4()
             with self.subTest(angles=angles), self.assertRaises(ValueError):
                 validate_attachment(rotation, self.config, "rifle")
+
+    def test_two_hand_fixture_applies_case_insensitive_ancestor_pose(self):
+        try:
+            from mathutils import Vector
+        except ImportError:
+            self.skipTest("Run in Blender for skeletal transforms")
+        skeleton = """node dummy Rig
+  parent NULL
+endnode
+node dummy Rbicep_g
+  parent Rig
+endnode
+node dummy rhand_g
+  parent Rbicep_g
+endnode
+node dummy rhand
+  parent rhand_g
+endnode
+node dummy Lbicep_g
+  parent Rig
+  position 1 0 0
+endnode
+node dummy lhand_g
+  parent Lbicep_g
+endnode
+endmodelgeom Rig
+"""
+        for name in ('lbicep_g', 'LBICEP_G', 'Lbicep_g'):
+            animation = f"""newanim xbowrdy Rig
+node dummy {name}
+  parent Rig
+  positionkey 1
+    0 2 3 4
+endnode
+doneanim xbowrdy Rig
+"""
+            with self.subTest(name=name):
+                transforms = hand_pose_transforms(skeleton, animation)
+                self.assertLess((transforms['l'] @ Vector() - Vector((2, 3, 4))).length, 1e-6)
+                self.assertLess((transforms['r'] @ Vector()).length, 1e-6)
 
 
 if __name__ == "__main__":

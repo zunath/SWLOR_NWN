@@ -67,8 +67,21 @@ and attack poses, muzzle direction, and different body sizes. Offline previews a
 do not establish live fit. Resource-only replacements require a weapon HAK rebuild;
 they do not require a module repack.
 
-`tools/RenderRifleGrip.py` reads the actual `xbowshot` right-hand hook rotation from
-an ASCII `a_ba_med_weap.mdl` reference. Supply `--source <review.blend>`,
+`tools/RenderRifleGrip.py` reads the rifle pose from an ASCII `a_ba_med_weap.mdl`
+reference. Supply `--source <review.blend>`,
 `--hand <ASCII pmh0_handr001.mdl>`, `--animation <ASCII a_ba_med_weap.mdl>` and
-`--output <local review folder>`. It renders both sides of the grip. The fixture
-checks the right hand only; support-hand and body clearance still need client review.
+`--output <local review folder>`. For fitting rifles, also supply
+`--skeleton <ASCII pmh0.mdl>` and `--left-hand <ASCII pmh0_handl001.mdl>`.
+This composes the complete arm hierarchy and shows both hands from both sides.
+Skeleton/animation node names must be matched case-insensitively: the skeleton's
+`Lbicep_g` and animation's `lbicep_g` are the same bone. Skipping this ancestor
+places the support hand incorrectly even when the right hand appears plausible.
+Use `--pose xbowrdy` for the holding pose or `--pose xbowshot` for the initial
+attack frame. Moving attack frames and body clearance still need client review.
+
+Review every replacement separately. A shared attachment-axis correction does not
+establish a good fit for different fore-end thicknesses, stocks and grips. Small
+vertical seating adjustments and pitch around the grip can close support-hand gaps;
+preserve uniform scale and inspect trigger contact after each adjustment. Record
+per-model fits locally and apply changes to the existing compiled node transforms
+where possible, preserving the verified geometry, UVs, normals and tangents.

@@ -61,6 +61,30 @@ public sealed class NamedAnimationPlayback
         }
     }
 
+    /// <summary>Reserves one-shot native preview ownership without installing authored mappings.</summary>
+    public string BeginNative(uint creature)
+    {
+        if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
+        ReleaseForNativePlayback(creature);
+        var token = Guid.NewGuid().ToString("N");
+        _runtime.SetToken(creature, token);
+        try
+        {
+            // Native one-shots finish at their model-specific length. Expire stale
+            // preview ownership silently instead of interrupting their natural exit.
+            _runtime.Schedule(10f, () =>
+            {
+                if (IsCurrent(creature, token)) ReleaseForNativePlayback(creature);
+            });
+            return token;
+        }
+        catch
+        {
+            if (IsCurrent(creature, token)) ReleaseForNativePlayback(creature);
+            throw;
+        }
+    }
+
     public void Complete(uint creature, string token)
     {
         if (!IsCurrent(creature, token)) return;

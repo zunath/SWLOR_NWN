@@ -8,13 +8,21 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.AnimationService;
 
 public static class AnimationPreviewCatalog
 {
     public const string OtherCategory = "Other";
-    public sealed record Entry(string Id, string DisplayName, AnimationClip Clip, IReadOnlyList<string> Categories);
+    public sealed record Entry(string Id, string DisplayName, AnimationClip Clip, IReadOnlyList<string> Categories,
+        Animation? NativeAnimation = null)
+    {
+        public string DurationText => NativeAnimation.HasValue ? "Native" : $"{Clip.Duration:0.##}s";
+        public string Play(uint creature) => NativeAnimation.HasValue
+            ? NamedAnimation.PlayNativePreview(creature, NativeAnimation.Value)
+            : NamedAnimation.Play(creature, Clip);
+    }
 
     public static IReadOnlyDictionary<string, AnimationClip> Clips { get; } = CreateClips();
 
@@ -41,6 +49,7 @@ public static class AnimationPreviewCatalog
         // Some buffs and casts declare their perk without a combat skill. Use that perk's category
         // when needed; keep shared clips in every category where they have a playback binding.
         var categories = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        var nativePreviews = new Dictionary<string, Animation>(StringComparer.OrdinalIgnoreCase);
         var authored = (authoredEntries ?? ActiveAbilityAnimationCatalog.Entries)
             .ToDictionary(entry => entry.Id, StringComparer.OrdinalIgnoreCase);
         foreach (var entry in authored.Values)
@@ -51,6 +60,13 @@ public static class AnimationPreviewCatalog
         }
         foreach (var ability in abilities)
         {
+            if (ability.NativeAnimationPreview.HasValue && ability.PreviewAnimation != null)
+            {
+                var key = ability.PreviewAnimation.Name;
+                if (nativePreviews.TryGetValue(key, out var previous) && previous != ability.NativeAnimationPreview.Value)
+                    throw new InvalidOperationException($"Conflicting native previews for animation '{key}'.");
+                nativePreviews[key] = ability.NativeAnimationPreview.Value;
+            }
             var skill = typeof(SkillType).GetField(ability.SkillType.ToString())?.GetCustomAttribute<SkillAttribute>();
             var category = ability.SkillType != SkillType.Invalid && skill is { IsActive: true } ? skill.Name : null;
             if (category == null && perks != null && perks.TryGetValue(ability.EffectiveLevelPerkType, out var perk) && perk.IsActive)
@@ -71,7 +87,8 @@ public static class AnimationPreviewCatalog
                     Regex.Replace(pair.Key, "(?<=[a-z0-9])(?=[A-Z])", " "), pair.Value,
                 Array.AsReadOnly(categories.TryGetValue(pair.Value.Name, out var names)
                     ? names.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray()
-                    : new[] { OtherCategory })))
+                    : new[] { OtherCategory }),
+                nativePreviews.TryGetValue(pair.Value.Name, out var native) ? native : null))
             .OrderBy(entry => entry.DisplayName, StringComparer.OrdinalIgnoreCase).ToArray());
     }
 

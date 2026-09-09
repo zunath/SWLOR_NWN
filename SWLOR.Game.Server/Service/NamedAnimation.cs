@@ -51,6 +51,31 @@ public static class NamedAnimation
     /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
     public static bool StopIfCurrent(uint creature, string token) => Playback.StopIfCurrent(creature, token);
 
+    /// <summary>Previews a native one-shot with the same stop and supersession ownership as named clips.</summary>
+    public static string PlayNativePreview(uint creature, Animation animation)
+    {
+        var token = Playback.BeginNative(creature);
+        try
+        {
+            AssignCommand(creature, () =>
+            {
+                if (!Playback.IsCurrent(creature, token)) return;
+                try { PlayAnimation(animation); }
+                catch
+                {
+                    if (Playback.IsCurrent(creature, token)) Playback.ReleaseForNativePlayback(creature);
+                    throw;
+                }
+            });
+        }
+        catch
+        {
+            if (Playback.IsCurrent(creature, token)) Playback.ReleaseForNativePlayback(creature);
+            throw;
+        }
+        return token;
+    }
+
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
     public static void ReleaseForNativePlayback(uint creature) => Playback.ReleaseForNativePlayback(creature);

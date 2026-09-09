@@ -8,10 +8,42 @@ from xml.etree import ElementTree as ET
 from pathlib import Path
 from unittest.mock import patch
 
-from UpdateAnimationBible import synchronize, synchronize_files, replace_outputs, conditional_replace
+from UpdateAnimationBible import synchronize, synchronize_files, replace_outputs, conditional_replace, details
 
 
 class AnimationBibleTests(unittest.TestCase):
+    def test_native_preview_uses_definition_instead_of_historical_motion_source(self):
+        for concurrent_edit in (False, True):
+            with self.subTest(concurrent_edit=concurrent_edit), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                workbook, manifest, registry, provenance, plan = [root / name for name in
+                    ("bible.xlsx", "manifest.json", "registry.json", "provenance.json", "plan.csv")]
+                definition = root / "TauntAbilityDefinition.cs"
+                definition.write_text(".UsesNativeAnimationPreview(Animation.FireForgetTaunt)")
+                workbook.write_bytes(b"original workbook")
+                manifest.write_text(json.dumps([{"Id": "Taunt", "InternalName": "sw_taunt",
+                    "BibleAnimationRow": 2, "DefinitionFiles": [definition.name]}]))
+                registry.write_text("[]")
+                provenance.write_text(json.dumps({"Animations": [{"Id": "Taunt", "Profile": "Sword slash"}]}))
+                plan.write_text("PerkId,Status,BibleAnimationRow\nTaunt,Installed,2\n")
+
+                def render(path, entries, records, original):
+                    cells = details(entries[0], {"ProjectPath": "old.swlanim"})
+                    self.assertEqual(cells["G"], "Base NWN FireForgetTaunt")
+                    self.assertEqual(cells["H"], "Native playback in game and tester")
+                    self.assertNotIn("old.swlanim", cells.values())
+                    if concurrent_edit:
+                        definition.write_text("changed while rendering")
+                    return b"new workbook"
+
+                with patch("UpdateAnimationBible.ROOT", root), patch("UpdateAnimationBible.render_workbook", side_effect=render):
+                    if concurrent_edit:
+                        with self.assertRaisesRegex(OSError, "Concurrent edit"):
+                            synchronize_files(manifest, workbook, registry, provenance, plan)
+                    else:
+                        synchronize_files(manifest, workbook, registry, provenance, plan)
+                self.assertEqual(workbook.read_bytes(), b"original workbook" if concurrent_edit else b"new workbook")
+
     def test_explicit_native_perk_stays_out_of_custom_animation_rows(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

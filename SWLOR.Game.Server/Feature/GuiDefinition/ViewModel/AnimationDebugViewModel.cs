@@ -82,7 +82,7 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
         foreach (var entry in _visible)
         {
             names.Add(entry.DisplayName);
-            durations.Add($"{entry.Clip.Duration:0.##}s");
+            durations.Add(entry.DurationText);
         }
         Names = names;
         Durations = durations;
@@ -106,8 +106,8 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
             return;
         }
         var entry = _visible[row];
-        _previewToken = NamedAnimation.Play(Player, entry.Clip);
-        StatusText = $"Last played: {entry.DisplayName} ({entry.Clip.Duration:0.##}s). Use Play to repeat.";
+        _previewToken = entry.Play(Player);
+        StatusText = $"Last played: {entry.DisplayName} ({entry.DurationText}). Use Play to repeat.";
     };
     public Action OnStop() => () =>
     {

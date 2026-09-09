@@ -10,6 +10,46 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class NamedAnimationPlaybackTests
 {
+    [Test]
+    public void NativePreviewUsesNoAuthoredMappingsAndOldTimeoutCannotStopItsReplacement()
+    {
+        var runtime = new Runtime();
+        var releases = 0;
+        var playback = new NamedAnimationPlayback(runtime, (_, _) => releases++);
+        playback.Begin(1, new AnimationClip("sw_old", 2), 2);
+        var native = playback.BeginNative(1);
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        playback.IsCurrent(1, native).Should().BeTrue();
+        var callbacks = runtime.Callbacks.ToArray();
+        var authored = playback.Begin(1, new AnimationClip("sw_new", 2), 2);
+        foreach (var callback in callbacks) callback();
+        playback.StopIfCurrent(1, native).Should().BeFalse();
+        playback.IsCurrent(1, authored).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_new");
+        releases.Should().Be(0);
+    }
+
+    [Test]
+    public void NativePreviewRepeatStopAndTimeoutPreserveNewerOwnershipAndNaturalNativeExit()
+    {
+        var runtime = new Runtime();
+        var releases = 0;
+        var playback = new NamedAnimationPlayback(runtime, (_, _) => releases++);
+        var first = playback.BeginNative(1);
+        var second = playback.BeginNative(1);
+        playback.StopIfCurrent(1, first).Should().BeFalse();
+        runtime.Callbacks[0]();
+        playback.IsCurrent(1, second).Should().BeTrue();
+        playback.StopIfCurrent(1, second).Should().BeTrue();
+        releases.Should().Be(1);
+        var third = playback.BeginNative(1);
+        foreach (var callback in runtime.Callbacks.ToArray()) callback();
+        playback.IsCurrent(1, third).Should().BeFalse();
+        runtime.Token.Should().BeEmpty();
+        releases.Should().Be(1, "native timeout must not force idle at a guessed model-specific duration");
+        runtime.ClearedActions.Should().Be(0);
+    }
+
     [TestCase(false)] [TestCase(true)]
     public void CancellationWithoutCurrentOwnershipPreservesUnrelatedQueuedWork(bool completed)
     {

@@ -297,6 +297,10 @@ def synchronize(workbook: Path, entries: list[dict], registry: list[dict]):
 
 
 def details(entry, installed):
+    if native := entry.get("NativeAnimationPreview"):
+        return {"F": entry["InternalName"], "G": f"Base NWN {native}",
+                "H": "Native playback in game and tester",
+                "I": "Native animation; no custom model required"}
     base = entry.get("Profile") or "Authored poses"
     source = entry.get("SourceModel", "")
     animation = entry.get("SourceAnimation")
@@ -317,6 +321,20 @@ def synchronize_files(manifest_path, workbook_path, registry_path, provenance_pa
             raise ValueError(f"Missing generation provenance: {entry['Id']}")
         for key in ("SourceModel", "SourceAnimation", "Profile"):
             entry[key] = provenance[entry["Id"]].get(key)
+        native = set()
+        for relative in entry.get("DefinitionFiles", []):
+            path = (ROOT / relative).resolve()
+            if not path.is_relative_to(ROOT.resolve()):
+                raise ValueError(f"Ability definition outside repository: {relative}")
+            if path not in captured:
+                captured[path] = path.read_bytes()
+            text = captured[path].decode("utf-8-sig")
+            text = re.sub(r"/\*.*?\*/|//[^\n]*", "", text, flags=re.S)
+            native.update(re.findall(r"\.UsesNativeAnimationPreview\s*\(\s*Animation\.(\w+)\s*\)", text))
+        if len(native) > 1:
+            raise ValueError(f"Conflicting native previews for {entry['Id']}")
+        if native:
+            entry["NativeAnimationPreview"] = native.pop()
     workbook_bytes = render_workbook(workbook_path, entries, json.loads(captured[registry_path].decode("utf-8-sig")), captured[workbook_path])
     rows = {e["Id"]: e["BibleAnimationRow"] for e in entries}
     for entry in source_entries:
@@ -342,7 +360,8 @@ def synchronize_files(manifest_path, workbook_path, registry_path, provenance_pa
                      manifest_path: (json.dumps(data, indent=2, ensure_ascii=False) + "\n").encode("utf-8"),
                      plan_path: stream.getvalue().encode("utf-8")},
                     {path: captured[path] for path in (workbook_path, manifest_path, plan_path)},
-                    {path: captured[path] for path in (registry_path, provenance_path)})
+                    {path: payload for path, payload in captured.items()
+                     if path not in (workbook_path, manifest_path, plan_path)})
     return len(entries)
 
 

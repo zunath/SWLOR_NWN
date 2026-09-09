@@ -113,6 +113,12 @@ or other visual effects. Test with actual equipment after deploying both body an
 
 ## Animation tester
 
+Provoke uses NWN's native `FireForgetTaunt` (108) for both ranks and for tester
+playback. Native timing follows the character model. Its historical `sw_provoke`
+name remains a searchable alias; the old generated sword clip is not selected.
+The Bible synchronizer reads explicit native preview declarations from ability
+definitions so later refreshes preserve this distinction.
+
 
 Use `/animations` to open the searchable **Animation Tester**. It is available to everyone
 on the Test environment, and to DM/Admin accounts on other environments. Search by readable

@@ -107,6 +107,15 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Uses a native one-shot in the animation tester instead of an authored clip.</summary>
+        public AbilityBuilder UsesNativeAnimationPreview(Animation animation)
+        {
+            if (animation == Animation.Invalid || !Enum.IsDefined(animation))
+                throw new ArgumentOutOfRangeException(nameof(animation));
+            _activeAbility.NativeAnimationPreview = animation;
+            return this;
+        }
+
         /// <summary>Plays the catalog gesture once at activation without occupying the action queue.</summary>
         public AbilityBuilder UsesImmediateAuthoredAnimation()
         {

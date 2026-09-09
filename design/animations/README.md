@@ -1,16 +1,18 @@
 # Game animations
 
 This branch contains perk playback, the in-game animation tester, authored clips, and the
-current animation production plan. The command-line generator uses the shared headless
+current animation production plan, plus a standing fishing sequence. The command-line generator uses the shared headless
 animation library and works without the separate Avalonia animation editor.
 
-The active library covers 281 animation entries and 506 ability-rank bindings: 213 custom
+The active ability library covers 281 animation entries and 506 ability-rank bindings: 213 custom
 perk requirements, 67 active Mimicry techniques, and Call Beast as its own action.
 Stealth retains its native toggle and has no custom project, installed clip, or tester entry.
 The perk plan keeps its explicit `Native` exclusion without an internal animation name.
 Beast abilities are excluded because their models have separate animation sets; player
 Beast Mastery actions remain included. The Animations tab retains all 119 image references
 and documents every entry's internal name, base motion, source project, and review status.
+The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
+clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
 The seven original Vibroblade clips are preserved. New clips are editable adaptations of
 native motion families or generated motion bases, and require in-game visual review.
 
@@ -87,7 +89,10 @@ performs two compressions, and rises. Ghost Protocol's recipe in
 escape posture. These recipes use the same generation and provenance workflow described above.
 The native Stealth toggle has no custom animation and remains separate from Ghost Protocol.
 Review the new motions with equipped items in the live game; the skeletal clips do not
-create medical props or alter healing, resource costs, or stealth mechanics.
+create medical props or alter healing, resource costs, or stealth mechanics. Current equipment
+remains visible. Focus Stim and Resuscitation place the weapon hand forward and outward
+to clear the head in sampled equipped poses while preserving the native wrist grip. This
+is offline asset verification, not a claim of live NWN visual validation.
 
 ## Animation tester
 
@@ -116,6 +121,28 @@ with a searchable [CSV](animation-plan.csv). It groups current active perks,
 preserves matching Bible image references, and identifies installed clips and shared-motion candidates.
 
 ## Authored clips and generation
+
+### Fishing activity
+
+`fishing/` contains the same cast, wait, reel, and idle sequence at six, seven, and eight
+seconds. Only the holding interval varies, preserving the activity's random wait time.
+Fishing selects the matching `AuthoredAnimation.Fishing6`, `Fishing7`, or `Fishing8` clip.
+Movement, combat, death, rod removal, and point exhaustion release only the animation
+owned by that attempt. Completion callbacks capture the attempt ID so an old timer cannot
+finish a restarted cast. Fish rewards, bait consumption, and catch odds are unchanged.
+
+The editable sources are installed on both humanoid supermodel chains. `/animations`
+lists them under **Other**; equip a fishing rod to check the actual attachment in game.
+The recipe uses `activity: "Fishing"` and an empty `abilityDefinition`. Activity recipes
+must name a real non-invalid `ActivityStatusType`; perk recipes still require a current
+ability definition. Generate and install with the same commands below, substituting the
+`fishing` folder and each `Fishing6`, `Fishing7`, and `Fishing8` project.
+
+The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, using the
+bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
+playback. After installing, compile the banks and regenerate the clothing bridges as below.
+
+### Library layout
 
 ```text
 design/animations/
@@ -173,7 +200,7 @@ for a longer cast/channel. Damage, costs, cooldowns, and movement rules are unch
 `/animtest ShieldBash` previews a clip on your character; `/animtest` lists all names. This debug
 command is available to DM/Admin accounts and everyone on a test server. Hacking Blade and Carve
 are outdated spreadsheet entries with no current matching abilities, so they are excluded
-from the recipe, installed models, registry, and preview list. Recipe entries must identify an
+from the recipe, installed models, registry, and preview list. Perk recipe entries must identify an
 existing `IAbilityListDefinition`; generation rejects stale entries instead of inventing perks.
 
 To update an installed draft from the command line, run this against an
@@ -284,6 +311,12 @@ For an update that would outgrow an already packed bank, add `--clips-per-bank 6
 more room before reinstalling. The default remains 128. A limit of `1` is a diagnostic
 option for small libraries; it still obeys the 32-model chain limit and will usually be
 rejected for large libraries. Neither option changes any motion keys or raises byte limits.
+
+Keep bank animation blocks sorted by name; the installer now sorts the complete bank before
+compilation. Offline pose sampling alone does not validate native animation lookup or equipment
+overlays. Fishing rods use the standard wield setting in `baseitems.2da`: the polearm setting
+adds a shoulder-rest overlay that masks the right arm during the fishing clip. Validate fishing
+with the rod equipped after replacing the HAKs, restarting the server, and reopening the client.
 
 RGB robe phenotypes also have generated animation bridges for their separate garment joints.
 Publish generated robe updates in a separate HAK PR from the humanoid animation banks.

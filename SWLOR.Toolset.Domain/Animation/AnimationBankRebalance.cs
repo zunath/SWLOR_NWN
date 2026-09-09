@@ -163,6 +163,7 @@ public static class AnimationBankRebalance
                     $@"(?m)^([ \t]*(?:(?:newmodel|beginmodelgeom|endmodelgeom|donemodel|parent|animroot)[ \t]+|(?:node|newanim|doneanim)[ \t]+\S+[ \t]+)){Regex.Escape(model.Name)}(?=[ \t]*\r?$)",
                     match => match.Groups[1].Value + name);
                 output = Regex.Replace(output, @"(?m)^setsupermodel\s+\S+\s+\S+\r?$", "setsupermodel " + name + " " + super);
+                output = AnimationInstall.SortAnimationBlocks(output);
                 var bytes = Encoding.UTF8.GetBytes(output);
                 if (bytes.Length > bankBudget || bytes.Length > AnimationInstall.MaximumOutputBytes - outputBytes)
                     throw new InvalidDataException("Rebalanced output exceeds its bounded bank or transaction budget.");

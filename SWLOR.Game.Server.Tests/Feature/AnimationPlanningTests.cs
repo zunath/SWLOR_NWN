@@ -109,7 +109,7 @@ public class AnimationPlanningTests
     }
 
     private sealed record PlannedAnimation(string Id, string Name, string InternalName, string Category,
-        string PerkId, string[] Feats, string[] DefinitionFiles, string Reference);
+        string PerkId, string[] Feats, string[] DefinitionFiles, string Reference, int BibleAnimationRow);
 
     private static PlannedAnimation[] ActivePlan() => JsonSerializer.Deserialize<PlannedAnimation[]>(
         File.ReadAllText(Path.Combine(Root, "design/animations/active-abilities.json")))!;
@@ -182,8 +182,16 @@ public class AnimationPlanningTests
             (entry.InternalName + "_out").Length.Should().BeLessThanOrEqualTo(16);
         }
         using var registry = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "design/animations/registry.json")));
-        foreach (var entry in registry.RootElement.EnumerateArray())
-            names[entry.GetProperty("Name").GetString()!].Should().Be(entry.GetProperty("AnimationName").GetString());
+        var installed = registry.RootElement.EnumerateArray().ToDictionary(
+            entry => entry.GetProperty("Name").GetString()!);
+        foreach (var entry in names)
+            installed[entry.Key].GetProperty("AnimationName").GetString().Should().Be(entry.Value);
+        installed.Keys.Except(names.Keys).Should().BeEquivalentTo("Fishing6", "Fishing7", "Fishing8");
+        foreach (var id in installed.Keys.Except(names.Keys))
+        {
+            installed[id].GetProperty("AnimationName").GetString().Should().Be("sw_" + id.ToLowerInvariant());
+            File.Exists(Path.Combine(Root, installed[id].GetProperty("ProjectPath").GetString()!)).Should().BeTrue();
+        }
     }
 
     [Test]
@@ -232,12 +240,15 @@ public class AnimationPlanningTests
         {
             Number = (int)row.Attribute("r")!,
             Cells = row.Elements(ns + "c").ToDictionary(c => Regex.Replace((string)c.Attribute("r")!, "[0-9]", ""), Text)
-        }).Where(row => row.Number > 1 && row.Cells.ContainsKey("C")).ToArray();
+        }).Where(row => row.Number > 1 && !string.IsNullOrWhiteSpace(row.Cells.GetValueOrDefault("C", ""))).ToArray();
         rows.Should().NotBeEmpty();
-        rows.Select(row => row.Number).Should().Equal(Enumerable.Range(2, rows.Length));
+        plan.Select(entry => entry.BibleAnimationRow).Should().OnlyHaveUniqueItems().And.OnlyContain(number => number > 1);
+        rows.Select(row => row.Number).Should().Equal(plan.Select(entry => entry.BibleAnimationRow).OrderBy(number => number),
+            "removed animations leave stable row gaps so existing image references are not shifted");
         foreach (var row in rows)
         {
             var entry = plan.Single(p => p.Category == row.Cells["B"] && p.Name == row.Cells["C"]);
+            entry.BibleAnimationRow.Should().Be(row.Number);
             entry.Reference.Should().Be(row.Cells.GetValueOrDefault("E", ""));
             row.Cells.GetValueOrDefault(internalNameColumn, "").Should().Be(entry.InternalName);
         }

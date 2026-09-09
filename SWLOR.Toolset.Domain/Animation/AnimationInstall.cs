@@ -186,6 +186,18 @@ public sealed class AnimationInstallPlan
 
 public static class AnimationInstall
 {
+    internal static string SortAnimationBlocks(string source)
+    {
+        var pattern = new Regex(@"(?m)^newanim (\S+) [^\r\n]+\r?\n[\s\S]*?^doneanim \1 [^\r\n]+(?:\r?\n|$)");
+        // Resrefs use canonical lowercase ASCII ordering. OrdinalIgnoreCase folds to
+        // uppercase, which places letters before underscores and changes this order.
+        var blocks = pattern.Matches(source).Cast<Match>()
+            .OrderBy(match => match.Groups[1].Value.ToLowerInvariant(), StringComparer.Ordinal)
+            .Select(match => match.Value).ToArray();
+        var index = 0;
+        return pattern.Replace(source, _ => blocks[index++]);
+    }
+
     private static StringComparison PathComparison => OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
     internal static StringComparer PathComparer => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
     internal static bool IsModelPath(string path) => Path.GetExtension(path).Equals(".mdl", StringComparison.OrdinalIgnoreCase);
@@ -593,6 +605,8 @@ public static class AnimationInstall
             }
             if (Encoding.ASCII.GetByteCount(overlay) > bankBudget)
                 throw new InvalidDataException("Completed animation bank exceeds its input size limit. Rebalance the target's banks before updating this clip.");
+            // The native compiler retains source order in the animation lookup table.
+            overlay = SortAnimationBlocks(overlay);
             EnsureOutputCapacity(Encoding.ASCII.GetByteCount(overlay));
             var overlayBytes = Encoding.ASCII.GetBytes(overlay);
             Add(overlayPath, overlayBytes);

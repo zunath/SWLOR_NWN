@@ -75,6 +75,7 @@ public class AnimationDebugTests
             .Should().Contain("ShieldBash").And.Contain("ShieldWall");
     }
 
+    /// <summary>Checks ability-derived categories and the fallback category for activity clips.</summary>
     [Test]
     public void EveryGeneratedClipHasItsReadableNameAndCategoryWithoutRequiringPlaybackOverrides()
     {
@@ -87,6 +88,8 @@ public class AnimationDebugTests
         foreach (var entry in ActiveAbilityAnimationCatalog.Entries)
             entries.Should().ContainSingle(preview => preview.Id == entry.Id && preview.DisplayName == entry.DisplayName &&
                 preview.Categories.Contains(entry.Category));
+        entries.Where(entry => entry.Id.StartsWith("Fishing", StringComparison.Ordinal))
+            .Should().HaveCount(3).And.OnlyContain(entry => entry.Categories.SequenceEqual(new[] { "Other" }));
     }
 
     [Test]

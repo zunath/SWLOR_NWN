@@ -2808,5 +2808,35 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/first-aid/Resuscitation.swlanim"
+  },
+  {
+    "Name": "Fishing6",
+    "AnimationName": "sw_fishing6",
+    "Duration": 6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/fishing/Fishing6.swlanim"
+  },
+  {
+    "Name": "Fishing7",
+    "AnimationName": "sw_fishing7",
+    "Duration": 7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/fishing/Fishing7.swlanim"
+  },
+  {
+    "Name": "Fishing8",
+    "AnimationName": "sw_fishing8",
+    "Duration": 8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/fishing/Fishing8.swlanim"
   }
 ]

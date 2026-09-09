@@ -170,4 +170,19 @@ public class AnimationBankRebalanceTests
         AnimationBankRebalance.Prepare(_root, "a_ba").Changes.Should().BeEmpty();
         AnimationBankRebalance.Prepare(_root, "a_ba", 1).Changes.Should().HaveCount(2);
     }
+
+    [Test]
+    public void SplitBanksSortNativeLookupTablesWithoutRewritingAnimationPayloads()
+    {
+        File.WriteAllText(Path.Combine(_models, "an_a_ba.mdl"), Model("an_a_ba", "NULL", Triplet("sw_two") + Triplet("sw_one") + Triplet("sw_three")));
+        var registryPath = Path.Combine(_root, "design", "animations", "registry.json");
+        var registry = JsonSerializer.Deserialize<List<AnimationRegistration>>(File.ReadAllText(registryPath))!;
+        registry.Add(new("Three", "sw_three", 1, ["SWLOR_Haks/models/a_ba.mdl"]));
+        File.WriteAllText(registryPath, JsonSerializer.Serialize(registry));
+        var plan = AnimationBankRebalance.Prepare(_root, "a_ba", 2);
+        foreach (var change in plan.Changes)
+            new MdlReader().Parse(change.After).Animations.Select(animation => animation.Name.ToLowerInvariant())
+                .Should().BeInAscendingOrder(StringComparer.Ordinal);
+        Encoding.UTF8.GetString(plan.Changes[0].After).Should().Contain(Triplet("sw_one")).And.Contain(Triplet("sw_two"));
+    }
 }

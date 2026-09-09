@@ -76,6 +76,9 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FinalMandateTechnique = new("sw_fina_mand", 1.35000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FinalSuppressionTechnique = new("sw_fina_supp", 1.10000002f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FinishingDriveTechnique = new("sw_fini_driv", 1.10000002f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Fishing6 = new("sw_fishing6", 6f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Fishing7 = new("sw_fishing7", 7f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Fishing8 = new("sw_fishing8", 8f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Flamethrower = new("sw_flamethrw", 2.0999999f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Flash = new("sw_flash", 1.20000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip FlashGrenade = new("sw_flashgren", 1.14999998f);

@@ -65,6 +65,7 @@ public class AuthoredCombatAnimationTests
         runtime.Token.Should().BeEmpty();
     }
 
+    /// <summary>Checks that the preview catalog retains the installed perk and fishing clips.</summary>
     [Test]
     public void PreviewIncludesCurrentPerkMovesAndFishing()
     {

@@ -17,6 +17,7 @@ internal sealed record Beat(float Time, string Label, JsonObject Pose, bool Thro
 
 internal static class MotionAuthor
 {
+    /// <summary>Bakes pose controls into validated, interpolated skeletal keys with grounded feet and a closed exit.</summary>
     public static AnimationProject Bake(AnimationProject rig, PosedNode[] neutral, Recipe recipe, Motion motion)
     {
         var beats = motion.Beats;

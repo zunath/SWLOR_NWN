@@ -74,6 +74,7 @@ public class AnimationDebugTests
         AnimationPreviewCatalog.Search("shield", "Other", entries).Should().HaveCount(2);
     }
 
+    /// <summary>Checks ability-derived categories and the fallback category for activity clips.</summary>
     [Test]
     public void PerkClipsDeriveVibrobladeCategoryAndFishingUsesOther()
     {

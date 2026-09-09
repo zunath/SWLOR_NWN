@@ -21,6 +21,7 @@ public class FishingAnimationTests
         }
     }
 
+    /// <summary>Checks source foot clearance before optional installed-bank duration and idle-exit validation.</summary>
     [TestCase(6)] [TestCase(7)] [TestCase(8)]
     public void ActivityDurationMatchesInstalledClipsOnBothHumanoidRigs(int seconds)
     {
@@ -32,6 +33,13 @@ public class FishingAnimationTests
         registration.Targets.Should().HaveCount(2);
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, registration.ProjectPath!)));
         project.Duration.Should().Be(seconds);
+        // A full-motion sample checks feet throughout interpolated cast and reel phases.
+        for (var time = 0f; time <= seconds; time += 1f / 60)
+        {
+            var world = AnimationRig.World(project.Joints, project.Sample(time));
+            foreach (var foot in new[] { "lfoot_g", "rfoot_g" })
+                world[project.Joints.FindIndex(j => j.Name == foot)].Translation.Z.Should().BeGreaterThan(.125f);
+        }
         foreach (var targetPath in registration.Targets)
         {
             var fullPath = Path.Combine(Root, targetPath);
@@ -67,12 +75,6 @@ public class FishingAnimationTests
                 }
             }
         }
-        // A full-motion sample checks feet throughout interpolated cast and reel phases.
-        for (var time = 0f; time <= seconds; time += 1f / 60)
-        {
-            var world = AnimationRig.World(project.Joints, project.Sample(time));
-            foreach (var foot in new[] { "lfoot_g", "rfoot_g" })
-                world[project.Joints.FindIndex(j => j.Name == foot)].Translation.Z.Should().BeGreaterThan(.125f);
-        }
+
     }
 }

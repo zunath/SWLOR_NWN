@@ -9,6 +9,10 @@ internal static class PreviewWriter
     private static readonly string[] Bones = ["rootdummy", "torso_g", "neck_g", "head_g", "lbicep_g", "lforearm_g", "lhand_g",
         "rbicep_g", "rforearm_g", "rhand_g", "lthigh_g", "lshin_g", "lfoot_g", "rthigh_g", "rshin_g", "rfoot_g"];
 
+    /// <summary>Returns the accessory's local tip offset for every offline preview producer.</summary>
+    public static Vector3 WeaponTipOffset(string? activity) => new(0, activity == "Fishing" ? 1.72f : .8f, 0);
+
+    /// <summary>Samples saved humanoid joints and attachment proxies for the browser preview.</summary>
     public static object Motion(AnimationProject project, Motion motion)
     {
         int Joint(string name)
@@ -29,7 +33,7 @@ internal static class PreviewWriter
             // cannot conceal a misplaced sword or a shield rotated by the forearm.
             var weapon = world[weaponIndex];
             var shield = world[shieldIndex];
-            points.Add(Vector3.Transform(new Vector3(0, motion.Activity == "Fishing" ? 1.72f : .8f, 0), weapon));
+            points.Add(Vector3.Transform(WeaponTipOffset(motion.Activity), weapon));
             foreach (var (x, z) in new[] { (-.19f, .49f), (.19f, .49f), (.28f, .34f), (.28f, -.34f),
                          (.19f, -.49f), (-.19f, -.49f), (-.28f, -.34f), (-.28f, .34f) })
                 points.Add(Vector3.Transform(new Vector3(-.09f, z, x), shield));
@@ -43,6 +47,7 @@ internal static class PreviewWriter
             project.Duration, Beats = motion.Beats.Select(b => new { b.Time, b.Label }), Frames = frames };
     }
 
+    /// <summary>Embeds the sampled motions in the self-contained preview page.</summary>
     public static string Html(IEnumerable<object> motions) =>
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Preview.html"))
             .Replace("__MOTIONS__", JsonSerializer.Serialize(motions));

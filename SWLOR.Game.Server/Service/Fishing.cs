@@ -331,13 +331,14 @@ namespace SWLOR.Game.Server.Service
                 player,
                 receiver => $"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.");
 
-            AssignCommand(player, () => ClearAllActions());
+            ClearAllActions(oObject: player);
             BiowarePosition.TurnToFaceObject(fishingPoint, player);
             var clip = GetFishingAnimation(fishingDelay);
             SetLocalString(player, FishingAnimationVariable, NamedAnimation.Play(player, clip));
             AssignCommand(GetModule(), () => CheckPosition(player, position, attemptId));
         }
 
+        /// <summary>Selects the complete fishing sequence matching the activity's wait duration.</summary>
         public static AnimationClip GetFishingAnimation(int seconds) => seconds switch
         {
             6 => AuthoredAnimation.Fishing6,
@@ -491,6 +492,7 @@ namespace SWLOR.Game.Server.Service
             Skill.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
         }
 
+        /// <summary>Releases this attempt's animation and state without clearing a replacement activity.</summary>
         private static void ClearFishingAttempt(uint player)
         {
             NamedAnimation.StopIfCurrent(player, GetLocalString(player, FishingAnimationVariable));

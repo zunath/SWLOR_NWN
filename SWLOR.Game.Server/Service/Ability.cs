@@ -575,14 +575,6 @@ namespace SWLOR.Game.Server.Service
                 return Deny("You are busy.");
             }
 
-            if (ability.ActivationType == AbilityActivationType.Weapon &&
-                Combat.IsWeaponSkillType(ability.SkillType) &&
-                !Combat.HasEquippedWeaponForAbilitySkill(activator, ability.SkillType))
-            {
-                var skillName = Skill.GetSkillDetails(ability.SkillType).Name;
-                return Deny($"You must equip a {skillName} weapon to use this ability.");
-            }
-
             if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {

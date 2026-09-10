@@ -11126,15 +11126,6 @@ namespace SWLOR.Game.Server.Service
             return OBJECT_INVALID;
         }
 
-        public static bool HasEquippedWeaponForAbilitySkill(uint creature, SkillType abilitySkillType)
-        {
-            if (!GetIsObjectValid(creature) || !IsWeaponSkillType(abilitySkillType))
-                return false;
-
-            return CanItemTriggerWeaponAbility(GetItemInSlot(InventorySlot.RightHand, creature), abilitySkillType) ||
-                   CanItemTriggerWeaponAbility(GetItemInSlot(InventorySlot.LeftHand, creature), abilitySkillType);
-        }
-
         public static bool CanItemTriggerWeaponAbility(uint item, SkillType abilitySkillType)
         {
             if (!GetIsObjectValid(item))
@@ -11146,7 +11137,9 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanWeaponSkillTriggerAbility(SkillType weaponSkillType, SkillType abilitySkillType)
         {
-            return !IsWeaponSkillType(abilitySkillType) || weaponSkillType == abilitySkillType;
+            // An ability's skill controls scaling, not which weapon can deliver it.
+            // Keep non-weapon items from triggering weapon abilities through item-hit events.
+            return !IsWeaponSkillType(abilitySkillType) || IsWeaponSkillType(weaponSkillType);
         }
 
         public static bool IsWeaponSkillType(SkillType skillType)

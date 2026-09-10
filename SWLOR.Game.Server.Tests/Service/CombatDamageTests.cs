@@ -187,21 +187,32 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void WeaponAbilities_OnlyUseTheirDeclaredWeaponSkill()
+    public void WeaponAbilities_AcceptEveryWeaponSkillRegardlessOfTheirDeclaredSkill()
     {
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Vibroknife, SkillType.Vibroknife).Should().BeTrue();
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Spear, SkillType.Vibroknife).Should().BeFalse();
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Vibroblade, SkillType.Lightsaber).Should().BeFalse();
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Invalid, SkillType.Vibroknife).Should().BeFalse();
+        var weaponSkills = Enum.GetValues<SkillType>().Where(Combat.IsWeaponSkillType).ToArray();
+        weaponSkills.Should().NotBeEmpty();
+        foreach (var abilitySkill in weaponSkills)
+        {
+            foreach (var weaponSkill in weaponSkills)
+            {
+                Combat.CanWeaponSkillTriggerAbility(weaponSkill, abilitySkill).Should().BeTrue(
+                    $"{abilitySkill} abilities must work with {weaponSkill} weapons");
+            }
+
+            Combat.CanWeaponSkillTriggerAbility(SkillType.Invalid, abilitySkill).Should().BeFalse();
+            Combat.CanWeaponSkillTriggerAbility(SkillType.Armor, abilitySkill).Should().BeFalse();
+        }
+
         Combat.CanWeaponSkillTriggerAbility(SkillType.Spear, SkillType.Invalid).Should().BeTrue();
 
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
 
-        abilitySource.Should().Contain("Combat.HasEquippedWeaponForAbilitySkill(activator, ability.SkillType)");
-        abilitySource.Should().Contain("You must equip a {skillName} weapon to use this ability.");
+        abilitySource.Should().NotContain("HasEquippedWeaponForAbilitySkill");
+        abilitySource.Should().NotContain("You must equip a {skillName} weapon to use this ability.");
         usePerkFeatSource.Should().Contain("Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType)");
+        usePerkFeatSource.Should().Contain("Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType)");
     }
 
     [Test]

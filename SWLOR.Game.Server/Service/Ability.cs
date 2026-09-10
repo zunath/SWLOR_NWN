@@ -798,7 +798,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        private static void ApplyAuraEffect(uint source, uint recipient, Type type)
+        private static void ApplyAuraEffect(uint source, uint recipient, Type type, Action<uint> onApplied = null)
         {
             if (StatusEffect.HasStatusEffect(recipient, type, source) ||
                 HasEqualOrStrongerAuraEffect(source, recipient, type))
@@ -807,7 +807,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             RemoveWeakerDuplicateAuraEffects(source, recipient, type);
-            StatusEffect.ApplyStatusEffect(source, recipient, type, 0f);
+            if (StatusEffect.ApplyStatusEffect(source, recipient, type, 0f))
+                onApplied?.Invoke(recipient);
         }
 
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
@@ -850,7 +851,7 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
-        public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
+        public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies, Action<uint> onApplied = null)
         {
             if (!_playerAuras.ContainsKey(activator))
                 _playerAuras.Add(activator, new PlayerAura());
@@ -895,7 +896,7 @@ namespace SWLOR.Game.Server.Service
 
             if (targetsSelf)
             {
-                ApplyAuraEffect(activator, activator, type);
+                ApplyAuraEffect(activator, activator, type, onApplied);
             }
 
             if (targetsParty)
@@ -903,7 +904,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var member in aura.PartyMembersInRange)
                 {
                     if (Party.IsInParty(activator, member))
-                        ApplyAuraEffect(activator, member, type);
+                        ApplyAuraEffect(activator, member, type, onApplied);
                 }
             }
 
@@ -913,7 +914,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (!GetIsDMPossessed(npc) && !GetIsDM(npc) &&
                         (GetIsEnemy(activator, npc) || GetIsEnemy(npc, activator)))
-                        ApplyAuraEffect(activator, npc, type);
+                        ApplyAuraEffect(activator, npc, type, onApplied);
                 }
             }
 

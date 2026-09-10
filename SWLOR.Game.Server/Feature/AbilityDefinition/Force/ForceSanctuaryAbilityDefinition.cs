@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -56,6 +57,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
+            var pulseReceipts = new Dictionary<float, Action<uint>>();
+            Action<uint> ReceiptForPulse(float delay)
+            {
+                if (!pulseReceipts.TryGetValue(delay, out var receipt))
+                {
+                    receipt = Ability.CaptureSuccessfulImpactVisualEffect(activator);
+                    pulseReceipts.Add(delay, receipt);
+                }
+                return receipt;
+            }
+
             AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
                 location,
@@ -64,7 +76,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 typeof(ForceSanctuary1StatusEffect),
                 AllyPulseVisualEffect,
                 areaMarkerVisualEffect: AreaMarkerVisualEffect,
-                areaMarkerVisualEffectScale: AreaMarkerVisualEffectScale);
+                areaMarkerVisualEffectScale: AreaMarkerVisualEffectScale,
+                pulseVisualEffects: ReceiptForPulse);
 
             AbilityAreaEffects.ScheduleFriendlyZoneHealing(
                 activator,
@@ -78,7 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     ForceControlHealingEffects.ApplyRestorativeControlPower(
                         activator,
                         friendly,
-                        targetWasBelowHalfHP));
+                        targetWasBelowHalfHP),
+                pulseVisualEffects: ReceiptForPulse);
         }
     }
 }

@@ -50,7 +50,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect visualEffect = VisualEffect.None,
             Action<uint, float> onFirstApplication = null,
             VisualEffect areaMarkerVisualEffect = VisualEffect.None,
-            float areaMarkerVisualEffectScale = 1f)
+            float areaMarkerVisualEffectScale = 1f,
+            Func<float, Action<uint>> pulseVisualEffects = null)
         {
             CreatePersistentSphereIndicator(
                 activator,
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             for (var elapsed = 0f; elapsed < durationSeconds - 0.01f; elapsed += 3f)
             {
                 var pulseDelay = elapsed;
-                var playReceipt = Ability.CaptureSuccessfulImpactVisualEffect(activator);
+                var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
@@ -98,12 +99,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Type statusEffect = null,
             VisualEffect visualEffect = VisualEffect.None,
             float multiplier = 1f,
-            Action<uint, bool> onHealed = null)
+            Action<uint, bool> onHealed = null,
+            Func<float, Action<uint>> pulseVisualEffects = null)
         {
             for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)
             {
                 var pulseDelay = elapsed;
-                var playReceipt = Ability.CaptureSuccessfulImpactVisualEffect(activator);
+                var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))

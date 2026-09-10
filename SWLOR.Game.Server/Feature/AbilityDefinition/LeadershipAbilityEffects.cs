@@ -119,8 +119,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Ability.RemoveAura(activator, auraType);
             }
 
-            Ability.ApplyAura(activator, statusEffectType, true, true, false);
-            Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
+            Ability.ApplyAura(activator, statusEffectType, true, true, false,
+                recipient => Ability.PlaySuccessfulImpactVisualEffect(activator, recipient));
             return true;
         }
     }

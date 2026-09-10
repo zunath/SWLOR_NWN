@@ -328,7 +328,9 @@ model number, ownership, or equip/unequip event; native engine tests verify this
 with real event observers and gameplay-state snapshots.
 
 Regenerate after changing a source robe or base skeleton, and rebuild
-`sw_pt_root.hak`, `sw_pt_robe.hak`, and `sw_2da.hak` together. The tint generator
+`sw_anim_m.hak`, `sw_anim_f.hak`, `sw_pt_root.hak`, `sw_pt_robe.hak`, and `sw_2da.hak`
+together. Follow the [animation rebuild workflow](../../design/animations/README.md#clothing-animation-bridges)
+to stage new bridges, pruned files, and the generated catalog before packaging. The tint generator
 keeps derived roots out of material-scope inference and checks their source/output
 hash manifest instead. A full client restart is required after installing models
 or phenotype tables. The female human robe187 prototype was verified in the

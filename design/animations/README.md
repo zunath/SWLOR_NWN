@@ -421,13 +421,18 @@ repository before packaging; otherwise a robe can continue using its older movem
 ```powershell
 python -B tools/GenerateRobeRgbModels.py --game-data "<NWN installation>/data" --apply
 python -B tools/PruneRobeAnimationBridges.py --apply
-git add -u -- sw_pt_root
+git add -A -- sw_anim_m sw_anim_f sw_pt_root sw_pt_robe sw_2da tools/RobeRgbModels.json
 python -B tools/PruneRobeAnimationBridges.py
-python -B tools/GenerateRobeRgbModels.py --check
+python -B tools/GenerateRobeRgbModels.py --check --game-data "<NWN installation>/data"
 ```
 
-Run these commands from `SWLOR_Haks`. Package and deploy `sw_pt_root.hak`, `sw_pt_robe.hak`,
-and `sw_2da.hak` together with the HAK containing the changed animation overlays.
+Run these commands from `SWLOR_Haks`. The staging step includes newly allocated bridges,
+pruned deletions, wearable models, tables, and the generated catalog. Package and deploy
+`sw_anim_m.hak`, `sw_anim_f.hak`, `sw_pt_root.hak`, `sw_pt_robe.hak`, and `sw_2da.hak`
+together with the HAK containing the changed animation overlays (usually `sw_cr_creature.hak`).
+Keep the male and female bridge packages separate so each archive stays below 2 GiB.
+Both build configurations and the module's HAK list must include `sw_anim_m` and `sw_anim_f`.
+Install the matching package versions on the server and client, then restart both.
 The generator audits body poses, weapon attachments, garment bindings, and source/output hashes.
 The cleanup keeps every bridge referenced by a current or retired body model, including transitive
 parents across all configured HAK layers. It removes only verified, unreachable generated files;

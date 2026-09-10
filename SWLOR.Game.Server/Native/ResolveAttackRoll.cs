@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using System.Runtime.InteropServices;
+using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using ImmunityType = NWN.Native.API.ImmunityType;
@@ -125,6 +126,9 @@ namespace SWLOR.Game.Server.Native
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+                var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility)
+                    ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
+                    : weaponSkillType;
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
@@ -162,16 +166,19 @@ namespace SWLOR.Game.Server.Native
 
                 Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none" : weapon.GetFirstName().GetSimple(0)));
 
-                var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon);
+                var accuracyAbility = queuedAbility == null
+                    ? AbilityType.Invalid
+                    : Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
+                var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
                 attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,
                     attackerAccuracy);
-                var defenderEvasion = Stat.GetEvasionNative(defender, weaponSkillType);
+                var defenderEvasion = Stat.GetEvasionNative(defender, abilitySkillType);
                 defenderEvasion = Combat.ApplySideAttackEvasionIgnore(
                     attacker.m_idSelf,
                     defender.m_idSelf,
-                    weaponSkillType,
+                    abilitySkillType,
                     defenderEvasion);
 
                 //---------------------------------------------------------------------------------------------
@@ -232,15 +239,15 @@ namespace SWLOR.Game.Server.Native
                         ? Combat.GetRangedAbilityLongRangeHitChanceAdjustment(
                             attacker.m_idSelf,
                             defender.m_idSelf,
-                            weaponSkillType)
+                            abilitySkillType)
                         : 0;
                 var hitChanceModifier =
-                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType) +
+                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
                     queuedWeaponAbilityLongRangeHitChanceAdjustment +
                     Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
                     Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                         attacker.m_idSelf,
-                        weaponSkillType) +
+                        abilitySkillType) +
                     Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
                         attacker.m_idSelf,
                         defender.m_idSelf,
@@ -396,7 +403,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     Combat.StoreQueuedWeaponAbilityCriticalRateBonus(
                         attacker.m_idSelf,
-                        weaponSkillType,
+                        abilitySkillType,
                         autoAttackCycleCriticalRate);
                 }
                 else

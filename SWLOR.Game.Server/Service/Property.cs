@@ -1911,6 +1911,11 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
+        /// <summary>
+        /// Deletes a property and its owned children, clears associated data and permissions,
+        /// and revokes its citizens' membership and unpaid citizenship taxes.
+        /// </summary>
+        /// <param name="property">The property to delete.</param>
         public static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
@@ -1987,6 +1992,7 @@ namespace SWLOR.Game.Server.Service
             {
                 Log.Write(LogGroup.Property, $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
                 citizen.CitizenPropertyId = string.Empty;
+                citizen.PropertyOwedTaxes = 0;
                 DB.Set(citizen);
             }
 
@@ -2449,6 +2455,8 @@ namespace SWLOR.Game.Server.Service
                 location);
 
             dbPlayer.CitizenPropertyId = city.Id;
+            // A new citizenship must not inherit taxes from a previously deleted city.
+            dbPlayer.PropertyOwedTaxes = 0;
             DB.Set(dbPlayer);
 
             Log.Write(LogGroup.Property, $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");

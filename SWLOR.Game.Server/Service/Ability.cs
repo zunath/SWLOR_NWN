@@ -108,7 +108,8 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             bool countsAsAttackAttempt = true,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
-            AbilityImpactSequence sequence = null)
+            AbilityImpactSequence sequence = null,
+            uint triggeringWeapon = OBJECT_INVALID)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -117,6 +118,9 @@ namespace SWLOR.Game.Server.Service
                 countsAsAttackAttempt: countsAsAttackAttempt,
                 activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
+                ? Item.GetDMG(triggeringWeapon)
+                : null;
             trackedImpact.ResolveDamageBonuses = () =>
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
@@ -186,7 +190,8 @@ namespace SWLOR.Game.Server.Service
                 activationAreaTelegraphs,
                 sequence)
             {
-                SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner
+                SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
+                TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage
             };
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
             {
@@ -248,6 +253,7 @@ namespace SWLOR.Game.Server.Service
 
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence);
+                GetTrackedAbilityImpact(activator).TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage;
                 GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
@@ -612,10 +618,9 @@ namespace SWLOR.Game.Server.Service
 
             if (ability.ActivationType == AbilityActivationType.Weapon &&
                 Combat.IsWeaponSkillType(ability.SkillType) &&
-                !Combat.HasEquippedWeaponForAbilitySkill(activator, ability.SkillType))
+                !Combat.HasEquippedWeaponForAbility(activator))
             {
-                var skillName = Skill.GetSkillDetails(ability.SkillType).Name;
-                return Deny($"You must equip a {skillName} weapon to use this ability.");
+                return Deny("You must equip a weapon to use this ability.");
             }
 
             if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
@@ -2787,7 +2792,7 @@ namespace SWLOR.Game.Server.Service
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon) +
+                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
@@ -3019,7 +3024,7 @@ namespace SWLOR.Game.Server.Service
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var scalingRank = GetNPCAbilityScalingRank(activator, skillType, damageType, combatImpactDamageAbility);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon) +
+                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
@@ -3456,6 +3461,7 @@ namespace SWLOR.Game.Server.Service
 
             public AbilityDetail Ability { get; }
             public AbilityImpactVisualEffects VisualEffects { get; }
+            public int? TriggeringWeaponDamage { get; set; }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
             public TrackedAbilityImpact SequenceOwner { get; set; }
             public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();

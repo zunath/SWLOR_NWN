@@ -1241,7 +1241,7 @@ namespace SWLOR.Game.Server.Feature
             var impactEnded = false;
             try
             {
-                Ability.BeginAbilityImpact(activator, abilityDetail);
+                Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);
                 abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;

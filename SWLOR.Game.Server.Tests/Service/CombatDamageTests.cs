@@ -187,21 +187,94 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void WeaponAbilities_OnlyUseTheirDeclaredWeaponSkill()
+    public void WeaponAbilities_AcceptEveryWeaponSkillRegardlessOfTheirDeclaredSkill()
     {
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Vibroknife, SkillType.Vibroknife).Should().BeTrue();
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Spear, SkillType.Vibroknife).Should().BeFalse();
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Vibroblade, SkillType.Lightsaber).Should().BeFalse();
-        Combat.CanWeaponSkillTriggerAbility(SkillType.Invalid, SkillType.Vibroknife).Should().BeFalse();
+        var weaponSkills = Enum.GetValues<SkillType>().Where(Combat.IsWeaponSkillType).ToArray();
+        weaponSkills.Should().NotBeEmpty();
+        foreach (var abilitySkill in weaponSkills)
+        {
+            foreach (var weaponSkill in weaponSkills)
+            {
+                Combat.CanWeaponSkillTriggerAbility(weaponSkill, abilitySkill).Should().BeTrue(
+                    $"{abilitySkill} abilities must work with {weaponSkill} weapons");
+            }
+
+            Combat.CanWeaponSkillTriggerAbility(SkillType.Invalid, abilitySkill).Should().BeFalse();
+            Combat.CanWeaponSkillTriggerAbility(SkillType.Armor, abilitySkill).Should().BeFalse();
+        }
+
         Combat.CanWeaponSkillTriggerAbility(SkillType.Spear, SkillType.Invalid).Should().BeTrue();
 
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
 
-        abilitySource.Should().Contain("Combat.HasEquippedWeaponForAbilitySkill(activator, ability.SkillType)");
-        abilitySource.Should().Contain("You must equip a {skillName} weapon to use this ability.");
+        abilitySource.Should().NotContain("HasEquippedWeaponForAbilitySkill");
+        abilitySource.Should().NotContain("You must equip a {skillName} weapon to use this ability.");
+        abilitySource.Should().Contain("!Combat.HasEquippedWeaponForAbility(activator)");
+        abilitySource.Should().Contain("You must equip a weapon to use this ability.");
         usePerkFeatSource.Should().Contain("Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType)");
+        usePerkFeatSource.Should().Contain("Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType)");
+    }
+
+    [Test]
+    public void QueuedWeaponDamage_UsesTheTriggeringItemAndPreservesReflectionWeaponSelection()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+
+        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item)");
+        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)");
+        abilitySource.Should().Contain("? Item.GetDMG(triggeringWeapon)");
+        abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
+        Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
+        Combat.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
+        Combat.GetCombatImpactWeaponDamage(0, SkillType.Force, triggeringWeaponDamage: 23).Should().Be(0);
+        abilitySource.Should().Contain("TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage");
+        combatSource.Should().Contain("GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true)");
+        var selection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
+        selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType");
+        selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(leftHand)) == skillType");
+        var equipped = ExtractMethod(combatSource, "public static bool HasEquippedWeaponForAbility");
+        equipped.Should().Contain("IsAbilityWeapon(GetItemInSlot(InventorySlot.RightHand, creature))");
+        equipped.Should().Contain("IsAbilityWeapon(GetItemInSlot(InventorySlot.LeftHand, creature))");
+    }
+
+    [Test]
+    public void QueuedWeaponHitRoll_UsesAbilitySkillForAccuracyAndStoredBonuses()
+    {
+        var root = FindRepositoryRoot();
+        var attackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        attackSource.Should().Contain("Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
+        attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
+        attackSource.Should().Contain("Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType)");
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Vibroblade).Should().Be(AbilityType.Perception);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Rifle).Should().Be(AbilityType.Agility);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Pistol).Should().Be(AbilityType.Agility);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Force).Should().Be(AbilityType.Invalid);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.BeastMastery).Should().Be(AbilityType.Invalid);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Invalid).Should().Be(AbilityType.Invalid);
+        attackSource.Should().Contain("Stat.GetEvasionNative(defender, abilitySkillType)");
+        attackSource.Should().Contain("Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"ApplySideAttackEvasionIgnore\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
+        attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
+        attackSource.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        var accuracy = ExtractMethod(statSource, "public static int GetAccuracyNative");
+        accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride : Skill.GetSkillTypeByBaseItem(baseItemType)");
+        accuracy.Should().Contain("skillLevel = dbPlayer.Skills[skillType].Rank");
+        accuracy.Should().Contain("var statType = accuracyAbilityOverride != AbilityType.Invalid");
+        accuracy.Should().Contain("accuracyBonus += ip.m_nCostTableValue");
     }
 
     [Test]
@@ -477,7 +550,7 @@ public class CombatDamageTests
 
         usePerkFeatSource.Should().Contain("Weapon abilities are queued for the next time the activator's attack lands on an enemy.");
         usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
-        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail);");
+        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator)");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType)");
         usePerkFeatSource.Should().Contain("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)");
@@ -613,7 +686,7 @@ public class CombatDamageTests
             damageCalculation.Should().Contain("skillType == SkillType.BeastMastery");
             damageCalculation.Should().Contain("Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon");
             damageCalculation.Should().Contain(
-                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon)");
+                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage)");
         }
 
         impactWeaponDamage.Should().Contain(

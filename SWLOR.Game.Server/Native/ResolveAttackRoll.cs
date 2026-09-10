@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using System.Runtime.InteropServices;
+using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using ImmunityType = NWN.Native.API.ImmunityType;
@@ -165,7 +166,10 @@ namespace SWLOR.Game.Server.Native
 
                 Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none" : weapon.GetFirstName().GetSimple(0)));
 
-                var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, abilitySkillType);
+                var accuracyAbility = queuedAbility == null
+                    ? AbilityType.Invalid
+                    : Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
+                var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
                 attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,

@@ -11691,6 +11691,17 @@ namespace SWLOR.Game.Server.Service
             return Item.GetWeaponDamageAbilityType(weaponType);
         }
 
+        public static AbilityType GetQueuedAbilityAccuracyAbilityType(uint creature, SkillType skillType)
+        {
+            if (skillType == SkillType.Staff)
+                return GetWeaponAccuracyAbilityType(creature, BaseItem.QuarterStaff);
+
+            if (skillType == SkillType.Force)
+                return AbilityType.Willpower;
+
+            return IsRangedWeaponSkill(skillType) ? AbilityType.Agility : AbilityType.Perception;
+        }
+
         public static AbilityType GetWeaponAccuracyAbilityType(uint creature, BaseItem weaponType)
         {
             var overrideAbility = GetAbilityOverride(

@@ -250,7 +250,12 @@ public class CombatDamageTests
         var attackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
         attackSource.Should().Contain("Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
-        attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType)");
+        attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
+        attackSource.Should().Contain("Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType)");
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Vibroblade).Should().Be(AbilityType.Perception);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Rifle).Should().Be(AbilityType.Agility);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Pistol).Should().Be(AbilityType.Agility);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Force).Should().Be(AbilityType.Willpower);
         attackSource.Should().Contain("Stat.GetEvasionNative(defender, abilitySkillType)");
         attackSource.Should().Contain("Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
@@ -266,6 +271,8 @@ public class CombatDamageTests
         var accuracy = ExtractMethod(statSource, "public static int GetAccuracyNative");
         accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride : Skill.GetSkillTypeByBaseItem(baseItemType)");
         accuracy.Should().Contain("skillLevel = dbPlayer.Skills[skillType].Rank");
+        accuracy.Should().Contain("var statType = accuracyAbilityOverride != AbilityType.Invalid");
+        accuracy.Should().Contain("accuracyBonus += ip.m_nCostTableValue");
     }
 
     [Test]

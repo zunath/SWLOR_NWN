@@ -338,8 +338,9 @@ def synchronize_files(manifest_path, workbook_path, registry_path, provenance_pa
                 captured[path] = path.read_bytes()
             text = captured[path].decode("utf-8-sig")
             text = re.sub(r"/\*.*?\*/|//[^\n]*", "", text, flags=re.S)
-            for animation, speed in re.findall(
+            for animation, duration, speed in re.findall(
                     r"\.UsesNativeAnimationPreview\s*\(\s*Animation\.(\w+)"
+                    r"\s*,\s*([0-9]+(?:\.[0-9]*)?)[fF]?"
                     r"\s*(?:,\s*([0-9]+(?:\.[0-9]*)?)[fF]?)?\s*\)", text):
                 native.add((animation, float(speed) if speed else 1.0))
         if len(native) > 1:

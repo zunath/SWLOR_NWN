@@ -15,6 +15,52 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AnimationDebugTests
 {
+    private sealed class PreviewClock : TimeProvider
+    {
+        public DateTimeOffset Now = DateTimeOffset.Parse("2026-01-01T00:00:00Z");
+        public override DateTimeOffset GetUtcNow() => Now;
+    }
+
+    [Test]
+    public void RapidRiflePreviewClicksWaitForTheCurrentClipAndRecovery()
+    {
+        var clock = new PreviewClock();
+        var model = new AnimationDebugViewModel(clock);
+        model.LoadCatalog(AnimationPreviewCatalog.Search("", "Rifle"));
+        model.TryReservePreview(AuthoredAnimation.SuppressionStance.Duration).Should().BeTrue();
+        model.PlayEnabled.Should().NotBeEmpty().And.OnlyContain(enabled => !enabled);
+        clock.Now = clock.Now.AddSeconds(.4);
+        model.TryReservePreview(AuthoredAnimation.SuppressiveLine.Duration).Should().BeFalse();
+        model.SearchText = "Suppressive Line";
+        model.Names.Should().Equal("Suppressive Line");
+        model.PlayEnabled.Should().Equal(false);
+        model.LoadCatalog(AnimationPreviewCatalog.Search("", "Rifle"));
+        model.SearchText = "";
+        model.PlayEnabled.Should().OnlyContain(enabled => !enabled,
+            "reopening the cached window or refreshing the list must not bypass playback timing");
+        clock.Now = clock.Now.AddSeconds(AuthoredAnimation.SuppressionStance.Duration - .4);
+        model.TryReservePreview(AuthoredAnimation.SuppressiveLine.Duration).Should().BeFalse();
+        clock.Now = clock.Now.AddSeconds(AnimationDebugViewModel.PreviewSettleSeconds + .01);
+        model.SearchText = "";
+        model.PlayEnabled.Should().OnlyContain(enabled => enabled);
+        model.TryReservePreview(AuthoredAnimation.SuppressiveLine.Duration).Should().BeTrue();
+        model.TryReservePreview(AuthoredAnimation.SuppressiveLine.Duration).Should().BeFalse();
+    }
+
+    [Test]
+    public void PreviewCooldownKeepsRowBindingsAlignedAcrossEmptyAndPagedResults()
+    {
+        var model = new AnimationDebugViewModel(new PreviewClock());
+        model.LoadCatalog(AnimationPreviewCatalog.Entries);
+        model.TryReservePreview(2).Should().BeTrue();
+        model.OnNext()();
+        model.PlayEnabled.Should().HaveCount(model.Names.Count).And.OnlyContain(enabled => !enabled);
+        model.SearchText = "missing-animation";
+        model.PlayEnabled.Should().BeEmpty();
+        model.SearchText = "";
+        model.PlayEnabled.Should().HaveCount(model.Names.Count).And.OnlyContain(enabled => !enabled);
+    }
+
     [Test]
     public void CommandsAllowStaffOrAnyoneOnTestOnly()
     {

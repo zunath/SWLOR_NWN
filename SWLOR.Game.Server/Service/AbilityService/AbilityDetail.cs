@@ -38,6 +38,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AnimationService.AnimationClip PreviewAnimation { get; set; }
         public Animation? NativeAnimationPreview { get; set; }
         public float NativeAnimationPreviewSpeed { get; set; } = 1f;
+        /// <summary>Native preview length at normal speed, including its start and end phases.</summary>
+        public float NativeAnimationPreviewDuration { get; set; }
         public AnimationService.AnimationClip AuthoredImpactAnimation { get; set; }
         public bool UsesImmediateAuthoredAnimation { get; set; }
         public bool UsesAuthoredImpactAnimation { get; set; }

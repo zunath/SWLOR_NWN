@@ -14,10 +14,10 @@ from UpdateAnimationBible import synchronize, synchronize_files, replace_outputs
 class AnimationBibleTests(unittest.TestCase):
     def test_native_preview_uses_definition_instead_of_historical_motion_source(self):
         for concurrent_edit, declaration, expected_source in (
-                (False, "Animation.FireForgetTaunt", "Base NWN FireForgetTaunt"),
-                (True, "Animation.FireForgetTaunt", "Base NWN FireForgetTaunt"),
-                (False, "Animation.SaberThrow, 2f", "Master lightsaber throw (CUSTOM46 / 68) at 2x speed"),
-                (True, "Animation.SaberThrow, 2f", "Master lightsaber throw (CUSTOM46 / 68) at 2x speed")):
+                (False, "Animation.FireForgetTaunt, 3f", "Base NWN FireForgetTaunt"),
+                (True, "Animation.FireForgetTaunt, 3f", "Base NWN FireForgetTaunt"),
+                (False, "Animation.SaberThrow, 3.833f, 2f", "Master lightsaber throw (CUSTOM46 / 68) at 2x speed"),
+                (True, "Animation.SaberThrow, 3.833f, 2f", "Master lightsaber throw (CUSTOM46 / 68) at 2x speed")):
             with self.subTest(concurrent_edit=concurrent_edit, declaration=declaration), tempfile.TemporaryDirectory() as folder:
                 root = Path(folder)
                 workbook, manifest, registry, provenance, plan = [root / name for name in

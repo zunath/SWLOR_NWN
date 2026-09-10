@@ -68,7 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.SaberThrow)
                 .PreservesNativeAnimationChoreography()
-                .UsesNativeAnimationPreview(Animation.SaberThrow, 2f)
+                // Reserve the native start, one loop, and end for tester replay timing.
+                .UsesNativeAnimationPreview(Animation.SaberThrow, 3.833f, 2f)
                 .DisplaysVisualEffectWhenActivating()
                 .IsAreaAbility()
                 .HasTargetingLine(

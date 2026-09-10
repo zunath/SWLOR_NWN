@@ -228,7 +228,13 @@ While a DM possesses an NPC, the window opens on the DM's screen and previews on
 
 Equip the weapon and shield you want to inspect, stand outside combat, and click **Play**.
 The selected clip runs once on your character without damage, costs, or perk effects. Click
-**Play** again to repeat. **Stop** and closing the window release only the preview started by
+**Play** again after the status returns to **Ready** to repeat. Play buttons stay disabled
+for the clip duration and a short recovery interval, including when searching, changing
+categories, or reopening the window. NWN queues some one-shots instead of interrupting them;
+overlapping preview requests can otherwise start late, play too quickly, or appear missing.
+This guard prevents overlapping requests from this window, but does not override native
+client animation scheduling (for example, an ambient head turn already in progress).
+**Stop** and closing the window release only the preview started by
 that window, preserving any newer ability animation. `/animtest <name>` remains available
 with the same staff/Test permissions. Updated model assets require a client and server restart.
 

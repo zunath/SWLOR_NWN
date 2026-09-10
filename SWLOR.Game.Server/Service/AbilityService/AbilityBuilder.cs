@@ -108,14 +108,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>Uses a native one-shot in the animation tester instead of an authored clip.</summary>
-        public AbilityBuilder UsesNativeAnimationPreview(Animation animation, float speed = 1f)
+        public AbilityBuilder UsesNativeAnimationPreview(Animation animation, float durationSeconds, float speed = 1f)
         {
             if (animation == Animation.Invalid || !Enum.IsDefined(animation))
                 throw new ArgumentOutOfRangeException(nameof(animation));
             if (!float.IsFinite(speed) || speed <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(speed));
+            if (!float.IsFinite(durationSeconds) || durationSeconds <= 0f ||
+                !float.IsFinite(durationSeconds / speed) || durationSeconds / speed > 600f)
+                throw new ArgumentOutOfRangeException(nameof(durationSeconds));
             _activeAbility.NativeAnimationPreview = animation;
             _activeAbility.NativeAnimationPreviewSpeed = speed;
+            _activeAbility.NativeAnimationPreviewDuration = durationSeconds;
             return this;
         }
 

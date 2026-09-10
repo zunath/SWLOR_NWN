@@ -30,6 +30,7 @@ public class NativeAnimationPreviewTests
         var preview = AnimationPreviewCatalog.CreateEntries(abilities.Values).Single(item => item.Id == entry.Id);
         preview.NativeAnimation.Should().Be(Animation.SaberThrow);
         preview.NativeAnimationSpeed.Should().Be(2f);
+        preview.PreviewDuration.Should().BeApproximately(1.9165f, .0001f);
         preview.DurationText.Should().Be("Native");
     }
 
@@ -40,7 +41,7 @@ public class NativeAnimationPreviewTests
     public void NativePreviewRejectsInvalidSpeed(float speed)
     {
         var builder = new AbilityBuilder().Create(FeatType.ThrowLightsaber1, SWLOR.Game.Server.Service.PerkService.PerkType.ThrowLightsaber);
-        Action configure = () => builder.UsesNativeAnimationPreview(Animation.SaberThrow, speed);
+        Action configure = () => builder.UsesNativeAnimationPreview(Animation.SaberThrow, 3.833f, speed);
         configure.Should().Throw<ArgumentOutOfRangeException>();
         Action preview = () => SWLOR.Game.Server.Service.NamedAnimation.PlayNativePreview(0, Animation.SaberThrow, speed);
         preview.Should().Throw<ArgumentOutOfRangeException>();
@@ -52,8 +53,8 @@ public class NativeAnimationPreviewTests
         var clip = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == "ThrowLightsaber").Clip;
         var abilities = new[]
         {
-            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.SaberThrow, NativeAnimationPreviewSpeed = 1f },
-            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.SaberThrow, NativeAnimationPreviewSpeed = 2f }
+            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.SaberThrow, NativeAnimationPreviewDuration = 3.833f, NativeAnimationPreviewSpeed = 1f },
+            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.SaberThrow, NativeAnimationPreviewDuration = 3.833f, NativeAnimationPreviewSpeed = 2f }
         };
         Action create = () => AnimationPreviewCatalog.CreateEntries(abilities);
         create.Should().Throw<InvalidOperationException>();
@@ -80,6 +81,13 @@ public class NativeAnimationPreviewTests
         var preview = AnimationPreviewCatalog.Search("Provoke", entries: previews).Single();
         preview.NativeAnimation.Should().Be(Animation.FireForgetTaunt);
         preview.DurationText.Should().Be("Native");
+        preview.PreviewDuration.Should().Be(3f);
+        var clock = new PreviewClock();
+        var model = new SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AnimationDebugViewModel(clock);
+        model.LoadCatalog(previews);
+        model.TryReservePreview(preview.PreviewDuration).Should().BeTrue();
+        clock.Now = clock.Now.AddSeconds(2);
+        model.TryReservePreview(AuthoredAnimation.SuppressionStance.Duration).Should().BeFalse();
         AnimationPreviewCatalog.Search(entry.Clip.Name, entries: previews).Should().Contain(preview);
     }
 
@@ -100,10 +108,34 @@ public class NativeAnimationPreviewTests
         var clip = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == "Provoke").Clip;
         var abilities = new[]
         {
-            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.FireForgetTaunt },
-            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.PointForward }
+            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.FireForgetTaunt, NativeAnimationPreviewDuration = 3f },
+            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.PointForward, NativeAnimationPreviewDuration = 3f }
         };
         Action create = () => AnimationPreviewCatalog.CreateEntries(abilities);
+        create.Should().Throw<InvalidOperationException>();
+    }
+
+    private sealed class PreviewClock : TimeProvider
+    {
+        public DateTimeOffset Now = DateTimeOffset.UnixEpoch;
+        public override DateTimeOffset GetUtcNow() => Now;
+    }
+
+    [TestCase(0f)]
+    [TestCase(-1f)]
+    [TestCase(float.NaN)]
+    [TestCase(float.PositiveInfinity)]
+    [TestCase(601f)]
+    public void NativePreviewRequiresAValidDuration(float duration)
+    {
+        var builder = new AbilityBuilder().Create(FeatType.Provoke1, SWLOR.Game.Server.Service.PerkService.PerkType.Provoke);
+        Action configure = () => builder.UsesNativeAnimationPreview(Animation.FireForgetTaunt, duration);
+        configure.Should().Throw<ArgumentOutOfRangeException>();
+        var clip = AuthoredAnimation.Provoke;
+        Action create = () => AnimationPreviewCatalog.CreateEntries(new[]
+        {
+            new AbilityDetail { PreviewAnimation = clip, NativeAnimationPreview = Animation.FireForgetTaunt, NativeAnimationPreviewDuration = duration }
+        });
         create.Should().Throw<InvalidOperationException>();
     }
 }

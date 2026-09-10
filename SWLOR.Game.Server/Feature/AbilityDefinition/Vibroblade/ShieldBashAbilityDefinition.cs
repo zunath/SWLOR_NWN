@@ -66,11 +66,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 0,
                 0,
                 null,
-                false,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Shield_Bash);
+                false);
 
             if (totalDamage <= 0)
                 return;
+
+            ApplyEffectToObject(DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Imp_Shield_Bash, fScale: 4f), target);
 
             var physicalDefense = Stat.GetDefense(
                 activator,

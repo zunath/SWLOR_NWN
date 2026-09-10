@@ -798,39 +798,31 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void PlayVFX()
         {
             _builder.Create("playvfx")
-                .Description("Plays a visual effect from visualeffects.2da.")
+                .Description("Plays a visual effect. Usage: /playvfx <ID> [scale 0.1-10].")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
-                    if (args.Length < 1)
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
+                    if (args.Length < 1 || args.Length > 2 ||
+                        !int.TryParse(args[0], out var vfxId) || vfxId < 0)
+                        return "Enter a visualeffects.2da ID and optional scale. Example: /playvfx 843 4";
 
-                    if (!int.TryParse(args[0], out var vfxId))
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
-
-                    try
-                    {
-                        var unused = (VisualEffect) vfxId;
-                    }
-                    catch
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
+                    if (args.Length == 2 &&
+                        (!float.TryParse(args[1], System.Globalization.NumberStyles.Float,
+                            System.Globalization.CultureInfo.InvariantCulture, out var scale) ||
+                         !float.IsFinite(scale) || scale < 0.1f || scale > 10f))
+                        return "Scale must be a number between 0.1 and 10.";
 
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
                 {
-                    var vfxId = Convert.ToInt32(args[0]);
-                    var vfx = (VisualEffect) vfxId;
-                    var effect = EffectVisualEffect(vfx);
-                    ApplyEffectToObject(DurationType.Instant, effect, target);
+                    var vfx = (VisualEffect)int.Parse(args[0]);
+                    var scale = args.Length == 2
+                        ? float.Parse(args[1], System.Globalization.CultureInfo.InvariantCulture)
+                        : 1f;
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx, fScale: scale), target);
                 });
         }
 

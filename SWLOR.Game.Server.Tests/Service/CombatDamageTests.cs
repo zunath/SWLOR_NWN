@@ -244,6 +244,26 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void QueuedWeaponHitRoll_UsesAbilitySkillForAccuracyAndStoredBonuses()
+    {
+        var root = FindRepositoryRoot();
+        var attackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        attackSource.Should().Contain("Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
+        attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType)");
+        attackSource.Should().Contain("Stat.GetEvasionNative(defender, abilitySkillType)");
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
+        attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
+        attackSource.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        var accuracy = ExtractMethod(statSource, "public static int GetAccuracyNative");
+        accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride : Skill.GetSkillTypeByBaseItem(baseItemType)");
+        accuracy.Should().Contain("skillLevel = dbPlayer.Skills[skillType].Rank");
+    }
+
+    [Test]
     public void NonCriticalRangedAbilities_ReserveStatDrivenStaminaCostAndRefundCriticalResults()
     {
         var root = FindRepositoryRoot();

@@ -15,55 +15,54 @@
         "Label": "Low ready",
         "SourceAnimation": "xbowshot",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "RootOffset": [
           0.0,
           0.005,
           -0.01
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.52,
         "Label": "Align sights",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.025,
           -0.024
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.94,
         "Label": "Settle breath",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.025,
           -0.024
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.13,
         "Label": "Precision shot",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "RootOffset": [
           0.0,
           0.008,
           -0.03
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.48,
         "Label": "Lower rifle",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.005,
@@ -93,22 +92,21 @@
         "Time": 0.22,
         "Label": "Shoulder rifle",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.015,
           -0.018
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.53,
         "Label": "Track legs",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
-          -20,
+          -15,
           0,
           0
         ],
@@ -116,16 +114,16 @@
           0.0,
           0.025,
           -0.035
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.8,
         "Label": "Low shot",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "TorsoDegrees": [
-          -20,
+          -15,
           0,
           0
         ],
@@ -133,26 +131,26 @@
           0.0,
           0.008,
           -0.04
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.08,
         "Label": "Return to center mass",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.02,
           -0.022
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.34,
         "Label": "Low ready",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,
@@ -182,22 +180,21 @@
         "Time": 0.2,
         "Label": "Shoulder rifle",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.02,
           -0.02
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.49,
         "Label": "Track head line",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
-          9,
+          5,
           0,
           0
         ],
@@ -205,16 +202,16 @@
           0.0,
           0.025,
           -0.018
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.72,
         "Label": "Head-line recoil",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "TorsoDegrees": [
-          9,
+          5,
           0,
           0
         ],
@@ -222,16 +219,16 @@
           0.0,
           0.008,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.96,
         "Label": "Maintain high cover",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.68,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
-          9,
+          5,
           0,
           0
         ],
@@ -239,14 +236,14 @@
           0.0,
           0.02,
           -0.02
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.23,
         "Label": "Lower rifle",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,
@@ -277,7 +274,6 @@
         "Label": "Survey left boundary",
         "SourceAnimation": "xbowshot",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "TorsoDegrees": [
           0,
           0,
@@ -287,14 +283,14 @@
           -0.025,
           0.005,
           -0.015
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.48,
         "Label": "Survey right boundary",
         "SourceAnimation": "xbowshot",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "TorsoDegrees": [
           0,
           0,
@@ -304,14 +300,14 @@
           0.025,
           0.005,
           -0.015
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.8,
         "Label": "Shoulder toward zone",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
           0,
           0,
@@ -321,14 +317,14 @@
           -0.02,
           0.025,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.0,
         "Label": "First covering round",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "TorsoDegrees": [
           0,
           0,
@@ -338,14 +334,14 @@
           -0.02,
           0.008,
           -0.032
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.22,
         "Label": "Track opposite side",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
           0,
           0,
@@ -355,14 +351,14 @@
           0.02,
           0.025,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.42,
         "Label": "Second covering round",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "TorsoDegrees": [
           0,
           0,
@@ -372,14 +368,14 @@
           0.02,
           0.008,
           -0.032
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.73,
         "Label": "Lower after zone marking",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,
@@ -396,7 +392,7 @@
   },
   {
     "Id": "OneShot",
-    "Description": "Check the rifle power selector with the support hand, regrip into an unwavering aim and deliver one committed shot",
+    "Description": "Set the stock firmly into the shoulder, settle a long sight picture, and absorb one committed shot with both hands supporting the rifle",
     "Duration": 2.2,
     "Beats": [
       {
@@ -410,72 +406,71 @@
         "Label": "Lowered carry",
         "SourceAnimation": "xbowshot",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "RootOffset": [
           0.0,
           0.0,
           -0.01
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.4,
-        "Label": "Set power selector",
-        "SourceAnimation": "xbowrdy",
-        "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
-        "LeftHand": [
-          0.14,
-          0.27,
-          1.08
-        ],
+        "Label": "Seat stock against shoulder",
+        "SourceAnimation": "xbowshot",
+        "SourceTime": 0.3,
         "RootOffset": [
           0.01,
           -0.01,
           -0.018
-        ]
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.64,
         "Label": "Build sight picture",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.03,
           -0.028
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.22,
         "Label": "Hold perfect sight picture",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.03,
           -0.028
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.46,
         "Label": "Committed recoil",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.67,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.6,
         "RootOffset": [
           0.0,
           0.0,
           -0.038
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.83,
         "Label": "Release aim",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.005,
@@ -505,10 +500,9 @@
         "Time": 0.22,
         "Label": "Brace lane",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
-          -5,
+          -4,
           0,
           0
         ],
@@ -516,16 +510,16 @@
           0.0,
           0.02,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.54,
         "Label": "Drive into straight aim",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.43,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
-          -9,
+          -6,
           0,
           0
         ],
@@ -533,16 +527,16 @@
           0.0,
           0.035,
           -0.03
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.78,
         "Label": "Penetrating round recoil",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "TorsoDegrees": [
-          -9,
+          -6,
           0,
           0
         ],
@@ -550,16 +544,16 @@
           0.0,
           0.005,
           -0.04
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.04,
         "Label": "Follow the lane",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.68,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
-          -5,
+          -4,
           0,
           0
         ],
@@ -567,14 +561,14 @@
           0.0,
           0.025,
           -0.03
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.31,
         "Label": "Retract rifle",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,
@@ -604,68 +598,67 @@
         "Time": 0.2,
         "Label": "Shoulder",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.025,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.44,
         "Label": "First suppression round",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "RootOffset": [
           0.0,
           0.008,
           -0.032
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.67,
         "Label": "Reset on target",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.025,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.86,
         "Label": "Second suppression round",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "RootOffset": [
           0.0,
           0.005,
           -0.034
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.13,
         "Label": "Hold target down",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.68,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.02,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.39,
         "Label": "Lower",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,
@@ -695,8 +688,7 @@
         "Time": 0.22,
         "Label": "Acquire lane left",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
           0,
           0,
@@ -706,14 +698,14 @@
           -0.025,
           0.025,
           -0.028
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.46,
         "Label": "Left burst",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "TorsoDegrees": [
           0,
           0,
@@ -723,38 +715,38 @@
           -0.025,
           0.008,
           -0.035
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.7,
         "Label": "Center lane",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.025,
           -0.028
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.94,
         "Label": "Center burst",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "RootOffset": [
           0.0,
           0.008,
           -0.035
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.2,
         "Label": "Lane right",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
           0,
           0,
@@ -764,14 +756,14 @@
           0.025,
           0.025,
           -0.028
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.43,
         "Label": "Right burst",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.62,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.57,
         "TorsoDegrees": [
           0,
           0,
@@ -781,14 +773,14 @@
           0.025,
           0.008,
           -0.035
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.77,
         "Label": "Lower after sweep",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,
@@ -819,43 +811,42 @@
         "Label": "Low carry",
         "SourceAnimation": "xbowshot",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "RootOffset": [
           0.0,
           0.0,
           -0.01
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.64,
         "Label": "Shoulder into watch",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.025,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.22,
         "Label": "Hold quiet sight line",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "RootOffset": [
           0.0,
           0.025,
           -0.025
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.46,
         "Label": "Lower calmly",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,
@@ -886,7 +877,6 @@
         "Label": "Check left flank",
         "SourceAnimation": "xbowshot",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "TorsoDegrees": [
           0,
           0,
@@ -896,14 +886,14 @@
           -0.02,
           0.005,
           -0.018
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.55,
         "Label": "Check right flank",
         "SourceAnimation": "xbowshot",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "TorsoDegrees": [
           0,
           0,
@@ -913,14 +903,14 @@
           0.02,
           0.005,
           -0.018
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 0.92,
         "Label": "Set forward brace",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
           -8,
           0,
@@ -930,14 +920,14 @@
           0.0,
           0.03,
           -0.032
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.37,
         "Label": "Hold pressure stance",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 0.3,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0.4,
         "TorsoDegrees": [
           -8,
           0,
@@ -947,14 +937,14 @@
           0.0,
           0.03,
           -0.032
-        ]
+        ],
+        "FollowSourceMotion": true
       },
       {
         "Time": 1.61,
         "Label": "Lower",
         "SourceAnimation": "xbowshot",
-        "SourceTime": 1,
-        "SourceModel": "a_ba_med_weap",
+        "SourceTime": 0,
         "RootOffset": [
           0.0,
           0.0,

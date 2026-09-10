@@ -11,6 +11,70 @@ namespace SWLOR.Toolset.Tests;
 
 public class FullBodyChoreographyTests
 {
+    [Test]
+    public void ExplicitSourceMotionKeepsTheNativeTwoHandGripWhenLoweringThroughDirectedBeats()
+    {
+        var model = NativeModel();
+        var recipe = new Choreography("LowerRifle", "Lower the aimed rifle along its native two-hand path, while relaxing the torso and stance.", 1.4f,
+            [new(0, "Idle", "pause1"),
+                new(.2f, "Aim", "xbowshot", .4f, TorsoDegrees: [5, 0, 0], RootOffset: [0, .025f, -.025f], FollowSourceMotion: true),
+                new(1.2f, "Carry", "xbowshot", 0, RootOffset: [0, .005f, -.01f]),
+                new(1.4f, "Idle", "pause1")]);
+        var project = ChoreographyAuthor.Bake(model, recipe);
+        var sparseRecipe = recipe with { Beats = recipe.Beats.Select(beat => beat with { FollowSourceMotion = false }).ToArray() };
+        var sparse = ChoreographyAuthor.Bake(model, sparseRecipe);
+        var clip = model.Animations.Single(animation => animation.Name == "xbowshot");
+        var bind = MdlAnimationPose.BindPose(model);
+        var hand = project.Joints.FindIndex(joint => joint.Name == "lhand_g");
+        var hook = project.Joints.FindIndex(joint => joint.Name == "rhand");
+        Matrix4x4 Grip(PosedNode[] pose)
+        {
+            var world = AnimationRig.World(project.Joints, pose);
+            Matrix4x4.Invert(world[hook], out var inverse);
+            return world[hand] * inverse;
+        }
+        var missingContact = 0f;
+        foreach (var key in project.Keys.Where(key => key.Time >= .2f && key.Time <= 1.2f))
+        {
+            var phase = .4f * (1 - (key.Time - .2f));
+            var sampled = MdlAnimationPose.Sample(clip, phase * clip.Length, bind);
+            var native = project.Joints.Select(joint => sampled.GetValueOrDefault(joint.Name, joint.Rest)).ToArray();
+            var expected = Grip(native); var actual = Grip(key.Pose);
+            Vector3.Distance(actual.Translation, expected.Translation).Should().BeLessThan(.0001f,
+                "an explicit reverse source span must keep the native support hand on the rifle during the entire lowering path");
+            Matrix4x4.Decompose(actual, out _, out var actualRotation, out _);
+            Matrix4x4.Decompose(expected, out _, out var expectedRotation, out _);
+            Math.Abs(Quaternion.Dot(actualRotation, expectedRotation)).Should().BeGreaterThan(.99999f,
+                "native palm orientation must follow the grip as the torso relaxes");
+            missingContact = Math.Max(missingContact, Vector3.Distance(Grip(sparse.Sample(key.Time)).Translation, expected.Translation));
+        }
+        missingContact.Should().BeGreaterThan(.04f, "this regression must exercise the five-centimetre grip separation caused by endpoint blending");
+    }
+
+    [TestCase("animation")]
+    [TestCase("model")]
+    [TestCase("last beat")]
+    public void ExplicitSourceMotionRejectsAnUnrelatedOrMissingNextSource(string mismatch)
+    {
+        var beats = new ChoreographyBeat[] { new(0, "Idle", "pause1"), new(.2f, "Aim", "xbowshot", .4f, FollowSourceMotion: true),
+            new(.8f, "Lower", "xbowshot"), new(1, "Idle", "pause1") };
+        if (mismatch == "animation") beats[2] = beats[2] with { SourceAnimation = "xbowrdy" };
+        if (mismatch == "model") beats[2] = beats[2] with { SourceModel = "a_ba_med_weap" };
+        if (mismatch == "last beat") beats[^1] = beats[^1] with { FollowSourceMotion = true };
+        var recipe = new Choreography("InvalidSourceSpan", "Reject a directed source path without a matching source endpoint.", 1, beats);
+        var read = () => ChoreographyAuthor.Read(JsonSerializer.Serialize(new[] { recipe }, BulkMotionAuthor.Json));
+        read.Should().Throw<InvalidDataException>().WithMessage("*next beat*same source*");
+    }
+
+    [Test]
+    public void UnusedSourceMotionControlDoesNotChangeRecipeSerialization()
+    {
+        var beat = new ChoreographyBeat(.2f, "Aim", "xbowshot", .4f);
+        JsonSerializer.Serialize(beat, BulkMotionAuthor.Json).Should().NotContain("FollowSourceMotion",
+            "adding an opt-in control must preserve existing recipe hashes and approved animation projects");
+        JsonSerializer.Serialize(beat with { FollowSourceMotion = true }, BulkMotionAuthor.Json).Should().Contain("\"FollowSourceMotion\": true");
+    }
+
     private static MdlModel NativeModel()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

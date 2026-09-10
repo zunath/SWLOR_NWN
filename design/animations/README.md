@@ -152,6 +152,20 @@ remains visible. Focus Stim and Resuscitation place the weapon hand forward and 
 to clear the head in sampled equipped poses while preserving the native wrist grip. This
 is offline asset verification, not a claim of live NWN visual validation.
 
+## Rifle choreography
+
+Use the effective `a_ba` `xbowrdy` and `xbowshot` clips for rifle poses. Both male and
+female native model chains resolve those overrides before `a_ba_med_weap`; selecting
+the older model explicitly bypasses the grip used by ordinary attacks. Hold the sight
+picture before the native shot at source time 0.50, and return through recoil instead
+of holding the raised muzzle at 0.62 or 0.68. Preserve the native two-handed path and
+the hand and `rhand` weapon-attachment rotations together when raising or lowering the
+rifle. Set `FollowSourceMotion` on the outgoing beat when the next beat uses the same
+source clip and model: it follows the complete native path even while lowering back
+to an earlier source time, preserving the support-hand contact through the transition.
+Basic Rifle's model is unchanged from master; compare authored poses against
+ordinary attacks with that same equipment before adjusting a weapon's geometry.
+
 ## Force choreography
 
 All 25 Force entries have individual recipes in `force/choreographies.json`. Directed pushes,

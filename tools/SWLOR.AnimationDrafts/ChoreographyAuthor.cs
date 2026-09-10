@@ -11,7 +11,8 @@ internal sealed record Choreography(string Id, string Description, float Duratio
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool InPlace = false);
 internal sealed record ChoreographyBeat(float Time, string Label, string SourceAnimation, float SourceTime = 0,
     float[]? LeftHand = null, float[]? RightHand = null, float[]? TorsoDegrees = null, string? SourceModel = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] float[]? RootOffset = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] float[]? RootOffset = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FollowSourceMotion = false);
 
 /// <summary>Native pose choreography with explicit hand paths and native local grips.
 /// Recipes are editable motion direction, not inferred motion capture.</summary>
@@ -49,9 +50,12 @@ internal static class ChoreographyAuthor
                 throw new InvalidDataException("Choreography torso adjustments must stay within 35 degrees.");
             if (beat.RootOffset is { } offset && (Math.Abs(offset[0]) > .15f || Math.Abs(offset[1]) > .15f || Math.Abs(offset[2]) > .1f))
                 throw new InvalidDataException("Choreography root offsets must stay within 15 cm horizontally and 10 cm vertically.");
+            if (beat.FollowSourceMotion && (i + 1 == recipe.Beats.Length ||
+                recipe.Beats[i + 1].SourceAnimation != beat.SourceAnimation || recipe.Beats[i + 1].SourceModel != beat.SourceModel))
+                throw new InvalidDataException("Following source motion requires the next beat to use the same source animation and model.");
         }
         foreach (var beat in new[] { recipe.Beats[0], recipe.Beats[^1] })
-            if (beat.SourceAnimation != "pause1" || beat.SourceModel != null || beat.SourceTime != 0 || beat.LeftHand != null || beat.RightHand != null || beat.TorsoDegrees != null || beat.RootOffset != null)
+            if (beat.SourceAnimation != "pause1" || beat.SourceModel != null || beat.SourceTime != 0 || beat.LeftHand != null || beat.RightHand != null || beat.TorsoDegrees != null || beat.RootOffset != null || beat.FollowSourceMotion)
                 throw new InvalidDataException("Choreography endpoints must use unmodified native idle.");
     }
 
@@ -173,6 +177,15 @@ internal static class ChoreographyAuthor
         result.Keys.Clear(); result.Events.Clear();
         var times = new SortedSet<float>(recipe.Beats.Select(b => b.Time));
         for (int frame = 0; frame / 30f < result.Duration; frame++) times.Add(frame / 30f);
+        // Coupled native grips can drift between sparse shoulder/elbow keys.
+        // Refine only explicitly followed paths; other recipe bytes are stable.
+        for (var index = 0; index < recipe.Beats.Length - 1; index++)
+        {
+            if (!recipe.Beats[index].FollowSourceMotion) continue;
+            var start = recipe.Beats[index].Time; var end = recipe.Beats[index + 1].Time;
+            for (var frame = (int)MathF.Ceiling(start * 60); frame / 60f < end; frame++)
+                times.Add(frame / 60f);
+        }
         var segment = 0;
         foreach (var time in times)
         {
@@ -188,10 +201,12 @@ internal static class ChoreographyAuthor
             // Directed decreasing phases reset to an earlier pose for recovery or
             // another action. Blend those poses, retaining legacy native reverse
             // playback only when neither endpoint supplies hand/torso direction.
+            // An explicit source path can instead retrace a known safe interval,
+            // such as lowering a two-handed weapon without losing its grip.
             var directed = first.LeftHand != null || second.LeftHand != null || first.RightHand != null || second.RightHand != null ||
                 first.TorsoDegrees != null || second.TorsoDegrees != null;
             var nativeSpan = first.SourceAnimation == second.SourceAnimation && first.SourceModel == second.SourceModel &&
-                (!directed || second.SourceTime >= first.SourceTime && (weightShift || first.SourceTime != second.SourceTime));
+                (first.FollowSourceMotion || !directed || second.SourceTime >= first.SourceTime && (weightShift || first.SourceTime != second.SourceTime));
             if (nativeSpan) pose = Native(first.SourceAnimation, float.Lerp(first.SourceTime, second.SourceTime, fraction), first.SourceModel);
             else
             {

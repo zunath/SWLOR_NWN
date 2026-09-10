@@ -7582,7 +7582,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var reflected = GetRangedDeflectionReflectionAmount(
-                GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill),
+                GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true),
                 reflectPercent,
                 GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender)),
                 capPercent);
@@ -11093,7 +11093,9 @@ namespace SWLOR.Game.Server.Service
         public static int GetCombatImpactWeaponDamage(
             uint activator,
             SkillType skillType,
-            bool usesQueuedNaturalWeapon = false)
+            bool usesQueuedNaturalWeapon = false,
+            bool requireMatchingSkill = false,
+            int? triggeringWeaponDamage = null)
         {
             if (!IsWeaponSkillType(skillType) &&
                 !(usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery))
@@ -11101,7 +11103,10 @@ namespace SWLOR.Game.Server.Service
                 return 0;
             }
 
-            var weapon = GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon);
+            if (triggeringWeaponDamage.HasValue)
+                return triggeringWeaponDamage.Value;
+
+            var weapon = GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon, requireMatchingSkill);
             return GetIsObjectValid(weapon)
                 ? Item.GetDMG(weapon)
                 : 0;
@@ -11110,20 +11115,36 @@ namespace SWLOR.Game.Server.Service
         private static uint GetCombatImpactWeapon(
             uint activator,
             SkillType skillType,
-            bool usesQueuedNaturalWeapon = false)
+            bool usesQueuedNaturalWeapon = false,
+            bool requireMatchingSkill = false)
         {
             if (usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery)
                 return GetCreatureNaturalWeapon(activator);
 
             var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
-            if (CanItemTriggerWeaponAbility(rightHand, skillType))
+            if (CanItemTriggerWeaponAbility(rightHand, skillType) &&
+                (!requireMatchingSkill || Skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType))
                 return rightHand;
 
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, activator);
-            if (CanItemTriggerWeaponAbility(leftHand, skillType))
+            if (CanItemTriggerWeaponAbility(leftHand, skillType) &&
+                (!requireMatchingSkill || Skill.GetSkillTypeByBaseItem(GetBaseItemType(leftHand)) == skillType))
                 return leftHand;
 
             return OBJECT_INVALID;
+        }
+
+        public static bool HasEquippedWeaponForAbility(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   (IsAbilityWeapon(GetItemInSlot(InventorySlot.RightHand, creature)) ||
+                    IsAbilityWeapon(GetItemInSlot(InventorySlot.LeftHand, creature)));
+        }
+
+        private static bool IsAbilityWeapon(uint item)
+        {
+            return GetIsObjectValid(item) &&
+                   IsWeaponSkillType(Skill.GetSkillTypeByBaseItem(GetBaseItemType(item)));
         }
 
         public static bool CanItemTriggerWeaponAbility(uint item, SkillType abilitySkillType)

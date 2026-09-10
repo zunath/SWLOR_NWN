@@ -211,8 +211,36 @@ public class CombatDamageTests
 
         abilitySource.Should().NotContain("HasEquippedWeaponForAbilitySkill");
         abilitySource.Should().NotContain("You must equip a {skillName} weapon to use this ability.");
+        abilitySource.Should().Contain("!Combat.HasEquippedWeaponForAbility(activator)");
+        abilitySource.Should().Contain("You must equip a weapon to use this ability.");
         usePerkFeatSource.Should().Contain("Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType)");
         usePerkFeatSource.Should().Contain("Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType)");
+    }
+
+    [Test]
+    public void QueuedWeaponDamage_UsesTheTriggeringItemAndPreservesReflectionWeaponSelection()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+
+        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item)");
+        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)");
+        abilitySource.Should().Contain("? Item.GetDMG(triggeringWeapon)");
+        abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
+        Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
+        Combat.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
+        Combat.GetCombatImpactWeaponDamage(0, SkillType.Force, triggeringWeaponDamage: 23).Should().Be(0);
+        abilitySource.Should().Contain("TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage");
+        combatSource.Should().Contain("GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true)");
+        var selection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
+        selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType");
+        selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(leftHand)) == skillType");
+        var equipped = ExtractMethod(combatSource, "public static bool HasEquippedWeaponForAbility");
+        equipped.Should().Contain("IsAbilityWeapon(GetItemInSlot(InventorySlot.RightHand, creature))");
+        equipped.Should().Contain("IsAbilityWeapon(GetItemInSlot(InventorySlot.LeftHand, creature))");
     }
 
     [Test]
@@ -488,7 +516,7 @@ public class CombatDamageTests
 
         usePerkFeatSource.Should().Contain("Weapon abilities are queued for the next time the activator's attack lands on an enemy.");
         usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
-        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail);");
+        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator)");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType)");
         usePerkFeatSource.Should().Contain("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)");
@@ -624,7 +652,7 @@ public class CombatDamageTests
             damageCalculation.Should().Contain("skillType == SkillType.BeastMastery");
             damageCalculation.Should().Contain("Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon");
             damageCalculation.Should().Contain(
-                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon)");
+                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage)");
         }
 
         impactWeaponDamage.Should().Contain(

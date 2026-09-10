@@ -1911,6 +1911,11 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
+        /// <summary>
+        /// Deletes a property and its owned children, clears associated data and permissions,
+        /// and revokes its citizens' membership and unpaid citizenship taxes.
+        /// </summary>
+        /// <param name="property">The property to delete.</param>
         public static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.

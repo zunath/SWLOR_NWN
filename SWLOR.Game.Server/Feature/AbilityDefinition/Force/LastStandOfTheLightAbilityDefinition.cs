@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.LastStandOfTheLight1, PerkType.LastStandOfTheLight)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Last Stand of the Light")
                 .Level(1)
                 .HasActivationDelay(1.5f)

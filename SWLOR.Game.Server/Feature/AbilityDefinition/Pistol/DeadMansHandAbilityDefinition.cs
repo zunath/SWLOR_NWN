@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DeadMansHand1, PerkType.DeadMansHand)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Dead Man's Hand")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisruptionField1, PerkType.DisruptionField)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disruption Field I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.DisruptionField, 30.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisruptionField2, PerkType.DisruptionField)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disruption Field II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.DisruptionField, 30.0f),

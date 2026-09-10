@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Level(level)
                 .HasActivationDelay(2f)
                 .UsesAnimation(Animation.PointForward)
+                .UsesImmediateAuthoredAnimation()
                 .HasRecastDelay(RecastGroup.ChargeOrder, 30f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()

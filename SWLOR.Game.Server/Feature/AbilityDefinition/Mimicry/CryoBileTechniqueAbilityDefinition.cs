@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.CryoBile, 40, 3)
                 .HasTargetingCone(
                     Spell.CryoBileTechnique,

@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.KoltoMist1, PerkType.KoltoMist)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Kolto Mist I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.KoltoMist2, PerkType.KoltoMist)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Kolto Mist II")
                 .Level(2)
                 .HasActivationDelay(1.5f)

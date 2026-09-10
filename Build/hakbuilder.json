@@ -69,6 +69,16 @@
       "CompileModels": false
     },
     {
+      "Name": "sw_anim_m",
+      "Path": "../SWLOR_Haks/sw_anim_m/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_anim_f",
+      "Path": "../SWLOR_Haks/sw_anim_f/",
+      "CompileModels": false
+    },
+    {
       "Name": "sw_pt_belt",
       "Path": "../SWLOR_Haks/sw_pt_belt/",
       "CompileModels": false

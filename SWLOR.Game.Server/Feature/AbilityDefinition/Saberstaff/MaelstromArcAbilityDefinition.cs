@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.MaelstromArc1, PerkType.MaelstromArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Maelstrom Arc I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.MaelstromArc, 30.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.MaelstromArc2, PerkType.MaelstromArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Maelstrom Arc II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.MaelstromArc, 30.0f),

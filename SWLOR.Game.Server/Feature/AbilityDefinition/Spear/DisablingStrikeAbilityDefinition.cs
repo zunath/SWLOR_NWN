@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisablingStrike1, PerkType.DisablingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disabling Strike I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisablingStrike2, PerkType.DisablingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disabling Strike II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisablingStrike3, PerkType.DisablingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disabling Strike III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),
@@ -97,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DisablingStrike4, PerkType.DisablingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Disabling Strike IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),

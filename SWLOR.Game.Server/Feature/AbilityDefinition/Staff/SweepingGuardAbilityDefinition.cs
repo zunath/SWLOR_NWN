@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SweepingGuard1, PerkType.SweepingGuard)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sweeping Guard")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SweepingGuard, 30.0f),

@@ -22,6 +22,19 @@ public class FishingAnimationTests
         AnimationInstall.SortAnimationBlocks(sorted).Should().Be(sorted);
     }
 
+    [Test]
+    public void BankOrderingUsesLowercaseAsciiWithoutChangingMixedCaseBlockPayloads()
+    {
+        const string letter = "newanim SW_criplshot Bank\n  length 7\ndoneanim SW_criplshot Bank\n";
+        const string underscore = "newanim sw_crip_defe Bank\n  length 2\ndoneanim sw_crip_defe Bank\n";
+        const string prefix = "newanim Sw_Aimedshot Bank\n  length 3\ndoneanim Sw_Aimedshot Bank\n";
+        var source = "newmodel Bank\n" + letter + underscore + prefix + "donemodel Bank\n";
+        var expected = "newmodel Bank\n" + prefix + underscore + letter + "donemodel Bank\n";
+
+        AnimationInstall.SortAnimationBlocks(source).Should().Be(expected);
+        AnimationInstall.SortAnimationBlocks(expected).Should().Be(expected);
+    }
+
     private static string Root
     {
         get
@@ -56,11 +69,23 @@ public class FishingAnimationTests
             var fullPath = Path.Combine(Root, targetPath);
             if (!File.Exists(fullPath)) Assert.Ignore("Initialize the HAK submodule to validate installed assets.");
             var target = new MdlReader().Parse(File.ReadAllBytes(fullPath));
-            var bankBytes = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(fullPath)!, target.SuperModel + ".mdl"));
-            AnimationBankSource.IsBinary(bankBytes).Should().BeTrue();
-            var bank = new MdlReader().Parse(bankBytes);
-            bank.Animations.Select(animation => animation.Name)
-                .Should().BeInAscendingOrder(StringComparer.OrdinalIgnoreCase);
+            var inherited = target;
+            MdlModel? bank = null;
+            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            while (!string.IsNullOrEmpty(inherited.SuperModel) && !inherited.SuperModel.Equals("NULL", StringComparison.OrdinalIgnoreCase))
+            {
+                visited.Add(inherited.SuperModel).Should().BeTrue("the animation chain must be acyclic");
+                visited.Count.Should().BeLessThanOrEqualTo(AnimationInstall.MaximumModelChainDepth);
+                var bankPath = AnimationInstall.FindTargetSource(Root, inherited.SuperModel);
+                bankPath.Should().NotBeNull();
+                var bankBytes = File.ReadAllBytes(bankPath!);
+                AnimationBankSource.IsBinary(bankBytes).Should().BeTrue();
+                inherited = new MdlReader().Parse(bankBytes);
+                if (inherited.Animations.Any(animation => animation.Name == clip.Name)) { bank = inherited; break; }
+            }
+            bank.Should().NotBeNull("fishing may occupy any owned bank after library rebalancing");
+            bank!.Animations.Select(animation => animation.Name.ToLowerInvariant())
+                .Should().BeInAscendingOrder(StringComparer.Ordinal);
             var installed = bank.Animations.Single(a => a.Name == clip.Name);
             installed.Length.Should().Be(seconds);
             bank.Animations.Should().Contain(a => a.Name == clip.StartName).And.Contain(a => a.Name == clip.EndName);

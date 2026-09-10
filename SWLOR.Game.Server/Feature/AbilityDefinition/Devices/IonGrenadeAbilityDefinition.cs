@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IonGrenade1, PerkType.IonGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Ion Grenade I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IonGrenade2, PerkType.IonGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Ion Grenade II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -94,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             int droidBonusPercent,
             Type statusEffect)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             var location = GetImpactLocation(activator, target, targetLocation);
             ApplyEffectAtLocation(
                 DurationType.Instant,
@@ -122,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         Array.Empty<Type>(),
                         damageType: CombatDamageType.Electrical,
                         targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
-                        damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0);
+                        damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0,
+                        playImpactAnimation: false);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f), location, true);

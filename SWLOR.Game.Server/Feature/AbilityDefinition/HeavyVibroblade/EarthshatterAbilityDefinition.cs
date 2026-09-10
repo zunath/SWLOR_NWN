@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(feat, PerkType.Earthshatter)
+                .UsesImmediateAuthoredAnimation()
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)

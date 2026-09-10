@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.PiercingQuills, 13, 2)
                 .MimicryElement(CombatDamageType.Physical)
                 .HasTargetingCone(

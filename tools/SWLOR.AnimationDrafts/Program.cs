@@ -12,6 +12,68 @@ using SWLOR.Game.Server.Service.AbilityService;
 using var logger = new LoggerConfiguration().WriteTo.Console(standardErrorFromLevel: LogEventLevel.Verbose).CreateLogger();
 try
 {
+    if (args.Length > 0 && args[0] == "rebalance-banks")
+    {
+        var clipsPerBank = AnimationInstall.ClipsPerBank;
+        string? bankName = null;
+        var options = new HashSet<string>(StringComparer.Ordinal);
+        if (args.Length < 3 || args.Length % 2 != 1)
+            throw new ArgumentException("Usage: rebalance-banks <repository> <rig> [--clips-per-bank <1-128>] [--bank <owned-resref>]");
+        for (var index = 3; index < args.Length; index += 2)
+        {
+            if (!options.Add(args[index])) throw new ArgumentException("Duplicate rebalance option: " + args[index]);
+            if (args[index] == "--bank") bankName = args[index + 1];
+            else if (args[index] != "--clips-per-bank" ||
+                !int.TryParse(args[index + 1], System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out clipsPerBank))
+                throw new ArgumentException("Invalid rebalance option: " + args[index]);
+        }
+        // Each rig chain is an independent transaction; registration and native model payloads stay unchanged.
+        var plan = AnimationBankRebalance.Prepare(args[1], args[2], clipsPerBank, bankName);
+        foreach (var change in plan.Changes) Console.WriteLine(change.Path);
+        plan.Apply();
+        foreach (var backup in plan.RetainedBackups) logger.Warning("Backup cleanup failed; retained {BackupPath}.", backup);
+        Console.WriteLine($"Rebalanced {args[2]} into bounded banks ({plan.Changes.Count} model files). Compile the changed models before installing clips.");
+        return 0;
+    }
+    if (args.Length >= 4 && args[0] == "generate-active")
+    {
+        if (args.Length > 4 && !(args.Length == 5 && args[4] == "--overwrite") && !(args.Length >= 6 && args[4] == "--replace"))
+            throw new ArgumentException("Use --overwrite or --replace followed by exact animation IDs.");
+        BulkMotionAuthor.Generate(args[1], args[2], Path.GetFullPath(args[3]), args.Length > 4,
+            args.Length >= 6 ? args.Skip(5).ToHashSet(StringComparer.OrdinalIgnoreCase) : null);
+        return 0;
+    }
+    if (args.Length >= 4 && args[0] == "install-active")
+    {
+        var root = Path.GetFullPath(args[1]);
+        var entries = JsonSerializer.Deserialize<ActiveMotion[]>(await ReadText(args[2]), BulkMotionAuthor.Json)
+            ?? throw new InvalidDataException("Empty inventory.");
+        BulkMotionAuthor.ValidateEntries(entries);
+        var targets = args.Skip(3).Select(name => AnimationInstall.FindTargetSource(root, name)
+            ?? throw new FileNotFoundException($"No configured HAK source for {name}.")).ToArray();
+        var projects = new List<(ActiveMotion Entry, string Path, AnimationProject Project, byte[] Hash)>();
+        // Reject missing, malformed or mismatched projects before publishing any bank.
+        foreach (var entry in entries)
+        {
+            var category = System.Text.RegularExpressions.Regex.Replace(entry.Category.ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
+            var path = Path.Combine(root, "design", "animations", category, entry.Id + ".swlanim");
+            var bytes = await AnimationProject.ReadFileBytesAsync(path);
+            var project = AnimationProject.Deserialize(System.Text.Encoding.UTF8.GetString(bytes));
+            if (project.Name != entry.Id) throw new InvalidDataException("Project identity mismatch: " + path);
+            projects.Add((entry, path, project, SHA256.HashData(bytes)));
+        }
+        var backups = AnimationInstallBatch.Apply(projects.Select(item => (Func<AnimationInstallPlan>)(() =>
+        {
+            var plan = AnimationInstall.Prepare(root, item.Project, targets, item.Path, item.Entry.InternalName);
+            if (!plan.Inputs.TryGetValue(item.Path, out var captured) || !SHA256.HashData(captured).AsSpan().SequenceEqual(item.Hash))
+                throw new IOException("Project changed after batch preflight: " + item.Path);
+            return plan;
+        })));
+        foreach (var item in projects)
+            Console.WriteLine($"Installed {item.Entry.Id}: {item.Entry.InternalName} ({item.Project.Duration:0.00}s)");
+        foreach (var backup in backups) logger.Warning("Backup cleanup failed; retained {BackupPath}.", backup);
+        return 0;
+    }
     if (args.Length >= 4 && args[0] == "install")
     {
         // Run against an isolated checkout with the toolset closed, just like other source generators.
@@ -65,9 +127,12 @@ try
 
     if (args.Length >= 4 && args[0] == "render-data")
     {
-        var source = new MdlReader().Parse(ReadBytes(args[1]));
+        var decodedModels = new MdlReadBudget();
+        var source = new MdlReader().Parse(ReadBytes(args[1]), decodedModels);
         var sourceRig = AnimationProject.FromModel(source);
         MdlModel? overlay = null;
+        string? overlayPath = null;
+        long loadedBankBytes = 0;
         AnimationRegistration[]? registry = null;
         var equipment = new List<(string Bone, MdlModel Model)>();
         for (var i = 4; i < args.Length; i++)
@@ -77,16 +142,40 @@ try
             {
                 var option = args[i];
                 if (++i == args.Length) throw new ArgumentException(option + " requires a path.");
-                if (option == "--overlay") overlay = new MdlReader().Parse(ReadBytes(args[i]));
+                if (option == "--overlay")
+                {
+                    overlayPath = Path.GetFullPath(args[i]);
+                    var bytes = ReadBytes(overlayPath);
+                    loadedBankBytes = bytes.Length;
+                    overlay = new MdlReader().Parse(bytes, decodedModels);
+                }
                 else registry = JsonSerializer.Deserialize<AnimationRegistration[]>(await ReadText(args[i]));
                 continue;
             }
             var part = args[i] switch { "--shield" => "shield", "--sword" => "weaponr", _ => throw new ArgumentException("Unknown render option.") };
             var bone = MdlPartBoneMap.GetBoneName(part)!;
             if (++i == args.Length) throw new ArgumentException("Equipment option requires an MDL path.");
-            equipment.Add((bone, new MdlReader().Parse(ReadBytes(args[i]))));
+            equipment.Add((bone, new MdlReader().Parse(ReadBytes(args[i]), decodedModels)));
         }
         if ((overlay == null) != (registry == null)) throw new ArgumentException("Installed rendering requires both --overlay and --registry.");
+        InstalledMotionLibrary? installed = null;
+        if (overlay != null)
+        {
+            var folder = Path.GetDirectoryName(overlayPath!)!;
+            var repository = InstalledMotionLibrary.FindMountedRepository(overlayPath!);
+            // Repository overlays follow mounted resource precedence. Standalone exports
+            // resolve their parent banks beside the explicitly supplied overlay file.
+            var adjacent = repository == null ? Directory.EnumerateFiles(folder)
+                .Where(path => Path.GetExtension(path).Equals(".mdl", StringComparison.OrdinalIgnoreCase))
+                .ToDictionary(path => Path.GetFileNameWithoutExtension(path), StringComparer.OrdinalIgnoreCase) : null;
+            installed = new InstalledMotionLibrary(overlay, name =>
+            {
+                var path = repository != null ? AnimationInstall.FindTargetSource(repository, name)
+                    : adjacent!.GetValueOrDefault(name);
+                if (path == null) return null;
+                return InstalledMotionLibrary.ReadBank(path, ref loadedBankBytes);
+            }, decodedModels);
+        }
         using var manifest = JsonDocument.Parse(await ReadText(Path.Combine(args[2], "manifest.json")));
         var poses = new List<object>();
         foreach (var entry in manifest.RootElement.GetProperty("Animations").EnumerateArray())
@@ -95,6 +184,9 @@ try
             var activity = entry.TryGetProperty("Activity", out var activityValue) ? activityValue.GetString() : null;
             AnimationProject.ValidateToken(id, 63);
             var project = AnimationProject.Deserialize(await ReadText(Path.Combine(args[2], id + ".swlanim")));
+            var registered = installed == null ? null : registry!.Single(r => r.Name == id);
+            var resolved = registered == null ? ((MdlModel Owner, MdlAnimation Animation)?)null
+                : installed!.Resolve(registered.AnimationName);
             var snapshots = new List<object>();
             var beats = entry.GetProperty("Beats").EnumerateArray().ToArray();
             var times = args.Contains("--frames")
@@ -108,9 +200,7 @@ try
                 if (overlay == null) pose = project.Sample(time);
                 else
                 {
-                    var registered = registry!.Single(r => r.Name == id);
-                    var animation = overlay.Animations.Single(a => a.Name == registered.AnimationName);
-                    var sampled = MdlAnimationPose.Sample(animation, time, MdlAnimationPose.BindPose(source));
+                    var sampled = MdlAnimationPose.Sample(resolved!.Value.Animation, time, MdlAnimationPose.BindPose(source));
                     // NWN scales inherited translations for the target model. Render the installed
                     // clip against that model, rather than reusing the authored project's transforms.
                     pose = sampleRig.Joints.Select(j => sampled.TryGetValue(j.Name, out var p)
@@ -143,7 +233,7 @@ try
                         .49f * MathF.Sin(i * MathF.PI / 4), .29f * MathF.Cos(i * MathF.PI / 4)))).ToArray(), EquipmentMeshes = equipment.Count > 0 });
             }
             poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), Activity = activity, project.Duration,
-                PoseSource = overlay == null ? "Editable project" : "Installed MDL: " + overlay.Name, Snapshots = snapshots });
+                PoseSource = resolved == null ? "Editable project" : "Installed MDL: " + resolved.Value.Owner.Name, Snapshots = snapshots });
         }
         var renderOutput = Path.GetFullPath(args[3]);
         Directory.CreateDirectory(Path.GetDirectoryName(renderOutput)!);
@@ -154,6 +244,8 @@ try
     if (args.Length < 4 || args[0] != "generate" || args.Skip(4).Any(a => a != "--overwrite"))
     {
         Console.Error.WriteLine("Usage: SWLOR.AnimationDrafts generate <a_ba.mdl> <recipe.json> <output-folder> [--overwrite]");
+        Console.Error.WriteLine("       SWLOR.AnimationDrafts generate-active <a_ba.mdl> <active-abilities.json> <animation-folder> [--overwrite]");
+        Console.Error.WriteLine("       SWLOR.AnimationDrafts install-active <repository-root> <active-abilities.json> <target-model> [target-model ...]");
         Console.Error.WriteLine("       SWLOR.AnimationDrafts preview <project-folder> <output.html> [--overwrite]");
         Console.Error.WriteLine("       SWLOR.AnimationDrafts install <repository-root> <project.swlanim> <target-model> [target-model ...]");
         Console.Error.WriteLine("       SWLOR.AnimationDrafts inspect <model.mdl>");

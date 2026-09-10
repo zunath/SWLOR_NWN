@@ -42,6 +42,22 @@ public class AuthoredCombatAnimationTests
     }
 
     [Test]
+    public void PolearmSwingsPlayQueuedClipsAndRestoreWithoutChangingReadyOrParry()
+    {
+        var runtime = new Runtime();
+        runtime.Maps["plreadyr"] = "native_ready";
+        runtime.Maps["plparryl"] = "native_parry";
+        var playback = new QueuedAttackAnimationPlayback(runtime);
+        var token = playback.Begin(1, AuthoredAnimation.ShieldBash);
+        var swings = new[] { "plslashl", "plslashr", "plslasho", "plstab", "plcloseh", "plclosel", "plreach" };
+        foreach (var swing in swings) runtime.Maps[swing].Should().Be(AuthoredAnimation.ShieldBash.Name);
+        playback.Complete(1, token);
+        foreach (var swing in swings) runtime.Maps[swing].Should().BeEmpty();
+        runtime.Maps["plreadyr"].Should().Be("native_ready");
+        runtime.Maps["plparryl"].Should().Be("native_parry");
+    }
+
+    [Test]
     public void QueuedSwingsRestoreOnConsumptionAndIgnoreSupersededTimeouts()
     {
         var runtime = new Runtime(); var playback = new QueuedAttackAnimationPlayback(runtime);
@@ -52,6 +68,36 @@ public class AuthoredCombatAnimationTests
         runtime.Maps.Keys.Should().NotContain(key => key.Contains("ready") || key.Contains("parry") || key == "throwr");
         playback.Complete(1, second);
         runtime.Maps.Values.Should().OnlyContain(value => value == "");
+        runtime.Token.Should().BeEmpty();
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void QueuedReleaseRestoresCurrentEquipmentAndOldTimersCannotRestoreOverNewMoves(bool equipmentChanged)
+    {
+        var runtime = new Runtime();
+        var hasKatar = true;
+        var restores = 0;
+        var playback = new QueuedAttackAnimationPlayback(runtime, creature =>
+        {
+            restores++;
+            runtime.Maps["1hslashl"] = hasKatar ? "nwslashl" : "";
+        });
+        var first = playback.Begin(1, AuthoredAnimation.GuardCounter);
+        hasKatar = !equipmentChanged;
+        playback.Stop(1);
+        runtime.Maps["1hslashl"].Should().Be(hasKatar ? "nwslashl" : "",
+            "release must resolve current equipment, never restore the equipment captured at activation");
+        var second = playback.Begin(1, AuthoredAnimation.ShieldBash);
+        playback.Complete(1, first);
+        runtime.Timeouts[0]();
+        restores.Should().Be(1);
+        runtime.Maps["1hslashl"].Should().Be(AuthoredAnimation.ShieldBash.Name);
+        runtime.Timeouts[1]();
+        restores.Should().Be(2);
+        runtime.Maps["1hslashl"].Should().Be(hasKatar ? "nwslashl" : "");
+        playback.Complete(1, second);
+        restores.Should().Be(2);
         runtime.Token.Should().BeEmpty();
     }
 
@@ -67,11 +113,11 @@ public class AuthoredCombatAnimationTests
 
     /// <summary>Checks that the preview catalog retains the installed perk and fishing clips.</summary>
     [Test]
-    public void PreviewIncludesCurrentPerkMovesAndFishing()
+    public void PreviewIncludesAllCatalogMovesWithCurrentAbilities()
     {
-        AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(new[] {
-            "ShieldBash", "ShieldWall", "CoveringStrike", "Invincible", "RiotBlade", "RendingStrike", "SavageCleave",
-            "Fishing6", "Fishing7", "Fishing8" });
+        AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(
+            ActiveAbilityAnimationCatalog.Entries.Select(entry => entry.Id)
+                .Concat(new[] { "Fishing6", "Fishing7", "Fishing8" }));
     }
 
     [Test]

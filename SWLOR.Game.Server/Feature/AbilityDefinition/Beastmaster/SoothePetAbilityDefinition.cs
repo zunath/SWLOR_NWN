@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Soothe Pet")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SoothePet, 60f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)

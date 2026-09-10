@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Cross Cut I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.CrossCut, 18.0f),
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Cross Cut II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.CrossCut, 18.0f),
@@ -83,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Cross Cut III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.CrossCut, 18.0f),
@@ -115,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut4, PerkType.CrossCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Cross Cut IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.CrossCut, 18.0f),

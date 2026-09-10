@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.MindTrick1, PerkType.MindTrick)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Mind Trick I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.MindTrick2, PerkType.MindTrick)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Mind Trick II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -80,12 +82,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void MindTrick1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             ApplyMindTrickImpact(activator, target, targetLocation);
             LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
         private static void MindTrick2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
             foreach (var hostileTarget in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, Radius, MindTrick2MaxTargets, target, IsNonMechanical))
             {
@@ -114,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 damageType: CombatDamageType.Force,
                 statusResistanceType: ResistanceType.Mind,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                playImpactAnimation: false);
         }
 
         private static int CalculateMindTrickDuration(uint activator, uint target)

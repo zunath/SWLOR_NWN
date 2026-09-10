@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardedChannel1, PerkType.GuardedChannel)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Guarded Channel I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 24.0f),
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardedChannel2, PerkType.GuardedChannel)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Guarded Channel II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 24.0f),
@@ -83,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardedChannel3, PerkType.GuardedChannel)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Guarded Channel III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 24.0f),

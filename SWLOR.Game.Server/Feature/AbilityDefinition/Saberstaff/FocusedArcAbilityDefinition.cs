@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc1, PerkType.FocusedArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Focused Arc I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.FocusedArc, 18.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc2, PerkType.FocusedArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Focused Arc II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.FocusedArc, 18.0f),
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc3, PerkType.FocusedArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Focused Arc III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.FocusedArc, 18.0f),
@@ -109,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc4, PerkType.FocusedArc)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Focused Arc IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.FocusedArc, 18.0f),

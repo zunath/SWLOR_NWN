@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Shielding1, PerkType.Shielding)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Shielding I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Shielding2, PerkType.Shielding)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Shielding II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Shielding3, PerkType.Shielding)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Shielding III")
                 .Level(3)
                 .HasActivationDelay(1f)

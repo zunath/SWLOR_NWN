@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             builder
                 .Create(FeatType.SignalJammer1, PerkType.SignalJammer)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Signal Jammer")
                 .Level(1)
                 .HasActivationDelay(1.5f)

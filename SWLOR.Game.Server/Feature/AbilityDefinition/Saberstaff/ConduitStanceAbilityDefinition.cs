@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ConduitStance1, PerkType.ConduitStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Conduit Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ConduitStance, 30.0f),

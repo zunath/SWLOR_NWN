@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Infusion1, PerkType.Infusion)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Infusion I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Infusion2, PerkType.Infusion)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Infusion II")
                 .Level(2)
                 .HasActivationDelay(1f)

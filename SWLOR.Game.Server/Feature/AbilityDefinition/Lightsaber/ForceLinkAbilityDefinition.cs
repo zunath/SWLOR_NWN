@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ForceLink1, PerkType.SaberForceLink)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Force Link")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ForceLink, 24.0f),

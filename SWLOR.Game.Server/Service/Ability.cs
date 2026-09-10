@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            AnimationService.AbilityAnimationBinding.Apply(_abilities, AnimationService.ActiveAbilityAnimationCatalog.Entries);
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
             AbilityTargeting.CacheData(_abilities);
         }
@@ -2165,6 +2166,10 @@ namespace SWLOR.Game.Server.Service
                    Math.Abs(rotatedY) <= width * 0.5f;
         }
 
+        /// <summary>Plays the current ability's declared impact gesture independently of target outcomes.</summary>
+        public static void PlayAbilityImpactAnimation(uint activator) =>
+            PlayCombatImpactAnimation(activator, Animation.Invalid);
+
         /// <summary>
         /// Plays a non-weapon combat impact animation while preserving explicit throw carriers.
         /// </summary>
@@ -2184,6 +2189,25 @@ namespace SWLOR.Game.Server.Service
 
             if (animation == Animation.Invalid)
                 return;
+
+            var authoredImpact = AnimationService.AbilityAnimationBinding.ImpactClip(trackedAbility, GetIsPC(activator));
+            if (authoredImpact != null)
+            {
+                // Damage and projectile effects are already dispatched by the ability. Use the
+                // named one-shot carrier here, including grenades, without queuing another action.
+                NamedAnimation.Play(activator, authoredImpact);
+                return;
+            }
+
+            // Native impact carriers must not reuse a preceding named clip's replacements.
+            NamedAnimation.ReleaseForNativePlayback(activator);
+
+            if (trackedAbility?.ImmediateNativeImpactAnimationDuration > 0f)
+            {
+                AssignCommand(activator, () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                    activator, animation, 1f, trackedAbility.ImmediateNativeImpactAnimationDuration, immediate: true));
+                return;
+            }
 
             var sourceAnimationName = string.Empty;
             var replacementAnimationName = string.Empty;

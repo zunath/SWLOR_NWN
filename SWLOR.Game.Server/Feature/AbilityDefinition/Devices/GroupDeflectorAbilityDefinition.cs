@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.GroupDeflector1, PerkType.GroupDeflector)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Group Deflector")
                 .Level(1)
                 .HasActivationDelay(1.5f)

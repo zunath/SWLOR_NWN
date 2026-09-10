@@ -12,6 +12,7 @@ internal sealed class AllocationBudget
 
     private readonly long _maximumBytes;
     private readonly string _format;
+    private readonly AllocationBudget? _parent;
     private long _reservedBytes;
 
     /// <summary>
@@ -20,7 +21,7 @@ internal sealed class AllocationBudget
     /// </summary>
     public long ReservedBytes => _reservedBytes;
 
-    public AllocationBudget(string format, long maximumBytes = DefaultMaximumBytes)
+    public AllocationBudget(string format, long maximumBytes = DefaultMaximumBytes, AllocationBudget? parent = null)
     {
         if (string.IsNullOrWhiteSpace(format))
             throw new ArgumentException("A format name is required.", nameof(format));
@@ -29,6 +30,7 @@ internal sealed class AllocationBudget
 
         _format = format;
         _maximumBytes = maximumBytes;
+        _parent = parent;
     }
 
     public void Reserve(long bytes, string context)
@@ -42,6 +44,9 @@ internal sealed class AllocationBudget
                 $"{_format} cumulative allocation budget exceeds {_maximumBytes} bytes while reading {context}.");
         }
 
+        // Both ceilings must accept the allocation before either local counter
+        // is advanced. A failed parse retains its earlier conservative charges.
+        _parent?.Reserve(bytes, context);
         _reservedBytes += bytes;
     }
 

@@ -20,13 +20,15 @@ public class AnimationPreviewChatCommand : IChatCommandListDefinition
         {
             var controller = AnimationPreviewCatalog.GetController(user);
             var name = string.Concat(args);
-            if (!Clips.TryGetValue(name, out var clip))
+            var entry = AnimationPreviewCatalog.Entries.SingleOrDefault(candidate =>
+                candidate.Id.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (entry == null)
             {
                 SendMessageToPC(controller, "Usage: /animtest <name>. Available: " + string.Join(", ", Clips.Keys.OrderBy(key => key)));
                 return;
             }
-            NamedAnimation.Play(user, clip);
-            SendMessageToPC(controller, $"Playing {name} ({clip.Duration:0.##} seconds).");
+            entry.Play(user);
+            SendMessageToPC(controller, $"Playing {name} ({entry.DurationText}).");
         })
         .Build();
 }

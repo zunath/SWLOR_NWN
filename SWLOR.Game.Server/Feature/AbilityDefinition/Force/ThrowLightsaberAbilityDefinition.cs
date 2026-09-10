@@ -67,6 +67,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.SaberThrow)
+                .PreservesNativeAnimationChoreography()
+                // Reserve the native start, one loop, and end for tester replay timing.
+                .UsesNativeAnimationPreview(Animation.SaberThrow, 3.833f, 2f)
                 .DisplaysVisualEffectWhenActivating()
                 .IsAreaAbility()
                 .HasTargetingLine(
@@ -130,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void PlayThrowLightsaberAnimation(uint activator, uint target, Location targetLocation)
         {
+            NamedAnimation.ReleaseForNativePlayback(activator);
             if (GetIsObjectValid(target) && target != activator)
             {
                 BiowarePosition.TurnToFaceObject(target, activator);

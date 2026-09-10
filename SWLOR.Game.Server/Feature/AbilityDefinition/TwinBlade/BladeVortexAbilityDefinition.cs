@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.BladeVortex1, PerkType.BladeVortex)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Blade Vortex I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.BladeVortex, 30.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.BladeVortex2, PerkType.BladeVortex)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Blade Vortex II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.BladeVortex, 30.0f),

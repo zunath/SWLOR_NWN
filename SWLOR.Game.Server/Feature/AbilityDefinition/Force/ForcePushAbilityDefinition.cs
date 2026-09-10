@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForcePush1, PerkType.ForcePush)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Force Push I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -69,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForcePush2, PerkType.ForcePush)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Force Push II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -95,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForcePush3, PerkType.ForcePush)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Force Push III")
                 .Level(3)
                 .HasActivationDelay(0f)

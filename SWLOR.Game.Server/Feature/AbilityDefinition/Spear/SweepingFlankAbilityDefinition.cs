@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SweepingFlank1, PerkType.SweepingFlank)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sweeping Flank I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.SweepingFlank, 24.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SweepingFlank2, PerkType.SweepingFlank)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sweeping Flank II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.SweepingFlank, 24.0f),
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SweepingFlank3, PerkType.SweepingFlank)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Sweeping Flank III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.SweepingFlank, 24.0f),

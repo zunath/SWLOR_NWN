@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.BlasterBeacon1, PerkType.BlasterBeacon)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Blaster Beacon I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.BlasterBeacon2, PerkType.BlasterBeacon)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Blaster Beacon II")
                 .Level(2)
                 .HasActivationDelay(1.5f)
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.BlasterBeacon3, PerkType.BlasterBeacon)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Blaster Beacon III")
                 .Level(3)
                 .HasActivationDelay(1.5f)

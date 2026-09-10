@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.ThrowRock)
+                .UsesImmediateAuthoredAnimation()
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1.5f)

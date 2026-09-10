@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SnapRush, 30f)
                 .RequirementStamina(4)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.SnapRush, 46, 3)
                 .MimicryUtility();
 

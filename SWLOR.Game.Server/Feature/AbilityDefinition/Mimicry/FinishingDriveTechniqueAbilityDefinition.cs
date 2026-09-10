@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.FinishingDrive, 5f)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.FinishingDrive, 48, 3)
                 .MimicryUtility()
                 .HasActivationDelay(0f)

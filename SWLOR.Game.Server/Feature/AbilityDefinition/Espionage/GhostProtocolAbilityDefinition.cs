@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             var builder = new AbilityBuilder();
             builder
                 .Create(FeatType.GhostProtocol, PerkType.GhostProtocol)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Ghost Protocol")
                 .Level(1)
                 .HasActivationDelay(0f)

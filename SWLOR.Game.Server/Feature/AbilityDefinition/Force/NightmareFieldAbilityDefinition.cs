@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.NightmareField1, PerkType.NightmareField)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Nightmare Field")
                 .Level(1)
                 .HasActivationDelay(1.5f)

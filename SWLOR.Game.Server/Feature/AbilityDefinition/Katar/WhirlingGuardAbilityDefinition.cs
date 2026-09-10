@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.WhirlingGuard1, PerkType.WhirlingGuard)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Whirling Guard")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.WhirlingGuard, 45.0f),

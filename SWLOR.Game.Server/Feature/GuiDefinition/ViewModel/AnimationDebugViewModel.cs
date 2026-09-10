@@ -13,6 +13,14 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
     public const int PageSize = 20;
     private int _page;
     private string _previewToken;
+    private readonly TimeProvider _clock;
+    private DateTimeOffset _previewReadyAt;
+    // NWN queues non-interruptible one-shots. Leave time for the authored exit
+    // and the next client update before accepting another preview.
+    public const float PreviewSettleSeconds = NamedAnimationPlayback.ExitGraceSeconds + .25f;
+
+    public AnimationDebugViewModel() : this(TimeProvider.System) { }
+    public AnimationDebugViewModel(TimeProvider clock) => _clock = clock ?? throw new ArgumentNullException(nameof(clock));
     private AnimationPreviewCatalog.Entry[] _entries = AnimationPreviewCatalog.Entries.ToArray();
     private string[] _categories = Array.Empty<string>();
     private AnimationPreviewCatalog.Entry[] _visible = Array.Empty<AnimationPreviewCatalog.Entry>();
@@ -28,12 +36,16 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
     public bool HasNext { get => Get<bool>(); set => Set(value); }
     public GuiBindingList<string> Names { get => Get<GuiBindingList<string>>(); set => Set(value); }
     public GuiBindingList<string> Durations { get => Get<GuiBindingList<string>>(); set => Set(value); }
+    public GuiBindingList<bool> PlayEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+    public bool IsPlaybackReady => _clock.GetUtcNow() >= _previewReadyAt;
 
     protected override void Initialize(GuiPayloadBase initialPayload)
     {
         LoadCatalog(AnimationPreviewCatalog.Entries);
         SearchText = "";
-        StatusText = "Stand outside combat, then choose Play. Stop releases the preview pose.";
+        StatusText = IsPlaybackReady
+            ? "Stand outside combat, then choose Play. Stop releases the preview pose."
+            : "Finishing the previous preview. Play will become available shortly.";
         if (!AnimationPreviewCatalog.CanUse(Player))
         {
             NuiDestroy(Player, WindowToken);
@@ -41,6 +53,7 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
         }
         WatchOnClient(m => m.SearchText);
         ChangePartialView(ContentElement, MainContentPartial);
+        if (!IsPlaybackReady) SchedulePreviewReady();
     }
 
     public void LoadCatalog(IEnumerable<AnimationPreviewCatalog.Entry> entries)
@@ -82,10 +95,11 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
         foreach (var entry in _visible)
         {
             names.Add(entry.DisplayName);
-            durations.Add($"{entry.Clip.Duration:0.##}s");
+            durations.Add(entry.DurationText);
         }
         Names = names;
         Durations = durations;
+        RefreshPlaybackAvailability();
         var category = string.IsNullOrEmpty(SelectedCategory) ? "All animations" : SelectedCategory;
         ResultText = matches.Length == 0 ? $"{category}: no animations match your search." : $"{category}: {matches.Length} animations";
         PageText = $"Page {_page + 1} / {pages}";
@@ -95,6 +109,39 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
 
     public Action OnPrevious() => () => { _page--; RefreshResults(); };
     public Action OnNext() => () => { _page++; RefreshResults(); };
+
+    public bool TryReservePreview(float duration)
+    {
+        if (!float.IsFinite(duration) || duration <= 0 || duration > 600)
+            throw new ArgumentOutOfRangeException(nameof(duration));
+        if (!IsPlaybackReady) return false;
+        _previewReadyAt = _clock.GetUtcNow().AddSeconds(duration + PreviewSettleSeconds);
+        RefreshPlaybackAvailability();
+        return true;
+    }
+
+    private void RefreshPlaybackAvailability()
+    {
+        var enabled = new GuiBindingList<bool>();
+        foreach (var _ in _visible) enabled.Add(IsPlaybackReady);
+        PlayEnabled = enabled;
+    }
+
+    private void SchedulePreviewReady()
+    {
+        var readyAt = _previewReadyAt;
+        var window = WindowToken;
+        var delay = (float)Math.Max(.05, (readyAt - _clock.GetUtcNow()).TotalSeconds);
+        AssignCommand(GetModule(), () => DelayCommand(delay, () =>
+        {
+            if (readyAt != _previewReadyAt || window != WindowToken || !GetIsObjectValid(Player) ||
+                NuiFindWindow(Player, Gui.BuildWindowId(WindowType)) != window) return;
+            if (!IsPlaybackReady) { SchedulePreviewReady(); return; }
+            RefreshPlaybackAvailability();
+            StatusText = "Ready. Choose Play to preview another animation or repeat the last one.";
+        }));
+    }
+
     public Action OnPlayRow() => () =>
     {
         if (!AnimationPreviewCatalog.CanUse(Player)) return;
@@ -106,13 +153,26 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
             return;
         }
         var entry = _visible[row];
-        _previewToken = NamedAnimation.Play(Player, entry.Clip);
-        StatusText = $"Last played: {entry.DisplayName} ({entry.Clip.Duration:0.##}s). Use Play to repeat.";
+        // Check on the server too: a second click can arrive before the client
+        // receives the disabled buttons, or after changing a category/search.
+        if (!TryReservePreview(entry.PreviewDuration))
+        {
+            StatusText = "Finishing the current preview. Play will become available shortly.";
+            return;
+        }
+        try
+        {
+            _previewToken = entry.Play(Player);
+            StatusText = $"Playing: {entry.DisplayName} ({entry.DurationText}). Play unlocks after recovery.";
+        }
+        finally { SchedulePreviewReady(); }
     };
     public Action OnStop() => () =>
     {
         if (!AnimationPreviewCatalog.CanUse(Player)) return;
-        StatusText = NamedAnimation.StopIfCurrent(Player, _previewToken) ? "Preview stopped." : "No preview is playing.";
+        StatusText = NamedAnimation.StopIfCurrent(Player, _previewToken)
+            ? "Releasing preview. Play unlocks after the current motion finishes."
+            : "No preview is playing.";
         _previewToken = null;
     };
     public override Action OnWindowClosed() => () =>

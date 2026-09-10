@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.Reprisal)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name(name)
                     .Level(level)
                     .HasRecastDelay(RecastGroup.Reprisal, 30.0f),

@@ -29,6 +29,17 @@ public class AnimationDraftAssetTests
     }
     private static string Folder => Path.Combine(Root, "design", "animations", "vibroblade");
 
+    private static InstalledMotionLibrary InstalledClips(MdlModel target)
+    {
+        long loadedBytes = 0;
+        return new InstalledMotionLibrary(target, name =>
+        {
+            var path = AnimationInstall.FindTargetSource(Root, name);
+            return path == null ? null : new MdlReader().Parse(InstalledMotionLibrary.ReadBank(path, ref loadedBytes));
+        });
+    }
+
+
     [Test]
     public void TwoBeatOneShotsAreRejectedBeforePosing()
     {
@@ -70,18 +81,18 @@ public class AnimationDraftAssetTests
         var sourcePath = AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bankPath);
         var bankSource = AnimationBankSource.Decode(File.ReadAllBytes(sourcePath), bankBytes);
         Encoding.UTF8.GetString(bankSource).Should().StartWith("# SWLOR authored animations for " + modelName);
-        var overlay = new MdlReader().Parse(bankBytes);
+        var installed = InstalledClips(target);
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
         foreach (var name in Names)
         {
             var entry = registry.Single(r => r.Name == name);
             entry.Targets.Should().Contain("SWLOR_Haks/sw_cr_creature/" + modelName + ".mdl");
-            overlay.Animations.Single(a => a.Name == entry.AnimationName).Length.Should().BeApproximately(entry.Duration, .0001f);
-            overlay.Animations.Should().Contain(a => a.Name == entry.AnimationName + "_in");
-            overlay.Animations.Should().Contain(a => a.Name == entry.AnimationName + "_out");
-            var exit = overlay.Animations.Single(a => a.Name == entry.AnimationName + "_out");
+            installed.Resolve(entry.AnimationName).Animation.Length.Should().BeApproximately(entry.Duration, .0001f);
+            installed.Resolve(entry.AnimationName + "_in").Animation.Name.Should().Be(entry.AnimationName + "_in");
+            installed.Resolve(entry.AnimationName + "_out").Animation.Name.Should().Be(entry.AnimationName + "_out");
+            var exit = installed.Resolve(entry.AnimationName + "_out").Animation;
             exit.Length.Should().BeApproximately(.2f, .0001f);
-            var exitPose = MdlAnimationPose.Sample(exit, exit.Length, MdlAnimationPose.BindPose(overlay));
+            var exitPose = MdlAnimationPose.Sample(exit, exit.Length, MdlAnimationPose.BindPose(target));
             var idle = MdlAnimationPose.SampleIdle(target, name =>
             {
                 var source = AnimationInstall.FindTargetSource(Root, name);
@@ -104,8 +115,28 @@ public class AnimationDraftAssetTests
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(library, "registry.json")))!;
         var paths = registry.Select(r => r.ProjectPath).ToArray();
         paths.Should().OnlyHaveUniqueItems().And.NotContainNulls();
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(library, "active-manifest.json")));
+        var basePaths = manifest.RootElement.GetProperty("Animations").EnumerateArray()
+            .Where(a => a.GetProperty("Procedural").GetBoolean())
+            .Select(a => "design/animations/bases/" + System.Text.RegularExpressions.Regex.Replace(
+                a.GetProperty("Profile").GetString()!, "[^A-Za-z0-9]", "") + ".swlanim")
+            .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var baseDirectory = Path.Combine(library, "bases");
+        (Directory.Exists(baseDirectory) ? Directory.GetFiles(baseDirectory, "*.swlanim", SearchOption.AllDirectories) : [])
+            .Select(p => Path.GetRelativePath(Root, p).Replace('\\', '/')).Should().BeEquivalentTo(basePaths,
+                "only bases referenced by installed procedural motions are exempt from direct gameplay registration");
         Directory.GetFiles(library, "*.swlanim", SearchOption.AllDirectories)
-            .Select(p => Path.GetRelativePath(Root, p).Replace('\\', '/')).Should().BeEquivalentTo(paths);
+            .Select(p => Path.GetRelativePath(Root, p).Replace('\\', '/')).Should().BeEquivalentTo(paths.Concat(basePaths));
+        foreach (var path in basePaths)
+        {
+            var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, path)));
+            project.Name.Should().Be(Path.GetFileNameWithoutExtension(path));
+            project.Events.Should().BeEmpty("a reusable motion base carries movement, not gameplay effects");
+            var start = project.Sample(0);
+            var world = AnimationRig.World(project.Joints, start);
+            var floor = new[] { "lfoot_g", "rfoot_g" }.Min(name => world[project.Joints.FindIndex(j => j.Name == name)].Translation.Z);
+            BulkMotionAuthor.ValidateMotion(project, start, floor);
+        }
         foreach (var entry in registry)
         {
             var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, entry.ProjectPath!)));
@@ -122,7 +153,15 @@ public class AnimationDraftAssetTests
         {
             var source = Path.Combine(Root, entry.ProjectPath!);
             var project = AnimationProject.Deserialize(File.ReadAllText(source));
-            var plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+            AnimationInstallPlan plan;
+            try
+            {
+                plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidDataException($"Could not prepare registered animation '{entry.Name}' against compiled banks.", exception);
+            }
             var banks = plan.Changes.Where(change => Path.GetExtension(change.Path) == ".mdl").ToArray();
             banks.Should().HaveCount(entry.Targets.Length);
             foreach (var bank in banks)
@@ -132,6 +171,43 @@ public class AnimationDraftAssetTests
                 plan.Inputs.Should().ContainKey(AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path));
             }
         }
+    }
+
+    [Test]
+    public void CompiledBodyChainsContainNoCustomStealthPhases()
+    {
+        var forbidden = new HashSet<string>(new[] { "sw_stealth", "sw_stealth_in", "sw_stealth_out" }, StringComparer.OrdinalIgnoreCase);
+        var checkedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var target in new[] { "a_ba", "a_fa" })
+        {
+            var name = target;
+            var chain = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            while (!string.IsNullOrEmpty(name) && !name.Equals("NULL", StringComparison.OrdinalIgnoreCase))
+            {
+                chain.Add(name).Should().BeTrue("the native body model chain must not cycle");
+                var path = AnimationInstall.FindTargetSource(Root, name);
+                path.Should().NotBeNull("every model in the humanoid animation chain must be available");
+                var model = new MdlReader().Parse(File.ReadAllBytes(path!));
+                if (checkedPaths.Add(path!))
+                    model.Animations.Select(a => a.Name).Should().NotContain(name => forbidden.Contains(name),
+                        "Stealth uses native stealth mode and has no custom animation phases in " + name);
+                name = model.SuperModel;
+            }
+        }
+    }
+
+    [Test]
+    public void CompiledBankDiscoveryRetainsOnlyEditedCompanions()
+    {
+        var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design/animations/registry.json")))!;
+        var entry = registry.First();
+        var source = Path.Combine(Root, entry.ProjectPath!);
+        var project = AnimationProject.Deserialize(File.ReadAllText(source));
+        var plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+        var banks = plan.Changes.Where(change => Path.GetExtension(change.Path) == ".mdl").ToArray();
+        plan.Inputs.Keys.Where(path => path.EndsWith(".mdl.ascii", StringComparison.OrdinalIgnoreCase))
+            .Should().BeEquivalentTo(banks.Select(bank => AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path)),
+                "editing a clip must not retain large editable companions for untouched banks");
     }
 
     [TestCaseSource(nameof(Names))]
@@ -244,11 +320,10 @@ public class AnimationDraftAssetTests
             var targetPath = Path.Combine(Root, "SWLOR_Haks", "sw_cr_creature", installedModel + ".mdl");
             if (!File.Exists(targetPath)) Assert.Ignore("Initialize the HAK submodule to verify installed native assets.");
             var target = new MdlReader().Parse(File.ReadAllBytes(targetPath));
-            var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Root,
-                "SWLOR_Haks", "sw_cr_creature", target.SuperModel + ".mdl")));
+            var installed = InstalledClips(target);
             var registered = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(
                 Path.Combine(Root, "design", "animations", "registry.json")))!.Single(r => r.Name == name);
-            var clip = overlay.Animations.Single(a => a.Name == registered.AnimationName);
+            var clip = installed.Resolve(registered.AnimationName).Animation;
             project = AnimationProject.FromModel(target);
             project.Keys.Clear(); project.Duration = clip.Length;
             foreach (var frame in MdlAnimationPose.SampleFrames(clip, 120, 240, MdlAnimationPose.BindPose(target)))
@@ -289,12 +364,12 @@ public class AnimationDraftAssetTests
         if (!File.Exists(path)) Assert.Ignore("Initialize the HAK submodule for native equipment verification.");
         var model = new MdlReader().Parse(File.ReadAllBytes(path));
         var rig = AnimationProject.FromModel(model);
-        var overlay = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(path)!, model.SuperModel + ".mdl")));
+        var installed = InstalledClips(model);
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
         var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(Folder, "recipe.json")), Recipe.Json)!;
         foreach (var motion in recipe.Motions)
         {
-            var clip = overlay.Animations.Single(a => a.Name == registry.Single(r => r.Name == motion.Id).AnimationName);
+            var clip = installed.Resolve(registry.Single(r => r.Name == motion.Id).AnimationName).Animation;
             foreach (var beat in motion.Beats.Skip(1).SkipLast(1))
             {
                 var sample = MdlAnimationPose.Sample(clip, beat.Time, MdlAnimationPose.BindPose(model));

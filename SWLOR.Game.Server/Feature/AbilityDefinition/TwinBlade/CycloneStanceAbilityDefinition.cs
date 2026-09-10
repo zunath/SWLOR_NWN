@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CycloneStance1, PerkType.CycloneStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Cyclone Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.CycloneStance, 30.0f),

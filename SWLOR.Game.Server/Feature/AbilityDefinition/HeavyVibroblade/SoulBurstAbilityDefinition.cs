@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulBurst1, PerkType.SoulBurst)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Soul Burst")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Double Shot I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.DoubleShot, 24.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Double Shot II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.DoubleShot, 24.0f),
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Double Shot III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.DoubleShot, 24.0f),

@@ -1,0 +1,6560 @@
+[
+  {
+    "Id": "ApexCollapseTechnique",
+    "Description": "Open a deliberately exposed predatory guard, pull the arms wide and lean into an aggressive challenge; expose the guard over a low planted base and lean the challenge through the hips before gathering again",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Take the fighting base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Open the exposed guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.55,
+          0.25,
+          1.1
+        ],
+        "RightHand": [
+          0.55,
+          0.25,
+          1.1
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Offer the aggressive challenge",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.55,
+          0.45,
+          1.4
+        ],
+        "RightHand": [
+          0.55,
+          0.45,
+          1.4
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Gather the attacking guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ArcPulseTechnique",
+    "Description": "Draw a low charge into one palm then sweep a broad electrical arc across the surrounding line; gather through the legs and carry the broad arc across the hips into an outward release",
+    "Duration": 2.3,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Gather a low charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.25,
+          1.0
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          -5
+        ]
+      },
+      {
+        "Time": 0.75,
+        "Label": "Lift the charge beside the body",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.7,
+          0.2,
+          1.6
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 1.2,
+        "Label": "Sweep the arc across the front",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.15,
+          0.8,
+          1.45
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Release the residual charge outward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.4,
+          1.15
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -3
+        ]
+      },
+      {
+        "Time": 2.3,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "BarbedVolleyTechnique",
+    "Description": "Cock a spread of barbs, then fan three short forward flicks across a cone; shift the planted throwing base across each spread lane and reload through the rear hip between flicks",
+    "Duration": 2.25,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Ready the barbs",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.15,
+          1.55
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -5
+        ]
+      },
+      {
+        "Time": 0.65,
+        "Label": "Flick the left spread",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.7,
+          1.4
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          6
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Reload the next flick",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.3,
+          1.45
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -4
+        ]
+      },
+      {
+        "Time": 1.2,
+        "Label": "Flick the center spread",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.85,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Fan the outer barbs",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.25,
+          0.65,
+          1.35
+        ],
+        "RootOffset": [
+          0.02,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -6
+        ]
+      },
+      {
+        "Time": 1.9,
+        "Label": "Withdraw the throwing hand",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "BloodFrenzyFlurryTechnique",
+    "Description": "A fast alternating right hook, left rake and low forward cut form a sustained bleeding flurry",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.2,
+        "Label": "Set the attacking base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Wind the right hook",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.72,
+        "Label": "Drive the right hook",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.62
+      },
+      {
+        "Time": 0.95,
+        "Label": "Wind the left rake",
+        "SourceAnimation": "nwslashr",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.25,
+        "Label": "Rake across the cone",
+        "SourceAnimation": "nwslashr",
+        "SourceTime": 0.55
+      },
+      {
+        "Time": 1.5,
+        "Label": "Chamber the low cut",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.28
+      },
+      {
+        "Time": 1.82,
+        "Label": "Finish the low cut",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 2.15,
+        "Label": "Recollect the guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "BraceBreakerTechnique",
+    "Description": "Catch the upper guard with the left hand and drive a compact right shoulder-line strike through it",
+    "Duration": 1.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Catch the target brace",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.7,
+          1.65
+        ]
+      },
+      {
+        "Time": 0.55,
+        "Label": "Chamber the breaking hook",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.32
+      },
+      {
+        "Time": 0.9,
+        "Label": "Break through the brace",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.62
+      },
+      {
+        "Time": 1.4,
+        "Label": "Withdraw without a second strike",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "BrutalBashTechnique",
+    "Description": "Raise the striking arm and deliver one heavy forward hook with a pronounced planted follow-through",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Set the heavy base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.8,
+        "Label": "Load the full hook",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.32,
+        "TorsoDegrees": [
+          -10,
+          0,
+          -10
+        ]
+      },
+      {
+        "Time": 1.15,
+        "Label": "Drive the heavy bash",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.62,
+        "TorsoDegrees": [
+          12,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 1.7,
+        "Label": "Recover the planted base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CapacitorSurgeTechnique",
+    "Description": "Compress charge between the palms and expand it sharply from the chest into a radial discharge; store the charge in a lowered core and let the radial release travel through the entire braced body",
+    "Duration": 2.45,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Cup the capacitor charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.18,
+          0.4,
+          1.25
+        ],
+        "RightHand": [
+          0.18,
+          0.4,
+          1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Compress at the chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.25,
+          1.5
+        ],
+        "RightHand": [
+          0.5,
+          0.4,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Discharge the stored surge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.7,
+          0.45,
+          1.6
+        ],
+        "RightHand": [
+          0.7,
+          0.45,
+          1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.95,
+        "Label": "Lower the spent charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.5,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.45,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ConcussiveChallengeTechnique",
+    "Description": "Plant the feet, pound one fist into a guarded chest posture, then throw out an arresting challenge; root the chest preparation through flexed knees before the retained native challenge",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Plant the challenge",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.04
+        ]
+      },
+      {
+        "Time": 0.9,
+        "Label": "Draw the challenge inward",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.25,
+          1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Throw out the concussive command",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.55,
+        "LeftHand": [
+          -0.6,
+          0.55,
+          1.55
+        ]
+      },
+      {
+        "Time": 2.05,
+        "Label": "End the command",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.95
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CrossfireDrillTechnique",
+    "Description": "Mark one firing lane, traverse to the other and finish with a firm suppressive hold signal; turn the firing-lane signals through deliberate lateral weight transfers and finish in a stable suppressive brace",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Set the first firing lane",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.55,
+          1.45
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Mark the crossing lane",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.2,
+          0.7,
+          1.45
+        ],
+        "RootOffset": [
+          0.02,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          7
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Set the overlap point",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.85,
+          1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Hold suppressive pressure",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.65,
+          1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CryoBileTechnique",
+    "Description": "Gather a chilled breath near the jaw, lean forward and sustain a low spreading exhalation; load the inhalation over the rear leg and support the sustained cold exhalation on a lowered forward base",
+    "Duration": 2.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.45,
+        "Label": "Gather the chilled breath",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.3,
+          1.7
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ]
+      },
+      {
+        "Time": 0.9,
+        "Label": "Lean into the freezing cone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.55,
+          1.25
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Spread the sustained cold",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.7,
+          0.55,
+          1.1
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          5
+        ],
+        "RootOffset": [
+          -0.02,
+          0.04,
+          -0.04
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Ease out of the exhalation",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.3,
+          1.1
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ]
+      },
+      {
+        "Time": 2.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DarkShockTechnique",
+    "Description": "Draw a shadowed charge behind the shoulder and cast it downward around the caster; load the dark charge behind the hip and drop its pressure through both knees before sweeping it away",
+    "Duration": 2.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Draw the dark charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.0,
+          1.65
+        ],
+        "RootOffset": [
+          0.02,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Hold the charge over the shoulder",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.45,
+          0.1,
+          1.95
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Drop the suppression wave",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.7,
+          1.0
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          4
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ]
+      },
+      {
+        "Time": 2.05,
+        "Label": "Sweep the suppression outward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.2,
+          1.05
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 2.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DisorientingScreechTechnique",
+    "Description": "Cover the side of the head, arch into a sustained shrill call, then release the sound across both flanks; support the sustained call with a firm low base that turns with the two flank releases",
+    "Duration": 2.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Prepare the high screech",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.32,
+          0.1,
+          1.8
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Project the shrill call",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.4,
+        "LeftHand": [
+          -0.32,
+          0.1,
+          1.8
+        ],
+        "TorsoDegrees": [
+          -12,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.7,
+        "Label": "Carry the call across the left flank",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.3,
+          1.65
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -9
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.03
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Finish across the right flank",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.6,
+          1.5
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          9
+        ],
+        "RootOffset": [
+          0.02,
+          0.02,
+          -0.03
+        ]
+      },
+      {
+        "Time": 2.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "DreadWaveTechnique",
+    "Description": "Gather a deep chest-level resonance, broaden the shoulders and push a low sonic wave outward; gather resonance beneath the ribs and drive the low wave through a planted forward body brace",
+    "Duration": 2.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Gather the dread resonance",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.22,
+          0.25,
+          1.35
+        ],
+        "RightHand": [
+          0.22,
+          0.25,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Expand the resonant chest",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.4,
+        "LeftHand": [
+          -0.55,
+          0.2,
+          1.4
+        ],
+        "RightHand": [
+          0.55,
+          0.2,
+          1.4
+        ],
+        "TorsoDegrees": [
+          -10,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Roll the sonic wave outward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.65,
+          1.15
+        ],
+        "RightHand": [
+          0.65,
+          0.65,
+          1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Let the wave subside",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.3,
+          0.95
+        ],
+        "RightHand": [
+          0.5,
+          0.3,
+          0.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FinalEclipseTechnique",
+    "Description": "Gather force above the lead shoulder and cut a decisive vertical line through the target corridor; load the high force line over the rear hip and cut downward through a grounded forward leg",
+    "Duration": 2.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Set the final line",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Gather the eclipsing force",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.15,
+          2.0
+        ],
+        "RootOffset": [
+          0.01,
+          -0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Cut the force corridor",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.85,
+          1.05
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
+        ]
+      },
+      {
+        "Time": 1.95,
+        "Label": "Hold the broken line",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.75,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          2
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Release the finishing force",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FinalLineTechnique",
+    "Description": "Set a narrow attacking lane and drive a single committed forward strike down it",
+    "Duration": 2.3,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Take the narrow line",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.8,
+        "Label": "Chamber the finishing strike",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.2,
+        "Label": "Drive through the line",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Complete the committed extension",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.68
+      },
+      {
+        "Time": 1.95,
+        "Label": "Recover the lane",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.3,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FinalMandateTechnique",
+    "Description": "Raise both arms to claim attention then direct a wide party rally into a firm forward order; resolve the native rally into a grounded forward command with the knees carrying the final order",
+    "Duration": 3.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.5,
+        "Label": "Claim the final mandate",
+        "SourceAnimation": "victorymg",
+        "SourceTime": 0.5
+      },
+      {
+        "Time": 1.15,
+        "Label": "Rally the full party",
+        "SourceAnimation": "victorymg",
+        "SourceTime": 0.65
+      },
+      {
+        "Time": 1.75,
+        "Label": "Direct the party forward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.8,
+          1.6
+        ],
+        "RightHand": [
+          0.45,
+          0.35,
+          1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Seal the order",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.55,
+          1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 3.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FinalSuppressionTechnique",
+    "Description": "A slow high stop sign closes into a sharp forward arresting palm held along the chosen line; place body weight behind the arresting palm and sustain the line without repeated knee pumping",
+    "Duration": 2.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.5,
+        "Label": "Raise the arrest signal",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.15,
+          1.95
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Set the suppression corridor",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.85,
+          1.75
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.7,
+        "Label": "Hold the final stop",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.85,
+          1.75
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Release the corridor",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.4,
+          1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FinishingDriveTechnique",
+    "Description": "Gather momentum through a compact loaded fighting base and pump the lead fist inward without striking a target; load the drive through the rear hip and push from the supporting leg, avoiding an idle arms-only bounce",
+    "Duration": 1.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Set the momentum base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.65,
+        "Label": "Gather the next drive",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.25,
+          1.05
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -5
+        ],
+        "RootOffset": [
+          0.01,
+          -0.03,
+          -0.05
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Pump momentum into the guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.22,
+          0.3,
+          1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          4
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Settle the stronger guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FrostSpitTechnique",
+    "Description": "Prepare a short chilled spit, snap the head and lead hand toward one target, then withdraw cleanly; make one restrained rear-to-front body impulse for the spit and then settle, without throwing the arms wildly",
+    "Duration": 1.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Gather the chilled spit",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.25,
+          1.65
+        ],
+        "TorsoDegrees": [
+          -6,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
+        ]
+      },
+      {
+        "Time": 0.7,
+        "Label": "Snap the frost at one target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.75,
+          1.35
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.15,
+        "Label": "Withdraw the lead hand",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.3,
+          1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "GoringChargeTechnique",
+    "Description": "Lower the shoulder behind a guarded fist and surge through a single straight goring impact",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Set the charging base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.65,
+        "Label": "Lower the goring shoulder",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.4,
+        "LeftHand": [
+          -0.25,
+          0.5,
+          1.1
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Drive the goring impact",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.58,
+        "LeftHand": [
+          -0.2,
+          0.8,
+          1.05
+        ],
+        "TorsoDegrees": [
+          20,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Replant after impact",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.2,
+        "LeftHand": [
+          -0.3,
+          0.45,
+          1.1
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "GrenadeBurstTechnique",
+    "Description": "Draw a charge from the hip and cast it outward with a complete overarm release before recovering; load the throwing hip, drive the release from the legs and absorb its follow-through before lowering the arm",
+    "Duration": 2.15,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Draw the charge",
+        "SourceAnimation": "getmid",
+        "SourceTime": 0.4
+      },
+      {
+        "Time": 0.7,
+        "Label": "Raise the explosive charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          -0.15,
+          1.85
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          -9
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Cast the burst outward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.85,
+          1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          6
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Complete the throwing follow-through",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.05,
+          0.65,
+          1.0
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          8
+        ],
+        "RootOffset": [
+          -0.01,
+          0.03,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Withdraw the throwing arm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.25,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "HoldfastSlamTechnique",
+    "Description": "Lift a heavy guard and hammer the lead hand down to pin the target in place; lift over a loaded rear leg, hammer down through bent knees and maintain planted pressure while pinning",
+    "Duration": 2.4,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Set the holdfast base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Raise the pinning hand",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.32,
+          0.25,
+          1.9
+        ],
+        "RootOffset": [
+          0.01,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          -5
+        ]
+      },
+      {
+        "Time": 1.25,
+        "Label": "Hammer the pin downward",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.8,
+          0.85
+        ],
+        "TorsoDegrees": [
+          12,
+          0,
+          3
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Hold the target pinned",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.8,
+          0.85
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Release the pin",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InfernoBlastTechnique",
+    "Description": "Draw a large breath with the arms open, then lean into a prolonged wide explosive exhalation; support the prolonged exhalation with a sustained forward knee brace after the retained native inhalation",
+    "Duration": 3.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.5,
+        "Label": "Draw the inferno breath",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.4,
+        "LeftHand": [
+          -0.65,
+          0.05,
+          1.4
+        ],
+        "RightHand": [
+          0.65,
+          0.05,
+          1.4
+        ],
+        "TorsoDegrees": [
+          -15,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.1,
+        "Label": "Open the cone",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.55,
+        "LeftHand": [
+          -0.75,
+          0.3,
+          1.55
+        ],
+        "RightHand": [
+          0.75,
+          0.3,
+          1.55
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Drive the sustained inferno",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.6,
+          0.65,
+          1.2
+        ],
+        "RightHand": [
+          0.6,
+          0.65,
+          1.2
+        ],
+        "TorsoDegrees": [
+          22,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.05
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Finish the forceful exhalation",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.45,
+          0.4,
+          1.1
+        ],
+        "RightHand": [
+          0.45,
+          0.4,
+          1.1
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ]
+      },
+      {
+        "Time": 3.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InnerCircleBindTechnique",
+    "Description": "Reach around the target line with both hands and close an inward binding clamp; reach over the lead leg, close the clamp and draw the binding tension back through the hips",
+    "Duration": 2.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Reach around the binding line",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.5,
+          1.45
+        ],
+        "RightHand": [
+          0.65,
+          0.5,
+          1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Close the inner clamp",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.7,
+          1.5
+        ],
+        "RightHand": [
+          0.12,
+          0.7,
+          1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Pull the binding taut",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.18,
+          0.35,
+          1.25
+        ],
+        "RightHand": [
+          0.18,
+          0.35,
+          1.25
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Maintain the sealed clamp",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.18,
+          0.35,
+          1.25
+        ],
+        "RightHand": [
+          0.18,
+          0.35,
+          1.25
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InnerCirclePounceTechnique",
+    "Description": "Compress into a deep attacking base and spring into a single close high hook",
+    "Duration": 2.3,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Gather the pounce",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.4
+      },
+      {
+        "Time": 0.8,
+        "Label": "Rise into the pounce",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.2,
+        "Label": "Drive the high pounce",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          12,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.7,
+        "Label": "Land in the fighting base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.0,
+        "Label": "Settle the landing",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.3,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InnerCircleSurgeTechnique",
+    "Description": "Gather a focused electrical charge between close hands, thrust it forward then split its residual arcs to either side; drive the focused surge from a loaded core and let the returning arcs carry weight between the legs",
+    "Duration": 2.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Gather the focused charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.35,
+          1.45
+        ],
+        "RightHand": [
+          0.15,
+          0.35,
+          1.45
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Thrust the primary surge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.18,
+          0.82,
+          1.6
+        ],
+        "RightHand": [
+          0.18,
+          0.82,
+          1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Fork the first arc",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.5,
+          1.55
+        ],
+        "RightHand": [
+          0.2,
+          0.65,
+          1.45
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Fork the returning arc",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.4,
+          1.3
+        ],
+        "RightHand": [
+          0.7,
+          0.45,
+          1.55
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 2.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InnerCircleVolleyTechnique",
+    "Description": "Build a tight sonic focus and release three compact forward pulses at one target; maintain a crouched base while three small forward weight impulses reinforce the timed pulses",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Build the sonic focus",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.3,
+          1.5
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.75,
+        "Label": "Send the first sonic pulse",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.85,
+          1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Gather the second pulse",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.4,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Send the second sonic pulse",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.82,
+          1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Gather the final pulse",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.35,
+          1.5
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.95,
+        "Label": "Send the final sonic pulse",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.85,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.3,
+        "Label": "Release the focus",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.3,
+          1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InnerRingFlurryTechnique",
+    "Description": "Pin the target with the lead hand and deliver three quick short right-arm rakes inside the trapped guard",
+    "Duration": 2.45,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Pin the inner target",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.5
+        ]
+      },
+      {
+        "Time": 0.55,
+        "Label": "Chamber the first short rake",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.35,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.5
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Apply the first short rake",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.57,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.5
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Rechamber inside the guard",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.4,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.5
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Apply the second short rake",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.6,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.5
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Rechamber the final rake",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.38,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.5
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Apply the final short rake",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.58,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.5
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Release the trapped guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.45,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "InnerVoidTechnique",
+    "Description": "Reach a narrow pulling hand toward the target then close the drawn force into the chest; follow the reaching hand with body weight, then transfer the drawn force back into the core",
+    "Duration": 2.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.45,
+        "Label": "Reach into the target void",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.85,
+          1.6
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Close the pulling grip",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.7,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Draw the weakened force inward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.16,
+          0.25,
+          1.45
+        ],
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Absorb the recovered force",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.2,
+          1.25
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "IonBurstTechnique",
+    "Description": "Cross a charged forearm at the chest and unfold a broad ion fan from left to right; carry the unfolding fan through a deliberate lateral hip transfer over a stable knee brace",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Charge the crossing forearm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.2,
+          0.35,
+          1.45
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -6
+        ]
+      },
+      {
+        "Time": 0.9,
+        "Label": "Open the left edge of the ion fan",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.7,
+          0.55,
+          1.55
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Sweep the ion fan through center",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.05,
+          0.85,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.9,
+        "Label": "Close the ion fan at the far edge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.25,
+          0.6,
+          1.2
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "LastBastionTechnique",
+    "Description": "Plant a wide defensive base and extend both arms as a held barrier protecting the party; use a sustained grounded leg brace beneath the broad party barrier, easing the weight only as the hands lower",
+    "Duration": 3.25,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Plant the final bastion",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Raise the broad barrier",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.6,
+          0.7,
+          1.4
+        ],
+        "RightHand": [
+          0.6,
+          0.7,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Brace the party behind the barrier",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.6,
+          0.7,
+          1.4
+        ],
+        "RightHand": [
+          0.6,
+          0.7,
+          1.4
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Lower the protective boundary",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.4,
+          1.1
+        ],
+        "RightHand": [
+          0.5,
+          0.4,
+          1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 3.25,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "LockstepCrushTechnique",
+    "Description": "A planted knee rise flows into one descending close strike that crushes the forward cone",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Set the crushing step",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.75,
+        "Label": "Raise the lockstep knee",
+        "SourceAnimation": "nwclosel",
+        "SourceTime": 0.45
+      },
+      {
+        "Time": 1.15,
+        "Label": "Plant the crushing step",
+        "SourceAnimation": "nwclosel",
+        "SourceTime": 0.75
+      },
+      {
+        "Time": 1.6,
+        "Label": "Drive the close crushing strike",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          15,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.05,
+        "Label": "Recollect the guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "MercilessAngleTechnique",
+    "Description": "Slip to one side, rake across the opening and finish with a second angled hook",
+    "Duration": 2.55,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Slip into the opening",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "TorsoDegrees": [
+          8,
+          0,
+          -16
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Rake through the first angle",
+        "SourceAnimation": "nwslashr",
+        "SourceTime": 0.55
+      },
+      {
+        "Time": 1.25,
+        "Label": "Load the finishing angle",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.3,
+        "TorsoDegrees": [
+          0,
+          0,
+          12
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Finish through the exposed flank",
+        "SourceAnimation": "nwcloseh",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 2.15,
+        "Label": "Close the merciless angle",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.55,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "NullShockTechnique",
+    "Description": "Pinpoint a distant field, close the suppressing grip and pull its drained charge into the lower chest; close the distant field over the lead knee and draw its energy backward through the hips",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Pinpoint the null field",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.8,
+          1.65
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Close the field around the target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.75,
+          1.25
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Drain the field inward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.25,
+          1.15
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.05,
+        "Label": "Release the spent null charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.6,
+          0.2,
+          0.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "OverclockedAnalyzer",
+    "Description": "Raise the analyzer forearm, make two deliberate controls adjustments and confirm its increased output; settle into a quiet working stance for both controls and straighten only after confirmation",
+    "Duration": 2.9,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.45,
+        "Label": "Raise the analyzer panel",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.4,
+          1.25
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          -2
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Select the overclock control",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.4,
+          1.25
+        ],
+        "RightHand": [
+          -0.05,
+          0.5,
+          1.35
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Adjust the second control",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.4,
+          1.25
+        ],
+        "RightHand": [
+          -0.15,
+          0.45,
+          1.15
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Confirm the analyzer output",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.6,
+          1.4
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Lower the operating arm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.9,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PackHarrierTechnique",
+    "Description": "Take a low stalking guard and snap one short low kick to hobble the target",
+    "Duration": 1.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Take the harrying base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.62,
+        "Label": "Chamber the low harrying kick",
+        "SourceAnimation": "nwkickl",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 0.95,
+        "Label": "Snap at the target leg",
+        "SourceAnimation": "nwkickl",
+        "SourceTime": 0.55
+      },
+      {
+        "Time": 1.45,
+        "Label": "Replant the stalking guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PermafrostRuptureTechnique",
+    "Description": "Compress cold near the waist, drive both palms downward and spread the frozen rupture around the feet",
+    "Duration": 2.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Compress the cold",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.35,
+          1.1
+        ],
+        "RightHand": [
+          0.2,
+          0.35,
+          1.1
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Lift the compressed frost",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.3,
+          1.6
+        ],
+        "RightHand": [
+          0.6,
+          0.4,
+          1.4
+        ]
+      },
+      {
+        "Time": 1.4,
+        "Label": "Rupture the ground frost",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.5,
+        "LeftHand": [
+          -0.35,
+          0.65,
+          0.65
+        ],
+        "RightHand": [
+          0.35,
+          0.65,
+          0.65
+        ]
+      },
+      {
+        "Time": 2.05,
+        "Label": "Spread the frozen edge",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.35,
+        "LeftHand": [
+          -0.75,
+          0.3,
+          0.95
+        ],
+        "RightHand": [
+          0.75,
+          0.3,
+          0.95
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Rise from the rupture",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.1
+      },
+      {
+        "Time": 2.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PiercingQuillsTechnique",
+    "Description": "Draw the quill arm behind the body and extend a held piercing fan through the enemy cone; load the back hip beneath the drawn arm and drive the held quill fan through a braced forward leg",
+    "Duration": 2.3,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Gather the piercing quills",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.55,
+          -0.1,
+          1.4
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -9
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Aim the piercing fan",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.65,
+          1.5
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Launch the quills through the cone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.88,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          6
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Finish the piercing extension",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.22,
+          0.6,
+          1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          3
+        ]
+      },
+      {
+        "Time": 2.3,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PouncingStrikeTechnique",
+    "Description": "A compressed knee bend springs into a straight high strike then returns to a low landed guard",
+    "Duration": 2.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Compress for the pounce",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.35
+      },
+      {
+        "Time": 0.7,
+        "Label": "Spring into the forward strike",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.05,
+        "Label": "Land the pouncing strike",
+        "SourceAnimation": "nwslasho",
+        "SourceTime": 0.58
+      },
+      {
+        "Time": 1.5,
+        "Label": "Absorb the landing",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.4
+      },
+      {
+        "Time": 1.8,
+        "Label": "Stand back into guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PressureLockTechnique",
+    "Description": "Frame the forward cone with wide hands then squeeze a sustained inward pressure seal; lower the whole body against the inward pressure seal and maintain the fixed brace while the lock holds",
+    "Duration": 2.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Frame the outer pressure boundary",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.5,
+          1.3
+        ],
+        "RightHand": [
+          0.75,
+          0.5,
+          1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Close the pressure around the cone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.8,
+          1.3
+        ],
+        "RightHand": [
+          0.35,
+          0.8,
+          1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Seal the immobilizing pressure",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.75,
+          1.15
+        ],
+        "RightHand": [
+          0.12,
+          0.75,
+          1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Maintain the pressure lock",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.75,
+          1.15
+        ],
+        "RightHand": [
+          0.12,
+          0.75,
+          1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RakingClawsTechnique",
+    "Description": "Reach low into the target line and rake one claw diagonally back across the leg; reach the low target through the knees and transfer the rake across the hips before withdrawing",
+    "Duration": 1.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Lower the raking guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.5,
+          1.1
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.65,
+        "Label": "Reach the target leg",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.78,
+          0.85
+        ],
+        "TorsoDegrees": [
+          12,
+          0,
+          4
+        ],
+        "RootOffset": [
+          0.01,
+          0.04,
+          -0.05
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Rake diagonally through the leg",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.45,
+          1.15
+        ],
+        "TorsoDegrees": [
+          9,
+          0,
+          -10
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.05
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Withdraw the claw",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RallyBreakerTechnique",
+    "Description": "Mark the opposing rally point then snap a short dismissive strike across its signal; load the dismissive cut in the rear hip and carry it across the planted stance with controlled follow-through",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Mark the rally point",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.75,
+          1.65
+        ],
+        "RootOffset": [
+          0.01,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Draw the breaking gesture",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.55,
+          0.25,
+          1.5
+        ],
+        "RootOffset": [
+          0.02,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 1.2,
+        "Label": "Cut across the rally signal",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.15,
+          0.75,
+          1.25
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          9
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Dismiss the broken rally",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.35,
+          1.0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          3
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RupturingQuakeTechnique",
+    "Description": "Raise both hands high and descend into a deep two-handed ground impact before lifting out of the shockwave",
+    "Duration": 3.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Set the quake base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.95,
+        "Label": "Raise the rupturing weight",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.45,
+          0.1,
+          2.0
+        ],
+        "RightHand": [
+          0.45,
+          0.1,
+          2.0
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Drive the deep ground rupture",
+        "SourceAnimation": "getlow",
+        "SourceTime": 1,
+        "LeftHand": [
+          -0.35,
+          0.65,
+          0.25
+        ],
+        "RightHand": [
+          0.35,
+          0.65,
+          0.25
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Hold the shockwave impact",
+        "SourceAnimation": "getlow",
+        "SourceTime": 1,
+        "LeftHand": [
+          -0.35,
+          0.65,
+          0.25
+        ],
+        "RightHand": [
+          0.35,
+          0.65,
+          0.25
+        ]
+      },
+      {
+        "Time": 2.55,
+        "Label": "Lift out of the rupture",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.25
+      },
+      {
+        "Time": 3.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SavageRoarTechnique",
+    "Description": "Hunch into a predatory breath, spread the arms low and project a rough forward roar; gather the breath from a crouched predatory base and soften the knees after the retained native roar",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Gather the savage breath",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "TorsoDegrees": [
+          12,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.04
+        ]
+      },
+      {
+        "Time": 0.9,
+        "Label": "Bare the predatory posture",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.5,
+        "LeftHand": [
+          -0.65,
+          0.25,
+          1.05
+        ],
+        "RightHand": [
+          0.65,
+          0.25,
+          1.05
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Project the rough roar",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.6,
+        "LeftHand": [
+          -0.65,
+          0.45,
+          1.05
+        ],
+        "RightHand": [
+          0.65,
+          0.45,
+          1.05
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Release the roar",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ScorchingBreathTechnique",
+    "Description": "Lift the chest for a hot inhalation then lean forward with lowered arms for a continuous scorching breath; plant the exhalation over a sustained low forward stance, then ease body pressure as the breath ends",
+    "Duration": 2.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.45,
+        "Label": "Draw the scorching breath",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.35,
+        "TorsoDegrees": [
+          -12,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Set the fire cone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.2,
+          1.0
+        ],
+        "RightHand": [
+          0.5,
+          0.2,
+          1.0
+        ],
+        "TorsoDegrees": [
+          18,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Sustain the scorching exhalation",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.35,
+          0.95
+        ],
+        "RightHand": [
+          0.65,
+          0.35,
+          0.95
+        ],
+        "TorsoDegrees": [
+          18,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Ease the breath to a close",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.2,
+          1.0
+        ],
+        "RightHand": [
+          0.4,
+          0.2,
+          1.0
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ]
+      },
+      {
+        "Time": 2.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SeismicSlamTechnique",
+    "Description": "Lift one heavy striking hand and pound the ground once from a low braced crouch",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Brace for the slam",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.75,
+        "Label": "Lift the seismic fist",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.4,
+          0.15,
+          1.95
+        ]
+      },
+      {
+        "Time": 1.15,
+        "Label": "Pound the ground",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.75,
+        "RightHand": [
+          0.2,
+          0.7,
+          0.35
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Hold the seismic contact",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.75,
+        "RightHand": [
+          0.2,
+          0.7,
+          0.35
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Rise from the slam",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.2
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ShrapnelBurstTechnique",
+    "Description": "Crack a held charge outward between the hands then fan its fragments low across the cone; brace beneath the charge break and transfer the low fragment fan across flexed knees",
+    "Duration": 2.4,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Hold the fragmentation charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.4,
+          1.3
+        ],
+        "RightHand": [
+          0.12,
+          0.4,
+          1.3
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Break the charge outward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.65,
+          1.4
+        ],
+        "RightHand": [
+          0.65,
+          0.65,
+          1.4
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -6
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Fan the low fragments",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.4,
+          0.95
+        ],
+        "RightHand": [
+          0.75,
+          0.4,
+          0.95
+        ],
+        "RootOffset": [
+          0.02,
+          0.03,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          7
+        ]
+      },
+      {
+        "Time": 1.95,
+        "Label": "Withdraw from the fragments",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.25,
+          1.15
+        ],
+        "RightHand": [
+          0.4,
+          0.25,
+          1.15
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SignalSnareTechnique",
+    "Description": "Find a target signal at the temple, hook it with a forward hand and draw it into a compact snare; follow the hooking hand over the lead leg and draw the caught signal back into a lowered core",
+    "Duration": 2.3,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Locate the target signal",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.28,
+          0.12,
+          1.75
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -3
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Hook the signal forward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.8,
+          1.6
+        ],
+        "RootOffset": [
+          0.01,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Draw the signal into the snare",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.45,
+          1.2
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Close the captured signal",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.3,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SnapRushTechnique",
+    "Description": "A quick guarded weight shift and backward arm drive gather speed without a false projectile cast; alternate pressure between the planted legs with the running-arm drive rather than moving only the shoulders",
+    "Duration": 1.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Gather the rush",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ]
+      },
+      {
+        "Time": 0.55,
+        "Label": "Drive the first running arm",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.45,
+          -0.15,
+          1.05
+        ],
+        "RightHand": [
+          0.25,
+          0.55,
+          1.45
+        ],
+        "TorsoDegrees": [
+          12,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.02,
+          0.03,
+          -0.04
+        ]
+      },
+      {
+        "Time": 0.9,
+        "Label": "Drive the opposite arm",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.6,
+          1.45
+        ],
+        "RightHand": [
+          0.45,
+          -0.1,
+          1.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ],
+        "RootOffset": [
+          -0.02,
+          0.03,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Settle the accelerated guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SonicShriekTechnique",
+    "Description": "Draw one hand beside the jaw, snap into a narrow forward sonic cry and hold its directed release; load the breath over the rear leg, then keep the narrow cry supported by a sustained forward knee brace",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Ready the focused shriek",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.28,
+          0.25,
+          1.72
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Project the narrow sonic cone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.55,
+          1.55
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Hold the directed cry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.55,
+          1.55
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.95,
+        "Label": "Lower the voice and arm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.3,
+          1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "StaticBurstTechnique",
+    "Description": "Build static at the waist, snap one radial discharge and follow with two alternating lateral arcs; ground the initial discharge through both knees and transfer weight across the subsequent lateral arcs",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Build the static charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.3,
+          1.1
+        ],
+        "RightHand": [
+          0.2,
+          0.3,
+          1.1
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Snap the primary burst",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.5,
+          1.55
+        ],
+        "RightHand": [
+          0.65,
+          0.5,
+          1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Arc toward the left",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.8,
+          0.2,
+          1.4
+        ],
+        "RightHand": [
+          0.25,
+          0.35,
+          1.25
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 1.8,
+        "Label": "Arc toward the right",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.35,
+          1.25
+        ],
+        "RightHand": [
+          0.8,
+          0.2,
+          1.4
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Drain the residual static",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.3,
+          0.95
+        ],
+        "RightHand": [
+          0.4,
+          0.3,
+          0.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "StaticWebTechnique",
+    "Description": "Weave a crossed charge at waist height then separate the hands diagonally into a surrounding electrical web; carry the diagonal strands through opposing hip transfers and settle the completed web over both legs",
+    "Duration": 2.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Cross the web strands",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.15,
+          0.5,
+          1.05
+        ],
+        "RightHand": [
+          -0.15,
+          0.35,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Weave the upper strand",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.55,
+          0.5,
+          1.8
+        ],
+        "RightHand": [
+          0.5,
+          0.4,
+          1.0
+        ],
+        "RootOffset": [
+          -0.03,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Stretch the opposing strand",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.6,
+          0.4,
+          1.15
+        ],
+        "RightHand": [
+          0.6,
+          0.5,
+          1.7
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          7
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Set the web around the caster",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.55,
+          1.35
+        ],
+        "RightHand": [
+          0.65,
+          0.55,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "StimCanisterTechnique",
+    "Description": "Retrieve a canister, lower it beside the caster and operate its top before rising",
+    "Duration": 2.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Retrieve the stim canister",
+        "SourceAnimation": "getmid",
+        "SourceTime": 0.45
+      },
+      {
+        "Time": 0.95,
+        "Label": "Lower the canister beside the party",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.65,
+        "LeftHand": [
+          -0.45,
+          0.6,
+          0.5
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Operate the canister top",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.65,
+        "LeftHand": [
+          -0.45,
+          0.6,
+          0.5
+        ],
+        "RightHand": [
+          -0.2,
+          0.6,
+          0.7
+        ]
+      },
+      {
+        "Time": 1.95,
+        "Label": "Release the deployed canister",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.5,
+        "LeftHand": [
+          -0.35,
+          0.35,
+          0.85
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Rise from deployment",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.1
+      },
+      {
+        "Time": 2.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SuppressingShotTechnique",
+    "Description": "Align a narrow forearm sight, release a short directed suppressive impulse and hold the lane; support the narrow release with a compact forward weight impulse and hold its lane over a softened lead knee",
+    "Duration": 2.15,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Align the suppression sight",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.55,
+          1.55
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Release down the narrow lane",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.87,
+          1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Hold the suppressed line",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.12,
+          0.87,
+          1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.75,
+        "Label": "Lower the sighting arm",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.35,
+          1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "SustainBurnTechnique",
+    "Description": "Touch a coating at the belt and wipe it along the held weapon arm before settling into an envenomed guard; remain stable while coating the weapon arm, then settle body weight into the envenomed fighting guard",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Gather the venom coating",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.2,
+          0.95
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Apply the coating along the weapon arm",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.15,
+          0.42,
+          1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Complete the careful coating stroke",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.35,
+          0.62,
+          1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          2
+        ]
+      },
+      {
+        "Time": 2.1,
+        "Label": "Set the coated guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "TailSweepTechnique",
+    "Description": "Pivot through one low turning leg sweep and replant both feet without a second kick",
+    "Duration": 2.1,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Prepare the low turning sweep",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.65,
+        "Label": "Turn into the sweeping leg",
+        "SourceAnimation": "nwkickr",
+        "SourceTime": 0.25
+      },
+      {
+        "Time": 1.05,
+        "Label": "Sweep across the surrounding line",
+        "SourceAnimation": "nwkickr",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 1.55,
+        "Label": "Replant after the sweep",
+        "SourceAnimation": "nwkickr",
+        "SourceTime": 0.95
+      },
+      {
+        "Time": 1.8,
+        "Label": "Square the guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 2.1,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "TerrifyingBellowTechnique",
+    "Description": "Rise into a towering open-chested threat, throw the arms apart and sustain a deep interrupting bellow",
+    "Duration": 3.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.5,
+        "Label": "Rise into the threat",
+        "SourceAnimation": "victorymg",
+        "SourceTime": 0.3
+      },
+      {
+        "Time": 1.05,
+        "Label": "Open the towering bellow",
+        "SourceAnimation": "victorymg",
+        "SourceTime": 0.55
+      },
+      {
+        "Time": 1.8,
+        "Label": "Sustain the interrupting sound",
+        "SourceAnimation": "victorymg",
+        "SourceTime": 0.6,
+        "TorsoDegrees": [
+          -10,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Lower the threatening arms",
+        "SourceAnimation": "taunt",
+        "SourceTime": 0.6
+      },
+      {
+        "Time": 3.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ToxicCloudTechnique",
+    "Description": "Gather a volatile vial near the hip and lob a high arc toward a distant poison field; load the lob from the back hip, rise through release and absorb the descending follow-through in the knees",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Retrieve the toxic charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.15,
+          1.0
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -4
+        ]
+      },
+      {
+        "Time": 0.85,
+        "Label": "Lift the cloud charge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.45,
+          0.05,
+          1.8
+        ],
+        "RootOffset": [
+          0.02,
+          -0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Lob the distant toxic field",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.75,
+          1.95
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          6
+        ]
+      },
+      {
+        "Time": 1.9,
+        "Label": "Follow the descending arc",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.8,
+          1.2
+        ],
+        "RootOffset": [
+          -0.01,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          4
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Withdraw from the fumes",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.2,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ToxicSpitTechnique",
+    "Description": "Gather a small poison spit at the jaw and snap it forward with a short low recoil; deliver one short whole-body spit impulse and catch the recoil through a soft knee bend",
+    "Duration": 1.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Gather the poison spit",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.22,
+          0.25,
+          1.68
+        ],
+        "TorsoDegrees": [
+          -5,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.02
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Spit toward the target",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.4,
+          1.1
+        ],
+        "TorsoDegrees": [
+          18,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Recoil from the poison release",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.5,
+          0.2,
+          1.05
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Settle the head and chest",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.01
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "VenomSprayTechnique",
+    "Description": "Prime a venom breath beside the jaw and sweep a sustained poisonous exhalation across the forward cone; support the sustained venom cone on a lowered stance that transfers pressure with the sweep",
+    "Duration": 2.65,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Prime the venom spray",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.65
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Begin at the left cone edge",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.7,
+          0.5,
+          1.2
+        ],
+        "TorsoDegrees": [
+          12,
+          0,
+          -12
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Sweep the venom across the cone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.15,
+          0.75,
+          1.1
+        ],
+        "TorsoDegrees": [
+          12,
+          0,
+          12
+        ],
+        "RootOffset": [
+          0.03,
+          0.03,
+          -0.04
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Finish the venom exhalation",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.35,
+          0.35,
+          1.0
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ]
+      },
+      {
+        "Time": 2.65,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WardenClampTechnique",
+    "Description": "Raise two separated warning hands then close and press a broad arresting clamp at chest height; close the arresting hands with a forward weight transfer and sustain downward pressure through the knees",
+    "Duration": 2.7,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Raise the warden warning",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.3,
+          1.7
+        ],
+        "RightHand": [
+          0.65,
+          0.3,
+          1.7
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Close the broad clamp",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.75,
+          1.45
+        ],
+        "RightHand": [
+          0.3,
+          0.75,
+          1.45
+        ],
+        "RootOffset": [
+          0.0,
+          0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Press the arrested line down",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.75,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.75,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Hold the clamp pressure",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.3,
+          0.75,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.75,
+          1.05
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.7,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WardenMarkTechnique",
+    "Description": "Trace a measured marking arc across nearby enemies and close the command with a pointed center signal; trace the marked arc through a measured lateral weight transfer and square the hips for the center signal",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Identify the first mark",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.7,
+          0.5,
+          1.55
+        ],
+        "RootOffset": [
+          -0.02,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 0.9,
+        "Label": "Trace the marked enemy arc",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.85,
+          1.65
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Finish the outer mark",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          0.3,
+          0.55,
+          1.45
+        ],
+        "RootOffset": [
+          0.03,
+          0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          7
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Confirm the marked center",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.7,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WardenMaulTechnique",
+    "Description": "Reach wide to catch the surrounding line, pull it inward and drive both hands down in a mauling arrest",
+    "Duration": 2.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Catch the surrounding line",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.65,
+          1.6
+        ],
+        "RightHand": [
+          0.75,
+          0.65,
+          1.6
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Pull the enemies inward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.3,
+          1.45
+        ],
+        "RightHand": [
+          0.2,
+          0.3,
+          1.45
+        ]
+      },
+      {
+        "Time": 1.55,
+        "Label": "Drive the mauling arrest down",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.45,
+        "LeftHand": [
+          -0.25,
+          0.65,
+          0.7
+        ],
+        "RightHand": [
+          0.25,
+          0.65,
+          0.7
+        ]
+      },
+      {
+        "Time": 2.15,
+        "Label": "Hold the arrested line low",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.3,
+          0.55,
+          0.9
+        ],
+        "RightHand": [
+          0.3,
+          0.55,
+          0.9
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Rise from the arrest",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.1
+      },
+      {
+        "Time": 2.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WardenOrderTechnique",
+    "Description": "Give a calm chest-level acknowledgement and lift a broad restorative command to the allied circle; lift the restorative order through a gentle knee extension and settle body weight with its return to center",
+    "Duration": 2.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Acknowledge the wounded circle",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.25,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Lift the restorative order",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.55,
+          0.6,
+          1.6
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          -1,
+          0,
+          -3
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Carry the order around the allies",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.2,
+          1.5
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          -12
+        ],
+        "RootOffset": [
+          0.02,
+          0.02,
+          -0.03
+        ]
+      },
+      {
+        "Time": 2.25,
+        "Label": "Offer the recovery back to center",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.6,
+          1.2
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WardenRendTechnique",
+    "Description": "Hook both sides of a hostile field and tear them apart before gathering the recovered force; hook from the lead leg, tear across the hips and draw the recovered force into a loaded core",
+    "Duration": 2.75,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.4,
+        "Label": "Hook the hostile field",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.2,
+          0.8,
+          1.4
+        ],
+        "RightHand": [
+          0.2,
+          0.8,
+          1.4
+        ],
+        "RootOffset": [
+          0.0,
+          0.04,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.0,
+        "Label": "Rend the field outward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.8,
+          0.35,
+          1.3
+        ],
+        "RightHand": [
+          0.8,
+          0.35,
+          1.3
+        ],
+        "RootOffset": [
+          -0.02,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -7
+        ]
+      },
+      {
+        "Time": 1.65,
+        "Label": "Draw the stolen force inward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.3,
+          1.1
+        ],
+        "RightHand": [
+          0.15,
+          0.3,
+          1.1
+        ],
+        "RootOffset": [
+          0.0,
+          -0.03,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Settle the recovered force",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.25,
+          1.35
+        ],
+        "RightHand": [
+          0.25,
+          0.25,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.75,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WardenSweepTechnique",
+    "Description": "Sweep the lead forearm around the body and settle into a held retaliatory counterguard; turn the counterguard through the supporting hips and hold its final ready position on bent knees",
+    "Duration": 2.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Take the retaliatory base",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RootOffset": [
+          0.0,
+          -0.01,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Sweep the left guard outward",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.75,
+          0.5,
+          1.3
+        ],
+        "RootOffset": [
+          -0.03,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          -8
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Close the returning guard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.65,
+          1.55
+        ],
+        "RootOffset": [
+          0.02,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          7
+        ]
+      },
+      {
+        "Time": 2.2,
+        "Label": "Hold the counterguard",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.25,
+          0.65,
+          1.55
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WardenWallTechnique",
+    "Description": "Raise a high outward-facing ward from the waist and hold a wide upright protective wall; raise the wall with the legs, then root its sustained protective hold in a firm knee brace",
+    "Duration": 3.15,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.45,
+        "Label": "Gather the protective wall",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.4,
+          0.4,
+          1.0
+        ],
+        "RightHand": [
+          0.4,
+          0.4,
+          1.0
+        ],
+        "RootOffset": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Lift the wall around the party",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.55,
+          1.8
+        ],
+        "RightHand": [
+          0.65,
+          0.55,
+          1.8
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.9,
+        "Label": "Hold the upright ward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.65,
+          0.55,
+          1.8
+        ],
+        "RightHand": [
+          0.65,
+          0.55,
+          1.8
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.05
+        ],
+        "TorsoDegrees": [
+          7,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.55,
+        "Label": "Settle the wall into place",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.6,
+          0.6,
+          1.35
+        ],
+        "RightHand": [
+          0.6,
+          0.6,
+          1.35
+        ],
+        "RootOffset": [
+          0.0,
+          0.01,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 3.15,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "WillFractureTechnique",
+    "Description": "Touch the temple to find a mental seam, slice it outward and pull the fractured force back into the palm; carry the mental cut across the hips and draw the fractured force back through the supporting legs",
+    "Duration": 2.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Find the mental seam",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.28,
+          0.12,
+          1.8
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          1,
+          0,
+          -3
+        ]
+      },
+      {
+        "Time": 0.9,
+        "Label": "Slice the seam across the cone",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.7,
+          0.65,
+          1.55
+        ],
+        "RootOffset": [
+          -0.03,
+          0.03,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          8
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Close around the fractured will",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.1,
+          0.8,
+          1.3
+        ],
+        "RootOffset": [
+          0.0,
+          0.02,
+          -0.04
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Draw the recovered force inward",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.15,
+          0.25,
+          1.45
+        ],
+        "RootOffset": [
+          0.0,
+          -0.02,
+          -0.03
+        ],
+        "TorsoDegrees": [
+          -3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 2.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

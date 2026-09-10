@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.WardenRend, 49, 3)
                 .HasTargetingSphere(
                     Spell.WardenRendTechnique,

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit1, PerkType.MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit2, PerkType.MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit II")
                 .Level(2)
                 .HasActivationDelay(1.5f)
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit3, PerkType.MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit III")
                 .Level(3)
                 .HasActivationDelay(1.5f)
@@ -101,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit4, PerkType.MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit IV")
                 .Level(4)
                 .HasActivationDelay(1.5f)

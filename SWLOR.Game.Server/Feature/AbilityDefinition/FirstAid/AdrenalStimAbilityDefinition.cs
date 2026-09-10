@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.AdrenalStim1, PerkType.AdrenalStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.AdrenalStim2, PerkType.AdrenalStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -72,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.AdrenalStim3, PerkType.AdrenalStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim III")
                 .Level(3)
                 .HasActivationDelay(1f)

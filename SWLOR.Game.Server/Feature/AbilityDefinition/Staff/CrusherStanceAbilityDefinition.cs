@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CrusherStance1, PerkType.CrusherStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Crusher Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.CrusherStance, 30.0f),

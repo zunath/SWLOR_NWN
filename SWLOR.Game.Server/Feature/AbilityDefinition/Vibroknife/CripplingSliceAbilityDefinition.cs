@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CripplingSlice1, PerkType.CripplingSlice)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Crippling Slice I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CripplingSlice2, PerkType.CripplingSlice)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Crippling Slice II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CripplingSlice3, PerkType.CripplingSlice)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Crippling Slice III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),

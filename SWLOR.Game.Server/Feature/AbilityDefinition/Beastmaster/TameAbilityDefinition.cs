@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Tame")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 2f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(18f)
                 .RequirementStamina(10)

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.EmergencyTriage1, PerkType.EmergencyTriage)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Emergency Triage")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ImmovableStance1, PerkType.ImmovableStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Immovable Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ImmovableStance, 30.0f),

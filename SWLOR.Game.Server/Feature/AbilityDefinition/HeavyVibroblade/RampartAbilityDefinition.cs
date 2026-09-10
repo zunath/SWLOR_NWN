@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.Rampart1, PerkType.Rampart)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Rampart")
                 .Level(1)
                 .HasActivationDelay(0f)

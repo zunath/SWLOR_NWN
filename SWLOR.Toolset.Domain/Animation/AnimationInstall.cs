@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Numerics;
+using System.Security.Cryptography;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Toolset.Domain.Render;
@@ -10,6 +11,21 @@ namespace SWLOR.Toolset.Domain.Animation;
 
 public sealed record AnimationFileChange(string Path, byte[]? Before, byte[] After);
 public sealed record AnimationRegistration(string Name, string AnimationName, float Duration, string[] Targets, string? ProjectPath = null);
+public sealed record AnimationInputFingerprint(long Length, string Sha256)
+{
+    public static AnimationInputFingerprint FromBytes(byte[] bytes) => new(bytes.LongLength, Convert.ToHexString(SHA256.HashData(bytes)));
+    public bool Matches(byte[] bytes) => Length == bytes.LongLength && Sha256 == Convert.ToHexString(SHA256.HashData(bytes));
+    public bool Matches(Stream stream)
+    {
+        stream.Position = 0;
+        return stream.Length == Length && Sha256 == Convert.ToHexString(SHA256.HashData(stream));
+    }
+    public void Verify(string path)
+    {
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        if (!Matches(stream)) throw new IOException($"'{path}' changed after the installation preview. Prepare a new preview.");
+    }
+}
 
 /// <summary>A reviewable installation transaction. Existing model payloads are retained byte for byte.</summary>
 public sealed class AnimationInstallPlan
@@ -18,6 +34,7 @@ public sealed class AnimationInstallPlan
     public required string ConstantName { get; init; }
     public required IReadOnlyList<AnimationFileChange> Changes { get; init; }
     public required IReadOnlyDictionary<string, byte[]> Inputs { get; init; }
+    public IReadOnlyDictionary<string, AnimationInputFingerprint> ReadOnlyInputs { get; init; } = new Dictionary<string, AnimationInputFingerprint>();
     public IReadOnlyCollection<string> AbsentInputs { get; init; } = [];
     /// <summary>Backup files whose cleanup failed during the most recent Apply call.</summary>
     public IReadOnlyList<string> RetainedBackups { get; private set; } = [];
@@ -44,10 +61,13 @@ public sealed class AnimationInstallPlan
         // Own the transaction's bytes as well as its ordering through commit and rollback.
         var changes = Changes.Select(change => new AnimationFileChange(change.Path, change.Before?.ToArray(), change.After.ToArray())).ToArray();
         var inputs = Inputs.ToDictionary(input => input.Key, input => input.Value.ToArray(), AnimationInstall.PathComparer);
+        var readOnlyInputs = ReadOnlyInputs.ToDictionary(input => input.Key, input => input.Value, AnimationInstall.PathComparer);
         var absentInputs = AbsentInputs.ToArray();
         var absentReservations = GetAbsentReservationPaths(changes, absentInputs);
         // The caller holds the module mutation lock. Every input is checked again after confirmation.
         VerifyInputs(inputs, absentInputs);
+        VerifyModelResolutions(readOnlyInputs.Keys, absentInputs, null);
+        foreach (var input in readOnlyInputs) input.Value.Verify(input.Key);
         foreach (var change in changes) Verify(change);
         var staged = new Dictionary<string, string>(AnimationInstall.PathComparer);
         var applied = new List<AnimationFileChange>();
@@ -68,6 +88,13 @@ public sealed class AnimationInstallPlan
             // dependency stable through the entire commit/rollback sequence, including config.
             var outputs = new HashSet<string>(AnimationInstall.PathComparer);
             for (var i = 0; i < changes.Length; i++) outputs.Add(changes[i].Path);
+            foreach (var input in readOnlyInputs)
+            {
+                if (outputs.Contains(input.Key)) throw new InvalidDataException("Read-only dependencies cannot also be outputs.");
+                var lease = new FileStream(input.Key, FileMode.Open, FileAccess.Read, FileShare.Read);
+                inputLeases.Add(lease);
+                if (!input.Value.Matches(lease)) throw new IOException($"'{input.Key}' changed after the installation preview.");
+            }
             foreach (var input in inputs)
             {
                 if (outputs.Contains(input.Key)) continue;
@@ -109,7 +136,7 @@ public sealed class AnimationInstallPlan
             }
             // A case-sensitive filesystem can admit another spelling beside a reserved
             // path. Check NWN resource identities again before reporting success.
-            VerifyModelResolutions(inputs.Keys.Concat(outputs), absentInputs,
+            VerifyModelResolutions(inputs.Keys.Concat(readOnlyInputs.Keys).Concat(outputs), absentInputs,
                 reservedAbsentInputs.Concat(outputs).ToHashSet(AnimationInstall.PathComparer));
         }
         catch (Exception failure)
@@ -159,7 +186,7 @@ public sealed class AnimationInstallPlan
                 throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
     }
 
-    private static void VerifyModelResolutions(IEnumerable<string> presentPaths, IEnumerable<string> absentPaths,
+    internal static void VerifyModelResolutions(IEnumerable<string> presentPaths, IEnumerable<string> absentPaths,
         IReadOnlySet<string>? allowedAbsentPaths)
     {
         var present = presentPaths.Where(AnimationInstall.IsModelPath).ToArray();
@@ -189,8 +216,10 @@ public static class AnimationInstall
     internal static string SortAnimationBlocks(string source)
     {
         var pattern = new Regex(@"(?m)^newanim (\S+) [^\r\n]+\r?\n[\s\S]*?^doneanim \1 [^\r\n]+(?:\r?\n|$)");
+        // Resrefs use canonical lowercase ASCII ordering. OrdinalIgnoreCase folds to
+        // uppercase, which places letters before underscores and changes this order.
         var blocks = pattern.Matches(source).Cast<Match>()
-            .OrderBy(match => match.Groups[1].Value, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(match => match.Groups[1].Value.ToLowerInvariant(), StringComparer.Ordinal)
             .Select(match => match.Value).ToArray();
         var index = 0;
         return pattern.Replace(source, _ => blocks[index++]);
@@ -211,7 +240,8 @@ public static class AnimationInstall
                 throw new InvalidDataException($"Ambiguous model resource '{Path.GetFileNameWithoutExtension(path)}': source filenames differ only by case.");
         return models;
     }
-    public const int ClipsPerBank = 256;
+    public const int ClipsPerBank = 128;
+    public const int MaximumBankBytes = 24 * 1024 * 1024;
     public const int MaximumModelChainDepth = 32;
     public const int MaximumInputBytes = 128 * 1024 * 1024;
     public const int MaximumOutputBytes = 128 * 1024 * 1024;
@@ -237,16 +267,18 @@ public static class AnimationInstall
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configPath)!, layer.GetProperty("Path").GetString()!))).ToArray();
 
     public static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths,
-        string? sourceProjectPath = null)
-        => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes, sourceProjectPath: sourceProjectPath);
+        string? sourceProjectPath = null, string? internalName = null)
+        => Prepare(repositoryRoot, project, targetPaths, MaximumInputBytes, sourceProjectPath: sourceProjectPath, internalName: internalName);
 
     internal static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths, int inputBudget,
-        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null, int bankBudget = AnimationProject.MaximumFileBytes)
+        int outputBudget = MaximumOutputBytes, string? sourceProjectPath = null, int bankBudget = MaximumBankBytes, string? internalName = null)
     {
         if (inputBudget < 1 || inputBudget > MaximumInputBytes) throw new ArgumentOutOfRangeException(nameof(inputBudget));
         if (outputBudget < 1 || outputBudget > MaximumOutputBytes) throw new ArgumentOutOfRangeException(nameof(outputBudget));
         if (bankBudget < 1 || bankBudget > AnimationProject.MaximumFileBytes) throw new ArgumentOutOfRangeException(nameof(bankBudget));
         project.Validate();
+        if (internalName != null && (internalName.Length > AnimationClip.MaxNameLength || !Regex.IsMatch(internalName, @"\Asw_[a-z0-9_]+\z")))
+            throw new InvalidDataException("An explicit internal animation name must start with sw_ and contain at most twelve lowercase letters, digits or underscores.");
         if (project.Name == "AuthoredAnimation" || !Regex.IsMatch(project.Name, @"\A[A-Z][A-Za-z0-9_]*\z"))
             throw new InvalidDataException("Use a C# constant name beginning with an uppercase letter, such as SaluteWithSaber.");
         var root = Path.GetFullPath(repositoryRoot);
@@ -255,6 +287,7 @@ public static class AnimationInstall
         var registryPath = Path.Combine(root, "design", "animations", "registry.json");
         var constantsPath = Path.Combine(root, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
         var inputs = new Dictionary<string, byte[]>(PathComparer);
+        var readOnlyInputs = new Dictionary<string, AnimationInputFingerprint>(PathComparer);
         var absentInputs = new HashSet<string>(PathComparer);
         var inputBytes = 0;
         byte[] Read(string path)
@@ -264,6 +297,9 @@ public static class AnimationInstall
                 data = AnimationSourceFile.ReadBytes(path, Math.Min(AnimationProject.MaximumFileBytes, inputBudget - inputBytes),
                     "Animation installation input (remaining aggregate budget)");
                 inputBytes += data.Length;
+                if (readOnlyInputs.TryGetValue(path, out var fingerprint) && !fingerprint.Matches(data))
+                    throw new IOException($"'{path}' changed while preparing the installation.");
+                readOnlyInputs.Remove(path); // Edited banks need full before bytes for rollback.
                 inputs[path] = data;
             }
             return data;
@@ -331,8 +367,12 @@ public static class AnimationInstall
             ? legacyProjectPath : $"design/animations/uncategorized/{project.Name}.swlanim";
         var projectPath = Path.GetFullPath(Path.Combine(root, relativeProjectPath));
         var stem = "sw_" + project.Name.ToLowerInvariant(); stem = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength)];
-        var animationName = registration?.AnimationName ?? stem;
+        if (registration != null && internalName != null && registration.AnimationName != internalName)
+            throw new InvalidDataException("The requested internal name differs from the installed animation. Existing animation identities cannot be renamed during installation.");
+        var animationName = registration?.AnimationName ?? internalName ?? stem;
         var usedNames = registrations.SelectMany(r => new[] { r.AnimationName, r.AnimationName + "_in", r.AnimationName + "_out" }).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (registration == null && internalName != null && new[] { animationName, animationName + "_in", animationName + "_out" }.Any(usedNames.Contains))
+            throw new InvalidDataException("The requested internal name collides with an installed animation or transition. Choose another explicit name.");
         for (var suffix = 1; registration == null && (usedNames.Contains(animationName) || usedNames.Contains(animationName + "_in") || usedNames.Contains(animationName + "_out")); suffix++)
         {
             var number = suffix.ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -341,6 +381,24 @@ public static class AnimationInstall
         var targets = targetPaths.Select(Path.GetFullPath).Distinct(PathComparer).ToArray();
         if (targets.Length is < 1 or > 32) throw new InvalidDataException("Select 1–32 target model files.");
         var models = new Dictionary<string, MdlModel>(PathComparer);
+        var binaryModels = new HashSet<string>(PathComparer);
+        var parsedModelBytes = 0;
+        MdlModel ReadModel(string path)
+        {
+            if (models.TryGetValue(path, out var cached)) return cached;
+            // Parsed models remain resident even when their source bytes only need a
+            // fingerprint. Bound that distinct-model corpus separately from rollback data.
+            var remainingModelBytes = inputBudget - parsedModelBytes;
+            var bytes = inputs.TryGetValue(path, out var retained) ? retained :
+                AnimationSourceFile.ReadBytes(path, Math.Min(AnimationProject.MaximumFileBytes,
+                    Math.Min(inputBudget - inputBytes, remainingModelBytes)), "Animation model dependency (remaining parsed-model budget)");
+            if (bytes.Length > remainingModelBytes)
+                throw new InvalidDataException("Animation model dependency exceeds the remaining parsed-model budget.");
+            parsedModelBytes += bytes.Length;
+            if (!inputs.ContainsKey(path)) readOnlyInputs.Add(path, AnimationInputFingerprint.FromBytes(bytes));
+            if (AnimationBankSource.IsBinary(bytes)) binaryModels.Add(path);
+            return models[path] = new MdlReader().Parse(bytes);
+        }
         var chains = new Dictionary<string, List<string>>(PathComparer);
         foreach (var target in targets)
         {
@@ -357,7 +415,7 @@ public static class AnimationInstall
             while (currentPath != null)
             {
                 if (!visited.Add(currentPath) || visited.Count > MaximumModelChainDepth) throw new InvalidDataException("Cyclic or excessively deep supermodel chain.");
-                var model = new MdlReader().Parse(Read(currentPath)); models[currentPath] = model;
+                var model = ReadModel(currentPath);
                 chain.Add(currentPath);
                 foreach (var animation in model.Animations)
                 {
@@ -410,16 +468,30 @@ public static class AnimationInstall
             var header = $"# SWLOR authored animations for {model.Name}";
             bool IsOwnedBank(string path)
             {
-                if (AnimationBankSource.IsBinary(Read(path)) && !File.Exists(AnimationBankSource.PathFor(hakRoot, path))) return false;
+                if (binaryModels.Contains(path) && !File.Exists(AnimationBankSource.PathFor(hakRoot, path))) return false;
                 var contents = Encoding.ASCII.GetString(AnimationSourceFile.Utf8Content(BankText(path)).Span);
                 return contents.StartsWith(header + "\n", StringComparison.Ordinal) || contents.StartsWith(header + "\r\n", StringComparison.Ordinal);
+            }
+            bool IsBankCandidate(string path)
+            {
+                if (!binaryModels.Contains(path)) return IsOwnedBank(path);
+                // Find a bank using its already parsed native metadata. Reading every large
+                // editable companion merely to discover ownership exhausted the aggregate
+                // budget once the library rolled over into multiple banks. This is only a
+                // candidate check: every bank we actually edit is fully hash/header verified.
+                var name = models[path].Name;
+                var fileName = Path.GetFileNameWithoutExtension(target);
+                return (name.Equals("an_" + fileName, StringComparison.OrdinalIgnoreCase) ||
+                        name.StartsWith("an_" + fileName[..Math.Min(fileName.Length, 8)] + "_", StringComparison.OrdinalIgnoreCase) ||
+                        name.StartsWith("ab_" + model.Name[..Math.Min(model.Name.Length, 8)] + "_", StringComparison.OrdinalIgnoreCase)) &&
+                    File.Exists(AnimationBankSource.PathFor(hakRoot, path));
             }
             var targetName = Path.GetFileNameWithoutExtension(target);
             AnimationProject.ValidateToken(targetName, 16);
             var overlayName = "an_" + targetName;
             if (registeredTarget)
             {
-                if (chains[target].Count < 2 || !IsOwnedBank(chains[target][1]))
+                if (chains[target].Count < 2 || !IsBankCandidate(chains[target][1]))
                     throw new InvalidDataException("Registered target is missing its authored animation bank.");
                 overlayName = model.SuperModel;
             }
@@ -445,12 +517,13 @@ public static class AnimationInstall
             var linkPath = target;
             if (existingOverlay != null)
             {
-                if (!IsOwnedBank(existingOverlay)) throw new InvalidDataException("Existing overlay is not an authored animation source.");
-                var banks = chains[target].Skip(1).TakeWhile(IsOwnedBank).ToArray();
+                if (!IsBankCandidate(existingOverlay)) throw new InvalidDataException("Existing overlay is not an authored animation source.");
+                var banks = chains[target].Skip(1).TakeWhile(IsBankCandidate).ToArray();
                 var selected = registration != null
                     ? banks.SingleOrDefault(path => models[path].Animations.Any(a => a.Name.Equals(animationName, StringComparison.OrdinalIgnoreCase)))
                     : banks.FirstOrDefault(path => models[path].Animations.Count < ClipsPerBank * 3 &&
-                        CountNodes(models[path]) + project.Joints.Count * 3 < 90_000 && Read(path).Length < 32 * 1024 * 1024);
+                        CountNodes(models[path]) + project.Joints.Count * 3 < 90_000 &&
+                        (inputs.TryGetValue(path, out var retained) ? retained.LongLength : readOnlyInputs[path].Length) < 32 * 1024 * 1024);
                 if (registration != null && selected == null) throw new InvalidDataException("Registered animation is missing from its target's banks.");
                 if (selected == null)
                 {
@@ -458,6 +531,7 @@ public static class AnimationInstall
                 }
                 else
                 {
+                    if (!IsOwnedBank(selected)) throw new InvalidDataException("Selected overlay is not an authored animation source.");
                     existingOverlay = overlayPath = selected;
                     overlayName = models[selected].Name;
                 }
@@ -466,6 +540,7 @@ public static class AnimationInstall
             {
                 if (chains[target].Count >= MaximumModelChainDepth) throw new InvalidDataException("Animation banks would exceed the supported supermodel chain depth. Split the library by target rig.");
                 linkPath = chains[target][1];
+                if (!IsOwnedBank(linkPath)) throw new InvalidDataException("The animation bank link is not an authored animation source.");
                 // Extra banks retain a fixed-size resref and are inserted behind the first
                 // overlay. Native model payloads and the existing animation chain stay intact.
                 var prefix = "ab_" + model.Name[..Math.Min(model.Name.Length, 8)] + "_";
@@ -579,7 +654,7 @@ public static class AnimationInstall
                 (overlay, blocks) = BuildOverlay();
             }
             if (Encoding.ASCII.GetByteCount(overlay) > bankBudget)
-                throw new InvalidDataException("Completed animation bank exceeds its input size limit. Simplify the clip before installing it.");
+                throw new InvalidDataException("Completed animation bank exceeds its input size limit. Rebalance the target's banks before updating this clip.");
             // The native compiler retains source order in the animation lookup table.
             overlay = SortAnimationBlocks(overlay);
             EnsureOutputCapacity(Encoding.ASCII.GetByteCount(overlay));
@@ -632,7 +707,7 @@ public static class AnimationInstall
                 projectBytes = existing;
         }
         Add(projectPath, projectBytes);
-        var plan = new AnimationInstallPlan { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, AbsentInputs = absentInputs };
+        var plan = new AnimationInstallPlan { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, ReadOnlyInputs = readOnlyInputs, AbsentInputs = absentInputs };
         _ = plan.GetAbsentReservationPaths(); // Reject an oversized transaction before presenting its installation preview.
         return plan;
     }

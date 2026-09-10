@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Adhesive Grenade I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Adhesive Grenade II")
                 .Level(2)
                 .HasActivationDelay(1f)

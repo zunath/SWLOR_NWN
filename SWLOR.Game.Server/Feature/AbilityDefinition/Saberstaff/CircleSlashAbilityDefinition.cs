@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Circle Slash I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.CircleSlash, 24.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Circle Slash II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.CircleSlash, 24.0f),
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Circle Slash III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.CircleSlash, 24.0f),

@@ -13,6 +13,25 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_scripted_ranged_impacts_keep_authored_motion_after_regeneration(self):
+        for skill in ("Pistol", "Rifle", "Throwing"):
+            with self.subTest(skill=skill):
+                lines = GENERATOR.authored_animation_builder_lines(
+                    skill, {"Type": "Combat", "CastingTime": "0"}, True)
+                self.assertEqual(["                    .UsesAuthoredAnimationAtImpact()"], lines)
+
+    def test_queued_attacks_do_not_gain_a_second_scripted_motion(self):
+        for skill in ("Rifle", "Katar", "Lightsaber"):
+            with self.subTest(skill=skill):
+                self.assertEqual([], GENERATOR.authored_animation_builder_lines(
+                    skill, {"Type": "Combat", "CastingTime": "Queued"}, True))
+
+    def test_stances_use_activation_gestures_instead_of_impact_gestures(self):
+        for skill in ("Pistol", "Rifle", "Throwing", "Staff"):
+            with self.subTest(skill=skill):
+                self.assertEqual(["                    .UsesImmediateAuthoredAnimation()"],
+                    GENERATOR.authored_animation_builder_lines(skill, {"Type": "Stance"}, False))
+
     def test_scope_calibration_reads_minimum_range_from_description(self):
         properties = dict(GENERATOR.description_stat_entries(
             {

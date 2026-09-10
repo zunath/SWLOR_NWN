@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.PurifyingWave1, PerkType.PurifyingWave)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Purifying Wave")
                 .Level(1)
                 .HasActivationDelay(1.5f)

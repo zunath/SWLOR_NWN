@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.GroundQuake1, PerkType.GroundQuake)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Ground Quake I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.GroundQuake, 30.0f),
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.GroundQuake2, PerkType.GroundQuake)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Ground Quake II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.GroundQuake, 30.0f),

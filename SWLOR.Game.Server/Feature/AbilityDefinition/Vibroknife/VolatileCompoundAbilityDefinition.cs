@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.VolatileCompound1, PerkType.VolatileCompound)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Volatile Compound I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.VolatileCompound, 45.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.VolatileCompound2, PerkType.VolatileCompound)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Volatile Compound II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.VolatileCompound, 45.0f),

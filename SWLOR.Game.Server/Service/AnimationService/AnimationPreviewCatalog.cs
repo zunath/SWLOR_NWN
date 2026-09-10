@@ -8,19 +8,35 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.AnimationService;
 
 public static class AnimationPreviewCatalog
 {
     public const string OtherCategory = "Other";
-    public sealed record Entry(string Id, string DisplayName, AnimationClip Clip, IReadOnlyList<string> Categories);
+    public sealed record Entry(string Id, string DisplayName, AnimationClip Clip, IReadOnlyList<string> Categories,
+        Animation? NativeAnimation = null, float NativeAnimationSpeed = 1f, float NativeAnimationDuration = 0f)
+    {
+        public string DurationText => NativeAnimation.HasValue ? "Native" : $"{Clip.Duration:0.##}s";
+        public float PreviewDuration => NativeAnimation.HasValue ? NativeAnimationDuration / NativeAnimationSpeed : Clip.Duration;
+        public string Play(uint creature) => NativeAnimation.HasValue
+            ? NamedAnimation.PlayNativePreview(creature, NativeAnimation.Value, NativeAnimationSpeed)
+            : NamedAnimation.Play(creature, Clip);
+    }
 
-    public static IReadOnlyDictionary<string, AnimationClip> Clips { get; } =
-        new ReadOnlyDictionary<string, AnimationClip>(typeof(AuthoredAnimation)
+    public static IReadOnlyDictionary<string, AnimationClip> Clips { get; } = CreateClips();
+
+    private static IReadOnlyDictionary<string, AnimationClip> CreateClips()
+    {
+        var clips = ActiveAbilityAnimationCatalog.Entries.ToDictionary(entry => entry.Id, entry => entry.Clip,
+            StringComparer.OrdinalIgnoreCase);
+        foreach (var field in typeof(AuthoredAnimation)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.FieldType == typeof(AnimationClip))
-            .ToDictionary(field => field.Name, field => (AnimationClip)field.GetValue(null), StringComparer.OrdinalIgnoreCase));
+            .Where(field => field.FieldType == typeof(AnimationClip)))
+            clips[field.Name] = (AnimationClip)field.GetValue(null);
+        return new ReadOnlyDictionary<string, AnimationClip>(clips);
+    }
 
     public static IReadOnlyList<Entry> Entries { get; private set; } = CreateEntries(Array.Empty<AbilityDetail>());
 
@@ -28,13 +44,37 @@ public static class AnimationPreviewCatalog
     public static void CacheCategories() => Entries = CreateEntries(Ability.GetAllAbilityDetails().Values, Perk.GetAllPerks());
 
     public static IReadOnlyList<Entry> CreateEntries(IEnumerable<AbilityDetail> abilities,
-        IReadOnlyDictionary<PerkType, PerkDetail> perks = null)
+        IReadOnlyDictionary<PerkType, PerkDetail> perks = null,
+        IEnumerable<AbilityAnimationEntry> authoredEntries = null)
     {
         // Some buffs and casts declare their perk without a combat skill. Use that perk's category
         // when needed; keep shared clips in every category where they have a playback binding.
         var categories = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        var nativePreviews = new Dictionary<string, (Animation Animation, float Speed, float Duration)>(StringComparer.OrdinalIgnoreCase);
+        var authored = (authoredEntries ?? ActiveAbilityAnimationCatalog.Entries)
+            .ToDictionary(entry => entry.Id, StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in authored.Values)
+        {
+            if (!categories.TryGetValue(entry.Clip.Name, out var names))
+                categories[entry.Clip.Name] = names = new(StringComparer.OrdinalIgnoreCase);
+            names.Add(entry.Category);
+        }
         foreach (var ability in abilities)
         {
+            if (ability.NativeAnimationPreview.HasValue && ability.PreviewAnimation != null)
+            {
+                var key = ability.PreviewAnimation.Name;
+                var native = (Animation: ability.NativeAnimationPreview.Value, Speed: ability.NativeAnimationPreviewSpeed,
+                    Duration: ability.NativeAnimationPreviewDuration);
+                if (!float.IsFinite(native.Speed) || native.Speed <= 0f)
+                    throw new InvalidOperationException($"Invalid native preview speed for animation '{key}'.");
+                if (!float.IsFinite(native.Duration) || native.Duration <= 0f ||
+                    !float.IsFinite(native.Duration / native.Speed) || native.Duration / native.Speed > 600f)
+                    throw new InvalidOperationException($"Invalid native preview duration for animation '{key}'.");
+                if (nativePreviews.TryGetValue(key, out var previous) && previous != native)
+                    throw new InvalidOperationException($"Conflicting native previews for animation '{key}'.");
+                nativePreviews[key] = native;
+            }
             var skill = typeof(SkillType).GetField(ability.SkillType.ToString())?.GetCustomAttribute<SkillAttribute>();
             var category = ability.SkillType != SkillType.Invalid && skill is { IsActive: true } ? skill.Name : null;
             if (category == null && perks != null && perks.TryGetValue(ability.EffectiveLevelPerkType, out var perk) && perk.IsActive)
@@ -43,7 +83,7 @@ public static class AnimationPreviewCatalog
                 if (metadata is { IsActive: true }) category = metadata.Name.Split(" - ", 2)[0];
             }
             if (category == null) continue;
-            foreach (var clip in new[] { ability.AuthoredAnimation, ability.QueuedAttackAnimation })
+            foreach (var clip in new[] { ability.AuthoredAnimation, ability.QueuedAttackAnimation, ability.PreviewAnimation })
             {
                 if (clip == null) continue;
                 if (!categories.TryGetValue(clip.Name, out var names)) categories[clip.Name] = names = new(StringComparer.OrdinalIgnoreCase);
@@ -51,10 +91,14 @@ public static class AnimationPreviewCatalog
             }
         }
         return Array.AsReadOnly(Clips.Select(pair => new Entry(pair.Key,
-                Regex.Replace(pair.Key, "(?<=[a-z0-9])(?=[A-Z])", " "), pair.Value,
+                authored.TryGetValue(pair.Key, out var metadata) ? metadata.DisplayName :
+                    Regex.Replace(pair.Key, "(?<=[a-z0-9])(?=[A-Z])", " "), pair.Value,
                 Array.AsReadOnly(categories.TryGetValue(pair.Value.Name, out var names)
                     ? names.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray()
-                    : new[] { OtherCategory })))
+                    : new[] { OtherCategory }),
+                nativePreviews.TryGetValue(pair.Value.Name, out var native) ? native.Animation : null,
+                nativePreviews.TryGetValue(pair.Value.Name, out var nativeSpeed) ? nativeSpeed.Speed : 1f,
+                nativePreviews.TryGetValue(pair.Value.Name, out var nativeDuration) ? nativeDuration.Duration : 0f))
             .OrderBy(entry => entry.DisplayName, StringComparer.OrdinalIgnoreCase).ToArray());
     }
 
@@ -66,6 +110,7 @@ public static class AnimationPreviewCatalog
     {
         var text = Normalize(query);
         return Normalize(entry.DisplayName).Contains(text, StringComparison.OrdinalIgnoreCase) ||
+               Normalize(entry.Id).Contains(text, StringComparison.OrdinalIgnoreCase) ||
                Normalize(entry.Clip.Name).Contains(text, StringComparison.OrdinalIgnoreCase);
     }
 

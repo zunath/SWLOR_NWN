@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingRound1, PerkType.PiercingRound)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Piercing Round I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.PiercingRound, 24.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingRound2, PerkType.PiercingRound)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Piercing Round II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.PiercingRound, 24.0f),
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingRound3, PerkType.PiercingRound)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Piercing Round III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.PiercingRound, 24.0f),

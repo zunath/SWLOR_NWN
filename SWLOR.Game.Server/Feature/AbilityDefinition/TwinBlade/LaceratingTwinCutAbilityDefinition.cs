@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut1, PerkType.LaceratingTwinCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Lacerating Twin Cut I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut2, PerkType.LaceratingTwinCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Lacerating Twin Cut II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut3, PerkType.LaceratingTwinCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Lacerating Twin Cut III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),
@@ -106,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut4, PerkType.LaceratingTwinCut)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Lacerating Twin Cut IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),

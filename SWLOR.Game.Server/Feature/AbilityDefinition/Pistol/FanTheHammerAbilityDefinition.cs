@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FanTheHammer1, PerkType.FanTheHammer)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Fan the Hammer I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.FanTheHammer, 30.0f),
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.FanTheHammer2, PerkType.FanTheHammer)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Fan the Hammer II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.FanTheHammer, 30.0f),

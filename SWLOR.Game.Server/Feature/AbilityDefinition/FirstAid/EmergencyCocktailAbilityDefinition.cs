@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.EmergencyCocktail1, PerkType.EmergencyCocktail)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Emergency Cocktail")
                 .Level(1)
                 .HasActivationDelay(1f)

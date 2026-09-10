@@ -19,10 +19,13 @@ internal sealed class AsciiMdlReader
     private readonly List<SourceLine> _lines = new();
     private int _index;
     private int _nodeCount;
+    private AllocationBudget? _allocationBudget;
 
-    public MdlModel Parse(byte[] data)
+    public MdlModel Parse(byte[] data, AllocationBudget? allocationBudget = null)
     {
         ArgumentNullException.ThrowIfNull(data);
+        _allocationBudget = allocationBudget;
+        _allocationBudget?.ReserveElements(data.LongLength, sizeof(char), "ASCII MDL decoded text");
         LoadLines(NwnTextEncoding.DecodeGeneral(data));
         var model = new MdlModel();
         var foundModel = false;
@@ -72,6 +75,7 @@ internal sealed class AsciiMdlReader
 
     private MdlAnimation ParseAnimation(string[] declaration, SourceLine source, string modelName)
     {
+        _allocationBudget?.Reserve(128, "ASCII MDL animation");
         var animation = new MdlAnimation
         {
             Name = RequiredToken(declaration, 1, source, "animation name")
@@ -134,6 +138,7 @@ internal sealed class AsciiMdlReader
     {
         if (++_nodeCount > MaximumNodes)
             throw Error($"ASCII MDL node count exceeds {MaximumNodes}.", source);
+        _allocationBudget?.Reserve(1_024, "ASCII MDL node");
 
         var type = RequiredToken(declaration, 1, source, "node type").ToLowerInvariant();
         var name = declaration.Length >= 3 ? declaration[2] : $"{type}_{_nodeCount}";
@@ -325,6 +330,7 @@ internal sealed class AsciiMdlReader
     private Vector3[] ReadVector3Array(string[] declaration, SourceLine source, string context)
     {
         var count = ArrayCount(declaration, source, context, MaximumVertices);
+        _allocationBudget?.ReserveElements(count, 12, "ASCII MDL " + context);
         var values = new Vector3[count];
         for (var index = 0; index < values.Length; index++)
         {
@@ -343,6 +349,7 @@ internal sealed class AsciiMdlReader
     private Vector2[] ReadVector2Array(string[] declaration, SourceLine source, string context)
     {
         var count = ArrayCount(declaration, source, context, MaximumVertices);
+        _allocationBudget?.ReserveElements(count, 16, "ASCII MDL " + context);
         var values = new List<Vector2>(count);
         for (var index = 0; index < count; index++)
         {
@@ -359,6 +366,9 @@ internal sealed class AsciiMdlReader
     private AsciiFace[] ReadFaces(string[] declaration, SourceLine source)
     {
         var count = ArrayCount(declaration, source, "faces", MaximumFaces);
+        // Includes source faces, generated normals, corner adjacency, remapping,
+        // and expanded render arrays retained while the mesh is finalized.
+        _allocationBudget?.ReserveElements(count, 768, "ASCII MDL face expansion");
         var values = new AsciiFace[count];
         for (var index = 0; index < values.Length; index++)
         {
@@ -385,6 +395,7 @@ internal sealed class AsciiMdlReader
     private MdlSkinInfluence[][] ReadWeights(string[] declaration, SourceLine source)
     {
         var count = ArrayCount(declaration, source, "skin weights", MaximumVertices);
+        _allocationBudget?.ReserveElements(count, 160, "ASCII MDL skin influences");
         var values = new MdlSkinInfluence[count][];
         for (var index = 0; index < values.Length; index++)
         {
@@ -468,8 +479,11 @@ internal sealed class AsciiMdlReader
         throw Error($"ASCII MDL {context} block is missing endlist.", source);
     }
 
-    private static KeyRow ParseKeyRow(SourceLine line, string context, int minimumColumns)
+    private KeyRow ParseKeyRow(SourceLine line, string context, int minimumColumns)
     {
+        // Covers the row/list entry and the resulting typed controller arrays.
+        // Token strings and arrays are charged separately before splitting.
+        _allocationBudget?.Reserve(256, "ASCII MDL " + context);
         var tokens = Tokens(line);
         if (tokens.Length < minimumColumns)
             throw Error($"ASCII MDL {context} row requires at least {minimumColumns} values.", line);
@@ -820,11 +834,14 @@ internal sealed class AsciiMdlReader
                 throw Error($"ASCII MDL line {number} exceeds {MaximumLineLength} characters.");
             var value = raw.Trim();
             if (value.Length > 0 && value[0] != '#')
+            {
+                _allocationBudget?.Reserve(64 + value.Length * 2L, "ASCII MDL source line");
                 _lines.Add(new SourceLine(number, NormalizeConcatenatedDirective(value)));
+            }
         }
     }
 
-    private static string NormalizeConcatenatedDirective(string value)
+    private string NormalizeConcatenatedDirective(string value)
     {
         foreach (var directive in new[]
                  {
@@ -846,7 +863,7 @@ internal sealed class AsciiMdlReader
 
         if (!value.StartsWith("node ", StringComparison.OrdinalIgnoreCase))
             return value;
-        var tokens = value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var tokens = Tokenize(value);
         if (tokens.Length != 2)
             return value;
         foreach (var type in new[]
@@ -898,8 +915,30 @@ internal sealed class AsciiMdlReader
         return count;
     }
 
-    private static string[] Tokens(SourceLine line) =>
-        line.Text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+    private string[] Tokens(SourceLine line) => Tokenize(line.Text);
+
+    private string[] Tokenize(string text)
+    {
+        if (_allocationBudget != null)
+        {
+            var tokenCount = 0;
+            var inToken = false;
+            foreach (var character in text)
+            {
+                if (char.IsWhiteSpace(character)) inToken = false;
+                else if (!inToken)
+                {
+                    tokenCount++;
+                    inToken = true;
+                }
+            }
+            // Key rows retain every token until their controller block is decoded,
+            // including extra columns. Account for strings, references, split work
+            // arrays, and characters before Split can amplify a wide input row.
+            _allocationBudget.Reserve(32 + tokenCount * 48L + text.Length * 2L, "ASCII MDL tokens");
+        }
+        return text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+    }
 
     private static string RequiredToken(string[] tokens, int index, SourceLine source, string context)
     {

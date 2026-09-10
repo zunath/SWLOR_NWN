@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard1, PerkType.GuardianWard)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard2, PerkType.GuardianWard)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard3, PerkType.GuardianWard)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward III")
                 .Level(3)
                 .HasActivationDelay(1f)
@@ -98,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard4, PerkType.GuardianWard)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward IV")
                 .Level(4)
                 .HasActivationDelay(1f)

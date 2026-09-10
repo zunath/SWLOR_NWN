@@ -262,6 +262,24 @@ EXPLICIT_ICON_RESREFS = {
 
 RANGED_COMBAT_IMPACT_SKILLS = {"Pistol", "Rifle", "Throwing"}
 
+# Scripted impacts use individual motions independently of their damage calculation.
+# Queued ranged attacks retain native firing; queued melee uses the swing binding.
+AUTHORED_MELEE_SKILLS = {"Katar", "TwinBlade", "Lightsaber", "Saberstaff", "Spear", "Staff", "Vibroknife"}
+
+
+def authored_animation_builder_lines(skill, row, hostile):
+    if is_queued_weapon_active(row):
+        return []
+    if skill in RANGED_COMBAT_IMPACT_SKILLS:
+        if hostile:
+            return ["                    .UsesAuthoredAnimationAtImpact()"]
+        return ["                    .UsesImmediateAuthoredAnimation()"] if not hostile and row.get("Type") == "Stance" else []
+    if skill not in AUTHORED_MELEE_SKILLS:
+        return []
+    method = "UsesAuthoredAnimationAtImpact" if hostile else "UsesImmediateAuthoredAnimation"
+    return [f"                    .{method}()"]
+
+
 PERK_BASE_ID_ALIASES = {
     ("Katar", "Steel Shoulder"): "TwinGuardStance",
     ("Katar", "Tag In"): "TwinIntercept",
@@ -3558,6 +3576,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             lines.extend([
                 "            ConfigureWeaponAbility(",
                 f"                builder.Create(FeatType.{feat}, PerkType.{perk_type})",
+                *authored_animation_builder_lines(skill, row, hostile == "true"),
                 f"                    .Name(\"{escape_csharp(row['PerkName'])}\")",
                 f"                    .Level({level})",
                 f"                    .HasRecastDelay(RecastGroup.{recast}, {recast_seconds:.1f}f),",

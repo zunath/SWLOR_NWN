@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket1, PerkType.WristRocket)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket2, PerkType.WristRocket)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket3, PerkType.WristRocket)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket III")
                 .Level(3)
                 .HasActivationDelay(1f)

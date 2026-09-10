@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LegSweep1, PerkType.LegSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Leg Sweep I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.LegSweep, 24.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LegSweep2, PerkType.LegSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Leg Sweep II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.LegSweep, 24.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.LegSweep3, PerkType.LegSweep)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Leg Sweep III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.LegSweep, 24.0f),

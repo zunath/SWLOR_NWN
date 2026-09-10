@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.AegisEternal1, PerkType.AegisEternal)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Aegis Eternal")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.JointLock1, PerkType.JointLock)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Joint Lock I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.JointLock, 24.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.JointLock2, PerkType.JointLock)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Joint Lock II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.JointLock, 24.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.JointLock3, PerkType.JointLock)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Joint Lock III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.JointLock, 24.0f),

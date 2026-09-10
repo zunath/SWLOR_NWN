@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.AbsoluteDefense1, PerkType.AbsoluteDefense)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Absolute Defense")
                 .Level(1)
                 .HasActivationDelay(0f)

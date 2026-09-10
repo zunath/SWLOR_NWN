@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.RibBreaker1, PerkType.RibBreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Rib Breaker I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.RibBreaker, 24.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.RibBreaker2, PerkType.RibBreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Rib Breaker II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.RibBreaker, 24.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.RibBreaker3, PerkType.RibBreaker)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Rib Breaker III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.RibBreaker, 24.0f),

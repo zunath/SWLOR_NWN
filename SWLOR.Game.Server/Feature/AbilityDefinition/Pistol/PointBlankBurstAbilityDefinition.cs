@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PointBlankBurst1, PerkType.PointBlankBurst)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Point Blank Burst I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.PointBlankBurst, 30.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.PointBlankBurst2, PerkType.PointBlankBurst)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Point Blank Burst II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.PointBlankBurst, 30.0f),

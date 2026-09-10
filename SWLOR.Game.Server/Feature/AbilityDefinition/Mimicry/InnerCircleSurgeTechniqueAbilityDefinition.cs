@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.InnerCircleSurge, 45, 3)
                 .MimicryElement(CombatDamageType.Electrical);
 

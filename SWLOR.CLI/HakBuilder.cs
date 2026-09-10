@@ -20,10 +20,19 @@ namespace SWLOR.CLI
         public void Process()
         {
             // Read the config file.
-            _config = GetConfig();
+            Process(GetConfig());
+        }
+
+        internal void Process(HakBuilderConfig config)
+        {
+            _config = config;
             _haksToProcess = _config.HakList
                 .Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name))
                 .ToList();
+            // Validate every input before deleting any previous HAK or TLK.
+            foreach (var hak in _haksToProcess)
+                ValidateArchiveSize(hak.Name, Directory.EnumerateFiles(hak.Path, "*", SearchOption.AllDirectories)
+                    .Select(path => new FileInfo(path).Length));
             // Clean the output folder.
             CleanOutputFolder();
 
@@ -63,6 +72,25 @@ namespace SWLOR.CLI
                 CompileHakpak(hak.Name, hak.Path);
             });
 
+        }
+
+        internal static void ValidateArchiveSize(string hakName, IEnumerable<long> resourceSizes)
+        {
+            // Conservative client compatibility budget, including the ERF V1.0
+            // 160-byte header and each 24-byte key plus 8-byte resource entry.
+            const long maximumExclusive = 2L * 1024 * 1024 * 1024;
+            long estimatedBytes = 160;
+            foreach (var size in resourceSizes)
+            {
+                if (size < 0)
+                    throw new ArgumentOutOfRangeException(nameof(resourceSizes));
+                if (size >= maximumExclusive - estimatedBytes - 32)
+                    throw new InvalidOperationException(
+                        $"HAK '{hakName}' reaches the 2 GiB client compatibility limit including archive tables. " +
+                        "Split its resources across smaller HAKs and add each HAK to the module before rebuilding. " +
+                        "No existing build outputs have been deleted.");
+                estimatedBytes += size + 32;
+            }
         }
 
         /// <summary>

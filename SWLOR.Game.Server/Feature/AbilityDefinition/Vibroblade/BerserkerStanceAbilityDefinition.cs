@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Name("Berserker Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.BerserkerStance, 30f)
+                    .UsesImmediateAuthoredAnimation()
                     .UsesAnimation(Animation.OneHandedStance),
                 typeof(BerserkerStanceStatusEffect),
                 () => new BerserkerStanceStatusEffect());

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.SonicBurst1, PerkType.SonicBurst)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Sonic Burst I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.SonicBurst2, PerkType.SonicBurst)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Sonic Burst II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.SonicBurst3, PerkType.SonicBurst)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Sonic Burst III")
                 .Level(3)
                 .HasActivationDelay(1f)

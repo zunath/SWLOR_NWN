@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorStance1, PerkType.VigorStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Vigor Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.VigorStance, 30.0f),

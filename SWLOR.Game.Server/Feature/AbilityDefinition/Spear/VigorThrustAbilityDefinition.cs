@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust1, PerkType.VigorThrust)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Vigor Thrust I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust2, PerkType.VigorThrust)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Vigor Thrust II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust3, PerkType.VigorThrust)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Vigor Thrust III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),
@@ -109,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust4, PerkType.VigorThrust)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Vigor Thrust IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),

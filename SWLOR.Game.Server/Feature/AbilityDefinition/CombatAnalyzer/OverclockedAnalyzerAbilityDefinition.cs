@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer
                 .HasActivationDelay(1.0f)
                 .HasRecastDelay(RecastGroup.Overload, 60f)
                 .UsesAnimation(Animation.LoopingConjure1)
+                .UsesImmediateAuthoredAnimation()
                 .IsCastedAbility()
                 .RequirementStamina(10)
                 .HasImpactAction((activator, target, level, location) =>

@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.BarbedVolley, 47, 2)
                 .HasTargetingCone(
                     Spell.BarbedVolleyTechnique,

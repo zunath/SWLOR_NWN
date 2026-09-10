@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike1, PerkType.HookingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Hooking Strike I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike2, PerkType.HookingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Hooking Strike II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike3, PerkType.HookingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Hooking Strike III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),
@@ -97,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike4, PerkType.HookingStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Hooking Strike IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),

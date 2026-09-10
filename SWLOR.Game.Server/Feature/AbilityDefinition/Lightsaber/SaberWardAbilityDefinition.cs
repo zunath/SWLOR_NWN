@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.SaberWard)
+                    .UsesImmediateAuthoredAnimation()
                     .Name(name)
                     .Level(level)
                     .HasRecastDelay(RecastGroup.SaberWard, 18.0f),

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Antitoxin1, PerkType.Antitoxin)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Antitoxin")
                 .Level(1)
                 .HasActivationDelay(1f)

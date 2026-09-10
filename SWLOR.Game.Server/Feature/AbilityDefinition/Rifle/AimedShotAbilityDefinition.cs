@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot1, PerkType.AimedShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Aimed Shot I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot2, PerkType.AimedShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Aimed Shot II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot3, PerkType.AimedShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Aimed Shot III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
@@ -112,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot4, PerkType.AimedShot)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Aimed Shot IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),

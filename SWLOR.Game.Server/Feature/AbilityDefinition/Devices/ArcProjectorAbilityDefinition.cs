@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(feat, PerkType.ArcProjector)
+                .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1f)

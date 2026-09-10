@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FragGrenade1, PerkType.FragGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FragGrenade2, PerkType.FragGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FragGrenade3, PerkType.FragGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade III")
                 .Level(3)
                 .HasActivationDelay(1f)

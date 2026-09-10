@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.TempestStance1, PerkType.TempestStance)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Tempest Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.TempestStance, 30.0f),

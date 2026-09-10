@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ShatteringStrike1, PerkType.ShatteringStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Shattering Strike I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ShatteringStrike, 24.0f),
@@ -47,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ShatteringStrike2, PerkType.ShatteringStrike)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Shattering Strike II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.ShatteringStrike, 24.0f),

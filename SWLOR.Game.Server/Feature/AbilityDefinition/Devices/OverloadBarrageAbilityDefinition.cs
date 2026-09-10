@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.OverloadBarrage1, PerkType.OverloadBarrage)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Overload Barrage")
                 .Level(1)
                 .HasActivationDelay(1.5f)
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void OverloadBarrage1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            Ability.PlayAbilityImpactAnimation(activator);
             var damageAdjustment = DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator);
             var baseDamageAdjustment = DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator);
             var hitChanceAdjustment = DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator);
@@ -75,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 baseDamageAdjustment: baseDamageAdjustment,
                 afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: hitChanceAdjustment,
-                criticalRatePercentAdjustment: criticalRateAdjustment);
+                criticalRatePercentAdjustment: criticalRateAdjustment,
+                playImpactAnimation: false);
 
             Ability.ApplyCombatImpact(
                 activator,
@@ -93,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 baseDamageAdjustment: baseDamageAdjustment,
                 afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: hitChanceAdjustment,
-                criticalRatePercentAdjustment: criticalRateAdjustment);
+                criticalRatePercentAdjustment: criticalRateAdjustment,
+                playImpactAnimation: false);
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -119,7 +123,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     DeviceAbilityEffects.ApplyTacticalUplink(activator);
                 },
                 hitChancePercentAdjustment: hitChanceAdjustment,
-                criticalRatePercentAdjustment: criticalRateAdjustment);
+                criticalRatePercentAdjustment: criticalRateAdjustment,
+                playImpactAnimation: false);
         }
 
         private static void InterruptActivation(uint target)

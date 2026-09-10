@@ -315,6 +315,128 @@ public sealed class MdlReaderTests
     }
 
     [Test]
+    public void DenseBinaryAnimationBanksCanDecodeBeyondTheSmallFileBudget()
+    {
+        // 35,000 distinct nodes plus their actual controller data retain over
+        // 64 MiB of managed payload from a valid file smaller than 64 MiB.
+        var bytes = BuildDenseBinaryAnimationBank(animationCount: 50, nodesPerAnimation: 700, rows: 48);
+        bytes.Length.Should().BeLessThan(64 * 1024 * 1024);
+
+        var shared = new MdlReadBudget();
+        var model = new MdlReader().Parse(bytes, shared);
+        shared.ReservedBytes.Should().BeGreaterThan(64L * 1024 * 1024,
+            "a shared chain budget must still admit the larger valid per-file allowance");
+
+        model.Animations.Should().HaveCount(50);
+        foreach (var animation in model.Animations)
+        {
+            var nodes = Enumerate(animation.GeometryRoot!).ToArray();
+            nodes.Should().HaveCount(700);
+            foreach (var node in nodes)
+            {
+                node.OrientationTimes.Should().HaveCount(48);
+                node.OrientationValues.Should().HaveCount(48);
+                node.OrientationTimes[0].Should().Be(0);
+                node.OrientationTimes[^1].Should().Be(1);
+                node.OrientationValues[0].Should().Be(Quaternion.Identity);
+                node.OrientationValues[^1].Z.Should().BeApproximately(MathF.Sqrt(.5f), .00001f);
+                node.OrientationValues[^1].W.Should().BeApproximately(MathF.Sqrt(.5f), .00001f);
+            }
+        }
+    }
+
+    [Test]
+    public void IndependentReadersChargeAliasedModelsAgainstOneSharedDecodedBudget()
+    {
+        var bytes = BuildBinaryMdlWithSharedFaceTable(meshCount: 3, faceCount: 32767);
+        bytes.Length.Should().BeLessThan(2 * 1024 * 1024);
+        var shared = new MdlReadBudget(64L * 1024 * 1024);
+        var retained = new List<MdlModel>
+        {
+            new MdlReader().Parse(bytes, shared),
+            new MdlReader().Parse(bytes, shared)
+        };
+        var previouslyReserved = shared.ReservedBytes;
+        previouslyReserved.Should().BeGreaterThan(40L * 1024 * 1024);
+        Action third = () => retained.Add(new MdlReader().Parse(bytes, shared));
+        third.Should().Throw<NwnFormatException>().WithMessage("*MDL model chain cumulative allocation budget*");
+        retained.Should().HaveCount(2);
+        shared.ReservedBytes.Should().BeGreaterThanOrEqualTo(previouslyReserved,
+            "a failed parse must not refund allocations or reset earlier readers' charges");
+        shared.ReservedBytes.Should().BeLessThanOrEqualTo(64L * 1024 * 1024);
+    }
+
+    [Test]
+    public void SharedBudgetDoesNotReplaceTheIndividualSmallFileLimit()
+    {
+        var bytes = BuildBinaryMdlWithSharedFaceTable(meshCount: 5, faceCount: ushort.MaxValue);
+        var shared = new MdlReadBudget();
+        Action read = () => new MdlReader().Parse(bytes, shared);
+        read.Should().Throw<NwnFormatException>().WithMessage("*Binary MDL cumulative allocation budget exceeds 67108864*");
+        shared.ReservedBytes.Should().BeLessThanOrEqualTo(64L * 1024 * 1024);
+    }
+
+    [Test]
+    public void AsciiModelNodesCannotBypassTheSharedDecodedBudget()
+    {
+        var text = new StringBuilder("newmodel bank\nbeginmodelgeom bank\nnode dummy bank\nparent NULL\nendnode\n");
+        for (var i = 0; i < 300; i++) text.Append($"node dummy joint{i}\nparent bank\nendnode\n");
+        text.Append("endmodelgeom bank\ndonemodel bank\n");
+        var bytes = Encoding.ASCII.GetBytes(text.ToString());
+        var shared = new MdlReadBudget(700 * 1024);
+        var first = new MdlReader().Parse(bytes, shared);
+        first.GeometryRoot!.Children.Should().HaveCount(300);
+        var previouslyReserved = shared.ReservedBytes;
+        Action second = () => new MdlReader().Parse(bytes, shared);
+        second.Should().Throw<NwnFormatException>().WithMessage("*MDL model chain cumulative allocation budget*");
+        shared.ReservedBytes.Should().BeGreaterThanOrEqualTo(previouslyReserved);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void WideAsciiControllerRowsChargeRetainedTokensBeforeSplitting(bool counted)
+    {
+        var text = new StringBuilder("newmodel bank\nbeginmodelgeom bank\nnode dummy bank\nparent NULL\n");
+        text.AppendLine(counted ? "positionkey 4" : "positionkey");
+        for (var row = 0; row < 4; row++)
+        {
+            text.Append(row).Append(" 1 2 3");
+            for (var column = 4; column < 2000; column++) text.Append(" 0");
+            text.AppendLine();
+        }
+        if (!counted) text.AppendLine("endlist");
+        text.Append("endnode\nendmodelgeom bank\ndonemodel bank\n");
+        var bytes = Encoding.ASCII.GetBytes(text.ToString());
+        bytes.Length.Should().BeLessThan(32 * 1024);
+
+        // Preserve existing acceptance of extra controller columns when bounded.
+        var model = new MdlReader().Parse(bytes, new MdlReadBudget(2 * 1024 * 1024));
+        model.GeometryRoot!.PositionValues.Should().HaveCount(4);
+        model.GeometryRoot.PositionValues.Should().OnlyContain(value => value == new Vector3(1, 2, 3));
+
+        var budget = new MdlReadBudget(256 * 1024);
+        Action read = () => new MdlReader().Parse(bytes, budget);
+        read.Should().Throw<NwnFormatException>()
+            .WithMessage("*MDL model chain cumulative allocation budget*ASCII MDL tokens*");
+        budget.ReservedBytes.Should().BeLessThanOrEqualTo(256 * 1024);
+    }
+
+    [Test]
+    public void LargeBinaryInputsStillCannotAmplifySharedTablesPastTheDecodedCeiling()
+    {
+        var shared = BuildBinaryMdlWithSharedFaceTable(meshCount: 13, faceCount: ushort.MaxValue);
+        // Padding must not turn a small aliased table into an unbounded allocation
+        // allowance, even when the resource reaches the offline input-size limit.
+        var bytes = new byte[64 * 1024 * 1024];
+        shared.CopyTo(bytes, 0);
+
+        Action parse = () => new MdlReader().Parse(bytes);
+
+        parse.Should().Throw<NwnFormatException>()
+            .WithMessage("*allocation budget exceeds 201326592 bytes*");
+    }
+
+    [Test]
     public void ReadsAsciiMeshAndReindexesTextureVertices()
     {
         var text = """
@@ -677,6 +799,61 @@ public sealed class MdlReaderTests
             WriteUInt32(bytes, mesh + 12, checked((uint)faceCount));
         }
 
+        return bytes;
+    }
+
+    private static byte[] BuildDenseBinaryAnimationBank(int animationCount, int nodesPerAnimation, ushort rows)
+    {
+        const int modelHeader = 232, animationHeader = 196, nodeHeader = 112, controllerKey = 12;
+        var childBytes = (nodesPerAnimation - 1) * 4;
+        var dataBytesPerNode = rows * 5 * sizeof(float);
+        var animationBytes = animationHeader + childBytes + nodesPerAnimation * (nodeHeader + controllerKey + dataBytesPerNode);
+        var modelBytes = modelHeader + animationCount * 4 + animationCount * animationBytes;
+        var bytes = new byte[12 + modelBytes];
+        WriteUInt32(bytes, 4, checked((uint)modelBytes));
+        WriteUInt32(bytes, 12 + 120, modelHeader);
+        WriteUInt32(bytes, 12 + 124, checked((uint)animationCount));
+        for (var animation = 0; animation < animationCount; animation++)
+        {
+            var pointer = modelHeader + animationCount * 4 + animation * animationBytes;
+            var childPointers = pointer + animationHeader;
+            var nodes = childPointers + childBytes;
+            var keys = nodes + nodesPerAnimation * nodeHeader;
+            var data = keys + nodesPerAnimation * controllerKey;
+            WriteUInt32(bytes, 12 + modelHeader + animation * 4, checked((uint)pointer));
+            WriteFixed(bytes, 12 + pointer + 8, 64, "clip" + animation);
+            WriteUInt32(bytes, 12 + pointer + 72, checked((uint)nodes));
+            WriteSingle(bytes, 12 + pointer + 112, 1);
+            for (var index = 0; index < nodesPerAnimation; index++)
+            {
+                var nodePointer = nodes + index * nodeHeader;
+                var node = 12 + nodePointer;
+                var keyPointer = keys + index * controllerKey;
+                var dataPointer = data + index * dataBytesPerNode;
+                WriteFixed(bytes, node + 32, 32, "joint" + index);
+                if (index == 0)
+                {
+                    WriteUInt32(bytes, node + 72, checked((uint)childPointers));
+                    WriteUInt32(bytes, node + 76, checked((uint)(nodesPerAnimation - 1)));
+                }
+                else WriteUInt32(bytes, 12 + childPointers + (index - 1) * 4, checked((uint)nodePointer));
+                WriteUInt32(bytes, node + 84, checked((uint)keyPointer));
+                WriteUInt32(bytes, node + 88, 1);
+                WriteUInt32(bytes, node + 96, checked((uint)dataPointer));
+                WriteUInt32(bytes, node + 100, checked((uint)(rows * 5)));
+                WriteUInt32(bytes, 12 + keyPointer, 20);
+                WriteUInt16(bytes, 12 + keyPointer + 4, rows);
+                WriteUInt16(bytes, 12 + keyPointer + 8, rows);
+                bytes[12 + keyPointer + 10] = 4;
+                for (var row = 0; row < rows; row++)
+                {
+                    WriteSingle(bytes, 12 + dataPointer + row * 4, row / (float)(rows - 1));
+                    var value = 12 + dataPointer + (rows + row * 4) * 4;
+                    WriteSingle(bytes, value + 8, row == rows - 1 ? MathF.Sqrt(.5f) : 0);
+                    WriteSingle(bytes, value + 12, row == rows - 1 ? MathF.Sqrt(.5f) : 1);
+                }
+            }
+        }
         return bytes;
     }
 

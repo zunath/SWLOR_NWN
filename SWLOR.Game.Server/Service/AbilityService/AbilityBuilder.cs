@@ -100,6 +100,52 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Retains native action ordering when impact scripts perform movement or their own animation.</summary>
+        public AbilityBuilder PreservesNativeAnimationChoreography()
+        {
+            _activeAbility.PreservesNativeAnimationChoreography = true;
+            return this;
+        }
+
+        /// <summary>Uses a native one-shot in the animation tester instead of an authored clip.</summary>
+        public AbilityBuilder UsesNativeAnimationPreview(Animation animation, float durationSeconds, float speed = 1f)
+        {
+            if (animation == Animation.Invalid || !Enum.IsDefined(animation))
+                throw new ArgumentOutOfRangeException(nameof(animation));
+            if (!float.IsFinite(speed) || speed <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(speed));
+            if (!float.IsFinite(durationSeconds) || durationSeconds <= 0f ||
+                !float.IsFinite(durationSeconds / speed) || durationSeconds / speed > 600f)
+                throw new ArgumentOutOfRangeException(nameof(durationSeconds));
+            _activeAbility.NativeAnimationPreview = animation;
+            _activeAbility.NativeAnimationPreviewSpeed = speed;
+            _activeAbility.NativeAnimationPreviewDuration = durationSeconds;
+            return this;
+        }
+
+        /// <summary>Plays the catalog gesture once at activation without occupying the action queue.</summary>
+        public AbilityBuilder UsesImmediateAuthoredAnimation()
+        {
+            _activeAbility.UsesImmediateAuthoredAnimation = true;
+            return this;
+        }
+
+        /// <summary>Plays the catalog motion once at impact without adding an action-queue delay.</summary>
+        public AbilityBuilder UsesAuthoredAnimationAtImpact()
+        {
+            _activeAbility.UsesAuthoredImpactAnimation = true;
+            return this;
+        }
+
+        /// <summary>Retains a timed native impact gesture without adding an action-queue delay.</summary>
+        public AbilityBuilder UsesImmediateNativeImpactAnimation(float duration)
+        {
+            if (!float.IsFinite(duration) || duration <= 0f || duration > 600f)
+                throw new ArgumentOutOfRangeException(nameof(duration));
+            _activeAbility.ImmediateNativeImpactAnimationDuration = duration;
+            return this;
+        }
+
         /// <summary>
         /// Assigns an animation to the caster of the ability. This will be played when the creature uses the ability.
         /// Calling this more than once will replace the previous animation.

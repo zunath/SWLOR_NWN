@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ViralCascade1, PerkType.ViralCascade)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Viral Cascade")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

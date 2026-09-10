@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.KillBox1, PerkType.KillBox)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Kill Box")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

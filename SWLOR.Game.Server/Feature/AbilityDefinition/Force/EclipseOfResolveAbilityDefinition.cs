@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.EclipseOfResolve1, PerkType.EclipseOfResolve)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Eclipse of Resolve")
                 .Level(1)
                 .HasActivationDelay(1.5f)

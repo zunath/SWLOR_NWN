@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.CreepingTerror1, PerkType.CreepingTerror)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Creeping Terror I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.CreepingTerror2, PerkType.CreepingTerror)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Creeping Terror II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -95,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.CreepingTerror3, PerkType.CreepingTerror)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Creeping Terror III")
                 .Level(3)
                 .HasActivationDelay(1.5f)

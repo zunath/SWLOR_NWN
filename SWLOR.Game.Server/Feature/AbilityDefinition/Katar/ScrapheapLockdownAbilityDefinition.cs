@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ScrapheapLockdown1, PerkType.ScrapheapLockdown)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Scrapheap Lockdown")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

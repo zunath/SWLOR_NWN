@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.UnmovingCenter1, PerkType.UnmovingCenter)
+                    .UsesImmediateAuthoredAnimation()
                     .Name("Unmoving Center")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),

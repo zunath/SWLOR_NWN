@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.KillzoneBeacon1, PerkType.KillzoneBeacon)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Killzone Beacon")
                 .Level(1)
                 .HasActivationDelay(2f)

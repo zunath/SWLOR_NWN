@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.TreatmentKit1, PerkType.TreatmentKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.TreatmentKit2, PerkType.TreatmentKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.TreatmentKit3, PerkType.TreatmentKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit III")
                 .Level(3)
                 .HasActivationDelay(1f)

@@ -10,6 +10,117 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class NamedAnimationPlaybackTests
 {
+    [Test]
+    public void RifleCarrierClearsTheExistingHoldAndSuppressesFutureHoldRefreshes()
+    {
+        ((int)Animation.FireForgetDodgeSide).Should().Be(global::NWN.Core.NWScript.ANIMATION_FIREFORGET_DODGE_SIDE);
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        var token = playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+
+        runtime.Replacements["dodges"].Should().Be("sw_aimedshot");
+        runtime.Replacements["xbowr"].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Replacements["plpause1"].Should().Be("xbowr",
+            "the second single-pass removal must target the existing physical hold, not the new no-op mapping");
+        playback.Complete(1, token);
+        runtime.Callbacks[^1]();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        runtime.Token.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ANewRifleClipKeepsItsMappingsWhenAnOlderExitAndTimeoutRun()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        var first = playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+        playback.Complete(1, first);
+        var oldCallbacks = runtime.Callbacks.ToArray();
+        var second = playback.Begin(1, new AnimationClip("sw_headshot", 2), 2, suppressRifleHold: true);
+
+        foreach (var callback in oldCallbacks) callback();
+        playback.StopIfCurrent(1, first).Should().BeFalse();
+        playback.IsCurrent(1, second).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.RifleCarrierSource].Should().Be("sw_headshot");
+        runtime.Replacements[NamedAnimationPlayback.RifleCarrySource].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().Be("xbowr");
+    }
+
+    [Test]
+    public void SwitchingFromRifleToRegularPlaybackRemovesEveryRifleMapping()
+    {
+        var runtime = new Runtime();
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+        var oldCallbacks = runtime.Callbacks.ToArray();
+        var regular = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+
+        runtime.Replacements[NamedAnimationPlayback.RifleCarrierSource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.RifleCarrySource].Should().BeEmpty();
+        runtime.Replacements[NamedAnimationPlayback.RifleCarryResetSource].Should().BeEmpty();
+        foreach (var callback in oldCallbacks) callback();
+        playback.IsCurrent(1, regular).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_wave");
+    }
+
+    [TestCase(ActionType.MoveToPoint)]
+    [TestCase(ActionType.AttackObject)]
+    public void StoppingARifleClipRestoresMappingsWithoutClearingMovementOrCombat(ActionType action)
+    {
+        var runtime = new Runtime { Action = action };
+        var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_aimedshot", 1.8f), 1.8f, suppressRifleHold: true);
+        var continued = false;
+        runtime.Actions.Enqueue(() => continued = true);
+
+        playback.Stop(1, cancelQueuedAnimation: true);
+        runtime.Callbacks[^1]();
+        runtime.RunActions();
+        continued.Should().BeTrue();
+        runtime.ClearedActions.Should().Be(0);
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+    }
+
+    [Test]
+    public void NativePreviewUsesNoAuthoredMappingsAndOldTimeoutCannotStopItsReplacement()
+    {
+        var runtime = new Runtime();
+        var releases = 0;
+        var playback = new NamedAnimationPlayback(runtime, (_, _) => releases++);
+        playback.Begin(1, new AnimationClip("sw_old", 2), 2);
+        var native = playback.BeginNative(1);
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        playback.IsCurrent(1, native).Should().BeTrue();
+        var callbacks = runtime.Callbacks.ToArray();
+        var authored = playback.Begin(1, new AnimationClip("sw_new", 2), 2);
+        foreach (var callback in callbacks) callback();
+        playback.StopIfCurrent(1, native).Should().BeFalse();
+        playback.IsCurrent(1, authored).Should().BeTrue();
+        runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_new");
+        releases.Should().Be(0);
+    }
+
+    [Test]
+    public void NativePreviewRepeatStopAndTimeoutPreserveNewerOwnershipAndNaturalNativeExit()
+    {
+        var runtime = new Runtime();
+        var releases = 0;
+        var playback = new NamedAnimationPlayback(runtime, (_, _) => releases++);
+        var first = playback.BeginNative(1);
+        var second = playback.BeginNative(1);
+        playback.StopIfCurrent(1, first).Should().BeFalse();
+        runtime.Callbacks[0]();
+        playback.IsCurrent(1, second).Should().BeTrue();
+        playback.StopIfCurrent(1, second).Should().BeTrue();
+        releases.Should().Be(1);
+        var third = playback.BeginNative(1);
+        foreach (var callback in runtime.Callbacks.ToArray()) callback();
+        playback.IsCurrent(1, third).Should().BeFalse();
+        runtime.Token.Should().BeEmpty();
+        releases.Should().Be(1, "native timeout must not force idle at a guessed model-specific duration");
+        runtime.ClearedActions.Should().Be(0);
+    }
+
     [TestCase(false)] [TestCase(true)]
     public void CancellationWithoutCurrentOwnershipPreservesUnrelatedQueuedWork(bool completed)
     {
@@ -129,10 +240,11 @@ public class NamedAnimationPlaybackTests
         runtime.Token.Should().Be(second);
         runtime.Callbacks[1](); runtime.Callbacks[^1](); runtime.Token.Should().BeEmpty();
     }
-    [Test] public void AnInterruptedQueueStillRestoresAllMappingsViaTimeout()
+    [TestCase(false)] [TestCase(true)]
+    public void AnInterruptedQueueStillRestoresAllMappingsViaTimeout(bool rifle)
     {
         var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
-        playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        playback.Begin(1, new AnimationClip("sw_wave", 2), 2, suppressRifleHold: rifle);
         runtime.Callbacks[0]();
         runtime.Callbacks[^1]();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
@@ -185,12 +297,34 @@ public class NamedAnimationPlaybackTests
         runtime.Token.Should().BeEmpty();
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
     }
-    [TestCase(false)] [TestCase(true)]
-    public void DeathClearsActiveOrEndingMappingsWithoutARecoveryAfterRevival(bool alreadyEnding)
+    [TestCase(false, false)] [TestCase(true, false)]
+    [TestCase(false, true)] [TestCase(true, true)]
+    public void NativeHandoffInvalidatesPreviewTimersAndDeferredRecoveryWithoutClearingActions(bool alreadyEnding, bool rifle)
+    {
+        var runtime = new Runtime();
+        var exits = new List<Func<bool>>();
+        var playback = new NamedAnimationPlayback(runtime, (_, ownsExit) => exits.Add(ownsExit));
+        var token = playback.Begin(1, new AnimationClip("sw_preview", 2), 2, completeAtDuration: true, suppressRifleHold: rifle);
+        if (alreadyEnding) playback.Complete(1, token);
+        var exitsBeforeHandoff = exits.Count;
+        runtime.Actions.Enqueue(() => { });
+        playback.ReleaseForNativePlayback(1);
+        foreach (var callback in runtime.Callbacks.ToArray()) callback();
+        runtime.Token.Should().BeEmpty();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        exits.Should().HaveCount(exitsBeforeHandoff, "native handoff must not issue a recovery which interrupts the new native gesture");
+        exits.Should().OnlyContain(ownsExit => !ownsExit());
+        runtime.ClearedActions.Should().Be(0);
+        runtime.Actions.Should().HaveCount(1);
+    }
+
+    [TestCase(false, false)] [TestCase(true, false)]
+    [TestCase(false, true)] [TestCase(true, true)]
+    public void DeathClearsActiveOrEndingMappingsWithoutARecoveryAfterRevival(bool alreadyEnding, bool rifle)
     {
         var runtime = new Runtime(); var exits = new List<Func<bool>>();
         var playback = new NamedAnimationPlayback(runtime, (_, ownsExit) => exits.Add(ownsExit));
-        var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        var token = playback.Begin(1, new AnimationClip("sw_wave", 2), 2, suppressRifleHold: rifle);
         if (alreadyEnding) playback.Complete(1, token);
         playback.ClearOnDeath(1);
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
@@ -201,10 +335,11 @@ public class NamedAnimationPlaybackTests
         if (alreadyEnding) runtime.Callbacks[1]();
         runtime.Replacements[NamedAnimationPlayback.LoopSource].Should().Be("sw_revived");
     }
-    [Test] public void SchedulingFailureRestoresMappingsImmediately()
+    [TestCase(false)] [TestCase(true)]
+    public void SchedulingFailureRestoresMappingsImmediately(bool rifle)
     {
         var runtime = new Runtime { FailSchedule = true }; var playback = new NamedAnimationPlayback(runtime);
-        Action act = () => playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        Action act = () => playback.Begin(1, new AnimationClip("sw_wave", 2), 2, suppressRifleHold: rifle);
         act.Should().Throw<InvalidOperationException>();
         runtime.Replacements.Values.Should().OnlyContain(value => value == ""); runtime.Token.Should().BeEmpty();
     }

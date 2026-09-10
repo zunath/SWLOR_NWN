@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.TacticalEscape, 45f)
                 .SkillType(SkillType.Espionage)

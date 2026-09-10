@@ -58,7 +58,8 @@ public class AnimationDebugDefinition : IGuiWindowDefinition
                     template.AddCell(cell =>
                     {
                         cell.SetIsVariable(false);
-                        cell.AddButton().SetText("Play").SetWidth(62f).BindOnClicked(m => m.OnPlayRow());
+                        cell.AddButton().SetText("Play").SetWidth(62f)
+                            .BindIsEnabled(m => m.PlayEnabled).BindOnClicked(m => m.OnPlayRow());
                     });
                 }).BindRowCount(m => m.Names).SetRowHeight(32f).SetHeight(240f));
                 content.AddRow(r =>

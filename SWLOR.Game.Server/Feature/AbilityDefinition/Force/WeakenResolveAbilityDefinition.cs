@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.WeakenResolve1, PerkType.WeakenResolve)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Weaken Resolve I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.WeakenResolve2, PerkType.WeakenResolve)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Weaken Resolve II")
                 .Level(2)
                 .HasActivationDelay(1f)

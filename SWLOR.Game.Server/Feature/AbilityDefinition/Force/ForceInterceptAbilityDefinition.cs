@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     AbilityTargeting.ValidateFriendlyTarget(activator, target, false))
                 .HasImpactAction(ForceIntercept1ImpactAction)
                 .IsCastedAbility()
+                .PreservesNativeAnimationChoreography()
                 .BreaksStealth()
                 .RequirementFP(5);
         }

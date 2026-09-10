@@ -58,6 +58,82 @@ public class AnimationFileSafetyTests
     }
 
     [Test]
+    public void NativeChainSnapshotsAreFingerprintedAndEditedBanksRetainRollbackBytes()
+    {
+        var (project, target, bank, source) = CompiledInstallationFixture();
+        var models = Path.GetDirectoryName(target)!;
+        var nativeOne = Path.Combine(models, "native_one.mdl");
+        var nativeTwo = Path.Combine(models, "native_two.mdl");
+        var padding = "# " + new string('x', 90_000) + "\n";
+        File.WriteAllText(nativeOne, padding + "newmodel native_one\nsetsupermodel native_one native_two\n" +
+            AnimationMdl.ExportGeometry(project).Replace("hero", "native_one") + "donemodel native_one\n");
+        File.WriteAllText(nativeTwo, padding + "newmodel native_two\nsetsupermodel native_two NULL\n" +
+            AnimationMdl.ExportGeometry(project).Replace("hero", "native_two") + "donemodel native_two\n");
+        var binary = AnimationInstall.PatchSupermodel(File.ReadAllBytes(bank), "an_hero", "native_one");
+        var ascii = AnimationInstall.PatchSupermodel(AnimationBankSource.Decode(File.ReadAllBytes(source), File.ReadAllBytes(bank)), "an_hero", "native_one");
+        File.WriteAllBytes(bank, binary);
+        File.WriteAllBytes(source, AnimationBankSource.Encode(ascii, binary));
+        var modelBytes = new[] { target, bank, nativeOne, nativeTwo }.Sum(path => File.ReadAllBytes(path).Length);
+        var budget = modelBytes + 128;
+        var plan = AnimationInstall.Prepare(_folder, project, [target], budget);
+        plan.ReadOnlyInputs.Should().ContainKey(nativeTwo);
+        plan.Inputs.Should().NotContainKey(nativeTwo).And.ContainKey(bank).And.ContainKey(source);
+        (plan.Inputs.Sum(input => input.Value.Length) + plan.ReadOnlyInputs.Sum(input => input.Value.Length))
+            .Should().BeGreaterThan(budget, "parsed-model and rollback payload budgets are independent");
+        File.AppendAllText(nativeTwo, "# concurrent modification\n");
+        ((Action)(() => plan.Apply())).Should().Throw<IOException>();
+        File.ReadAllBytes(bank).Should().Equal(binary);
+    }
+
+    [Test]
+    public void IndividuallyValidModelDependenciesCannotExceedTheParsedChainBudget()
+    {
+        var (project, target) = InstallationFixture();
+        var folder = Path.GetDirectoryName(target)!;
+        File.WriteAllBytes(target, AnimationInstall.PatchSupermodel(File.ReadAllBytes(target), "hero", "native_one"));
+        foreach (var (name, parent) in new[] { ("native_one", "native_two"), ("native_two", "NULL") })
+            File.WriteAllText(Path.Combine(folder, name + ".mdl"), "# " + new string('x', 60_000) + "\n" +
+                $"newmodel {name}\nsetsupermodel {name} {parent}\n" +
+                AnimationMdl.ExportGeometry(project).Replace("hero", name) + $"donemodel {name}\n");
+        Action prepare = () => AnimationInstall.Prepare(_folder, project, [target], 100_000);
+        prepare.Should().Throw<InvalidDataException>().WithMessage("*parsed-model budget*");
+        File.Exists(Path.Combine(folder, "an_hero.mdl")).Should().BeFalse();
+    }
+
+    [Test]
+    public void ExplicitAnimatorIdentityIsPreservedAcrossInstallationAndCannotSilentlyRename()
+    {
+        var (project, target) = InstallationFixture();
+        var first = AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_greet");
+        first.AnimationName.Should().Be("sw_greet");
+        first.Apply();
+        AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_greet").AnimationName.Should().Be("sw_greet");
+        Action rename = () => AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_other");
+        rename.Should().Throw<InvalidDataException>().WithMessage("*cannot be renamed*");
+    }
+
+    [TestCase("sw_greet")]
+    [TestCase("sw_greet_in")]
+    public void ExplicitAnimatorIdentityCannotCollideWithClipOrEntryPhase(string name)
+    {
+        var (project, target) = InstallationFixture();
+        AnimationInstall.Prepare(_folder, project, [target], internalName: "sw_greet").Apply();
+        project.Name = "Other";
+        Action collide = () => AnimationInstall.Prepare(_folder, project, [target], internalName: name);
+        collide.Should().Throw<InvalidDataException>().WithMessage("*collides*");
+    }
+
+    [TestCase("sw_toolongname")]
+    [TestCase("sw_BadCase")]
+    [TestCase("../bad")]
+    public void ExplicitAnimatorIdentityLeavesRoomForBothEnginePhases(string name)
+    {
+        var (project, target) = InstallationFixture();
+        Action invalid = () => AnimationInstall.Prepare(_folder, project, [target], internalName: name);
+        invalid.Should().Throw<InvalidDataException>();
+    }
+
+    [Test]
     public void CompiledBanksCanBeEditedWithoutLosingOtherAnimationBlocks()
     {
         var (project, target, bank, source) = CompiledInstallationFixture();
@@ -73,6 +149,34 @@ public class AnimationFileSafetyTests
             text.Should().Contain(start[from..to]);
         }
         new MdlReader().Parse(File.ReadAllBytes(bank)).Animations.Should().HaveCount(6);
+    }
+
+    [Test]
+    public void CompiledBankDiscoveryUsesResourceNameWhenModelLabelDiffers()
+    {
+        var (project, target, bank, source) = CompiledInstallationFixture();
+        var original = File.ReadAllBytes(bank);
+        var binary = original.ToArray();
+        var oldName = Encoding.ASCII.GetBytes("an_hero\0");
+        var newName = Encoding.ASCII.GetBytes("an_alias\0");
+        for (int i = 0; i <= binary.Length - newName.Length; i++)
+            if (binary.AsSpan(i, oldName.Length).SequenceEqual(oldName))
+            {
+                binary[i + oldName.Length].Should().Be(0, "native model names use fixed-size zero-padded fields");
+                newName.CopyTo(binary.AsSpan(i));
+            }
+        var text = Encoding.UTF8.GetString(AnimationBankSource.Decode(File.ReadAllBytes(source), original)).Replace("an_hero", "an_alias");
+        var aliasTarget = Path.Combine(Path.GetDirectoryName(target)!, "alias.mdl");
+        File.WriteAllBytes(aliasTarget, AnimationInstall.PatchSupermodel(File.ReadAllBytes(target), "hero", "an_alias"));
+        var aliasBank = Path.Combine(Path.GetDirectoryName(bank)!, "an_alias.mdl");
+        File.WriteAllBytes(aliasBank, binary);
+        File.WriteAllBytes(AnimationBankSource.PathFor(Path.Combine(_folder, "SWLOR_Haks"), aliasBank), AnimationBankSource.Encode(Encoding.UTF8.GetBytes(text), binary));
+        var registryPath = Path.Combine(_folder, "design/animations/registry.json");
+        var registrations = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(registryPath))!;
+        registrations[0] = registrations[0] with { Targets = [Path.GetRelativePath(_folder, aliasTarget).Replace('\\', '/')] };
+        File.WriteAllText(registryPath, JsonSerializer.Serialize(registrations));
+        var plan = AnimationInstall.Prepare(_folder, project, [aliasTarget]);
+        plan.Changes.Should().Contain(change => change.Path == aliasBank);
     }
 
     [TestCase("binary")] [TestCase("source")] [TestCase("missing")]

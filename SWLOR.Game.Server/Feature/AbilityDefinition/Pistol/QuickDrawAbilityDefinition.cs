@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw1, PerkType.QuickDraw)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Quick Draw I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw2, PerkType.QuickDraw)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Quick Draw II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw3, PerkType.QuickDraw)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Quick Draw III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),
@@ -112,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw4, PerkType.QuickDraw)
+                    .UsesAuthoredAnimationAtImpact()
                     .Name("Quick Draw IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),

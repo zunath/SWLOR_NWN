@@ -561,7 +561,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.VisualEffect
         Vfx_Imp_Mirv_Rock3 = 840,
         Vfx_Dur_Chat_Bubble = 841,
         Vfx_Imp_Healing_M_Silent = 842,
-        Vfx_Fnf_Breath_Cold = 843,
-        Vfx_Fnf_Breath_Poison = 844,
+        Vfx_Imp_Breath_Cold = 843,
+        Vfx_Imp_Breath_Poison = 844,
     }
 }

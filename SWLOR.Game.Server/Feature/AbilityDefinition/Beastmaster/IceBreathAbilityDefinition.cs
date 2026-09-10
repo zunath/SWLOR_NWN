@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void IceBreath1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Cold);
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Imp_Breath_Cold);
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void IceBreath2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Cold);
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Imp_Breath_Cold);
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void IceBreath3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Cold);
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Imp_Breath_Cold);
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,

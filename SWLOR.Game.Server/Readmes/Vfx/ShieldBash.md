@@ -7,8 +7,9 @@ effect, without an energy ring, screen shake, or added sound.
 - Custom `visualeffects.2da` row: **843**, `Vfx_Imp_Shield_Bash`.
 - Model: `sw_shldbash.mdl` in `sw_vfx.hak`, compiled binary, no supermodel.
 - Original textures: `sw_bash_spark.tga` and `sw_bash_dust.tga`.
-- Emission ends after 0.13 seconds; the last particles expire before the
-  0.9-second impact animation ends. Neither emitter loops.
+- A single detonation at 0.1 seconds creates 24 sparks and 8 dust particles;
+  the last particles expire before the 0.9-second impact animation ends.
+  Neither emitter loops. The compiled event is checked by the generator.
 - `ShieldBashAbilityDefinition` supplies the target VFX to `ApplyCombatImpact`.
   Its existing damage/status success gate applies the effect. Merely queueing
   Shield Bash does not produce the new VFX. Damage and animations are unchanged.

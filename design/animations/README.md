@@ -166,6 +166,25 @@ to an earlier source time, preserving the support-hand contact through the trans
 Basic Rifle's model is unchanged from master; compare authored poses against
 ordinary attacks with that same equipment before adjusting a weapon's geometry.
 
+Rifles and cannons also have a persistent native `xbowr` holding layer. The usual
+custom-emote carrier leaves that layer active, overriding the authored arms even
+when both clients receive the correct replacement mappings. Named playback uses
+NWN's existing Dodge Side animation (114) for these weapons because it clears
+the holding layers before starting the replacement clip. `plpause1` temporarily
+maps to literal `xbowr` so that removal reaches the previously active layer;
+`xbowr` maps to the controller-free `sw_nohold` clip to prevent later holding
+refreshes from overwriting the pose. All mappings share playback ownership and
+are restored on completion, interruption cleanup, death, or native handoff.
+
+`sw_nohold` is a single shared support clip, not an ability or tester entry.
+Run `python tools/EnsureWeaponCarryOverlay.py --apply` in the HAK repository after
+replacing `a_ba_casts.mdl`. The installer compiles only the tiny support clip and
+preserves every existing animation byte. Robes inherit it from the common tail;
+they do not need regenerated animation families for this addition. Rebuild
+`sw_cr_creature.hak` and deploy it together with the server playback changes.
+Live client layer inspection verified the native holding-layer conflict and the
+Dodge Side cleanup; visual motion approval still requires in-game review.
+
 ## Force choreography
 
 All 25 Force entries have individual recipes in `force/choreographies.json`. Directed pushes,

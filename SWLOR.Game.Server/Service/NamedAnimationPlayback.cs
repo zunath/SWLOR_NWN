@@ -22,6 +22,10 @@ public sealed class NamedAnimationPlayback
     public const string StartSource = "custom1start";
     public const string LoopSource = "custom1lp";
     public const string EndSource = "custom1end";
+    public const string RifleCarrySource = "xbowr";
+    public const string RifleCarrierSource = "dodges";
+    public const string RifleCarryResetSource = "plpause1";
+    public const string NoHoldName = "sw_nohold";
     // Keep the authored exit mapped while the engine leaves the custom-emote state.
     // Generated exits take 0.2 seconds; the remaining time allows a deferred script tick.
     public const float ExitGraceSeconds = .5f;
@@ -35,18 +39,33 @@ public sealed class NamedAnimationPlayback
         _releasePose = releasePose;
     }
 
-    public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false)
+    public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false,
+        bool suppressRifleHold = false)
     {
         ArgumentNullException.ThrowIfNull(clip);
+        return BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration,
+            rifleCarry: suppressRifleHold ? NoHoldName : "", rifleClip: suppressRifleHold ? clip.Name : "");
+    }
+
+    private string BeginMapped(uint creature, string start, string loop, string end, float duration, bool completeAtDuration,
+        string rifleCarry = "", string rifleClip = "")
+    {
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         var token = Guid.NewGuid().ToString("N");
         _runtime.SetToken(creature, token);
         try
         {
-            _runtime.Replace(creature, StartSource, clip.StartName);
-            _runtime.Replace(creature, LoopSource, clip.Name);
-            _runtime.Replace(creature, EndSource, clip.EndName);
+            _runtime.Replace(creature, StartSource, start);
+            _runtime.Replace(creature, LoopSource, loop);
+            _runtime.Replace(creature, EndSource, end);
+            // DodgeSide clears xbowr and plpause1 before playing dodges. Replacement
+            // lookup is a single pass: the plpause1 alias removes the existing physical
+            // xbowr layer while its new mapping suppresses subsequent carry refreshes.
+            // Install all mappings in this script callback before issuing playback.
+            _runtime.Replace(creature, RifleCarrierSource, rifleClip);
+            _runtime.Replace(creature, RifleCarrySource, rifleCarry);
+            _runtime.Replace(creature, RifleCarryResetSource, string.IsNullOrEmpty(rifleClip) ? "" : RifleCarrySource);
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.
             _runtime.Schedule(duration + 1f, () => Complete(creature, token));
@@ -111,6 +130,9 @@ public sealed class NamedAnimationPlayback
         _runtime.Replace(creature, StartSource, "");
         _runtime.Replace(creature, LoopSource, "");
         _runtime.Replace(creature, EndSource, "");
+        _runtime.Replace(creature, RifleCarrierSource, "");
+        _runtime.Replace(creature, RifleCarrySource, "");
+        _runtime.Replace(creature, RifleCarryResetSource, "");
         _runtime.SetToken(creature, "");
     }
 

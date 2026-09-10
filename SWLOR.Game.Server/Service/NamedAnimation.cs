@@ -1,29 +1,32 @@
 using System;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>Plays installed named animations through a temporary, creature-local custom emote mapping.</summary>
+/// <summary>Plays installed named animations through temporary, creature-local native animation mappings.</summary>
 public static class NamedAnimation
 {
     private const string PlaybackTokenVariable = "_NAMED_ANIMATION_PLAYBACK";
     private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose);
 
     /// <summary>
-    /// Queues a clip without clearing existing actions. The original Point Forward emote mapping
-    /// is restored at completion or by a module-owned timeout if the queue is interrupted.
+    /// Queues a clip without clearing existing actions. Native mappings are restored at
+    /// completion or by a module-owned timeout if the queue is interrupted.
     /// </summary>
     public static void Queue(uint creature, AnimationClip clip, float? durationSeconds = null)
     {
         var duration = Validate(clip, durationSeconds);
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
+        var rifle = UsesRifleGrip(creature);
+        var speed = rifle ? RiflePlaybackSpeed(clip, duration) : 1f;
         string token = null;
         AssignCommand(creature, () =>
         {
-            ActionDoCommand(() => token = Playback.Begin(creature, clip, duration));
-            ActionPlayAnimation(Animation.PointForward, 1f, duration);
+            ActionDoCommand(() => token = Playback.Begin(creature, clip, duration, suppressRifleHold: rifle));
+            ActionPlayAnimation(rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed, duration);
             ActionDoCommand(() => Playback.Complete(creature, token));
         });
     }
@@ -32,15 +35,24 @@ public static class NamedAnimation
     public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null)
     {
         var duration = Validate(clip, durationSeconds);
+        var rifle = UsesRifleGrip(creature);
+        var speed = rifle ? RiflePlaybackSpeed(clip, duration) : 1f;
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
-        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true);
+        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, suppressRifleHold: rifle);
+        return PlayMapped(creature, token, duration,
+            rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
+    }
+
+    private static string PlayMapped(uint creature, string token, float duration,
+        Animation carrier = Animation.PointForward, float speed = 1f)
+    {
         try
         {
             AssignCommand(creature, () =>
             {
                 if (!Playback.IsCurrent(creature, token)) return;
-                try { PlayAnimation(Animation.PointForward, 1f, duration); }
+                try { PlayAnimation(carrier, speed, duration); }
                 catch { Playback.Complete(creature, token); throw; }
             });
         }
@@ -106,6 +118,20 @@ public static class NamedAnimation
         var value = duration ?? clip.Duration;
         if (!float.IsFinite(value) || value <= 0 || value > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         return value;
+    }
+
+    private static bool UsesRifleGrip(uint creature)
+    {
+        var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
+        return GetIsObjectValid(weapon) && GetBaseItemType(weapon) is BaseItem.Rifle or BaseItem.Cannon;
+    }
+
+    private static float RiflePlaybackSpeed(AnimationClip clip, float duration)
+    {
+        var speed = clip.Duration / duration;
+        if (!float.IsFinite(speed) || speed <= 0f)
+            throw new ArgumentOutOfRangeException(nameof(duration), "Animation duration produces an invalid playback speed.");
+        return speed;
     }
 
     private sealed class NativeRuntime : INamedAnimationRuntime

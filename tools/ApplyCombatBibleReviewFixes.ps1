@@ -573,42 +573,42 @@ $perkChanges = @(
         Sheet = "Beast Mastery"
         PerkName = "Poison Breath I"
         Values = @{
-            Description = "The beast breathes poison at hostile targets in a 6m x 5m cone, dealing 10 poison DMG plus MGT scaling and attempting to inflict Poison for 12 seconds."
+            Description = "The beast breathes poison at hostile targets in a 10m x 10m cone, dealing 10 poison DMG plus MGT scaling and attempting to inflict Poison for 12 seconds."
         }
     },
     @{
         Sheet = "Beast Mastery"
         PerkName = "Poison Breath II"
         Values = @{
-            Description = "The beast breathes poison at hostile targets in a 6m x 5m cone, dealing 14 poison DMG plus MGT scaling and attempting to inflict Poison for 12 seconds."
+            Description = "The beast breathes poison at hostile targets in a 10m x 10m cone, dealing 14 poison DMG plus MGT scaling and attempting to inflict Poison for 12 seconds."
         }
     },
     @{
         Sheet = "Beast Mastery"
         PerkName = "Poison Breath III"
         Values = @{
-            Description = "The beast breathes poison at hostile targets in a 6m x 5m cone, dealing 18 poison DMG plus MGT scaling and attempting to inflict Poison for 12 seconds."
+            Description = "The beast breathes poison at hostile targets in a 10m x 10m cone, dealing 18 poison DMG plus MGT scaling and attempting to inflict Poison for 12 seconds."
         }
     },
     @{
         Sheet = "Beast Mastery"
         PerkName = "Ice Breath I"
         Values = @{
-            Description = "The beast breathes ice at hostile targets in a 6m x 5m cone, dealing 10 ice DMG plus MGT scaling and slowing affected enemies for 4 seconds."
+            Description = "The beast breathes ice at hostile targets in a 10m x 10m cone, dealing 10 ice DMG plus MGT scaling and slowing affected enemies for 4 seconds."
         }
     },
     @{
         Sheet = "Beast Mastery"
         PerkName = "Ice Breath II"
         Values = @{
-            Description = "The beast breathes ice at hostile targets in a 6m x 5m cone, dealing 14 ice DMG plus MGT scaling and slowing affected enemies for 5 seconds."
+            Description = "The beast breathes ice at hostile targets in a 10m x 10m cone, dealing 14 ice DMG plus MGT scaling and slowing affected enemies for 5 seconds."
         }
     },
     @{
         Sheet = "Beast Mastery"
         PerkName = "Ice Breath III"
         Values = @{
-            Description = "The beast breathes ice at hostile targets in a 6m x 5m cone, dealing 18 ice DMG plus MGT scaling and immobilizing affected enemies for 10 seconds."
+            Description = "The beast breathes ice at hostile targets in a 10m x 10m cone, dealing 18 ice DMG plus MGT scaling and immobilizing affected enemies for 10 seconds."
         }
     }
 )

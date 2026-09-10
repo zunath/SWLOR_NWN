@@ -39,8 +39,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.PoisonBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
-                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
+                .HasAITarget(AITarget.HighestEnmityWithinRange(10f))
                 .HasImpactAction(PoisonBreath1ImpactAction)
+                .HasTargetingCone(Spell.PoisonBreath1, 10f, 10f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -58,8 +60,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.PoisonBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
-                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
+                .HasAITarget(AITarget.HighestEnmityWithinRange(10f))
                 .HasImpactAction(PoisonBreath2ImpactAction)
+                .HasTargetingCone(Spell.PoisonBreath2, 10f, 10f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -77,8 +81,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.PoisonBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
-                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
+                .HasAITarget(AITarget.HighestEnmityWithinRange(10f))
                 .HasImpactAction(PoisonBreath3ImpactAction)
+                .HasTargetingCone(Spell.PoisonBreath3, 10f, 10f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -87,6 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void PoisonBreath1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Poison);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -97,17 +105,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 typeof(PoisonStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
-                6f,
-                5f,
+                10f,
+                10f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Poison,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Poison_S,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Gas_Explosion_Acid);
+                areaVisualEffect: VisualEffect.None);
         }
 
         private static void PoisonBreath2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Poison);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -118,17 +128,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 typeof(PoisonStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
-                6f,
-                5f,
+                10f,
+                10f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Poison,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Poison_S,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Gas_Explosion_Acid);
+                areaVisualEffect: VisualEffect.None);
         }
 
         private static void PoisonBreath3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Poison);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -139,13 +151,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 typeof(PoisonStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
-                6f,
-                5f,
+                10f,
+                10f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Poison,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Poison_S,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Gas_Explosion_Acid);
+                areaVisualEffect: VisualEffect.None);
         }
 
     }

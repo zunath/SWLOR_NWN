@@ -39,8 +39,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.IceBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
-                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
+                .HasAITarget(AITarget.HighestEnmityWithinRange(10f))
                 .HasImpactAction(IceBreath1ImpactAction)
+                .HasTargetingCone(Spell.IceBreath1, 10f, 10f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -58,8 +60,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.IceBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
-                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
+                .HasAITarget(AITarget.HighestEnmityWithinRange(10f))
                 .HasImpactAction(IceBreath2ImpactAction)
+                .HasTargetingCone(Spell.IceBreath2, 10f, 10f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -77,8 +81,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.IceBreath, 15f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()
-                .HasAITarget(AITarget.HighestEnmityWithinRange(6f))
+                .HasAITarget(AITarget.HighestEnmityWithinRange(10f))
                 .HasImpactAction(IceBreath3ImpactAction)
+                .HasTargetingCone(Spell.IceBreath3, 10f, 10f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -87,6 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void IceBreath1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Cold);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -97,17 +105,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 typeof(HamstringStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
-                6f,
-                5f,
+                10f,
+                10f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Ice,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm);
+                areaVisualEffect: VisualEffect.None);
         }
 
         private static void IceBreath2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Cold);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -118,17 +128,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 typeof(HamstringStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
-                6f,
-                5f,
+                10f,
+                10f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Ice,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm);
+                areaVisualEffect: VisualEffect.None);
         }
 
         private static void IceBreath3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            BeastBreathVisuals.Play(activator, target, targetLocation, VisualEffect.Vfx_Fnf_Breath_Cold);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -139,13 +151,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 typeof(ImmobilizedStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
-                6f,
-                5f,
+                10f,
+                10f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Ice,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm);
+                areaVisualEffect: VisualEffect.None);
         }
 
     }

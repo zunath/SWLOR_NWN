@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
                     {
                         TemporaryHitPointEffects.ApplyFlat(ally, "LAST_BASTION", 30, 30f);
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, ally);
                     }
 
                     // Nearby enemies generate +25% enmity toward the caster for the duration.

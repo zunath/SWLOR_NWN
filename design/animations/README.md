@@ -470,6 +470,38 @@ pruned deletions, wearable models, tables, and the generated catalog. Package an
 `sw_anim_m.hak`, `sw_anim_f.hak`, `sw_pt_root.hak`, `sw_pt_robe.hak`, and `sw_2da.hak`
 together with the HAK containing the changed animation overlays (usually `sw_cr_creature.hak`).
 Keep the male and female bridge packages separate so each archive stays below 2 GiB.
+Each individual resource must also be smaller than NWSync's 15 MiB limit. The robe
+generator now partitions compiled animation bridges into banks below 14 MiB. The
+original bridge name remains the entry point; `_b01`, `_b02`, and later banks
+inherit the rest of its clips before reaching its original supermodel. Every bank
+retains the full skeleton and native part IDs. Animation names, durations, events,
+and controller bytes are preserved, and joining the banks must reproduce the
+original compiled bridge byte for byte. Never raise NWSync's size limit to publish
+an oversized bridge.
+
+To repair an existing validated robe catalog without regenerating its poses or
+wearable models, run from `SWLOR_Haks`:
+
+```powershell
+python -B tools/RepackRobeAnimationBanks.py --apply --stage output/nwsync-banks
+python -B tools/GenerateRobeRgbModels.py --check
+python -B tools/CheckNwsyncResources.py
+```
+
+The repair validates all owned inputs, stages the complete bank set, checks exact
+binary reconstruction and native decompilation, and then installs it. Reusing the
+staging directory reuses checks only when the original model, validator, compiler,
+and staged output hashes still match. It does not change wearable roots, phenotype
+tables, ability references, or authoring projects. Commit the new bank files and
+`tools/RobeRgbModels.json` together with the changed bridge heads. Rebuild and
+publish both `sw_anim_m.hak` and `sw_anim_f.hak`; NWSync needs the complete updated
+chains. This partitions transfer resources without reducing the total animation
+data needed by a wearer.
+
+`BuildHaks.cmd` runs the resource-size audit before building. Other packaging paths
+must run `CheckNwsyncResources.py` too; it checks every configured HAK resource,
+including files outside the generated animation catalog.
+
 Both build configurations and the module's HAK list must include `sw_anim_m` and `sw_anim_f`.
 Install the matching package versions on the server and client, then restart both.
 The generator audits body poses, weapon attachments, garment bindings, and source/output hashes.

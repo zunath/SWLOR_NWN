@@ -252,6 +252,11 @@ public class CombatDamageTests
         attackSource.Should().Contain("Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
         attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType)");
         attackSource.Should().Contain("Stat.GetEvasionNative(defender, abilitySkillType)");
+        attackSource.Should().Contain("Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"ApplySideAttackEvasionIgnore\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
+        System.Text.RegularExpressions.Regex.IsMatch(attackSource,
+            @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,

@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Native
                 defenderEvasion = Combat.ApplySideAttackEvasionIgnore(
                     attacker.m_idSelf,
                     defender.m_idSelf,
-                    weaponSkillType,
+                    abilitySkillType,
                     defenderEvasion);
 
                 //---------------------------------------------------------------------------------------------
@@ -235,10 +235,10 @@ namespace SWLOR.Game.Server.Native
                         ? Combat.GetRangedAbilityLongRangeHitChanceAdjustment(
                             attacker.m_idSelf,
                             defender.m_idSelf,
-                            weaponSkillType)
+                            abilitySkillType)
                         : 0;
                 var hitChanceModifier =
-                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType) +
+                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
                     queuedWeaponAbilityLongRangeHitChanceAdjustment +
                     Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
                     Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(

@@ -234,6 +234,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
+                        // Clear any stale debt left by a previously deleted city.
+                        dbPlayer.PropertyOwedTaxes = 0;
 
                         DB.Set(dbPlayer);
 

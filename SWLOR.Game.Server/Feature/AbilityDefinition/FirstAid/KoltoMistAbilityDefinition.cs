@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.KoltoMist1, PerkType.KoltoMist)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_KoltoMist)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Kolto Mist I")
                 .Level(1)
@@ -62,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.KoltoMist2, PerkType.KoltoMist)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_KoltoMist)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Kolto Mist II")
                 .Level(2)
@@ -126,6 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             for (var elapsed = TickIntervalSeconds; elapsed <= DurationSeconds + 0.01f; elapsed += TickIntervalSeconds)
             {
                 var pulseDelay = elapsed;
+                var playPulseVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
@@ -134,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     if (!GetIsObjectValid(GetAreaFromLocation(location)))
                         return;
 
-                    var applied = ApplyKoltoMistPulse(activator, location, percentPerTick);
+                    var applied = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);
                     if (applied && !combatPointAwarded)
                     {
                         combatPointAwarded = true;
@@ -144,22 +148,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             }
         }
 
-        private static bool ApplyKoltoMistPulse(uint activator, Location location, float percentPerTick)
+        private static bool ApplyKoltoMistPulse(uint activator, Location location, float percentPerTick, Action<uint> playPulseVisual)
         {
             var applied = false;
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, HealRadiusMeters))
             {
+                var hitPointsBeforeHealing = GetCurrentHitPoints(friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(
                     activator,
                     friendly,
                     percentPerTick,
                     visualEffect: VisualEffect.Vfx_Imp_Head_Heal);
+                if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
+                    playPulseVisual(friendly);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                StatusEffect.ApplyStatusEffect(
+                if (StatusEffect.ApplyStatusEffect(
                     activator,
                     friendly,
                     typeof(KoltoMistHealingStatusEffect),
-                    StatusRefreshDurationSeconds);
+                    StatusRefreshDurationSeconds))
+                    playPulseVisual(friendly);
                 applied = true;
             }
 

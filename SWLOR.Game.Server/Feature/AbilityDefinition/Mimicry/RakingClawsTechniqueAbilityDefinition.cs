@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Com_Chunk_Red_Small)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RakingClawsTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)

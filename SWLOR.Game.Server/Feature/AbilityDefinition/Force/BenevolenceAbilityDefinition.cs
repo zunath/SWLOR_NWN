@@ -1,3 +1,5 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -25,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Benevolence1, PerkType.Benevolence)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Benevolence)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence I")
                 .Level(1)
@@ -49,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Benevolence2, PerkType.Benevolence)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Benevolence)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence II")
                 .Level(2)
@@ -73,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Benevolence3, PerkType.Benevolence)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Benevolence)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence III")
                 .Level(3)
@@ -113,7 +118,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
             var multiplier = friendly == activator ? 1f : 1.25f;
+            var hitPointsBeforeHealing = GetCurrentHitPoints(friendly);
             AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, percent, multiplier: multiplier);
+            if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
         }
     }

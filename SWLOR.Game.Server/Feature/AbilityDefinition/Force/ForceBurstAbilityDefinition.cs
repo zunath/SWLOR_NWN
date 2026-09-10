@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.ForceBurst)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceBurst)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)

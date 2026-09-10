@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Special_Red_White,
                 maxRange: 6f,
                 criticalRatePercentAdjustment: 25)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_InnerCirclePounceTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

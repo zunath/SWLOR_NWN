@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Magical_Vision,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
                 centerOnActivator: true)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ConcussiveChallengeTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

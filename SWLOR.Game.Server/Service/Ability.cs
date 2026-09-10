@@ -364,6 +364,41 @@ namespace SWLOR.Game.Server.Service
             return GetTrackedAbilityImpact(activator)?.Summary;
         }
 
+        /// <summary>
+        /// Plays the definition's finite receipt burst after a heal, buff, or other noncombat
+        /// action succeeds. Call for the actual recipient while its ability impact is active.
+        /// Failed actions must not call this method. Combat impacts report success internally.
+        /// </summary>
+        public static void PlaySuccessfulImpactVisualEffect(uint activator, uint recipient)
+        {
+            PlaySuccessfulImpactVisualEffect(GetTrackedAbilityImpact(activator)?.VisualEffects, recipient);
+        }
+
+        /// <summary>
+        /// Captures the originating visual for a delayed noncombat pulse without changing combat
+        /// tracking or bonuses. Capture once per pulse, then report its successful recipients.
+        /// </summary>
+        public static Action<uint> CaptureSuccessfulImpactVisualEffect(uint activator)
+        {
+            var effect = GetSuccessfulImpactVisualEffect(activator);
+            var visuals = new AbilityImpactVisualEffects(effect);
+            return recipient => PlaySuccessfulImpactVisualEffect(visuals, recipient);
+        }
+
+        /// <summary>Returns the current impact's visual reference for a later independent combat event.</summary>
+        public static VisualEffect GetSuccessfulImpactVisualEffect(uint activator)
+        {
+            return GetTrackedAbilityImpact(activator)?.Ability.SuccessfulImpactVisualEffect ?? VisualEffect.None;
+        }
+
+        private static void PlaySuccessfulImpactVisualEffect(AbilityImpactVisualEffects visuals, uint recipient)
+        {
+            if (visuals == null || !GetIsObjectValid(recipient) || !visuals.TryRecordRecipient(recipient))
+                return;
+
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visuals.Effect), recipient);
+        }
+
         public static void AddActiveAbilityDefenseIgnorePercentAdjustment(uint activator, int adjustment)
         {
             if (adjustment == 0)
@@ -2344,9 +2379,12 @@ namespace SWLOR.Game.Server.Service
                 firstHostileAbilityHitDamageBonusApplied,
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0);
 
-            if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
+            if (damage > 0 || statusApplied)
             {
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
+                if (trackedImpact?.VisualEffects.Effect is { } authoredEffect && authoredEffect != VisualEffect.None)
+                    PlaySuccessfulImpactVisualEffect(activator, target);
+                else if (targetVisualEffect != VisualEffect.None)
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
             }
 
             afterSuccessfulHit?.Invoke(target);
@@ -3416,6 +3454,7 @@ namespace SWLOR.Game.Server.Service
             private Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>> _statSources;
 
             public AbilityDetail Ability { get; }
+            public AbilityImpactVisualEffects VisualEffects { get; }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
             public TrackedAbilityImpact SequenceOwner { get; set; }
             public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();
@@ -3488,6 +3527,7 @@ namespace SWLOR.Game.Server.Service
                 AbilityImpactSequence sequence)
             {
                 Ability = ability;
+                VisualEffects = new AbilityImpactVisualEffects(ability.SuccessfulImpactVisualEffect);
                 _sequence = sequence;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;

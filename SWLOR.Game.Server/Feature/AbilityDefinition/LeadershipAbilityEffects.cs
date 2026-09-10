@@ -120,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             Ability.ApplyAura(activator, statusEffectType, true, true, false);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
             return true;
         }
     }

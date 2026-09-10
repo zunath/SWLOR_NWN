@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceSanctuary1, PerkType.ForceSanctuary)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSanctuary)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Force Sanctuary")
                 .Level(1)

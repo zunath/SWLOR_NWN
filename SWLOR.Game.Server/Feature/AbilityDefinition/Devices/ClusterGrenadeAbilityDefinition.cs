@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ClusterGrenade1, PerkType.ClusterGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ClusterGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Cluster Grenade")
                 .Level(1)

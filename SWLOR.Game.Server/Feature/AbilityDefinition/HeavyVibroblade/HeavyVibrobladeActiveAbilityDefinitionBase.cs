@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         protected static void ApplySelfStatus(uint activator, Type type)
         {
             StatusEffect.RemoveOtherStanceStatuses(activator, type);
-            StatusEffect.ApplyStatusEffect(activator, activator, type, 0f);
+            if (StatusEffect.ApplyStatusEffect(activator, activator, type, 0f))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
         }
 
         protected static int SoulStrikeImpact(uint activator, uint target, Location targetLocation, int damageBonus, int healingPercent)
@@ -96,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             if (includeSelf)
             {
-                StatusEffect.ApplyStatusEffect(activator, activator, type, duration);
+                if (StatusEffect.ApplyStatusEffect(activator, activator, type, duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 ApplyVisualEffect(activator, visualEffect);
             }
 
@@ -107,7 +109,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             {
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    StatusEffect.ApplyStatusEffect(activator, creature, type, duration);
+                    if (StatusEffect.ApplyStatusEffect(activator, creature, type, duration))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
                     ApplyVisualEffect(creature, visualEffect);
                 }
 

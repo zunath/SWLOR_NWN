@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             builder
                 .Create(FeatType.RendingStrike1, PerkType.RendingStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RendingStrike)
                 .Name("Rending Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             builder
                 .Create(FeatType.RendingStrike2, PerkType.RendingStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RendingStrike)
                 .Name("Rending Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)

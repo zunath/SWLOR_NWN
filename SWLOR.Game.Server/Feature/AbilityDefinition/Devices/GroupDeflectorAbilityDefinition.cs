@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.GroupDeflector1, PerkType.GroupDeflector)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GroupDeflector)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Group Deflector")
                 .Level(1)
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var duration = durationSeconds;
 
             TemporaryHitPointEffects.ApplyFlat(target, "GROUP_DEFLECTOR", amount, duration);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }

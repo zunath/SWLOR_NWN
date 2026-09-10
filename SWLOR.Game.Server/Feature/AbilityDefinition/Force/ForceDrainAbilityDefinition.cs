@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceDrain1, PerkType.ForceDrain)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceDrain)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Force Drain I")
                 .Level(1)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceDrain2, PerkType.ForceDrain)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceDrain)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Force Drain II")
                 .Level(2)
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceDrain3, PerkType.ForceDrain)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceDrain)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Force Drain III")
                 .Level(3)

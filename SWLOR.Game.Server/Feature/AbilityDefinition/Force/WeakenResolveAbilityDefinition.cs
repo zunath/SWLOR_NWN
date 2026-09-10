@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.WeakenResolve1, PerkType.WeakenResolve)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WeakenResolve)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Weaken Resolve I")
                 .Level(1)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.WeakenResolve2, PerkType.WeakenResolve)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WeakenResolve)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Weaken Resolve II")
                 .Level(2)

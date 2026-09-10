@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             builder
                 .Create(featType, PerkType.CoveringStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CoveringStrike)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)

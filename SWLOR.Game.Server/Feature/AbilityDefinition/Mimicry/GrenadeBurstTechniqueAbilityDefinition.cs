@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Fire,
                 maxRange: 10f,
                 centerOnActivator: true)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GrenadeBurstTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

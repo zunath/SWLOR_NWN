@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RailDart1, PerkType.RailDart)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RailDart)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Rail Dart I")
                 .Level(1)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RailDart2, PerkType.RailDart)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RailDart)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Rail Dart II")
                 .Level(2)
@@ -75,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RailDart3, PerkType.RailDart)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RailDart)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Rail Dart III")
                 .Level(3)

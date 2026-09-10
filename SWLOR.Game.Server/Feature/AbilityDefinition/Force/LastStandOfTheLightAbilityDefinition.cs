@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.LastStandOfTheLight1, PerkType.LastStandOfTheLight)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_LastStandOfTheLight)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Last Stand of the Light")
                 .Level(1)
@@ -51,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void LastStandOfTheLight1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
-            StatusEffect.ApplyStatusEffect(activator, friendly, typeof(LastStandOfTheLight1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
+            if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(LastStandOfTheLight1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
         }
     }

@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.HoldTheLine1, PerkType.HoldTheLine)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_HoldTheLine)
                 .Name("Hold the Line")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -59,7 +60,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     friendly,
                     AbilityEffectScaling.ScaleValueBySourceSocial(activator, 18, 22),
                     CapstoneAbility.ActiveDurationSeconds);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
                 affectedCount++;
             }

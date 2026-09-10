@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Special_Red_White,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
                 damagePercentAdjustment: InnateAbility.MissingHpRamp(35))
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FinalLineTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

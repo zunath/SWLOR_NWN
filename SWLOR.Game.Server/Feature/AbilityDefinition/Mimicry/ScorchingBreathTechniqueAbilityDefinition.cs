@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Hit_Fire,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Fire,
                 additionalStatusEffects: new[] { typeof(WeakenedStatusEffect) })
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ScorchingBreathTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

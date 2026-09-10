@@ -91,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var ability = builder
                 .Create(feat, PerkType.ForceJudgment)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceJudgment)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)

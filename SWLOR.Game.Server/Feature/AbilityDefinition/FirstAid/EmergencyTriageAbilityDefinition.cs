@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.EmergencyTriage1, PerkType.EmergencyTriage)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_EmergencyTriage)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Emergency Triage")
                 .Level(1)

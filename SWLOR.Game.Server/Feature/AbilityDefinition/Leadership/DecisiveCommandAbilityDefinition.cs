@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.DecisiveCommand1, PerkType.DecisiveCommand)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_DecisiveCommand)
                 .Name("Decisive Command")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -56,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affectedCount++;
             }

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Infusion1, PerkType.Infusion)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Infusion)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Infusion I")
                 .Level(1)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Infusion2, PerkType.Infusion)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Infusion)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Infusion II")
                 .Level(2)
@@ -87,11 +89,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void ApplyInfusion(uint activator, uint target, string name, float totalPercent)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
-            StatusEffect.ApplyStatusEffect(
+            if (StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
                 new RegenerativeHealingStatusEffect(name, totalPercent, 5, true),
-                30f);
+                30f))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
             FirstAidTreatmentAdjustments.GrantCombatPoint(activator);

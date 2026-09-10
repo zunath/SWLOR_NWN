@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.CreepingTerror1, PerkType.CreepingTerror)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CreepingTerror)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Creeping Terror I")
                 .Level(1)
@@ -69,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.CreepingTerror2, PerkType.CreepingTerror)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CreepingTerror)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Creeping Terror II")
                 .Level(2)
@@ -97,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.CreepingTerror3, PerkType.CreepingTerror)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CreepingTerror)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Creeping Terror III")
                 .Level(3)

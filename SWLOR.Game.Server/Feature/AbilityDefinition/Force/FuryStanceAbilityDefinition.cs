@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.FuryStance1, PerkType.FuryStance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FuryStance)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Fury Stance I")
                 .Level(1)
@@ -40,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.FuryStance2, PerkType.FuryStance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FuryStance)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Fury Stance II")
                 .Level(2)

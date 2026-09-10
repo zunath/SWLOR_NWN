@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Storm,
                 centerOnActivator: true,
                 afterSuccessfulHit: InnateAbility.ChainOnHit(InnateAbilityProfile.Mimicry, 2, 5f, 10, typeof(ShockStatusEffect), 30, CombatDamageType.Electrical, oncePerCast: true))
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_StaticBurstTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

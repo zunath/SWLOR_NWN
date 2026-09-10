@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -40,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             _builder
                 .Create(FeatType.Tame, PerkType.Tame)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Tame)
                 .Name("Tame")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 2f)
@@ -144,6 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     SendMessageToPC(activator, ColorToken.Green($"Successfully tamed {GetName(target)}!"));
                     DestroyObject(target);
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 });
         }
     }

@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Storm,
                 centerOnActivator: true,
                 enmityBonus: 75)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenMarkTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

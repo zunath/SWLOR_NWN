@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             for (var elapsed = 0f; elapsed < durationSeconds - 0.01f; elapsed += 3f)
             {
                 var pulseDelay = elapsed;
+                var playReceipt = Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
@@ -79,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         if (firstApplications.Add(friendly))
                             onFirstApplication?.Invoke(friendly, Math.Max(0.1f, durationSeconds - pulseDelay));
 
-                        StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f);
+                        if (StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f))
+                            playReceipt(friendly);
                         if (visualEffect != VisualEffect.None)
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), friendly);
                     }
@@ -101,17 +103,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)
             {
                 var pulseDelay = elapsed;
+                var playReceipt = Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
                     {
                         var targetWasBelowHalfHP = GetMaxHitPoints(friendly) > 0 &&
                                                    GetCurrentHitPoints(friendly) < GetMaxHitPoints(friendly) * 0.5f;
+                        var hpBeforeHealing = GetCurrentHitPoints(friendly);
                         AbilityEffectScaling.ApplyScaledHeal(activator, friendly, percentPerTick, multiplier: multiplier);
+                        if (GetCurrentHitPoints(friendly) > hpBeforeHealing)
+                            playReceipt(friendly);
                         onHealed?.Invoke(friendly, targetWasBelowHalfHP);
 
-                        if (statusEffect != null)
-                            StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f);
+                        if (statusEffect != null && StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f))
+                            playReceipt(friendly);
 
                         if (visualEffect != VisualEffect.None)
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), friendly);

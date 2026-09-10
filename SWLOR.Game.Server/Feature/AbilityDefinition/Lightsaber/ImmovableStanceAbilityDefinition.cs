@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ImmovableStance1, PerkType.ImmovableStance)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ImmovableStance)
                     .UsesImmediateAuthoredAnimation()
                     .Name("Immovable Stance")
                     .Level(1)

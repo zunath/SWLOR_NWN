@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IonGrenade1, PerkType.IonGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IonGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Ion Grenade I")
                 .Level(1)
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IonGrenade2, PerkType.IonGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IonGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Ion Grenade II")
                 .Level(2)

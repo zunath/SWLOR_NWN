@@ -1425,7 +1425,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 var selfStatus = SelfStatusEffectFactory();
                 StatusEffect.RemoveOtherStanceStatuses(activator, selfStatus.GetType());
-                StatusEffect.ApplyStatusEffect(activator, activator, selfStatus, duration > 0f ? duration : 0f);
+                if (StatusEffect.ApplyStatusEffect(activator, activator, selfStatus, duration > 0f ? duration : 0f))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
             }
 
             public void ApplySelfStatusToGuardedTarget(uint activator, Type statusEffect, int duration)
@@ -1439,7 +1440,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (!GetIsObjectValid(guardedTarget))
                     return;
 
-                StatusEffect.ApplyStatusEffect(activator, guardedTarget, statusEffect, duration);
+                if (StatusEffect.ApplyStatusEffect(activator, guardedTarget, statusEffect, duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, guardedTarget);
             }
         }
 
@@ -1494,6 +1496,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             if (profile.ApplyFriendlyTargetStatus(activator, target, duration))
                             {
                                 profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
+                                Ability.PlaySuccessfulImpactVisualEffect(activator, target);
                                 profile.AfterActivation(activator, skill);
                             }
                             return;
@@ -1502,6 +1505,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         if (isFriendlyTarget && profile.HasFriendlyTargetEffects())
                         {
                             profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
+                            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
                             profile.AfterActivation(activator, skill);
                             return;
                         }
@@ -1513,7 +1517,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         else if (statusEffect != null)
                         {
                             StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
-                            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f);
+                            if (StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f))
+                                Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                             profile.ApplySelfStatusToGuardedTarget(activator, statusEffect, duration);
                         }
 
@@ -1967,7 +1972,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.RemoveOtherStanceStatuses(activator, type);
-                    StatusEffect.ApplyStatusEffect(activator, activator, statusEffectFactory(), 0f);
+                    if (StatusEffect.ApplyStatusEffect(activator, activator, statusEffectFactory(), 0f))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 })
                 .IsCastedAbility()
                 .BreaksStealth();
@@ -1984,7 +1990,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     var statusEffect = statusEffectFactory();
-                    StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+                    if (StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                     additionalAction?.Invoke(activator);
                 })
                 .IsCastedAbility()
@@ -2001,7 +2008,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, target, type, duration, CombatDamageType.Physical);
+                    if (StatusEffect.ApplyStatusEffect(activator, target, type, duration, CombatDamageType.Physical))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, target);
                     Ability.ApplyHostileAbilityEnmity(activator, target);
                 })
                 .IsCastedAbility()
@@ -2087,7 +2095,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             if (includeSelf)
             {
-                StatusEffect.ApplyStatusEffect(activator, activator, statusEffectFactory(), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, activator, statusEffectFactory(), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
             }
 
             var location = GetLocation(activator);
@@ -2097,7 +2106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    StatusEffect.ApplyStatusEffect(activator, creature, statusEffectFactory(), duration, CombatDamageType.Physical);
+                    if (StatusEffect.ApplyStatusEffect(activator, creature, statusEffectFactory(), duration, CombatDamageType.Physical))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
@@ -2133,7 +2143,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), creature);
                     }
 
-                    StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
+                    if (StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
                     Ability.ApplyHostileAbilityEnmity(activator, creature);
                     if (fpDrainPercent > 0)
                     {

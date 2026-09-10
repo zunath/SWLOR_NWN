@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         {
             builder
                 .Create(feat, PerkType.TacticalEscape)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TacticalEscape)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
@@ -71,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), activator);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
         }
     }
 }

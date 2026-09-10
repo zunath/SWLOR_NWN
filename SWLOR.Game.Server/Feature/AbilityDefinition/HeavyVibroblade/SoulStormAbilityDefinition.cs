@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulStorm1, PerkType.SoulStorm)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulStorm)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Soul Storm")
                 .Level(1)

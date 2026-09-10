@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             builder
                 .Create(featType, PerkType.ShieldBash)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Imp_Shield_Bash)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
@@ -70,9 +71,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
             if (totalDamage <= 0)
                 return;
-
-            ApplyEffectToObject(DurationType.Instant,
-                EffectVisualEffect(VisualEffect.Vfx_Imp_Shield_Bash, fScale: 4f), target);
 
             var physicalDefense = Stat.GetDefense(
                 activator,

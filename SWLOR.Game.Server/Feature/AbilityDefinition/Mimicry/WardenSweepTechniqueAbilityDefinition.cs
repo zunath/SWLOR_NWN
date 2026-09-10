@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             var ability = _builder
                 .Create(FeatType.WardenSweepTechnique, PerkType.CombatAnalyzer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenSweepTechnique)
                 .Name("Warden Sweep")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

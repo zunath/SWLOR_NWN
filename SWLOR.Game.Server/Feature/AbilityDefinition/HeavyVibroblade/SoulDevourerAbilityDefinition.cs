@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulDevourer1, PerkType.SoulDevourer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulDevourer)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Soul Devourer")
                 .Level(1)

@@ -481,7 +481,8 @@ internal sealed class AsciiMdlReader
 
     private KeyRow ParseKeyRow(SourceLine line, string context, int minimumColumns)
     {
-        // Covers the temporary token row and the resulting typed controller arrays.
+        // Covers the row/list entry and the resulting typed controller arrays.
+        // Token strings and arrays are charged separately before splitting.
         _allocationBudget?.Reserve(256, "ASCII MDL " + context);
         var tokens = Tokens(line);
         if (tokens.Length < minimumColumns)
@@ -840,7 +841,7 @@ internal sealed class AsciiMdlReader
         }
     }
 
-    private static string NormalizeConcatenatedDirective(string value)
+    private string NormalizeConcatenatedDirective(string value)
     {
         foreach (var directive in new[]
                  {
@@ -862,7 +863,7 @@ internal sealed class AsciiMdlReader
 
         if (!value.StartsWith("node ", StringComparison.OrdinalIgnoreCase))
             return value;
-        var tokens = value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var tokens = Tokenize(value);
         if (tokens.Length != 2)
             return value;
         foreach (var type in new[]
@@ -914,8 +915,30 @@ internal sealed class AsciiMdlReader
         return count;
     }
 
-    private static string[] Tokens(SourceLine line) =>
-        line.Text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+    private string[] Tokens(SourceLine line) => Tokenize(line.Text);
+
+    private string[] Tokenize(string text)
+    {
+        if (_allocationBudget != null)
+        {
+            var tokenCount = 0;
+            var inToken = false;
+            foreach (var character in text)
+            {
+                if (char.IsWhiteSpace(character)) inToken = false;
+                else if (!inToken)
+                {
+                    tokenCount++;
+                    inToken = true;
+                }
+            }
+            // Key rows retain every token until their controller block is decoded,
+            // including extra columns. Account for strings, references, split work
+            // arrays, and characters before Split can amplify a wide input row.
+            _allocationBudget.Reserve(32 + tokenCount * 48L + text.Length * 2L, "ASCII MDL tokens");
+        }
+        return text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+    }
 
     private static string RequiredToken(string[] tokens, int index, SourceLine source, string context)
     {

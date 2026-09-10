@@ -392,6 +392,35 @@ public sealed class MdlReaderTests
         shared.ReservedBytes.Should().BeGreaterThanOrEqualTo(previouslyReserved);
     }
 
+    [TestCase(true)]
+    [TestCase(false)]
+    public void WideAsciiControllerRowsChargeRetainedTokensBeforeSplitting(bool counted)
+    {
+        var text = new StringBuilder("newmodel bank\nbeginmodelgeom bank\nnode dummy bank\nparent NULL\n");
+        text.AppendLine(counted ? "positionkey 4" : "positionkey");
+        for (var row = 0; row < 4; row++)
+        {
+            text.Append(row).Append(" 1 2 3");
+            for (var column = 4; column < 2000; column++) text.Append(" 0");
+            text.AppendLine();
+        }
+        if (!counted) text.AppendLine("endlist");
+        text.Append("endnode\nendmodelgeom bank\ndonemodel bank\n");
+        var bytes = Encoding.ASCII.GetBytes(text.ToString());
+        bytes.Length.Should().BeLessThan(32 * 1024);
+
+        // Preserve existing acceptance of extra controller columns when bounded.
+        var model = new MdlReader().Parse(bytes, new MdlReadBudget(2 * 1024 * 1024));
+        model.GeometryRoot!.PositionValues.Should().HaveCount(4);
+        model.GeometryRoot.PositionValues.Should().OnlyContain(value => value == new Vector3(1, 2, 3));
+
+        var budget = new MdlReadBudget(256 * 1024);
+        Action read = () => new MdlReader().Parse(bytes, budget);
+        read.Should().Throw<NwnFormatException>()
+            .WithMessage("*MDL model chain cumulative allocation budget*ASCII MDL tokens*");
+        budget.ReservedBytes.Should().BeLessThanOrEqualTo(256 * 1024);
+    }
+
     [Test]
     public void LargeBinaryInputsStillCannotAmplifySharedTablesPastTheDecodedCeiling()
     {

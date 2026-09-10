@@ -52,6 +52,14 @@ public sealed class InstalledMotionLibrary
         _models[overlay.Name] = overlay;
     }
 
+    /// <summary>Decodes every cached parent against the budget already used for the overlay and body.</summary>
+    public InstalledMotionLibrary(MdlModel overlay, Func<string, byte[]?> loadSuperModel, MdlReadBudget decodedBudget)
+        : this(overlay, name => loadSuperModel(name) is { } bytes ? new MdlReader().Parse(bytes, decodedBudget) : null)
+    {
+        ArgumentNullException.ThrowIfNull(loadSuperModel);
+        ArgumentNullException.ThrowIfNull(decodedBudget);
+    }
+
     public (MdlModel Owner, MdlAnimation Animation) Resolve(string animationName)
     {
         AnimationProject.ValidateToken(animationName, 16);

@@ -225,6 +225,45 @@ class AnimationBibleTests(unittest.TestCase):
             with zipfile.ZipFile(path) as z:
                 self.assertEqual(z.read("xl/worksheets/sheet2.xml"), first)
 
+    def test_multi_letter_columns_keep_their_cell_attributes_styles_and_content(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "bible.xlsx"
+            rows = []
+            for number, name in ((1, "Name"), (2, "Push"), (3, "Pull")):
+                managed = (f'<c r="B{number}" t="inlineStr"><is><t>Force</t></is></c>'
+                           f'<c r="C{number}" t="inlineStr"><is><t>{name}</t></is></c>'
+                           f'<c r="D{number}" s="4"/>')
+                unmanaged = ""
+                for column in ("AB", "BC", "HI"):
+                    # Later rows deliberately differ from the first style in a column.
+                    style = "" if (number, column) == (1, "AB") else f' s="{number * 10}"'
+                    unmanaged += (f'<c r="{column}{number}"{style} t="inlineStr" cm="2" vm="3" ph="1">'
+                                  f'<is><r><rPr><b/></rPr><t>{column} note {number}</t></r>'
+                                  '<r><t xml:space="preserve"> retained suffix</t></r></is></c>')
+                rows.append(f'<row r="{number}">{managed}{unmanaged}</row>')
+            worksheet = ('<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                         '<dimension ref="A1:HI3"/><sheetData>' + ''.join(rows) + '</sheetData></worksheet>')
+            with zipfile.ZipFile(path, "w") as z:
+                z.writestr("xl/workbook.xml", '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Animations" r:id="rId2"/></sheets></workbook>')
+                z.writestr("xl/_rels/workbook.xml.rels", '<Relationships><Relationship Id="rId2" Target="worksheets/sheet2.xml"/></Relationships>')
+                z.writestr("xl/worksheets/sheet2.xml", worksheet)
+            entries = [{"Id": name, "Name": name, "Category": "Force", "InternalName": "sw_" + name.lower()}
+                       for name in ("Push", "Pull")]
+            registry = [{"Name": e["Id"], "AnimationName": e["InternalName"], "ProjectPath": e["Id"] + ".swlanim"}
+                        for e in entries]
+            ns = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+            original = ET.fromstring(worksheet)
+            for run in range(2):
+                synchronize(path, copy.deepcopy(entries), registry)
+                with zipfile.ZipFile(path) as z:
+                    actual = ET.fromstring(z.read("xl/worksheets/sheet2.xml"))
+                for number in (1, 2, 3):
+                    for column in ("AB", "BC", "HI"):
+                        with self.subTest(run=run, cell=f"{column}{number}"):
+                            selector = f'.//s:c[@r="{column}{number}"]'
+                            self.assertEqual(ET.tostring(actual.find(selector, ns)),
+                                             ET.tostring(original.find(selector, ns)))
+
     def test_prefixed_sheet_data_is_updated_and_existing_used_range_is_retained(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "bible.xlsx"

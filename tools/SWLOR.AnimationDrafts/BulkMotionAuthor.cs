@@ -224,6 +224,10 @@ internal static class BulkMotionAuthor
         var previous = previousManifest?.RootElement.GetProperty("Animations").EnumerateArray()
             .ToDictionary(a => a.GetProperty("Id").GetString()!) ?? new Dictionary<string, JsonElement>();
         var modelBytes = Capture(modelPath) ?? throw new FileNotFoundException("Missing base model.", modelPath);
+        var modelHash = Convert.ToHexString(SHA256.HashData(modelBytes)).ToLowerInvariant();
+        var sameBaseModel = previousManifest != null &&
+            previousManifest.RootElement.TryGetProperty("SourceModelSha256", out var priorModelHash) &&
+            priorModelHash.ValueKind == JsonValueKind.String && priorModelHash.GetString() == modelHash;
         var model = new MdlReader().Parse(modelBytes);
         var reports = new List<object>();
         var pending = new Dictionary<string, string>();
@@ -278,7 +282,7 @@ internal static class BulkMotionAuthor
             }
             if (profile.Procedural && choreography == null && !preserved) baseProfiles.TryAdd(profile.Name, profile);
             var hash = ProjectHash(contents);
-            var hasProvenance = preserved && previous.TryGetValue(entry.Id, out var prior) && prior.GetProperty("ProjectSha256").GetString() == hash;
+            var hasProvenance = preserved && sameBaseModel && previous.TryGetValue(entry.Id, out var prior) && prior.GetProperty("ProjectSha256").GetString() == hash;
             if (hasProvenance && previous[entry.Id].TryGetProperty("ChoreographySha256", out var priorRecipeHash) && priorRecipeHash.ValueKind == JsonValueKind.String)
                 hasProvenance = choreography != null && priorRecipeHash.GetString() == choreographyHash &&
                     (sourceNames.Length == 0 || previous[entry.Id].TryGetProperty("ChoreographySourceSha256", out var sourceHash) && sourceHash.GetString() == choreographySourceHash);
@@ -304,7 +308,7 @@ internal static class BulkMotionAuthor
         }
         var projectCount = pending.Count;
         pending.Add(manifestPath, JsonSerializer.Serialize(new { Version = 1,
-            SourceModelSha256 = Convert.ToHexString(SHA256.HashData(modelBytes)).ToLowerInvariant(), Animations = reports }, Json) + "\n");
+            SourceModelSha256 = modelHash, Animations = reports }, Json) + "\n");
         var root = Directory.GetParent(Path.GetFullPath(output))?.Parent?.FullName;
         if (root != null && Directory.Exists(Path.Combine(root, "SWLOR.Game.Server")))
             pending.Add(Path.Combine(root, "SWLOR.Game.Server/Service/AnimationService/ActiveAbilityAnimationCatalog.cs"), RenderCatalog(entries));

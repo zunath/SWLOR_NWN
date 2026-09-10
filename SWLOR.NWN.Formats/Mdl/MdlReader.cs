@@ -35,23 +35,32 @@ public sealed class MdlReader
     private readonly Dictionary<(uint Pointer, bool HasGeometryPayload), MdlNode> _nodes = new();
     private readonly HashSet<(uint Pointer, bool HasGeometryPayload)> _activeNodes = new();
 
-    public MdlModel Parse(byte[] data)
+    public MdlModel Parse(byte[] data) => ParseCore(data, null);
+
+    /// <summary>Reads a model while retaining individual limits and charging a shared decoded budget.</summary>
+    public MdlModel Parse(byte[] data, MdlReadBudget budget)
+    {
+        ArgumentNullException.ThrowIfNull(budget);
+        return ParseCore(data, budget.Allocations);
+    }
+
+    private MdlModel ParseCore(byte[] data, AllocationBudget? sharedBudget)
     {
         ArgumentNullException.ThrowIfNull(data);
         if (data.Length >= sizeof(uint) && BitConverter.ToUInt32(data, 0) != 0)
-            return new AsciiMdlReader().Parse(data);
+            return new AsciiMdlReader().Parse(data, sharedBudget);
 
-        return ParseBinary(data);
+        return ParseBinary(data, sharedBudget);
     }
 
-    private MdlModel ParseBinary(byte[] data)
+    private MdlModel ParseBinary(byte[] data, AllocationBudget? sharedBudget)
     {
         _reader = new GuardedBinaryReader(data);
         // Dense animation banks retain managed nodes as well as their controller
         // arrays. Allow bounded expansion for large inputs while retaining the
         // original budget for small files that alias tables to amplify allocations.
         _allocationBudget = new AllocationBudget("Binary MDL", Math.Clamp(data.LongLength * 3,
-            AllocationBudget.DefaultMaximumBytes, MaximumDecodedAllocationBytes));
+            AllocationBudget.DefaultMaximumBytes, MaximumDecodedAllocationBytes), sharedBudget);
         _nodes.Clear();
         _activeNodes.Clear();
 

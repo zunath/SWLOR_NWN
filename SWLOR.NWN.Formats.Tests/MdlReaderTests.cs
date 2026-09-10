@@ -322,7 +322,10 @@ public sealed class MdlReaderTests
         var bytes = BuildDenseBinaryAnimationBank(animationCount: 50, nodesPerAnimation: 700, rows: 48);
         bytes.Length.Should().BeLessThan(64 * 1024 * 1024);
 
-        var model = new MdlReader().Parse(bytes);
+        var shared = new MdlReadBudget();
+        var model = new MdlReader().Parse(bytes, shared);
+        shared.ReservedBytes.Should().BeGreaterThan(64L * 1024 * 1024,
+            "a shared chain budget must still admit the larger valid per-file allowance");
 
         model.Animations.Should().HaveCount(50);
         foreach (var animation in model.Animations)
@@ -340,6 +343,53 @@ public sealed class MdlReaderTests
                 node.OrientationValues[^1].W.Should().BeApproximately(MathF.Sqrt(.5f), .00001f);
             }
         }
+    }
+
+    [Test]
+    public void IndependentReadersChargeAliasedModelsAgainstOneSharedDecodedBudget()
+    {
+        var bytes = BuildBinaryMdlWithSharedFaceTable(meshCount: 3, faceCount: 32767);
+        bytes.Length.Should().BeLessThan(2 * 1024 * 1024);
+        var shared = new MdlReadBudget(64L * 1024 * 1024);
+        var retained = new List<MdlModel>
+        {
+            new MdlReader().Parse(bytes, shared),
+            new MdlReader().Parse(bytes, shared)
+        };
+        var previouslyReserved = shared.ReservedBytes;
+        previouslyReserved.Should().BeGreaterThan(40L * 1024 * 1024);
+        Action third = () => retained.Add(new MdlReader().Parse(bytes, shared));
+        third.Should().Throw<NwnFormatException>().WithMessage("*MDL model chain cumulative allocation budget*");
+        retained.Should().HaveCount(2);
+        shared.ReservedBytes.Should().BeGreaterThanOrEqualTo(previouslyReserved,
+            "a failed parse must not refund allocations or reset earlier readers' charges");
+        shared.ReservedBytes.Should().BeLessThanOrEqualTo(64L * 1024 * 1024);
+    }
+
+    [Test]
+    public void SharedBudgetDoesNotReplaceTheIndividualSmallFileLimit()
+    {
+        var bytes = BuildBinaryMdlWithSharedFaceTable(meshCount: 5, faceCount: ushort.MaxValue);
+        var shared = new MdlReadBudget();
+        Action read = () => new MdlReader().Parse(bytes, shared);
+        read.Should().Throw<NwnFormatException>().WithMessage("*Binary MDL cumulative allocation budget exceeds 67108864*");
+        shared.ReservedBytes.Should().BeLessThanOrEqualTo(64L * 1024 * 1024);
+    }
+
+    [Test]
+    public void AsciiModelNodesCannotBypassTheSharedDecodedBudget()
+    {
+        var text = new StringBuilder("newmodel bank\nbeginmodelgeom bank\nnode dummy bank\nparent NULL\nendnode\n");
+        for (var i = 0; i < 300; i++) text.Append($"node dummy joint{i}\nparent bank\nendnode\n");
+        text.Append("endmodelgeom bank\ndonemodel bank\n");
+        var bytes = Encoding.ASCII.GetBytes(text.ToString());
+        var shared = new MdlReadBudget(700 * 1024);
+        var first = new MdlReader().Parse(bytes, shared);
+        first.GeometryRoot!.Children.Should().HaveCount(300);
+        var previouslyReserved = shared.ReservedBytes;
+        Action second = () => new MdlReader().Parse(bytes, shared);
+        second.Should().Throw<NwnFormatException>().WithMessage("*MDL model chain cumulative allocation budget*");
+        shared.ReservedBytes.Should().BeGreaterThanOrEqualTo(previouslyReserved);
     }
 
     [Test]

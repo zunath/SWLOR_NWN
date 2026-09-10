@@ -141,7 +141,7 @@ def render_workbook(workbook: Path, entries: list[dict], registry: list[dict], c
             column = re.sub(r"\d", "", existing.get("r"))
             if column in extra:
                 node.remove(existing)
-            elif column in "ABCDEFGHI":
+            elif column in {"A", "B", "C", "D", "E", "F", "G", "H", "I"}:
                 existing.set("s", style(column, number == 1))
         for column, content in extra.items():
             node.append(ET.fromstring('<root xmlns="' + NS["s"] + '">' +

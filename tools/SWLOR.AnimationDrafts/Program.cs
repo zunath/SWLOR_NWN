@@ -127,7 +127,8 @@ try
 
     if (args.Length >= 4 && args[0] == "render-data")
     {
-        var source = new MdlReader().Parse(ReadBytes(args[1]));
+        var decodedModels = new MdlReadBudget();
+        var source = new MdlReader().Parse(ReadBytes(args[1]), decodedModels);
         var sourceRig = AnimationProject.FromModel(source);
         MdlModel? overlay = null;
         string? overlayPath = null;
@@ -146,7 +147,7 @@ try
                     overlayPath = Path.GetFullPath(args[i]);
                     var bytes = ReadBytes(overlayPath);
                     loadedBankBytes = bytes.Length;
-                    overlay = new MdlReader().Parse(bytes);
+                    overlay = new MdlReader().Parse(bytes, decodedModels);
                 }
                 else registry = JsonSerializer.Deserialize<AnimationRegistration[]>(await ReadText(args[i]));
                 continue;
@@ -154,7 +155,7 @@ try
             var part = args[i] switch { "--shield" => "shield", "--sword" => "weaponr", _ => throw new ArgumentException("Unknown render option.") };
             var bone = MdlPartBoneMap.GetBoneName(part)!;
             if (++i == args.Length) throw new ArgumentException("Equipment option requires an MDL path.");
-            equipment.Add((bone, new MdlReader().Parse(ReadBytes(args[i]))));
+            equipment.Add((bone, new MdlReader().Parse(ReadBytes(args[i]), decodedModels)));
         }
         if ((overlay == null) != (registry == null)) throw new ArgumentException("Installed rendering requires both --overlay and --registry.");
         InstalledMotionLibrary? installed = null;
@@ -172,9 +173,8 @@ try
                 var path = repository != null ? AnimationInstall.FindTargetSource(repository, name)
                     : adjacent!.GetValueOrDefault(name);
                 if (path == null) return null;
-                var bytes = InstalledMotionLibrary.ReadBank(path, ref loadedBankBytes);
-                return new MdlReader().Parse(bytes);
-            });
+                return InstalledMotionLibrary.ReadBank(path, ref loadedBankBytes);
+            }, decodedModels);
         }
         using var manifest = JsonDocument.Parse(await ReadText(Path.Combine(args[2], "manifest.json")));
         var poses = new List<object>();

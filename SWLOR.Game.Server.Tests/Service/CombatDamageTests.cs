@@ -255,7 +255,9 @@ public class CombatDamageTests
         Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Vibroblade).Should().Be(AbilityType.Perception);
         Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Rifle).Should().Be(AbilityType.Agility);
         Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Pistol).Should().Be(AbilityType.Agility);
-        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Force).Should().Be(AbilityType.Willpower);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Force).Should().Be(AbilityType.Invalid);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.BeastMastery).Should().Be(AbilityType.Invalid);
+        Combat.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Invalid).Should().Be(AbilityType.Invalid);
         attackSource.Should().Contain("Stat.GetEvasionNative(defender, abilitySkillType)");
         attackSource.Should().Contain("Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,

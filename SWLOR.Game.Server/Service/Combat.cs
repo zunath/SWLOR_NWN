@@ -11696,8 +11696,8 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Staff)
                 return GetWeaponAccuracyAbilityType(creature, BaseItem.QuarterStaff);
 
-            if (skillType == SkillType.Force)
-                return AbilityType.Willpower;
+            if (!IsWeaponSkillType(skillType))
+                return AbilityType.Invalid;
 
             return IsRangedWeaponSkill(skillType) ? AbilityType.Agility : AbilityType.Perception;
         }

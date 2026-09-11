@@ -451,6 +451,30 @@ adds a shoulder-rest overlay that masks the right arm during the fishing clip. V
 with the rod equipped after replacing the HAKs, restarting the server, and reopening the client.
 
 RGB robe phenotypes also have generated animation bridges for their separate garment joints.
+The generator shares one body track set per native body base. Garment joints share a
+track only when their original name, parent, and complete animation
+controllers match. Different robe rigs retain separate joints in that shared
+supermodel; their wearable models bind to the appropriate joints. This removes
+repeated body animation data without flattening robes onto a single garment rig.
+Each wearer retains its own local defaults and authored skin bindings; an
+inherited animation overrides channels by native part ID. Different bind
+positions therefore do not require duplicate copies of identical motion.
+Native compilation rebuilds the part IDs. Resource names and phenotype
+assignments of wearers stay stable.
+
+The initial shared conversion reduced the compiled robe animation banks from
+2,146,927,180 bytes (64 families, 175 banks) to 939,143,268 bytes (14 shared rigs,
+69 banks), saving 56.26%. The largest bank is 14,679,932 bytes. Validation covered
+all 1,596 wearers, 84,770 body-pose samples, and 485,210 garment-clip comparisons
+against the previous compiled rigs. These figures cover the animation banks;
+robe meshes, textures, and other HAK resources are additional.
+
+Sharing lowers the total compiled payload across robe styles. The first wearer
+of a body type can inherit more garment tracks than its former individual
+family, while other styles can reuse that rig. Check entry/loading time with a
+single wearer and with mixed robe styles on the actual client before deployment;
+compiled byte counts and offline pose checks do not measure runtime memory or
+loading performance.
 Publish generated robe updates in a separate HAK PR from the humanoid animation banks.
 Stack the robe PR on the body-animation branch, and keep the parent game's submodule pointer
 on the complete body-and-robe result. Merge both HAK changes before deploying either set.
@@ -464,6 +488,14 @@ git add -A -- sw_anim_m sw_anim_f sw_pt_root sw_pt_robe sw_2da tools/RobeRgbMode
 python -B tools/PruneRobeAnimationBridges.py
 python -B tools/GenerateRobeRgbModels.py --check --game-data "<NWN installation>/data"
 ```
+
+For a packaging or sharing conversion that must preserve all installed movement,
+add `--verify-existing-motion` to generation. This additionally compares each
+existing wearer's local garment binds and all inherited garment animation keys
+against the new compiled rigs before installing anything. Do not use this flag
+when deliberately editing motion; the normal source, skin, and body audits still
+apply to those changes. The staging `sharing.json` and `report.json` record the
+family counts and validation results.
 
 Run these commands from `SWLOR_Haks`. The staging step includes newly allocated bridges,
 pruned deletions, wearable models, tables, and the generated catalog. Package and deploy
@@ -489,14 +521,17 @@ python -B tools/CheckNwsyncResources.py
 ```
 
 The repair validates all owned inputs, stages the complete bank set, checks exact
-binary reconstruction and native decompilation, and then installs it. Reusing the
+binary reconstruction and native decompilation, and then installs it with a
+recoverable journal and the manifest last. An interrupted installation is rolled
+back on the next invocation before validation. Reusing the
 staging directory reuses checks only when the original model, validator, compiler,
 and staged output hashes still match. It does not change wearable roots, phenotype
 tables, ability references, or authoring projects. Commit the new bank files and
 `tools/RobeRgbModels.json` together with the changed bridge heads. Rebuild and
 publish both `sw_anim_m.hak` and `sw_anim_f.hak`; NWSync needs the complete updated
 chains. This partitions transfer resources without reducing the total animation
-data needed by a wearer.
+data needed by a wearer. This repair can recertify only the two packaging scripts;
+changed generation, pose, skin, or animation inputs require a full regeneration.
 
 `BuildHaks.cmd` runs the resource-size audit before building. Other packaging paths
 must run `CheckNwsyncResources.py` too; it checks every configured HAK resource,

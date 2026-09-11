@@ -533,6 +533,10 @@ chains. This partitions transfer resources without reducing the total animation
 data needed by a wearer. This repair can recertify only the two packaging scripts;
 changed generation, pose, skin, or animation inputs require a full regeneration.
 
+Choose a staging directory inside `output`, such as `output/nwsync-banks`.
+`output/nwsync-bank-install` and its `.lock` path are reserved for installation
+and recovery; neither those paths nor their descendants may be used for staging.
+
 `BuildHaks.cmd` runs the resource-size audit before building. Other packaging paths
 must run `CheckNwsyncResources.py` too; it checks every configured HAK resource,
 including files outside the generated animation catalog.

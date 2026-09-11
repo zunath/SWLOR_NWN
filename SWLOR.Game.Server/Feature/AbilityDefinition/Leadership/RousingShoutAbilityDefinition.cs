@@ -127,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 target,
                 AbilityEffectScaling.ScaleValueBySourceSocial(activator, temporaryHPPercent, temporaryHPCap),
                 durationSeconds);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
 
             if (targetWasInDanger)
             {

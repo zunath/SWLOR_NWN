@@ -1401,6 +1401,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         SelfGuardDurationSeconds,
                         "GeneratedWeaponAbility:GuardingPlayerGuard");
                     GuardedStatusEffect.RefreshGuardBenefitsFromSource(activator);
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 }
             }
 

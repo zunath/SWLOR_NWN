@@ -803,7 +803,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        private static void ApplyAuraEffect(uint source, uint recipient, Type type, Action<uint> onApplied = null)
+        private static void ApplyAuraEffect(uint source, uint recipient, Type type, VisualEffect successfulImpactVisualEffect = VisualEffect.None)
         {
             if (StatusEffect.HasStatusEffect(recipient, type, source) ||
                 HasEqualOrStrongerAuraEffect(source, recipient, type))
@@ -812,8 +812,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             RemoveWeakerDuplicateAuraEffects(source, recipient, type);
-            if (StatusEffect.ApplyStatusEffect(source, recipient, type, 0f))
-                onApplied?.Invoke(recipient);
+            if (StatusEffect.ApplyStatusEffect(source, recipient, type, 0f) && successfulImpactVisualEffect != VisualEffect.None)
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(successfulImpactVisualEffect), recipient);
         }
 
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
@@ -856,7 +856,7 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
-        public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies, Action<uint> onApplied = null)
+        public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies, VisualEffect successfulImpactVisualEffect = VisualEffect.None)
         {
             if (!_playerAuras.ContainsKey(activator))
                 _playerAuras.Add(activator, new PlayerAura());
@@ -897,11 +897,11 @@ namespace SWLOR.Game.Server.Service
                 aura.Auras.RemoveAt(0);
             }
 
-            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies));
+            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies, successfulImpactVisualEffect));
 
             if (targetsSelf)
             {
-                ApplyAuraEffect(activator, activator, type, onApplied);
+                ApplyAuraEffect(activator, activator, type, successfulImpactVisualEffect);
             }
 
             if (targetsParty)
@@ -909,7 +909,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var member in aura.PartyMembersInRange)
                 {
                     if (Party.IsInParty(activator, member))
-                        ApplyAuraEffect(activator, member, type, onApplied);
+                        ApplyAuraEffect(activator, member, type, successfulImpactVisualEffect);
                 }
             }
 
@@ -919,7 +919,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (!GetIsDMPossessed(npc) && !GetIsDM(npc) &&
                         (GetIsEnemy(activator, npc) || GetIsEnemy(npc, activator)))
-                        ApplyAuraEffect(activator, npc, type, onApplied);
+                        ApplyAuraEffect(activator, npc, type, successfulImpactVisualEffect);
                 }
             }
 
@@ -1103,7 +1103,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsParty)
-                            ApplyAuraEffect(leader, target, aura.StatusEffect);
+                            ApplyAuraEffect(leader, target, aura.StatusEffect, aura.SuccessfulImpactVisualEffect);
                     }
                 }
 
@@ -1114,7 +1114,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsEnemies)
-                            ApplyAuraEffect(leader, target, aura.StatusEffect);
+                            ApplyAuraEffect(leader, target, aura.StatusEffect, aura.SuccessfulImpactVisualEffect);
                     }
                 }
             }
@@ -1228,7 +1228,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsParty)
                     {
-                        ApplyAuraEffect(self, entering, detail.StatusEffect);
+                        ApplyAuraEffect(self, entering, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
                     }
                 }
             }
@@ -1243,7 +1243,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsEnemies)
                     {
-                        ApplyAuraEffect(self, entering, detail.StatusEffect);
+                        ApplyAuraEffect(self, entering, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
                     }
                 }
             }

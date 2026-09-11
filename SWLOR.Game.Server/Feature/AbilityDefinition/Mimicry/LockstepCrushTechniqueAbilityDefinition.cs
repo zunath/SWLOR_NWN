@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Screen_Shake,
                 afterSuccessfulHit: (activator, target) =>
                     StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f, CombatDamageType.Physical))
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_LockstepCrushTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)

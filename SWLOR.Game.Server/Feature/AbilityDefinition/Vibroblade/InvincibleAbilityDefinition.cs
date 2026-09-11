@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             ConfigureSelfStatus(
                 builder
                     .Create(FeatType.Invincible1, PerkType.Invincible)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Invincible)
                     .Name("Invincible")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)

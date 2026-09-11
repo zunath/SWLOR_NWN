@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Dazed_S,
                 maxRange: 12f)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SignalSnareTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

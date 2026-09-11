@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.TreatmentKit1, PerkType.TreatmentKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TreatmentKit)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit I")
                 .Level(1)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.TreatmentKit2, PerkType.TreatmentKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TreatmentKit)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit II")
                 .Level(2)
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.TreatmentKit3, PerkType.TreatmentKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TreatmentKit)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit III")
                 .Level(3)
@@ -102,8 +105,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
+                var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
                 foreach (var statusEffect in new[] { typeof(PoisonStatusEffect), typeof(BleedStatusEffect) })
                     StatusEffect.RemoveStatusEffect(friendly, statusEffect, false);
+                if (StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
 
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
@@ -119,7 +125,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
+                var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
+                if (StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
                 affectedCount++;
@@ -134,8 +143,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
+                var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 30f);
+                if (StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 30f))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
                 affectedCount++;

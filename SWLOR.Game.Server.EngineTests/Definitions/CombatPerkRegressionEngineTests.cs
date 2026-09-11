@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var beast = ctx.SpawnCreature("nw_bandit001");
             var target = ctx.SpawnCreature("nw_rat001", 2f);
-            var edgeTarget = ctx.SpawnCreature("nw_rat001", 5.5f);
-            var farTarget = ctx.SpawnCreature("nw_rat001", 8f);
+            var edgeTarget = ctx.SpawnCreature("nw_rat001", 9.5f);
+            var farTarget = ctx.SpawnCreature("nw_rat001", 11f);
             await ctx.WaitFrameAsync();
             Prepare(ctx, beast);
             Prepare(ctx, target);
@@ -71,15 +71,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             })
             {
                 var ability = Ability.GetAbilityDetail(feat);
+                var action = NPCAI.Profiles[AIProfileType.BeastCompanion].Actions
+                    .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == feat);
                 var context = new AIContext(beast, AITriggerType.Heartbeat, target,
                     new AIProfile { Type = AIProfileType.BeastCompanion }, new AIState(), Array.Empty<uint>());
                 ctx.Assert(ability.AITargetSelector != null, $"{feat} declares its AI target");
-                var selected = ability.AITargetSelector(context);
+                var selected = action.TargetSelector(context);
                 var aimed = feat is FeatType.PoisonBreath1 or FeatType.PoisonBreath2 or FeatType.PoisonBreath3
                     or FeatType.IceBreath1 or FeatType.IceBreath2 or FeatType.IceBreath3;
                 ctx.AssertEqual(aimed ? target : beast, selected, $"{feat} target");
                 context.SetEvaluatedTarget(selected);
-                ctx.Assert(AIScore.Ability(ability)(context) > 0, $"{feat} scores with one enemy");
+                ctx.Assert(action.Score(context) > 0, $"{feat} scores with one enemy in the actual companion profile");
                 if (aimed)
                 {
                     ctx.MakeHostile(edgeTarget);
@@ -87,7 +89,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Enmity.ModifyEnmity(edgeTarget, beast, 10);
                     var edgeContext = new AIContext(beast, AITriggerType.Heartbeat, edgeTarget,
                         context.Profile, new AIState(), Array.Empty<uint>());
-                    ctx.AssertEqual(edgeTarget, ability.AITargetSelector(edgeContext), $"{feat} can reach beyond 5m within its 6m cone");
+                    ctx.AssertEqual(edgeTarget, ability.AITargetSelector(edgeContext), $"{feat} can reach beyond 6m within its 10m cone");
                     ChangeToStandardFaction(edgeTarget, StandardFaction.Defender);
 
                     ctx.MakeHostile(farTarget);
@@ -96,6 +98,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var farContext = new AIContext(beast, AITriggerType.Heartbeat, farTarget,
                         context.Profile, new AIState(), Array.Empty<uint>());
                     ctx.AssertEqual(OBJECT_INVALID, ability.AITargetSelector(farContext), $"{feat} rejects enemies beyond cone reach");
+                    ChangeToStandardFaction(farTarget, StandardFaction.Defender);
+                    Enmity.ClearEnmityTable(beast);
+                    Enmity.ModifyEnmity(target, beast, 10);
+                }
+                else
+                {
+                    ctx.MakeHostile(farTarget);
+                    Enmity.ClearEnmityTable(beast);
+                    Enmity.ModifyEnmity(farTarget, beast, 10);
+                    var farContext = new AIContext(beast, AITriggerType.Heartbeat, farTarget,
+                        context.Profile, new AIState(), Array.Empty<uint>());
+                    var farSelected = action.TargetSelector(farContext);
+                    ctx.AssertEqual(OBJECT_INVALID, farSelected, $"{feat} rejects an enemy outside its 5m radius");
+                    farContext.SetEvaluatedTarget(farSelected);
+                    ctx.AssertEqual(0, action.Score(farContext), $"{feat} does not spend stamina on an empty area");
                     ChangeToStandardFaction(farTarget, StandardFaction.Defender);
                     Enmity.ClearEnmityTable(beast);
                     Enmity.ModifyEnmity(target, beast, 10);

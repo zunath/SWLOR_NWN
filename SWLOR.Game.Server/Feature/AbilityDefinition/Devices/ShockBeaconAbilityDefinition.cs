@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ShockBeacon1, PerkType.ShockBeacon)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShockBeacon)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Shock Beacon I")
                 .Level(1)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ShockBeacon2, PerkType.ShockBeacon)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShockBeacon)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Shock Beacon II")
                 .Level(2)

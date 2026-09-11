@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Ice,
                 VisualEffect.Vfx_Imp_Frost_S,
                 maxRange: 8f)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FrostSpitTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

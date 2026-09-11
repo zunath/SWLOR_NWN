@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FragGrenade1, PerkType.FragGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade I")
                 .Level(1)
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FragGrenade2, PerkType.FragGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade II")
                 .Level(2)
@@ -83,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FragGrenade3, PerkType.FragGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade III")
                 .Level(3)

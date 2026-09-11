@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Blood_Spark_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Bump)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BloodFrenzyFlurryTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)

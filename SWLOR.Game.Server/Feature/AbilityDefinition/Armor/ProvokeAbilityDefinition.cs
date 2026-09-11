@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
             }
 
             Enmity.ModifyEnmity(activator, target, enmity);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
         {
             _builder
                 .Create(FeatType.Provoke1, PerkType.Provoke)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Provoke)
                 .Name("Provoke I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Provoke, 6f)
@@ -84,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
         {
             _builder
                 .Create(FeatType.Provoke2, PerkType.Provoke)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Provoke)
                 .Name("Provoke II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Provoke2, 12f)

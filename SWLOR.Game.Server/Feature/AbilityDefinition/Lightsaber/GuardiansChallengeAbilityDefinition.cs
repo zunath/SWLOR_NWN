@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.GuardiansChallenge)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardiansChallenge)
                     .UsesAuthoredAnimationAtImpact()
                     .Name(name)
                     .Level(level)

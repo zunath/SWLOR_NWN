@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Poison,
                 VisualEffect.Vfx_Imp_Poison_S,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Acid)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_VenomSprayTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

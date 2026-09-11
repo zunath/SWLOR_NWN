@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(feat, PerkType.ArcProjector)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ArcProjector)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)

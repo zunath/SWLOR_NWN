@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Resuscitation1, PerkType.Resuscitation)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Resuscitation)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Resuscitation I")
                 .Level(1)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Resuscitation2, PerkType.Resuscitation)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Resuscitation)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Resuscitation II")
                 .Level(2)
@@ -79,9 +81,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsObjectValid(target))
                 return;
 
+            var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
-            DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
+            DelayCommand(0.1f, () =>
+            {
+                Ability.ReapplyAuraEffectsForCreature(target);
+                if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
+                    playResurrectionVisual(target);
+            });
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
             FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
         }
@@ -91,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsObjectValid(target))
                 return;
 
+            var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             // Resurrection is not settled until after the current engine command finishes.
@@ -99,6 +108,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             {
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
                 Ability.ReapplyAuraEffectsForCreature(target);
+                if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
+                    playResurrectionVisual(target);
             });
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
             FirstAidTreatmentAdjustments.GrantCombatPoint(activator);

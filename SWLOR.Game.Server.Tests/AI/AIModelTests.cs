@@ -168,6 +168,23 @@ public class AIModelTests
     }
 
     [Test]
+    public void BruiserRadiusAbilities_ScoreAnEligibleTargetWithoutRequiringACrowd()
+    {
+        var abilities = new CrushingSlamAbilityDefinition().BuildAbilities()
+            .Concat(new RampageAbilityDefinition().BuildAbilities())
+            .Concat(new PrimalOverrunAbilityDefinition().BuildAbilities());
+        foreach (var (feat, ability) in abilities)
+        {
+            var context = CreateContext(self: 100);
+            ability.AIScore.Should().NotBeNull($"{feat} must not inherit crowd-count scoring");
+            ability.AIScore!(context).Should().Be(0, "an absent/out-of-range enemy must not waste stamina");
+            context.SetEvaluatedTarget(context.Self);
+            ability.AIScore(context).Should().BeGreaterThan(AIScoreBand.BasicAttack,
+                "one eligible enemy must be enough to use the self-centered ability");
+        }
+    }
+
+    [Test]
     public void AIScore_DefensiveAbilitiesRequireCombatEnmity()
     {
         const uint self = 100;

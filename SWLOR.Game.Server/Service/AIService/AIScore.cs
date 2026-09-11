@@ -11,6 +11,11 @@ namespace SWLOR.Game.Server.Service.AIService
             return _ => score;
         }
 
+        public static AIScoreCalculation WithTarget(int score)
+        {
+            return context => context.EvaluatedTarget != OBJECT_INVALID ? score : 0;
+        }
+
         public static AIScoreCalculation SelfHealthBelow(int thresholdPercent, int score)
         {
             return context => context.SelfHealthPercent <= thresholdPercent

@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Lightning_S,
                 VisualEffect.Vfx_Fnf_Storm)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FinalSuppressionTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

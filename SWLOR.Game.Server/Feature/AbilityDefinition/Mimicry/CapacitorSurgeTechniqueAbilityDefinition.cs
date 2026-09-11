@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Lightning_M,
                 VisualEffect.Vfx_Fnf_Electric_Explosion,
                 centerOnActivator: true)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CapacitorSurgeTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

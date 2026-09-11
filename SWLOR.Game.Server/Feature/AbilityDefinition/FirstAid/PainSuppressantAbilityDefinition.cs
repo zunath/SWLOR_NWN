@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.PainSuppressant1, PerkType.PainSuppressant)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PainSuppressant)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Pain Suppressant I")
                 .Level(1)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.PainSuppressant2, PerkType.PainSuppressant)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PainSuppressant)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Pain Suppressant II")
                 .Level(2)
@@ -81,7 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 10, duration);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant1StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant1StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
                 applied = true;
@@ -97,7 +100,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 15, duration);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
                 applied = true;

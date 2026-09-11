@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceSpark1, PerkType.ForceSpark)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSpark)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Force Spark I")
                 .Level(1)
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceSpark2, PerkType.ForceSpark)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSpark)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Force Spark II")
                 .Level(2)

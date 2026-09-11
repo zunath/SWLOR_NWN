@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.BastionStance1, PerkType.BastionStance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BastionStance)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Bastion Stance")
                 .Level(1)

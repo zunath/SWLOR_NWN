@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             builder
                 .Create(FeatType.SignalJammer1, PerkType.SignalJammer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SignalJammer)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Signal Jammer")
                 .Level(1)

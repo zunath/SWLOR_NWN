@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(featType, PerkType.RallyingStandard)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RallyingStandard)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(2f)

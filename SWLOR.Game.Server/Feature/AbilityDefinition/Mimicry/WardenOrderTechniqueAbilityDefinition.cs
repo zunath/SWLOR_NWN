@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             _builder
                 .Create(FeatType.WardenOrderTechnique, PerkType.CombatAnalyzer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenOrderTechnique)
                 .Name("Warden Order")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
@@ -36,7 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
                         amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
                         amount = Stat.ApplyHealingReceivedAdjustment(ally, amount);
+                        var hitPointsBeforeHealing = GetCurrentHitPoints(ally);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), ally);
+                        if (GetCurrentHitPoints(ally) > hitPointsBeforeHealing)
+                            Ability.PlaySuccessfulImpactVisualEffect(activator, ally);
                     }
                 });
 

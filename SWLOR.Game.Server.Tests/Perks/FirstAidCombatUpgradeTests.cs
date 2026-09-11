@@ -192,7 +192,7 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("GetIsObjectValid(activator)");
         koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
         koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");
-        koltoMist.Should().Contain("var applied = ApplyKoltoMistPulse(activator, location, percentPerTick);");
+        koltoMist.Should().Contain("var applied = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);");
         koltoMist.Should().Contain("if (applied && !combatPointAwarded)");
         koltoMist.Should().Contain("visualEffect: VisualEffect.Vfx_Imp_Head_Heal");
         koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");

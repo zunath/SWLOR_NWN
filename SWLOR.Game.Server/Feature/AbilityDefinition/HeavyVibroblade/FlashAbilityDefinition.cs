@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.Flash1, PerkType.Flash)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Flash)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Flash")
                 .Level(1)

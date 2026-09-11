@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Shielding1, PerkType.Shielding)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Shielding)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Shielding I")
                 .Level(1)
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Shielding2, PerkType.Shielding)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Shielding)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Shielding II")
                 .Level(2)
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Shielding3, PerkType.Shielding)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Shielding)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Shielding III")
                 .Level(3)
@@ -104,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding1StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding1StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 applied = true;
@@ -119,7 +123,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding2StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding2StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 applied = true;
@@ -134,7 +139,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding3StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding3StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 applied = true;

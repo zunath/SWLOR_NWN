@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 12f,
                 additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) },
                 afterSuccessfulHit: InnateAbility.InterruptOnHit())
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_InnerCircleBindTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

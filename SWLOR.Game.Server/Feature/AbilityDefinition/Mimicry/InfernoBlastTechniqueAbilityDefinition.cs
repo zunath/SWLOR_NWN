@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
             _builder
                 .Create(FeatType.InfernoBlastTechnique, profile.PlayerPerkType)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_InfernoBlastTechnique)
                 .Name("Inferno Blast")
                 .HasActivationDelay(2.5f)
                 .HasRecastDelay(RecastGroup.InfernoBlast, 30f)

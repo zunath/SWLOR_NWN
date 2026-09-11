@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             var builder = new AbilityBuilder();
             builder
                 .Create(FeatType.ShockTrap, PerkType.ShockTrap)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShockTrap)
                 .Name("Shock Trap")
                 .Level(1)
                 .HasActivationDelay(2f)

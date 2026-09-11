@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.KillzoneBeacon1, PerkType.KillzoneBeacon)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_KillzoneBeacon)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Killzone Beacon")
                 .Level(1)

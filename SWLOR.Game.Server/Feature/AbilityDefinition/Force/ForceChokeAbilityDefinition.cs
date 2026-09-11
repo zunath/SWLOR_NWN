@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.ForceChoke)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceChoke)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
@@ -112,12 +113,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyForceDamageOverTime(uint activator, uint target, int immobilizeSeconds, int totalDamage)
         {
-            StatusEffect.ApplyStatusEffect(
+            if (StatusEffect.ApplyStatusEffect(
                 activator,
                 target,
                 new ForceChokeDamageStatusEffect(totalDamage),
                 immobilizeSeconds,
-                CombatDamageType.Force);
+                CombatDamageType.Force))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, target);
         }
 
     }

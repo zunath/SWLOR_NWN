@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.FortressStrike1, PerkType.FortressStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FortressStrike)
                 .Name("Fortress Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.FortressStrike2, PerkType.FortressStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FortressStrike)
                 .Name("Fortress Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -60,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.FortressStrike3, PerkType.FortressStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FortressStrike)
                 .Name("Fortress Strike III")
                 .Level(3)
                 .HasActivationDelay(0f)
@@ -107,7 +111,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 false);
 
             Enmity.ModifyEnmity(activator, target, enmityBonus + damage);
-            StatusEffect.ApplyStatusEffect(activator, activator, new FortressStrikeStatusEffect(defensePercent), 30f);
+            if (StatusEffect.ApplyStatusEffect(activator, activator, new FortressStrikeStatusEffect(defensePercent), 30f))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
         }
     }
 }

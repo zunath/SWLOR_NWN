@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             var builder = new AbilityBuilder();
             builder
                 .Create(FeatType.GhostProtocol, PerkType.GhostProtocol)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GhostProtocol)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Ghost Protocol")
                 .Level(1)
@@ -88,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 PrimedCriticalModifierGroup);
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghost_Smoke), activator);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
         }
     }
 }

@@ -136,6 +136,12 @@ dependency hashes, and editable project hashes.
 These revisions have offline generation checks, but no live NWN visual approval. Review them
 in `/animations` with the intended weapon and shield after deploying both body and robe HAKs.
 
+Berserker Stance retains the native weapon-ready elbow bends and local grips while its
+torso leans and its legs shift weight. Its former outward/backward hand targets inverted
+the forearms; do not restore those targets without checking elbow rotation as well as
+hand position. The focused stance regression samples the hold at 120 Hz, and installed
+motion checks cover both male and female exports. Live equipment review is still required.
+
 ## First Aid and Ghost Protocol
 
 The twelve First Aid abilities have individual recipes in `first-aid/choreographies.json`.
@@ -496,6 +502,14 @@ against the new compiled rigs before installing anything. Do not use this flag
 when deliberately editing motion; the normal source, skin, and body audits still
 apply to those changes. The staging `sharing.json` and `report.json` record the
 family counts and validation results.
+
+For a correction to an existing clip, add `--update-animation sw_berse_stn` to
+generation (substitute the exact internal name; repeat the option for multiple clips).
+This keeps the shared rig resource names and bank layout instead of allocating another
+full family. Before allowing reuse, it compares compiled models with just those named
+clips removed: the skeleton, part IDs, binds, every other animation and its events must
+remain byte-identical. An ambiguous prior family or any unrelated difference fails
+before installation. Structural changes still require the normal versioned workflow.
 
 Run these commands from `SWLOR_Haks`. The staging step includes newly allocated bridges,
 pruned deletions, wearable models, tables, and the generated catalog. Package and deploy

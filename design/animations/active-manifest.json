@@ -4464,14 +4464,14 @@
       "Project": "vibroblade/BerserkerStance.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1 \u002B 1hreadyr",
-      "Profile": "Authored choreography: Open the shield side, draw the sword back beside the hip and lean into an exposed aggressive ready posture; hold the threat without making an attack",
+      "Profile": "Authored choreography: Brace the weapon in its native ready grip, load the legs and lean into an aggressive forward threat; retain natural elbow bends while holding without an attack",
       "ChoreographyPath": "vibroblade/choreographies.json",
-      "ChoreographySha256": "0f427ba61f00e461f4f95405f89d471b8a7d35565f92cfbada37f37a5cc52e79",
+      "ChoreographySha256": "0b315e5e2ae291220accfe70080aaad02cd52060e5ef97ad009b28f4f3496f08",
       "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "4027bc4585aa2eea267e01c49c39ee29901d12178ffc199bb10681c7ba43de3c"
+      "ProjectSha256": "ebbbb96418df2ff2776e31fe09d531a47189adde5056e5278adc3fe2c85fe1ab"
     },
     {
       "Id": "CoveringStrike",

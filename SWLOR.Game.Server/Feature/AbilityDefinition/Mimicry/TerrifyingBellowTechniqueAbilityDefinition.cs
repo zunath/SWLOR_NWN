@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 6f,
                 centerOnActivator: true,
                 afterSuccessfulHit: InnateAbility.InterruptOnHit())
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TerrifyingBellowTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

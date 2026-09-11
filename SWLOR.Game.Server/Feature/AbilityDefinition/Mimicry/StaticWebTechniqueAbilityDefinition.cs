@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Head_Electricity,
                 VisualEffect.Dur_Web,
                 centerOnActivator: true)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_StaticWebTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

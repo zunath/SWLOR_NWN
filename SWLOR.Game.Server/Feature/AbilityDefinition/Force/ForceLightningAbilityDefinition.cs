@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceLightning1, PerkType.ForceLightning)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceLightning)
                 .Name("Force Lightning I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceLightning2, PerkType.ForceLightning)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceLightning)
                 .Name("Force Lightning II")
                 .Level(2)
                 .HasActivationDelay(1.5f)
@@ -87,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceLightning3, PerkType.ForceLightning)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceLightning)
                 .Name("Force Lightning III")
                 .Level(3)
                 .HasActivationDelay(1.5f)

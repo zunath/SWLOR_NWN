@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard1, PerkType.GuardianWard)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardianWard)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward I")
                 .Level(1)
@@ -55,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard2, PerkType.GuardianWard)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardianWard)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward II")
                 .Level(2)
@@ -78,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard3, PerkType.GuardianWard)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardianWard)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward III")
                 .Level(3)
@@ -101,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.GuardianWard4, PerkType.GuardianWard)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardianWard)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Guardian Ward IV")
                 .Level(4)
@@ -125,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 6, 30f);
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }
@@ -134,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 9, 30f);
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }
@@ -143,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 12, 30f);
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }
@@ -152,6 +160,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, 15, 30f);
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
             }
         }

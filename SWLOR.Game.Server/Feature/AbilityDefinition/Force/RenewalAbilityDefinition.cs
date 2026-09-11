@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Renewal1, PerkType.Renewal)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Renewal)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Renewal I")
                 .Level(1)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Renewal2, PerkType.Renewal)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Renewal)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Renewal II")
                 .Level(2)
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.Renewal3, PerkType.Renewal)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Renewal)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Renewal III")
                 .Level(3)
@@ -117,11 +120,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
             var affinityAdjustedTotalPercent = totalPercent * Ability.GetActiveForceAffinityMagnitudeMultiplier(activator);
-            StatusEffect.ApplyStatusEffect(
+            if (StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
                 new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10),
-                30f);
+                30f))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
         }

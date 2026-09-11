@@ -38,7 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
+            var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
+            if (GetCurrentHitPoints(target) > hitPointsBeforeHealing)
+                Ability.PlaySuccessfulImpactVisualEffect(source, target);
             ApplyMedicalVisualEffect(target);
         }
 

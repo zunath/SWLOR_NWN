@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ShatteringStrike1, PerkType.ShatteringStrike)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShatteringStrike)
                     .UsesAuthoredAnimationAtImpact()
                     .Name("Shattering Strike I")
                     .Level(1)
@@ -48,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ShatteringStrike2, PerkType.ShatteringStrike)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShatteringStrike)
                     .UsesAuthoredAnimationAtImpact()
                     .Name("Shattering Strike II")
                     .Level(2)

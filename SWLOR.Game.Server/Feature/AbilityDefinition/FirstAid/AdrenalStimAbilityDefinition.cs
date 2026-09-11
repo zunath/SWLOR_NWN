@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.AdrenalStim1, PerkType.AdrenalStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdrenalStim)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim I")
                 .Level(1)
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.AdrenalStim2, PerkType.AdrenalStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdrenalStim)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim II")
                 .Level(2)
@@ -74,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.AdrenalStim3, PerkType.AdrenalStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdrenalStim)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim III")
                 .Level(3)
@@ -99,7 +102,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 10));
-                StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
                 applied = true;
@@ -115,7 +119,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
-                StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
                 applied = true;
@@ -131,7 +136,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
-                StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
                 applied = true;

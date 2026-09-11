@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket1, PerkType.WristRocket)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WristRocket)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket I")
                 .Level(1)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket2, PerkType.WristRocket)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WristRocket)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket II")
                 .Level(2)
@@ -75,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket3, PerkType.WristRocket)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WristRocket)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket III")
                 .Level(3)

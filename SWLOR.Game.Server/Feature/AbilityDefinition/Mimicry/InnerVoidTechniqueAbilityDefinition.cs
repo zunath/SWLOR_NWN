@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Negative_Energy,
                 maxRange: 12f,
                 afterSuccessfulHit: InnateAbility.RestoreFPOnHit(5))
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_InnerVoidTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

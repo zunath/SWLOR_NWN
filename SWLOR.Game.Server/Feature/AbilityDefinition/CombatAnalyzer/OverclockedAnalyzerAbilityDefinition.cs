@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer
         {
             _builder
                 .Create(FeatType.Overload, PerkType.OverclockedAnalyzer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_OverclockedAnalyzer)
                 .Name("Overclocked Analyzer")
                 .Level(1)
                 .HasActivationDelay(1.0f)
@@ -27,7 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer
                 .RequirementStamina(10)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, activator, new OverloadStatusEffect(), 12f);
+                    if (StatusEffect.ApplyStatusEffect(activator, activator, new OverloadStatusEffect(), 12f))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
                 })
                 .SkillType(SkillType.Mimicry);

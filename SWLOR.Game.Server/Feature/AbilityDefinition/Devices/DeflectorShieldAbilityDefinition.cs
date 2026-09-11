@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_DeflectorShield)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield I")
                 .Level(1)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_DeflectorShield)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield II")
                 .Level(2)
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_DeflectorShield)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield III")
                 .Level(3)
@@ -133,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var duration = durationSeconds;
 
             TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, "DEFLECTOR_SHIELD", amount, duration);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }

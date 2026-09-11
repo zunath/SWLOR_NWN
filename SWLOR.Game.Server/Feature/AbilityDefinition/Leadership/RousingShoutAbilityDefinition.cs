@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.RousingShout1, PerkType.RousingShout)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RousingShout)
                 .Name("Rousing Shout I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.RousingShout2, PerkType.RousingShout)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RousingShout)
                 .Name("Rousing Shout II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.RousingShout3, PerkType.RousingShout)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RousingShout)
                 .Name("Rousing Shout III")
                 .Level(3)
                 .HasActivationDelay(1f)
@@ -124,10 +127,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 target,
                 AbilityEffectScaling.ScaleValueBySourceSocial(activator, temporaryHPPercent, temporaryHPCap),
                 durationSeconds);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
 
             if (targetWasInDanger)
             {
-                StatusEffect.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds);
+                if (StatusEffect.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             }
 
             LeadershipAbilityEffects.ApplyTriageProtocol(activator, target, durationSeconds);

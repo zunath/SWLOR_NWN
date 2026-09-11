@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Service
             public bool IsLive { get; set; } = true;
             public int Tier { get; init; }
             public bool IsConcealed { get; init; }
+            public VisualEffect SuccessfulImpactVisualEffect { get; init; }
             public HashSet<uint> DetectedBy { get; } = new();
         }
 
@@ -100,7 +101,8 @@ namespace SWLOR.Game.Server.Service
             var record = new TrapRecord
             {
                 Owner = owner,
-                Location = location
+                Location = location,
+                SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner)
             };
             ownerTraps.Add(record);
 
@@ -292,7 +294,9 @@ namespace SWLOR.Game.Server.Service
                     statusEffect,
                     statusDurationSeconds,
                     damageType,
-                    targetVisualEffect: triggerVisualEffect,
+                    targetVisualEffect: record.SuccessfulImpactVisualEffect != VisualEffect.None
+                        ? record.SuccessfulImpactVisualEffect
+                        : triggerVisualEffect,
                     areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff);
                 return;
             }

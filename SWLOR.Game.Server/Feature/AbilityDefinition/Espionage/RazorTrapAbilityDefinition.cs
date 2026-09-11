@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         {
             builder
                 .Create(feat, PerkType.RazorTrap)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RazorTrap)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(2f)

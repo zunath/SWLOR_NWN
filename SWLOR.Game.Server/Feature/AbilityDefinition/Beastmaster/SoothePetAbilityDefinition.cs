@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             _builder
                 .Create(FeatType.SoothePet, PerkType.SoothePet)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoothePet)
                 .Name("Soothe Pet")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SoothePet, 60f)
@@ -58,6 +59,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
 
+                    var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(beast).GetAllEffects().Count;
+                    var nativeEffectsBeforeCleanse = CountNativeEffects(beast);
                     StatusEffect.RemoveCleanseableStatusEffects(beast, StatusEffectCleanseType.SoothePet);
 
                     RemoveEffect(beast,
@@ -69,10 +72,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         EffectTypeScript.Sleep,
                         EffectTypeScript.Slow);
 
+                    if (StatusEffect.GetCreatureStatusEffects(beast).GetAllEffects().Count < statusCountBeforeCleanse ||
+                        CountNativeEffects(beast) < nativeEffectsBeforeCleanse)
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
+        }
+        private static int CountNativeEffects(uint creature)
+        {
+            var count = 0;
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+                count++;
+            return count;
         }
     }
 }

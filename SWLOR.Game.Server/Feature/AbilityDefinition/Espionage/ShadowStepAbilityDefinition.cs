@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         {
             builder
                 .Create(feat, PerkType.ShadowStep)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShadowStep)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
@@ -74,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 targetPosition.Z);
             var destination = Location(GetArea(target), behind, GetFacing(target));
 
+            var playArrivalVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
             AssignCommand(activator, () =>
             {
@@ -81,6 +83,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 ActionDoCommand(() =>
                 {
                     AssignCommand(activator, () => SetFacingPoint(GetPosition(target)));
+                    if (GetIsObjectValid(activator) && GetArea(activator) == GetAreaFromLocation(destination) &&
+                        GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f)
+                        playArrivalVisual(activator);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
                 });
             });

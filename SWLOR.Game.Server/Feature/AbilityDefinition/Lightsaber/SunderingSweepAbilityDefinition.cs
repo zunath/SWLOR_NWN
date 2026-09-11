@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep1, PerkType.SunderingSweep)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SunderingSweep)
                     .UsesAuthoredAnimationAtImpact()
                     .Name("Sundering Sweep I")
                     .Level(1)
@@ -50,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep2, PerkType.SunderingSweep)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SunderingSweep)
                     .UsesAuthoredAnimationAtImpact()
                     .Name("Sundering Sweep II")
                     .Level(2)
@@ -82,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep3, PerkType.SunderingSweep)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SunderingSweep)
                     .UsesAuthoredAnimationAtImpact()
                     .Name("Sundering Sweep III")
                     .Level(3)

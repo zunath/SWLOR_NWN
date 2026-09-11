@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             _builder
                 .Create(FeatType.LastBastionTechnique, PerkType.CombatAnalyzer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_LastBastionTechnique)
                 .Name("Last Bastion")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
@@ -34,12 +36,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
                     {
                         TemporaryHitPointEffects.ApplyFlat(ally, "LAST_BASTION", 30, 30f);
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, ally);
                     }
 
                     // Nearby enemies generate +25% enmity toward the caster for the duration.
                     foreach (var enemy in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(activator), 8.0f, 0))
                     {
-                        StatusEffect.ApplyStatusEffect(activator, enemy, new LastBastionStatusEffect(), 30f);
+                        if (StatusEffect.ApplyStatusEffect(activator, enemy, new LastBastionStatusEffect(), 30f))
+                            Ability.PlaySuccessfulImpactVisualEffect(activator, enemy);
                     }
                 });
 

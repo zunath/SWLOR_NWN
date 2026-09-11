@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
             _builder
                 .Create(FeatType.RupturingQuakeTechnique, profile.PlayerPerkType)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RupturingQuakeTechnique)
                 .Name("Rupturing Quake")
                 .HasActivationDelay(3.0f)
                 .HasRecastDelay(RecastGroup.RupturingQuake, 30f)

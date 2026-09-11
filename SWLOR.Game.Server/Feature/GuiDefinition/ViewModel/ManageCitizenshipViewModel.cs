@@ -131,6 +131,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
         }
 
+        /// <summary>
+        /// Creates the confirmation action for registering or revoking citizenship in this city.
+        /// Successful membership changes clear unpaid citizenship taxes before saving the player.
+        /// </summary>
+        /// <returns>The citizenship registration or revocation action.</returns>
         public Action RegisterRevoke() => () =>
         {
             var playerId = GetObjectUUID(Player);
@@ -234,6 +239,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
+                        // Clear any stale debt left by a previously deleted city.
+                        dbPlayer.PropertyOwedTaxes = 0;
 
                         DB.Set(dbPlayer);
 

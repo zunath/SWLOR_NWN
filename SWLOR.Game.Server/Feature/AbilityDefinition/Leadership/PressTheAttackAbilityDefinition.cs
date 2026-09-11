@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.PressTheAttack1, PerkType.PressTheAttack)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PressTheAttack)
                 .Name("Press the Attack I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.PressTheAttack2, PerkType.PressTheAttack)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PressTheAttack)
                 .Name("Press the Attack II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -68,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.PressTheAttack3, PerkType.PressTheAttack)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PressTheAttack)
                 .Name("Press the Attack III")
                 .Level(3)
                 .HasActivationDelay(0f)
@@ -90,7 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack1StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack1StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affectedCount++;
             }
@@ -106,7 +110,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack2StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack2StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affectedCount++;
             }
@@ -122,7 +127,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack3StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack3StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affectedCount++;
             }

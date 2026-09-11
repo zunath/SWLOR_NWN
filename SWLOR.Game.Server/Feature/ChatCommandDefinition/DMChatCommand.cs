@@ -804,34 +804,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
-                    if (args.Length < 1)
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
-
-                    if (!int.TryParse(args[0], out var vfxId))
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
-
-                    try
-                    {
-                        var unused = (VisualEffect) vfxId;
-                    }
-                    catch
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
+                    if (args.Length != 1 || !int.TryParse(args[0], out var vfxId) || vfxId < 0)
+                        return "Enter a visualeffects.2da ID. Example: /playvfx 843";
 
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
-                {
-                    var vfxId = Convert.ToInt32(args[0]);
-                    var vfx = (VisualEffect) vfxId;
-                    var effect = EffectVisualEffect(vfx);
-                    ApplyEffectToObject(DurationType.Instant, effect, target);
-                });
+                    ApplyEffectToObject(DurationType.Instant,
+                        EffectVisualEffect((VisualEffect)int.Parse(args[0])), target));
         }
 
         private void ResetAbilityRecastTimers()

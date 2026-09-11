@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Icestorm,
                 enmityBonus: 100,
                 additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) })
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CryoBileTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)

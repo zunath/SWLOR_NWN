@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             builder
                 .Create(FeatType.GuardingBond, PerkType.GuardingBond)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardingBond)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Guarding Bond")
                 .Level(1)

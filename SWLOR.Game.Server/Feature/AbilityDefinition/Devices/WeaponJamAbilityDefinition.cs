@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WeaponJam1, PerkType.WeaponJam)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WeaponJam)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Weapon Jam")
                 .Level(1)

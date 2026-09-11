@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Evil,
                 maxRange: 8f,
                 afterSuccessfulHit: InnateAbility.DrainOnHit(10, 10))
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_NullShockTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

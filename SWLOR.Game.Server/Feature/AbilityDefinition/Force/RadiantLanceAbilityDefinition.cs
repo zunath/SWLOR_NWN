@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.RadiantLance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RadiantLance)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)

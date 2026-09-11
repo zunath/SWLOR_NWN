@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             ConfigurePartyStatus(
                 builder
                     .Create(featType, PerkType.ShieldWall)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShieldWall)
                     .Name(name)
                     .Level(level)
                     .HasRecastDelay(RecastGroup.ShieldWall, 45f)

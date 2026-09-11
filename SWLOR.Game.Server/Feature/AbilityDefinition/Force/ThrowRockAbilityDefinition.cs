@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.ThrowRock)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ThrowRock)
                 .UsesImmediateAuthoredAnimation()
                 .Name(name)
                 .Level(level)

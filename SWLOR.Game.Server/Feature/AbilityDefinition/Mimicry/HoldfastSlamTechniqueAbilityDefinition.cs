@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 6f,
                 enmityBonus: 100,
                 additionalStatusEffects: new[] { typeof(ExposedStatusEffect) })
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_HoldfastSlamTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Vitality)

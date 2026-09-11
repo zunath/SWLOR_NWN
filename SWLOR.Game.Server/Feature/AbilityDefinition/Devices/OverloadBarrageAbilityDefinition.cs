@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.OverloadBarrage1, PerkType.OverloadBarrage)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_OverloadBarrage)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Overload Barrage")
                 .Level(1)

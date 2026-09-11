@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.EmergencyBunker1, PerkType.EmergencyBunker)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_EmergencyBunker)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Emergency Bunker")
                 .Level(1)
@@ -74,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var temporaryHP = 60 + GameMath.PercentOf(GetMaxHitPoints(target), 8);
             temporaryHP = Ability.ApplyCombatReadinessMagnitude(activator, temporaryHP);
             TemporaryHitPointEffects.ApplyFlat(target, "EMERGENCY_BUNKER", temporaryHP, durationSeconds);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
         }
     }

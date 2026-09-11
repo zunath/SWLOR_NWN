@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
             _builder
                 .Create(FeatType.SeismicSlamTechnique, profile.PlayerPerkType)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SeismicSlamTechnique)
                 .Name("Seismic Slam")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.SeismicSlam, 24f)

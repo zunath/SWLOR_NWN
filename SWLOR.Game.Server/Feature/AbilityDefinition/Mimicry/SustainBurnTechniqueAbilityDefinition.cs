@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             var ability = _builder
                 .Create(FeatType.SustainBurnTechnique, PerkType.CombatAnalyzer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SustainBurnTechnique)
                 .Name("Sustain Burn")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

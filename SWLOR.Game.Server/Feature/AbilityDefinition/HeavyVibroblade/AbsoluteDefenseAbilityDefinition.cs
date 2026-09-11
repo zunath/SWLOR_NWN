@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.AbsoluteDefense1, PerkType.AbsoluteDefense)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AbsoluteDefense)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Absolute Defense")
                 .Level(1)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                         if (!GetIsObjectValid(partyMember))
                             continue;
 
-                        StatusEffect.ApplyStatusEffect(activator, partyMember, typeof(AbsoluteDefenseStatusEffect), CapstoneAbility.ActiveDurationSeconds);
+                        if (StatusEffect.ApplyStatusEffect(activator, partyMember, typeof(AbsoluteDefenseStatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                            Ability.PlaySuccessfulImpactVisualEffect(activator, partyMember);
                         Ability.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);
                         Ability.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);
                     }

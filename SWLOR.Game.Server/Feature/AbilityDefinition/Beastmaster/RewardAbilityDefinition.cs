@@ -82,7 +82,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
 
+            var hitPointsBeforeHealing = GetCurrentHitPoints(beast);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
+            if (GetCurrentHitPoints(beast) > hitPointsBeforeHealing)
+                Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 
             TakePetTreat(activator);
@@ -94,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             _builder
                 .Create(FeatType.Reward1, PerkType.Reward)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Reward)
                 .Name("Reward I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Reward, 12f)
@@ -112,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             _builder
                 .Create(FeatType.Reward2, PerkType.Reward)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Reward)
                 .Name("Reward II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Reward, 12f)
@@ -130,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             _builder
                 .Create(FeatType.Reward3, PerkType.Reward)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Reward)
                 .Name("Reward III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Reward, 12f)

@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceLeap1, PerkType.ForceLeap)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceLeap)
                 .Name("Force Leap I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceLeap2, PerkType.ForceLeap)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceLeap)
                 .Name("Force Leap II")
                 .Level(2)
                 .HasActivationDelay(0f)

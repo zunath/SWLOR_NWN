@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Dazed_S,
                 maxRange: 12f,
                 damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(DisorientedStatusEffect), typeof(DazedStatusEffect)))
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_InnerCircleVolleyTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Special_Red_White,
                 maxRange: 6f,
                 afterSuccessfulHit: InnateAbility.RestoreStaminaOnHit(4))
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_InnerRingFlurryTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)

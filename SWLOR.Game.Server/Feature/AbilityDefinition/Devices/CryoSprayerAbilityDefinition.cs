@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.CryoSprayer1, PerkType.CryoSprayer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CryoSprayer)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Cryo Sprayer")
                 .Level(1)

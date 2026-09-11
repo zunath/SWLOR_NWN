@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.AnimationService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             ConfigureWeapon(
                 builder
                     .Create(featType, PerkType.RiotBlade)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RiotBlade)
                     .Name(name)
                     .Level(level)
                     .HasRecastDelay(RecastGroup.RiotBlade, 18f)

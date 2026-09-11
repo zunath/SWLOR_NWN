@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.CleanseOrder1, PerkType.CleanseOrder)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CleanseOrder)
                 .Name("Cleanse Order I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.CleanseOrder2, PerkType.CleanseOrder)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CleanseOrder)
                 .Name("Cleanse Order II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -132,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (!StatusEffect.ApplyStatusEffect(source, target, commandMarker, durationSeconds))
                 return;
 
+            Ability.PlaySuccessfulImpactVisualEffect(source, target);
             TemporaryHitPointEffects.ApplyFlatOwned(
                 target,
                 CleanseOrder1StatusEffect.TemporaryHitPointEffectKey,

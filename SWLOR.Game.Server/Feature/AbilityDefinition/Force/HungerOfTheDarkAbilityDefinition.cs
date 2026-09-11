@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.HungerOfTheDark1, PerkType.HungerOfTheDark)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_HungerOfTheDark)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Hunger of the Dark")
                 .Level(1)
@@ -46,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void HungerOfTheDark1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(HungerOfTheDark1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
+            if (StatusEffect.ApplyStatusEffect(activator, activator, typeof(HungerOfTheDark1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Aura_Negative_Energy), activator);
         }
     }

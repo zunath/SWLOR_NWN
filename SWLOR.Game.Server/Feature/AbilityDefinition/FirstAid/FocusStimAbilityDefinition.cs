@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.FocusStim1, PerkType.FocusStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FocusStim)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Focus Stim I")
                 .Level(1)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.FocusStim2, PerkType.FocusStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FocusStim)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Focus Stim II")
                 .Level(2)
@@ -80,7 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(FocusStim1StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(FocusStim1StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 applied = true;
@@ -95,7 +98,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(FocusStim2StatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(FocusStim2StatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 applied = true;

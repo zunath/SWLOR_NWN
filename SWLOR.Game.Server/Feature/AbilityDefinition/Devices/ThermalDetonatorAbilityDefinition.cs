@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ThermalDetonator1, PerkType.ThermalDetonator)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ThermalDetonator)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Thermal Detonator")
                 .Level(1)

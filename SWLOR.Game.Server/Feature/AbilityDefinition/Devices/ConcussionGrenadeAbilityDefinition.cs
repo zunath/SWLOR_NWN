@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ConcussionGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Concussion Grenade I")
                 .Level(1)
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ConcussionGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Concussion Grenade II")
                 .Level(2)

@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             _builder
                 .Create(FeatType.FinishingDriveTechnique, PerkType.CombatAnalyzer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FinishingDriveTechnique)
                 .Name("Finishing Drive")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
@@ -42,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     if (existing != null)
                         StatusEffect.RemoveStatusEffect(activator, typeof(FinishingDriveMomentumStatusEffect), activator, false);
 
-                    StatusEffect.ApplyStatusEffect(activator, activator, new FinishingDriveMomentumStatusEffect(stacks), MomentumDurationSeconds);
+                    if (StatusEffect.ApplyStatusEffect(activator, activator, new FinishingDriveMomentumStatusEffect(stacks), MomentumDurationSeconds))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 });
 
             return _builder.Build();

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.BlasterBeacon1, PerkType.BlasterBeacon)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BlasterBeacon)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Blaster Beacon I")
                 .Level(1)
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.BlasterBeacon2, PerkType.BlasterBeacon)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BlasterBeacon)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Blaster Beacon II")
                 .Level(2)
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.BlasterBeacon3, PerkType.BlasterBeacon)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BlasterBeacon)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Blaster Beacon III")
                 .Level(3)

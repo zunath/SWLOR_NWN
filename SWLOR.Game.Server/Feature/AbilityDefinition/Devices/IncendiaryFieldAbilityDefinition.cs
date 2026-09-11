@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IncendiaryField1, PerkType.IncendiaryField)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IncendiaryField)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Incendiary Field I")
                 .Level(1)
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IncendiaryField2, PerkType.IncendiaryField)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IncendiaryField)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Incendiary Field II")
                 .Level(2)
@@ -82,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.IncendiaryField3, PerkType.IncendiaryField)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IncendiaryField)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Incendiary Field III")
                 .Level(3)

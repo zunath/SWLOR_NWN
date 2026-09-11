@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
             _builder
                 .Create(FeatType.PiercingQuillsTechnique, profile.PlayerPerkType)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PiercingQuillsTechnique)
                 .Name("Piercing Quills")
                 .HasActivationDelay(1.6f)
                 .HasRecastDelay(RecastGroup.PiercingQuills, 18f)

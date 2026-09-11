@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.Reprisal)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Reprisal)
                     .UsesAuthoredAnimationAtImpact()
                     .Name(name)
                     .Level(level)

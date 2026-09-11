@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.PowerCell1, PerkType.PowerCell)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PowerCell)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Power Cell I")
                 .Level(1)
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.PowerCell2, PerkType.PowerCell)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PowerCell)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Power Cell II")
                 .Level(2)
@@ -75,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.PowerCell3, PerkType.PowerCell)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PowerCell)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Power Cell III")
                 .Level(3)
@@ -103,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 10));
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 30f);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 30f))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
                 isInitialTarget = false;
@@ -116,7 +120,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 30f);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 30f))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
                 isInitialTarget = false;
@@ -129,7 +134,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in GetPowerCell3Targets(activator, target, targetLocation))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
                 isInitialTarget = false;

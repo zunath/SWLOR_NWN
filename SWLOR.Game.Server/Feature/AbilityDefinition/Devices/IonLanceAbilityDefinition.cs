@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(feat, PerkType.IonLance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IonLance)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)

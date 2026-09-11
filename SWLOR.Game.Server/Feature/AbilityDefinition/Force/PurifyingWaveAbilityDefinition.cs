@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.PurifyingWave1, PerkType.PurifyingWave)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PurifyingWave)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Purifying Wave")
                 .Level(1)
@@ -71,8 +72,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
+                var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);
+                var hitPointsBeforeHealing = GetCurrentHitPoints(friendly);
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, 8);
+                if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing ||
+                    StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
         }

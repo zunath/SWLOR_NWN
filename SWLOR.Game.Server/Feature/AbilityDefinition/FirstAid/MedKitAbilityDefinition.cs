@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit1, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit I")
                 .Level(1)
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit2, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit II")
                 .Level(2)
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit3, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit III")
                 .Level(3)
@@ -104,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.MedKit4, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit IV")
                 .Level(4)
@@ -175,7 +179,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
+            var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
+            if (GetCurrentHitPoints(target) > hitPointsBeforeHealing)
+                Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(target);
         }
     }

@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true,
                 enmityBonus: 100,
                 afterSuccessfulHit: InnateAbility.PullOnHit())
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenMaulTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

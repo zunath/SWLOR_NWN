@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ForceSheath1, PerkType.ForceSheath)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSheath)
                     .Name("Force Sheath I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
@@ -49,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ForceSheath2, PerkType.ForceSheath)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSheath)
                     .Name("Force Sheath II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
@@ -79,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ForceSheath3, PerkType.ForceSheath)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSheath)
                     .Name("Force Sheath III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
@@ -109,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ForceSheath4, PerkType.ForceSheath)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSheath)
                     .Name("Force Sheath IV")
                     .Level(4)
                     .HasRecastDelay(RecastGroup.ForceSheath, 18.0f),

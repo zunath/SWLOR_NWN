@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForceIntercept1, PerkType.ForceIntercept)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceIntercept)
                 .Name("Force Intercept")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -57,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_1), activator);
             AssignCommand(activator, () => ActionJumpToObject(friendly));
-            StatusEffect.ApplyStatusEffect(activator, friendly, typeof(ForceIntercept1StatusEffect), 30f);
+            if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(ForceIntercept1StatusEffect), 30f))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }

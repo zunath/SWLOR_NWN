@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.EmergencyCocktail1, PerkType.EmergencyCocktail)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_EmergencyCocktail)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Emergency Cocktail")
                 .Level(1)
@@ -53,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EmergencyCocktailStatusEffect), duration);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EmergencyCocktailStatusEffect), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, "EMERGENCY_COCKTAIL", 12, duration);
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);

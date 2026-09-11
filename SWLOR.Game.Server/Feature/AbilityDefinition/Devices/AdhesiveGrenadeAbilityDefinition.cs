@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdhesiveGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Adhesive Grenade I")
                 .Level(1)
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdhesiveGrenade)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Adhesive Grenade II")
                 .Level(2)

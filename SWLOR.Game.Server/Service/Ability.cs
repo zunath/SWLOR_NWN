@@ -370,6 +370,41 @@ namespace SWLOR.Game.Server.Service
             return GetTrackedAbilityImpact(activator)?.Summary;
         }
 
+        /// <summary>
+        /// Plays the definition's finite receipt burst after a heal, buff, or other noncombat
+        /// action succeeds. Call for the actual recipient while its ability impact is active.
+        /// Failed actions must not call this method. Combat impacts report success internally.
+        /// </summary>
+        public static void PlaySuccessfulImpactVisualEffect(uint activator, uint recipient)
+        {
+            PlaySuccessfulImpactVisualEffect(GetTrackedAbilityImpact(activator)?.VisualEffects, recipient);
+        }
+
+        /// <summary>
+        /// Captures the originating visual for a delayed noncombat pulse without changing combat
+        /// tracking or bonuses. Capture once per pulse, then report its successful recipients.
+        /// </summary>
+        public static Action<uint> CaptureSuccessfulImpactVisualEffect(uint activator)
+        {
+            var effect = GetSuccessfulImpactVisualEffect(activator);
+            var visuals = new AbilityImpactVisualEffects(effect);
+            return recipient => PlaySuccessfulImpactVisualEffect(visuals, recipient);
+        }
+
+        /// <summary>Returns the current impact's visual reference for a later independent combat event.</summary>
+        public static VisualEffect GetSuccessfulImpactVisualEffect(uint activator)
+        {
+            return GetTrackedAbilityImpact(activator)?.Ability.SuccessfulImpactVisualEffect ?? VisualEffect.None;
+        }
+
+        private static void PlaySuccessfulImpactVisualEffect(AbilityImpactVisualEffects visuals, uint recipient)
+        {
+            if (visuals == null || !GetIsObjectValid(recipient) || !visuals.TryRecordRecipient(recipient))
+                return;
+
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visuals.Effect), recipient);
+        }
+
         public static void AddActiveAbilityDefenseIgnorePercentAdjustment(uint activator, int adjustment)
         {
             if (adjustment == 0)
@@ -768,7 +803,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        private static void ApplyAuraEffect(uint source, uint recipient, Type type)
+        private static void ApplyAuraEffect(uint source, uint recipient, Type type, VisualEffect successfulImpactVisualEffect = VisualEffect.None)
         {
             if (StatusEffect.HasStatusEffect(recipient, type, source) ||
                 HasEqualOrStrongerAuraEffect(source, recipient, type))
@@ -777,7 +812,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             RemoveWeakerDuplicateAuraEffects(source, recipient, type);
-            StatusEffect.ApplyStatusEffect(source, recipient, type, 0f);
+            if (StatusEffect.ApplyStatusEffect(source, recipient, type, 0f) && successfulImpactVisualEffect != VisualEffect.None)
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(successfulImpactVisualEffect), recipient);
         }
 
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
@@ -820,7 +856,7 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
-        public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
+        public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies, VisualEffect successfulImpactVisualEffect = VisualEffect.None)
         {
             if (!_playerAuras.ContainsKey(activator))
                 _playerAuras.Add(activator, new PlayerAura());
@@ -861,11 +897,11 @@ namespace SWLOR.Game.Server.Service
                 aura.Auras.RemoveAt(0);
             }
 
-            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies));
+            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies, successfulImpactVisualEffect));
 
             if (targetsSelf)
             {
-                ApplyAuraEffect(activator, activator, type);
+                ApplyAuraEffect(activator, activator, type, successfulImpactVisualEffect);
             }
 
             if (targetsParty)
@@ -873,7 +909,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var member in aura.PartyMembersInRange)
                 {
                     if (Party.IsInParty(activator, member))
-                        ApplyAuraEffect(activator, member, type);
+                        ApplyAuraEffect(activator, member, type, successfulImpactVisualEffect);
                 }
             }
 
@@ -883,7 +919,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (!GetIsDMPossessed(npc) && !GetIsDM(npc) &&
                         (GetIsEnemy(activator, npc) || GetIsEnemy(npc, activator)))
-                        ApplyAuraEffect(activator, npc, type);
+                        ApplyAuraEffect(activator, npc, type, successfulImpactVisualEffect);
                 }
             }
 
@@ -1067,7 +1103,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsParty)
-                            ApplyAuraEffect(leader, target, aura.StatusEffect);
+                            ApplyAuraEffect(leader, target, aura.StatusEffect, aura.SuccessfulImpactVisualEffect);
                     }
                 }
 
@@ -1078,7 +1114,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsEnemies)
-                            ApplyAuraEffect(leader, target, aura.StatusEffect);
+                            ApplyAuraEffect(leader, target, aura.StatusEffect, aura.SuccessfulImpactVisualEffect);
                     }
                 }
             }
@@ -1192,7 +1228,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsParty)
                     {
-                        ApplyAuraEffect(self, entering, detail.StatusEffect);
+                        ApplyAuraEffect(self, entering, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
                     }
                 }
             }
@@ -1207,7 +1243,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsEnemies)
                     {
-                        ApplyAuraEffect(self, entering, detail.StatusEffect);
+                        ApplyAuraEffect(self, entering, detail.StatusEffect, detail.SuccessfulImpactVisualEffect);
                     }
                 }
             }
@@ -2349,9 +2385,12 @@ namespace SWLOR.Game.Server.Service
                 firstHostileAbilityHitDamageBonusApplied,
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0);
 
-            if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
+            if (damage > 0 || statusApplied)
             {
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
+                if (trackedImpact?.VisualEffects.Effect is { } authoredEffect && authoredEffect != VisualEffect.None)
+                    PlaySuccessfulImpactVisualEffect(activator, target);
+                else if (targetVisualEffect != VisualEffect.None)
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
             }
 
             afterSuccessfulHit?.Invoke(target);
@@ -3421,6 +3460,7 @@ namespace SWLOR.Game.Server.Service
             private Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>> _statSources;
 
             public AbilityDetail Ability { get; }
+            public AbilityImpactVisualEffects VisualEffects { get; }
             public int? TriggeringWeaponDamage { get; set; }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
             public TrackedAbilityImpact SequenceOwner { get; set; }
@@ -3494,6 +3534,7 @@ namespace SWLOR.Game.Server.Service
                 AbilityImpactSequence sequence)
             {
                 Ability = ability;
+                VisualEffects = new AbilityImpactVisualEffects(ability.SuccessfulImpactVisualEffect);
                 _sequence = sequence;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;

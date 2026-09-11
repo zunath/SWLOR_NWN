@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Com_Chunk_Red_Medium)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BrutalBashTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

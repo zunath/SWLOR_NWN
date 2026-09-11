@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForcePush1, PerkType.ForcePush)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForcePush)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Force Push I")
                 .Level(1)
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForcePush2, PerkType.ForcePush)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForcePush)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Force Push II")
                 .Level(2)
@@ -97,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.ForcePush3, PerkType.ForcePush)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForcePush)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Force Push III")
                 .Level(3)
@@ -194,7 +197,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyHobble(uint activator, uint target, int durationSeconds)
         {
-            StatusEffect.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), durationSeconds, CombatDamageType.Force);
+            if (StatusEffect.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), durationSeconds, CombatDamageType.Force))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, target);
         }
 
     }

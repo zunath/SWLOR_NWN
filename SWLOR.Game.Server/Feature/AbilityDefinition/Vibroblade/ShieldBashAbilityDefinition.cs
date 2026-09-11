@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             builder
                 .Create(featType, PerkType.ShieldBash)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Imp_Shield_Bash)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.BreakMorale1, PerkType.BreakMorale)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BreakMorale)
                 .Name("Break Morale I")
                 .Level(1)
                 .HasActivationDelay(0.5f)
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             builder
                 .Create(FeatType.BreakMorale2, PerkType.BreakMorale)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BreakMorale)
                 .Name("Break Morale II")
                 .Level(2)
                 .HasActivationDelay(0.5f)
@@ -120,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     continue;
 
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), hostile);
+                Ability.PlaySuccessfulImpactVisualEffect(activator, hostile);
                 affectedCount++;
             }
 

@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.ThrowLightsaber)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ThrowLightsaber)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1.5f)

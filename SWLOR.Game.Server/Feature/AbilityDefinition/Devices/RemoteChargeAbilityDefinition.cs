@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RemoteCharge1, PerkType.RemoteCharge)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RemoteCharge)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Remote Charge I")
                 .Level(1)
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.RemoteCharge2, PerkType.RemoteCharge)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RemoteCharge)
                 .UsesAuthoredAnimationAtImpact()
                 .Name("Remote Charge II")
                 .Level(2)

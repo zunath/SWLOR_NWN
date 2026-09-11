@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulStrike1, PerkType.SoulStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulStrike)
                 .Name("Soul Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -40,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulStrike2, PerkType.SoulStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulStrike)
                 .Name("Soul Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulStrike3, PerkType.SoulStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulStrike)
                 .Name("Soul Strike III")
                 .Level(3)
                 .HasActivationDelay(0f)

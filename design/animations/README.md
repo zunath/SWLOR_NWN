@@ -523,7 +523,7 @@ python -B tools/CheckNwsyncResources.py
 The repair validates all owned inputs, stages the complete bank set, checks exact
 binary reconstruction and native decompilation, and then installs it with a
 recoverable journal and the manifest last. An interrupted installation is rolled
-back on the next invocation before validation. Reusing the
+back on the next invocation after reserved-path checks and before other validation. Reusing the
 staging directory reuses checks only when the original model, validator, compiler,
 and staged output hashes still match. It does not change wearable roots, phenotype
 tables, ability references, or authoring projects. Commit the new bank files and

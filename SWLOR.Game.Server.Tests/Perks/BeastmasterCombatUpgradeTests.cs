@@ -17,6 +17,39 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class BeastmasterCombatUpgradeTests
 {
     [Test]
+    public void BruiserBreaths_AllRanksUseTenMetreCones()
+    {
+        var abilities = new IceBreathAbilityDefinition().BuildAbilities()
+            .Concat(new PoisonBreathAbilityDefinition().BuildAbilities());
+        foreach (var (feat, ability) in abilities)
+        {
+            ability.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Cone);
+            ability.Targeting.SizeX.Should().Be(10f);
+            ability.Targeting.SizeY.Should().Be(10f);
+            ability.Targeting.Spell.ToString().Should().Be(feat.ToString());
+            ability.RequiresTarget.Should().BeFalse();
+            ability.Targeting.Flags.Should().Be(
+                AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+        }
+    }
+
+    [TestCase(8f, 3f, true)]
+    [TestCase(8f, -3f, true)]
+    [TestCase(11f, 0f, false)]
+    [TestCase(4f, 3f, false)]
+    [TestCase(-1f, 0f, false)]
+    public void BruiserBreathCone_CoversSeparatedEnemiesAndRespectsBoundaries(float x, float y, bool expected)
+    {
+        var method = typeof(SWLOR.Game.Server.Service.Ability)
+            .GetMethod("IsPositionInCone", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var result = (bool)method.Invoke(null, new object[]
+        {
+            new System.Numerics.Vector3(x, y, 0f), System.Numerics.Vector3.Zero, 0f, 10f, 10f
+        })!;
+        result.Should().Be(expected);
+    }
+
+    [Test]
     public void BeastmasterPassivePerks_ExposeBibleStats()
     {
         var damage = BuildPerksWithout2daLookup(new BeastDamagePerkDefinition(), "BloodFrenzy", "PredatorsMark");

@@ -43,6 +43,14 @@ namespace SWLOR.Game.Server.Service.AIService
             };
         }
 
+        public static AITargetSelector SelfWithEnemyWithinRange(float maxRange)
+        {
+            var selectEnemy = HighestEnmityWithinRange(maxRange);
+            return context => selectEnemy(context) != OBJECT_INVALID
+                ? context.Self
+                : OBJECT_INVALID;
+        }
+
         public static AITargetSelector Master()
         {
             return context => context.Master;

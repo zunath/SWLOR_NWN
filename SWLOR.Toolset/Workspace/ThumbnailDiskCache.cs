@@ -72,8 +72,12 @@ namespace SWLOR.Toolset.Workspace
         /// v16: creature thumbnails compose visible armor, helmets, cloaks, held weapons, equipment
         /// dyes, cloak texture mappings, and cloak visibility flags.
         /// </para>
+        /// <para>
+        /// v17: invisible placeables expose their editor selection geometry. Previous cached
+        /// "no artwork" entries must be regenerated even when the blueprint and models are unchanged.
+        /// </para>
         /// </remarks>
-        private const string FormatVersion = "v16";
+        private const string FormatVersion = "v17";
 
         private const string MissingArtworkExtension = ".none";
 

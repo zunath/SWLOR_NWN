@@ -389,7 +389,7 @@ namespace SWLOR.Toolset.Domain.Render
             if (!placeableAppearances.TryGet(appearanceId, out var row))
                 return null;
 
-            return string.IsNullOrWhiteSpace(row.ModelName) ? null : modelCache.GetOrBuild(row.ModelName);
+            return string.IsNullOrWhiteSpace(row.ModelName) ? null : modelCache.GetOrBuildPlaceableEditor(row.ModelName);
         }
 
         /// <summary>

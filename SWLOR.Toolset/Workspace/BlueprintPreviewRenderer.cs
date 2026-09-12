@@ -276,7 +276,7 @@ namespace SWLOR.Toolset.Workspace
                         : type == ResourceType.Utd && reference.IsDoorTransition
                             ? BuildDoorTransitionModel(reference.ModelResRef)
                         : ApplyRootItemTintOwnership(
-                            BuildRenderModel(reference.ModelResRef), reference),
+                            BuildRenderModel(reference.ModelResRef, placeableEditor: type == ResourceType.Utp), reference),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
@@ -319,6 +319,7 @@ namespace SWLOR.Toolset.Workspace
                 Emitters = model.Emitters,
                 DefaultAnimationName = model.DefaultAnimationName,
                 IsDoorTransitionGeometry = model.IsDoorTransitionGeometry,
+                IsInvisiblePlaceableGeometry = model.IsInvisiblePlaceableGeometry,
                 LayerColorIndices = reference.LayerColorIndices,
             };
         }
@@ -632,7 +633,7 @@ namespace SWLOR.Toolset.Workspace
             };
         }
 
-        private RenderModel? BuildRenderModel(string modelResRef)
+        private RenderModel? BuildRenderModel(string modelResRef, bool placeableEditor = false)
         {
             var model = LoadMdl(modelResRef, withSupermodelAnims: false);
             if (model == null)
@@ -640,7 +641,9 @@ namespace SWLOR.Toolset.Workspace
 
             try
             {
-                return MdlMeshBuilder.Build(model, IdleFrames(model));
+                return placeableEditor
+                    ? MdlMeshBuilder.BuildPlaceableEditor(model, IdleFrames(model))
+                    : MdlMeshBuilder.Build(model, IdleFrames(model));
             }
             catch (Exception)
             {

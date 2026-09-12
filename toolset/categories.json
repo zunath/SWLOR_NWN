@@ -32,7 +32,8 @@
                 "tat_anc_southent",
                 "tat_anc_verpexba",
                 "tochee_cantina",
-                "tosche_cantina_s"
+                "tosche_cantina_s",
+                "pw_sc_canyonpit"
               ]
             },
             {
@@ -144,7 +145,8 @@
                 "veles_sewers",
                 "veles_sheriff",
                 "veles_shops",
-                "visc_sewer_depth"
+                "visc_sewer_depth",
+                "pw_sc_velescmd"
               ]
             },
             {
@@ -176,7 +178,8 @@
                 "v_repubbase_ext",
                 "v_repubbase_hang",
                 "v_repubbase_jnrm",
-                "v_repubbase_off"
+                "v_repubbase_off",
+                "pw_sc_repubcmd"
               ]
             },
             {
@@ -469,7 +472,9 @@
             "valkorrdung1a",
             "valkorrdung1b",
             "valkorrdung1c",
-            "valkorrdung1d"
+            "valkorrdung1d",
+            "pw_sc_korrforge",
+            "pw_sc_sithritual"
           ]
         },
         {
@@ -560,7 +565,8 @@
             "dan_warehouse",
             "dan_wildplain",
             "pw_sc_dantmedsub",
-            "pw_sc_dantprowar"
+            "pw_sc_dantprowar",
+            "pw_sc_jeditrial"
           ]
         },
         {
@@ -582,7 +588,8 @@
             "dath_waterfallru",
             "dath_west_desert",
             "pw_sc_dath_apexd",
-            "pw_sc_dath_sden"
+            "pw_sc_dath_sden",
+            "pw_sc_tarnalpha"
           ]
         },
         {
@@ -618,7 +625,8 @@
             {
               "name": "Qion Box Canyon",
               "members": [
-                "sol_mandaloriani"
+                "sol_mandaloriani",
+                "pw_sc_qioncore"
               ]
             }
           ],

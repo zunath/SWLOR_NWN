@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                null);
+                new WeaponAbilityProfile { MaximumAreaTargets = 5 });
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ConcussiveToss2, PerkType.ConcussiveToss)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                null);
+                new WeaponAbilityProfile { MaximumAreaTargets = 5 });
 
             return builder.Build();
         }

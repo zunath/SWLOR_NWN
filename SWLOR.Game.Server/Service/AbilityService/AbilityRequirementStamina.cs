@@ -72,8 +72,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
             var adjustment = Combat.GetAbilityStaminaCostFlatAdjustment(player, ability);
             adjustment += consumeNextAdjustment
-                ? Combat.ConsumeNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType)
-                : Combat.GetNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType);
+                ? Combat.ConsumeNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType, ability.IsHostileAbility)
+                : Combat.GetNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType, ability.IsHostileAbility);
             adjustment += consumeNextAdjustment
                 ? Combat.ConsumeNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType)
                 : Combat.GetNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType);

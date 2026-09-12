@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.BraceBreaker,
                 0.8f,
-                18f,
+                24f,
                 7,
                 0,
                 15,

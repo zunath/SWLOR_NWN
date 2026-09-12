@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ConcussiveChallenge,
                 1.0f,
-                18f,
+                24f,
                 5,
                 0,
                 15,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Magical_Vision,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ConcussiveChallengeTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

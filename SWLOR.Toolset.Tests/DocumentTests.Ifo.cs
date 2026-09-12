@@ -10,6 +10,7 @@ namespace SWLOR.Toolset.Tests
         private static string ModuleIfoPath =>
             Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json");
 
+        /// <summary>Checks module metadata and the current HAK stack are exposed by the document model.</summary>
         [Test]
         public void ModuleIfo_KnownValues_ReadCorrectly()
         {
@@ -23,7 +24,7 @@ namespace SWLOR.Toolset.Tests
             document.AreaList.Should().HaveCountGreaterThanOrEqualTo(438);
             document.AreaResRefs[0].Should().Be("anchor_entreenor");
             document.AreaResRefs[1].Should().Be("anchor_entreesud");
-            document.HakList.Should().HaveCount(117);
+            document.HakList.Should().HaveCount(119);
             document.HakNames[0].Should().Be("sw_2da");
             document.HakNames[1].Should().Be("sw_ability");
             document.HakNames.Should().Contain("sw_tint_mtr");

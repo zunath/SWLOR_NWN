@@ -385,7 +385,7 @@ public class LeadershipCombatUpgradeTests
         percentageStage.Should().Contain("damage = ApplyTypedLeadershipDamageTakenPercentageModifier(");
         percentageStage.IndexOf("damage = ApplyTypedLeadershipDamageTakenPercentageModifier(", StringComparison.Ordinal)
             .Should().BeLessThan(percentageStage.IndexOf(
-                "return genericAdjustment == 0",
+                "return ApplyCombinedDamageTakenAdjustment",
                 StringComparison.Ordinal),
                 "typed Leadership and generic damage reduction must remain separate multiplicative stages");
         typedStage.Should().NotContain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
@@ -622,7 +622,8 @@ public class LeadershipCombatUpgradeTests
             "leadershipForceAdjustment",
             "leadershipOtherAdjustment",
             "genericAdjustment",
-            "typedLeadershipReductionAlreadyApplied");
+            "typedLeadershipReductionAlreadyApplied",
+            "targetStatusDamagePercentAdjustment");
         return (int)method.Invoke(null, new object[]
         {
             damage,
@@ -632,6 +633,7 @@ public class LeadershipCombatUpgradeTests
             -18,
             -10,
             typedLeadershipReductionAlreadyApplied,
+            0,
         })!;
     }
 

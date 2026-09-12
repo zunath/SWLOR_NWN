@@ -184,7 +184,7 @@ namespace SWLOR.Toolset.Tests
             var nss = Path.Combine(CorpusLocator.ModuleDirectory, "nss");
             var sources = Directory.EnumerateFiles(nss, "*.nss")
                 .ToDictionary(
-                    Path.GetFileNameWithoutExtension,
+                    path => Path.GetFileNameWithoutExtension(path)!,
                     p => ScriptTextDocument.Load(p).Text,
                     StringComparer.OrdinalIgnoreCase);
 

@@ -1,4 +1,6 @@
 #nullable enable
+using System.Numerics;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
@@ -20,13 +22,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             _resources = resources;
         }
 
+        /// <summary>Renders the solved draft with the requested tile display and optional room, transition, footprint and route overlays.</summary>
         public AreaPreviewImage Render(
             AreaGenerationDraft draft,
             AreaPreviewMode mode,
             bool showRoomOverlay,
             bool showTransitions = true,
             bool showDecorations = true,
-            int pixelsPerTile = 24)
+            int pixelsPerTile = 24,
+            bool showRoutes = false)
         {
             ArgumentNullException.ThrowIfNull(draft);
             if (!draft.Result.Success || draft.Result.Resolved == null)
@@ -94,6 +98,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     (34, 34, 38, 180));
             }
 
+            if (showRoutes)
+                DrawRoutes(pixels, width, draft, pixelsPerTile);
             if (showRoomOverlay)
                 DrawRoomOverlay(pixels, width, resolved, pixelsPerTile);
             if (showTransitions)
@@ -152,6 +158,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return true;
         }
 
+        /// <summary>Classifies resolved terrain for schematic rendering, giving usable open surfaces priority over default fill.</summary>
         private static (byte R, byte G, byte B, byte A) FallbackColor(
             TileRecord? tile,
             int orientation,
@@ -167,14 +174,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var corners = Enumerable.Range(0, 4)
                 .Select(slot => tile.GetCornerAt(orientation, slot))
                 .ToArray();
-            if (corners.All(label => label.Equals(tileset.DefaultTerrain, StringComparison.OrdinalIgnoreCase)))
-                return (18, 18, 20, 255);
-
             var allOpen = corners.All(label => label.Equals(openTerrain, StringComparison.OrdinalIgnoreCase)) ||
                           !string.IsNullOrEmpty(secondaryOpenTerrain) && corners.All(label =>
                               label.Equals(secondaryOpenTerrain, StringComparison.OrdinalIgnoreCase));
             if (!allOpen)
+            {
+                if (corners.All(label => label.Equals(tileset.DefaultTerrain, StringComparison.OrdinalIgnoreCase)))
+                    return (18, 18, 20, 255);
                 return (120, 100, 70, 255);
+            }
 
             return role switch
             {
@@ -232,6 +240,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             }
         }
 
+        /// <summary>Draws declared scaled prop footprints and measured building bounds on the preview.</summary>
         private static void DrawDecorations(
             byte[] pixels,
             int width,
@@ -241,9 +250,49 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         {
             foreach (var decoration in draft.Result.PlannedDecorations)
             {
+                if (decoration.FootprintBounds is { } bounds)
+                {
+                    StrokeRect(pixels, width, (int)MathF.Round(bounds.MinX / 10 * cell),
+                        (int)MathF.Round((areaHeight - bounds.MaxY / 10) * cell),
+                        Math.Max(1, (int)MathF.Round((bounds.MaxX - bounds.MinX) / 10 * cell)),
+                        Math.Max(1, (int)MathF.Round((bounds.MaxY - bounds.MinY) / 10 * cell)), (160, 170, 195, 200));
+                    continue;
+                }
                 var x = (int)MathF.Round(decoration.Position.X / 10f * cell);
                 var y = (int)MathF.Round((areaHeight - decoration.Position.Y / 10f) * cell);
-                DrawCircle(pixels, width, x, y, Math.Max(1, cell / 12), (210, 150, 255, 210), hollow: false);
+                var radius = Math.Clamp((int)MathF.Ceiling(decoration.FootprintRadius * decoration.VisualScale / 10f * cell), 1, width);
+                var color = decoration.BlocksMovement ? ((byte)210, (byte)150, (byte)255, (byte)180) : ((byte)90, (byte)200, (byte)215, (byte)140);
+                DrawCircle(pixels, width, x, y, radius, color, hollow: true);
+                DrawCircle(pixels, width, x, y, 1, color, hollow: false);
+            }
+        }
+
+        /// <summary>Draws the circulation bands reserved by the selected decoration placement policy.</summary>
+        private static void DrawRoutes(byte[] pixels, int width, AreaGenerationDraft draft, int cell)
+        {
+            var layout = draft.Result.Resolved;
+            var routes = DecorationPlacementSafety.BuildRoutes(layout,
+                DecorationPlacementSafety.BuildOpenSurface(layout), draft.Composition.Tileset.RoadCrosser);
+            var radius = DecorationPlacementSafety.RouteRadius(draft.Settings.Overrides?.DecorationPlacementStyle ?? DecorationPlacementStyle.Spacious) / 10 * cell;
+            var painted = new HashSet<(int X, int Y)>();
+            Vector2 Screen(Vector2 point) => new(point.X / 10 * cell, (layout.Height - point.Y / 10) * cell);
+            foreach (var route in routes)
+            {
+                var start = Screen(route.Start);
+                var end = Screen(route.End);
+                var delta = end - start;
+                var minX = Math.Max(0, (int)MathF.Floor(MathF.Min(start.X, end.X) - radius));
+                var maxX = Math.Min(width - 1, (int)MathF.Ceiling(MathF.Max(start.X, end.X) + radius));
+                var minY = Math.Max(0, (int)MathF.Floor(MathF.Min(start.Y, end.Y) - radius));
+                var maxY = Math.Min(pixels.Length / 4 / width - 1, (int)MathF.Ceiling(MathF.Max(start.Y, end.Y) + radius));
+                for (var y = minY; y <= maxY; y++)
+                for (var x = minX; x <= maxX; x++)
+                {
+                    var point = new Vector2(x, y);
+                    var t = delta.LengthSquared() == 0 ? 0 : Math.Clamp(Vector2.Dot(point - start, delta) / delta.LengthSquared(), 0, 1);
+                    if (Vector2.DistanceSquared(point, start + t * delta) <= radius * radius && painted.Add((x, y)))
+                        BlendPixel(pixels, width, x, y, (245, 205, 85, 135));
+                }
             }
         }
 

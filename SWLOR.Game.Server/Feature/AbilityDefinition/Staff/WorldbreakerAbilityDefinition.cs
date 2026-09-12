@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
+                    MaximumAreaTargets = 5,
                     ExtraDamageIfTargetControlled = 40,
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control,
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),

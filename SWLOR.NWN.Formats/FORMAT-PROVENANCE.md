@@ -85,6 +85,16 @@ language (Windows-1252 for Western TLKs and general strings). Binary ResRefs and
 - The full 232-byte binary model header must fit inside the declared model-data section, not merely
   inside the combined model-plus-MDX resource. Incompatible node-type flag combinations and mesh
   subtypes without a mesh flag are rejected as format errors before typed node parsing.
+- Binary skin bone mappings index geometry nodes in preorder and map to the local slots used by
+  vertex bone indices. The node-number field may instead identify a supermodel bone. This was
+  independently checked on 2026-09-12 against owned `pmh0_robe010.mdl` bytes and its native
+  decompiler output: all 578 compiled vertices matched the corresponding ASCII positions and
+  named weights. The CC0 `NWN1MDL.bt` layout was consulted again for offsets; no third-party
+  implementation source was used. Synthetic tests cover later bones, unrelated node numbers,
+  unused zero-weight slots, duplicate mappings, negative weights, and unmapped positive weights.
+  Imported body parts such as `pfe0_belt112.mdl` retain a larger donor-skeleton table after
+  removing its nodes (the native decompiler reports `invalidnodeindex`). Such models keep their
+  raw attributes and existing static preview rather than assigning weights to unrelated nodes.
 
 ## Verification record
 
@@ -149,6 +159,9 @@ zero skips.
   `HakMdlParseSweepTests` (`SWLOR.NWN.Formats.Corpus.Tests`) closes that gap by parsing every MDL
   under SWLOR_Haks, pinning 10 internally-inconsistent phenotype-22 robe models
   (`pfe22_robe027.mdl` and nine others) as expected-invalid.
+  On 2026-09-12 the pinned HAK revision `28553a8aa9f7be80b7212b2837293a04807d513b`
+  contained repaired versions of all ten robes. The sweep now requires every model to parse
+  successfully, without a known-invalid exception list.
 - ASCII grammar inventory: requested/executed 16,078, failed 0, skipped 0. Required node kinds
   include trimesh, dummy, light, emitter, AABB, danglymesh, skin, animmesh, and reference; 11,150
   animation blocks were observed.

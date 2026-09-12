@@ -36,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Screen_Shake,
                 centerOnActivator: true,
                 enmityBonus: 100,
-                afterSuccessfulHit: InnateAbility.PullOnHit())
+                afterSuccessfulHit: InnateAbility.PullOnHit(),
+                maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenMaulTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

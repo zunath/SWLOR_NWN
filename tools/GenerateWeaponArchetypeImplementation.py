@@ -1139,7 +1139,18 @@ def description_stat_entries(row, base):
         r"(?:Auto-attacks|Thrown attacks).*?(\d+)% chance to deal \+(\d+).*?DMG",
         description,
         re.IGNORECASE)
-    if auto_attack_bonus:
+    if base == "Payload Pouch":
+        add_stat(stats, "AutoAttackSplashChance", parse_count(r"(\d+)% chance", description))
+        add_stat(stats, "AutoAttackSplashDamage", parse_count(r"deal (\d+) Physical DMG", description))
+        add_stat(stats, "AutoAttackSplashSkillType", skill_expr)
+        add_stat(stats, "AutoAttackSplashRadiusMeters", parse_count(r"within (\d+)m", description))
+        splash_targets = re.search(r"up to (\d+|one|two|three|four|five|six|seven|eight|nine|ten) other enemies", description, re.IGNORECASE)
+        if not splash_targets:
+            raise ValueError("Payload Pouch must state its additional splash target count.")
+        count = splash_targets.group(1).lower()
+        count = int(count) if count.isdigit() else ("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten").index(count) + 1
+        add_stat(stats, "AutoAttackSplashMaximumTargets", count + 1)
+    elif auto_attack_bonus:
         add_stat(stats, "AutoAttackDamageBonusChance", auto_attack_bonus.group(1))
         add_stat(stats, "AutoAttackDamageBonus", auto_attack_bonus.group(2))
 
@@ -1586,6 +1597,11 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityDamageToBleedingTargetSkillType", skill_expr)
         add_stat(stats, "AbilityDamageToBleedingTargetBonus", parse_count(r"deal \+(\d+) DMG", description))
         add_stat(stats, "BleedingTargetAbilityBleedDurationExtensionSeconds", parse_count(r"refresh Bleed by (\d+) seconds", description))
+        if "chance to hit one enemy" in description:
+            add_stat(stats, "BleedingTargetAbilitySplashChance", parse_percent(r"have a (\d+)% chance", description))
+            add_stat(stats, "BleedingTargetAbilitySplashDamage", parse_count(r"for \+(\d+) DMG", description))
+            add_stat(stats, "BleedingTargetAbilitySplashRadiusMeters", parse_count(r"within (\d+)m", description))
+            add_stat(stats, "BleedingTargetAbilitySplashMaximumTargets", 1)
     if (
         "bleeding or hemorrhaging targets" in lowered or
         "bleeding targets" in lowered
@@ -1619,7 +1635,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "ForceDamageTakenForceDefenseDurationSeconds", parse_duration(description) or 30)
     if "Force Disruption" in description or "Foggy Mind" in description or "ability-cost debuffs" in description:
         if "last" in lowered and "longer" in lowered:
-            add_stat(stats, "OutgoingDebuffDurationPercentAdjustment", parse_percent(r"last (\d+)% longer", description))
+            add_stat(stats, "OutgoingAbilityDisruptionDurationPercentAdjustment", parse_percent(r"last (\d+)% longer", description))
     if "Foggy Mind take" in description:
         add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetCategory", status_category_expression("Control"))
         add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetPercentAdjustment", parse_percent(r"take \+(\d+)% damage", description))
@@ -1650,7 +1666,10 @@ def description_stat_entries(row, base):
     if "When an enemy misses you" in description or "After an enemy misses you" in description or "After you evade an attack" in description:
         stamina_cost = parse_count(r"costs (\d+) less STM", description)
         if stamina_cost:
-            add_stat(stats, "AvoidedAttackNextSkillAbilitySkillType", skill_expr)
+            if "hostile ranged ability" in lowered:
+                add_stat(stats, "AvoidedAttackNextSkillAbilityRangedOnly", 1)
+            elif "hostile combat ability" not in lowered:
+                add_stat(stats, "AvoidedAttackNextSkillAbilitySkillType", skill_expr)
             add_stat(stats, "AvoidedAttackNextSkillAbilityStaminaCostAdjustment", f"-{stamina_cost}")
             add_stat(stats, "AvoidedAttackNextSkillAbilityWindowSeconds", parse_duration(description) or 30)
 

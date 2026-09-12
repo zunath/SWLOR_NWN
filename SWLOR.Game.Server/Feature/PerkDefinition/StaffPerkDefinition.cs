@@ -161,13 +161,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake1)
-                .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 6 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 6 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
-                .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 6 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 6 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .Description("Deals weapon DMG + 35 to enemies within 5m of you. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 35 to enemies within 5m of you. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds. Affects up to 5 enemies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
                 .RequirementQuest(StaffCapstoneQuestDefinition.WorldbreakerMasteryQuestId);

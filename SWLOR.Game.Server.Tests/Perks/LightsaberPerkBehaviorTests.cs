@@ -208,11 +208,15 @@ public class LightsaberPerkBehaviorTests
         // The Force portion must be deferred off the native damage-roll hook (DelayCommand), not applied
         // synchronously mid-hook, or it re-enters the damage/AI chain and cascades with reflect effects.
         conversion.Should().Contain("DelayCommand");
+        conversion.Should().Contain("targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment",
+            "the converted share must carry reductions already applied to the incoming hit");
+        conversion.Should().Contain("outgoingModifiersAlreadyApplied: true",
+            "conversion must not multiply outgoing bonuses a second time");
 
         // The native auto-attack path splits the physical hit before physical resistance.
         var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
         var nativeConversion = native.IndexOf(
-            "Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage)",
+            "Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment)",
             StringComparison.Ordinal);
         var nativeLeadership = native.IndexOf(
             "Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)",
@@ -229,7 +233,7 @@ public class LightsaberPerkBehaviorTests
         // Both ability damage paths do the same before their physical resistance stage.
         var ability = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"));
         const string abilityConversionCall =
-            "Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage)";
+            "Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment)";
         const string abilityLeadershipCall =
             "Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)";
         const string abilityResistanceCall =

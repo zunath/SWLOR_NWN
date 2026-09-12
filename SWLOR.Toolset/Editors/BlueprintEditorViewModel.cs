@@ -47,9 +47,6 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public ObservableCollection<EditorTabViewModel> Tabs { get; } = new();
 
-        /// <summary>The raw Conversation tab content, held so Advanced follows Custom.</summary>
-        private EditorTabViewModel? _advancedTab;
-
         private EditorTabViewModel? _selectedTab;
 
         /// <summary>

@@ -366,6 +366,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
                         .Where(e => e.FamilyMaxPerArea <= 0 || string.IsNullOrEmpty(e.FamilyKey) ||
                                     familyUsage.GetValueOrDefault(e.FamilyKey) < e.FamilyMaxPerArea)
                         .Where(e => HasSameModelClearance(e, cell, dir, scale, placedCenters))
+                        .Where(e => HasFrontageClearance(e, cell, dir, scale, result.Placements))
                         .Where(e => Fits(e, cell, dir, scale, layout, openCells, stamped, excluded))
                         .Where(e => FrontageSupportRule.IsSupported(
                             Footprint(e, cell, dir, scale), layout, tileset.ChasmTerrains))
@@ -559,12 +560,25 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
             return true;
         }
 
+        /// <summary>Rejects frontage candidates whose measured bounds intersect a previously accepted building.</summary>
+        private static bool HasFrontageClearance(BuildingFrontageEntry entry, (int X, int Y) cell,
+            (int Dx, int Dy) direction, float scale, List<FrontagePlacement> placements)
+        {
+            var box = Footprint(entry, cell, direction, scale);
+            var bounds = new DecorationBounds(box.MinX, box.MinY, box.MaxX, box.MaxY);
+            // Occupied cells only track substantial cell coverage; thin overlaps and differently
+            // named models can still interpenetrate between cell centers. Check the actual boxes.
+            return placements.All(placed => placed.Decoration.FootprintBounds is not { } existing || !bounds.Overlaps(existing));
+        }
+
+        /// <summary>Commits a selected frontage with its occupied cells, support anchor and measured world bounds.</summary>
         private static void Place(
             BuildingFrontageEntry entry, (int X, int Y) cell, (int Dx, int Dy) dir, float scale,
             ResolvedLayout layout, FrontageResult result)
         {
             var face = FaceCenter(cell, dir);
             var center = Center(entry, cell, dir, scale);
+            var bounds = Footprint(entry, cell, dir, scale);
 
             // SUPPORT ANCHOR (see PlannedDecoration.GroundAnchor): grounding must sample the
             // platform the face stands flush with, not the footprint center -- a deep tower's
@@ -591,6 +605,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
                     VisualScale = scale,
                     FootprintRadius = MathF.Sqrt(
                         entry.FaceWidth * entry.FaceWidth + entry.Depth * entry.Depth) / 2f,
+                    FootprintBounds = new DecorationBounds(bounds.MinX, bounds.MinY, bounds.MaxX, bounds.MaxY),
                     GroundAnchor = anchor,
                     GroundZ = groundZ
                 },

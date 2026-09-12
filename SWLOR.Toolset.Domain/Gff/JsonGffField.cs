@@ -25,11 +25,14 @@ namespace SWLOR.Toolset.Domain.Gff
             return JsonStringCodec.Decode(RawText);
         }
 
+        /// <summary>Updates localized text while preserving unchanged tokens and the encoding of imported non-ASCII text.</summary>
         public void SetText(string text)
         {
             EditScope.EnsureMutationAllowed();
             var oldRawText = RawText;
-            RawText = JsonStringCodec.Encode(text);
+            RawText = JsonStringCodec.EncodeReplacement(text, oldRawText);
+            if (ReferenceEquals(oldRawText, RawText))
+                return;
             EditScope.Capture(new LocStringEntryTextEdit(this, oldRawText, RawText));
         }
     }
@@ -108,6 +111,7 @@ namespace SWLOR.Toolset.Domain.Gff
             return JsonStringCodec.Decode(RawValue);
         }
 
+        /// <summary>Validates and edits a string field while retaining unchanged token bytes and the source text encoding.</summary>
         public void SetString(string value)
         {
             RequireScalar();
@@ -118,7 +122,9 @@ namespace SWLOR.Toolset.Domain.Gff
             EditScope.EnsureMutationAllowed();
             var oldValue = RawValue;
             var oldLocId = RawLocStringId;
-            RawValue = JsonStringCodec.Encode(value);
+            RawValue = JsonStringCodec.EncodeReplacement(value, oldValue!);
+            if (ReferenceEquals(oldValue, RawValue))
+                return;
             EditScope.Capture(new FieldValueEdit(this, oldValue, oldLocId, RawValue, RawLocStringId));
         }
 

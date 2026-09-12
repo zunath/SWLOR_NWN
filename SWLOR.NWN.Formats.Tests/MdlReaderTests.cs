@@ -139,6 +139,111 @@ public sealed class MdlReaderTests
             new MdlBoneIndices(7, 8, 9, 10));
     }
 
+    /// <summary>Resolves compiled skin slots by geometry preorder, including bones parsed after the skin.</summary>
+    [Test]
+    public void ResolvesBinarySkinInfluencesByGeometryPreorder()
+    {
+        var skin = new MdlReader().Parse(CreateMappedBinarySkin()).GetMeshNodes()
+            .Should().ContainSingle().Subject.Should().BeOfType<MdlSkinmeshNode>().Subject;
+
+        skin.VertexInfluences.Should().HaveCount(2);
+        skin.VertexInfluences[0].Should().Equal(
+            new MdlSkinInfluence("arm", .25f), new MdlSkinInfluence("torso", .75f));
+        skin.VertexInfluences[1].Should().BeEmpty("zero weights do not reference their unused bone slots");
+    }
+
+    /// <summary>Imported parts with a removed donor skeleton keep their readable geometry and raw skin attributes.</summary>
+    [Test]
+    public void PreservesBinarySkinWhoseSkeletonWasRemoved()
+    {
+        var original = CreateMappedBinarySkin();
+        const int boundary = 12 + 1312;
+        var bytes = new byte[original.Length + 2];
+        original.AsSpan(0, boundary).CopyTo(bytes);
+        original.AsSpan(boundary).CopyTo(bytes.AsSpan(boundary + 2));
+        WriteUInt32(bytes, 4, 1314);
+        WriteInt32(bytes, 12 + 568 + 112 + 512 + 24, 5);
+        WriteInt16(bytes, 12 + 1310, -1);
+        WriteInt16(bytes, 12 + 1312, 0);
+
+        var skin = new MdlReader().Parse(bytes).GetMeshNodes()
+            .Should().ContainSingle().Subject.Should().BeOfType<MdlSkinmeshNode>().Subject;
+        skin.Vertices.Should().HaveCount(2);
+        skin.BoneWeights[0].Should().Be(new Vector4(.25f, .75f, 0, 0));
+        skin.BoneMapping.Should().Equal(-1, 1, -1, -1, 0);
+        skin.VertexInfluences.Should().BeEmpty("missing donor bones must not be assigned to unrelated local nodes");
+    }
+
+    /// <summary>Rejects ambiguous mappings and positive weights whose bone slots cannot be resolved.</summary>
+    [TestCase("duplicate")]
+    [TestCase("unmapped")]
+    [TestCase("negative")]
+    [TestCase("empty")]
+    public void RejectsInvalidBinarySkinInfluences(string corruption)
+    {
+        var bytes = CreateMappedBinarySkin();
+        const int mapping = 12 + 1304;
+        const int mdx = 12 + 1312;
+        switch (corruption)
+        {
+            case "duplicate": WriteInt16(bytes, mapping + 6, 1); break;
+            case "unmapped": WriteInt16(bytes, mdx + 28, 2); break;
+            case "negative": WriteSingle(bytes, mdx + 12, -.25f); break;
+            case "empty":
+                WriteInt16(bytes, mapping + 2, -1);
+                WriteInt16(bytes, mapping + 6, -1);
+                break;
+        }
+
+        Action parse = () => new MdlReader().Parse(bytes);
+        parse.Should().Throw<NwnFormatException>().WithMessage("*MDL skin*");
+    }
+
+    /// <summary>Builds a small compiled skin with deliberately unrelated node numbers and reversed bone slots.</summary>
+    private static byte[] CreateMappedBinarySkin()
+    {
+        const int modelDataSize = 1312;
+        const int stride = 36;
+        var bytes = new byte[12 + modelDataSize + stride * 2];
+        WriteUInt32(bytes, 4, modelDataSize);
+        WriteUInt32(bytes, 8, stride * 2);
+        WriteUInt32(bytes, 84, 232);
+        WriteFixed(bytes, 12 + 232 + 32, 32, "root");
+        WriteUInt32(bytes, 12 + 232 + 72, 1292);
+        WriteUInt32(bytes, 12 + 232 + 76, 3);
+        WriteUInt32(bytes, 12 + 1292, 344);
+        WriteUInt32(bytes, 12 + 1296, 568);
+        WriteUInt32(bytes, 12 + 1300, 456);
+        WriteFixed(bytes, 12 + 344 + 32, 32, "arm");
+        WriteUInt32(bytes, 12 + 344 + 28, 173);
+        WriteFixed(bytes, 12 + 456 + 32, 32, "torso");
+        WriteUInt32(bytes, 12 + 456 + 28, 2);
+        WriteFixed(bytes, 12 + 568 + 32, 32, "skin");
+        WriteUInt32(bytes, 12 + 568 + 28, uint.MaxValue);
+        WriteUInt32(bytes, 12 + 568 + 108, 0x60);
+        var mesh = 12 + 568 + 112;
+        WriteUInt32(bytes, mesh + 440, stride);
+        WriteUInt16(bytes, mesh + 448, 2);
+        WriteInt32(bytes, mesh + 452, -1);
+        WriteInt32(bytes, mesh + 468, -1);
+        var skin = mesh + 512;
+        WriteInt32(bytes, skin + 12, 12);
+        WriteInt32(bytes, skin + 16, 28);
+        WriteInt32(bytes, skin + 20, 1304);
+        WriteInt32(bytes, skin + 24, 4);
+        WriteInt16(bytes, 12 + 1304, -1);
+        WriteInt16(bytes, 12 + 1306, 1);
+        WriteInt16(bytes, 12 + 1308, -1);
+        WriteInt16(bytes, 12 + 1310, 0);
+        var mdx = 12 + modelDataSize;
+        WriteVector4(bytes, mdx + 12, new Vector4(.25f, .75f, 0, 0));
+        WriteInt16(bytes, mdx + 28, 1);
+        WriteInt16(bytes, mdx + 30, 0);
+        WriteInt16(bytes, mdx + 32, -1);
+        WriteInt16(bytes, mdx + 34, -1);
+        return bytes;
+    }
+
     [Test]
     public void RejectsBinaryMdxStrideSmallerThanAnAttribute()
     {

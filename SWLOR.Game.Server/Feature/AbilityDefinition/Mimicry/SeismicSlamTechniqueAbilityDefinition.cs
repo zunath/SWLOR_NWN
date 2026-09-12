@@ -47,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         statusResistanceType: ResistanceType.Mobility,
                         targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Nature,
                         areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
-                        useNPCStatScaling: InnateAbility.ShouldUseNPCStatScaling(activator));
+                        useNPCStatScaling: InnateAbility.ShouldUseNPCStatScaling(activator),
+                        maxTargets: 5);
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

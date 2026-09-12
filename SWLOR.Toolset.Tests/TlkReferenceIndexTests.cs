@@ -62,6 +62,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        /// <summary>Protects referenced blank biographies while identifying the first reusable corpus TLK gap.</summary>
         [Test]
         public void Corpus_RecognizesIntentionallyBlankBiographyRow80831()
         {
@@ -84,7 +85,7 @@ namespace SWLOR.Toolset.Tests
             var firstSafeGap = document.FindFirstAvailableBlank(index);
             TestContext.Out.WriteLine($"First corpus-safe custom TLK gap: {firstSafeGap}");
             firstSafeGap.Should().Be(expectedFirstSafeGap);
-            firstSafeGap.Should().Be(6181, "the current corpus's first unpopulated and unreferenced row is stable");
+            firstSafeGap.Should().Be(6182, "the current corpus's first unpopulated and unreferenced row is stable");
         }
 
         [Test]

@@ -37,10 +37,10 @@ namespace SWLOR.Toolset.Tests
 
         private static readonly Dictionary<string, int> ExpectedPlacementCounts = new()
         {
-            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 1952,
+            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 1953,
             [WaypointBehaviorCatalog.FishingPointId] = 431,
             [WaypointBehaviorCatalog.MapNoteId] = 376,
-            [WaypointBehaviorCatalog.StuckRescuePointId] = 306,
+            [WaypointBehaviorCatalog.StuckRescuePointId] = 308,
             [WaypointBehaviorCatalog.TransitionDestinationId] = 229,
             [WaypointBehaviorCatalog.PropertyEntranceId] = 43,
             [WaypointBehaviorCatalog.StarshipDockId] = 11,
@@ -49,7 +49,7 @@ namespace SWLOR.Toolset.Tests
             [WaypointBehaviorCatalog.TaxiStopId] = 4,
             [WaypointBehaviorCatalog.DeathRespawnId] = 1,
             [WaypointBehaviorCatalog.RebuildId] = 2,
-            [WaypointBehaviorCatalog.CustomId] = 550
+            [WaypointBehaviorCatalog.CustomId] = 560
         };
 
         private static string GameServerSourceRoot =>
@@ -86,6 +86,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        /// <summary>Compares waypoint classifications with the reviewed placement counts in the current module corpus.</summary>
         [Test]
         public void PlacementBehaviorCountsMatchTheModuleCorpus()
         {
@@ -94,7 +95,7 @@ namespace SWLOR.Toolset.Tests
                 .ToDictionary(group => group.Key, group => group.Count());
 
             counts.Should().BeEquivalentTo(ExpectedPlacementCounts);
-            counts.Values.Sum().Should().Be(3925);
+            counts.Values.Sum().Should().Be(3938);
         }
 
         [Test]

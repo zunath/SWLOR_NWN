@@ -2,6 +2,7 @@ using System.Globalization;
 using Avalonia.Data.Converters;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 
 namespace SWLOR.Toolset.AreaGeneration;
 
@@ -10,11 +11,14 @@ public sealed class AreaGeneratorOptionLabelConverter : IValueConverter
 {
     public static AreaGeneratorOptionLabelConverter Instance { get; } = new();
 
+    /// <summary>Maps generator enum choices to builder-facing labels, including the two decoration placement styles.</summary>
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         value switch
         {
             AreaPreviewMode.Schematic => "Schematic",
             AreaPreviewMode.MapGraphics => "Map graphics",
+            DecorationPlacementStyle.Spacious => "Clear routes and spacing",
+            DecorationPlacementStyle.Compact => "Compact dressing",
             DungeonLayoutStyle.RoomsAndCorridors => "Rooms and corridors",
             DungeonLayoutStyle.OrganicCave => "Organic cave",
             DungeonLayoutStyle.Warren => "Warren",

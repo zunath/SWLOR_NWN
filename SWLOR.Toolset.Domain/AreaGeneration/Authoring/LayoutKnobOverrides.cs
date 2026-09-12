@@ -29,11 +29,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         /// <summary>
         /// Decorations are theme content (DungeonDetail.Decorations/DecorationBaseDensity), not a
         /// layout knob -- they never feed MacroLayoutParameters/ApplyTo below, so they can't affect
-        /// map geometry. GenerationEngine.Generate reads these two directly to compute
+        /// map geometry. GenerationEngine.Generate reads these directly to compute
         /// GenerationResult.PlannedDecorationCount from the resolved layout.
         /// </summary>
         public bool EnableDecorations { get; init; } = true;
         public int DecorationDensityPercent { get; init; } = 100;
+        public Decoration.DecorationPlacementStyle DecorationPlacementStyle { get; init; } =
+            Decoration.DecorationPlacementStyle.Spacious;
 
         /// <summary>Named tileset decoration profile to dress with (see DungeonTilesetProfile.
         /// DecorationProfiles, e.g. fcx01's "ruined"); empty = the standard palette. Content, not a

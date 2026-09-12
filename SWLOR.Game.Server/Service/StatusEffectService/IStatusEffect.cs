@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         ResistanceType AppliedResistanceType { get; }
         float Frequency { get; }
         int DurationTicks { get; }
+        float GetRemainingDurationSeconds(DateTime currentTime);
         bool PersistsOnLogout { get; }
         StatGroup StatGroup { get; }
         List<Type> MorePowerfulEffectTypes { get; }

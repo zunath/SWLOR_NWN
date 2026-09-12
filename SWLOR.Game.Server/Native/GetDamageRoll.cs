@@ -556,14 +556,6 @@ namespace SWLOR.Game.Server.Native
             {
                 damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             }
-            damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
-            if (isLandedAttack)
-            {
-                // Unlike its pure side-attack sibling, the back-attack modifier also consumes
-                // Ghost Protocol's primed Exposed rider - a discarded swing must not burn it.
-                damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
-            }
-
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 
             damage = Combat.ApplyDamageDealtModifiers(
@@ -576,13 +568,13 @@ namespace SWLOR.Game.Server.Native
                 canApplyRandomFlatBonusesThisDamage,
                 isLandedAttack,
                 null,
-                out var damageBeforeTargetStatusStage);
+                out var targetStatusDamageAdjustment);
 
             // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             if (isLandedAttack)
             {
-                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
+                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment);
             }
 
             // Conversion must split first so each portion receives only its own typed Leadership channel.
@@ -623,7 +615,7 @@ namespace SWLOR.Game.Server.Native
                 damage,
                 attacker.m_idSelf,
                 damageType,
-                preTargetStatusStageDamage: damageBeforeTargetStatusStage,
+                targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment,
                 isLandedAttack: isLandedAttack,
                 typedLeadershipReductionAlreadyApplied: true);
             if (isLandedAttack)

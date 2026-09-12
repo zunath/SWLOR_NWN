@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
+                    MaximumAreaTargets = 5,
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConvertsRequiredTargetStatusEffect = true,
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
@@ -80,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
+                    MaximumAreaTargets = 5,
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConvertsRequiredTargetStatusEffect = true,
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),

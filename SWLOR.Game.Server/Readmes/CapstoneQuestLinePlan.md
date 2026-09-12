@@ -185,7 +185,7 @@ Each arena has its planet local, `IS_DUNGEON = 1`, `MINI_MAP_DISABLED = 1`, a `S
 
 When the adjoining dungeon is built, route its arena entrance to the entry tag above and add the return travel object near that waypoint. No placeholder destination or public-area shortcut is active. The eight entry blueprints are registered in the existing waypoint palette. Master positions, entry, and recovery points have been snapped to real WOK walkable faces and checked for connected paths with decorative footprint clearance; live encounter and visual review are still required.
 
-Authoring and export are reproducible through `tools/SWLOR.BossArenaGenerator` (see its README). `artifacts/boss-arenas/capstone-boss-arenas.erf` contains 32 native resources: eight ARE/GIT/GIC triplets and eight entrance UTWs. All resources passed native `nwn_gff` round-trip validation; GIC list counts and encounter setup were checked. The overview uses tileset map artwork where available; `tjsb0` has no 2D map artwork and uses a labeled schematic. Repack the module to deploy the checked-in area changes.
+The checked-in content contains 32 native resources: eight ARE/GIT/GIC triplets and eight entrance UTWs. All resources passed native `nwn_gff` round-trip validation; GIC list counts and encounter setup were checked. Maintain these areas directly in the toolset and repack the module to deploy changes.
 
 ### Generated Reusable Content
 

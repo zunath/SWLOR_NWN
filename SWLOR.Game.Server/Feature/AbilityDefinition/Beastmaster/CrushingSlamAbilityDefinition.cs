@@ -106,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 centerOnActivator: true,
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
+                maxTargets: 5);
         }
 
         private static void CrushingSlam2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -127,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 centerOnActivator: true,
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
+                maxTargets: 5);
         }
 
         private static void CrushingSlam3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -148,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 centerOnActivator: true,
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
+                maxTargets: 5);
         }
 
     }

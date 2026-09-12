@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Stunned";
         public override EffectIconType Icon => EffectIconType.StunnedStatusEffect;
         public override StatusEffectCategory Categories =>
+            StatusEffectCategory.Debuff |
             StatusEffectCategory.Control |
             StatusEffectCategory.Incapacitating |
             StatusEffectCategory.HardCrowdControl;

@@ -202,6 +202,21 @@ namespace SWLOR.Game.Server.Service.CombatService
             return Consume(creature, statType, GetGroup(groupStatType));
         }
 
+        /// <summary>Consumes only the payload belonging to a previously inspected temporary source.</summary>
+        public static int ConsumeSource(uint creature, StatType statType, StatAdjustmentSource source)
+        {
+            return ConsumeSourceInternal(creature, statType, source, true);
+        }
+
+        private static int ConsumeSourceInternal(uint creature, StatType statType, StatAdjustmentSource source, bool publishRefresh)
+        {
+            if (!_modifiers.TryGetValue(creature, out var modifiers))
+                return 0;
+
+            var group = modifiers.FirstOrDefault(modifier => $"temporary:{modifier.Group}" == source.Key)?.Group;
+            return group == null ? 0 : ConsumeInternal(creature, statType, group, publishRefresh);
+        }
+
         public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
         {
             if (PurgeExpired(creature))

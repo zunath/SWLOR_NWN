@@ -343,7 +343,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             int enmityBonus = 0,
             IEnumerable<Type> additionalStatusEffects = null,
             Func<uint, int> damagePercentAdjustment = null,
-            Action<uint, uint> afterSuccessfulHit = null)
+            Action<uint, uint> afterSuccessfulHit = null,
+            int maxTargets = 0)
         {
             var ability = builder
                 .Create(feat, profile.PlayerPerkType)
@@ -398,7 +399,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     damagePercentAdjustment: damagePercentAdjustment,
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: hitTarget => afterSuccessfulHit?.Invoke(activator, hitTarget),
-                    useNPCStatScaling: ShouldUseNPCStatScaling(activator));
+                    useNPCStatScaling: ShouldUseNPCStatScaling(activator),
+                    maxTargets: maxTargets);
             });
 
             ability.MimicryElement(damageType);

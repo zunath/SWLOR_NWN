@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new WeaponAbilityProfile { MaximumAreaTargets = 5 });
 
             return builder.Build();
         }

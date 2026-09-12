@@ -35,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Frost_L,
                 VisualEffect.Vfx_Fnf_Icestorm,
                 enmityBonus: 100,
-                additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) })
+                additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) },
+                maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CryoBileTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

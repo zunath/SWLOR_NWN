@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EvasiveReloadTrait)
                 .Description("After you evade an attack, your next hostile ranged ability within 30 seconds costs 3 less STM.")
-                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilitySkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityRangedOnly, 1)
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment, -3)
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityWindowSeconds, 30)
                 .Price(2)

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Eclipse of Resolve";
         public override EffectIconType Icon => EffectIconType.EclipseOfResolve1StatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.AbilityDisruption;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;
         public override bool PersistsOnLogout => false;

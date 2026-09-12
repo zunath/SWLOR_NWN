@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Electrical,
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Head_Electricity,
-                VisualEffect.Dur_Web)
+                VisualEffect.Dur_Web,
+                maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PressureLockTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

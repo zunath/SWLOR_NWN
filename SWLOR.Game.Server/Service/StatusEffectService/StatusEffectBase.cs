@@ -80,9 +80,18 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             Source = source;
         }
 
+        public float GetRemainingDurationSeconds(DateTime currentTime)
+        {
+            if (_isPermanent)
+                return -1f;
+            return (float)Math.Max(0d, _durationTicks * Math.Max(1f, Frequency) -
+                Math.Max(0d, (currentTime - _lastRun).TotalSeconds));
+        }
+
         public void ExtendDurationTicks(int ticks)
         {
-            if (_isPermanent || IsFlaggedForRemoval || ticks <= 0)
+            if (_isPermanent || IsFlaggedForRemoval || ticks <= 0 ||
+                (Categories & StatusEffectCategory.HardCrowdControl) != 0)
                 return;
 
             _durationTicks += ticks;
@@ -93,7 +102,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             if (_isPermanent || IsFlaggedForRemoval || ticks <= 0)
                 return;
 
-            _durationTicks = ticks;
+            _durationTicks = (Categories & StatusEffectCategory.HardCrowdControl) != 0
+                ? Math.Min(_durationTicks, ticks)
+                : ticks;
         }
 
         protected virtual void Reapply(uint creature) { }

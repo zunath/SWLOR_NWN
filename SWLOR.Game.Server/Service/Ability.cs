@@ -2478,13 +2478,13 @@ namespace SWLOR.Game.Server.Service
                           activator, skillType, appliedStatusCategories);
                 });
             adjustedBaseDamage = impactDamage.BaseDamage;
+            var authoredDamagePercentAdjustment = impactDamage.DealsDamage ? damagePercentAdjustment?.Invoke(target) ?? 0 : 0;
+            var lowHPDamagePercentAdjustment = impactDamage.DealsDamage ? GetDarkForceTargetLowHPDamageAdjustment(activator, target) : 0;
             var damage = !impactDamage.DealsDamage ? 0 : useUnscaledDamage
-                ? CalculateUnscaledCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType)
+                ? CalculateUnscaledCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, authoredDamagePercentAdjustment, lowHPDamagePercentAdjustment)
                 : usesNPCStatScaling
-                    ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
-                    : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical);
-            damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
-            damage = ApplyDarkForceTargetLowHPDamageModifier(activator, target, damage);
+                    ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical, authoredDamagePercentAdjustment, lowHPDamagePercentAdjustment)
+                    : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical, authoredDamagePercentAdjustment, lowHPDamagePercentAdjustment);
             return ApplyHostileCombatImpact(
                 activator,
                 target,
@@ -2628,40 +2628,25 @@ namespace SWLOR.Game.Server.Service
                 60f);
         }
 
-        private static int ApplyDamagePercentAdjustment(
-            uint target,
-            int damage,
-            Func<uint, int> damagePercentAdjustment)
+        private static int GetDarkForceTargetLowHPDamageAdjustment(uint activator, uint target)
         {
-            if (damage <= 0 || damagePercentAdjustment == null)
-                return damage;
-
-            var adjustment = damagePercentAdjustment(target);
-            if (adjustment == 0)
-                return damage;
-
-            return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
-        }
-
-        private static int ApplyDarkForceTargetLowHPDamageModifier(uint activator, uint target, int damage)
-        {
-            if (damage <= 0 || !GetIsObjectValid(target))
-                return damage;
+            if (!GetIsObjectValid(target))
+                return 0;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
             if (trackedImpact?.Ability?.TriggersDarkForceConversion != true)
-                return damage;
+                return 0;
 
             var threshold = Stat.GetStatAdjustment(activator, StatType.DarkForceTargetLowHPDamageThresholdPercent);
             var adjustment = Stat.GetStatAdjustment(activator, StatType.DarkForceTargetLowHPDamagePercentAdjustment);
             if (threshold <= 0 || adjustment == 0)
-                return damage;
+                return 0;
 
             var maxHP = GetMaxHitPoints(target);
             if (maxHP <= 0 || GetCurrentHitPoints(target) > maxHP * (threshold / 100f))
-                return damage;
+                return 0;
 
-            return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+            return adjustment;
         }
 
         private static void ApplyDarkForceConversion(uint activator, uint target, int damage)
@@ -2739,7 +2724,9 @@ namespace SWLOR.Game.Server.Service
             uint target,
             SkillType skillType,
             int baseDamage,
-            CombatDamageType damageType)
+            CombatDamageType damageType,
+            int abilityDamagePercentAdjustment = 0,
+            int lowHPAbilityDamagePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0, false))
@@ -2753,9 +2740,14 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 damageType,
                 isAbilityDamage: true,
-                ability: trackedImpact?.Ability);
+                canApplyRandomFlatBonuses: true,
+                isLandedAttack: true,
+                ability: trackedImpact?.Ability,
+                targetStatusDamagePercentAdjustment: out var targetStatusDamageAdjustment,
+                abilityDamagePercentAdjustment,
+                lowHPAbilityDamagePercentAdjustment);
             damage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage);
-            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref damage);
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref damage, targetStatusDamageAdjustment);
             damage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, damage, damageType);
             damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
             damage = Combat.ApplyDamageTakenModifiers(
@@ -2763,6 +2755,7 @@ namespace SWLOR.Game.Server.Service
                 damage,
                 activator,
                 damageType,
+                targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment,
                 typedLeadershipReductionAlreadyApplied: true);
 
             return damage;
@@ -2776,7 +2769,9 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             int criticalRatePercentAdjustment = 0,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            bool canCritical = true)
+            bool canCritical = true,
+            int abilityDamagePercentAdjustment = 0,
+            int lowHPAbilityDamagePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var usesQueuedNaturalWeapon =
@@ -2853,33 +2848,6 @@ namespace SWLOR.Game.Server.Service
                 target,
                 idleBonuses.CriticalDamagePercentAdjustment +
                 (trackedImpact?.NextAbilityCriticalDamagePercentAdjustment ?? 0));
-            calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
-            calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilitySingleTarget(activator),
-                IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyThrowingAbilityShapeDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplySkillAreaAbilityDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyPhysicalAbilityShapeDamageModifier(
-                activator,
-                damageType,
-                calculatedDamage,
-                IsTrackedAbilitySingleTarget(activator));
-            calculatedDamage = Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilityArea(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
@@ -2890,12 +2858,17 @@ namespace SWLOR.Game.Server.Service
                 calculatedDamage,
                 skillType,
                 damageType,
-                isAbilityDamage: true,
-                ability: trackedImpact?.Ability);
+                true,
+                true,
+                true,
+                trackedImpact?.Ability,
+                out var targetStatusDamageAdjustment,
+                abilityDamagePercentAdjustment,
+                lowHPAbilityDamagePercentAdjustment);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
-            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment);
             // Conversion must split first so each portion receives only its own typed Leadership channel.
             calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
@@ -2904,6 +2877,7 @@ namespace SWLOR.Game.Server.Service
                 calculatedDamage,
                 activator,
                 damageType,
+                targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment,
                 typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)
@@ -3007,7 +2981,9 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             int criticalRatePercentAdjustment = 0,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            bool canCritical = true)
+            bool canCritical = true,
+            int abilityDamagePercentAdjustment = 0,
+            int lowHPAbilityDamagePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var usesQueuedNaturalWeapon =
@@ -3092,33 +3068,6 @@ namespace SWLOR.Game.Server.Service
                 target,
                 idleBonuses.CriticalDamagePercentAdjustment +
                 (trackedImpact?.NextAbilityCriticalDamagePercentAdjustment ?? 0));
-            calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
-            calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilitySingleTarget(activator),
-                IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyThrowingAbilityShapeDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplySkillAreaAbilityDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyPhysicalAbilityShapeDamageModifier(
-                activator,
-                damageType,
-                calculatedDamage,
-                IsTrackedAbilitySingleTarget(activator));
-            calculatedDamage = Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(
-                activator,
-                skillType,
-                calculatedDamage,
-                IsTrackedAbilityArea(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
@@ -3129,12 +3078,17 @@ namespace SWLOR.Game.Server.Service
                 calculatedDamage,
                 skillType,
                 damageType,
-                isAbilityDamage: true,
-                ability: trackedImpact?.Ability);
+                true,
+                true,
+                true,
+                trackedImpact?.Ability,
+                out var targetStatusDamageAdjustment,
+                abilityDamagePercentAdjustment,
+                lowHPAbilityDamagePercentAdjustment);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
-            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment);
             // Conversion must split first so each portion receives only its own typed Leadership channel.
             calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
@@ -3143,6 +3097,7 @@ namespace SWLOR.Game.Server.Service
                 calculatedDamage,
                 activator,
                 damageType,
+                targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment,
                 typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)

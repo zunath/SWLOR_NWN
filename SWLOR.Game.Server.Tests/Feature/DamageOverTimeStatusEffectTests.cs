@@ -78,8 +78,8 @@ public class DamageOverTimeStatusEffectTests
         var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
 
         forceDotSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
-        forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force)");
-        forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force)");
+        forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment)");
+        forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment)");
         forceDotSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature))");
     }
 

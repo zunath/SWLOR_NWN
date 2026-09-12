@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Fractured Focus";
         public override EffectIconType Icon => EffectIconType.FracturedFocusStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.AbilityDisruption;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;
 

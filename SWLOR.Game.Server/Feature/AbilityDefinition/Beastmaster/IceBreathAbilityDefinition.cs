@@ -157,7 +157,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Ice,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                maxTargets: 5);
         }
 
     }

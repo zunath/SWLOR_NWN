@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.SuppressingShot,
                 1.2f,
-                18f,
+                24f,
                 5,
                 0,
                 15,
@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Physical,
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Com_Special_Blue_Red,
-                VisualEffect.Vfx_Fnf_Screen_Bump)
+                VisualEffect.Vfx_Fnf_Screen_Bump,
+                maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SuppressingShotTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

@@ -78,9 +78,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PayloadPouchTrait)
-                .Description("Thrown attacks have a 15% chance to deal +8 area DMG around the target.")
-                .IncreasesStat(StatType.AutoAttackDamageBonusChance, 15)
-                .IncreasesStat(StatType.AutoAttackDamageBonus, 8)
+                .Description("Thrown auto-attacks have a 15% chance to deal 8 Physical DMG to the target and up to four other enemies within 3m. This splash cannot trigger other on-hit effects.")
+                .IncreasesStat(StatType.AutoAttackSplashChance, 15)
+                .IncreasesStat(StatType.AutoAttackSplashDamage, 8)
+                .IncreasesStat(StatType.AutoAttackSplashSkillType, (int)SkillType.Throwing)
+                .IncreasesStat(StatType.AutoAttackSplashRadiusMeters, 3)
+                .IncreasesStat(StatType.AutoAttackSplashMaximumTargets, 5)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 5);
         }
@@ -164,13 +167,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss1)
-                .Description("Deals weapon DMG + 16 to enemies within 5m of you and inflicts Dazed for 15 seconds.")
+                .Description("Deals weapon DMG + 16 to enemies within 5m of you and inflicts Dazed for 15 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss2)
-                .Description("Deals weapon DMG + 30 to enemies within 5m of you and inflicts Dazed for 15 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m of you and inflicts Dazed for 15 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 32);
         }

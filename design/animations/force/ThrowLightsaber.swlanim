@@ -1973,7 +1973,7 @@
           "Position": {
             "X": 0.05960007,
             "Y": -0.015788326,
-            "Z": 1.1901203
+            "Z": 1.1699228
           },
           "Orientation": {
             "IsIdentity": false,
@@ -2833,7 +2833,7 @@
           "Position": {
             "X": 0.03043203,
             "Y": 0.0016115371,
-            "Z": 1.198422
+            "Z": 1.1196603
           },
           "Orientation": {
             "IsIdentity": false,
@@ -3693,7 +3693,7 @@
           "Position": {
             "X": 0.0050685154,
             "Y": 0.016741853,
-            "Z": 1.2056407
+            "Z": 1.0612388
           },
           "Orientation": {
             "IsIdentity": false,
@@ -4553,7 +4553,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0473163
           },
           "Orientation": {
             "IsIdentity": false,
@@ -5413,7 +5413,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.048147
           },
           "Orientation": {
             "IsIdentity": false,
@@ -6273,7 +6273,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.050475
           },
           "Orientation": {
             "IsIdentity": false,
@@ -7133,7 +7133,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0535609
           },
           "Orientation": {
             "IsIdentity": false,
@@ -7993,7 +7993,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0558205
           },
           "Orientation": {
             "IsIdentity": false,
@@ -8853,7 +8853,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0577077
           },
           "Orientation": {
             "IsIdentity": false,
@@ -9713,7 +9713,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0595577
           },
           "Orientation": {
             "IsIdentity": false,
@@ -10573,7 +10573,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -11433,7 +11433,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -12293,7 +12293,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -13153,7 +13153,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -14013,7 +14013,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -14873,7 +14873,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -15731,9 +15731,9 @@
         },
         {
           "Position": {
-            "X": -0.00041,
+            "X": -0.00041000004,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -16593,7 +16593,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -17453,7 +17453,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -18313,7 +18313,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597503
           },
           "Orientation": {
             "IsIdentity": false,
@@ -19173,7 +19173,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -20033,7 +20033,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -20893,7 +20893,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -21753,7 +21753,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -22613,7 +22613,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -23473,7 +23473,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -24333,7 +24333,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -25193,7 +25193,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -26053,7 +26053,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -26913,7 +26913,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -27773,7 +27773,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -28633,7 +28633,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -29493,7 +29493,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -30353,7 +30353,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -31213,7 +31213,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -32073,7 +32073,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -32933,7 +32933,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -33793,7 +33793,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -34653,7 +34653,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -35513,7 +35513,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -36373,7 +36373,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -37233,7 +37233,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -38093,7 +38093,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -38953,7 +38953,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -39813,7 +39813,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -40673,7 +40673,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -41533,7 +41533,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -42393,7 +42393,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -43253,7 +43253,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -44111,9 +44111,9 @@
         },
         {
           "Position": {
-            "X": -0.00041,
+            "X": -0.00041000004,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -44973,7 +44973,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -45833,7 +45833,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -46693,7 +46693,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -47553,7 +47553,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -48413,7 +48413,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -49273,7 +49273,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -50133,7 +50133,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -50993,7 +50993,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -51853,7 +51853,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -52713,7 +52713,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -53573,7 +53573,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -54433,7 +54433,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0597504
           },
           "Orientation": {
             "IsIdentity": false,
@@ -55293,7 +55293,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0573584
           },
           "Orientation": {
             "IsIdentity": false,
@@ -56153,7 +56153,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0540625
           },
           "Orientation": {
             "IsIdentity": false,
@@ -57013,7 +57013,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0500895
           },
           "Orientation": {
             "IsIdentity": false,
@@ -57873,7 +57873,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0475558
           },
           "Orientation": {
             "IsIdentity": false,
@@ -58733,7 +58733,7 @@
           "Position": {
             "X": -0.00041,
             "Y": 0.02001,
-            "Z": 1.2072
+            "Z": 1.0473163
           },
           "Orientation": {
             "IsIdentity": false,
@@ -59593,7 +59593,7 @@
           "Position": {
             "X": 0.004653363,
             "Y": 0.016989509,
-            "Z": 1.2057589
+            "Z": 1.0601974
           },
           "Orientation": {
             "IsIdentity": false,
@@ -60453,7 +60453,7 @@
           "Position": {
             "X": 0.019671425,
             "Y": 0.008030653,
-            "Z": 1.2014846
+            "Z": 1.0962431
           },
           "Orientation": {
             "IsIdentity": false,
@@ -61313,7 +61313,7 @@
           "Position": {
             "X": 0.039353907,
             "Y": -0.0037107107,
-            "Z": 1.1958827
+            "Z": 1.1372495
           },
           "Orientation": {
             "IsIdentity": false,
@@ -62173,7 +62173,7 @@
           "Position": {
             "X": 0.05829265,
             "Y": -0.015008401,
-            "Z": 1.1904924
+            "Z": 1.1681465
           },
           "Orientation": {
             "IsIdentity": false,
@@ -63033,7 +63033,7 @@
           "Position": {
             "X": 0.07107997,
             "Y": -0.022636533,
-            "Z": 1.186853
+            "Z": 1.1834302
           },
           "Orientation": {
             "IsIdentity": false,

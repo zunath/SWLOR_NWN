@@ -2806,7 +2806,7 @@
   },
   {
     "Id": "ThrowLightsaber",
-    "Description": "Original CUSTOM46 saber throw start, loop and recovery at master double speed; gameplay owns the traveling weapon",
+    "Description": "Original CUSTOM46 saber throw start, loop and recovery at master double speed with grounded root height; gameplay owns the traveling weapon",
     "Duration": 2.22,
     "Beats": [
       {
@@ -2867,7 +2867,7 @@
   },
   {
     "Id": "ThrowRock",
-    "Description": "Scoop a heavy invisible mass upward from low forward space then heave both arms toward the distant target; lift the heavy telekinetic mass through the legs, load the hips behind it and heave from the whole body",
+    "Description": "Gather the rock with a low leading hand, lift it beside the shoulder, then drive a compact forward Force release through a planted weight shift; the other hand stays close to the body and both arms settle smoothly",
     "Duration": 2.9,
     "Beats": [
       {
@@ -2877,133 +2877,159 @@
         "SourceTime": 0
       },
       {
-        "Time": 0.45,
-        "Label": "Reach down for stone and debris",
+        "Time": 0.5,
+        "Label": "Gather the stone with the leading hand",
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
-        "RightHand": [
-          0.36,
-          0.51,
-          0.99
-        ],
         "LeftHand": [
-          -0.36,
-          0.51,
-          0.99
+          -0.28,
+          0.3,
+          1.1
+        ],
+        "RightHand": [
+          0.28,
+          0.22,
+          1.25
         ],
         "TorsoDegrees": [
-          10,
+          5,
           0,
-          0
+          4
         ],
         "RootOffset": [
-          0.0,
-          0.03,
-          -0.05
+          0.015,
+          0.015,
+          -0.03
         ]
       },
       {
-        "Time": 1.03,
-        "Label": "Lift the telekinetic weight",
+        "Time": 1.05,
+        "Label": "Lift and suspend beside the shoulder",
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
-        "RightHand": [
-          0.4,
-          0.4,
-          1.43
-        ],
         "LeftHand": [
-          -0.4,
-          0.4,
-          1.43
+          -0.29,
+          0.36,
+          1.44
+        ],
+        "RightHand": [
+          0.27,
+          0.24,
+          1.29
         ],
         "TorsoDegrees": [
-          4,
+          -2,
           0,
-          0
+          7
         ],
         "RootOffset": [
-          0.0,
-          0.01,
-          -0.03
+          0.025,
+          -0.025,
+          -0.035
+        ]
+      },
+      {
+        "Time": 1.25,
+        "Label": "Set the direction before release",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.27,
+          0.39,
+          1.46
+        ],
+        "RightHand": [
+          0.27,
+          0.24,
+          1.28
+        ],
+        "TorsoDegrees": [
+          -2,
+          0,
+          7
+        ],
+        "RootOffset": [
+          0.025,
+          -0.025,
+          -0.035
         ]
       },
       {
         "Time": 1.5,
-        "Label": "Draw the heavy mass back",
-        "SourceAnimation": "pause1",
+        "Label": "Drive the rock forward with the Force",
+        "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
-        "RightHand": [
-          0.41,
-          0.19,
-          1.58
-        ],
         "LeftHand": [
-          -0.41,
-          0.19,
-          1.58
+          -0.22,
+          0.53,
+          1.39
+        ],
+        "RightHand": [
+          0.28,
+          0.22,
+          1.25
         ],
         "TorsoDegrees": [
-          -6,
+          6,
           0,
-          0
+          -4
         ],
         "RootOffset": [
-          0.0,
-          -0.04,
-          -0.04
+          -0.015,
+          0.04,
+          -0.025
         ]
       },
       {
-        "Time": 1.96,
-        "Label": "Heave the mass toward the target",
+        "Time": 1.8,
+        "Label": "Absorb the release without a second thrust",
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
-        "RightHand": [
-          0.37,
-          0.65,
-          1.22
-        ],
         "LeftHand": [
-          -0.37,
-          0.65,
-          1.22
+          -0.24,
+          0.46,
+          1.35
+        ],
+        "RightHand": [
+          0.28,
+          0.22,
+          1.24
         ],
         "TorsoDegrees": [
-          12,
+          4,
           0,
-          0
+          -2
         ],
         "RootOffset": [
-          0.0,
-          0.05,
-          -0.03
+          -0.01,
+          0.025,
+          -0.025
         ]
       },
       {
-        "Time": 2.43,
-        "Label": "Follow through and release the weight",
+        "Time": 2.25,
+        "Label": "Lower the guiding hand and settle",
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
-        "RightHand": [
-          0.47,
-          0.45,
-          1.05
-        ],
         "LeftHand": [
-          -0.47,
-          0.45,
-          1.05
+          -0.28,
+          0.28,
+          1.2
         ],
-        "RootOffset": [
-          0.0,
-          0.03,
-          -0.04
+        "RightHand": [
+          0.28,
+          0.21,
+          1.23
         ],
         "TorsoDegrees": [
-          8,
+          1,
           0,
           0
+        ],
+        "RootOffset": [
+          0,
+          0.005,
+          -0.015
         ]
       },
       {

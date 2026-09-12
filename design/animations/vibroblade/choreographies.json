@@ -1,7 +1,7 @@
 [
   {
     "Id": "BerserkerStance",
-    "Description": "Open the shield side, draw the sword back beside the hip and lean into an exposed aggressive ready posture; hold the threat without making an attack",
+    "Description": "Brace the weapon in its native ready grip, load the legs and lean into an aggressive forward threat; retain natural elbow bends while holding without an attack",
     "Duration": 2.35,
     "Beats": [
       {
@@ -23,14 +23,9 @@
       },
       {
         "Time": 0.75,
-        "Label": "Open the guarded flank",
+        "Label": "Load the stance with the weapon braced",
         "SourceAnimation": "1hreadyr",
         "SourceTime": 0,
-        "LeftHand": [
-          -0.5,
-          0.08,
-          1.1
-        ],
         "TorsoDegrees": [
           0,
           0,
@@ -44,19 +39,9 @@
       },
       {
         "Time": 1.2,
-        "Label": "Draw the sword into an aggressive chamber",
+        "Label": "Lean into the braced weapon",
         "SourceAnimation": "1hreadyr",
         "SourceTime": 0,
-        "RightHand": [
-          0.34,
-          -0.1,
-          1.03
-        ],
-        "LeftHand": [
-          -0.52,
-          0.17,
-          1.04
-        ],
         "TorsoDegrees": [
           -10,
           0,
@@ -70,19 +55,9 @@
       },
       {
         "Time": 1.65,
-        "Label": "Hold the exposed forward threat",
+        "Label": "Hold the forward threat with natural elbows",
         "SourceAnimation": "1hreadyr",
         "SourceTime": 0,
-        "RightHand": [
-          0.34,
-          -0.06,
-          1.06
-        ],
-        "LeftHand": [
-          -0.5,
-          0.22,
-          1.07
-        ],
         "TorsoDegrees": [
           -14,
           0,

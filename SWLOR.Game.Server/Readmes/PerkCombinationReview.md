@@ -52,14 +52,14 @@ This bounds hard control. It does not prove that every combination of soft debuf
 
 ## Validation
 
-**Full suite before PR feedback fixes: 2,715 passed, zero failed, zero skipped**, in 7 minutes 50 seconds. After fixing splash targeting, native damage dispatch and control-duration feedback, the focused regression run passed all **198 tests**. The build succeeded with one existing nullable-annotation warning in `GuiWidget.cs` and no errors. Builds skipped the Windows post-build deploy as required.
+**Full suite after PR feedback fixes: 2,724 passed, zero failed, zero skipped**, in 7 minutes 54 seconds. The focused regression run also passed all **198 tests**. Builds succeeded with existing nullable-reference/annotation warnings and no errors, and skipped the Windows post-build deploy as required. A subsequent wording clarification explicitly identifies the primary target as Payload Pouch's splash origin.
 
 ```powershell
 dotnet build SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never --no-restore
-dotnet test SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj --no-build --no-restore --results-directory TestResults/BibleReview --logger 'trx;LogFileName=pr-review-full.trx'
+dotnet test SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj --no-build --no-restore --results-directory TestResults/BibleReview --logger 'trx;LogFileName=pr-review-final-full.trx'
 ```
 
-The completed runs are `TestResults/BibleReview/pr-review-full.trx` and `TestResults/BibleReview/pr-review-fixes-focused.trx` in this workspace. Parent and TLK submodule whitespace checks also passed. The PR records subsequent validation and review results.
+The completed runs are `TestResults/BibleReview/pr-review-final-full.trx` and `TestResults/BibleReview/pr-review-fixes-focused.trx` in this workspace. Parent and TLK submodule whitespace checks also passed. The PR records subsequent description-sync validation and review results.
 
 The focused damage/control checks passed 199 tests. After making the duration test helper compatible with status-effect discovery, the combined status-loader and perk-combination regression run passed all 40 tests. The behavioral coverage includes 10,000 pairs of independent proc rolls and 9,216 mitigation pairs, plus exact boundary cases for tiny hits, flat damage and late control conversion.
 

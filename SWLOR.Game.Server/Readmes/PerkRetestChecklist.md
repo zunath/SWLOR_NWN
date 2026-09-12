@@ -2,7 +2,7 @@
 
 Snapshot: September 12, 2026. Source: [perk tracker](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203). All 1,004 skill/perk/rank names matched the local Bible manifest. Row links reflect this snapshot; use the skill and perk name if the sheet is reordered.
 
-**331 rows need verification for these changes: 51 directly changed rows and 280 combination regressions.** After the authorized tracker update and subsequent review fixes, 249 say Pass, 63 say Retest, and 19 say Not Tested. Of the 51 direct rows, 30 say Retest, 18 still say Pass, and three Deflecting Return ranks say Not Tested. The additional direct rows need verification too; the authorized live-sheet edit was limited to the original 26 rows. Combination regression means testing the listed interaction, not that the perk is independently known to be broken.
+**331 rows need verification for these changes: 52 directly changed rows and 279 combination regressions.** After the authorized tracker update and subsequent review fixes, 249 say Pass, 63 say Retest, and 19 say Not Tested. Of the 52 direct rows, 31 say Retest, 18 still say Pass, and three Deflecting Return ranks say Not Tested. The additional direct rows need verification too; the authorized live-sheet edit was limited to the original 26 rows. Combination regression means testing the listed interaction, not that the perk is independently known to be broken.
 
 On September 12, the user requested that the 26 directly changed rows previously marked Pass be changed to Retest. The live sheet update was verified to change exactly those 26 Test Status cells; this checklist reflects that update. Preserve its other existing work: 37 additional rows already marked Retest fall outside this change-specific list, and their existing retest requirements still apply. Likewise, this list does not replace the tracker's remaining first-time testing backlog.
 
@@ -58,6 +58,10 @@ Test this splash, pulse, retaliation or reflection against Physical and Force da
 
 With Ricochet Toss, a thrown ability hitting a bleeding target gets one 25% roll per cast for 12 damage to one other enemy within 5m. Check another weapon skill, a nonbleeding target, Flurry Bleed alone, multiple bleeding targets and repeated field pulses. Cluster Pouch adds 10 damage to one other enemy within 5m once per area thrown cast. The original target cannot spend the extra-target slot. Combine both perks; their budgets remain independent and a later cast starts fresh.
 
+### C13: Control-only damage suppression
+
+Use Flash with high weapon damage, captured flat-damage bonuses, outgoing damage buffs and low-HP target bonuses. Every affected target must take zero damage while still receiving the authored Flash debuff and +650 bonus Enmity. Damage procs and damage-derived healing must not fire from the zero-damage impact. Ordinary damaging abilities, including Flash Toss, must retain their normal damage and mitigation floors.
+
 ## Direct changes: test first
 
 | Tracker row | Skill | Perk / rank | Current status | Test cases |
@@ -70,6 +74,7 @@ With Ricochet Toss, a thrown ability hitting a bleeding target gets one 25% roll
 | [315](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A315:O315) | Force | Creeping Terror II | Pass | C2, C4 |
 | [328](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A328:O328) | Force | Creeping Terror III | Pass | C2, C4 |
 | [346](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A346:O346) | Force | Reflective Barrier | Pass | C11 |
+| [410](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A410:O410) | Heavy Vibroblade | Flash | Retest | C13 |
 | [412](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A412:O412) | Heavy Vibroblade | Defensive Harmony | Retest | C5 |
 | [434](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A434:O434) | Heavy Vibroblade | Soul Amplification | Retest | C5 |
 | [449](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A449:O449) | Katar | Iron Elbows | Pass | C11 |
@@ -257,7 +262,6 @@ With Ricochet Toss, a thrown ability hitting a bleeding target gets one 25% roll
 | [367](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A367:O367) | Force | Weaken Resolve II | Pass | C2 |
 | [370](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A370:O370) | Force | Mind Trick II | Pass | C3 |
 | [372](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A372:O372) | Force | Force Judgment III | Pass | C1 |
-| [410](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A410:O410) | Heavy Vibroblade | Flash | Retest | C1 |
 | [416](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A416:O416) | Heavy Vibroblade | Guardian's Resolve | Pass | C5 |
 | [417](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A417:O417) | Heavy Vibroblade | Rampart | Pass | C2 |
 | [422](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A422:O422) | Heavy Vibroblade | Blood Weapon | Pass | C5 |

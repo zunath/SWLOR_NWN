@@ -1030,6 +1030,11 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return damage;
 
+            // An authored zero-damage ability must stay zero even when weapon damage,
+            // flat bonuses or later percentage bonuses would otherwise produce a hit.
+            if (isAbilityDamage && abilityDamagePercentAdjustment <= -100)
+                return 0;
+
             if (HasDamageImmunity(defender, damageType))
                 return 0;
 

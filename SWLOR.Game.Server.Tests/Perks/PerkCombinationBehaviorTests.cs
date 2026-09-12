@@ -101,6 +101,21 @@ public class PerkCombinationBehaviorTests
             .Should().BeFalse("a shared skill selector must not confer another perk's proc");
     }
 
+    [TestCase(SkillType.HeavyVibroblade, -100, 1)]
+    [TestCase(SkillType.HeavyVibroblade, -100, 500)]
+    [TestCase(SkillType.Force, -100, 500)]
+    [TestCase(SkillType.HeavyVibroblade, -150, 500)]
+    public void ExplicitZeroDamageAbilities_BypassWeaponDamageAndAllLaterBonuses(
+        SkillType skill, int adjustment, int rolledDamage)
+    {
+        var damage = Combat.ApplyDamageDealtModifiers(1, 2, rolledDamage, skill, CombatDamageType.Physical,
+            isAbilityDamage: true, canApplyRandomFlatBonuses: true, isLandedAttack: true, ability: null,
+            targetStatusDamagePercentAdjustment: out var targetAdjustment,
+            abilityDamagePercentAdjustment: adjustment, lowHPAbilityDamagePercentAdjustment: 500);
+        damage.Should().Be(0);
+        targetAdjustment.Should().Be(0);
+    }
+
     [Test]
     public void SingleAdditionalDamageTarget_ExcludesThePrimaryBeforeSpendingTheSlot()
     {

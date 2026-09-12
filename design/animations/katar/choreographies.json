@@ -650,7 +650,7 @@
   },
   {
     "Id": "ScrapperStance",
-    "Description": "Loosen the shoulders with alternating low hand chambers, roll into a forward scrapping guard and settle ready to control an opponent",
+    "Description": "Ease into a consistent fighting guard, alternate compact hand chambers in front of the ribs and settle into a forward scrapping posture; lower the hands smoothly without reversing the arm's bend",
     "Duration": 2.45,
     "Beats": [
       {
@@ -660,9 +660,9 @@
         "SourceTime": 0
       },
       {
-        "Time": 0.3,
+        "Time": 0.45,
         "Label": "Take a loose fighting base",
-        "SourceAnimation": "nwreadyl",
+        "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
         "RootOffset": [
           0.0,
@@ -671,7 +671,7 @@
         ]
       },
       {
-        "Time": 0.75,
+        "Time": 0.85,
         "Label": "Chamber the right hand low",
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
@@ -681,9 +681,9 @@
           1.26
         ],
         "RightHand": [
-          0.37,
-          0.05,
-          1.05
+          0.31,
+          0.24,
+          1.16
         ],
         "TorsoDegrees": [
           0,
@@ -702,9 +702,9 @@
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
         "LeftHand": [
-          -0.38,
-          0.12,
-          1.05
+          -0.31,
+          0.24,
+          1.16
         ],
         "RightHand": [
           0.26,
@@ -746,17 +746,6 @@
           0.0,
           0.03,
           -0.035
-        ]
-      },
-      {
-        "Time": 2.15,
-        "Label": "Settle the stance",
-        "SourceAnimation": "nwreadyr",
-        "SourceTime": 0,
-        "RootOffset": [
-          0.0,
-          0.01,
-          -0.015
         ]
       },
       {

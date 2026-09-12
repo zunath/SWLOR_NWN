@@ -214,14 +214,14 @@
       "Project": "devices/CryoSprayer.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1",
-      "Profile": "Authored choreography: Braced right wrist cold spray traverses a narrow cone; shift pressure across the planted legs with the spray sweep while maintaining a low stable spraying stance",
+      "Profile": "Authored choreography: Right wrist cold spray traverses a narrow cone while the left arm stays in a compact forward guard beside the chest; shift pressure across planted legs with the spray sweep while maintaining a low stable spraying stance",
       "ChoreographyPath": "devices/choreographies.json",
-      "ChoreographySha256": "c55339a62d45a072c6f472f535a5917e529289f3aa2d8eef420bac3321892ceb",
+      "ChoreographySha256": "10879e5a89ac11427987680d5b8cefcfee04ab1e41ec8adc10aa45a1456b102e",
       "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "5ae83d3cfe42c11b72575a475b01c7740f8ef0f0c3c603471cc86ec785f7b180"
+      "ProjectSha256": "f6b0fa32a6f31d6c58961d9f2d30790df86ecfee7722c6a7c889f26d0d7d017e"
     },
     {
       "Id": "DeflectorShield",
@@ -809,14 +809,14 @@
       "Project": "first-aid/PainSuppressant.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1",
-      "Profile": "Authored choreography: Press a shoulder dose and maintain a firm local compression hold before releasing the shoulder; settle weight beneath the treated shoulder and maintain the compression stance before easing upright",
+      "Profile": "Authored choreography: Bring the dosing hand across in front of the chest toward the opposite shoulder, keeping the elbow forward and below the hand; hold a compact compression gesture, then lower the arm and ease upright",
       "ChoreographyPath": "first-aid/choreographies.json",
-      "ChoreographySha256": "98d3ffaa04980e19e88e6740cba18c898b1690ff452daa5e058cc8edfce6d40e",
+      "ChoreographySha256": "343e9a5b5f8fbf7bd9eb3742d352cda24532bd97e48526ad70c9d3ff2f89e4e1",
       "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a40187244bc819198879a733c235565",
-      "ProjectSha256": "c84721a0b4710fe64b38cfe44136ba4822959fb1ddccc9188bcf0b60dc7dfabc"
+      "ProjectSha256": "3b20da2ed3c46b90abc8f8091a3e00329108194f828ca556e049a18d724ba10d"
     },
     {
       "Id": "Resuscitation",
@@ -1249,16 +1249,16 @@
       "Category": "Force",
       "Duration": 2.22,
       "Project": "force/ThrowLightsaber.swlanim",
-      "SourceModel": "a_ba \u002B a_ba_non_combat",
-      "SourceAnimation": "pause1 \u002B custom46start \u002B custom46lp \u002B custom46end",
-      "Profile": "Authored choreography: Original CUSTOM46 saber throw start, loop and recovery at master double speed; gameplay owns the traveling weapon",
+      "SourceModel": "a_ba + a_ba_non_combat",
+      "SourceAnimation": "pause1 + custom46start + custom46lp + custom46end",
+      "Profile": "Authored choreography: Original CUSTOM46 saber throw start, loop and recovery at master double speed with grounded root height; gameplay owns the traveling weapon",
       "ChoreographyPath": "force/choreographies.json",
-      "ChoreographySha256": "5f54a1d16f5c5504bd06eefdae7a6aa11f0f30e16509efd2f5c025c0d94fe806",
-      "ChoreographySourceSha256": "71eae39bc651486f0da0c3225afd8fdc418271604d20277955334e1d6d699323",
+      "ChoreographySha256": "f13511054f222b19af280e598f95d49efa31383e9ffce4b6a56152e151f1510e",
+      "ChoreographySourceSha256": "b47debea1daf214316d209ce4e84c1fff3c053a56d60924f1ca8b55509ff4f1b",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "a9b038a1bbe05367d5d76558a67e8a15390494046de4bb3dbd6115e95fdb7305"
+      "ProjectSha256": "42934f3485df41a3a117ee863910099fe902e3cd89b9944777acf22ca71bca32"
     },
     {
       "Id": "ThrowRock",
@@ -1641,15 +1641,15 @@
       "Duration": 2.45,
       "Project": "katar/ScrapperStance.swlanim",
       "SourceModel": "a_ba",
-      "SourceAnimation": "pause1 \u002B nwreadyl \u002B nwreadyr",
-      "Profile": "Authored choreography: Loosen the shoulders with alternating low hand chambers, roll into a forward scrapping guard and settle ready to control an opponent",
+      "SourceAnimation": "pause1 + nwreadyr",
+      "Profile": "Authored choreography: Ease into a consistent fighting guard, alternate compact hand chambers in front of the ribs and settle into a forward scrapping posture; lower the hands smoothly without reversing the arm's bend",
       "ChoreographyPath": "katar/choreographies.json",
-      "ChoreographySha256": "b9d918e2016cc7c9c663d2c88e1ca31e5a4e28a26800fae20b657d25088b6023",
+      "ChoreographySha256": "c5e3db9f2f4b29508a139799e0fd673205f544c9cf701398396c623a002286f8",
       "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "abb9bae03bec804de63bf2babb77f0df973c810c07597c67f7a539fb086aa619"
+      "ProjectSha256": "f1e5b5d52498eaa42b87816137e8c41a32f80e372305612354690be3595dad86"
     },
     {
       "Id": "TwinGuardStance",
@@ -2730,14 +2730,14 @@
       "Project": "mimicry/PiercingQuillsTechnique.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1",
-      "Profile": "Authored choreography: Draw the quill arm behind the body and extend a held piercing fan through the enemy cone; load the back hip beneath the drawn arm and drive the held quill fan through a braced forward leg",
+      "Profile": "Authored choreography: Gather the quill hand in front of the ribs with a natural elbow bend, then drive a compact piercing fan forward within the arm's reach; transfer weight onto the braced forward leg and withdraw on the same side",
       "ChoreographyPath": "mimicry/choreographies.json",
-      "ChoreographySha256": "8312acf9e0f20601b075d4d80f5ddb478f837fbb723510d40cee4d17c62a2ea5",
+      "ChoreographySha256": "e5760c63a1418e467a11692eb351d582dd3421234f97fa608dd5db68f0bda5e6",
       "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "ca6c585233a152c75c15fd63ec7a37fe3eb23f34d79490bfd3ec15177dd79283"
+      "ProjectSha256": "00aff08ede1a7518be8de25d7924376510b997d8db3928afcda0bf5229d0e5d2"
     },
     {
       "Id": "PouncingStrikeTechnique",
@@ -2916,15 +2916,15 @@
       "Duration": 1.65,
       "Project": "mimicry/SnapRushTechnique.swlanim",
       "SourceModel": "a_ba",
-      "SourceAnimation": "pause1 \u002B nwreadyr",
-      "Profile": "Authored choreography: A quick guarded weight shift and backward arm drive gather speed without a false projectile cast; alternate pressure between the planted legs with the running-arm drive rather than moving only the shoulders",
+      "SourceAnimation": "pause1 + nwreadyr",
+      "Profile": "Authored choreography: Gather speed with two compact alternating arm pumps, keeping each elbow bent and each hand in front of the ribs; transfer pressure between the planted legs, then gather and lower the hands smoothly",
       "ChoreographyPath": "mimicry/choreographies.json",
-      "ChoreographySha256": "b704f0bc7b0ea1b3b6e5618370ba6035072950c6c61203db1c56f18d766b7d09",
+      "ChoreographySha256": "8fa7a5bc5dad3d0f50cab9c080caae3f635e5b97a7872af23dd7d9dcf3052c58",
       "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f36b6d367985dd802537e0853b2222fe38e425a55a85dd99d35c6161c6d53cbd"
+      "ProjectSha256": "6f3d29b3122b3bb810e44248446ef79ead565da7dafcedb9b44df8a7daa4c9d4"
     },
     {
       "Id": "SonicShriekTechnique",

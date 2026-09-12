@@ -205,6 +205,19 @@ at 2x speed in both gameplay and the tester. This requires the master model's
 NWN throw. Its `sw_thro_sabe` name and editable project remain
 available as an authoring reference; the generated clip is not selected for playback.
 
+The native throw's bent-knee stance needs a keyed `rootdummy` height: retaining
+standing height lifts both feet above the floor. Its editable native source is
+`SWLOR_Haks/model_sources/sw_cr_creature/a_ba_non_combat.mdl.ascii`. The correction
+changes only the root position tracks in the three CUSTOM46 phases; the original
+rotations, throw motion, events, and durations remain intact. When adding the
+missing height tracks, compile that source as a candidate, then use
+`SWLOR_Haks/tools/UpdateNativeRootTracks.py` with the original compiled model and
+the three named phases. It copies only the new position controllers, preserving
+the original model's other bytes instead of introducing legacy decompiler rounding
+into unrelated motion. Install the result as `sw_cr_creature/a_ba_non_combat.mdl`
+before refreshing the authoring reference and robe banks. Changing `sw_thro_sabe`
+alone does not change native playback.
+
 Ordinary Force gestures play at their declared activation or impact stage without extending
 cast timers. Creeping Terror's field creation uses activation playback; it does not replay
 the gesture on each damage pulse. Skeletal poses do not create lightning, stones, shields,

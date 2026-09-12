@@ -168,7 +168,18 @@ Current build state (2026-09-12):
 
 ### Generated Boss Arenas (2026-09-12)
 
-These normal ARE/GIT/GIC triplets were authored with the toolset area generator's `MacroLayout`, `TileResolver`, decoration planner, document populator, and `NewAreaWriter`. A compact arena macro plan replaces the generator's ordinary multi-room dungeon layouts: each 10x10-tile area has a staging entrance, a broad combat floor, and peripheral dressing. The recommended tilesets in this plan were retained, including the CEP variants resolved against their actual SET data.
+These normal ARE/GIT/GIC triplets use the toolset area generator's terrain resolution and document format, with individually composed scenery. The rooms have been reduced from 10x10 tiles to the sizes below, with 24–77 decorative placements per arena, themed lighting, entrance framing, and a central fighting space. Terrain was resolved against the actual SET data; the Jedi hall uses the same stone Home tile family as the existing Jedi Temple, and the forge, engineering room, and beast hollow use clear floor tiles so random tile furniture and rock columns do not obstruct the encounter.
+
+| Arena | Size (tiles) | Scenery |
+| --- | --- | --- |
+| Militia Command Room | 7x7 | Tactical projection table, console wall, generators, banners, and structural columns |
+| Saber Trial Chamber | 6x7 | Jedi floor emblem, sanctuary arch, training colonnade, braziers, and planted alcoves |
+| Champion Forge | 8x7 | Smelting crucible, paired furnaces, glowing weapon forges, anvils, stone pillars, and crystals |
+| Canyon Dueling Pit | 8x7 | Weathered gate, ruined pillars, sandstone outcrops, braziers, and krayt remains |
+| Overload Chamber | 7x8 | Fusion core, generator banks, containment columns, conduits, and control stations |
+| Final Ritual Chamber | 7x7 | Ritual shrine, processional carpet, guardian idols, obelisks, braziers, and red crystals |
+| Engineering Command Room | 7x7 | Command console wall, diagnostic benches, machinery, Republic banners, and entrance columns |
+| Alpha Beast Hollow | 8x8 | Rooted trees, rock ledges, dense edge foliage, fallen branches, mushrooms, and a feeding hollow |
 
 | Content Package | Registered Boss Arena | Tileset | Entry Waypoint Tag | Entry Blueprint |
 | --- | --- | --- | --- | --- |
@@ -183,7 +194,7 @@ These normal ARE/GIT/GIC triplets were authored with the toolset area generator'
 
 Each arena has its planet local, `IS_DUNGEON = 1`, `MINI_MAP_DISABLED = 1`, a `STUCK_WAYPOINT`, and three master encounter activators following the existing Protected Ward pattern: quest state 1, hidden by default, unique visibility IDs, 60-minute starter cooldowns, and 10-minute idle despawns. Master creature blueprints and their existing spawn waypoint blueprints are reused. No ambient enemies, wardens, or procedural treasure containers are placed in these arenas.
 
-When the adjoining dungeon is built, route its arena entrance to the entry tag above and add the return travel object near that waypoint. No placeholder destination or public-area shortcut is active. The eight entry blueprints are registered in the existing waypoint palette. Master positions, entry, and recovery points have been snapped to real WOK walkable faces and checked for connected paths with decorative footprint clearance; live encounter and visual review are still required.
+When the adjoining dungeon is built, route its arena entrance to the entry tag above and add the return travel object near that waypoint. No placeholder destination or public-area shortcut is active. The eight entry blueprints are registered in the existing waypoint palette. All 64 master, activator, entry, and recovery anchors are grounded on WOK faces and connected in a 0.5m sampled floor check with 1m clearance from decorative model footprints. Scenery is static, non-interactive, and contains no scripts, loot, or traps. All eight rooms were visually inspected using 3D previews of their actual tile and placeable models; in-engine lighting, effects, collision, and live encounters still require playtesting.
 
 The checked-in content contains 32 native resources: eight ARE/GIT/GIC triplets and eight entrance UTWs. All resources passed native `nwn_gff` round-trip validation; GIC list counts and encounter setup were checked. Maintain these areas directly in the toolset and repack the module to deploy changes.
 
@@ -201,8 +212,8 @@ The checked-in content contains 32 native resources: eight ARE/GIT/GIC triplets 
 - Final boss UTCs include the matching capstone feat and `PERK_LEVEL_<perk id>` local.
 - Beast capstone enemies use beast creature appearances and beast-style feat packages rather than humanoid templates.
 - Area spawn waypoint blueprints are in `Module/utw` and `Module/itp/waypointpalcus.itp.json`. Their `Tag` equals the spawn table ID.
-- Warden/master spawn waypoint blueprints are in `Module/utw` and `Module/itp/waypointpalcus.itp.json`. Their `Tag` is the `QUEST_ENCOUNTER_WAYPOINT` value for future `quest_enc` activator instances.
-- Unique boss activator placeables are not generated and are not in the placeable palette. The future placed world instance is the source of truth for each activator.
+- Warden/master spawn waypoint blueprints are in `Module/utw` and `Module/itp/waypointpalcus.itp.json`. Their `Tag` matches the placed `quest_enc` activator's `QUEST_ENCOUNTER_WAYPOINT` value. Master activators and their spawn waypoints are placed in all 13 boss arenas; only dungeon warden placements remain pending in the eight unfinished packages.
+- Unique boss activator blueprints are not in the placeable palette. The placed GIT instance is the source of truth for each activator. Preserve the existing master instances when connecting the remaining dungeons; add only their missing dungeon warden instances.
 
 ### Required Content Packages
 
@@ -210,11 +221,11 @@ Each content package below requires one dungeon area and one attached boss arena
 
 | Content Package | Planet | Capstone Lines | Dungeon Area Expectation | Attached Boss Arena Expectation |
 | --- | --- | --- | --- | --- |
-| Veles Militia Annex | Viscara | Invincible; Vital Rupture; Systemic Shutdown | Secured militia training wing attached to Veles Colony; interior barracks, sparring floor, and knife-work cells. | Isolated militia command room attached to the annex, with state-gated warden/master activators. |
+| Veles Militia Annex | Viscara | Invincible; Vital Rupture; Systemic Shutdown | Secured militia training wing attached to Veles Colony; interior barracks, sparring floor, and knife-work cells. | Isolated militia command room attached to the annex, with existing state-gated master activators. |
 | Dantooine Jedi Enclave Trial Halls | Dantooine | Saber Storm; Guardian Master; Saber Cyclone | Sealed Jedi Enclave training wing with stone/enclave interiors, crystal-channel side rooms, and saber trial corridors. | Controlled saber trial chamber attached to the halls, isolated from ambient lesson spawns. |
 | Korriban Forge Caverns | Korriban | Absolute Defense; Soul Ascension; Forcebane | Ancient Sith weapon forge and cavern complex with heavy melee proving rooms and hazardous forge machinery. | Sealed champion forge chamber attached to the caverns. |
 | Smuggler's Moon Fight Club Backrooms | Smuggler's Moon | Crippling Defense; Tempest Bloom; Red Bloom | Illegal fight-club service corridors and private arena backrooms, gated from public casino/fight club traffic. | Smuggler's Moon Private Pit, attached to the backrooms for on-demand bosses. |
-| CZ-220 Breaker Yard | CZ-220 | Adamantine Guard; Scrapheap Lockdown; Worldbreaker | Industrial scrap and maintenance yard with tight lanes, gantries, and malfunctioning machinery. | Locked breaker bay attached to the yard for warden/master encounters. |
+| CZ-220 Breaker Yard | CZ-220 | Adamantine Guard; Scrapheap Lockdown; Worldbreaker | Industrial scrap and maintenance yard with tight lanes, gantries, and malfunctioning machinery. | Locked breaker bay attached to the yard with existing master encounters. |
 | Anchorhead Canyon Range | Tatooine | Unmoving Center; Last Word; Dead Man's Hand | Remote canyon firing range outside Anchorhead with open lanes, cover ridges, and dueling platforms. | Isolated canyon-pocket arena attached to the range. |
 | Czerka Arms Test Range | Smuggler's Moon | Kill Box; One Shot; Rain of Steel | Czerka Arms firing and ordnance test range with interior lanes, storage, and target-control rooms. | Czerka Blast-Safe Cell, attached to the test range. |
 | Hutlar Qion Test Site | Hutlar | Perfect Flurry; Thermal Detonator; Overload Barrage | Frozen Qion Valley weapons test site with snowfield approach, bunker interiors, and device hazards. | Contained overload chamber attached to the test site. |

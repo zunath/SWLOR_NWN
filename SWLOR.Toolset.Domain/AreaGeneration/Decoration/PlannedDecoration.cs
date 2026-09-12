@@ -33,6 +33,19 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// </summary>
         public float FootprintRadius { get; set; } = 1f;
 
+        /// <summary>Measured, already-scaled world bounds for cardinal building frontages. Their
+        /// enclosing circle greatly overstates intrusion into the street beside a long building.</summary>
+        public DecorationBounds? FootprintBounds { get; set; }
+
+        /// <summary>Flat paint and elevated facade art do not obstruct ground movement.</summary>
+        public bool BlocksMovement { get; set; } = true;
+
+        /// <summary>Nonzero groups (doorway pairs and vignettes) are accepted or omitted together.</summary>
+        public int ArrangementId { get; set; }
+
+        /// <summary>A stacked tier is only retained when its supporting prop is retained.</summary>
+        public PlannedDecoration SupportDecoration { get; set; }
+
         /// <summary>
         /// World-space SUPPORT ANCHOR for grounding, or null to ground at the placement's own XY
         /// (every ordinary decoration). Set by BuildingFrontagePlanner for frontage buildings: a
@@ -50,5 +63,19 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// correctly. 0 for anchor-less decorations and flat layouts.
         /// </summary>
         public float GroundZ { get; set; }
+    }
+
+    public readonly record struct DecorationBounds(float MinX, float MinY, float MaxX, float MaxY)
+    {
+        public bool Overlaps(DecorationBounds other) =>
+            MinX < other.MaxX - 0.001f && MaxX > other.MinX + 0.001f &&
+            MinY < other.MaxY - 0.001f && MaxY > other.MinY + 0.001f;
+
+        public bool IntersectsCircle(float x, float y, float radius)
+        {
+            var dx = x - Math.Clamp(x, MinX, MaxX);
+            var dy = y - Math.Clamp(y, MinY, MaxY);
+            return dx * dx + dy * dy < radius * radius;
+        }
     }
 }

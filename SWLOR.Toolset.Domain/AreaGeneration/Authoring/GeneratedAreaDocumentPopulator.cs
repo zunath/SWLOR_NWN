@@ -427,6 +427,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 draft.Settings.Tier * 7919 ^
                 0x51ED270B));
             var occupied = CreatureOccupiedAnchors(draft);
+            var buildingBounds = BuildingBounds(draft);
             var appearanceTable = LoadCreatureAppearanceTable(workspace.ResourceIndex);
             var placements = new List<CreaturePlacement>();
 
@@ -447,7 +448,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     room,
                     spawns.Select(spawn => spawn.Radius).ToList(),
                     occupied,
-                    random);
+                    random,
+                    buildingBounds);
                 for (var index = 0; index < spawns.Count; index++)
                 {
                     var spawn = spawns[index];
@@ -471,7 +473,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 bossRoom,
                 [bossSpawn.Radius],
                 occupied,
-                random).Single();
+                random,
+                buildingBounds).Single();
             placements.Add(new CreaturePlacement(
                 bossSpawn,
                 bossAnchor.X,
@@ -493,7 +496,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         transition.DoorY,
                         draft.Composition.Content.ExitDoorFootprintRadius))
                 .ToList();
-            occupied.AddRange(draft.Result.PlannedDecorations.Select(decoration =>
+            occupied.AddRange(draft.Result.PlannedDecorations.Where(decoration => decoration.BlocksMovement && decoration.SupportDecoration == null && decoration.FootprintBounds == null).Select(decoration =>
                 (decoration.Position.X, decoration.Position.Y, EffectiveFootprintRadius(decoration))));
 
             var bossRoom = draft.Result.Resolved.Rooms.FirstOrDefault(room => room.Role == RoomRole.Boss);
@@ -520,7 +523,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             LayoutRoom room,
             IReadOnlyList<float> creatureRadii,
             ICollection<(float X, float Y, float Radius)> occupied,
-            Random random)
+            Random random,
+            IReadOnlyList<DecorationBounds>? buildingBounds = null)
         {
             if (creatureRadii.Count == 0)
                 return Array.Empty<(float X, float Y)>();
@@ -551,6 +555,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     {
                         var candidate = (tile.X * 10f + offsetX, tile.Y * 10f + offsetY);
                         if (!HasCreatureBoundaryClearance(candidate, radius, boundarySegments) ||
+                            buildingBounds?.Any(bounds => bounds.IntersectsCircle(candidate.Item1, candidate.Item2, radius)) == true ||
                             fixedObstacles.Any(point =>
                                 DistanceSquared(candidate, (point.X, point.Y)) + 0.0001f <
                                 (radius + point.Radius) * (radius + point.Radius)))
@@ -854,13 +859,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         draft.Composition.Content.ExitDoorFootprintRadius));
             }
 
-            occupied.AddRange(draft.Result.PlannedDecorations.Select(decoration =>
+            occupied.AddRange(draft.Result.PlannedDecorations.Where(decoration => decoration.BlocksMovement && decoration.SupportDecoration == null && decoration.FootprintBounds == null).Select(decoration =>
                 (decoration.Position.X, decoration.Position.Y, EffectiveFootprintRadius(decoration))));
-            if (occupied.Count == 0)
-                return candidates[0];
+            var buildingBounds = BuildingBounds(draft);
 
             foreach (var candidate in candidates)
             {
+                if (buildingBounds.Any(bounds => bounds.IntersectsCircle(candidate.X, candidate.Y, MathF.Max(treasureRadius, TreasureAnchorClearance))))
+                    continue;
                 if (occupied.All(point =>
                 {
                     var requiredDistance = MathF.Max(
@@ -893,6 +899,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 draft.Composition.Tileset.RoadCrosser);
         }
 
+        private static IReadOnlyList<DecorationBounds> BuildingBounds(AreaGenerationDraft draft) =>
+            draft.Result.PlannedDecorations.Where(prop => prop.BlocksMovement && prop.FootprintBounds.HasValue)
+                .Select(prop => prop.FootprintBounds!.Value).ToList();
+
         private static float DistanceSquared((float X, float Y) left, (float X, float Y) right)
         {
             var dx = left.X - right.X;
@@ -905,24 +915,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             TilesetModel tileset,
             float worldX,
             float worldY)
-        {
-            var tileX = Math.Clamp((int)MathF.Floor(worldX / 10f), 0, layout.Width - 1);
-            var tileY = Math.Clamp((int)MathF.Floor(worldY / 10f), 0, layout.Height - 1);
-            var resolved = layout.GetTile(tileX, tileY);
-            var tile = tileset.Tiles[resolved.TileId];
-            var localX = Math.Clamp((worldX - tileX * 10f) / 10f, 0f, 1f);
-            var localY = Math.Clamp((worldY - tileY * 10f) / 10f, 0f, 1f);
-
-            var topLeft = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.TopLeft);
-            var topRight = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.TopRight);
-            var bottomRight = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.BottomRight);
-            var bottomLeft = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.BottomLeft);
-            var bottom = bottomLeft + (bottomRight - bottomLeft) * localX;
-            var top = topLeft + (topRight - topLeft) * localX;
-            var cornerOffset = bottom + (top - bottom) * localY;
-
-            return (resolved.Height + cornerOffset) * layout.HeightTransition;
-        }
+            => ResolvedGround.HeightAt(layout, tileset, worldX, worldY);
 
         private static void AddPlaceable(
             ModuleWorkspace workspace,

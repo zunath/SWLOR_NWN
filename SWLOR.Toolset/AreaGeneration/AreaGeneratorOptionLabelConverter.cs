@@ -2,6 +2,7 @@ using System.Globalization;
 using Avalonia.Data.Converters;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 
 namespace SWLOR.Toolset.AreaGeneration;
 
@@ -15,6 +16,8 @@ public sealed class AreaGeneratorOptionLabelConverter : IValueConverter
         {
             AreaPreviewMode.Schematic => "Schematic",
             AreaPreviewMode.MapGraphics => "Map graphics",
+            DecorationPlacementStyle.Spacious => "Clear routes and spacing",
+            DecorationPlacementStyle.Compact => "Compact dressing",
             DungeonLayoutStyle.RoomsAndCorridors => "Rooms and corridors",
             DungeonLayoutStyle.OrganicCave => "Organic cave",
             DungeonLayoutStyle.Warren => "Warren",

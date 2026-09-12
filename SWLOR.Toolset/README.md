@@ -176,6 +176,8 @@ Phases 0–7 of [PLAN.md](PLAN.md) are complete. In practice:
 - **Create areas** from a template, registered in `module.ifo`, or use **Tools → Area Generator**
   to preview a deterministic themed layout and write its tiles, atmosphere, transitions, doors,
   and decorations directly into the open module. Export remains in the existing ERF Manager.
+  See the [area generator guide](AreaGeneration/README.md) for prop spacing options, preview overlays,
+  placement diagnostics and verification limits.
 - **Validate and pack** without leaving the app.
 
 `WORKLOG.md` records what each work package did and, more usefully, *why* — including the bugs found

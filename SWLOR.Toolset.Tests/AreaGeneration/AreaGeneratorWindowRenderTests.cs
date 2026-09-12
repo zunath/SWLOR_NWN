@@ -12,6 +12,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -21,6 +22,30 @@ namespace SWLOR.Toolset.Tests.AreaGeneration;
 
 public sealed class AreaGeneratorWindowRenderTests
 {
+    [AvaloniaTest]
+    public void DecorationControls_ExposeClearRoutesByDefaultAndAnOptionalCompactMode()
+    {
+        using var viewModel = CreateViewModel();
+        var window = new AreaGeneratorWindow(viewModel);
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            var selector = window.FindControl<ComboBox>("DecorationPlacementSelector")!;
+            viewModel.DecorationPlacementStyle.Should().Be(DecorationPlacementStyle.Spacious);
+            selector.SelectedItem.Should().Be(DecorationPlacementStyle.Spacious);
+            selector.SelectedItem = DecorationPlacementStyle.Compact;
+            viewModel.DecorationPlacementStyle.Should().Be(DecorationPlacementStyle.Compact);
+            viewModel.EnableDecorations = false;
+            selector.IsEnabled.Should().BeFalse();
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
     [Test]
     public void TilesetChoices_ShowOnlyTheVisualName()
     {
@@ -203,6 +228,7 @@ public sealed class AreaGeneratorWindowRenderTests
                 window.FindControl<CheckBox>("ShowRoomsToggle")!,
                 window.FindControl<CheckBox>("ShowTransitionsToggle")!,
                 window.FindControl<CheckBox>("ShowDecorationsToggle")!,
+                window.FindControl<CheckBox>("ShowRoutesToggle")!,
                 window.FindControl<Button>("GeneratePreviewButton")!
             };
 
@@ -594,6 +620,7 @@ public sealed class AreaGeneratorWindowRenderTests
         AssertInvalidatesPreview(viewModel, () => viewModel.ShowRooms = false);
         AssertInvalidatesPreview(viewModel, () => viewModel.ShowTransitions = false);
         AssertInvalidatesPreview(viewModel, () => viewModel.ShowDecorations = false);
+        AssertInvalidatesPreview(viewModel, () => viewModel.ShowRoutes = true);
     }
 
     private static void AssertInvalidatesPreview(AreaGeneratorViewModel viewModel, Action changeDisplayOption)
@@ -659,10 +686,12 @@ public sealed class AreaGeneratorWindowRenderTests
         private int _operationCount;
 
         public Task FirstOperationStarted => _firstOperationStarted.Task;
+        public ConcurrentBag<Type> OperationTypes { get; } = new();
         public ConcurrentBag<int> WorkerThreadIds { get; } = new();
 
         public Task<T> RunAsync<T>(Func<T> operation)
         {
+            OperationTypes.Add(typeof(T));
             return Task.Run(() =>
             {
                 WorkerThreadIds.Add(Environment.CurrentManagedThreadId);
@@ -677,6 +706,43 @@ public sealed class AreaGeneratorWindowRenderTests
         }
 
         public void Release() => _release.TrySetResult(true);
+    }
+
+    [AvaloniaTest]
+    public async Task OverlayChanges_ReuseTheSolvedDraft_ButPlacementChangesRegenerate()
+    {
+        var runner = new GatedBackgroundTaskRunner();
+        runner.Release();
+        using var viewModel = CreateGeneratableViewModel(runner);
+        viewModel.PreviewMode = AreaPreviewMode.Schematic;
+        await viewModel.GeneratePreviewCommand.ExecuteAsync(null);
+        viewModel.Preview.Should().NotBeNull(viewModel.StatusMessage);
+        runner.OperationTypes.Count(type => type == typeof(AreaGenerationDraft)).Should().Be(1);
+        viewModel.ShowDecorations = false;
+        await viewModel.GeneratePreviewCommand.ExecuteAsync(null);
+        viewModel.Preview.Should().NotBeNull();
+        runner.OperationTypes.Count(type => type == typeof(AreaGenerationDraft)).Should().Be(1);
+        viewModel.DecorationPlacementStyle = DecorationPlacementStyle.Compact;
+        await viewModel.GeneratePreviewCommand.ExecuteAsync(null);
+        runner.OperationTypes.Count(type => type == typeof(AreaGenerationDraft)).Should().Be(2);
+    }
+
+    [AvaloniaTest]
+    public async Task SettingsChangedDuringGeneration_CannotPublishAStaleCreatablePreview()
+    {
+        var runner = new GatedBackgroundTaskRunner();
+        using var viewModel = CreateGeneratableViewModel(runner);
+        viewModel.PreviewMode = AreaPreviewMode.Schematic;
+        var generation = viewModel.GeneratePreviewCommand.ExecuteAsync(null);
+        try
+        {
+            await runner.FirstOperationStarted.WaitAsync(TimeSpan.FromSeconds(5));
+            viewModel.DecorationPlacementStyle = DecorationPlacementStyle.Compact;
+        }
+        finally { runner.Release(); }
+        await generation;
+        viewModel.Preview.Should().BeNull();
+        viewModel.CreateAreaCommand.CanExecute(null).Should().BeFalse();
     }
 
     private static async Task WaitUntilAsync(Func<bool> condition, Func<string> currentStatus)

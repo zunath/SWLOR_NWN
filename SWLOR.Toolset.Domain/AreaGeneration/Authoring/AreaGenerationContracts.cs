@@ -33,6 +33,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         public string FailureReason { get; init; }
         public IReadOnlyList<PlannedDecoration> PlannedDecorations { get; init; } = Array.Empty<PlannedDecoration>();
         public int PlannedDecorationCount => PlannedDecorations.Count;
+        public DecorationPlacementReport DecorationPlacementReport { get; init; }
     }
 
     /// <summary>Static numeric ranges for the authoring surface.</summary>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration
@@ -88,6 +89,25 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             // downstream dressing can compose an ensemble on area-marking feature tiles (see
             // ResolvedLayout.FeatureTileCells).
             var placedFeatureCells = new Dictionary<(int X, int Y), string>();
+            var protectedFeatureCells = new HashSet<(int X, int Y)>();
+            if (featureLookup != null && layout.Rooms.Count > 0)
+            {
+                var surfaceLayout = new ResolvedLayout
+                {
+                    Width = width, Height = height, Rooms = layout.Rooms, Transitions = layout.Transitions,
+                    CornerTerrains = layout.Corners, OpenTerrain = layout.OpenTerrain,
+                    SecondaryOpenTerrain = layout.SecondaryOpenTerrain, Crossers = layout.Crossers,
+                    StampedStructureTiles = layout.StampedOpenSetPieceFootprints.SelectMany(footprint => footprint).ToHashSet()
+                };
+                var surface = DecorationPlacementSafety.BuildOpenSurface(surfaceLayout);
+                foreach (var route in DecorationPlacementSafety.BuildRoutes(surfaceLayout, surface, string.Empty))
+                {
+                    protectedFeatureCells.Add(((int)MathF.Floor(route.Start.X / 10), (int)MathF.Floor(route.Start.Y / 10)));
+                    protectedFeatureCells.Add(((int)MathF.Floor(route.End.X / 10), (int)MathF.Floor(route.End.Y / 10)));
+                }
+                foreach (var room in layout.Rooms)
+                    protectedFeatureCells.Add(room.CenterTile);
+            }
 
             // Bottom-up, row-major order — matches ResolvedLayout.Tiles indexing (index = y * Width + x,
             // y = 0 at the south edge). This is also the "first unresolvable cell" order used for
@@ -198,7 +218,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                         {
                             var featurePick = PickWeighted(featureSet, random);
 
-                            var isTransitionAnchor = false;
+                            var isTransitionAnchor = protectedFeatureCells.Contains((x, y));
                             foreach (var transition in layout.Transitions)
                             {
                                 if (transition.Tile.X == x && transition.Tile.Y == y)

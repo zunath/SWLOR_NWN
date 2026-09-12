@@ -44,7 +44,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     $"Theme '{theme.DisplayName}' tier {settings.Tier} has invalid treasure settings.",
                     nameof(settings));
             }
-            if (theme.ExitPlaceableFootprintRadius <= 0f ||
+            if (!float.IsFinite(theme.ExitPlaceableFootprintRadius) ||
+                !float.IsFinite(theme.ExitDoorFootprintRadius) ||
+                !float.IsFinite(theme.TreasurePlaceableFootprintRadius) ||
+                theme.ExitPlaceableFootprintRadius <= 0f ||
                 theme.ExitDoorFootprintRadius <= 0f ||
                 theme.TreasurePlaceableFootprintRadius <= 0f)
             {
@@ -68,6 +71,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 : settings.TilesetProfileKey;
             if (!Definitions.TilesetProfiles.TryGetValue(tilesetKey, out var tilesetProfile))
                 throw new ArgumentException($"Unknown tileset profile '{tilesetKey}'.", nameof(settings));
+
+            if (settings.Overrides is { } requested)
+            {
+                if (requested.DecorationDensityPercent is < 0 or > 200 || !Enum.IsDefined(requested.DecorationPlacementStyle))
+                    throw new ArgumentOutOfRangeException(nameof(settings), "Choose a supported prop placement style and a decoration density from 0 to 200 percent.");
+                if (!string.IsNullOrWhiteSpace(requested.DecorationProfile) &&
+                    !tilesetProfile.DecorationProfiles.ContainsKey(requested.DecorationProfile))
+                    throw new ArgumentException($"Tileset '{tilesetProfile.DisplayName}' has no decoration palette '{requested.DecorationProfile}'.", nameof(settings));
+            }
 
             var layoutKey = string.IsNullOrWhiteSpace(settings.LayoutProfileKey)
                 ? theme.LayoutProfileKey
@@ -116,8 +128,30 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             ArgumentNullException.ThrowIfNull(workspace);
             var draft = Generate(settings);
             if (draft.Result.Success)
+            {
+                ValidatePlaceableBlueprints(draft, workspace);
                 GeneratedAreaDocumentPopulator.ValidateEncounterPlacement(draft, workspace);
+            }
             return draft;
+        }
+
+        internal static void ValidatePlaceableBlueprints(AreaGenerationDraft draft, ModuleWorkspace workspace)
+        {
+            var content = draft.Composition.Content;
+            var required = draft.Result.PlannedDecorations.Select(prop => (Type: ResourceType.Utp, Resref: prop.Resref)).ToList();
+            if (draft.Result.Resolved.Rooms.Any(room => room.Role == RoomRole.Boss))
+                required.Add((ResourceType.Utp, content.TreasurePlaceableResref));
+            foreach (var transition in draft.Result.Resolved.Transitions)
+                required.Add(transition.Style == TransitionStyle.Placeable
+                    ? (ResourceType.Utp, content.ExitPlaceableResref) : (ResourceType.Utd, content.ExitDoorResref));
+            var missing = new List<string>();
+            foreach (var resource in required.DistinctBy(item => (item.Type, (item.Resref ?? string.Empty).ToLowerInvariant())))
+            {
+                if (string.IsNullOrWhiteSpace(resource.Resref) || !workspace.TryLoadBlueprint(resource.Type, resource.Resref, out _))
+                    missing.Add($"{resource.Resref}.{resource.Type.ToString().ToLowerInvariant()}");
+            }
+            if (missing.Count > 0)
+                throw new InvalidOperationException("Cannot create this area: missing prop or door blueprints: " + string.Join(", ", missing) + ".");
         }
 
         private static void ValidateEffectiveLayoutSettings(

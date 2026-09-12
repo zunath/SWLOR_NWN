@@ -2,7 +2,7 @@
 
 Snapshot: September 12, 2026. Source: [perk tracker](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203). All 1,004 skill/perk/rank names matched the local Bible manifest. Row links reflect this snapshot; use the skill and perk name if the sheet is reordered.
 
-**309 rows need verification for these changes: 30 directly changed rows and 279 combination regressions.** After the authorized tracker update, 231 say Pass, 63 say Retest, and 15 say Not Tested. All 30 direct rows now say Retest. Combination regression means testing the listed interaction, not that the perk is independently known to be broken.
+**312 rows need verification for these changes: 33 directly changed rows and 279 combination regressions.** After the authorized tracker update and the additional Creeping Terror fix, 234 say Pass, 63 say Retest, and 15 say Not Tested. Of the 33 direct rows, 30 say Retest and Creeping Terror I-III still say Pass. Those three additional rows also need retesting; the authorized live-sheet edit was limited to the original 26 rows. Combination regression means testing the listed interaction, not that the perk is independently known to be broken.
 
 On September 12, the user requested that the 26 directly changed rows previously marked Pass be changed to Retest. The live sheet update was verified to change exactly those 26 Test Status cells; this checklist reflects that update. Preserve its other existing work: 37 additional rows already marked Retest fall outside this change-specific list, and their existing retest requirements still apply. Likewise, this list does not replace the tracker's remaining first-time testing backlog.
 
@@ -58,6 +58,9 @@ Verify Brace Breaker, Concussive Challenge, Suppressing Shot (Mimicry) and Tail 
 | [106](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A106:O106) | Beast Mastery | Crushing Slam II | Retest | C3, C8 |
 | [111](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A111:O111) | Beast Mastery | Ice Breath III | Retest | C3, C8 |
 | [112](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A112:O112) | Beast Mastery | Crushing Slam III | Retest | C3, C8 |
+| [309](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A309:O309) | Force | Creeping Terror I | Pass | C2, C4 |
+| [315](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A315:O315) | Force | Creeping Terror II | Pass | C2, C4 |
+| [328](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A328:O328) | Force | Creeping Terror III | Pass | C2, C4 |
 | [412](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A412:O412) | Heavy Vibroblade | Defensive Harmony | Retest | C5 |
 | [434](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A434:O434) | Heavy Vibroblade | Soul Amplification | Retest | C5 |
 | [478](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A478:O478) | Katar | Scrapheap Lockdown | Retest | C3, C8 |

@@ -1531,14 +1531,26 @@ namespace SWLOR.Game.Server.Service
 
                 var origin = GetLocation(defender);
                 var damage = source[StatType.AutoAttackSplashDamage];
-                var targets = AbilityTargeting.GetHostileTargetsNearLocation(attacker, origin,
-                    source[StatType.AutoAttackSplashRadiusMeters],
-                    source[StatType.AutoAttackSplashMaximumTargets] - 1, defender).ToArray();
-                ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
-                if (!GetIsDead(defender))
-                    ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
-                foreach (var target in targets)
-                    ApplyTriggeredDamage(attacker, target, damage, CombatDamageType.Physical, skillType);
+                var targets = SelectAutoAttackSplashSecondaryTargets(
+                    AbilityTargeting.GetHostileTargetsNearLocation(attacker, origin,
+                        source[StatType.AutoAttackSplashRadiusMeters], maxTargets: 0),
+                    defender, source[StatType.AutoAttackSplashMaximumTargets]);
+                // Auto-attack riders run inside GetDamageRoll. Dispatching another damage event
+                // here would re-enter the native attack and overwrite its shared combat context.
+                DelayCommand(0.0f, () =>
+                {
+                    if (!GetIsObjectValid(attacker))
+                        return;
+
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
+                    if (GetIsObjectValid(defender) && !GetIsDead(defender))
+                        ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
+                    foreach (var target in targets)
+                    {
+                        if (GetIsObjectValid(target) && !GetIsDead(target))
+                            ApplyTriggeredDamage(attacker, target, damage, CombatDamageType.Physical, skillType);
+                    }
+                });
             }
         }
 
@@ -1547,6 +1559,12 @@ namespace SWLOR.Game.Server.Service
             return source[StatType.AutoAttackSplashDamage] > 0 && source[StatType.AutoAttackSplashChance] > 0 &&
                    source[StatType.AutoAttackSplashRadiusMeters] > 0 && source[StatType.AutoAttackSplashMaximumTargets] > 1 &&
                    SkillTypeMatches(skillType, GetSkillTypeFromStat(source[StatType.AutoAttackSplashSkillType]));
+        }
+
+        public static uint[] SelectAutoAttackSplashSecondaryTargets(IEnumerable<uint> candidates, uint primaryTarget, int maximumTotalTargets)
+        {
+            return candidates.Where(target => target != primaryTarget).Distinct()
+                .Take(Math.Max(0, maximumTotalTargets - 1)).ToArray();
         }
 
         public static void ApplyDamageDealtEffects(

@@ -56,6 +56,24 @@ public class PerkCombinationBehaviorTests
     }
 
     [Test]
+    public void SplashTargetBudget_ExcludesThePrimaryBeforeLimitingSecondaryTargets()
+    {
+        foreach (var candidates in new[]
+                 {
+                     new uint[] { 99, 1, 2, 3, 4, 5 },
+                     new uint[] { 1, 2, 99, 2, 3, 4, 5 },
+                     new uint[] { 1, 2, 3, 4, 5 }
+                 })
+        {
+            Combat.SelectAutoAttackSplashSecondaryTargets(candidates, 99, 5)
+                .Should().Equal(new uint[] { 1, 2, 3, 4 },
+                    "the primary receives its own hit and cannot consume or duplicate any of the four splash slots");
+        }
+        Combat.SelectAutoAttackSplashSecondaryTargets(new uint[] { 99, 1, 2 }, 99, 1).Should().BeEmpty();
+        Combat.SelectAutoAttackSplashSecondaryTargets(new uint[] { 99, 1, 2 }, 99, 0).Should().BeEmpty();
+    }
+
+    [Test]
     public void AvoidedAttackDiscounts_KeepTheirAuthoredScopesAndConsumeIndependently()
     {
         StoreDiscount("staff", PerkSource<StaffPerkDefinition>("FlowingDefense", PerkType.FlowingDefense));

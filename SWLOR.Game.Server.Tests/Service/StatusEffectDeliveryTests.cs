@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
@@ -32,6 +34,46 @@ public class StatusEffectDeliveryTests
             .Should().Be("Mind Vulnerability increased Dazed duration from 15s to 17s.");
         StatusEffect.BuildDurationResistanceMessage(ResistanceType.Trauma, "Venom", 5, 5, 6f)
             .Should().BeEmpty();
+    }
+
+    [TestCase(30, 33, 30f, "")]
+    [TestCase(36, 33, 30f, "")]
+    [TestCase(30, 27, 30f, "Mind Resistance reduced Dazed duration from 30s to 27s.")]
+    [TestCase(15, 17, 30f, "Mind Vulnerability increased Dazed duration from 15s to 17s.")]
+    [TestCase(6, 7, 2.5f, "")]
+    [TestCase(6, 4, 5.5f, "Mind Resistance reduced Dazed duration from 5s to 4s.")]
+    public void ControlResistanceFeedback_UsesBothConstrainedDurations(
+        int baselineTicks, int resistedTicks, float remainingSeconds, string expected)
+    {
+        int Constrain(int ticks) => StatusEffect.ClampConvertedControlDurationTicks(
+            StatusEffect.ClampHardCrowdControlDurationTicks(StatusEffectCategory.HardCrowdControl, ticks, 1f),
+            1f, remainingSeconds);
+
+        StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mind, "Dazed",
+            Constrain(baselineTicks), Constrain(resistedTicks), 1f).Should().Be(expected,
+            "feedback must report the remaining control time without crediting the control budget to resistance");
+    }
+
+    [Test]
+    public void ControlResistanceFeedback_IsBuiltAfterBothRuntimeDurationConstraints()
+    {
+        var root = FindRepositoryRoot();
+        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
+        var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
+        var feedback = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(node => node.Expression.ToString() == "BuildDurationResistanceMessage");
+        foreach (var constraint in new[] { "ClampHardCrowdControlDurationTicks", "ClampConvertedControlDurationTicks" })
+        {
+            var assignments = method.DescendantNodes().OfType<AssignmentExpressionSyntax>()
+                .Where(node => node.Right is InvocationExpressionSyntax call && call.Expression.ToString() == constraint)
+                .ToArray();
+            assignments.Select(node => node.Left.ToString()).Should().BeEquivalentTo(
+                "durationTicks", "durationTicksWithoutResistance");
+            assignments.Should().OnlyContain(node => node.Span.End < feedback.Span.Start,
+                "the runtime must clamp both durations before formatting feedback");
+        }
     }
 
     [Test]

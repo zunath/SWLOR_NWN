@@ -217,8 +217,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var damage = Ability.ApplyCapturedAbilityDamageBonus(activator, scaledPulseDamage);
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
-            damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force);
-            damage = Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force);
+            damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
+            damage = Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,
+                deliveryType: CombatDamageDeliveryType.DamageOverTime,
+                targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damage < 0)
                 damage = 0;
 

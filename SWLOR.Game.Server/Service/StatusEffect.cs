@@ -520,7 +520,7 @@ namespace SWLOR.Game.Server.Service
             ApplyOutgoingStatusStatAdjustments(statusEffect, source);
 
             var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
-            var durationResistanceMessage = string.Empty;
+            var durationTicksWithoutResistance = durationTicks;
             if (!isPermanent &&
                 durationTicks > 0 &&
                 GetIsObjectValid(source) &&
@@ -535,19 +535,16 @@ namespace SWLOR.Game.Server.Service
                         return false;
                     }
 
-                    var durationTicksBeforeResistance = durationTicks;
                     durationTicks = Resistance.CalculateResistedTicks(creature, resistanceType, durationTicks);
-                    durationResistanceMessage = BuildDurationResistanceMessage(
-                        resistanceType,
-                        statusEffect.Name,
-                        durationTicksBeforeResistance,
-                        durationTicks,
-                        statusEffect.Frequency);
                 }
             }
 
             if (!isPermanent)
+            {
                 durationTicks = ClampHardCrowdControlDurationTicks(statusEffect.Categories, durationTicks, statusEffect.Frequency);
+                durationTicksWithoutResistance = ClampHardCrowdControlDurationTicks(
+                    statusEffect.Categories, durationTicksWithoutResistance, statusEffect.Frequency);
+            }
 
             if (!isPermanent && durationTicks <= 0)
             {
@@ -567,8 +564,10 @@ namespace SWLOR.Game.Server.Service
                 foreach (var replaced in replacedEffects.Where(effect =>
                              (effect.Categories & StatusEffectCategory.HardCrowdControl) != 0))
                 {
-                    durationTicks = ClampConvertedControlDurationTicks(durationTicks, statusEffect.Frequency,
-                        replaced.GetRemainingDurationSeconds(now));
+                    var remainingSeconds = replaced.GetRemainingDurationSeconds(now);
+                    durationTicks = ClampConvertedControlDurationTicks(durationTicks, statusEffect.Frequency, remainingSeconds);
+                    durationTicksWithoutResistance = ClampConvertedControlDurationTicks(
+                        durationTicksWithoutResistance, statusEffect.Frequency, remainingSeconds);
                 }
                 if (durationTicks <= 0)
                     return false;
@@ -656,6 +655,10 @@ namespace SWLOR.Game.Server.Service
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
             PublishStatusEffectReceivedRefresh(creature);
 
+            // Compare effective durations so the control budget is not mislabeled as resistance,
+            // and vulnerability never claims to extend control beyond its actual expiration.
+            var durationResistanceMessage = BuildDurationResistanceMessage(
+                resistanceType, statusEffect.Name, durationTicksWithoutResistance, durationTicks, statusEffect.Frequency);
             if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
                 (GetIsPC(source) || GetIsDM(source)))
             {

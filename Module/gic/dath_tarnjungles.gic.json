@@ -13,6 +13,13 @@
           "type": "cexostring",
           "value": "ForestExit"
         }
+      },
+      {
+        "__struct_id": 8,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
@@ -67,6 +74,13 @@
         "Comment": {
           "type": "cexostring",
           "value": "Desert Boulder 2"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       }
     ]
@@ -124,6 +138,20 @@
   "WaypointList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
       {
         "__struct_id": 5,
         "Comment": {

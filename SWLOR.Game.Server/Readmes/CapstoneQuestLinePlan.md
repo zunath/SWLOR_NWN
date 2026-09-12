@@ -140,9 +140,9 @@ All 40 capstone quest givers (39 lines plus Blood Frenzy's Sera Vonn) are hand-p
 
 The skill-owned capstone quest definitions define the 39 post-Blood-Frenzy capstone quest lines. Each line has five quests, rank prerequisites on every step, proof key items granted from quest credit, a final quest achievement, NPC group identifiers for every objective, deterministic enemy/waypoint/spawn/loot asset IDs, and a final quest ID used by the matching capstone perk requirement.
 
-All 40 quest givers are placed (see the Quest Giver Placements table above); quest-giver creation and placement are not remaining work. As of 2026-09-12, the eight recently added boss arenas are generated and registered, with their 24 master `quest_enc` activators, master spawn waypoints, and entry/recovery waypoints. For each unfinished package, what remains is the dungeon/lesson area, gated hub access, two-way dungeon/arena travel, dungeon metadata, ambient spawn setup, and warden encounters.
+All 40 quest givers are placed (see the Quest Giver Placements table above); quest-giver creation and placement are not remaining work. As of 2026-09-12, the eight recently added boss arenas and their adjoining dungeons are built, registered, and connected. Each package includes gated hub access, two-way dungeon/arena travel, dungeon metadata, ambient spawns, and warden/master encounters.
 
-The reusable setup exists now: quest definitions, dedicated quest giver UTC/DLG files, creature palette entries for those quest givers, enemy UTCs, stat skins, weapons, spawn table definitions, loot table definitions, and waypoint palette blueprints. The lines assigned to the seven unfinished packages are not ready for in-game progression until their dungeons, gated access, travel links, dungeon metadata, ambient spawns, and warden activators are created. Their master encounters are already placed in the generated arenas.
+The reusable setup exists now: quest definitions, dedicated quest giver UTC/DLG files, creature palette entries for those quest givers, enemy UTCs, stat skins, weapons, spawn table definitions, loot table definitions, and waypoint palette blueprints. All 13 packages now include their dungeons, gated access, travel links, dungeon metadata, ambient spawns, and warden activators. Their master encounters are placed in the attached arenas; live progression validation remains.
 
 Do not wire ambient spawns or wardens until their target dungeon exists. Area builders may reuse each content package for up to three capstone lines, but must keep the level 50 content isolated from low-level or general-purpose spawn spaces. The generated boss arenas deliberately have no live travel connections to unrelated public areas.
 
@@ -151,7 +151,7 @@ For capstone planning, a content package is not a single physical area. Followin
 - One gated dungeon or lesson area containing the ambient level 50 capstone enemies and general spawn waypoint.
 - One attached boss arena area containing the state-gated `quest_enc` activators and boss spawn waypoints.
 
-The full 13-package scope represents 26 physical areas: 13 dungeons and 13 attached boss arenas. Six packages are fully wired, and the other seven have their boss arenas. Nineteen physical areas exist; seven dungeon areas and their access/travel wiring remain.
+The full 13-package scope represents 26 physical areas: 13 dungeons and 13 attached boss arenas. All 13 packages are built and wired: 13 dungeons and 13 attached boss arenas. Live progression, combat, and in-engine collision checks remain.
 
 Current build state (2026-09-12):
 
@@ -165,7 +165,19 @@ Current build state (2026-09-12):
   - Fight Club uses `NARSHADDAA_FIGHT_CLUB_*_RARES` naming; the other 36 lines use `CAPSTONE_<LINECODE>_RARES` / `CAPSTONE_<LINECODE>_WD_RARES` (e.g. `CAPSTONE_FORCEBANE_RARES`). Items use deterministic resrefs `<linecode>_<l1..l8|w1..w5>`.
   - Weapon-skill lines drop the line's weapon type (Force lines drop lightsabers); non-weapon lines (Devices, Leadership, First Aid, Beast Mastery) drop gear/accessories only. Weapon damage is lesson-tier (23) / warden-tier (41) with normalized per-base delay; gear reuses Blood Frenzy stat templates by slot.
   - 468 new items total (36 lines × 13). They require a module repack on deploy.
-- The remaining seven packages have generated boss arenas, listed below. Their seven dungeon/lesson areas still need construction; Veles Militia Annex is now connected and complete pending live testing.
+- **The seven additional dungeons are built and wired (2026-09-12).** Each is 16x16 tiles, with seven or eight connected rooms/clearings, 20 fixed ambient lesson spawns, three separate blood-dressed warden altars, a recovery waypoint, and two native doorway exits. Activators retain `???`, invisible appearance 479, and the complete state-gated `quest_enc` configuration. The four altar blood decals match Breaker Bay, including two placed on the altar top. Existing master activators and arena scenery are preserved. World entrances check the existing package keys and permit nearby party travel; internal dungeon/arena travel is ungated.
+
+| Dungeon | Resref / tileset | World entrance | Key | Arrival direction / attached arena |
+| --- | --- | --- | --- | --- |
+| Dantooine - Jedi Enclave Trial Halls | `pw_sc_jedihalls` / `udp2` | Jedi Enclave Library (`dan_jedienlibry`), west aisle door at (30, 25) | 108 | Enter from east; north exit to Saber Trial Chamber |
+| Korriban - Forge Caverns | `pw_sc_forgecav` / `zde01` | Sith Fortress, Forgeworks (`valkorrdung1c`), north wall door at (125, 150) | 109 | Enter from south; north exit to Champion Forge |
+| Tatooine - Anchorhead Canyon Range | `pw_sc_canyonrng` / `ttd01` | Anchorhead North Entrance (`anchor_entreenor`), east cliff passage at (155.8, 75) | 112 | Enter from west; north exit to Canyon Dueling Pit |
+| Hutlar - Qion Test Site | `pw_sc_qiontest` / `zti01` | Qion Box Canyon (`sol_hutlarqcanyo`), east compound entrance near (68.5, 27.2, 10) | 114 | Enter from west; north exit to Overload Chamber |
+| Korriban - Sith Crypt Depths | `pw_sc_cryptdeep` / `vmr01` | Sith Crypt (`korr_crypt_zil`), north passage at (55, 160) | 115 | Enter from south; north exit to Final Ritual Chamber |
+| Viscara - Republic Engineering Bunker | `pw_sc_repubeng` / `tbx78` | Republic Base Combat Deck (`v_repubbase_cd`), unused north elevator beside the existing arrival lift at (105, 57) | 116 | Enter from south; north exit to Engineering Command Room |
+| Dathomir - Tarn Jungle Preserve | `pw_sc_tarnpres` / `jac01` | Tarnished Jungles (`dath_tarnjungles`), east woodland passage near (94.8, 85) | 118 | Enter from west; north exit to Alpha Beast Hollow |
+
+The halls use archives, training rooms, and crystal accents; the forge contains furnaces, anvils, and weapon benches; the canyon has firing lanes and cover; Qion has frozen test yards and generator banks; the crypt has tomb corridors and ritual rooms; the engineering bunker has control, storage, and device-test rooms; the preserve has furnished access clearings, dense edge foliage, and feeding sites. All use their existing planet category alongside the attached arena. `TrialDungeonPlacementTests` covers registration, categories, spawn counts, altar configuration, and bidirectional travel. Native previews and a 0.5m-clearance audit cover the usable points; live engine validation remains.
 
 ### Generated Boss Arenas (2026-09-12)
 
@@ -197,16 +209,16 @@ Each arena has its planet local, `IS_DUNGEON = 1`, `MINI_MAP_DISABLED = 1`, a `S
 
 Each room has one Trial Altar (`zep_altarevil3`), matching the established boss-area altar. Its three activators use the native large invisible appearance (479), retain the established `???` name, and sit within 2.5m of the altar. The master spawn waypoints remain on the fighting floor. The eight areas are assigned in `toolset/categories.json` to their existing location folders: Viscara / Veles, Dantooine, Korriban (both rooms), Tatooine / Anchorhead, Hutlar / Qion Box Canyon, Viscara / Republic Base, and Dathomir. Reopen the module after importing the category sidecar to refresh the toolset's folder tree.
 
-Each arena has an `[Exit]` placeable tagged `<arena resref>_exit` at the entrance end of the room, in front of visible doorway scenery. This follows the Protected Ward and Breaker Yard pattern: a large invisible `tele_obj` interaction point paired with a visible exit. The interior rooms use facility doors or sealed gates recessed into the room walls. The forge, canyon, and beast hollow use stone arch doors with matching backing masonry extending into the native rock; keep both pieces together when moving these exits. Exit objects are usable and have no key or quest visibility gate. The Militia Command Room exit is connected to `VELES_ANNEX_COMMAND_RETURN` with `OnUsed = teleport`. The other seven exits retain blank `DESTINATION` locals and `OnUsed` scripts until their dungeons exist.
+Each arena has an `[Exit]` placeable tagged `<arena resref>_exit` at the entrance end of the room, in front of visible doorway scenery. This follows the Protected Ward and Breaker Yard pattern: a large invisible `tele_obj` interaction point paired with a visible exit. The interior rooms use facility doors or sealed gates recessed into the room walls. The forge, canyon, and beast hollow use stone arch doors with matching backing masonry extending into the native rock; keep both pieces together when moving these exits. Exit objects are usable and have no key or quest visibility gate. The Militia Command Room exit is connected to `VELES_ANNEX_COMMAND_RETURN` with `OnUsed = teleport`. The other seven exits now use `OnUsed = teleport` and target the corresponding dungeon's `<dungeon resref>_return` waypoint.
 
-When the adjoining dungeon is built, route its arena entrance to the entry tag above. Connect the existing arena exit by setting `DESTINATION` to that dungeon's return waypoint tag and `OnUsed` to `teleport`; preserve the exit scenery and arrival waypoint. No placeholder destination or public-area shortcut is active. The eight entry blueprints are registered in the existing waypoint palette. The original 64 master, activator, entry, and recovery anchors and the eight exit interaction points are grounded on WOK faces, with clear approaches from the fighting floor. Scenery is static, non-interactive, and contains no scripts, loot, or traps. All eight rooms were visually inspected using 3D previews of their actual tile and placeable models; in-engine lighting, effects, collision, and live encounters still require playtesting.
+Each adjoining dungeon's north door now targets the entry tag above, and each arena exit returns to that dungeon. Preserve the exit scenery and arrival waypoint when maintaining these connections. No placeholder destination or public-area shortcut is active. The eight entry blueprints are registered in the existing waypoint palette. The original 64 master, activator, entry, and recovery anchors and the eight exit interaction points are grounded on WOK faces, with clear approaches from the fighting floor. Scenery is static, non-interactive, and contains no scripts, loot, or traps. All eight rooms were visually inspected using 3D previews of their actual tile and placeable models; in-engine lighting, effects, collision, and live encounters still require playtesting.
 
 The checked-in content contains 32 native resources: eight ARE/GIT/GIC triplets and eight entrance UTWs. All resources passed native `nwn_gff` round-trip validation; GIC list counts and encounter setup were checked. Maintain these areas directly in the toolset and repack the module to deploy changes.
 
 ### Generated Reusable Content
 
 - General lesson enemies use one spawn table per area group. Each table contains only quest steps 1, 2, and 4: adept, specialist, and inner circle enemies.
-- Quest step 3 wardens and quest step 5 final masters are intentionally excluded from ambient spawn tables. They must be spawned through `quest_enc` activator instances only. Warden mini-bosses (step 3) go in the DUNGEON/lesson area; final masters (step 5) go in the attached BOSS ARENA. All six completed content packages follow this split.
+- Quest step 3 wardens and quest step 5 final masters are intentionally excluded from ambient spawn tables. They must be spawned through `quest_enc` activator instances only. Warden mini-bosses (step 3) go in the DUNGEON/lesson area; final masters (step 5) go in the attached BOSS ARENA. All 13 content packages follow this split.
 - Each area group has two ordinary loot tables: `<spawn table id>_LESSON_LOOT` and `<spawn table id>_BOSS_LOOT`. Progression proof key items are not in these loot tables.
 - Each capstone line has five generated enemy UTCs, five generated stat skins, and five generated weapons using deterministic resrefs:
   - Enemy: `cp_<line code>_<ad|sp|wd|ic|ms>`
@@ -217,8 +229,8 @@ The checked-in content contains 32 native resources: eight ARE/GIT/GIC triplets 
 - Final boss UTCs include the matching capstone feat and `PERK_LEVEL_<perk id>` local.
 - Beast capstone enemies use beast creature appearances and beast-style feat packages rather than humanoid templates.
 - Area spawn waypoint blueprints are in `Module/utw` and `Module/itp/waypointpalcus.itp.json`. Their `Tag` equals the spawn table ID.
-- Warden/master spawn waypoint blueprints are in `Module/utw` and `Module/itp/waypointpalcus.itp.json`. Their `Tag` matches the placed `quest_enc` activator's `QUEST_ENCOUNTER_WAYPOINT` value. Master activators and their spawn waypoints are placed in all 13 boss arenas; only dungeon warden placements remain pending in the seven unfinished packages.
-- Unique boss activator blueprints are not in the placeable palette. The placed GIT instance is the source of truth for each activator. Preserve the existing master instances when connecting the remaining dungeons; add only their missing dungeon warden instances.
+- Warden/master spawn waypoint blueprints are in `Module/utw` and `Module/itp/waypointpalcus.itp.json`. Their `Tag` matches the placed `quest_enc` activator's `QUEST_ENCOUNTER_WAYPOINT` value. Master activators and their spawn waypoints are placed in all 13 boss arenas, and warden activators and spawn waypoints are placed in all 13 dungeons.
+- Unique boss activator blueprints are not in the placeable palette. The placed GIT instance is the source of truth for each activator. Preserve the existing master and warden instances when maintaining the dungeon connections.
 
 ### Required Content Packages
 
@@ -242,9 +254,9 @@ Each content package below requires one dungeon area and one attached boss arena
 
 (2026-07-11: the Lightsaber Ward/Severance perk trees were redesigned. The Dantooine Jedi Enclave Trial Halls "Saber Storm" and "Guardian Master" mastery quests listed above are unchanged/reused — their quest IDs and definitions did not change — but they now gate the new capstones Epicenter (Severance tree) and Aegis Eternal (Ward tree) respectively, instead of the old Lightsaber Defense/Offense capstones.)
 
-### Suggested Tilesets
+### Area Tilesets
 
-Tileset per area: the resref goes in the area's `Tileset` field, and the toolset display name (`UnlocalizedName` in the `.set`) is what you pick in the New Area dropdown. The five shipped packages list their actual tilesets; the rest are recommendations chosen to fit the fiction and reuse tilesets already proven in existing SWLOR areas.
+Tileset per area: the resref goes in the area's `Tileset` field, and the toolset display name (`UnlocalizedName` in the `.set`) is what you pick in the New Area dropdown. All packages now use the listed tilesets, chosen to fit the fiction and reuse tilesets already proven in existing SWLOR areas.
 
 | Content Package | Dungeon Tileset | Attached Boss Arena Tileset |
 | --- | --- | --- |
@@ -286,7 +298,7 @@ These spawn tables are for the dungeon/lesson areas only. Do not place these way
 
 ### Area Builder Handoff For Each Content Package
 
-- For each unfinished package, build its gated dungeon/lesson area and connect it to the registered boss arena above. Preserve the authored arena and its existing master encounters; do not recreate them. The five completed packages need no duplicate area or encounter placements.
+- Maintain the existing gated dungeon/lesson area and its registered boss arena. Preserve the authored arena and its master encounters; all 13 packages are complete and need no duplicate area or encounter placements.
 - Preserve each capstone line's already placed quest giver in its safe hub and keep the line's journal "return to" text consistent with that hub. Do not collapse multiple capstone quest lines onto one shared area trainer even when the lines reuse the same content package.
 - Add a standard access object or equivalent gate that checks the content package's capstone key item and sends the player into the dungeon/lesson area.
 - In the dungeon/lesson area, place the general spawn waypoint using the generated waypoint resref above. Its tag already matches the generated spawn table ID.

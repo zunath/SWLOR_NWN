@@ -23,21 +23,21 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Perfect Flurry Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Thermal Detonator Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Overload Barrage Master; invisible interaction object beside the trial altar."
         }
       },
       {
@@ -276,6 +276,13 @@
         "Comment": {
           "type": "cexostring",
           "value": "aswtor_020"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Trial altar; three quest-gated invisible challenge activators immediately south."
         }
       }
     ]

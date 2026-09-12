@@ -23,21 +23,21 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Invincible Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Vital Rupture Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Systemic Shutdown Master; invisible interaction object beside the trial altar."
         }
       },
       {
@@ -262,6 +262,13 @@
         "Comment": {
           "type": "cexostring",
           "value": "aswtor_005"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Trial altar; three quest-gated invisible challenge activators immediately south."
         }
       }
     ]

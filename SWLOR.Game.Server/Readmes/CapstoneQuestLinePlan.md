@@ -168,7 +168,7 @@ Current build state (2026-09-12):
 
 ### Generated Boss Arenas (2026-09-12)
 
-These normal ARE/GIT/GIC triplets use the toolset area generator's terrain resolution and document format, with individually composed scenery. The rooms have been reduced from 10x10 tiles to the sizes below, with 24–77 decorative placements per arena, themed lighting, entrance framing, and a central fighting space. Terrain was resolved against the actual SET data; the Jedi hall uses the same stone Home tile family as the existing Jedi Temple, and the forge, engineering room, and beast hollow use clear floor tiles so random tile furniture and rock columns do not obstruct the encounter.
+These normal ARE/GIT/GIC triplets use the toolset area generator's terrain resolution and document format, with individually composed scenery. The rooms have been reduced from 10x10 tiles to the sizes below, with 25–78 decorative placements per arena, themed lighting, entrance framing, and a central fighting space. Terrain was resolved against the actual SET data; the Jedi hall uses the same stone Home tile family as the existing Jedi Temple, and the forge, engineering room, and beast hollow use clear floor tiles so random tile furniture and rock columns do not obstruct the encounter.
 
 | Arena | Size (tiles) | Scenery |
 | --- | --- | --- |
@@ -193,6 +193,8 @@ These normal ARE/GIT/GIC triplets use the toolset area generator's terrain resol
 | Dathomir Tarn Jungle Preserve | `pw_sc_tarnalpha` — Dathomir - Alpha Beast Hollow | `ttu01` | `pw_sc_tarnalpha_entry` | `wp_tarnalpha_ent` |
 
 Each arena has its planet local, `IS_DUNGEON = 1`, `MINI_MAP_DISABLED = 1`, a `STUCK_WAYPOINT`, and three master encounter activators following the existing Protected Ward pattern: quest state 1, hidden by default, unique visibility IDs, 60-minute starter cooldowns, and 10-minute idle despawns. Master creature blueprints and their existing spawn waypoint blueprints are reused. No ambient enemies, wardens, or procedural treasure containers are placed in these arenas.
+
+Each room has one Trial Altar (`zep_altarevil3`), matching the established boss-area altar. Its three activators use the native large invisible appearance (479), are named `Challenge: <master name>`, and sit within 2.5m of the altar. The master spawn waypoints remain on the fighting floor. The eight areas are assigned in `toolset/categories.json` to their existing location folders: Viscara / Veles, Dantooine, Korriban (both rooms), Tatooine / Anchorhead, Hutlar / Qion Box Canyon, Viscara / Republic Base, and Dathomir. Reopen the module after importing the category sidecar to refresh the toolset's folder tree.
 
 When the adjoining dungeon is built, route its arena entrance to the entry tag above and add the return travel object near that waypoint. No placeholder destination or public-area shortcut is active. The eight entry blueprints are registered in the existing waypoint palette. All 64 master, activator, entry, and recovery anchors are grounded on WOK faces and connected in a 0.5m sampled floor check with 1m clearance from decorative model footprints. Scenery is static, non-interactive, and contains no scripts, loot, or traps. All eight rooms were visually inspected using 3D previews of their actual tile and placeable models; in-engine lighting, effects, collision, and live encounters still require playtesting.
 

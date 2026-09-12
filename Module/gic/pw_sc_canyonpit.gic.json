@@ -23,21 +23,21 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Unmoving Center Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Last Word Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Dead Man's Hand Master; invisible interaction object beside the trial altar."
         }
       },
       {
@@ -262,6 +262,13 @@
         "Comment": {
           "type": "cexostring",
           "value": "aswtor_185"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Trial altar; three quest-gated invisible challenge activators immediately south."
         }
       }
     ]

@@ -23,21 +23,21 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Killzone Beacon Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Emergency Bunker Master; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Quest-gated master activator"
+          "value": "Challenge: Decisive Command Master; invisible interaction object beside the trial altar."
         }
       },
       {
@@ -255,6 +255,13 @@
         "Comment": {
           "type": "cexostring",
           "value": "aswtor_020"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Trial altar; three quest-gated invisible challenge activators immediately south."
         }
       }
     ]

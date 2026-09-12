@@ -31,11 +31,13 @@ public class ThrowRockChoreographyTests
         var arms = new[] { "lbicep_g", "rbicep_g", "lforearm_g", "rforearm_g" }.Select(Joint).ToArray();
         const float step = 1 / 120f;
         var previous = project.Sample(0);
-        for (var time = step; time < project.Duration; time += step)
+        var previousTime = 0f;
+        while (previousTime < project.Duration)
         {
+            var time = MathF.Min(previousTime + step, project.Duration);
             var pose = project.Sample(time);
             foreach (var arm in arms)
-                (Degrees(previous[arm].Orientation, pose[arm].Orientation) / step).Should().BeLessThan(500,
+                (Degrees(previous[arm].Orientation, pose[arm].Orientation) / (time - previousTime)).Should().BeLessThan(500,
                     $"{project.Joints[arm].Name} at {time:0.000}s must not snap during the throw");
             if (time >= .5f && time <= 2.25f)
             {
@@ -48,6 +50,7 @@ public class ThrowRockChoreographyTests
                         "the directed gesture must retain its local grip through the release");
             }
             previous = pose;
+            previousTime = time;
         }
     }
 }

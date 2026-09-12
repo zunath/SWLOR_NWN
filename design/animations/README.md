@@ -195,7 +195,7 @@ Dodge Side cleanup; visual motion approval still requires in-game review.
 
 Throw Rock uses a leading-hand gather and lift, then a compact forward release
 at 1.5 seconds. The opposite hand stays close to the body, and a planted weight
-shift carries the motion through its 2.9-second recovery. Keep the same native
+shift carries the motion through the end of the 2.9-second clip. Keep the same native
 base pose throughout the active gesture: switching to idle during the wind-up
 previously collapsed the stance and snapped the forearm. Its regression checks
 foot contact, local grip and arm rotation speed between the authored keys.

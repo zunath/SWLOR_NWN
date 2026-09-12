@@ -30,6 +30,9 @@ for previews and placed objects prevents the two surfaces from drifting.
 - Textures are decoded to a top-left, row-major RGBA convention before GPU upload.
 - Tile and instance geometry uses the same world-transform convention and animation pose evaluator.
 - The area renderer batches repeated tile meshes and keeps texture caches scoped to a GL context.
+- Invisible placeables use their authored `render 0` selection volumes, displayed as pale translucent
+  surfaces. Picking follows that geometry; ordinary models still omit it. Visible props and emitter
+  effects do not expose hidden helper surfaces.
 - Emitters use a deliberately bounded visual cue; the editor does not simulate the engine's full
   particle-controller system.
 

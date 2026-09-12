@@ -21,6 +21,8 @@ namespace SWLOR.Toolset.Domain.Render
             new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, RenderModel?> _placeablePreviewCache =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, RenderModel?> _placeableEditorCache =
+            new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, RenderModel?> _doorTransitionCache =
             new(StringComparer.OrdinalIgnoreCase);
 
@@ -34,6 +36,7 @@ namespace SWLOR.Toolset.Domain.Render
         {
             _cache.Clear();
             _placeablePreviewCache.Clear();
+            _placeableEditorCache.Clear();
             _doorTransitionCache.Clear();
         }
 
@@ -64,6 +67,26 @@ namespace SWLOR.Toolset.Domain.Render
             return _placeablePreviewCache.GetOrAdd(modelResRef, BuildPlaceablePreview);
         }
 
+        /// <summary>Area-editor geometry, including an invisible placeable's hidden selection surfaces.</summary>
+        public RenderModel? GetOrBuildPlaceableEditor(string? modelResRef)
+        {
+            if (string.IsNullOrWhiteSpace(modelResRef))
+                return null;
+            return _placeableEditorCache.GetOrAdd(modelResRef, resRef =>
+            {
+                var model = Load(resRef);
+                try
+                {
+                    return model == null ? null : MdlMeshBuilder.BuildPlaceableEditor(model);
+                }
+                catch (Exception)
+                {
+                    // Malformed hidden selection surfaces must not prevent the area from opening.
+                    return null;
+                }
+            });
+        }
+
         /// <summary>
         /// Resolves an invisible transition-door model including its <c>render 0</c> editor
         /// selection surfaces. Kept separate from the ordinary cache so the same MDL remains
@@ -86,7 +109,14 @@ namespace SWLOR.Toolset.Domain.Render
         private RenderModel? BuildPlaceablePreview(string modelResRef)
         {
             var model = Load(modelResRef);
-            return model == null ? null : MdlMeshBuilder.BuildPlaceablePreview(model);
+            try
+            {
+                return model == null ? null : MdlMeshBuilder.BuildPlaceablePreview(model);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private RenderModel? BuildDoorTransition(string modelResRef)

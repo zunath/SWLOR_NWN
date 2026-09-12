@@ -182,6 +182,9 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public bool IsDoorTransitionGeometry { get; init; }
 
+        /// <summary>Hidden selection surfaces of an invisible placeable, shown only in the editor.</summary>
+        public bool IsInvisiblePlaceableGeometry { get; init; }
+
         /// <summary>
         /// The palette index each PLT layer is dyed with (skin, hair, metal, cloth, leather, tattoo),
         /// or empty for a model with no dyed textures.
@@ -313,7 +316,29 @@ namespace SWLOR.Toolset.Domain.Render
                 includeDoorTransitionGeometry: false,
                 skinSurfaceClearance: 0f,
                 skinSurfaceClearanceExcludedBones: null,
-                sampledAnimations: null);
+                sampledAnimations: null,
+                includeInvisiblePlaceableGeometry: HasOnlyHiddenPlaceableGeometry(model));
+        }
+
+        /// <summary>Builds a placed prop, retaining an invisible object's authored selection shape.</summary>
+        public static RenderModel BuildPlaceableEditor(
+            MdlModel model, IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames = null)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+            return BuildInternal(
+                model, poseFrames, includePlaceableMetadata: false,
+                includeDoorTransitionGeometry: false, skinSurfaceClearance: 0f,
+                skinSurfaceClearanceExcludedBones: null, sampledAnimations: null,
+                includeInvisiblePlaceableGeometry: HasOnlyHiddenPlaceableGeometry(model));
+        }
+
+        private static bool HasOnlyHiddenPlaceableGeometry(MdlModel model)
+        {
+            var nodes = EnumerateNodes(model.GeometryRoot).ToArray();
+            // Effect models can contain hidden helper surfaces; they are not invisible objects.
+            return !nodes.OfType<MdlEmitterNode>().Any() &&
+                   !nodes.OfType<MdlTrimeshNode>().Any(IsRenderableMesh) &&
+                   nodes.OfType<MdlTrimeshNode>().Any(mesh => !mesh.Render && IsEditorSelectionMesh(mesh));
         }
 
         /// <summary>
@@ -397,7 +422,8 @@ namespace SWLOR.Toolset.Domain.Render
             bool includeDoorTransitionGeometry,
             float skinSurfaceClearance,
             IReadOnlySet<string>? skinSurfaceClearanceExcludedBones,
-            IReadOnlyList<MdlAnimationPose.SampledAnimation>? sampledAnimations)
+            IReadOnlyList<MdlAnimationPose.SampledAnimation>? sampledAnimations,
+            bool includeInvisiblePlaceableGeometry = false)
         {
             var sourceAnimations = includePlaceableMetadata
                 ? MdlAnimationPose.PlaceableAnimations(model)
@@ -419,7 +445,8 @@ namespace SWLOR.Toolset.Domain.Render
                 // arrives at the default of true, and it carries no bitmap - which drew it as a flat
                 // grey slab across the ground of every tile that had one. The area view gets its
                 // walkmesh from the tile's .wok (see TileWalkmeshCache), never from here.
-                if (!(includeDoorTransitionGeometry ? IsDoorTransitionMesh(mesh) : IsRenderableMesh(mesh)))
+                if (!(includeDoorTransitionGeometry || includeInvisiblePlaceableGeometry
+                        ? IsEditorSelectionMesh(mesh) : IsRenderableMesh(mesh)))
                     continue;
 
                 var built = BuildMesh(
@@ -472,7 +499,8 @@ namespace SWLOR.Toolset.Domain.Render
                 Animations = renderAnimations,
                 Emitters = renderEmitters,
                 DefaultAnimationName = defaultAnimationName,
-                IsDoorTransitionGeometry = includeDoorTransitionGeometry
+                IsDoorTransitionGeometry = includeDoorTransitionGeometry,
+                IsInvisiblePlaceableGeometry = includeInvisiblePlaceableGeometry && renderMeshes.Count > 0
             };
         }
 
@@ -502,7 +530,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// those meshes while retaining the ordinary exclusions for collision and placeholder
         /// nodes; both rendered and non-rendered authored surfaces contribute to the editor shape.
         /// </summary>
-        private static bool IsDoorTransitionMesh(MdlTrimeshNode mesh)
+        private static bool IsEditorSelectionMesh(MdlTrimeshNode mesh)
         {
             ArgumentNullException.ThrowIfNull(mesh);
             if (mesh.IsWalkmesh || PlaceholderNames.Contains(mesh.Name) ||

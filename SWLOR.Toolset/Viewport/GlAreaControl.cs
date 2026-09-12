@@ -3391,7 +3391,7 @@ void main()
             {
                 foreach (var raw in scene.Instances)
                 {
-                    if (!DrawsAsModel(raw))
+                    if (!DrawsAsModel(raw) || raw.Model?.IsInvisiblePlaceableGeometry == true)
                         continue;
 
                     var instance = Displayed(raw);
@@ -3460,6 +3460,7 @@ void main()
             }
 
             DrawDoorTransitions(scene);
+            DrawInvisiblePlaceables(scene);
 
             DrawPreviewEmitters(scene, preview);
             if (previewNeedsFrames)
@@ -3529,7 +3530,7 @@ void main()
                 if (!IsInstanceVisible(instance))
                     continue;
 
-                DrawDoorTransitionGeometry(instance);
+                DrawEditorGeometry(instance);
             }
 
             _gl.DepthMask(true);
@@ -3538,9 +3539,9 @@ void main()
         }
 
         /// <summary>
-        /// Submits one transition door using flat-colour state already configured by the caller.
+        /// Submits hidden editor geometry using flat-colour state already configured by the caller.
         /// </summary>
-        private void DrawDoorTransitionGeometry(InstanceMarker instance)
+        private void DrawEditorGeometry(InstanceMarker instance)
         {
             var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
             if (instance.Model is { Meshes.Count: > 0 } model)
@@ -3560,7 +3561,7 @@ void main()
                 return;
             }
 
-            if (_doorTransitionBuffer is not { } fallback)
+            if (!instance.IsDoorTransition || _doorTransitionBuffer is not { } fallback)
                 return;
 
             _gl!.BindVertexArray(fallback.Vao);
@@ -3569,6 +3570,42 @@ void main()
             {
                 _gl.DrawElements(PrimitiveType.Triangles, (uint)fallback.IndexCount,
                     DrawElementsType.UnsignedInt, (void*)0);
+            }
+        }
+
+        private static readonly Vector3 InvisiblePlaceableColor = new(0.9f, 0.9f, 0.85f);
+
+        /// <summary>Invisible props retain their authored selection volumes as pale translucent surfaces.</summary>
+        private void DrawInvisiblePlaceables(AreaScene scene)
+        {
+            if (_gl == null)
+                return;
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.DepthMask(false);
+            try
+            {
+                SetUniformBool("hasTexture", false);
+                SetUniformBool("useTextureAlpha", false);
+                SetUniformBool("unlit", true);
+                SetUniformFloat("alphaCutoff", 0f);
+                SetUniformFloat("flatAlpha", 0.16f);
+                SetUniformVec3("flatColor", InvisiblePlaceableColor);
+                foreach (var raw in scene.Instances)
+                {
+                    if (raw.Model?.IsInvisiblePlaceableGeometry != true)
+                        continue;
+                    var instance = Displayed(raw);
+                    if (IsInstanceVisible(instance))
+                        DrawEditorGeometry(instance);
+                }
+            }
+            finally
+            {
+                _gl.DepthMask(true);
+                _gl.Disable(EnableCap.Blend);
+                SetUniformFloat("flatAlpha", 1f);
             }
         }
 
@@ -3980,14 +4017,15 @@ void main()
             // being placed, visibly not placeable here.
             var refused = SnapsToDoorAnchors && _snappedDoorAnchor == null;
 
-            if (placed.IsDoorTransition)
+            if (placed.IsDoorTransition || placed.Model?.IsInvisiblePlaceableGeometry == true)
             {
                 SetUniformBool("hasTexture", false);
                 SetUniformBool("useTextureAlpha", false);
                 SetUniformBool("unlit", true);
                 SetUniformFloat("alphaCutoff", 0f);
-                SetUniformVec3("flatColor", refused ? PlacementRefusedColor : DoorTransitionColor);
-                DrawDoorTransitionGeometry(placed);
+                SetUniformVec3("flatColor", refused ? PlacementRefusedColor :
+                    placed.IsDoorTransition ? DoorTransitionColor : InvisiblePlaceableColor);
+                DrawEditorGeometry(placed);
             }
             else if (DrawsAsModel(placed))
             {

@@ -113,6 +113,13 @@ namespace SWLOR.Toolset.Domain.Render
             if (size <= 0)
                 return null;
 
+            if (model?.IsInvisiblePlaceableGeometry == true)
+            {
+                resolveTexture = null;
+                resolveLayeredTexture = null;
+                resolveMeshTexture = null;
+            }
+
             palette ??= ThumbnailPalette.Default;
 
             var isDoorTransition = renderDoorTransitionFallback || model?.IsDoorTransitionGeometry == true;

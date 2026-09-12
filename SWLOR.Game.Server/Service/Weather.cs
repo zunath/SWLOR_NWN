@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
@@ -115,11 +116,15 @@ namespace SWLOR.Game.Server.Service
             }
 
             var previous = state.Conditions;
-            state.TryUpdate(_pattern, GetAreaClimate(area),
+            if (!state.TryUpdate(_pattern, GetAreaClimate(area),
                 GetLocalInt(area, VAR_WEATHER_HEAT), GetLocalInt(area, VAR_WEATHER_HUMIDITY),
                 GetLocalInt(area, VAR_WEATHER_WIND), GetIsAreaNatural(area) != 0,
-                NWScript.Random);
+                NWScript.Random)) return;
             var conditions = state.Conditions;
+            Log.WriteStructured(LogGroup.Server,
+                "Weather updated for {AreaResref}: revision {Revision}, heat {Heat}, humidity {Humidity}, wind {Wind}, precipitation {Precipitation}, storm {Storm}",
+                GetResRef(area), state.Revision, conditions.Heat, conditions.Humidity, conditions.Wind,
+                conditions.Precipitation, conditions.Storm);
             NWScript.SetWeather(area, conditions.Precipitation switch
             {
                 Precipitation.Rain => WeatherType.Rain,

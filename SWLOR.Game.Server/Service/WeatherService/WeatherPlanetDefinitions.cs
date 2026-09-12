@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Service.WeatherService
         {
             var climates = new Dictionary<string, WeatherClimate>(StringComparer.OrdinalIgnoreCase);
             foreach (var (planet, climate) in planets) climates.Add(planet.ToString(), climate);
-            climates.Add("Kashyyyk", new WeatherClimate
+            climates["Kashyyyk"] = new WeatherClimate
             {
                 HeatModifier = 3, HumidityModifier = 3, MinimumHeat = 4
-            });
-            climates.Add("Ossus", new WeatherClimate
+            };
+            climates["Ossus"] = new WeatherClimate
             {
                 HeatModifier = 2, HumidityModifier = -1, MinimumHeat = 4
-            });
-            climates.Add("None", new WeatherClimate { IsSheltered = true });
+            };
+            climates["None"] = new WeatherClimate { IsSheltered = true };
             return climates;
         }
 

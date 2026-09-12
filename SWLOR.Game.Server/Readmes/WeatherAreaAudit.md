@@ -50,8 +50,7 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `coolship` | [Prefab] Ship - The Gwenivere | 3 | Sheltered |  |
 | `coxxian_hq` | Viscara - Coxxion Headquarters | 1 | Sheltered |  |
 | `cz220shipbreaker` | CZ-220 - Breaker Yard | 1 | Sheltered |  |
-| `cz220shipbreakin` | CZ-220 - Breaker Bay
- | 1 | Sheltered |  |
+| `cz220shipbreakin` | CZ-220 - Breaker Bay | 1 | Sheltered |  |
 | `czs220_hangar` | CZ-220 - Hangar | 1 | Sheltered |  |
 | `czs220_maintlvl` | CZ-220 - Maintenance Level | 3 | Sheltered |  |
 | `dan_battlemon` | Dantooine - Battle Monster Gym | 1 | Sheltered |  |
@@ -281,8 +280,7 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `pw_sc_dantprowar` | Dantooine - Protected Ward | 3 | Sheltered |  |
 | `pw_sc_dath_apexd` | Dathomir - Grotto Apex Den | 7 | Sheltered |  |
 | `pw_sc_dath_sden` | Dathomir - Sealed Apex Den | 7 | Sheltered |  |
-| `pw_sc_emfbackr` | Smuggler's Moon - Fight Club Backrooms
- | 3 | Sheltered |  |
+| `pw_sc_emfbackr` | Smuggler's Moon - Fight Club Backrooms | 3 | Sheltered |  |
 | `pw_sc_jeditrial` | Dantooine - Saber Trial Chamber | 1 | Sheltered |  |
 | `pw_sc_korrforge` | Korriban - Champion Forge | 7 | Sheltered |  |
 | `pw_sc_qioncore` | Hutlar - Overload Chamber | 1 | Sheltered |  |

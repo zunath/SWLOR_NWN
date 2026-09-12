@@ -19,6 +19,9 @@ climate, storm, feedback, and damage rules.
   multiple players do not reroll storms. All outdoor, above-ground areas receive
   scripted precipitation at initialization and on each update when a climate is
   configured. Interior, underground, sealed station, and space areas are excluded.
+  Accepted updates write a structured Server log event with the area resref,
+  revision, heat, humidity, wind, precipitation, and storm. Repeated entries do not
+  emit duplicate update events.
 - The shared `Planet.GetPlanetType` lookup supplies the climate, including
   authored planet IDs and resref fallbacks. `VAR_WEATHER_CLIMATE` (area string)
   overrides that lookup with a name from `WeatherPlanetDefinitions.GetNamedClimates`.

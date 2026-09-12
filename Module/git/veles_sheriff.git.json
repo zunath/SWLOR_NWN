@@ -170980,7 +170980,7 @@
         "__struct_id": 9,
         "X": {
           "type": "float",
-          "value": 35.0
+          "value": 34.0
         },
         "Y": {
           "type": "float",
@@ -191314,7 +191314,7 @@
         "__struct_id": 5,
         "XPosition": {
           "type": "float",
-          "value": 35.0
+          "value": 34.0
         },
         "YPosition": {
           "type": "float",

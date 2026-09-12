@@ -2,7 +2,7 @@
 
 Snapshot: September 12, 2026. Source: [perk tracker](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203). All 1,004 skill/perk/rank names matched the local Bible manifest. Row links reflect this snapshot; use the skill and perk name if the sheet is reordered.
 
-**312 rows need verification for these changes: 33 directly changed rows and 279 combination regressions.** After the authorized tracker update and the additional Creeping Terror fix, 234 say Pass, 63 say Retest, and 15 say Not Tested. Of the 33 direct rows, 30 say Retest and Creeping Terror I-III still say Pass. Those three additional rows also need retesting; the authorized live-sheet edit was limited to the original 26 rows. Combination regression means testing the listed interaction, not that the perk is independently known to be broken.
+**331 rows need verification for these changes: 51 directly changed rows and 280 combination regressions.** After the authorized tracker update and subsequent review fixes, 249 say Pass, 63 say Retest, and 19 say Not Tested. Of the 51 direct rows, 30 say Retest, 18 still say Pass, and three Deflecting Return ranks say Not Tested. The additional direct rows need verification too; the authorized live-sheet edit was limited to the original 26 rows. Combination regression means testing the listed interaction, not that the perk is independently known to be broken.
 
 On September 12, the user requested that the 26 directly changed rows previously marked Pass be changed to Retest. The live sheet update was verified to change exactly those 26 Test Status cells; this checklist reflects that update. Preserve its other existing work: 37 additional rows already marked Retest fall outside this change-specific list, and their existing retest requirements still apply. Likewise, this list does not replace the tracker's remaining first-time testing backlog.
 
@@ -20,7 +20,7 @@ Combine target-status reduction with generic reduction, Guard, Leadership and re
 
 ### C3: Continuous control and immunity
 
-Combine Iron Grip and Scrapper Stance with hard control; verify a final maximum of 30 seconds after duration bonuses and resistance. Attempt same-type refresh, another control type, and late Ground Quake Daze-to-Knockdown conversion. No attempt may postpone the original expiration. After control ends, all hard-control types must fail for 20 seconds. Repeat with two attackers, cleansing and logout/rejoin. Soft debuffs retain their authored refresh/extension behavior.
+Combine Iron Grip and Scrapper Stance with hard control; verify a final maximum of 30 seconds after duration bonuses and resistance. Attempt same-type refresh, another control type, and late Ground Quake Daze-to-Knockdown conversion. No attempt may postpone the original expiration. After control ends, all hard-control types must fail for 20 seconds. Repeat with two attackers, cleansing and logout/rejoin. Soft debuffs retain their authored refresh/extension behavior. Separately, verify that the self-applied subdual penalty retains its authored 60-second knockdown; the combat cap must not shorten it.
 
 ### C4: Periodic damage mitigation
 
@@ -50,6 +50,14 @@ With Disruption Expert alone, extend Foggy Mind, Force Disruption and ability-co
 
 Verify Brace Breaker, Concussive Challenge, Suppressing Shot (Mimicry) and Tail Sweep display and enforce a 24-second cooldown. Base Daze remains 15 seconds. Shared immunity still begins when control ends; switching techniques or attackers cannot bypass it.
 
+### C11: Triggered damage mitigation
+
+Test this splash, pulse, retaliation or reflection against Physical and Force damage-taken reduction or vulnerability, plus generic reduction, typed Leadership and resistance. Typed reduction must apply once and share the 85% target/generic budget. Include Shielding and Dampening Field against Physical hits, Force Warding against Force hits, tiny damage values, and Physical-to-Force conversion with an explicit zero or nonzero original target adjustment. Conversion must not apply the new hit modifier twice. Triggered damage must not chain further procs.
+
+### C12: Thrown ability secondary hits
+
+With Ricochet Toss, a thrown ability hitting a bleeding target gets one 25% roll per cast for 12 damage to one other enemy within 5m. Check another weapon skill, a nonbleeding target, Flurry Bleed alone, multiple bleeding targets and repeated field pulses. Cluster Pouch adds 10 damage to one other enemy within 5m once per area thrown cast. The original target cannot spend the extra-target slot. Combine both perks; their budgets remain independent and a later cast starts fresh.
+
 ## Direct changes: test first
 
 | Tracker row | Skill | Perk / rank | Current status | Test cases |
@@ -61,10 +69,16 @@ Verify Brace Breaker, Concussive Challenge, Suppressing Shot (Mimicry) and Tail 
 | [309](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A309:O309) | Force | Creeping Terror I | Pass | C2, C4 |
 | [315](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A315:O315) | Force | Creeping Terror II | Pass | C2, C4 |
 | [328](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A328:O328) | Force | Creeping Terror III | Pass | C2, C4 |
+| [346](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A346:O346) | Force | Reflective Barrier | Pass | C11 |
 | [412](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A412:O412) | Heavy Vibroblade | Defensive Harmony | Retest | C5 |
 | [434](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A434:O434) | Heavy Vibroblade | Soul Amplification | Retest | C5 |
+| [449](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A449:O449) | Katar | Iron Elbows | Pass | C11 |
+| [450](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A450:O450) | Katar | Whirling Guard | Pass | C11 |
 | [478](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A478:O478) | Katar | Scrapheap Lockdown | Retest | C3, C8 |
 | [540](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A540:O540) | Lightsaber | Epicenter | Retest | C3, C8 |
+| [543](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A543:O543) | Lightsaber | Deflecting Return I | Not Tested | C11 |
+| [550](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A550:O550) | Lightsaber | Deflecting Return II | Not Tested | C11 |
+| [557](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A557:O557) | Lightsaber | Deflecting Return III | Not Tested | C11 |
 | [580](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A580:O580) | Mimicry | Concussive Challenge | Retest | C3, C8, C10 |
 | [598](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A598:O598) | Mimicry | Suppressing Shot | Retest | C3, C8, C10 |
 | [600](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A600:O600) | Mimicry | Tail Sweep | Retest | C3, C8, C10 |
@@ -77,16 +91,28 @@ Verify Brace Breaker, Concussive Challenge, Suppressing Shot (Mimicry) and Tail 
 | [648](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A648:O648) | Mimicry | Terrifying Bellow | Retest | C3, C8 |
 | [649](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A649:O649) | Mimicry | Warden Clamp | Retest | C3, C8 |
 | [651](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A651:O651) | Mimicry | Warden Maul | Retest | C3, C8 |
+| [654](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A654:O654) | Mimicry | Warden Sweep | Pass | C11 |
 | [695](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A695:O695) | Pistol | Evasive Reload | Retest | C7 |
+| [792](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A792:O792) | Spear | Force Warding I | Pass | C11 |
+| [798](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A798:O798) | Spear | Force Warding II | Pass | C11 |
 | [799](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A799:O799) | Spear | Disruption Expert | Retest | C3, C9 |
+| [806](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A806:O806) | Spear | Force Warding III | Pass | C11 |
 | [821](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A821:O821) | Spear | Opportunist's Flow | Retest | C7 |
 | [832](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A832:O832) | Staff | Ground Quake I | Retest | C3, C8 |
 | [838](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A838:O838) | Staff | Ground Quake II | Retest | C3, C8 |
 | [843](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A843:O843) | Staff | Worldbreaker | Retest | C3, C8 |
 | [853](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A853:O853) | Staff | Flowing Defense | Retest | C7 |
-| [863](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A863:O863) | Throwing | Payload Pouch | Retest | C6 |
+| [863](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A863:O863) | Throwing | Payload Pouch | Retest | C6, C11 |
+| [867](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A867:O867) | Throwing | Cluster Pouch | Pass | C11, C12 |
 | [868](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A868:O868) | Throwing | Concussive Toss I | Retest | C3, C8 |
 | [874](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A874:O874) | Throwing | Concussive Toss II | Retest | C3, C8 |
+| [885](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A885:O885) | Throwing | Ricochet Toss | Pass | C11, C12 |
+| [911](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A911:O911) | Twin Blade | Edge Rhythm | Pass | C11 |
+| [915](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A915:O915) | Twin Blade | Tempest Bloom | Pass | C11 |
+| [952](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A952:O952) | Vibroblade | Shield Bash I | Pass | C11 |
+| [956](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A956:O956) | Vibroblade | Shield Bash II | Pass | C11 |
+| [962](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A962:O962) | Vibroblade | Shield Bash III | Pass | C11 |
+| [967](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A967:O967) | Vibroblade | Shield Bash IV | Pass | C11 |
 
 ## Combination regressions
 
@@ -272,9 +298,10 @@ Verify Brace Breaker, Concussive Challenge, Suppressing Shot (Mimicry) and Tail 
 | [544](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A544:O544) | Lightsaber | Saber Ward II | Pass | C2 |
 | [551](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A551:O551) | Lightsaber | Saber Ward III | Pass | C2 |
 | [552](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A552:O552) | Lightsaber | Reprisal I | Pass | C3 |
+| [554](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A554:O554) | Lightsaber | Center of the Storm | Not Tested | C11 |
 | [555](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A555:O555) | Lightsaber | Reprisal II | Pass | C3 |
 | [556](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A556:O556) | Lightsaber | Saber Ward IV | Pass | C2 |
-| [558](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A558:O558) | Lightsaber | Aegis Eternal | Pass | C2 |
+| [558](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A558:O558) | Lightsaber | Aegis Eternal | Pass | C2, C11 |
 | [559](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A559:O559) | Mimicry | Combat Analyzer I | Pass | C1 |
 | [560](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A560:O560) | Mimicry | Combat Analyzer II | Pass | C1 |
 | [561](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A561:O561) | Mimicry | Combat Analyzer III | Pass | C1 |
@@ -371,3 +398,4 @@ Verify Brace Breaker, Concussive Challenge, Suppressing Shot (Mimicry) and Tail 
 | [997](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A997:O997) | Vibroknife | Cheap Shot | Pass | C1 |
 | [1000](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A1000:O1000) | Vibroknife | Backstab II | Retest | C3 |
 | [1005](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A1005:O1005) | Vibroknife | Escape Artist | Pass | C3 |
+

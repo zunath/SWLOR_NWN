@@ -1563,8 +1563,14 @@ namespace SWLOR.Game.Server.Service
 
         public static uint[] SelectAutoAttackSplashSecondaryTargets(IEnumerable<uint> candidates, uint primaryTarget, int maximumTotalTargets)
         {
+            return SelectSecondaryDamageTargets(candidates, primaryTarget, Math.Max(0, maximumTotalTargets - 1));
+        }
+
+        /// <summary>Excludes the original target before spending the secondary-target budget.</summary>
+        public static uint[] SelectSecondaryDamageTargets(IEnumerable<uint> candidates, uint primaryTarget, int maximumSecondaryTargets)
+        {
             return candidates.Where(target => target != primaryTarget).Distinct()
-                .Take(Math.Max(0, maximumTotalTargets - 1)).ToArray();
+                .Take(Math.Max(0, maximumSecondaryTargets)).ToArray();
         }
 
         public static void ApplyDamageDealtEffects(
@@ -5996,6 +6002,7 @@ namespace SWLOR.Game.Server.Service
             ApplyFoggyMindResourceDrain(activator, target, ability);
             ApplyBleedingTargetAbilityBleedRefresh(activator, target, skillType);
             ApplyBleedingTargetAbilityBleedSpread(activator, target, skillType, damageType);
+            ApplyBleedingTargetAbilitySplash(activator, target, skillType, damageType);
             ApplyAreaAbilityFragmentation(activator, target, ability, skillType, damageType);
 
             switch (skillType)
@@ -6178,16 +6185,50 @@ namespace SWLOR.Game.Server.Service
         {
             var bonus = Stat.GetStatAdjustment(activator, StatType.ThrowingBombardierClusterStormDamageBonus);
             var maximumTargets = Stat.GetStatAdjustment(activator, StatType.ThrowingBombardierClusterStormMaximumTargets);
-            if (bonus <= 0 || maximumTargets <= 0)
+            if (bonus <= 0 || maximumTargets <= 0 ||
+                Ability.GetAbilityImpactSequence(activator)?.TryTriggerDamageRider(
+                    nameof(StatType.ThrowingBombardierClusterStormDamageBonus)) != true)
                 return;
 
-            foreach (var nearby in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), 5f, maximumTargets, OBJECT_INVALID))
+            foreach (var nearby in SelectSecondaryDamageTargets(
+                         AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), 5f, 0, target),
+                         target, maximumTargets))
             {
-                if (nearby == target)
-                    continue;
-
                 ApplyTriggeredDamage(activator, nearby, bonus, damageType);
             }
+        }
+
+        private static void ApplyBleedingTargetAbilitySplash(
+            uint activator, uint target, SkillType skillType, CombatDamageType damageType)
+        {
+            if (!StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding))
+                return;
+
+            foreach (var source in Ability.GetAbilityImpactStatSources(activator, StatType.BleedingTargetAbilitySplashDamage))
+            {
+                if (!CanTriggerBleedingTargetAbilitySplash(source, skillType, true, 1) ||
+                    Ability.GetAbilityImpactSequence(activator)?.TryTriggerDamageRider(
+                        source.GetModifierGroup(StatType.BleedingTargetAbilitySplashDamage)) != true ||
+                    !CanTriggerBleedingTargetAbilitySplash(source, skillType, true, Random.D100(1)))
+                    continue;
+
+                foreach (var nearby in SelectSecondaryDamageTargets(
+                             AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target),
+                                 source[StatType.BleedingTargetAbilitySplashRadiusMeters], 0, target),
+                             target, source[StatType.BleedingTargetAbilitySplashMaximumTargets]))
+                    ApplyTriggeredDamage(activator, nearby, source[StatType.BleedingTargetAbilitySplashDamage], damageType, skillType);
+            }
+        }
+
+        /// <summary>Checks this source's complete proc conditions without combining unrelated selectors.</summary>
+        public static bool CanTriggerBleedingTargetAbilitySplash(
+            StatAdjustmentSource source, SkillType skillType, bool isBleeding, int roll)
+        {
+            return isBleeding && roll >= 1 && roll <= Math.Min(100, source[StatType.BleedingTargetAbilitySplashChance]) &&
+                   source[StatType.BleedingTargetAbilitySplashDamage] > 0 &&
+                   source[StatType.BleedingTargetAbilitySplashRadiusMeters] > 0 &&
+                   source[StatType.BleedingTargetAbilitySplashMaximumTargets] > 0 &&
+                   SkillTypeMatches(skillType, GetSkillTypeFromStat(source[StatType.AbilityDamageToBleedingTargetSkillType]));
         }
 
         private static void ApplySaturationToss(uint activator, uint target)
@@ -7595,7 +7636,7 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             SkillType skillType = SkillType.Invalid,
             bool typedLeadershipReductionAlreadyApplied = false,
-            int targetStatusDamagePercentAdjustment = 0,
+            int? targetStatusDamagePercentAdjustment = null,
             bool outgoingModifiersAlreadyApplied = false)
         {
             if (damage <= 0)
@@ -7603,6 +7644,14 @@ namespace SWLOR.Game.Server.Service
 
             if (!outgoingModifiersAlreadyApplied)
                 damage = ApplyDamageTypeDealtModifiers(activator, damage, damageType);
+            var typedTargetAdjustment = damageType.IsPhysicalDamageType()
+                ? Stat.GetStatAdjustment(target, StatType.PhysicalDamageTakenPercentAdjustment)
+                : damageType == CombatDamageType.Force
+                    ? Stat.GetStatAdjustment(target, StatType.ForceDamageTakenPercentAdjustment)
+                    : 0;
+            var targetDamage = ApplyTriggeredDamageTargetAdjustment(
+                damage, typedTargetAdjustment, targetStatusDamagePercentAdjustment);
+            damage = targetDamage.Damage;
             damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
             if (damage <= 0)
                 return 0;
@@ -7613,7 +7662,7 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 damageType,
                 deliveryType: CombatDamageDeliveryType.Triggered,
-                targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment,
+                targetStatusDamagePercentAdjustment: targetDamage.Adjustment,
                 typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied);
             if (damage <= 0)
                 return 0;
@@ -7632,6 +7681,19 @@ namespace SWLOR.Game.Server.Service
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
             return damage;
+        }
+
+        /// <summary>
+        /// Applies a new triggered hit's typed target modifier, or preserves the adjustment
+        /// already applied to a converted damage portion, including an explicit zero.
+        /// </summary>
+        public static (int Damage, int Adjustment) ApplyTriggeredDamageTargetAdjustment(
+            int damage, int typedTargetAdjustment, int? previouslyAppliedAdjustment)
+        {
+            if (previouslyAppliedAdjustment.HasValue)
+                return (damage, previouslyAppliedAdjustment.Value);
+            var adjustment = Math.Max(-MaximumCombinedDamageReductionPercent, typedTargetAdjustment);
+            return (ApplyPercentDamageAdjustment(damage, adjustment), adjustment);
         }
 
         private const int DeflectingReturnCooldownSeconds = 6;

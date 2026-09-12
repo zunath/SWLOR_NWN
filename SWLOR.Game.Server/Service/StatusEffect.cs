@@ -541,9 +541,11 @@ namespace SWLOR.Game.Server.Service
 
             if (!isPermanent)
             {
-                durationTicks = ClampHardCrowdControlDurationTicks(statusEffect.Categories, durationTicks, statusEffect.Frequency);
+                durationTicks = ClampHardCrowdControlDurationTicks(statusEffect.Categories, durationTicks, statusEffect.Frequency,
+                    isSelfApplied: source == creature);
                 durationTicksWithoutResistance = ClampHardCrowdControlDurationTicks(
-                    statusEffect.Categories, durationTicksWithoutResistance, statusEffect.Frequency);
+                    statusEffect.Categories, durationTicksWithoutResistance, statusEffect.Frequency,
+                    isSelfApplied: source == creature);
             }
 
             if (!isPermanent && durationTicks <= 0)
@@ -761,11 +763,12 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Apply the final control budget after outgoing duration bonuses and resistance.
-        /// Soft debuffs and permanent effects are unaffected.
+        /// Self-applied system penalties, soft debuffs and permanent effects are unaffected.
         /// </summary>
-        public static int ClampHardCrowdControlDurationTicks(StatusEffectCategory categories, int ticks, float frequency)
+        public static int ClampHardCrowdControlDurationTicks(
+            StatusEffectCategory categories, int ticks, float frequency, bool isSelfApplied = false)
         {
-            if (ticks <= 0 || (categories & StatusEffectCategory.HardCrowdControl) == 0)
+            if (isSelfApplied || ticks <= 0 || (categories & StatusEffectCategory.HardCrowdControl) == 0)
                 return ticks;
 
             return Math.Min(ticks, (int)Math.Floor(MaximumHardCrowdControlDurationSeconds / Math.Max(1f, frequency)));

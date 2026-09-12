@@ -6096,6 +6096,22 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         OutgoingAbilityDisruptionDurationPercentAdjustment = 1079,
 
+        /// <summary>Chance to splash from an ability hit against a bleeding target.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        BleedingTargetAbilitySplashChance = 1080,
+
+        /// <summary>Flat damage dealt to each secondary target by the source's splash.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BleedingTargetAbilitySplashDamage = 1081,
+
+        /// <summary>Radius around the bleeding target for the source's splash.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        BleedingTargetAbilitySplashRadiusMeters = 1082,
+
+        /// <summary>Maximum secondary targets for the source's splash per cast.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        BleedingTargetAbilitySplashMaximumTargets = 1083,
+
     }
 
     public class StatTypeAttribute : Attribute

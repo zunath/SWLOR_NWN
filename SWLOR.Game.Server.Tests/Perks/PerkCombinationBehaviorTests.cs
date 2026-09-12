@@ -83,6 +83,34 @@ public class PerkCombinationBehaviorTests
     }
 
     [Test]
+    public void RicochetToss_GrantsItsFullPayloadAndOnlyRollsForThrownHitsAgainstBleedingTargets()
+    {
+        var source = PerkSource<ThrowingPerkDefinition>("RicochetToss", PerkType.RicochetToss);
+        source[StatType.BleedingTargetAbilitySplashDamage].Should().Be(12);
+        source[StatType.BleedingTargetAbilitySplashRadiusMeters].Should().Be(5);
+        source[StatType.BleedingTargetAbilitySplashMaximumTargets].Should().Be(1);
+        foreach (var skill in Enum.GetValues<SkillType>())
+        foreach (var bleeding in new[] { false, true })
+        {
+            var procs = Enumerable.Range(1, 100).Count(roll =>
+                Combat.CanTriggerBleedingTargetAbilitySplash(source, skill, bleeding, roll));
+            procs.Should().Be(skill == SkillType.Throwing && bleeding ? 25 : 0);
+        }
+        var flurry = PerkSource<ThrowingPerkDefinition>("FlurryBleed", PerkType.FlurryBleed);
+        Combat.CanTriggerBleedingTargetAbilitySplash(flurry, SkillType.Throwing, true, 1)
+            .Should().BeFalse("a shared skill selector must not confer another perk's proc");
+    }
+
+    [Test]
+    public void SingleAdditionalDamageTarget_ExcludesThePrimaryBeforeSpendingTheSlot()
+    {
+        Combat.SelectSecondaryDamageTargets(new uint[] { 99, 99, 1, 1, 2 }, 99, 1)
+            .Should().Equal(new uint[] { 1 });
+        Combat.SelectSecondaryDamageTargets(new uint[] { 99 }, 99, 1).Should().BeEmpty();
+        Combat.SelectSecondaryDamageTargets(new uint[] { 99, 1 }, 99, 0).Should().BeEmpty();
+    }
+
+    [Test]
     public void AvoidedAttackDiscounts_KeepTheirAuthoredScopesAndConsumeIndependently()
     {
         StoreDiscount("staff", PerkSource<StaffPerkDefinition>("FlowingDefense", PerkType.FlowingDefense));
@@ -137,6 +165,38 @@ public class PerkCombinationBehaviorTests
             guarded.Should().BeLessThanOrEqualTo((int)Math.Ceiling(ordinary * .45),
                 "Guard is a separate 55% reduction, including when other reductions reach their cap");
         }
+    }
+
+    [TestCase(8, -50, -80, 4, 2)]
+    [TestCase(100, -50, -80, 50, 15)]
+    [TestCase(100, -95, -80, 15, 15)]
+    [TestCase(100, 20, -50, 120, 60)]
+    public void TriggeredDamage_HonorsTypedTargetModifiersAndTheSharedReductionBudget(
+        int damage, int typedAdjustment, int genericAdjustment, int typedDamage, int expected)
+    {
+        var result = Combat.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
+        result.Damage.Should().Be(typedDamage);
+        Combat.ApplyCombinedDamageTakenAdjustment(result.Damage, result.Adjustment, genericAdjustment)
+            .Should().Be(expected);
+    }
+
+    [TestCase(-50)]
+    [TestCase(0)]
+    public void ConvertedDamage_PreservesAnAlreadyAppliedTargetAdjustmentIncludingZero(int priorAdjustment)
+    {
+        var result = Combat.ApplyTriggeredDamageTargetAdjustment(50, -80, priorAdjustment);
+        result.Damage.Should().Be(50, "the originating hit already applied its target-status modifier");
+        result.Adjustment.Should().Be(priorAdjustment);
+    }
+
+    [Test]
+    public void SelfAppliedSubdualControl_PreservesItsSixtySecondDuration()
+    {
+        var categories = new KnockdownStatusEffect().Categories;
+        StatusEffect.ClampHardCrowdControlDurationTicks(categories, 60, 1f, isSelfApplied: true)
+            .Should().Be(60, "subdual applies its knockdown from the defeated player to themselves");
+        StatusEffect.ClampHardCrowdControlDurationTicks(categories, 60, 1f, isSelfApplied: false)
+            .Should().Be(30, "externally applied combat control must retain its budget");
     }
 
     [TestCase(10, 100, 100, 0)]

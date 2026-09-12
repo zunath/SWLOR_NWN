@@ -1597,6 +1597,11 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityDamageToBleedingTargetSkillType", skill_expr)
         add_stat(stats, "AbilityDamageToBleedingTargetBonus", parse_count(r"deal \+(\d+) DMG", description))
         add_stat(stats, "BleedingTargetAbilityBleedDurationExtensionSeconds", parse_count(r"refresh Bleed by (\d+) seconds", description))
+        if "chance to hit one enemy" in description:
+            add_stat(stats, "BleedingTargetAbilitySplashChance", parse_percent(r"have a (\d+)% chance", description))
+            add_stat(stats, "BleedingTargetAbilitySplashDamage", parse_count(r"for \+(\d+) DMG", description))
+            add_stat(stats, "BleedingTargetAbilitySplashRadiusMeters", parse_count(r"within (\d+)m", description))
+            add_stat(stats, "BleedingTargetAbilitySplashMaximumTargets", 1)
     if (
         "bleeding or hemorrhaging targets" in lowered or
         "bleeding targets" in lowered

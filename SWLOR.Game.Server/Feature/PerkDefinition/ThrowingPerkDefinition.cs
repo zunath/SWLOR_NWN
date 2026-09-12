@@ -342,6 +342,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RicochetTossTrait)
                 .Description("Thrown abilities against bleeding targets have a 25% chance to hit one enemy within 5m for +12 DMG.")
                 .IncreasesStat(StatType.AbilityDamageToBleedingTargetSkillType, (int)SkillType.Throwing)
+                .IncreasesStat(StatType.BleedingTargetAbilitySplashChance, 25)
+                .IncreasesStat(StatType.BleedingTargetAbilitySplashDamage, 12)
+                .IncreasesStat(StatType.BleedingTargetAbilitySplashRadiusMeters, 5)
+                .IncreasesStat(StatType.BleedingTargetAbilitySplashMaximumTargets, 1)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 15);
         }

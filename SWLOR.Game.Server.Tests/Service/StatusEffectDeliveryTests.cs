@@ -88,6 +88,22 @@ public class StatusEffectDeliveryTests
     }
 
     [Test]
+    public void SubdualSelfApplication_IsPassedToBothControlBudgetClamps()
+    {
+        var root = FindRepositoryRoot();
+        var statusSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var calls = CSharpSyntaxTree.ParseText(statusSource).GetRoot().DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(call => call.Expression.ToString() == "ClampHardCrowdControlDurationTicks").ToArray();
+        calls.Should().HaveCount(2);
+        calls.Should().OnlyContain(call => call.ArgumentList.Arguments.Any(arg =>
+            arg.NameColon != null && arg.NameColon.Name.Identifier.ValueText == "isSelfApplied" &&
+            arg.Expression.ToString() == "source == creature"));
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Death.cs"))
+            .Should().Contain("StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);");
+    }
+
+    [Test]
     public void LegacyDamageCallbacks_OnlyReceiveDirectDamage()
     {
         var effect = new LegacyDamageCallbackStatusEffect();

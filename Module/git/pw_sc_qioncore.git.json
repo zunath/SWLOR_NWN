@@ -10350,7 +10350,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 5.2
+          "value": 1.0
         },
         "Z": {
           "type": "float",
@@ -10375,7 +10375,7 @@
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.0
+              "value": 0.7
             }
           }
         }
@@ -10708,7 +10708,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 9.5
+          "value": 5.3
         },
         "Z": {
           "type": "float",

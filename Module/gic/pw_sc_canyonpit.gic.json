@@ -282,6 +282,13 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
+          "value": "Visible arena exit scenery for pw_sc_canyonpit_exit."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
           "value": "Unconnected arena return exit. When its dungeon exists, set DESTINATION to the dungeon return waypoint tag and OnUsed to teleport. No key or quest visibility gate."
         }
       }

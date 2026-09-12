@@ -1267,15 +1267,15 @@
       "Duration": 2.9,
       "Project": "force/ThrowRock.swlanim",
       "SourceModel": "a_ba",
-      "SourceAnimation": "pause1 \u002B nwreadyr",
-      "Profile": "Authored choreography: Scoop a heavy invisible mass upward from low forward space then heave both arms toward the distant target; lift the heavy telekinetic mass through the legs, load the hips behind it and heave from the whole body",
+      "SourceAnimation": "pause1 + nwreadyr",
+      "Profile": "Authored choreography: Gather the rock with a low leading hand, lift it beside the shoulder, then drive a compact forward Force release through a planted weight shift; the other hand stays close to the body and both arms settle smoothly",
       "ChoreographyPath": "force/choreographies.json",
-      "ChoreographySha256": "c024fbaf9f490a9a9481a75849ae678f261e8e8c1effef05cbdb1cb3adc2fdfe",
+      "ChoreographySha256": "0ea15e167189900a4b0b5f8fb97ec1b343822f27aaff5f7913c6477f328a8239",
       "ChoreographySourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "https://chatgpt.com/s/m_6a400953c9188191a5966bb5d3cbae36",
-      "ProjectSha256": "aacf56ee4eb4aa91f2fb950c69b0865067c9d631bd4ea27c00a50a12de57b0ac"
+      "ProjectSha256": "7221d75e2fd1ee06e46b0cab47268b23151f35828aa72c53c80616bee99ab6c4"
     },
     {
       "Id": "WeakenResolve",

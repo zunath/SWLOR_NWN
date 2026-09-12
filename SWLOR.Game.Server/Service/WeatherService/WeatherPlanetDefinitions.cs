@@ -5,6 +5,32 @@ namespace SWLOR.Game.Server.Service.WeatherService
 {
     public static class WeatherPlanetDefinitions
     {
+        // These profiles also support authored areas outside the active galaxy map.
+        // Unknown overrides deliberately do not fall back to a different planet.
+        public static Dictionary<string, WeatherClimate> GetNamedClimates(Dictionary<PlanetType, WeatherClimate> planets)
+        {
+            var climates = new Dictionary<string, WeatherClimate>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (planet, climate) in planets) climates.Add(planet.ToString(), climate);
+            climates["Kashyyyk"] = new WeatherClimate
+            {
+                HeatModifier = 3, HumidityModifier = 3, MinimumHeat = 4
+            };
+            climates["Ossus"] = new WeatherClimate
+            {
+                HeatModifier = 2, HumidityModifier = -1, MinimumHeat = 4
+            };
+            climates["None"] = new WeatherClimate { IsSheltered = true };
+            return climates;
+        }
+
+        public static WeatherClimate ResolveClimate(PlanetType planet, string climateOverride,
+            IReadOnlyDictionary<PlanetType, WeatherClimate> planets, IReadOnlyDictionary<string, WeatherClimate> named)
+        {
+            if (!string.IsNullOrWhiteSpace(climateOverride))
+                return named.TryGetValue(climateOverride.Trim(), out var custom) ? custom : null;
+            return planets.TryGetValue(planet, out var climate) ? climate : null;
+        }
+
         public static Dictionary<PlanetType, WeatherClimate> GetPlanetClimates()
         {
             return new Dictionary<PlanetType, WeatherClimate>
@@ -44,8 +70,8 @@ namespace SWLOR.Game.Server.Service.WeatherService
                     RainNormalText = "The ocean, affronted by the existence of patches of non-ocean on the surface of the planet, is attempting to reclaim the land by air drop.  In other words, it's raining.",
                     RainWarmText = "A heavy rain shower is passing over, but is doing little to dispel the humidity in the air.",
                     SnowText = "It's snowing!  The local flora seems most surprised at this turn of events.",
-                    StormText = "A storm rips in off the sea, filling the sky with dramatic flashes.",
-                    ScorchingText = "The sun bakes the sand, making it extremely uncomfortable to those without insulated boots.",
+                    StormText = "A storm rips in off the sea. " + WeatherFeedbackText.Storm,
+                    ScorchingText = "The sun bakes the sand, and heat shimmers above the beach.",
                     ColdWindyText = "A chill wind sweeps over the isles, the moisture in the air cutting to the bone.",
                     WarmWindyText = "The wind is picking up, a warm front rolling over.  There could be a storm soon.",
                     WindyText = "A strong wind sweeps in.  The sea is choppy, waves crashing onto the beach.",
@@ -53,7 +79,8 @@ namespace SWLOR.Game.Server.Service.WeatherService
                 [PlanetType.Hutlar] = new WeatherClimate
                 {
                     HeatModifier = -8,
-                    HumidityModifier = -8,
+                    HumidityModifier = +2,
+                    MaximumHeat = 3,
                     HasSnowStorms = true,
                     FreezingText = "A wave of cold air rolls in, stinging exposed flesh.",
                     SnowText = "It's snowing... again...",
@@ -64,6 +91,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
                     MildText = "It is cold, the sky is clear, and there is a gentle breeze.",
                     WarmCloudyText = "It is cold."
                 },
+                [PlanetType.CZ220] = new WeatherClimate { IsSheltered = true },
                 [PlanetType.Korriban] = new WeatherClimate
                 {
                     HeatModifier = +3,
@@ -86,6 +114,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
 				},
 				[PlanetType.SmugglersMoonStation] = new WeatherClimate
 				{
+					IsSheltered = true,
 					HeatModifier = -2,
 					HumidityModifier = -2,
 					WindModifier = -5,

@@ -11,6 +11,7 @@ public sealed class AreaGeneratorOptionLabelConverter : IValueConverter
 {
     public static AreaGeneratorOptionLabelConverter Instance { get; } = new();
 
+    /// <summary>Maps generator enum choices to builder-facing labels, including the two decoration placement styles.</summary>
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         value switch
         {

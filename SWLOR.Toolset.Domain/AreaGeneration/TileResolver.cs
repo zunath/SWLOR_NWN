@@ -54,6 +54,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
     /// </summary>
     public static class TileResolver
     {
+        /// <summary>Resolves layout terrain, crossers and features into tiles while protecting room hubs and reserved circulation cells.</summary>
         public static bool TryResolve(
             TilesetModel tileset,
             MacroLayout layout,

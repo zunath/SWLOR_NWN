@@ -329,6 +329,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     partial void OnShowTransitionsChanged(bool value) => InvalidatePreviewDisplay();
 
     partial void OnShowDecorationsChanged(bool value) => InvalidatePreviewDisplay();
+    /// <summary>Requests a new rendering when the reserved-route overlay changes.</summary>
     partial void OnShowRoutesChanged(bool value) => InvalidatePreviewDisplay();
 
     partial void OnPreviewChanging(Bitmap? oldValue, Bitmap? newValue)
@@ -436,6 +437,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     private bool CanCreate() => CanGenerate() && _previewedDraft != null;
 
+    /// <summary>Solves or rerenders a draft and publishes it only if its settings revision is still current.</summary>
     [RelayCommand(CanExecute = nameof(CanGenerate))]
     private async Task GeneratePreview()
     {
@@ -629,6 +631,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         RequestAutomaticPreview();
     }
 
+    /// <summary>Discards the solved draft and rendered preview when a generation input changes.</summary>
     private void InvalidatePreview(string status)
     {
         _previewRevision++;
@@ -639,6 +642,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         SetStatus(status);
     }
 
+    /// <summary>Invalidates the displayed image while retaining the solved draft for overlay-only rendering.</summary>
     private void InvalidatePreviewDisplay()
     {
         if (_loadingDefaults)
@@ -783,6 +787,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         CreateAreaCommand.NotifyCanExecuteChanged();
     }
 
+    /// <summary>Captures builder selections as generation settings, including decoration style, palette and density.</summary>
     private AreaGenerationSettings BuildSettings()
     {
         var wholeValues = new[]
@@ -828,6 +833,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         };
     }
 
+    /// <summary>Summarizes the generated layout, preview availability and decoration omission diagnostics for the builder.</summary>
     private static string Describe(AreaGenerationDraft draft, AreaPreviewImage image)
     {
         var resolved = draft.Result.Resolved!;

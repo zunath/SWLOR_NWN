@@ -51,6 +51,7 @@ public class DungeonDecorationPlannerReviewRegressionTests
 
 public class TileResolverReviewRegressionTests
 {
+    /// <summary>Guards encounter hubs and the connected route from replacement by decorative feature tiles.</summary>
     [Test]
     public void FeatureSprinkling_PreservesRoomCentersAndTheRouteToAnOpening()
     {

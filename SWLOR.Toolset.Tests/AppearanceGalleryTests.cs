@@ -1,5 +1,6 @@
 using Avalonia.Headless.NUnit;
 using System.Collections.Concurrent;
+using System.Xml.Linq;
 using Avalonia.Controls;
 using Avalonia.Logging;
 using Avalonia.Threading;
@@ -544,6 +545,7 @@ namespace SWLOR.Toolset.Tests
             section.Dispose();
         }
 
+        /// <summary>Guards shared appearance controls and the placement of full-body colors inside the existing Body editor.</summary>
         [Test]
         public void OneGridServesEveryEditorThatPicksAnAppearance()
         {
@@ -573,8 +575,13 @@ namespace SWLOR.Toolset.Tests
             creatureView.Should().Contain(
                 "<TabItem Header=\"Body\" IsVisible=\"{Binding BodyParts.HasEditableContent}\">",
                 "the existing Body surface must be available only when the model exposes editable content");
-            creatureView.Should().Contain("Content=\"{Binding TintMapEditor}\"",
-                "full-body tint channels belong inside the existing Body editor");
+            var fullBodyColors = XDocument.Parse(creatureView).Descendants()
+                .Single(element => element.Name.LocalName == "StackPanel" &&
+                    (string?)element.Attribute("IsVisible") == "{Binding BodyParts.IsFullBody}");
+            fullBodyColors.Descendants().Should().Contain(element =>
+                    element.Name.LocalName == "ItemsControl" &&
+                    (string?)element.Attribute("ItemsSource") == "{Binding BodyParts.Colors}",
+                "full-body tint channels use the shared body color rows inside the Body editor");
             creatureView.Should().NotContain("<TabItem Header=\"Tints\"",
                 "tints must not duplicate the Body appearance surface");
             var palettePickerView = File.ReadAllText(Path.Combine(

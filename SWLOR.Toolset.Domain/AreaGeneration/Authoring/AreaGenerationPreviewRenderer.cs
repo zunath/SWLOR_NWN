@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             _resources = resources;
         }
 
+        /// <summary>Renders the solved draft with the requested tile display and optional room, transition, footprint and route overlays.</summary>
         public AreaPreviewImage Render(
             AreaGenerationDraft draft,
             AreaPreviewMode mode,
@@ -157,6 +158,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return true;
         }
 
+        /// <summary>Classifies resolved terrain for schematic rendering, giving usable open surfaces priority over default fill.</summary>
         private static (byte R, byte G, byte B, byte A) FallbackColor(
             TileRecord? tile,
             int orientation,
@@ -238,6 +240,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             }
         }
 
+        /// <summary>Draws declared scaled prop footprints and measured building bounds on the preview.</summary>
         private static void DrawDecorations(
             byte[] pixels,
             int width,
@@ -264,6 +267,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             }
         }
 
+        /// <summary>Draws the circulation bands reserved by the selected decoration placement policy.</summary>
         private static void DrawRoutes(byte[] pixels, int width, AreaGenerationDraft draft, int cell)
         {
             var layout = draft.Result.Resolved;

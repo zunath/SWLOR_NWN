@@ -23,6 +23,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             Definitions = definitions ?? new DefinitionCatalog();
         }
 
+        /// <summary>Produces a deterministic area draft from the requested composition, layout settings and decoration policy.</summary>
         public AreaGenerationDraft Generate(AreaGenerationSettings settings)
         {
             ArgumentNullException.ThrowIfNull(settings);
@@ -135,6 +136,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return draft;
         }
 
+        /// <summary>Rejects missing decoration, treasure and transition blueprints before a preview can be created.</summary>
         internal static void ValidatePlaceableBlueprints(AreaGenerationDraft draft, ModuleWorkspace workspace)
         {
             var content = draft.Composition.Content;

@@ -11,6 +11,7 @@ namespace SWLOR.Toolset.Tests.AreaGeneration;
 
 public class DecorationPlacementSafetyTests
 {
+    /// <summary>Creates an open room fixture with a reserved encounter hub and a surrounding unsupported border.</summary>
     private static ResolvedLayout Room() => new()
     {
         Width = 5, Height = 5,
@@ -21,15 +22,18 @@ public class DecorationPlacementSafetyTests
         }]
     };
 
+    /// <summary>Creates a ground-prop proposal with an explicit footprint for placement tests.</summary>
     private static PlannedDecoration Prop(float x, float y, float radius = 1) => new()
     {
         Resref = "crate", Position = new Vector3(x, y, 0), FootprintRadius = radius
     };
 
+    /// <summary>Applies the placement filter to a test plan with overridable room, style and tileset fixtures.</summary>
     private static DecorationPlacementReport Apply(List<PlannedDecoration> plan, ResolvedLayout? layout = null,
         DecorationPlacementStyle style = DecorationPlacementStyle.Spacious, DungeonTilesetProfile? profile = null) =>
         DecorationPlacementSafety.Apply(plan, layout ?? Room(), profile ?? new(), new(), style);
 
+    /// <summary>Ensures neither placement mode accepts two solid props with intersecting footprints.</summary>
     [TestCase(DecorationPlacementStyle.Spacious)]
     [TestCase(DecorationPlacementStyle.Compact)]
     public void OverlappingFootprints_AreOmittedInBothModes(DecorationPlacementStyle style)
@@ -42,6 +46,7 @@ public class DecorationPlacementSafetyTests
         report.OverlapCount.Should().Be(1);
     }
 
+    /// <summary>Verifies the compact option relaxes route width and spacing without disabling clearance.</summary>
     [Test]
     public void CompactMode_LeavesNarrowerRoutesAndCloserSpacing()
     {
@@ -60,6 +65,7 @@ public class DecorationPlacementSafetyTests
         Apply(closePair).PlacedCount.Should().Be(1);
     }
 
+    /// <summary>Checks reserved paths stay on concave room tiles and extend to custom tunnel openings.</summary>
     [Test]
     public void Routes_FollowConcaveRoomTilesAndIncludeTunnelMouths()
     {
@@ -75,6 +81,7 @@ public class DecorationPlacementSafetyTests
         Apply(plan, layout).RouteConflictCount.Should().Be(1);
     }
 
+    /// <summary>Rejects footprints that cross unsupported room edges or structure cells after scaling.</summary>
     [Test]
     public void FootprintSupport_AccountsForScaleWallsAndStructureCells()
     {
@@ -87,6 +94,7 @@ public class DecorationPlacementSafetyTests
         plan.Should().BeEmpty();
     }
 
+    /// <summary>Guards against checking only the prop center when its footprint reaches a chasm quadrant.</summary>
     [Test]
     public void ChasmCheck_RejectsFootprintOverhangEvenWhenItsCenterIsSupported()
     {
@@ -97,6 +105,7 @@ public class DecorationPlacementSafetyTests
         Apply(plan, layout, profile: new() { ChasmTerrains = ["Hole"] }).UnsupportedCount.Should().Be(1);
     }
 
+    /// <summary>Ensures a rejected arrangement member cannot leave a partial doorway pair or vignette.</summary>
     [Test]
     public void Arrangement_IsOmittedTogetherWhenOneMemberCannotFit()
     {
@@ -108,6 +117,7 @@ public class DecorationPlacementSafetyTests
         plan.Should().BeEmpty();
     }
 
+    /// <summary>Checks that cargo tiers survive only while their supporting base remains in the accepted plan.</summary>
     [Test]
     public void Stacks_KeepSupportedTiersAndDropTiersWhoseBaseWasRejected()
     {
@@ -124,6 +134,7 @@ public class DecorationPlacementSafetyTests
         plan.Should().Equal(supported, tier);
     }
 
+    /// <summary>Verifies flat decoration does not consume ground-obstacle clearance.</summary>
     [Test]
     public void FloorPaint_DoesNotBlockPropsRoutesOrCreatureClearance()
     {
@@ -138,6 +149,7 @@ public class DecorationPlacementSafetyTests
         GeneratedAreaDocumentPopulator.CreatureOccupiedAnchors(draft).Should().ContainSingle();
     }
 
+    /// <summary>Rejects non-finite placement values before they can enter generated area data.</summary>
     [Test]
     public void InvalidNumbers_CannotReachTheAreaDocuments()
     {
@@ -146,6 +158,7 @@ public class DecorationPlacementSafetyTests
         plan.Should().BeEmpty();
     }
 
+    /// <summary>Checks a rigid footprint cannot straddle excessive ground-height variation.</summary>
     [Test]
     public void RigidProps_RejectSteepSlopesAndRaisedTileSeams()
     {
@@ -160,6 +173,7 @@ public class DecorationPlacementSafetyTests
         DecorationPlacementSafety.HasLevelSupport(new(15, 15), 1, layout, tileset).Should().BeTrue();
     }
 
+    /// <summary>Requires an explicit lawn declaration before treating feature art as supported prop surface.</summary>
     [Test]
     public void CuratedLawnSurface_AcceptsProps_ButAnUnknownFeatureDoesNot()
     {
@@ -172,6 +186,7 @@ public class DecorationPlacementSafetyTests
             .PlacedCount.Should().Be(1);
     }
 
+    /// <summary>Guards explicit Standard selection and declared small-prop radii against fallback defaults.</summary>
     [Test]
     public void StandardPalette_OverridesTheThemesNamedPalette_AndSmallFootprintsStaySmall()
     {
@@ -187,6 +202,7 @@ public class DecorationPlacementSafetyTests
         DungeonDecorationPlanner.Plan(Room(), profile, detail, 100).Should().OnlyContain(prop => prop.Resref == "ruin");
     }
 
+    /// <summary>Ensures replanning without decorations removes earlier frontage occupancy.</summary>
     [Test]
     public void ZeroDensity_ClearsStaleFrontageOccupancy()
     {
@@ -196,6 +212,7 @@ public class DecorationPlacementSafetyTests
         layout.PlaceableStructureCells.Should().BeEmpty();
     }
 
+    /// <summary>Checks required prop blueprints are validated before a draft becomes creatable.</summary>
     [Test]
     public void MissingPlaceables_AreReportedBeforePreviewIsCreatable()
     {
@@ -205,6 +222,7 @@ public class DecorationPlacementSafetyTests
         action.Should().Throw<InvalidOperationException>().WithMessage("*missing_prop.utp*");
     }
 
+    /// <summary>Checks elongated frontages use measured rectangles instead of oversized enclosing circles.</summary>
     [Test]
     public void LongBuildings_ReserveTheirMeasuredBoundsWithoutBlockingTheEntireStreet()
     {
@@ -222,6 +240,7 @@ public class DecorationPlacementSafetyTests
         anchors.Should().OnlyContain(point => !bounds.IntersectsCircle(point.X, point.Y, 0.5f));
     }
 
+    /// <summary>Guards open exterior floor from being colored as solid default terrain.</summary>
     [Test]
     public void Schematic_ShowsOpenExteriorFloorEvenWhenItIsAlsoTheTilesetDefault()
     {

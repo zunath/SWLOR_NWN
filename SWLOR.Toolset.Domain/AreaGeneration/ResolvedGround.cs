@@ -5,6 +5,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration;
 /// <summary>Interpolates the resolved tile's oriented corner heights in world meters.</summary>
 internal static class ResolvedGround
 {
+    /// <summary>Interpolates the resolved tile's oriented corner heights at a world position, clamping samples to the area.</summary>
     internal static float HeightAt(ResolvedLayout layout, TilesetModel tileset, float x, float y)
     {
         var tileX = Math.Clamp((int)MathF.Floor(x / 10), 0, layout.Width - 1);

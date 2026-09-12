@@ -12,6 +12,7 @@ namespace SWLOR.Toolset.Tests.AreaGeneration;
 
 public class DecorationCompositionTests
 {
+    /// <summary>Exercises seeded compositions at multiple sizes and densities for deterministic, usable and non-overlapping dressing.</summary>
     [TestCase(StandardTilesetProfiles.Cavern, StandardLayoutProfiles.Organic)]
     [TestCase(StandardTilesetProfiles.Facility, StandardLayoutProfiles.Halls)]
     [TestCase(StandardTilesetProfiles.AncientRuin, StandardLayoutProfiles.Packed)]

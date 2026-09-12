@@ -12,6 +12,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
     /// </summary>
     public static class GenerationEngine
     {
+        /// <summary>Produces a deterministic area draft from the requested composition, layout settings and decoration policy.</summary>
         public static GenerationResult Generate(
             DungeonComposition composition,
             TilesetModel tileset,

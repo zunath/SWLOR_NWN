@@ -400,6 +400,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             _ = PlanCreatures(draft, workspace);
         }
 
+        /// <summary>Loads encounter blueprints and assigns creatures to supported anchors outside reserved object footprints.</summary>
         private static IReadOnlyList<CreaturePlacement> PlanCreatures(
             AreaGenerationDraft draft,
             ModuleWorkspace workspace)
@@ -484,6 +485,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return placements;
         }
 
+        /// <summary>Collects ground obstacles that creature and treasure placement must avoid, excluding floor paint and duplicate stack tiers.</summary>
         internal static List<(float X, float Y, float Radius)> CreatureOccupiedAnchors(
             AreaGenerationDraft draft)
         {
@@ -518,6 +520,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return MathF.Max(0f, decoration.FootprintRadius) * MathF.Max(0f, decoration.VisualScale);
         }
 
+        /// <summary>Selects separated encounter anchors with room support and clearance from occupied circles and building rectangles.</summary>
         internal static IReadOnlyList<(float X, float Y)> SelectCreatureAnchors(
             ResolvedLayout resolved,
             LayoutRoom room,
@@ -899,6 +902,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 draft.Composition.Tileset.RoadCrosser);
         }
 
+        /// <summary>Collects measured frontage rectangles for creature and treasure clearance.</summary>
         private static IReadOnlyList<DecorationBounds> BuildingBounds(AreaGenerationDraft draft) =>
             draft.Result.PlannedDecorations.Where(prop => prop.BlocksMovement && prop.FootprintBounds.HasValue)
                 .Select(prop => prop.FootprintBounds!.Value).ToList();
@@ -910,6 +914,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return dx * dx + dy * dy;
         }
 
+        /// <summary>Samples the shared oriented tile-height estimate used to ground generated objects.</summary>
         private static float GroundHeightAt(
             ResolvedLayout layout,
             TilesetModel tileset,

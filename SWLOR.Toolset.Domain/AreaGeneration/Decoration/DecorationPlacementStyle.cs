@@ -6,6 +6,7 @@ public enum DecorationPlacementStyle
     Compact
 }
 
+/// <summary>Summarizes proposed and accepted decoration counts and mutually exclusive reasons for omitting props.</summary>
 public sealed record DecorationPlacementReport(
     int ProposedCount,
     int PlacedCount,

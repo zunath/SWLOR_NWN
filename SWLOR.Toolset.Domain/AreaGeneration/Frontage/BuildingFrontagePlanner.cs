@@ -560,6 +560,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
             return true;
         }
 
+        /// <summary>Rejects frontage candidates whose measured bounds intersect a previously accepted building.</summary>
         private static bool HasFrontageClearance(BuildingFrontageEntry entry, (int X, int Y) cell,
             (int Dx, int Dy) direction, float scale, List<FrontagePlacement> placements)
         {
@@ -570,6 +571,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
             return placements.All(placed => placed.Decoration.FootprintBounds is not { } existing || !bounds.Overlaps(existing));
         }
 
+        /// <summary>Commits a selected frontage with its occupied cells, support anchor and measured world bounds.</summary>
         private static void Place(
             BuildingFrontageEntry entry, (int X, int Y) cell, (int Dx, int Dy) dir, float scale,
             ResolvedLayout layout, FrontageResult result)

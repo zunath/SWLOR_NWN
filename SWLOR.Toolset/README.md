@@ -49,8 +49,17 @@ dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:RunPostBuildEvent
 dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build
 ```
 
-900+ tests, about three minutes. A handful of corpus gates need a local NWN:EE install for base-game
-data and call `Assert.Ignore` without one, so a skip is expected rather than a failure.
+The suite has 3,400+ tests, including corpus-wide animation, model and rendering checks. Runtime
+depends on the available assets. The complete pinned `SWLOR_Haks` checkout is required: a sparse
+checkout containing only tileset definitions is sufficient for some generator tests but causes
+missing-file failures elsewhere. Restore a sparse checkout before running the full suite:
+
+```bash
+git -C SWLOR_Haks sparse-checkout disable
+```
+
+A handful of corpus gates also need a local NWN:EE install for base-game data and call
+`Assert.Ignore` without one. Platform-specific tests can likewise be skipped on an unsupported OS.
 
 ```bash
 dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --filter "FullyQualifiedName~TilePainterTests"

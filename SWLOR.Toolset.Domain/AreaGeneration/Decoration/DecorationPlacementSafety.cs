@@ -13,6 +13,7 @@ public static class DecorationPlacementSafety
     private static readonly (int X, int Y, int Edge)[] Directions =
     [ (1, 0, EdgeSlot.Right), (0, 1, EdgeSlot.Top), (-1, 0, EdgeSlot.Left), (0, -1, EdgeSlot.Bottom) ];
 
+    /// <summary>Filters proposed arrangements deterministically for support, circulation and overlap, and reports why props were omitted.</summary>
     public static DecorationPlacementReport Apply(
         List<PlannedDecoration> plan, ResolvedLayout layout, DungeonTilesetProfile profile,
         DungeonDetail content, DecorationPlacementStyle style, TilesetModel? tileset = null)
@@ -135,6 +136,7 @@ public static class DecorationPlacementSafety
         return new(proposed, plan.Count, unsupported, routeConflicts, overlaps);
     }
 
+    /// <summary>Checks that a rigid footprint stays within the allowed height variation across its center and perimeter.</summary>
     internal static bool HasLevelSupport(Vector2 point, float radius, ResolvedLayout layout, TilesetModel tileset)
     {
         if (layout.HeightTransition <= 0) return true;
@@ -153,6 +155,7 @@ public static class DecorationPlacementSafety
         return max - min <= 0.5f;
     }
 
+    /// <summary>Collects usable room and open-terrain cells while excluding structures, feature art and out-of-area coordinates.</summary>
     internal static HashSet<(int X, int Y)> BuildOpenSurface(ResolvedLayout layout)
     {
         var surface = layout.Rooms.Where(room => !room.IsSetPiece).SelectMany(room => room.Tiles).ToHashSet();
@@ -176,6 +179,7 @@ public static class DecorationPlacementSafety
         return surface;
     }
 
+    /// <summary>Checks the complete scaled footprint against area boundaries, supported tiles and every intersected chasm quadrant.</summary>
     internal static bool HasSupport(Vector2 point, float radius, HashSet<(int X, int Y)> surface,
         ResolvedLayout layout, DungeonTilesetProfile profile)
     {
@@ -262,11 +266,16 @@ public static class DecorationPlacementSafety
         return routes.ToList();
     }
 
+    /// <summary>Converts a tile coordinate to its center in world meters.</summary>
     private static Vector2 Center((int X, int Y) tile) => new(tile.X * 10 + 5, tile.Y * 10 + 5);
+    /// <summary>Returns half the minimum circulation width reserved by the selected placement style.</summary>
     internal static float RouteRadius(DecorationPlacementStyle style) => style == DecorationPlacementStyle.Spacious ? 1.25f : 0.6f;
+    /// <summary>Squares a clearance distance for comparisons that avoid square roots.</summary>
     private static float Square(float value) => value * value;
+    /// <summary>Tests whether a circular footprint intrudes into an axis-aligned square, allowing boundary contact.</summary>
     private static bool Intersects(Vector2 point, float radius, float x, float y, float size) =>
         Vector2.DistanceSquared(point, new(Math.Clamp(point.X, x, x + size), Math.Clamp(point.Y, y, y + size))) < Square(radius) - 0.0001f;
+    /// <summary>Measures squared distance to the closest point on a route segment, including zero-length segments.</summary>
     private static float DistanceToSegmentSquared(Vector2 point, Vector2 start, Vector2 end)
     {
         var delta = end - start;

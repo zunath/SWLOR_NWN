@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Tests.AreaGeneration;
 
 public sealed class AreaGeneratorWindowRenderTests
 {
+    /// <summary>Checks that builders can choose compact dressing while clear routes remain the default.</summary>
     [AvaloniaTest]
     public void DecorationControls_ExposeClearRoutesByDefaultAndAnOptionalCompactMode()
     {
@@ -205,6 +206,7 @@ public sealed class AreaGeneratorWindowRenderTests
         }
     }
 
+    /// <summary>Checks every preview toggle remains within the pane when the generator window is at its minimum width.</summary>
     [AvaloniaTest]
     public void PreviewToolbarFitsInsideThePaneAtTheMinimumWindowWidth()
     {
@@ -611,6 +613,7 @@ public sealed class AreaGeneratorWindowRenderTests
         }
     }
 
+    /// <summary>Ensures changed overlays cannot leave an obsolete image marked as the current preview.</summary>
     [AvaloniaTest]
     public void ChangingPreviewDisplayOptions_InvalidatesTheRenderedPreview()
     {
@@ -689,6 +692,7 @@ public sealed class AreaGeneratorWindowRenderTests
         public ConcurrentBag<Type> OperationTypes { get; } = new();
         public ConcurrentBag<int> WorkerThreadIds { get; } = new();
 
+        /// <summary>Runs the test operation under controlled scheduling so preview completion and invalidation can be exercised.</summary>
         public Task<T> RunAsync<T>(Func<T> operation)
         {
             OperationTypes.Add(typeof(T));
@@ -708,6 +712,7 @@ public sealed class AreaGeneratorWindowRenderTests
         public void Release() => _release.TrySetResult(true);
     }
 
+    /// <summary>Distinguishes inexpensive overlay rendering from settings changes that require a new validated draft.</summary>
     [AvaloniaTest]
     public async Task OverlayChanges_ReuseTheSolvedDraft_ButPlacementChangesRegenerate()
     {
@@ -727,6 +732,7 @@ public sealed class AreaGeneratorWindowRenderTests
         runner.OperationTypes.Count(type => type == typeof(AreaGenerationDraft)).Should().Be(2);
     }
 
+    /// <summary>Simulates a delayed solve to ensure outdated results never enable area creation.</summary>
     [AvaloniaTest]
     public async Task SettingsChangedDuringGeneration_CannotPublishAStaleCreatablePreview()
     {

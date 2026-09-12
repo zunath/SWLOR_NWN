@@ -283,13 +283,13 @@ These spawn tables are for the dungeon/lesson areas only. Do not place these way
 
 ### Area Builder Handoff For Each Content Package
 
-- Create two attached physical areas: a gated dungeon/lesson area and a boss arena area reachable from that dungeon.
-- Place each capstone line's dedicated quest giver NPC in a safe hub area with no enemy spawns (such as a settlement or landing pad on the package's planet). Do not collapse multiple capstone quest lines onto one shared area trainer even when the lines reuse the same content package. Update the line's journal "return to" text to name that hub.
+- For each unfinished package, build its gated dungeon/lesson area and connect it to the registered boss arena above. Preserve the authored arena and its existing master encounters; do not recreate them. The five completed packages need no duplicate area or encounter placements.
+- Preserve each capstone line's already placed quest giver in its safe hub and keep the line's journal "return to" text consistent with that hub. Do not collapse multiple capstone quest lines onto one shared area trainer even when the lines reuse the same content package.
 - Add a standard access object or equivalent gate that checks the content package's capstone key item and sends the player into the dungeon/lesson area.
 - In the dungeon/lesson area, place the general spawn waypoint using the generated waypoint resref above. Its tag already matches the generated spawn table ID.
 - In the dungeon/lesson area, use the generated level 50 spawn table for general lesson enemies only. Do not place the table in low-level, public, or boss arena areas.
-- Place `quest_enc` activator instances for on-demand bosses (state-specific visibility, 60-minute starter cooldown, one-active-creature guard, participant quest credit, idle despawn). Put the warden (step 3) activators in the DUNGEON/lesson area and the master (step 5) activators in the attached BOSS ARENA.
-- For every line, place one warden activator for quest step 3 (in the dungeon) and one master activator for quest step 5 (in the boss arena). Each activator should use the generated boss UTC resref and generated boss spawn waypoint tag defined by the owning quest line and generated module assets, such as `cp_invinc_wd` with `CAPSTONE_INVINC_WD_SPAWN` or `cp_invinc_ms` with `CAPSTONE_INVINC_MS_SPAWN`. Copy literal handoff values into setup notes when an area builder needs them; do not make quest constants public for handoff tooling.
+- In each unfinished dungeon/lesson area, place the missing warden `quest_enc` activators (state-specific visibility, 60-minute starter cooldown, one-active-creature guard, participant quest credit, idle despawn). Master activators and spawn waypoints are already placed in the attached boss arena and must be preserved.
+- For each line in an unfinished package, place one warden activator for quest step 3 and its spawn waypoint in the dungeon. Use the generated warden UTC resref and spawn waypoint tag defined by the owning quest line and generated module assets, such as `cp_invinc_wd` with `CAPSTONE_INVINC_WD_SPAWN`. Use the master values below only to verify the existing arena instances. Copy literal handoff values into setup notes when an area builder needs them; do not make quest constants public for handoff tooling.
 - Required `quest_enc` locals per activator:
   - `QUEST_ID`: the exact quest ID for the warden/master step.
   - `QUEST_STATE`: `1`.
@@ -310,7 +310,7 @@ Literal handoff values for every capstone line. All lines follow the same determ
 - Quest IDs: `<quest id stem>_foundation`, `_measure`, `_breach` (warden), `_circle`, `_mastery` (master).
 - Warden activator locals: `QUEST_ID = <stem>_breach`, `QUEST_ENCOUNTER_ID = <stem>_breach_warden`, `QUEST_ENCOUNTER_RESREF = cp_<code>_wd`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_WD_SPAWN` (waypoint blueprint `wp_<code>_wd`).
 - Master activator locals: `QUEST_ID = <stem>_mastery`, `QUEST_ENCOUNTER_ID = <stem>_mastery_master`, `QUEST_ENCOUNTER_RESREF = cp_<code>_ms`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_MS_SPAWN` (waypoint blueprint `wp_<code>_ms`).
-- Every activator: `QUEST_STATE = 1`, `VISIBILITY_HIDDEN_DEFAULT = 1`, a unique `VISIBILITY_OBJECT_ID`, `QUEST_ENCOUNTER_COOLDOWN_MINUTES = 60`, `QUEST_ENCOUNTER_IDLE_MINUTES = 10`, `OnUsed = quest_enc`, `LocName = ???`.
+- Every activator: `QUEST_STATE = 1`, `VISIBILITY_HIDDEN_DEFAULT = 1`, a unique `VISIBILITY_OBJECT_ID`, `QUEST_ENCOUNTER_COOLDOWN_MINUTES = 60`, `QUEST_ENCOUNTER_IDLE_MINUTES = 10`, `OnUsed = quest_enc`. Name new activators `Challenge: <boss name>` and use invisible appearance 479 beside the area's altar; preserve the existing master's quest and visibility locals.
 - Access gate: `tele_obj` instance with `KEY_ITEM_ID` = the package's key item ID below, `TELEPORT_PARTY_MEMBERS = 1`, and a `MISSING_KEY_ITEM_MESSAGE` naming the package location.
 
 | Content Package | Line (Skill) | Quest Giver (resref) | Line Code | Quest ID Stem | Key Item ID |

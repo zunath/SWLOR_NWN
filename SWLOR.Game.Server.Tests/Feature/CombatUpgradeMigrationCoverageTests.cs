@@ -635,7 +635,7 @@ public class CombatUpgradeMigrationCoverageTests
         storedItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsFromObject");
         AssertShipSurfaces(storedItemMigration);
 
-        obsoleteItemMigration.Should().Contain("CurrentDroidInstructionMaxLevels");
+        obsoleteItemMigration.Should().Contain("DroidInstructions.Normalize");
         obsoleteItemMigration.Should().Contain("RemoveObsoleteItemsFromConstructedDroid");
         obsoleteItemMigration.Should().Contain("SyncDroidInstructionProperties");
         obsoleteItemMigration.Should().Contain("id_concgren3");

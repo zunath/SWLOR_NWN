@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -1218,7 +1219,11 @@ public class CombatUpgradeBibleSyncTests
             "Feature",
             "MigrationDefinition",
             "ObsoleteItemMigration.cs"));
-        var migrationMaxLevels = ReadCurrentDroidInstructionMaxLevels(migrationSource);
+        using var perkCache = new DroidPerkCacheScope();
+        var migrationMaxLevels = Enum.GetValues<PerkType>()
+            .Select(type => DroidInstructions.TryNormalize(new DroidPerk(type, int.MaxValue), out var normalized) ? normalized : null)
+            .Where(instruction => instruction != null)
+            .ToDictionary(instruction => instruction.Perk, instruction => instruction.Level);
         var perks = BuildPerksWithout2daLookup()
             .ToDictionary(x => x.Type, x => x.Detail);
         var expectedInstructions = GetExpectedDroidInstructions(perks)
@@ -1343,31 +1348,6 @@ public class CombatUpgradeBibleSyncTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
-    private static IReadOnlyDictionary<PerkType, int> ReadCurrentDroidInstructionMaxLevels(string source)
-    {
-        var block = Regex.Match(
-            source,
-            @"CurrentDroidInstructionMaxLevels\s*=\s*new\(\)\s*\{(?<body>.*?)\};",
-            RegexOptions.Singleline);
-        if (!block.Success)
-            Assert.Fail("Could not find CurrentDroidInstructionMaxLevels in obsolete item migration.");
-
-        var result = new Dictionary<PerkType, int>();
-        foreach (Match match in Regex.Matches(
-                     block.Groups["body"].Value,
-                     @"\{\s*PerkType\.([A-Za-z0-9_]+)\s*,\s*(\d+)\s*\}",
-                     RegexOptions.None))
-        {
-            var perkName = match.Groups[1].Value;
-            if (!Enum.TryParse(perkName, out PerkType perkType))
-                Assert.Fail($"CurrentDroidInstructionMaxLevels references unknown perk {perkName}.");
-
-            if (!result.TryAdd(perkType, int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture)))
-                Assert.Fail($"CurrentDroidInstructionMaxLevels contains duplicate perk {perkName}.");
-        }
-
-        return result;
-    }
 
     private static IReadOnlyCollection<ExpectedDroidInstruction> GetExpectedDroidInstructions(
         IReadOnlyDictionary<PerkType, PerkDetail> perks)

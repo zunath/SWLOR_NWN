@@ -270,6 +270,34 @@
           "type": "cexostring",
           "value": "Trial altar; three quest-gated invisible challenge activators immediately south."
         }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Visible arena exit scenery for pw_sc_velescmd_exit."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Visible arena exit scenery for pw_sc_velescmd_exit."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Visible arena exit scenery for pw_sc_velescmd_exit."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Unconnected arena return exit. When its dungeon exists, set DESTINATION to the dungeon return waypoint tag and OnUsed to teleport. No key or quest visibility gate."
+        }
       }
     ]
   },

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Serilog;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
@@ -14,12 +15,15 @@ namespace SWLOR.Toolset.Domain.Render
     /// </summary>
     public sealed class TileModelCache
     {
+        private static readonly ILogger Logger = Log.ForContext<TileModelCache>();
         private static readonly ushort MdlResourceType = ResourceIdentity.TypeFromExtension("mdl");
 
         private readonly ResourceIndex _resourceIndex;
         private readonly ConcurrentDictionary<string, RenderModel?> _cache =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, RenderModel?> _placeablePreviewCache =
+            new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, RenderModel?> _placeableEditorCache =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, RenderModel?> _doorTransitionCache =
             new(StringComparer.OrdinalIgnoreCase);
@@ -34,6 +38,7 @@ namespace SWLOR.Toolset.Domain.Render
         {
             _cache.Clear();
             _placeablePreviewCache.Clear();
+            _placeableEditorCache.Clear();
             _doorTransitionCache.Clear();
         }
 
@@ -64,6 +69,27 @@ namespace SWLOR.Toolset.Domain.Render
             return _placeablePreviewCache.GetOrAdd(modelResRef, BuildPlaceablePreview);
         }
 
+        /// <summary>Area-editor geometry, including an invisible placeable's hidden selection surfaces.</summary>
+        public RenderModel? GetOrBuildPlaceableEditor(string? modelResRef)
+        {
+            if (string.IsNullOrWhiteSpace(modelResRef))
+                return null;
+            return _placeableEditorCache.GetOrAdd(modelResRef, resRef =>
+            {
+                var model = Load(resRef);
+                try
+                {
+                    return model == null ? null : MdlMeshBuilder.BuildPlaceableEditor(model);
+                }
+                catch (Exception ex)
+                {
+                    // Malformed hidden selection surfaces must not prevent the area from opening.
+                    Logger.Warning(ex, "Could not build placeable editor geometry for {ModelResRef}", resRef);
+                    return null;
+                }
+            });
+        }
+
         /// <summary>
         /// Resolves an invisible transition-door model including its <c>render 0</c> editor
         /// selection surfaces. Kept separate from the ordinary cache so the same MDL remains
@@ -86,7 +112,15 @@ namespace SWLOR.Toolset.Domain.Render
         private RenderModel? BuildPlaceablePreview(string modelResRef)
         {
             var model = Load(modelResRef);
-            return model == null ? null : MdlMeshBuilder.BuildPlaceablePreview(model);
+            try
+            {
+                return model == null ? null : MdlMeshBuilder.BuildPlaceablePreview(model);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Could not build placeable preview geometry for {ModelResRef}", modelResRef);
+                return null;
+            }
         }
 
         private RenderModel? BuildDoorTransition(string modelResRef)

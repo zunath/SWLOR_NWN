@@ -29,6 +29,30 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void InvisiblePlaceables_DoNotReuseLegacyNoArtworkEntries()
+        {
+            var currentRoot = new DirectoryInfo(_cache.RootPath!);
+            var legacyRoot = Path.Combine(currentRoot.Parent!.Parent!.FullName, "v16", currentRoot.Name);
+            var legacyFolder = Path.Combine(legacyRoot, "utp");
+            Directory.CreateDirectory(legacyFolder);
+            var legacyEntry = Path.Combine(legacyFolder, "invisible.none");
+            try
+            {
+                File.WriteAllText(legacyEntry, string.Empty);
+                _cache.TryLoad(ResourceType.Utp, "invisible", blueprintPath: null,
+                        useIndexedBlueprint: false, out _)
+                    .Should().Be(ThumbnailDiskCache.Lookup.Miss,
+                        "the old renderer cached invisible models as having no artwork");
+            }
+            finally
+            {
+                File.Delete(legacyEntry);
+                Directory.Delete(legacyFolder);
+                Directory.Delete(legacyRoot);
+            }
+        }
+
+        [Test]
         public void StandardAndCustomSourcesUseIndependentEntriesForTheSameResRef()
         {
             const string resRef = "shared_resref";

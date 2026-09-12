@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
             int heatModifier, int humidityModifier, int windModifier, bool isNatural,
             WeatherStorm previousStorm, Func<int, int> random)
         {
-            heat = Math.Clamp(heat + climate.HeatModifier + heatModifier, 1, 10);
+            heat = Math.Clamp(heat + climate.HeatModifier + heatModifier, climate.MinimumHeat, climate.MaximumHeat);
             humidity = Math.Clamp(humidity + climate.HumidityModifier + humidityModifier, 1, 10);
             wind = Math.Clamp(wind + climate.WindModifier + windModifier - (isNatural ? 0 : 1), 1, 10);
 

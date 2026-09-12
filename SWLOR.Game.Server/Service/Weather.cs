@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<uint, AreaWeather> _areas = new();
         private static readonly Dictionary<uint, WeatherExposure> _exposures = new();
-        private static readonly WeatherClimate _defaultClimate = new();
         private static Dictionary<PlanetType, WeatherClimate> _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
+        private static Dictionary<string, WeatherClimate> _namedClimates = WeatherPlanetDefinitions.GetNamedClimates(_planetClimates);
         private static WeatherPattern _pattern = new();
 
         private const string VAR_WEATHER_HEAT = "VAR_WEATHER_HEAT";
@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Service
         public static void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
+            _namedClimates = WeatherPlanetDefinitions.GetNamedClimates(_planetClimates);
             _pattern = new WeatherPattern();
             _areas.Clear();
             _exposures.Clear();
@@ -51,15 +52,16 @@ namespace SWLOR.Game.Server.Service
 
         private static WeatherClimate GetAreaClimate(uint area)
         {
-            return _planetClimates.TryGetValue(Planet.GetPlanetType(area), out var climate)
-                ? climate : _defaultClimate;
+            return WeatherPlanetDefinitions.ResolveClimate(Planet.GetPlanetType(area),
+                GetLocalString(area, "VAR_WEATHER_CLIMATE"), _planetClimates, _namedClimates);
         }
 
         private static bool IsWeatherArea(uint area)
         {
             return GetIsObjectValid(area) && area != GetModule() &&
                    !GetIsAreaInterior(area) && GetIsAreaAboveGround(area) &&
-                   !GetLocalBool(area, "SPACE") && !GetName(area).StartsWith("Space -", StringComparison.OrdinalIgnoreCase);
+                   !GetLocalBool(area, "SPACE") && !GetName(area).StartsWith("Space -", StringComparison.OrdinalIgnoreCase) &&
+                   GetAreaClimate(area) is { IsSheltered: false };
         }
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -256,19 +258,35 @@ namespace SWLOR.Game.Server.Service
 
             var damageType = hazard switch
             {
-                WeatherHazard.Acid => DamageType.Acid,
-                WeatherHazard.Snow => DamageType.Cold,
-                _ => DamageType.Bludgeoning
+                WeatherHazard.Acid => CombatDamageType.Poison,
+                WeatherHazard.Snow => CombatDamageType.Ice,
+                _ => CombatDamageType.Physical
             };
             AssignCommand(area, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(d6(dice), damageType), creature);
+                var damage = GetProtectedDamage(creature, d6(dice), damageType);
+                if (damage <= 0) return;
+                var nativeType = hazard == WeatherHazard.Sand ? DamageType.Bludgeoning : damageType.GetNWScriptDamageType();
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, nativeType), creature);
                 if (hazard == WeatherHazard.Acid || hazard == WeatherHazard.Snow)
                 {
                     var visual = hazard == WeatherHazard.Acid ? VisualEffect.Vfx_Imp_Acid_S : VisualEffect.Vfx_Imp_Frost_S;
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visual), creature);
                 }
             });
+        }
+
+        private static int GetProtectedDamage(uint target, int damage, CombatDamageType damageType)
+        {
+            // Doors/placeables hit by lightning do not have character stats.
+            if (damage <= 0 || GetObjectType(target) != ObjectType.Creature) return Math.Max(0, damage);
+            var typedAdjustment = damageType.IsPhysicalDamageType()
+                ? Stat.GetStatAdjustment(target, StatType.PhysicalDamageTakenPercentAdjustment) : 0;
+            var adjusted = Combat.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, adjusted.Damage);
+            if (damage <= 0) return 0;
+            return Combat.ApplyDamageTakenModifiers(target, damage, damageType: damageType,
+                targetStatusDamagePercentAdjustment: adjusted.Adjustment);
         }
 
         public static void Thunderstorm(uint area)
@@ -293,6 +311,8 @@ namespace SWLOR.Game.Server.Service
             {
                 var damage = WeatherConditions.GetLightningDamage(power, GetDistanceBetweenLocations(location, GetLocation(target)));
                 if (damage <= 0 || GetIsDM(target) || GetIsDMPossessed(target)) continue;
+                damage = GetProtectedDamage(target, damage, CombatDamageType.Electrical);
+                if (damage <= 0) continue;
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
                 if (GetObjectType(target) != ObjectType.Creature || GetIsDead(target)) continue;
 

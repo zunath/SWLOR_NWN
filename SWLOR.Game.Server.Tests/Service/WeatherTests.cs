@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.WeatherService;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
 using WeatherRuntime = SWLOR.Game.Server.Service.Weather;
@@ -107,7 +108,7 @@ public class WeatherTests
     [TestCase(PlanetType.Viscara, 4, 10, 5)]
     [TestCase(PlanetType.Tatooine, 10, 1, 5)]
     [TestCase(PlanetType.MonCala, 7, 8, 6)]
-    [TestCase(PlanetType.Hutlar, 1, 1, 5)]
+    [TestCase(PlanetType.Hutlar, 1, 10, 5)]
     [TestCase(PlanetType.Korriban, 9, 3, 5)]
     public void PlanetClimates_AreAppliedOnce(PlanetType planet, int heat, int humidity, int wind)
     {
@@ -139,7 +140,7 @@ public class WeatherTests
         resolve.Invoke(null, new object[] { "CZ-220 - Main Deck" }).Should().Be(PlanetType.CZ220);
         resolve.Invoke(null, new object[] { "Smuggler's Moon Station - Corridors" }).Should().Be(PlanetType.SmugglersMoonStation);
         Planet.GetPlanetTypeByAreaResref("canyon_001").Should().Be(PlanetType.Tatooine);
-        Method("GetAreaClimate").Should().Contain("Planet.GetPlanetType(area)").And.Contain("TryGetValue");
+        Method("GetAreaClimate").Should().Contain("Planet.GetPlanetType(area)").And.Contain("ResolveClimate");
     }
 
     [Test]
@@ -310,9 +311,72 @@ public class WeatherTests
         damage.Should().Contain("GetIsPC(creature)").And.Contain("!GetIsDM(creature)")
             .And.Contain("!GetIsDMPossessed(creature)").And.Contain("!GetIsDead(creature)")
             .And.Contain("conditions.GetHazard(").And.Contain("WeatherHazard.None")
-            .And.Contain("WeatherHazard.Snow => DamageType.Cold")
+            .And.Contain("WeatherHazard.Snow => CombatDamageType.Ice")
             .And.Contain("VisualEffect.Vfx_Imp_Frost_S").And.Contain("AssignCommand(area,");
         Method("Thunderstorm", 1).Should().Contain("state.Conditions.Storm != WeatherStorm.Thunder");
+    }
+
+    [Test]
+    public void Runtime_AllWeatherHitsUseResistanceAndDamageTakenProtection_BeforeApplyingEffects()
+    {
+        var pulse = Method("ApplyWeatherDamage");
+        pulse.Should().Contain("WeatherHazard.Acid => CombatDamageType.Poison")
+            .And.Contain("WeatherHazard.Snow => CombatDamageType.Ice")
+            .And.Contain("GetProtectedDamage(creature, d6(dice), damageType)")
+            .And.Contain("DamageType.Bludgeoning");
+        var bolt = Method("Thunderstorm", 2);
+        bolt.IndexOf("GetProtectedDamage(target, damage, CombatDamageType.Electrical)")
+            .Should().BeLessThan(bolt.IndexOf("EffectDamage(damage, DamageType.Electrical)"));
+        var protection = Method("GetProtectedDamage");
+        protection.Should().Contain("GetObjectType(target) != ObjectType.Creature")
+            .And.Contain("Resistance.ApplyResistanceToDamage(target, damageType, adjusted.Damage)")
+            .And.Contain("Combat.ApplyDamageTakenModifiers(target, damage, damageType: damageType")
+            .And.Contain("StatType.PhysicalDamageTakenPercentAdjustment")
+            .And.Contain("if (damage <= 0) return 0;");
+        CombatDamageType.Poison.GetNWScriptDamageType().Should().Be(SWLOR.NWN.API.NWScript.Enum.DamageType.Acid);
+        CombatDamageType.Ice.GetNWScriptDamageType().Should().Be(SWLOR.NWN.API.NWScript.Enum.DamageType.Cold);
+    }
+
+    [Test]
+    public void Hutlar_CanHaveClearSkiesAndSnowfall_ButNeverRainOrThunder()
+    {
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Hutlar];
+        var precipitation = new HashSet<Precipitation>();
+        for (var heat = -1; heat <= 12; heat++)
+        for (var humidity = 1; humidity <= 10; humidity++)
+        for (var wind = 1; wind <= 10; wind++)
+        {
+            var result = WeatherConditions.Create(heat, humidity, wind, climate, 0, 0, 0, true, WeatherStorm.None, _ => 0);
+            result.Heat.Should().BeLessThanOrEqualTo(3);
+            result.Storm.Should().NotBe(WeatherStorm.Thunder);
+            precipitation.Add(result.Precipitation);
+        }
+        precipitation.Should().BeEquivalentTo(new[] { Precipitation.Clear, Precipitation.Snow });
+    }
+
+    [TestCase("Kashyyyk")]
+    [TestCase("Ossus")]
+    public void AdditionalPlanetProfiles_AllowRainWithoutSnow(string name)
+    {
+        var climates = WeatherPlanetDefinitions.GetNamedClimates(WeatherPlanetDefinitions.GetPlanetClimates());
+        var precipitation = new HashSet<Precipitation>();
+        for (var heat = -1; heat <= 12; heat++)
+        for (var humidity = 1; humidity <= 10; humidity++)
+            precipitation.Add(WeatherConditions.Create(heat, humidity, 5, climates[name], 0, 0, 0, true,
+                WeatherStorm.None, max => max - 1).Precipitation);
+        precipitation.Should().Contain(Precipitation.Rain).And.NotContain(Precipitation.Snow);
+    }
+
+    [Test]
+    public void UnconfiguredAreasAndInvalidOverrides_DoNotAcquireRandomClimateOrHazards()
+    {
+        var planets = WeatherPlanetDefinitions.GetPlanetClimates();
+        var named = WeatherPlanetDefinitions.GetNamedClimates(planets);
+        WeatherPlanetDefinitions.ResolveClimate(PlanetType.Invalid, "", planets, named).Should().BeNull();
+        WeatherPlanetDefinitions.ResolveClimate(PlanetType.Tatooine, "typo", planets, named).Should().BeNull();
+        WeatherPlanetDefinitions.ResolveClimate(PlanetType.Invalid, "kashyyyk", planets, named).Should().BeSameAs(named["Kashyyyk"]);
+        WeatherPlanetDefinitions.ResolveClimate(PlanetType.Tatooine, "None", planets, named)!.IsSheltered.Should().BeTrue();
+        Method("IsWeatherArea").Should().Contain("GetAreaClimate(area) is { IsSheltered: false }");
     }
 
     private static WeatherConditions Conditions(int heat, int humidity, int wind,

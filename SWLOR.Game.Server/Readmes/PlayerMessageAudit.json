@@ -5272,14 +5272,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 236,
+    "Line": 238,
     "Member": "DoWeatherEffects",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 299,
+    "Line": 319,
     "Member": "Thunderstorm",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"

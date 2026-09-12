@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Immobilized";
         public override EffectIconType Icon => EffectIconType.ImmobilizedStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Control | StatusEffectCategory.HardCrowdControl;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.HardCrowdControl;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;
 

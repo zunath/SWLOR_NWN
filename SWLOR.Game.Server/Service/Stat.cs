@@ -2172,7 +2172,7 @@ namespace SWLOR.Game.Server.Service
             return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
         }
 
-        public static int ApplyHealingReceivedAdjustment(uint creature, int amount)
+        public static int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true)
         {
             if (amount <= 0)
                 return amount;
@@ -2180,10 +2180,23 @@ namespace SWLOR.Game.Server.Service
             var adjustment = GetStatAdjustment(creature, StatType.HealingReceivedPercentAdjustment);
             var adjustedAmount = Math.Max(1, ApplyPercentAdjustment(amount, adjustment));
 
-            ApplyHealingReceivedStaminaRestore(creature);
-            ApplyHealingReceivedAttackBoost(creature);
+            if (applyReceivedEffects)
+                ApplyHealingReceivedEffects(creature, adjustedAmount);
 
             return adjustedAmount;
+        }
+
+        public static int CalculateEffectiveHealingAmount(int amount, int currentHP, int maxHP)
+        {
+            return currentHP <= 0 ? 0 : Math.Clamp(amount, 0, Math.Max(0, maxHP - currentHP));
+        }
+
+        public static void ApplyHealingReceivedEffects(uint creature, int amount)
+        {
+            if (CalculateEffectiveHealingAmount(amount, GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
+                return;
+            ApplyHealingReceivedStaminaRestore(creature);
+            ApplyHealingReceivedAttackBoost(creature);
         }
 
         private static void ApplyHealingReceivedStaminaRestore(uint creature)

@@ -1,5 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -78,9 +80,56 @@ public class DamageOverTimeStatusEffectTests
         var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
 
         forceDotSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
-        forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force)");
-        forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force)");
+        forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment)");
+        forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment)");
         forceDotSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature))");
+    }
+
+    [Test]
+    public void TypedPeriodicDamage_PreservesItsReductionBudgetThroughTheFinalStage()
+    {
+        var examined = 0;
+        var root = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature");
+        foreach (var file in Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories))
+        {
+            var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot();
+            foreach (var call in syntax.DescendantNodes().OfType<InvocationExpressionSyntax>())
+            {
+                if (call.Expression.ToString() != "Combat.ApplyDamageOverTimeTakenModifiers") continue;
+                var args = call.ArgumentList.Arguments;
+                if (args[2].Expression.ToString() is not ("CombatDamageType.Force" or "CombatDamageType.Physical")) continue;
+                examined++;
+                args.Count.Should().Be(4, file + " must retain the typed reduction when applying the shared 85% cap");
+                var capture = args[3].Expression as DeclarationExpressionSyntax;
+                capture.Should().NotBeNull(file);
+                var variable = capture!.Designation.ToString();
+                variable.Should().NotBe("_", file);
+                var method = call.Ancestors().OfType<MethodDeclarationSyntax>().First();
+                method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+                    .Where(final => final.Expression.ToString() == "Combat.ApplyDamageTakenModifiers")
+                    .Should().Contain(final => final.ArgumentList.Arguments.Any(arg =>
+                            arg.NameColon != null && arg.NameColon.Name.Identifier.Text == "targetStatusDamagePercentAdjustment" &&
+                            arg.Expression.ToString() == variable),
+                        file + " must carry the earlier reduction into the final mitigation stage");
+            }
+        }
+        examined.Should().BeGreaterThanOrEqualTo(4, "status ticks and persistent ability fields both need coverage");
+    }
+
+    [Test]
+    public void AutoAttackSplash_DefersDamageEventsUntilTheNativeAttackReturns()
+    {
+        var file = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var method = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot()
+            .DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.Text == "ApplyAutoAttackSplashEffects");
+        var damageCalls = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Where(call => call.Expression.ToString() == "ApplyTriggeredDamage").ToArray();
+        damageCalls.Should().NotBeEmpty();
+        foreach (var damageCall in damageCalls)
+            damageCall.Ancestors().OfType<InvocationExpressionSyntax>()
+                .Should().Contain(call => call.Expression.ToString() == "DelayCommand",
+                    "splash hits must not re-enter GetDamageRoll or overwrite the original attack's damage source");
     }
 
     [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount)")]

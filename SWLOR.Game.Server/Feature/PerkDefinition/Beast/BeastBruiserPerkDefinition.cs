@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GrantsFeat(FeatType.IceBreath2)
 
                 .AddPerkLevel()
-                .Description("The beast breathes ice at hostile targets in a 10m x 10m cone, dealing 18 ice DMG plus MGT scaling and immobilizing affected enemies for 10 seconds.")
+                .Description("The beast breathes ice at hostile targets in a 10m x 10m cone, dealing 18 ice DMG plus MGT scaling and immobilizing affected enemies for 10 seconds. Affects up to 5 enemies.")
                 .Price(4)
                 .RequirementBeastLevel(42)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
@@ -89,21 +89,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast slams hostile enemies within 5m for 10 physical DMG plus MGT scaling and Dazes them for 15 seconds.")
+                .Description("The beast slams hostile enemies within 5m for 10 physical DMG plus MGT scaling and Dazes them for 15 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementBeastLevel(12)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
                 .GrantsFeat(FeatType.CrushingSlam1)
 
                 .AddPerkLevel()
-                .Description("The beast slams hostile enemies within 5m for 14 physical DMG plus MGT scaling and Dazes them for 15 seconds.")
+                .Description("The beast slams hostile enemies within 5m for 14 physical DMG plus MGT scaling and Dazes them for 15 seconds. Affects up to 5 enemies.")
                 .Price(4)
                 .RequirementBeastLevel(28)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
                 .GrantsFeat(FeatType.CrushingSlam2)
 
                 .AddPerkLevel()
-                .Description("The beast slams hostile enemies within 5m for 18 physical DMG plus MGT scaling and Dazes them for 15 seconds.")
+                .Description("The beast slams hostile enemies within 5m for 18 physical DMG plus MGT scaling and Dazes them for 15 seconds. Affects up to 5 enemies.")
                 .Price(4)
                 .RequirementBeastLevel(45)
                 .RequirementBeastRole(BeastRoleType.Bruiser)

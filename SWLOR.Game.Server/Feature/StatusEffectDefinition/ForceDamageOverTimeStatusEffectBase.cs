@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var source = GetIsObjectValid(Source) ? Source : creature;
             damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
-            damage = Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force);
-            damage = Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force);
+            damage = Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
+            damage = Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damage <= 0)
                 return;
 

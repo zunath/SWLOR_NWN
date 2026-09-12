@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
+                    MaximumAreaTargets = 5,
                     DamageType = CombatDamageType.Force,
                     ExtraDamageTargetStatusEffect = typeof(SunderStatusEffect),
                     ExtraDamageIfTargetStatusEffect = 15

@@ -520,7 +520,7 @@ namespace SWLOR.Game.Server.Service
             ApplyOutgoingStatusStatAdjustments(statusEffect, source);
 
             var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
-            var durationResistanceMessage = string.Empty;
+            var durationTicksWithoutResistance = durationTicks;
             if (!isPermanent &&
                 durationTicks > 0 &&
                 GetIsObjectValid(source) &&
@@ -535,15 +535,17 @@ namespace SWLOR.Game.Server.Service
                         return false;
                     }
 
-                    var durationTicksBeforeResistance = durationTicks;
                     durationTicks = Resistance.CalculateResistedTicks(creature, resistanceType, durationTicks);
-                    durationResistanceMessage = BuildDurationResistanceMessage(
-                        resistanceType,
-                        statusEffect.Name,
-                        durationTicksBeforeResistance,
-                        durationTicks,
-                        statusEffect.Frequency);
                 }
+            }
+
+            if (!isPermanent)
+            {
+                durationTicks = ClampHardCrowdControlDurationTicks(statusEffect.Categories, durationTicks, statusEffect.Frequency,
+                    isSelfApplied: source == creature);
+                durationTicksWithoutResistance = ClampHardCrowdControlDurationTicks(
+                    statusEffect.Categories, durationTicksWithoutResistance, statusEffect.Frequency,
+                    isSelfApplied: source == creature);
             }
 
             if (!isPermanent && durationTicks <= 0)
@@ -557,6 +559,21 @@ namespace SWLOR.Game.Server.Service
                 .Where(effect => effect.GetType() == replacedStatusEffectType).ToArray() ?? Array.Empty<IStatusEffect>();
             if (replacedStatusEffectType != null && replacedEffects.Length == 0)
                 return false;
+
+            if (!isPermanent && (statusEffect.Categories & StatusEffectCategory.HardCrowdControl) != 0)
+            {
+                var now = DateTime.UtcNow;
+                foreach (var replaced in replacedEffects.Where(effect =>
+                             (effect.Categories & StatusEffectCategory.HardCrowdControl) != 0))
+                {
+                    var remainingSeconds = replaced.GetRemainingDurationSeconds(now);
+                    durationTicks = ClampConvertedControlDurationTicks(durationTicks, statusEffect.Frequency, remainingSeconds);
+                    durationTicksWithoutResistance = ClampConvertedControlDurationTicks(
+                        durationTicksWithoutResistance, statusEffect.Frequency, remainingSeconds);
+                }
+                if (durationTicks <= 0)
+                    return false;
+            }
 
             // A conversion validates without counting the effect it replaces as active
             // control. Preserve its native effect, expiration and stats on rejection.
@@ -640,6 +657,10 @@ namespace SWLOR.Game.Server.Service
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
             PublishStatusEffectReceivedRefresh(creature);
 
+            // Compare effective durations so the control budget is not mislabeled as resistance,
+            // and vulnerability never claims to extend control beyond its actual expiration.
+            var durationResistanceMessage = BuildDurationResistanceMessage(
+                resistanceType, statusEffect.Name, durationTicksWithoutResistance, durationTicks, statusEffect.Frequency);
             if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
                 (GetIsPC(source) || GetIsDM(source)))
             {
@@ -706,6 +727,53 @@ namespace SWLOR.Game.Server.Service
                 : $"{seconds:0.#}s";
         }
 
+        public static int GetOutgoingDurationPercentAdjustment(StatusEffectCategory categories, Func<StatType, int> getStat)
+        {
+            var adjustment = 0;
+            if ((categories & StatusEffectCategory.Debuff) == StatusEffectCategory.Debuff)
+            {
+                adjustment += getStat(StatType.OutgoingDebuffDurationPercentAdjustment);
+            }
+
+            if ((categories & StatusEffectCategory.Control) == StatusEffectCategory.Control)
+            {
+                adjustment += getStat(StatType.OutgoingControlDurationPercentAdjustment);
+            }
+
+            if ((categories & StatusEffectCategory.ForceDisruption) == StatusEffectCategory.ForceDisruption)
+            {
+                adjustment += getStat(StatType.OutgoingForceDisruptionDurationPercentAdjustment);
+            }
+
+            if ((categories & StatusEffectCategory.AbilityDisruption) != 0)
+                adjustment += getStat(StatType.OutgoingAbilityDisruptionDurationPercentAdjustment);
+
+            return adjustment;
+        }
+
+        /// <summary>A conversion must not move the original control expiration or its immunity window.</summary>
+        public static int ClampConvertedControlDurationTicks(int requestedTicks, float frequency, float remainingSeconds)
+        {
+            if (remainingSeconds < 0f)
+                return requestedTicks;
+            return Math.Min(requestedTicks, (int)Math.Floor(Math.Max(0f, remainingSeconds) / Math.Max(1f, frequency)));
+        }
+
+        public const int MaximumHardCrowdControlDurationSeconds = 30;
+
+        /// <summary>
+        /// Apply the final control budget after outgoing duration bonuses and resistance.
+        /// Self-applied system penalties, soft debuffs and permanent effects are unaffected.
+        /// </summary>
+        public static int ClampHardCrowdControlDurationTicks(
+            StatusEffectCategory categories, int ticks, float frequency, bool isSelfApplied = false)
+        {
+            if (isSelfApplied || ticks <= 0 || (categories & StatusEffectCategory.HardCrowdControl) == 0)
+                return ticks;
+
+            return Math.Min(ticks, (int)Math.Floor(MaximumHardCrowdControlDurationSeconds / Math.Max(1f, frequency)));
+        }
+
         private static int ApplyOutgoingStatusDurationAdjustments(
             IStatusEffect statusEffect,
             uint source,
@@ -715,21 +783,7 @@ namespace SWLOR.Game.Server.Service
             if (isPermanent || durationTicks <= 0 || !GetIsObjectValid(source))
                 return durationTicks;
 
-            var percentAdjustment = 0;
-            if ((statusEffect.Categories & StatusEffectCategory.Debuff) == StatusEffectCategory.Debuff)
-            {
-                percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingDebuffDurationPercentAdjustment);
-            }
-
-            if ((statusEffect.Categories & StatusEffectCategory.Control) == StatusEffectCategory.Control)
-            {
-                percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingControlDurationPercentAdjustment);
-            }
-
-            if ((statusEffect.Categories & StatusEffectCategory.ForceDisruption) == StatusEffectCategory.ForceDisruption)
-            {
-                percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionDurationPercentAdjustment);
-            }
+            var percentAdjustment = GetOutgoingDurationPercentAdjustment(statusEffect.Categories, stat => Stat.GetStatAdjustment(source, stat));
 
             if (percentAdjustment != 0)
             {
@@ -1106,7 +1160,8 @@ namespace SWLOR.Game.Server.Service
             var extended = false;
             foreach (var statusEffect in creatureEffects.GetAllEffects())
             {
-                if (statusEffect.GetType() != statusEffectClass)
+                if ((statusEffect.Categories & StatusEffectCategory.HardCrowdControl) != 0 ||
+                    statusEffect.GetType() != statusEffectClass)
                     continue;
 
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
@@ -1140,7 +1195,8 @@ namespace SWLOR.Game.Server.Service
             var refreshed = false;
             foreach (var statusEffect in creatureEffects.GetAllEffects())
             {
-                if (statusEffect.GetType() != statusEffectClass)
+                if ((statusEffect.Categories & StatusEffectCategory.HardCrowdControl) != 0 ||
+                    statusEffect.GetType() != statusEffectClass)
                     continue;
 
                 if (source != OBJECT_INVALID && statusEffect.Source != source)

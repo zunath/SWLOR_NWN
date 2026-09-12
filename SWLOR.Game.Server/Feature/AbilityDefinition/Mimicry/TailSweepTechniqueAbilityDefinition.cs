@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TailSweep,
                 1.4f,
-                18f,
+                24f,
                 5,
                 18,
                 15,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TailSweepTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

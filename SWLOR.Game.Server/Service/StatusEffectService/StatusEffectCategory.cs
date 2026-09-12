@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         /// confusion). While one is active, no different hard CC can land on the same target -
         /// the shared immunity gate reads this flag.
         /// </summary>
-        HardCrowdControl = 512
+        HardCrowdControl = 512,
+
+        /// <summary>Delays, disables, or increases the resource cost of ability activation.</summary>
+        AbilityDisruption = 1024
     }
 }

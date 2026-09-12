@@ -9,6 +9,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
     {
         private bool _areaPulseTriggered;
         private HashSet<uint> _chainTargets;
+        private readonly HashSet<string> _damageRiders = new();
+
+        /// <summary>Consumes one source's damage rider across all targets and phases of this cast.</summary>
+        public bool TryTriggerDamageRider(string sourceKey) => _damageRiders.Add(sourceKey);
 
         public bool HasRemainingChainArcs(int maximumTargets) => (_chainTargets?.Count ?? 0) < maximumTargets;
 

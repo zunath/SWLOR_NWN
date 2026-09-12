@@ -12,9 +12,9 @@ public class FinalLineTests
         .GetType("SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbility")!
         .GetMethod("CalculateMissingHpBonus", BindingFlags.NonPublic | BindingFlags.Static)!
         .CreateDelegate<Func<int, int, int, int>>();
-    private static readonly Func<uint, int, Func<uint, int>, int> Apply = typeof(Ability)
-        .GetMethod("ApplyDamagePercentAdjustment", BindingFlags.NonPublic | BindingFlags.Static)!
-        .CreateDelegate<Func<uint, int, Func<uint, int>, int>>();
+    private static readonly Func<int, int, int> Apply = typeof(Combat)
+        .GetMethod("ApplyPercentDamageAdjustment", BindingFlags.NonPublic | BindingFlags.Static)!
+        .CreateDelegate<Func<int, int, int>>();
 
     [TestCase(100, 0)]
     [TestCase(99, 0)]
@@ -67,7 +67,7 @@ public class FinalLineTests
     [TestCase(50, 200, 234)]
     [TestCase(50, 1, 2)]
     public void BonusMultipliesResolvedDamageAndRoundsExtraDamageUp(int hp, int rolledDamage, int expected) =>
-        Apply(1, rolledDamage, _ => Bonus(hp, 100, 35)).Should().Be(expected);
+        Apply(rolledDamage, Bonus(hp, 100, 35)).Should().Be(expected);
 
     [Test]
     public void EachTargetAndSubsequentHitUsesFreshHealth()
@@ -79,21 +79,30 @@ public class FinalLineTests
             calls.Add(target);
             return Bonus(health[target], 100, 35);
         }
-        Apply(1, 100, Adjustment).Should().Be(100);
-        Apply(2, 100, Adjustment).Should().Be(117);
-        Apply(3, 100, Adjustment).Should().Be(134);
+        Apply(100, Adjustment(1)).Should().Be(100);
+        Apply(100, Adjustment(2)).Should().Be(117);
+        Apply(100, Adjustment(3)).Should().Be(134);
         health[1] = 25;
-        Apply(1, 100, Adjustment).Should().Be(126);
+        Apply(100, Adjustment(1)).Should().Be(126);
         health[1] = 100;
-        Apply(1, 100, Adjustment).Should().Be(100, "healing must remove the previous bonus");
+        Apply(100, Adjustment(1)).Should().Be(100, "healing must remove the previous bonus");
         calls.Should().Equal(1u, 2u, 3u, 1u, 1u);
     }
 
     [Test]
-    public void ZeroDamageDoesNotBecomeDamageOrEvaluateTheBonus()
+    public void FinisherBonus_CannotMultiplyDamageBeyondTheSharedBudget()
     {
-        Apply(1, 0, _ => throw new AssertionException("Zero damage should bypass the bonus"))
+        var afterOtherBonuses = 200;
+        var finisherDamage = Apply(afterOtherBonuses, Bonus(1, 100, 35));
+        Combat.CapOutgoingDamageBonus(100, finisherDamage, 12).Should().Be(212,
+            "the finisher percentage shares the +100% cap while earned flat damage remains separate");
+    }
+
+    [Test]
+    public void SharedDamageAdjustment_DoesNotCreateDamageFromZero()
+    {
+        Apply(0, 35)
             .Should().Be(0);
-        Apply(1, 100, null).Should().Be(100);
+        Apply(100, 0).Should().Be(100);
     }
 }

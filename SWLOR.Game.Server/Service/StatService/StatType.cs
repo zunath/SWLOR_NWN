@@ -6060,6 +6060,58 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AreaAbilityHasteStacksPerAdditionalTarget = 1070,
 
+        /// <summary>Limits the avoided-attack discount to hostile ranged weapon abilities.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AvoidedAttackNextSkillAbilityRangedOnly = 1071,
+
+        /// <summary>Limits a stored Stamina discount to ranged weapon abilities.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        NextSkillAbilityStaminaCostAdjustmentRangedOnly = 1072,
+
+        /// <summary>Limits a stored Stamina discount to hostile abilities.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        NextSkillAbilityStaminaCostAdjustmentHostileOnly = 1073,
+
+        /// <summary>Flat triggered splash damage on a successful auto-attack proc.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackSplashDamage = 1074,
+
+        /// <summary>Percent chance for this source's auto-attack splash.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        AutoAttackSplashChance = 1075,
+
+        /// <summary>Weapon skill required for this source's auto-attack splash.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AutoAttackSplashSkillType = 1076,
+
+        /// <summary>Radius in meters around the struck target.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AutoAttackSplashRadiusMeters = 1077,
+
+        /// <summary>Maximum splash targets including the original target.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AutoAttackSplashMaximumTargets = 1078,
+
+        /// <summary>Duration bonus for debuffs that delay, disable, or increase ability costs.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OutgoingAbilityDisruptionDurationPercentAdjustment = 1079,
+
+        /// <summary>Chance to splash from an ability hit against a bleeding target.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        BleedingTargetAbilitySplashChance = 1080,
+
+        /// <summary>Flat damage dealt to each secondary target by the source's splash.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BleedingTargetAbilitySplashDamage = 1081,
+
+        /// <summary>Radius around the bleeding target for the source's splash.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        BleedingTargetAbilitySplashRadiusMeters = 1082,
+
+        /// <summary>Maximum secondary targets for the source's splash per cast.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        BleedingTargetAbilitySplashMaximumTargets = 1083,
+
     }
 
     public class StatTypeAttribute : Attribute

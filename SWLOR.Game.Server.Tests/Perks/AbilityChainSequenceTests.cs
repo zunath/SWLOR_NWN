@@ -7,6 +7,20 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class AbilityChainSequenceTests
 {
     [Test]
+    public void DamageRiders_KeepIndependentOncePerCastBudgetsAcrossTargetsAndPulses()
+    {
+        var sequence = new AbilityImpactSequence();
+        for (var pulse = 0; pulse < 5; pulse++)
+        for (var target = 0; target < 8; target++)
+        {
+            sequence.TryTriggerDamageRider("cluster").Should().Be(pulse == 0 && target == 0);
+            sequence.TryTriggerDamageRider("ricochet").Should().Be(pulse == 0 && target == 0);
+        }
+        sequence.TryTriggerAreaPulse().Should().BeTrue();
+        new AbilityImpactSequence().TryTriggerDamageRider("ricochet").Should().BeTrue();
+    }
+
+    [Test]
     public void SparsePrimaryHits_ShareRemainingArcBudgetWithoutRepeatingTargets()
     {
         var sequence = new AbilityImpactSequence();

@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisruptionExpertTrait)
                 .Description("Foggy Mind, Force Disruption, and ability-cost debuffs you apply last 25% longer.")
-                .IncreasesStat(StatType.OutgoingDebuffDurationPercentAdjustment, 25)
+                .IncreasesStat(StatType.OutgoingAbilityDisruptionDurationPercentAdjustment, 25)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 25);
         }
@@ -395,7 +395,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OpportunistsFlowTrait)
                 .Description("When an enemy misses you, your next hostile combat ability within 30 seconds costs 4 less STM.")
-                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilitySkillType, (int)SkillType.Spear)
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment, -4)
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityWindowSeconds, 30)
                 .Price(2)

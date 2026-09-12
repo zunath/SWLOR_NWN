@@ -35,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Dazed_S,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
                 centerOnActivator: true,
-                enmityBonus: 75)
+                enmityBonus: 75,
+                maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenClampTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

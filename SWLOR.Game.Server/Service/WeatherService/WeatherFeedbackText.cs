@@ -4,6 +4,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
     {
 
         public const string Lightning = "You were hit by the bolt of lightning!";
+        public const string AcidRain = "Acid rain burns exposed skin. Take shelter immediately!";
         public const string Cloudy = "Clouds move across the sky at a brisk pace, driven by strong wind.";
         public const string ColdCloudy = "Cold air is punctuated by an overcast sky, the clouds thick and dark.";
         public const string ColdWindy = "A chill wind is in the air, cutting like a knife.";

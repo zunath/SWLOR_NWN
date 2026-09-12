@@ -147,7 +147,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Last Stand of the Light Master"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -512,7 +512,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Hunger of the Dark Master"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -877,7 +877,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Eclipse of Resolve Master"
+            "0": "???"
           }
         },
         "OnClick": {

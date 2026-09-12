@@ -147,7 +147,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Killzone Beacon Master"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -512,7 +512,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Emergency Bunker Master"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -877,7 +877,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Decisive Command Master"
+            "0": "???"
           }
         },
         "OnClick": {

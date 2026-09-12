@@ -147,7 +147,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Saber Storm Master"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -512,7 +512,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Guardian Master Paragon"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -877,7 +877,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Saber Cyclone Master"
+            "0": "???"
           }
         },
         "OnClick": {

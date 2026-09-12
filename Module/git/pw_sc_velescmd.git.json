@@ -147,7 +147,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Invincible Master"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -512,7 +512,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Vital Rupture Master"
+            "0": "???"
           }
         },
         "OnClick": {
@@ -877,7 +877,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Challenge: Systemic Shutdown Master"
+            "0": "???"
           }
         },
         "OnClick": {

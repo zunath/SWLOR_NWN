@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Serilog;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
@@ -14,6 +15,7 @@ namespace SWLOR.Toolset.Domain.Render
     /// </summary>
     public sealed class TileModelCache
     {
+        private static readonly ILogger Logger = Log.ForContext<TileModelCache>();
         private static readonly ushort MdlResourceType = ResourceIdentity.TypeFromExtension("mdl");
 
         private readonly ResourceIndex _resourceIndex;
@@ -79,9 +81,10 @@ namespace SWLOR.Toolset.Domain.Render
                 {
                     return model == null ? null : MdlMeshBuilder.BuildPlaceableEditor(model);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Malformed hidden selection surfaces must not prevent the area from opening.
+                    Logger.Warning(ex, "Could not build placeable editor geometry for {ModelResRef}", resRef);
                     return null;
                 }
             });
@@ -113,8 +116,9 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 return model == null ? null : MdlMeshBuilder.BuildPlaceablePreview(model);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Warning(ex, "Could not build placeable preview geometry for {ModelResRef}", modelResRef);
                 return null;
             }
         }

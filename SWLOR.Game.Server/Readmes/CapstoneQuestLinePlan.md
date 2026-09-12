@@ -310,7 +310,9 @@ Literal handoff values for every capstone line. All lines follow the same determ
 - Quest IDs: `<quest id stem>_foundation`, `_measure`, `_breach` (warden), `_circle`, `_mastery` (master).
 - Warden activator locals: `QUEST_ID = <stem>_breach`, `QUEST_ENCOUNTER_ID = <stem>_breach_warden`, `QUEST_ENCOUNTER_RESREF = cp_<code>_wd`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_WD_SPAWN` (waypoint blueprint `wp_<code>_wd`).
 - Master activator locals: `QUEST_ID = <stem>_mastery`, `QUEST_ENCOUNTER_ID = <stem>_mastery_master`, `QUEST_ENCOUNTER_RESREF = cp_<code>_ms`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_MS_SPAWN` (waypoint blueprint `wp_<code>_ms`).
-- Every activator: `QUEST_STATE = 1`, `VISIBILITY_HIDDEN_DEFAULT = 1`, a unique `VISIBILITY_OBJECT_ID`, `QUEST_ENCOUNTER_COOLDOWN_MINUTES = 60`, `QUEST_ENCOUNTER_IDLE_MINUTES = 10`, `OnUsed = quest_enc`. Name new activators `Challenge: <boss name>` and use invisible appearance 479 beside the area's altar; preserve the existing master's quest and visibility locals.
+- Every activator: `QUEST_STATE = 1`, `VISIBILITY_HIDDEN_DEFAULT = 1`, a unique `VISIBILITY_OBJECT_ID`, `QUEST_ENCOUNTER_COOLDOWN_MINUTES = 60`, `QUEST_ENCOUNTER_IDLE_MINUTES = 10`, `OnUsed = quest_enc`.
+- New warden activators: name `Challenge: <warden name>`, use invisible appearance 479, and place at the line's encounter location inside its dungeon/lesson area with its warden spawn waypoint.
+- Master activators: name `Challenge: <master name>` and use invisible appearance 479 beside the attached boss arena's altar. Preserve the existing master's quest and visibility locals and its spawn waypoint on the fighting floor.
 - Access gate: `tele_obj` instance with `KEY_ITEM_ID` = the package's key item ID below, `TELEPORT_PARTY_MEMBERS = 1`, and a `MISSING_KEY_ITEM_MESSAGE` naming the package location.
 
 | Content Package | Line (Skill) | Quest Giver (resref) | Line Code | Quest ID Stem | Key Item ID |

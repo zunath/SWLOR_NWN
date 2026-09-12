@@ -10,6 +10,7 @@ using Serilog;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
@@ -67,6 +68,9 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private StatusSource _statusSource;
     private CancellationTokenSource? _automaticPreviewCancellation;
     private AreaGenerationDraft? _previewedDraft;
+    private AreaGenerationDraft? _solvedDraft;
+    private int _previewRevision;
+    private bool _renderOnlyRequested;
 
     private static readonly HashSet<string> GenerationInputProperties = new(StringComparer.Ordinal)
     {
@@ -94,6 +98,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         nameof(FeatureDensityPercent),
         nameof(ElevationRegions),
         nameof(EnableDecorations),
+        nameof(DecorationPlacementStyle),
         nameof(DecorationDensityPercent)
     };
 
@@ -104,6 +109,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     public ObservableCollection<DecorationChoice> DecorationProfiles { get; } = new();
     public IReadOnlyList<DungeonLayoutStyle> LayoutStyles { get; } = Enum.GetValues<DungeonLayoutStyle>();
     public IReadOnlyList<AreaPreviewMode> PreviewModes { get; } = Enum.GetValues<AreaPreviewMode>();
+    public IReadOnlyList<DecorationPlacementStyle> DecorationPlacementStyles { get; } = Enum.GetValues<DecorationPlacementStyle>();
     public int MinimumDimension => LayoutStyleSizeFloor.For(LayoutStyle);
     public int MinimumRoomSizeBound => EffectiveRoomSizeBounds().Min;
     public int MaximumRoomSizeBound => Math.Min(
@@ -135,6 +141,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _showRooms = true;
     [ObservableProperty] private bool _showTransitions = true;
     [ObservableProperty] private bool _showDecorations = true;
+    [ObservableProperty] private bool _showRoutes;
     [ObservableProperty] private string _resRef = string.Empty;
     [ObservableProperty] private string _displayName = "Generated Area";
     [ObservableProperty] private double _width = 16;
@@ -156,6 +163,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [ObservableProperty] private double _featureDensityPercent = 3;
     [ObservableProperty] private double _elevationRegions;
     [ObservableProperty] private bool _enableDecorations = true;
+    [ObservableProperty] private DecorationPlacementStyle _decorationPlacementStyle = DecorationPlacementStyle.Spacious;
     [ObservableProperty] private double _decorationDensityPercent = 100;
     [ObservableProperty] private Bitmap? _preview;
     [ObservableProperty] private string _statusMessage = InitialStatusMessage;
@@ -321,6 +329,8 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     partial void OnShowTransitionsChanged(bool value) => InvalidatePreviewDisplay();
 
     partial void OnShowDecorationsChanged(bool value) => InvalidatePreviewDisplay();
+    /// <summary>Requests a new rendering when the reserved-route overlay changes.</summary>
+    partial void OnShowRoutesChanged(bool value) => InvalidatePreviewDisplay();
 
     partial void OnPreviewChanging(Bitmap? oldValue, Bitmap? newValue)
     {
@@ -427,9 +437,13 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     private bool CanCreate() => CanGenerate() && _previewedDraft != null;
 
+    /// <summary>Solves or rerenders a draft and publishes it only if its settings revision is still current.</summary>
     [RelayCommand(CanExecute = nameof(CanGenerate))]
     private async Task GeneratePreview()
     {
+        var revision = _previewRevision;
+        var cachedDraft = _renderOnlyRequested ? _solvedDraft : null;
+        _renderOnlyRequested = false;
         CancelAutomaticPreviewRequest();
         SetPreviewedDraft(null);
         BusyMessage = "Preparing generation settings...";
@@ -439,7 +453,9 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         {
             var settings = BuildSettings();
             BusyMessage = "Solving the layout and validating encounters...";
-            var draft = await _backgroundTasks.RunAsync(() => _authoring.Generate(settings, _workspace)).ConfigureAwait(true);
+            var draft = cachedDraft ?? await _backgroundTasks.RunAsync(() => _authoring.Generate(settings, _workspace)).ConfigureAwait(true);
+            if (_disposed || revision != _previewRevision)
+                return;
             if (!draft.Result.Success)
             {
                 Preview = null;
@@ -447,10 +463,13 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                 return;
             }
 
+            _solvedDraft = draft;
+
             var previewMode = PreviewMode;
             var showRooms = ShowRooms;
             var showTransitions = ShowTransitions;
             var showDecorations = ShowDecorations;
+            var showRoutes = ShowRoutes;
             BusyMessage = previewMode == AreaPreviewMode.MapGraphics
                 ? "Rendering tiles and preview overlays..."
                 : "Rendering the schematic preview...";
@@ -459,7 +478,10 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                 previewMode,
                 showRooms,
                 showTransitions,
-                showDecorations)).ConfigureAwait(true);
+                showDecorations,
+                showRoutes: showRoutes)).ConfigureAwait(true);
+            if (_disposed || revision != _previewRevision)
+                return;
             BusyMessage = "Preparing the preview image...";
             Preview = ToBitmap(image);
             SetPreviewedDraft(draft);
@@ -468,6 +490,8 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             Log.Error(ex, "Area generation preview failed.");
+            if (_disposed || revision != _previewRevision)
+                return;
             Preview = null;
             SetPreviewedDraft(null);
             SetStatus(ex.GetBaseException().Message, isError: true);
@@ -475,6 +499,8 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         finally
         {
             IsBusy = false;
+            if (!_disposed && revision != _previewRevision)
+                RequestAutomaticPreview();
         }
     }
 
@@ -605,20 +631,31 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         RequestAutomaticPreview();
     }
 
+    /// <summary>Discards the solved draft and rendered preview when a generation input changes.</summary>
     private void InvalidatePreview(string status)
     {
+        _previewRevision++;
+        _solvedDraft = null;
+        _renderOnlyRequested = false;
         Preview = null;
         SetPreviewedDraft(null);
         SetStatus(status);
     }
 
+    /// <summary>Invalidates the displayed image while retaining the solved draft for overlay-only rendering.</summary>
     private void InvalidatePreviewDisplay()
     {
         if (_loadingDefaults)
             return;
 
+        _previewRevision++;
+        _renderOnlyRequested = true;
         if (Preview != null)
-            InvalidatePreview("Preview display options changed. Updating the preview...");
+        {
+            Preview = null;
+            SetPreviewedDraft(null);
+            SetStatus("Preview display options changed. Updating the preview...");
+        }
 
         RequestAutomaticPreview();
     }
@@ -750,6 +787,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         CreateAreaCommand.NotifyCanExecuteChanged();
     }
 
+    /// <summary>Captures builder selections as generation settings, including decoration style, palette and density.</summary>
     private AreaGenerationSettings BuildSettings()
     {
         var wholeValues = new[]
@@ -788,20 +826,28 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                 FeatureDensityPercent = (int)FeatureDensityPercent,
                 ElevationRegions = (int)ElevationRegions,
                 EnableDecorations = EnableDecorations,
+                DecorationPlacementStyle = DecorationPlacementStyle,
                 DecorationDensityPercent = (int)DecorationDensityPercent,
                 DecorationProfile = SelectedDecorationProfile?.Key ?? string.Empty
             }
         };
     }
 
+    /// <summary>Summarizes the generated layout, preview availability and decoration omission diagnostics for the builder.</summary>
     private static string Describe(AreaGenerationDraft draft, AreaPreviewImage image)
     {
         var resolved = draft.Result.Resolved!;
         var missing = image.MissingTileGraphics == 0
             ? string.Empty
             : $" {image.MissingTileGraphics} tile graphic(s) used schematic colors.";
+        var report = draft.Result.DecorationPlacementReport;
+        var clearance = report is { OmittedCount: > 0 }
+            ? $" Omitted {report.OmittedCount} props: {report.UnsupportedCount} unsupported, " +
+              $"{report.RouteConflictCount} near routes or anchors, {report.OverlapCount} overlapping. " +
+              "Density is a target; clearance takes priority."
+            : string.Empty;
         return $"Seed {draft.Result.AttemptSeed}: {resolved.Rooms.Count} rooms, " +
-               $"{resolved.Transitions.Count} transitions, {draft.Result.PlannedDecorationCount} decorations.{missing}";
+               $"{resolved.Transitions.Count} transitions, {draft.Result.PlannedDecorationCount} decorations.{clearance}{missing}";
     }
 
     private static Bitmap ToBitmap(AreaPreviewImage image)

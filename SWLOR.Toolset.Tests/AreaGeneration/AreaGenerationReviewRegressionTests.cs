@@ -51,6 +51,27 @@ public class DungeonDecorationPlannerReviewRegressionTests
 
 public class TileResolverReviewRegressionTests
 {
+    /// <summary>Guards encounter hubs and the connected route from replacement by decorative feature tiles.</summary>
+    [Test]
+    public void FeatureSprinkling_PreservesRoomCentersAndTheRouteToAnOpening()
+    {
+        var layout = new MacroLayout(new CornerTerrainGrid(4, 1, "Floor"))
+        {
+            DoorTransitions = false, OpenTerrain = "Floor", FeatureDensity = 1,
+            FeatureTiles = new() { ["Feature"] = 1 },
+            Rooms = [new() { Id = 1, CenterTile = (0, 0), Tiles = [(0, 0), (1, 0), (2, 0)] }]
+        };
+        var tileset = new TilesetModel
+        {
+            Tiles = [Tile(0, [0, 0, 0, 0]), Tile(1, [0, 0, 0, 0], 0)],
+            Groups = [new() { Name = "Feature", Rows = 1, Columns = 1, TileIds = [1] }]
+        };
+        TileResolver.TryResolve(tileset, layout, new Random(5), out var resolved, out var failure).Should().BeTrue(failure);
+        resolved.FeatureTileCells.Should().NotContainKey((0, 0));
+        resolved.FeatureTileCells.Should().NotContainKey((1, 0));
+        resolved.FeatureTileCells.Should().NotContainKey((2, 0));
+    }
+
     [Test]
     public void ElevatedLayout_SprinklesFlatFeatureOnCompatibleLevelCellAtItsGridHeight()
     {

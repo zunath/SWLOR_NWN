@@ -103,6 +103,23 @@ namespace SWLOR.Toolset.Domain.Gff
         }
 
         /// <summary>
+        /// Preserves unchanged tokens, including their escapes, and retains UTF-8 for edits to
+        /// imported non-ASCII UTF-8 text. New text in ASCII or native tokens uses Windows-1252.
+        /// </summary>
+        internal static byte[] EncodeReplacement(string value, byte[] originalToken)
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            // New fields use an empty byte array until their first text assignment.
+            if (originalToken.Length == 0)
+                return Encode(value);
+            if (string.Equals(value, Decode(originalToken), StringComparison.Ordinal))
+                return originalToken;
+
+            var useUtf8 = originalToken.Any(valueByte => valueByte >= 0x80) && IsUtf8Content(originalToken);
+            return Encode(value, useUtf8);
+        }
+
+        /// <summary>
         /// True when the token's content bytes are valid UTF-8 (escape sequences are ASCII and so
         /// never change the verdict). Windows-1252 accepts any byte, so it is the fallback.
         /// </summary>

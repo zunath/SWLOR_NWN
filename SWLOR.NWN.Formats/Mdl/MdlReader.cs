@@ -34,6 +34,7 @@ public sealed class MdlReader
     private AllocationBudget _allocationBudget = null!;
     private readonly Dictionary<(uint Pointer, bool HasGeometryPayload), MdlNode> _nodes = new();
     private readonly HashSet<(uint Pointer, bool HasGeometryPayload)> _activeNodes = new();
+    private readonly List<MdlNode> _geometryNodes = new();
 
     public MdlModel Parse(byte[] data) => ParseCore(data, null);
 
@@ -53,6 +54,7 @@ public sealed class MdlReader
         return ParseBinary(data, sharedBudget);
     }
 
+    /// <summary>Reads bounded binary geometry, resolves its skin bindings, and loads animation controllers.</summary>
     private MdlModel ParseBinary(byte[] data, AllocationBudget? sharedBudget)
     {
         _reader = new GuardedBinaryReader(data);
@@ -63,6 +65,7 @@ public sealed class MdlReader
             AllocationBudget.DefaultMaximumBytes, MaximumDecodedAllocationBytes), sharedBudget);
         _nodes.Clear();
         _activeNodes.Clear();
+        _geometryNodes.Clear();
 
         if (data.Length < FileHeaderSize + ModelHeaderSize)
             throw new NwnFormatException("Binary MDL is shorter than its file and model headers.");
@@ -92,6 +95,7 @@ public sealed class MdlReader
         if (rootPointer != 0)
             model.GeometryRoot = ParseNode(rootPointer, null, 0, hasGeometryPayload: true);
 
+        ResolveSkinInfluences();
         ParseAnimations(model, _modelBase + 120);
         return model;
     }
@@ -127,6 +131,7 @@ public sealed class MdlReader
         }
     }
 
+    /// <summary>Reads one bounded node tree while retaining geometry preorder for binary skin mappings.</summary>
     private MdlNode ParseNode(uint pointer, MdlNode? parent, int depth, bool hasGeometryPayload)
     {
         var nodeKey = (pointer, hasGeometryPayload);
@@ -164,6 +169,8 @@ public sealed class MdlReader
         node.Name = FixedString(offset + 32, 32, "MDL node name");
         node.Parent = parent;
         _nodes.Add(nodeKey, node);
+        if (hasGeometryPayload)
+            _geometryNodes.Add(node);
         _activeNodes.Add(nodeKey);
 
         try
@@ -374,6 +381,78 @@ public sealed class MdlReader
                     _reader.ReadInt16(current + 6));
             }
             skin.BoneIndices = indices;
+        }
+    }
+
+    /// <summary>Converts binary bone slots into the named influences shared by ASCII models and preview skinning.</summary>
+    private void ResolveSkinInfluences()
+    {
+        foreach (var skin in _geometryNodes.OfType<MdlSkinmeshNode>())
+        {
+            if (skin.BoneMapping.Length == 0 || skin.BoneWeights.Length == 0 || skin.BoneIndices.Length == 0)
+                continue;
+            // Imported body parts can retain a donor skeleton's mapping after its
+            // nodes were removed. Preserve their raw attributes and rigid preview;
+            // a local geometry index cannot safely identify those missing bones.
+            if (skin.BoneMapping.Length > _geometryNodes.Count)
+                continue;
+
+            // Mapping entries follow geometry preorder, not the node-number field:
+            // compiled garments can store supermodel node numbers in that field.
+            var slotCount = Math.Max(0, skin.BoneMapping.Max() + 1);
+            _allocationBudget.ReserveElements(slotCount, IntPtr.Size, "MDL skin bone names");
+            var boneNames = new string?[slotCount];
+            for (var nodeIndex = 0; nodeIndex < skin.BoneMapping.Length; nodeIndex++)
+            {
+                var slot = skin.BoneMapping[nodeIndex];
+                if (slot < 0)
+                    continue;
+                if (nodeIndex >= _geometryNodes.Count || boneNames[slot] != null)
+                    throw new NwnFormatException("MDL skin bone mapping references missing or duplicate geometry bones.");
+                boneNames[slot] = _geometryNodes[nodeIndex].Name;
+            }
+
+            var vertexCount = skin.BoneWeights.Length;
+            _allocationBudget.ReserveElements(vertexCount, 40, "MDL skin influence rows and array headers");
+            var influences = new MdlSkinInfluence[vertexCount][];
+            for (var vertex = 0; vertex < vertexCount; vertex++)
+            {
+                var weights = skin.BoneWeights[vertex];
+                var indices = skin.BoneIndices[vertex];
+                var count = 0;
+                for (var component = 0; component < 4; component++)
+                {
+                    if (weights[component] < 0)
+                        throw new NwnFormatException("MDL skin weight cannot be negative.");
+                    if (weights[component] > 0)
+                        count++;
+                }
+                if (count == 0)
+                {
+                    influences[vertex] = Array.Empty<MdlSkinInfluence>();
+                    continue;
+                }
+                _allocationBudget.ReserveElements(count, 16, "MDL named skin influences");
+                var row = new MdlSkinInfluence[count];
+                var influenceIndex = 0;
+                for (var component = 0; component < 4; component++)
+                {
+                    if (weights[component] <= 0)
+                        continue;
+                    var slot = component switch
+                    {
+                        0 => indices.Index0,
+                        1 => indices.Index1,
+                        2 => indices.Index2,
+                        _ => indices.Index3
+                    };
+                    if (slot < 0 || slot >= boneNames.Length || string.IsNullOrWhiteSpace(boneNames[slot]))
+                        throw new NwnFormatException("MDL skin influence references an unmapped bone slot.");
+                    row[influenceIndex++] = new MdlSkinInfluence(boneNames[slot]!, weights[component]);
+                }
+                influences[vertex] = row;
+            }
+            skin.VertexInfluences = influences;
         }
     }
 

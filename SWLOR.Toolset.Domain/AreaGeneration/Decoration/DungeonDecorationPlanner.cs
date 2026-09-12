@@ -541,14 +541,17 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             string decorationProfile = null)
         {
             var plan = new List<PlannedDecoration>();
+            if (layout != null)
+                layout.PlaceableStructureCells = new HashSet<(int X, int Y)>();
             if (layout == null || detail == null || densityPercent <= 0)
                 return plan;
 
             // Named-profile resolution: an explicit per-request pick wins, then the theme's own
-            // declaration; an empty/unknown name is the standard palette. A named profile fully
+            // declaration when no override was supplied. An explicit empty name selects standard.
+            // The authoring service rejects unknown requested names. A named profile fully
             // REPLACES the standard tileset Decorations/Vignettes (no merging) -- see
             // DungeonDecorationProfile.
-            var profileName = !string.IsNullOrWhiteSpace(decorationProfile) ? decorationProfile : detail.DecorationProfile;
+            var profileName = decorationProfile ?? detail.DecorationProfile;
             DungeonDecorationProfile namedProfile = null;
             if (!string.IsNullOrWhiteSpace(profileName) && tileset?.DecorationProfiles != null)
                 tileset.DecorationProfiles.TryGetValue(profileName, out namedProfile);
@@ -920,6 +923,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
                 var resref = PickWeighted(doorwayFallback, rng);
                 var doorwayEntry = doorwayFallback.FirstOrDefault(e => e.Resref == resref);
+                var pairPlacements = new List<PlannedDecoration>();
                 foreach (var tile in new[] { pair.A, pair.B })
                 {
                     var roomIndex = tileToRoom[tile];
@@ -932,12 +936,21 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     if (urban && TileCarriesRoadEdge(tile, layout, roadCrosser) && doorwayEntry?.AllowOnRoadSurface != true)
                         continue;
 
-                    plan.Add(urban
+                    pairPlacements.Add(urban
                         ? BuildUrbanWallPlacement(tile, wallDir.Value, resref, DecorationContext.DoorwayFlank, layout, roadCrosser)
                         : BuildWallHuggingPlacement(tile, wallDir.Value, resref, DecorationContext.DoorwayFlank));
-                    RecordUse(areaUsage, resref);
-                    consumedTiles.Add(tile);
                 }
+                if (pairPlacements.Count != 2)
+                    continue;
+                var arrangementId = plan.Count + 1;
+                foreach (var placement in pairPlacements)
+                {
+                    placement.ArrangementId = arrangementId;
+                    plan.Add(placement);
+                    RecordUse(areaUsage, resref);
+                }
+                consumedTiles.Add(pair.A);
+                consumedTiles.Add(pair.B);
             }
 
             // PASS 2b0: zone-marking feature tiles (a grass lawn, a fountain court) that landed
@@ -1231,6 +1244,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             if (urban && tileset?.FacadeMounts is { Count: > 0 })
                 plan.AddRange(BuildingFrontagePlanner.PlanFacadeMounts(layout, tileset, frontage, plan.Count));
 
+            // Legacy callers of Plan also receive the center-based chasm check; the authoring
+            // pipeline applies full footprint support and clearance in DecorationPlacementSafety.
             // CHASM GROUND FILTER (footprint-support pass): on a chasm-bearing tileset (see
             // DungeonTilesetProfile.ChasmTerrains), a GROUND-standing dressing placement whose
             // point lands on a chasm corner-quadrant would render floating over the abyss -- the
@@ -1244,11 +1259,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             // for every tileset without chasm semantics.
             if (tileset?.ChasmTerrains is { Count: > 0 } && layout.CornerTerrains != null)
             {
-                plan.RemoveAll(p =>
+                var unsupported = plan.Where(p =>
                     p.Context != DecorationContext.BuildingFrontage &&
                     p.Context != DecorationContext.FacadeMount &&
                     p.Position.Z <= 0.5f &&
-                    IsOverChasm(p.Position.X, p.Position.Y, layout, tileset.ChasmTerrains));
+                    IsOverChasm(p.Position.X, p.Position.Y, layout, tileset.ChasmTerrains)).ToHashSet();
+                var rejectedGroups = unsupported.Where(p => p.ArrangementId != 0).Select(p => p.ArrangementId).ToHashSet();
+                plan.RemoveAll(p => unsupported.Contains(p) || rejectedGroups.Contains(p.ArrangementId) ||
+                    p.SupportDecoration != null && unsupported.Contains(p.SupportDecoration));
             }
 
             var footprintByResref = palette
@@ -1259,8 +1277,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     StringComparer.OrdinalIgnoreCase);
             foreach (var decoration in plan)
             {
-                if (footprintByResref.TryGetValue(decoration.Resref, out var declaredRadius))
-                    decoration.FootprintRadius = MathF.Max(decoration.FootprintRadius, declaredRadius);
+                if (decoration.Context is not (DecorationContext.BuildingFrontage or DecorationContext.FacadeMount) &&
+                    footprintByResref.TryGetValue(decoration.Resref, out var declaredRadius))
+                    decoration.FootprintRadius = declaredRadius;
+                decoration.BlocksMovement = decoration.Context is not
+                    (DecorationContext.GroundDecal or DecorationContext.RoadMarking or DecorationContext.FacadeMount) &&
+                    !palette.Any(entry => entry.Resref.Equals(decoration.Resref, StringComparison.OrdinalIgnoreCase) &&
+                        entry.Role == DecorationRole.GroundDecal);
             }
 
             return plan;
@@ -3370,7 +3393,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     Resref = member.Resref,
                     Position = new Vector3(member.Position.X, member.Position.Y, stackHeight),
                     Facing = member.Facing,
-                    Context = member.Context
+                    Context = member.Context,
+                    SupportDecoration = member
                 });
                 RecordUse(areaUsage, member.Resref);
             }
@@ -3889,6 +3913,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             // anchor's own into-the-room direction (-wallDir).
             var cos = (float)Math.Cos(baseFacingRad - Math.PI / 2.0);
             var sin = (float)Math.Sin(baseFacingRad - Math.PI / 2.0);
+            var arrangementId = plan.Count + 1;
 
             foreach (var member in vignette.Members)
             {
@@ -3900,7 +3925,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     Resref = member.Resref,
                     Position = new Vector3(anchorPosition.X + rotatedX, anchorPosition.Y + rotatedY, 0f),
                     Facing = (float)(baseFacingDeg + member.FacingOffset),
-                    Context = DecorationContext.WallAdjacent
+                    Context = DecorationContext.WallAdjacent,
+                    ArrangementId = arrangementId
                 });
             }
         }

@@ -16,28 +16,9 @@ namespace SWLOR.NWN.Formats.Corpus.Tests;
 [Category(MdlCorpusScopeTests.CorpusCategory)]
 public sealed class HakMdlParseSweepTests
 {
-    /// <summary>
-    /// These phenotype-22 robe models are internally inconsistent (pointers/counts that don't
-    /// agree with the rest of the file) independent of the reader. They are pinned here the same
-    /// way <c>FormatsCorpusTests</c> pins <c>ipf_shol197.plt</c>/<c>ipf_shor197.plt</c> as
-    /// expected-invalid, so a genuine reader regression on any other file still fails the sweep.
-    /// </summary>
-    private static readonly HashSet<string> KnownInvalidHakMdls = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "pfe22_robe027.mdl",
-        "pfe22_robe172.mdl",
-        "pfe22_robe174.mdl",
-        "pfe22_robe200.mdl",
-        "pfh22_robe172.mdl",
-        "pfh22_robe174.mdl",
-        "pfo22_robe027.mdl",
-        "pfo22_robe172.mdl",
-        "pfo22_robe174.mdl",
-        "pfo22_robe200.mdl",
-    };
-
+    /// <summary>Requires every current HAK model to parse, including the repaired phenotype-22 robes.</summary>
     [Test]
-    public void EveryHakMdlParsesOrIsPinnedAsKnownCorrupt()
+    public void EveryHakMdlParses()
     {
         var paths = LicensedCorpus.HakSourceDirectories()
             .SelectMany(directory => Directory.EnumerateFiles(directory, "*.mdl", SearchOption.AllDirectories))
@@ -47,35 +28,19 @@ public sealed class HakMdlParseSweepTests
 
         var requested = paths.Length;
         var executed = 0;
-        var expectedInvalid = new List<string>();
         var failures = new List<string>();
-        var seenKnownInvalid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var path in paths)
         {
-            var fileName = Path.GetFileName(path);
             var identity = "hak:" + Path.GetRelativePath(LicensedCorpus.HaksRoot, path)
                 .Replace('\\', '/');
-            var isKnownInvalid = KnownInvalidHakMdls.Contains(fileName);
 
             // Read and parse one file at a time; the bytes and model both go out of scope at the
-            // end of the loop body so memory stays bounded across the ~54k-file sweep.
+            // end of the loop body so memory stays bounded across the complete corpus.
             var bytes = File.ReadAllBytes(path);
             try
             {
                 _ = new MdlReader().Parse(bytes);
-                if (isKnownInvalid)
-                {
-                    failures.Add(
-                        $"{identity}: expected NwnFormatException (pinned known-corrupt) but parsing succeeded.");
-                    continue;
-                }
-                executed++;
-            }
-            catch (NwnFormatException ex) when (isKnownInvalid)
-            {
-                seenKnownInvalid.Add(fileName);
-                expectedInvalid.Add($"{identity}: {ex.Message}");
                 executed++;
             }
             catch (Exception ex)
@@ -86,17 +51,11 @@ public sealed class HakMdlParseSweepTests
 
         TestContext.Out.WriteLine(
             $"Hak MDL parse sweep requested={requested} executed={executed} failed={failures.Count} " +
-            $"skipped=0 expected-invalid={expectedInvalid.Count}");
-        if (expectedInvalid.Count > 0)
-            TestContext.Out.WriteLine(string.Join(Environment.NewLine, expectedInvalid));
+            "skipped=0");
         if (failures.Count > 0)
             TestContext.Out.WriteLine(string.Join(Environment.NewLine, failures.Take(50)));
 
         failures.Should().BeEmpty();
-        seenKnownInvalid.Should().BeEquivalentTo(
-            KnownInvalidHakMdls,
-            "every pinned known-corrupt robe model must actually exist in the corpus and throw " +
-            "NwnFormatException, otherwise the pin is stale");
         executed.Should().Be(requested);
     }
 }

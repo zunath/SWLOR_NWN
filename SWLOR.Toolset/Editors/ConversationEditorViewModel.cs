@@ -1936,6 +1936,7 @@ namespace SWLOR.Toolset.Editors
             await TrySaveAsync().ConfigureAwait(true);
         }
 
+        /// <summary>Commits pending dialogue edits, validates the conversation and saves it with external-change handling.</summary>
         public async Task<bool> TrySaveAsync()
         {
             // Captured ahead of CommitLine: when the line text is also dirty, CommitLine's
@@ -1947,7 +1948,7 @@ namespace SWLOR.Toolset.Editors
                    Animation: AdvancedAnimation,
                    Comment: AdvancedComment,
                    Script: AdvancedScript)
-                : ((string, string, decimal, string, string)?)null;
+                : ((string Speaker, string Sound, decimal Animation, string Comment, string Script)?)null;
 
             CommitLine();
             if (advancedDraft is { } draft)

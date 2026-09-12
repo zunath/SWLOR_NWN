@@ -12,6 +12,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
     /// </summary>
     public static class GenerationEngine
     {
+        /// <summary>Produces a deterministic area draft from the requested composition, layout settings and decoration policy.</summary>
         public static GenerationResult Generate(
             DungeonComposition composition,
             TilesetModel tileset,
@@ -27,15 +28,19 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var solved = LayoutSolver.Solve(baseParameters, tileset, width, height, seed, openTerrainOverride);
 
             // Decoration planning is pure, like layout solving, so preview and module writing consume
-            // the same composition-and-seed result. The schematic/map render stays tile-only (see
-            // GenerationResult.PlannedDecorationCount).
+            // the same composition-and-seed result, including the final prop clearance pass.
             IReadOnlyList<PlannedDecoration> plannedDecorations = Array.Empty<PlannedDecoration>();
+            DecorationPlacementReport placementReport = null;
             if (solved.Success && composition.Content != null && (overrides?.EnableDecorations ?? true))
             {
                 var densityPercent = overrides?.DecorationDensityPercent ?? 100;
-                var decorationProfile = overrides?.DecorationProfile ?? string.Empty;
-                plannedDecorations = DungeonDecorationPlanner.Plan(
+                var decorationProfile = overrides?.DecorationProfile;
+                var proposals = DungeonDecorationPlanner.Plan(
                     solved.Resolved, composition.Tileset, composition.Content, densityPercent, decorationProfile);
+                placementReport = DecorationPlacementSafety.Apply(proposals, solved.Resolved,
+                    composition.Tileset, composition.Content,
+                    overrides?.DecorationPlacementStyle ?? DecorationPlacementStyle.Spacious, tileset);
+                plannedDecorations = proposals;
             }
 
             return new GenerationResult
@@ -47,7 +52,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Resolved = solved.Resolved,
                 AttemptSeed = solved.AttemptSeed,
                 FailureReason = solved.FailureReason,
-                PlannedDecorations = plannedDecorations
+                PlannedDecorations = plannedDecorations,
+                DecorationPlacementReport = placementReport
             };
         }
     }

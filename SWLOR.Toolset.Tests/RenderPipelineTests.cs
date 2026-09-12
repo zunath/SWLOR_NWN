@@ -175,13 +175,14 @@ namespace SWLOR.Toolset.Tests
             totalMeshesBuilt.Should().BeGreaterThan(0, "at least one model in the sample must produce visible geometry");
         }
 
+        /// <summary>Decodes an existing uncompressed corpus texture and verifies its reported dimensions.</summary>
         [Test]
         public void TextureLoader_LoadTga_ForKnownCorpusTexture_DecodesToReportedDimensions()
         {
             var index = BuildHakOnlyIndex();
 
             // A plain (non-BioWare-DDS) TGA texture used by the dungeon tileset.
-            var image = TextureLoader.LoadTga(index, "zde01_wall9k1");
+            var image = TextureLoader.LoadTga(index, "zde01_sewer01");
 
             image.Should().NotBeNull();
             image!.Width.Should().BeGreaterThan(0);
@@ -258,10 +259,11 @@ namespace SWLOR.Toolset.Tests
             info.HasTransparencyHint.Should().BeTrue();
         }
 
+        /// <summary>Reads cube-map metadata from the current forest sky texture sidecar.</summary>
         [Test]
         public void TxiInfo_Parse_Cube_MatchesRealCorpusFile()
         {
-            var path = Path.Combine(HaksDirectory, "sw_t_mine", "ztall_sky.txi");
+            var path = Path.Combine(HaksDirectory, "sw_t_cepforest", "ztall_sky.txi");
             File.Exists(path).Should().BeTrue();
 
             var info = TxiInfo.Parse(File.ReadAllText(path));

@@ -6077,7 +6077,7 @@ namespace SWLOR.Game.Server.Service.StatService
         AutoAttackSplashDamage = 1074,
 
         /// <summary>Percent chance for this source's auto-attack splash.</summary>
-        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         AutoAttackSplashChance = 1075,
 
         /// <summary>Weapon skill required for this source's auto-attack splash.</summary>

@@ -52,7 +52,7 @@ public class CrowdControlBudgetTests
                 if (!payload.SelectMany(a => a.DescendantNodes()).OfType<IdentifierNameSyntax>()
                         .Any(n => controlTypes.Contains(n.Identifier.Text))) continue;
                 examined++;
-                if (budget == null || budget == "0")
+                if (!int.TryParse(budget, NumberStyles.Integer, CultureInfo.InvariantCulture, out var targetBudget) || targetBudget <= 0)
                     offenders.Add($"{Path.GetFileName(file)}:{call.GetLocation().GetLineSpan().StartLinePosition.Line + 1}");
             }
         }
@@ -64,6 +64,7 @@ public class CrowdControlBudgetTests
     public void MimicryControl_CooldownIsAtLeastOneAndAHalfTimesItsAuthoredDuration()
     {
         var directory = Path.Combine(Root(), "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Mimicry");
+        var examined = 0;
         foreach (var file in Directory.EnumerateFiles(directory, "*.cs"))
         foreach (var call in CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>())
         {
@@ -74,8 +75,10 @@ public class CrowdControlBudgetTests
             if (type == null || (((StatusEffectBase)Activator.CreateInstance(type)!).Categories & StatusEffectCategory.HardCrowdControl) == 0) continue;
             var cooldown = float.Parse(args[7].Expression.ToString().TrimEnd('f'), CultureInfo.InvariantCulture);
             var duration = int.Parse(args[10].Expression.ToString(), CultureInfo.InvariantCulture);
+            examined++;
             cooldown.Should().BeGreaterThanOrEqualTo(duration * 1.5f, Path.GetFileName(file));
         }
+        examined.Should().BeGreaterThanOrEqualTo(12, "the audit must resolve the authored Mimicry hard-control abilities");
     }
 
     private static string Root()

@@ -56,6 +56,15 @@ public class PerkCombinationBehaviorTests
     }
 
     [Test]
+    public void SplashChance_IsBeneficialAndUsesMaximumAggregation()
+    {
+        Stat.IsBeneficialStatAdjustment(StatType.AutoAttackSplashChance, 15).Should().BeTrue();
+        Stat.IsBeneficialStatAdjustment(StatType.AutoAttackSplashChance, 0).Should().BeFalse();
+        Stat.IsBeneficialStatAdjustment(StatType.AutoAttackSplashChance, -15).Should().BeFalse();
+        Stat.GetStatTypeAggregation(StatType.AutoAttackSplashChance).Should().Be(StatTypeAggregation.Maximum);
+    }
+
+    [Test]
     public void SplashTargetBudget_ExcludesThePrimaryBeforeLimitingSecondaryTargets()
     {
         foreach (var candidates in new[]

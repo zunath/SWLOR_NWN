@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Status
 
-Last updated: 2026-08-17
+Last updated: 2026-09-12
 
 ## Source Of Truth
 
@@ -108,7 +108,7 @@ The legacy combat Bible review gate has been retired. Use `CombatUpgradeBibleSyn
 
 ## Static Implementation Status And Validation Risks
 
-The scoped perk, ability, stat-consumer, feat, spell, icon, recast, and status-effect implementation audit is complete with no known static production gaps. Remaining mechanic work in this section is release validation, not another row-alignment or foundational-system implementation pass. Capstone world construction is tracked separately in `CapstoneQuestLinePlan.md`; eight content packages comprising sixteen physical areas remain there.
+The scoped perk, ability, stat-consumer, feat, spell, icon, recast, and status-effect implementation audit is complete with no known static production gaps. Remaining mechanic work in this section is release validation, not another row-alignment or foundational-system implementation pass. Capstone world construction is tracked separately in `CapstoneQuestLinePlan.md`. The eight remaining boss arenas were generated and registered on 2026-09-12, with 24 master encounters; eight dungeon/lesson areas, their wardens and ambient spawns, and gated access/two-way travel still remain. Those eight packages are not yet playable end to end.
 
 Active-to-trait code cleanup is no longer a known outstanding implementation slice. The current C# sync tests cover trait rows, active feat grants, and extra live ability surfaces for Bible-scoped perks.
 

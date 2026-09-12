@@ -329,6 +329,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine - Saber Trial Chamber - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_jeditrial_ent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dantooine Janta"
                     },
                     "RESREF": {
@@ -499,6 +510,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dantooine_world_"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir - Alpha Beast Hollow - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_tarnalpha_ent"
                     }
                   },
                   {
@@ -824,6 +846,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hutlar - Overload Chamber - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_qioncore_ent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar Qion Test Site - General Capstone Spawn"
                     },
                     "RESREF": {
@@ -895,6 +928,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wp_thermdet_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Champion Forge - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_korrforge_ent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban - Final Ritual Chamber - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sithrit_ent"
                     }
                   },
                   {
@@ -1418,6 +1473,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tatooine - Canyon Dueling Pit - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_canyonpit_ent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tatooine - Sand Beetle"
                     },
                     "RESREF": {
@@ -1616,6 +1682,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscara - Engineering Command Room - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_repubcmd_ent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara - Mandalorian Facility Spawns"
                     },
                     "RESREF": {
@@ -1632,6 +1709,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "man_leader_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Militia Command Room - Entrance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_velescmd_ent"
                     }
                   },
                   {

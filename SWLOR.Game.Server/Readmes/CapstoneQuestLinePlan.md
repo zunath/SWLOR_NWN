@@ -140,20 +140,20 @@ All 40 capstone quest givers (39 lines plus Blood Frenzy's Sera Vonn) are hand-p
 
 The skill-owned capstone quest definitions define the 39 post-Blood-Frenzy capstone quest lines. Each line has five quests, rank prerequisites on every step, proof key items granted from quest credit, a final quest achievement, NPC group identifiers for every objective, deterministic enemy/waypoint/spawn/loot asset IDs, and a final quest ID used by the matching capstone perk requirement.
 
-All 40 quest givers are placed (see the Quest Giver Placements table above); quest-giver creation and placement are not remaining work. For each of the eight unfinished packages, what remains is the dungeon/boss-arena content: two registered physical areas, gated access and internal travel, area metadata, a general spawn waypoint, and the warden/master `quest_enc` activator and spawn-waypoint instances.
+All 40 quest givers are placed (see the Quest Giver Placements table above); quest-giver creation and placement are not remaining work. As of 2026-09-12, the eight remaining boss arenas are generated and registered, with their 24 master `quest_enc` activators, master spawn waypoints, and entry/recovery waypoints. For each unfinished package, what remains is the dungeon/lesson area, gated hub access, two-way dungeon/arena travel, dungeon metadata, ambient spawn setup, and warden encounters.
 
-The reusable setup exists now: quest definitions, dedicated quest giver UTC/DLG files, creature palette entries for those quest givers, enemy UTCs, stat skins, weapons, spawn table definitions, loot table definitions, and waypoint palette blueprints. The lines assigned to the eight unfinished packages are not ready for in-game progression until their areas, gated access objects, travel links, area metadata, spawn waypoints, and `quest_enc` boss activator instances are created.
+The reusable setup exists now: quest definitions, dedicated quest giver UTC/DLG files, creature palette entries for those quest givers, enemy UTCs, stat skins, weapons, spawn table definitions, loot table definitions, and waypoint palette blueprints. The lines assigned to the eight unfinished packages are not ready for in-game progression until their dungeons, gated access, travel links, dungeon metadata, ambient spawns, and warden activators are created. Their master encounters are already placed in the generated arenas.
 
-No `Module/git` placement should be added for these lines until the target content package exists. Area builders may reuse each content package for up to three capstone lines, but must keep the level 50 content isolated from low-level or general-purpose spawn spaces.
+Do not wire ambient spawns or wardens until their target dungeon exists. Area builders may reuse each content package for up to three capstone lines, but must keep the level 50 content isolated from low-level or general-purpose spawn spaces. The generated boss arenas deliberately have no live travel connections to unrelated public areas.
 
 For capstone planning, a content package is not a single physical area. Following the Blood Frenzy pattern, each content package requires two attached physical areas:
 
 - One gated dungeon or lesson area containing the ambient level 50 capstone enemies and general spawn waypoint.
 - One attached boss arena area containing the state-gated `quest_enc` activators and boss spawn waypoints.
 
-The full 13-package scope represents 26 physical areas: 13 dungeons and 13 attached boss arenas. Five packages are wired, so the remaining construction scope is eight packages and 16 physical areas.
+The full 13-package scope represents 26 physical areas: 13 dungeons and 13 attached boss arenas. Five packages are fully wired, and the other eight now have their boss arenas. Eighteen physical areas exist; eight dungeon areas and their access/travel wiring remain.
 
-Current build state (2026-08-17):
+Current build state (2026-09-12):
 
 - **Dathomir Grotto Apex Den** is fully placed and wired (see the dedicated section below). Its three lines await only an in-game progression pass and a position review.
 - **Czerka Arms Test Range** is wired (2026-07-14). Dungeon `pw_ar_czarmrange` (`Smuggler's Moon - Czerka Weapons Testing Facility`) carries `CREATURE_SPAWN_TABLE_ID = CAPSTONE_CZERKA_ARMS_TEST_RANGE`, `IS_DUNGEON`, `MINI_MAP_DISABLED`, `MAP_KEY_ITEM_ID = 85` (Corporate District region key). The three **warden** activators + waypoints (`killbox_wd_call`/`oneshot_wd_call`/`rainsteel_wd_call`) live in the dungeon near `WP_SMUG_CZERKA_WEAPONS_TO_ARENA`; the three **master** activators + waypoints (`killbox_ms_call`/`oneshot_ms_call`/`rainsteel_ms_call`) live in the boss arena `ka_ar_czweaparen` (`Smuggler's Moon - Czerka Blast-Safe Cell`, elevated floor Z≈15.2) near `WP_SMUG_CZERKA_ARENA_TO_WEAPONS`. Dungeon↔arena uses the area builder's engine `LinkedTo` triggers (`SMUG_CZERKA_WEAPONS_TO_ARENA` / `SMUG_CZERKA_ARENA_TO_WEAPONS`, no key). The hub→dungeon `[Enter Czerka Weapons Testing Facility]` tele_obj in `pw_ar_narscorpd` (Corporate District) was mis-pointed at the hub-side exit waypoint (a no-op loop); it now targets `SMUG_CZERKA_WEAPONS_TEST_ENT` and is key-gated with `KEY_ITEM_ID = 113` + `TELEPORT_PARTY_MEMBERS = 1`. Covered by `CzerkaArmsTestRangePlacementTests`. Naming gotcha: the arena resref `ka_ar_czweaparen` collides with the `ka_*` `[Prefab]` Comms-event-area convention, so `PlayerFacingNameBroadcastTests` now matches event areas by their `[Prefab]` name rather than resref prefix alone.
@@ -164,7 +164,28 @@ Current build state (2026-08-17):
   - Fight Club uses `NARSHADDAA_FIGHT_CLUB_*_RARES` naming; the other 36 lines use `CAPSTONE_<LINECODE>_RARES` / `CAPSTONE_<LINECODE>_WD_RARES` (e.g. `CAPSTONE_FORCEBANE_RARES`). Items use deterministic resrefs `<linecode>_<l1..l8|w1..w5>`.
   - Weapon-skill lines drop the line's weapon type (Force lines drop lightsabers); non-weapon lines (Devices, Leadership, First Aid, Beast Mastery) drop gear/accessories only. Weapon damage is lesson-tier (23) / warden-tier (41) with normalized per-base delay; gear reuses Blood Frenzy stat templates by slot.
   - 468 new items total (36 lines × 13). They require a module repack on deploy.
-- The remaining eight packages have no physical areas yet; they account for the 16-area construction backlog described above.
+- The remaining eight packages have generated boss arenas, listed below. Their eight dungeon/lesson areas still need construction.
+
+### Generated Boss Arenas (2026-09-12)
+
+These normal ARE/GIT/GIC triplets were authored with the toolset area generator's `MacroLayout`, `TileResolver`, decoration planner, document populator, and `NewAreaWriter`. A compact arena macro plan replaces the generator's ordinary multi-room dungeon layouts: each 10x10-tile area has a staging entrance, a broad combat floor, and peripheral dressing. The recommended tilesets in this plan were retained, including the CEP variants resolved against their actual SET data.
+
+| Content Package | Registered Boss Arena | Tileset | Entry Waypoint Tag | Entry Blueprint |
+| --- | --- | --- | --- | --- |
+| Veles Militia Annex | `pw_sc_velescmd` — Viscara - Militia Command Room | `tbx78` | `pw_sc_velescmd_entry` | `wp_velescmd_ent` |
+| Dantooine Jedi Enclave Trial Halls | `pw_sc_jeditrial` — Dantooine - Saber Trial Chamber | `zin01` | `pw_sc_jeditrial_entry` | `wp_jeditrial_ent` |
+| Korriban Forge Caverns | `pw_sc_korrforge` — Korriban - Champion Forge | `ztu01` | `pw_sc_korrforge_entry` | `wp_korrforge_ent` |
+| Anchorhead Canyon Range | `pw_sc_canyonpit` — Tatooine - Canyon Dueling Pit | `tdm01` | `pw_sc_canyonpit_entry` | `wp_canyonpit_ent` |
+| Hutlar Qion Test Site | `pw_sc_qioncore` — Hutlar - Overload Chamber | `tbx78` | `pw_sc_qioncore_entry` | `wp_qioncore_ent` |
+| Korriban Sith Crypt Depths | `pw_sc_sithritual` — Korriban - Final Ritual Chamber | `zid01` | `pw_sc_sithritual_entry` | `wp_sithrit_ent` |
+| Viscara Republic Engineering Bunker | `pw_sc_repubcmd` — Viscara - Engineering Command Room | `tjsb0` | `pw_sc_repubcmd_entry` | `wp_repubcmd_ent` |
+| Dathomir Tarn Jungle Preserve | `pw_sc_tarnalpha` — Dathomir - Alpha Beast Hollow | `ttu01` | `pw_sc_tarnalpha_entry` | `wp_tarnalpha_ent` |
+
+Each arena has its planet local, `IS_DUNGEON = 1`, `MINI_MAP_DISABLED = 1`, a `STUCK_WAYPOINT`, and three master encounter activators following the existing Protected Ward pattern: quest state 1, hidden by default, unique visibility IDs, 60-minute starter cooldowns, and 10-minute idle despawns. Master creature blueprints and their existing spawn waypoint blueprints are reused. No ambient enemies, wardens, or procedural treasure containers are placed in these arenas.
+
+When the adjoining dungeon is built, route its arena entrance to the entry tag above and add the return travel object near that waypoint. No placeholder destination or public-area shortcut is active. The eight entry blueprints are registered in the existing waypoint palette. Master positions, entry, and recovery points have been snapped to real WOK walkable faces and checked for connected paths with decorative footprint clearance; live encounter and visual review are still required.
+
+Authoring and export are reproducible through `tools/SWLOR.BossArenaGenerator` (see its README). `artifacts/boss-arenas/capstone-boss-arenas.erf` contains 32 native resources: eight ARE/GIT/GIC triplets and eight entrance UTWs. All resources passed native `nwn_gff` round-trip validation; GIC list counts and encounter setup were checked. The overview uses tileset map artwork where available; `tjsb0` has no 2D map artwork and uses a labeled schematic. Repack the module to deploy the checked-in area changes.
 
 ### Generated Reusable Content
 
@@ -185,7 +206,7 @@ Current build state (2026-08-17):
 
 ### Required Content Packages
 
-Each content package below requires one dungeon area and one attached boss arena area. The dungeon holds the ambient lesson enemies for quest steps 1, 2, and 4. The attached boss arena holds the on-demand warden and master encounters for quest steps 3 and 5. Do not collapse the boss arena into the dungeon for these capstone packages; the intended pattern is Blood Frenzy-style dungeon plus attached boss arena.
+Each content package below requires one dungeon area and one attached boss arena area. The dungeon holds the ambient lesson enemies for quest steps 1, 2, and 4 plus the on-demand warden encounters for quest step 3. The attached boss arena holds the on-demand master encounters for quest step 5. Do not collapse the boss arena into the dungeon for these capstone packages; the intended pattern is Blood Frenzy-style dungeon plus attached boss arena.
 
 | Content Package | Planet | Capstone Lines | Dungeon Area Expectation | Attached Boss Arena Expectation |
 | --- | --- | --- | --- | --- |

@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class Droid
     {
-        private static readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
         private static readonly Dictionary<int, int> _levelsByTier = new();
         private static readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
@@ -60,7 +59,6 @@ namespace SWLOR.Game.Server.Service
         {
             CacheDroidLevels();
             CachePersonalities();
-            CacheDefaultTierPerks();
         }
 
         private static void CacheDroidLevels()
@@ -80,33 +78,6 @@ namespace SWLOR.Game.Server.Service
             _droidPersonalities[DroidPersonalityType.Slang] = new DroidSlangPersonality();
             _droidPersonalities[DroidPersonalityType.Bland] = new DroidBlandPersonality();
             _droidPersonalities[DroidPersonalityType.Worshipful] = new DroidWorshipfulPersonality();
-        }
-
-        private static void CacheDefaultTierPerks()
-        {
-            _defaultPerksByTier[1] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[2] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[3] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[4] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[5] = new Dictionary<PerkType, int>();
-
-            for (var level = 5; level >= 1; level--)
-            {
-                // Previous levels' perks
-                var levelCopy = level;
-                var previousPerks = _defaultPerksByTier.Where(x => x.Key < levelCopy)
-                    .OrderByDescending(o => o.Key);
-                foreach (var (_, perksForThisLevel) in previousPerks)
-                {
-                    foreach (var (perkType, perkLevel) in perksForThisLevel)
-                    {
-                        if (!_defaultPerksByTier[level].ContainsKey(perkType))
-                        {
-                            _defaultPerksByTier[level][perkType] = perkLevel;
-                        }
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -350,9 +321,7 @@ namespace SWLOR.Game.Server.Service
                     switch (subType)
                     {
                         case DroidStatSubType.Tier:
-                            details.Tier = value < 1 ? 1 : value;
-                            details.Perks = _defaultPerksByTier[details.Tier]
-                                .ToDictionary(x => x.Key, y => y.Value);
+                            details.Tier = Math.Clamp(value, 1, 5);
                             break;
                         case DroidStatSubType.AISlots:
                             details.AISlots += value;
@@ -449,14 +418,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                else if (type == ItemPropertyType.DroidInstruction)
-                {
-                    var perkType = (PerkType)GetItemPropertySubType(ip);
-                    var level = GetItemPropertyCostTableValue(ip);
-
-                    if(!details.Perks.ContainsKey(perkType) || details.Perks[perkType] < level)
-                        details.Perks[perkType] = level;
-                }
                 else if (type == ItemPropertyType.DroidPersonality)
                 {
                     var personalityType = (DroidPersonalityType)GetItemPropertySubType(ip);
@@ -469,6 +430,8 @@ namespace SWLOR.Game.Server.Service
 
             var constructedDroid = LoadConstructedDroid(controller);
             details.CustomName = constructedDroid.Name;
+            details.Perks = DroidInstructions.SelectActive(constructedDroid.ActivePerks, details.Tier, details.AISlots)
+                .ToDictionary(instruction => instruction.Perk, instruction => instruction.Level);
 
             return details;
         }
@@ -509,7 +472,7 @@ namespace SWLOR.Game.Server.Service
                     switch (subType)
                     {
                         case DroidStatSubType.Tier:
-                            details.Tier = value < 1 ? 1 : value;
+                            details.Tier = Math.Clamp(value, 1, 5);
                             break;
                         case DroidStatSubType.AISlots:
                             details.AISlots += value;
@@ -611,7 +574,7 @@ namespace SWLOR.Game.Server.Service
                     details.PartType = (DroidPartItemPropertySubType)GetItemPropertySubType(ip);
                 }
             }
-            details.Level = _levelsByTier[details.Tier];
+            details.Level = _levelsByTier.GetValueOrDefault(details.Tier);
 
             return details;
         }
@@ -1001,9 +964,14 @@ namespace SWLOR.Game.Server.Service
             var serialized = GetLocalString(controller, ConstructedDroidVariable);
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
+                constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized) ?? new ConstructedDroid();
             }
 
+            constructedDroid.LearnedPerks ??= new List<DroidPerk>();
+            constructedDroid.ActivePerks ??= new List<DroidPerk>();
+            constructedDroid.EquippedItems ??= new Dictionary<InventorySlot, string>();
+            constructedDroid.Inventory ??= new Dictionary<string, string>();
+            constructedDroid.AppearanceParts ??= new Dictionary<CreaturePart, int>();
             constructedDroid.TintOverrides ??= new Dictionary<string, int>();
 
             return constructedDroid;
@@ -1018,6 +986,21 @@ namespace SWLOR.Game.Server.Service
         {
             var serialized = JsonConvert.SerializeObject(constructedDroid);
             SetLocalString(controller, ConstructedDroidVariable, serialized);
+        }
+
+        public static void SaveInstructions(uint controller, ConstructedDroid constructedDroid)
+        {
+            // JSON is the authoritative loadout; properties mirror it for item inspection.
+            var properties = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            for (var property = GetFirstItemProperty(controller); GetIsItemPropertyValid(property); property = GetNextItemProperty(controller))
+                if (GetItemPropertyType(property) == ItemPropertyType.DroidInstruction)
+                    properties.Add(property);
+            foreach (var property in properties)
+                RemoveItemProperty(controller, property);
+            foreach (var instruction in constructedDroid.ActivePerks)
+                AddItemProperty(DurationType.Permanent,
+                    ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)instruction.Perk, instruction.Level), controller);
+            SaveConstructedDroid(controller, constructedDroid);
         }
 
         [NWNEventHandler(ScriptName.OnDroidBlocked)]

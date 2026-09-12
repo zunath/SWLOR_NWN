@@ -1604,35 +1604,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 150,
+    "Line": 136,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 172,
+    "Line": 153,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(message))"
+    "Call": "SendMessageToPC(Player, ColorToken.Red(\"This instruction disc does not contain a supported droid ability.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 180,
+    "Line": 159,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red($\"This instruction disc cannot be uploaded because it exceeds the tier of your droid. (Droid tier: {controllerDetails.Tier}, Required: {tier})\"))"
+    "Call": "SendMessageToPC(Player, ColorToken.Red($\"This instruction requires a tier {tier} droid.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 187,
+    "Line": 164,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"That instruction disc has already been uploaded to this droid.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 203,
+    "Line": 175,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Instruction disc uploaded to droid successfully.\"))"
@@ -3914,42 +3914,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 146,
+    "Line": 117,
     "Member": "UseDroidAssemblyTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The 'Droid Assembly' perk is required to use this terminal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 197,
+    "Line": 168,
     "Member": "OnAcquireItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, giveItemMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 211,
+    "Line": 182,
     "Member": "OnAcquireItem",
     "Delivery": "Retained",
     "Call": "SpeakString(\"I'm sorry master. I cannot carry any more items.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 715,
+    "Line": 678,
     "Member": "SpawnDroid",
     "Delivery": "Retained",
     "Call": "SpeakString(personality.GreetingPhrase())"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 889,
+    "Line": 852,
     "Member": "DespawnDroid",
     "Delivery": "Retained",
     "Call": "SpeakString(personality.DismissedPhrase())"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",
-    "Line": 1060,
+    "Line": 1043,
     "Member": "DroidOnDeath",
     "Delivery": "Retained",
     "Call": "SpeakString(personality.DeathPhrase())"
@@ -4369,7 +4369,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Perk.cs",
-    "Line": 1337,
+    "Line": 1342,
     "Member": "RemovePerkLevelOnSkillDecay",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.\", player, false)"
@@ -5272,16 +5272,16 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 462,
+    "Line": 243,
     "Member": "DoWeatherEffects",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(oCreature, sMessage)"
+    "Call": "SendMessageToPC(creature, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 603,
+    "Line": 324,
     "Member": "Thunderstorm",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(oObject, WeatherFeedbackText.Lightning)"
+    "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"
   }
 ]

@@ -100,7 +100,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ClearProperties(cpu);
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidPart, (int)DroidPartItemPropertySubType.CPU), cpu);
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, 1), cpu);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, 12, 5), cpu);
+                // Retired rows are no longer constructible from the current 2DA.
+                // Restore a saved legacy property just as a pre-upgrade item does.
+                AddLegacyProperty(cpu, ItemPropertyType.DroidStat, 12, 45, 5);
+                var savedCpu = Deserialize(ctx, ObjectPlugin.Serialize(cpu));
+                ObjectPlugin.AcquireItem(owner, savedCpu);
+                DestroyObject(cpu);
+                cpu = savedCpu;
+                ctx.AssertEqual(5, PropertyValue(cpu, ItemPropertyType.DroidStat, 12), "Saved legacy CPU weapon group");
 
                 ClearProperties(weapon);
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, 6), weapon);

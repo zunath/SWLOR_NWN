@@ -834,6 +834,11 @@ namespace SWLOR.Game.Server.Service
             return _allPerks[perkType];
         }
 
+        public static bool TryGetPerkDetails(PerkType perkType, out PerkDetail detail)
+        {
+            return _allPerks.TryGetValue(perkType, out detail);
+        }
+
         public static PerkCategoryType GetPerkCategoryType(PerkType perkType)
         {
             return _allPerks.TryGetValue(perkType, out var perkDetail)

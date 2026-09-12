@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -138,49 +139,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             { "saberstaff_upg1", "staff_upg2" },
         };
 
-        private static readonly Dictionary<PerkType, int> CurrentDroidInstructionMaxLevels = new()
-        {
-            { PerkType.AdhesiveGrenade, 2 },
-            { PerkType.AdrenalStim, 3 },
-            { PerkType.Antitoxin, 1 },
-            { PerkType.ArcProjector, 3 },
-            { PerkType.BlasterBeacon, 3 },
-            { PerkType.ClusterGrenade, 1 },
-            { PerkType.ConcussionGrenade, 2 },
-            { PerkType.CryoSprayer, 1 },
-            { PerkType.DeflectorShield, 3 },
-            { PerkType.DisruptionPulse, 1 },
-            { PerkType.EmergencyBunker, 1 },
-            { PerkType.EmergencyCocktail, 1 },
-            { PerkType.EmergencyTriage, 1 },
-            { PerkType.FlashGrenade, 1 },
-            { PerkType.Flamethrower, 3 },
-            { PerkType.FocusStim, 2 },
-            { PerkType.FragGrenade, 3 },
-            { PerkType.GroupDeflector, 1 },
-            { PerkType.IncendiaryField, 3 },
-            { PerkType.Infusion, 2 },
-            { PerkType.IonGrenade, 2 },
-            { PerkType.IonLance, 3 },
-            { PerkType.KillzoneBeacon, 1 },
-            { PerkType.KoltoMist, 2 },
-            { PerkType.MedKit, 4 },
-            { PerkType.OverloadBarrage, 1 },
-            { PerkType.PainSuppressant, 2 },
-            { PerkType.PowerCell, 3 },
-            { PerkType.Provoke, 2 },
-            { PerkType.RailDart, 3 },
-            { PerkType.RemoteCharge, 2 },
-            { PerkType.Resuscitation, 2 },
-            { PerkType.Shielding, 3 },
-            { PerkType.ShockBeacon, 2 },
-            { PerkType.SignalJammer, 1 },
-            { PerkType.SonicBurst, 3 },
-            { PerkType.ThermalDetonator, 1 },
-            { PerkType.TreatmentKit, 3 },
-            { PerkType.WeaponJam, 1 },
-            { PerkType.WristRocket, 3 },
-        };
+
 
         public static bool IsObsoleteResRef(string resref)
         {
@@ -384,7 +343,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var activeInstructionProperties = LoadDroidInstructionProperties(item);
             var droidStateChanged = MergeDroidPerks(droid.ActivePerks, activeInstructionProperties);
 
-            droidStateChanged |= NormalizeDroidPerks(droid);
+            var controllerStats = Droid.LoadDroidItemPropertyDetails(item);
+            droidStateChanged |= DroidInstructions.Normalize(droid, controllerStats.Tier, controllerStats.AISlots);
             droidStateChanged |= SyncDroidInstructionProperties(item, droid.ActivePerks);
             changed |= droidStateChanged;
 
@@ -456,65 +416,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                 var perkType = (PerkType)GetItemPropertySubType(ip);
                 var level = GetItemPropertyCostTableValue(ip);
-                if (TryNormalizeDroidPerk(new DroidPerk(perkType, level), out var normalized))
+                if (DroidInstructions.TryNormalize(new DroidPerk(perkType, level), out var normalized))
                     result.Add(normalized);
             }
 
             return result;
         }
 
-        private static bool NormalizeDroidPerks(ConstructedDroid droid)
-        {
-            droid.LearnedPerks ??= new List<DroidPerk>();
-            droid.ActivePerks ??= new List<DroidPerk>();
-
-            var changed = NormalizeDroidPerkList(droid.LearnedPerks, out var learnedPerks);
-            changed |= NormalizeDroidPerkList(droid.ActivePerks, out var activePerks);
-            changed |= MergeDroidPerks(learnedPerks, activePerks);
-
-            droid.LearnedPerks = learnedPerks;
-            droid.ActivePerks = activePerks;
-            return changed;
-        }
-
-        private static bool NormalizeDroidPerkList(IReadOnlyList<DroidPerk> source, out List<DroidPerk> normalized)
-        {
-            normalized = new List<DroidPerk>();
-            var seen = new HashSet<(PerkType Perk, int Level)>();
-
-            foreach (var perk in source)
-            {
-                if (!TryNormalizeDroidPerk(perk, out var migratedPerk))
-                    continue;
-
-                if (!seen.Add((migratedPerk.Perk, migratedPerk.Level)))
-                    continue;
-
-                normalized.Add(migratedPerk);
-            }
-
-            return !AreEqualDroidPerks(source, normalized);
-        }
-
-        private static bool TryNormalizeDroidPerk(DroidPerk perk, out DroidPerk normalized)
-        {
-            normalized = null;
-            if (perk == null ||
-                perk.Perk == PerkType.Invalid ||
-                perk.Level <= 0 ||
-                !CurrentDroidInstructionMaxLevels.TryGetValue(perk.Perk, out var maxLevel))
-            {
-                return false;
-            }
-
-            normalized = new DroidPerk(perk.Perk, Math.Min(perk.Level, maxLevel));
-            return true;
-        }
-
         private static bool MergeDroidPerks(List<DroidPerk> target, IEnumerable<DroidPerk> source)
         {
             var changed = false;
             var existing = target
+                .Where(value => value != null)
                 .Select(x => (x.Perk, x.Level))
                 .ToHashSet();
 

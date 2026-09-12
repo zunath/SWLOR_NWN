@@ -3518,7 +3518,7 @@
   },
   {
     "Id": "PiercingQuillsTechnique",
-    "Description": "Draw the quill arm behind the body and extend a held piercing fan through the enemy cone; load the back hip beneath the drawn arm and drive the held quill fan through a braced forward leg",
+    "Description": "Gather the quill hand in front of the ribs with a natural elbow bend, then drive a compact piercing fan forward within the arm's reach; transfer weight onto the braced forward leg and withdraw on the same side",
     "Duration": 2.3,
     "Beats": [
       {
@@ -3533,9 +3533,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          -0.55,
-          -0.1,
-          1.4
+          -0.3,
+          0.22,
+          1.25
         ],
         "RootOffset": [
           0.02,
@@ -3554,9 +3554,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          -0.4,
-          0.65,
-          1.5
+          -0.2,
+          0.42,
+          1.43
         ],
         "RootOffset": [
           0.01,
@@ -3575,9 +3575,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          -0.1,
-          0.88,
-          1.4
+          -0.13,
+          0.5,
+          1.43
         ],
         "RootOffset": [
           0.0,
@@ -3596,9 +3596,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          0.22,
-          0.6,
-          1.2
+          -0.16,
+          0.38,
+          1.29
         ],
         "RootOffset": [
           0.0,
@@ -4554,7 +4554,7 @@
   },
   {
     "Id": "SnapRushTechnique",
-    "Description": "A quick guarded weight shift and backward arm drive gather speed without a false projectile cast; alternate pressure between the planted legs with the running-arm drive rather than moving only the shoulders",
+    "Description": "Gather speed with two compact alternating arm pumps, keeping each elbow bent and each hand in front of the ribs; transfer pressure between the planted legs, then gather and lower the hands smoothly",
     "Duration": 1.65,
     "Beats": [
       {
@@ -4568,6 +4568,16 @@
         "Label": "Gather the rush",
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
+        "LeftHand": [
+          -0.27,
+          0.28,
+          1.24
+        ],
+        "RightHand": [
+          0.27,
+          0.28,
+          1.24
+        ],
         "RootOffset": [
           0.0,
           -0.02,
@@ -4580,14 +4590,14 @@
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
         "LeftHand": [
-          -0.45,
-          -0.15,
-          1.05
+          -0.3,
+          0.2,
+          1.18
         ],
         "RightHand": [
-          0.25,
-          0.55,
-          1.45
+          0.24,
+          0.4,
+          1.42
         ],
         "TorsoDegrees": [
           12,
@@ -4606,14 +4616,14 @@
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
         "LeftHand": [
-          -0.25,
-          0.6,
-          1.45
+          -0.24,
+          0.4,
+          1.42
         ],
         "RightHand": [
-          0.45,
-          -0.1,
-          1.05
+          0.3,
+          0.2,
+          1.18
         ],
         "TorsoDegrees": [
           8,
@@ -4631,6 +4641,16 @@
         "Label": "Settle the accelerated guard",
         "SourceAnimation": "nwreadyr",
         "SourceTime": 0,
+        "LeftHand": [
+          -0.27,
+          0.28,
+          1.24
+        ],
+        "RightHand": [
+          0.27,
+          0.28,
+          1.24
+        ],
         "RootOffset": [
           0.0,
           0.01,

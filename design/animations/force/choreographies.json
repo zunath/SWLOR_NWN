@@ -2806,7 +2806,7 @@
   },
   {
     "Id": "ThrowLightsaber",
-    "Description": "Original CUSTOM46 saber throw start, loop and recovery at master double speed; gameplay owns the traveling weapon",
+    "Description": "Original CUSTOM46 saber throw start, loop and recovery at master double speed with grounded root height; gameplay owns the traveling weapon",
     "Duration": 2.22,
     "Beats": [
       {

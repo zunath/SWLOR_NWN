@@ -1132,7 +1132,7 @@
   },
   {
     "Id": "CryoSprayer",
-    "Description": "Braced right wrist cold spray traverses a narrow cone; shift pressure across the planted legs with the spray sweep while maintaining a low stable spraying stance",
+    "Description": "Right wrist cold spray traverses a narrow cone while the left arm stays in a compact forward guard beside the chest; shift pressure across planted legs with the spray sweep while maintaining a low stable spraying stance",
     "Duration": 1.9,
     "Beats": [
       {
@@ -1147,9 +1147,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          0.16,
-          0.34,
-          1.22
+          -0.24,
+          0.22,
+          1.29
         ],
         "RightHand": [
           0.28,
@@ -1173,9 +1173,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          0.16,
-          0.34,
-          1.22
+          -0.24,
+          0.27,
+          1.32
         ],
         "RightHand": [
           0.02,
@@ -1199,9 +1199,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          0.16,
-          0.34,
-          1.22
+          -0.22,
+          0.27,
+          1.32
         ],
         "RightHand": [
           0.48,
@@ -1225,9 +1225,9 @@
         "SourceAnimation": "pause1",
         "SourceTime": 0,
         "LeftHand": [
-          0.16,
-          0.34,
-          1.22
+          -0.25,
+          0.22,
+          1.26
         ],
         "RightHand": [
           0.29,

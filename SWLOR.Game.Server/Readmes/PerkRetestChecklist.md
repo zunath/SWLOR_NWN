@@ -398,4 +398,3 @@ With Ricochet Toss, a thrown ability hitting a bleeding target gets one 25% roll
 | [997](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A997:O997) | Vibroknife | Cheap Shot | Pass | C1 |
 | [1000](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A1000:O1000) | Vibroknife | Backstab II | Retest | C3 |
 | [1005](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A1005:O1005) | Vibroknife | Escape Artist | Pass | C3 |
-

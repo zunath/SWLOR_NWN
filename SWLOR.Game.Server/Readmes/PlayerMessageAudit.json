@@ -1604,35 +1604,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 135,
+    "Line": 136,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 149,
+    "Line": 153,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"This instruction disc does not contain a supported droid ability.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 155,
+    "Line": 159,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"This instruction requires a tier {tier} droid.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 160,
+    "Line": 164,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"That instruction disc has already been uploaded to this droid.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs",
-    "Line": 171,
+    "Line": 175,
     "Member": "AddInstructionDisk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Instruction disc uploaded to droid successfully.\"))"

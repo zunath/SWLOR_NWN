@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -146,6 +147,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var perk = new DroidPerk((PerkType)GetItemPropertySubType(property), GetItemPropertyCostTableValue(property));
                     if (!DroidInstructions.TryGetLevel(perk, out _))
                     {
+                        Log.WriteStructured(LogGroup.Error,
+                            "Unsupported droid instruction disc: {Resref}, perk {Perk}, level {Level}",
+                            GetResRef(item), perk.Perk, perk.Level);
                         SendMessageToPC(Player, ColorToken.Red("This instruction disc does not contain a supported droid ability."));
                         return;
                     }

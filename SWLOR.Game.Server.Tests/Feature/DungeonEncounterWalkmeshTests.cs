@@ -19,10 +19,10 @@ public class DungeonEncounterWalkmeshTests
         var points = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
             .Concat(git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray())
             .Where(p => area == "pw_sc_smarena"
-                ? Text(p, "Tag").EndsWith("_MS_SPAWN") || Text(p, "Tag").EndsWith("_ms_call")
+                ? Text(p, "Tag").EndsWith("_MS_SPAWN") || Text(p, "Tag").EndsWith("_ms_call") || Text(p, "Tag") == "STUCK_WAYPOINT"
                 : Text(p, "Tag").Equals("CAPSTONE_INFCONDUIT_WD_SPAWN") || Text(p, "Tag").Equals("infconduit_wd_call"))
             .ToArray();
-        points.Should().HaveCount(area == "pw_sc_smarena" ? 6 : 2);
+        points.Should().HaveCount(area == "pw_sc_smarena" ? 7 : 2);
         var triangles = ReadWalkableFloor(root, area, hakFolder);
         foreach (var point in points)
         {

@@ -114022,6 +114022,67 @@
           "type": "float",
           "value": 15.20000743865967
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck Recovery"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 85.8840103149414
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 13.64939594268799
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 15.20000839233398
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.7572088241577148
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.6531729102134705
+        }
       }
     ]
   }

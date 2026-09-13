@@ -60,6 +60,14 @@ public class DungeonEncounterConfigurationTests
     }
 
     [TestCaseSource(nameof(Dungeons))]
+    public void DungeonAndArena_HaveRecoveryWaypoints(Dungeon dungeon)
+    {
+        foreach (var area in new[] { dungeon.Area, dungeon.Arena })
+            List(_areas[area], "WaypointList").Should().ContainSingle(w => Text(w, "Tag") == "STUCK_WAYPOINT",
+                $"{area} needs a recovery point for stuck players");
+    }
+
+    [TestCaseSource(nameof(Dungeons))]
     public void RareEnemyPool_HasAPlacedSpawnAndReachableLoot(Dungeon dungeon)
     {
         var waypoints = List(_areas[dungeon.Area], "WaypointList");

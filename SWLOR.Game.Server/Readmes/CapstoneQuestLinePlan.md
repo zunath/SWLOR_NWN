@@ -300,11 +300,10 @@ These spawn tables are for the dungeon/lesson areas only. Do not place these way
 
 - Maintain the existing gated dungeon/lesson area and its registered boss arena. Preserve the authored arena and its master encounters; all 13 packages are complete and need no duplicate area or encounter placements.
 - Preserve each capstone line's already placed quest giver in its safe hub and keep the line's journal "return to" text consistent with that hub. Do not collapse multiple capstone quest lines onto one shared area trainer even when the lines reuse the same content package.
-- Add a standard access object or equivalent gate that checks the content package's capstone key item and sends the player into the dungeon/lesson area.
-- In the dungeon/lesson area, place the general spawn waypoint using the generated waypoint resref above. Its tag already matches the generated spawn table ID.
-- In the dungeon/lesson area, use the generated level 50 spawn table for general lesson enemies only. Do not place the table in low-level, public, or boss arena areas.
-- In each unfinished dungeon/lesson area, place the missing warden `quest_enc` activators (state-specific visibility, 60-minute starter cooldown, one-active-creature guard, participant quest credit, idle despawn). Master activators and spawn waypoints are already placed in the attached boss arena and must be preserved.
-- For each line in an unfinished package, place one warden activator for quest step 3 and its spawn waypoint in the dungeon. Use the generated warden UTC resref and spawn waypoint tag defined by the owning quest line and generated module assets, such as `cp_invinc_wd` with `CAPSTONE_INVINC_WD_SPAWN`. Use the master values below only to verify the existing arena instances. Copy literal handoff values into setup notes when an area builder needs them; do not make quest constants public for handoff tooling.
+- Verify that the existing world access gate checks the package's capstone key and takes the key holder and eligible nearby party members to its dungeon entrance. Preserve both return routes.
+- Preserve the placed general and rare spawn waypoints and their registered spawn-table tags. General level 50 lesson enemies belong in the dungeon, outside public hubs and boss arenas.
+- Verify each line's existing warden `quest_enc` activator and spawn waypoint in the dungeon, and its existing master activator and spawn waypoint in the arena. Retain state-specific visibility, the 60-minute starter cooldown, one-active-creature guard, participant quest credit, and idle despawn.
+- Use the quick-reference values below to audit existing instances, including the generated enemy resrefs and unique spawn waypoint tags. Copy literal values into maintenance notes when needed; do not make quest constants public for handoff tooling.
 - Required `quest_enc` locals per activator:
   - `QUEST_ID`: the exact quest ID for the warden/master step.
   - `QUEST_STATE`: `1`.
@@ -314,9 +313,9 @@ These spawn tables are for the dungeon/lesson areas only. Do not place these way
   - `QUEST_ENCOUNTER_COOLDOWN_MINUTES`: `60`.
   - `QUEST_ENCOUNTER_IDLE_MINUTES`: use the established boss idle timeout unless the area needs a stricter value.
 - Keep unique boss activator instances out of the placeable palette unless the area builder explicitly asks for a reusable palette blueprint.
-- Add World NPCs Bible rows for every generated enemy and boss using the established NPC guide, formulas, dropdown-backed fields, resistance overrides, weapon delay rows, and ability packages before final balance sign-off.
+- Keep each generated enemy and boss synchronized with its World NPCs Bible row, including formulas, dropdown-backed fields, resistance overrides, weapon delays, and ability packages, before balance sign-off.
 - Generated enemies already require reusable generic signature abilities. Create any extra boss-only abilities later as reusable behavior/effect assets, one ability definition per file directly under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, with valid icons and generated cooldown icon variants, when a line needs more than its assigned capstone feat, generated signature ability, and baseline NPC support package.
-- Run a full in-game progression pass for every line assigned to the area group after placement.
+- Run a full in-game progression pass for every line assigned to the area group after changes.
 
 ### Area Builder Quick Reference
 
@@ -326,7 +325,7 @@ Literal handoff values for every capstone line. All lines follow the same determ
 - Warden activator locals: `QUEST_ID = <stem>_breach`, `QUEST_ENCOUNTER_ID = <stem>_breach_warden`, `QUEST_ENCOUNTER_RESREF = cp_<code>_wd`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_WD_SPAWN` (waypoint blueprint `wp_<code>_wd`).
 - Master activator locals: `QUEST_ID = <stem>_mastery`, `QUEST_ENCOUNTER_ID = <stem>_mastery_master`, `QUEST_ENCOUNTER_RESREF = cp_<code>_ms`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_MS_SPAWN` (waypoint blueprint `wp_<code>_ms`).
 - Every activator: `QUEST_STATE = 1`, `VISIBILITY_HIDDEN_DEFAULT = 1`, a unique `VISIBILITY_OBJECT_ID`, `QUEST_ENCOUNTER_COOLDOWN_MINUTES = 60`, `QUEST_ENCOUNTER_IDLE_MINUTES = 10`, `OnUsed = quest_enc`.
-- New warden activators: name `???`, use invisible appearance 479, and place at the line's encounter location inside its dungeon/lesson area with its warden spawn waypoint.
+- Warden activators: retain the `???` name and invisible appearance 479 at the line's existing dungeon encounter location, beside its dressed altar and with its linked spawn waypoint on walkable floor.
 - Master activators: retain the `???` name and use invisible appearance 479 beside the attached boss arena's altar. Preserve the existing master's quest and visibility locals and its spawn waypoint on the fighting floor.
 - Access gate: `tele_obj` instance with `KEY_ITEM_ID` = the package's key item ID below, `TELEPORT_PARTY_MEMBERS = 1`, and a `MISSING_KEY_ITEM_MESSAGE` naming the package location.
 

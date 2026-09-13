@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
@@ -169,6 +170,9 @@ namespace SWLOR.Game.Server.Service
 
         }
 
+        /// <summary>
+        /// Stages player data privately, applies live changes, and advances the token and version only with the durable checkpoint.
+        /// </summary>
         internal static void ApplyPlayerMigration(
             IPlayerMigration migration,
             uint player,
@@ -180,9 +184,10 @@ namespace SWLOR.Game.Server.Service
 
             migration.Migrate(player);
 
-            // Live-object migrations may save player data. Refresh it before adding
-            // record-only changes, then persist those and the checkpoint in one save.
-            var dbPlayer = loadPlayer();
+            // Live-object migrations may save player data. Refresh it, then copy
+            // the cached record so failed hooks or saves cannot publish an unsaved
+            // token or checkpoint through DB.Get's shared instance.
+            var dbPlayer = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(loadPlayer()));
             migration.MigratePlayerData(dbPlayer);
             dbPlayer.Version = migration.Version;
             savePlayer(dbPlayer);

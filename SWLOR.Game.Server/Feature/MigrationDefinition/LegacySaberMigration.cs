@@ -258,6 +258,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return normalized;
         }
 
+        /// <summary>
+        /// Recalibrates a serialized legacy saber while retaining its saved identity and always releasing the temporary object.
+        /// </summary>
         private static bool TryNormalizeSerializedSaber(string serialized, out string migrated)
         {
             migrated = serialized;
@@ -268,15 +271,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj))
                 return false;
 
-            if (NormalizeSabersOnObject(obj) <= 0)
+            try
             {
-                DestroyObject(obj);
-                return false;
-            }
+                if (NormalizeSabersOnObject(obj) <= 0)
+                {
+                    return false;
+                }
 
-            migrated = MigrationObject.Serialize(obj);
-            DestroyObject(obj);
-            return true;
+                migrated = MigrationObject.Serialize(obj, serialized);
+                return true;
+            }
+            finally
+            {
+                MigrationObject.DestroyTemporaryObject(obj);
+            }
         }
     }
 }

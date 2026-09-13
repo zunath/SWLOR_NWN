@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Game.Server.Service.DroidService;
@@ -154,7 +156,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                    ObsoleteItemConversions.TryGetValue(resref, out replacementResRef);
         }
 
-        public static uint ConvertItem(uint item, string replacementResRef)
+        /// <summary>
+        /// Creates a replacement stack, retains its droid inventory key, and detaches the retired item before saving its owner.
+        /// </summary>
+        public static uint ConvertItem(uint item, string replacementResRef, MigrationItemDisposal disposal)
         {
             var possessor = GetItemPossessor(item, true);
             var target = GetIsObjectValid(possessor) ? possessor : GetObjectByTag("TEMP_ITEM_STORAGE");
@@ -162,43 +167,56 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(replacement))
                 throw new InvalidOperationException($"Could not create migration replacement '{replacementResRef}'.");
 
-            // Droid inventories use this local to identify the separately serialized item.
-            var droidItemId = GetLocalString(item, "DROID_ITEM_ID");
-            if (!string.IsNullOrWhiteSpace(droidItemId))
-                SetLocalString(replacement, "DROID_ITEM_ID", droidItemId);
-
-            RemoveItem(item);
-            return replacement;
-        }
-
-        private static void RemoveItem(uint item)
-        {
-            // DestroyObject is deferred until the script finishes. Move the item
-            // out now so serializing its container cannot save the retired item again.
-            var possessor = GetItemPossessor(item, true);
-            var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
-            if (GetIsObjectValid(possessor) && possessor != storage &&
-                (!GetIsObjectValid(storage) || !ItemPlugin.MoveTo(item, storage, true)))
+            try
             {
-                throw new InvalidOperationException("Could not remove a retired item from its migration container.");
-            }
+                // Droid inventories use this local to identify the separately serialized item.
+                var droidItemId = GetLocalString(item, "DROID_ITEM_ID");
+                if (!string.IsNullOrWhiteSpace(droidItemId))
+                    SetLocalString(replacement, "DROID_ITEM_ID", droidItemId);
 
-            DestroyObject(item);
+                disposal.Remove(item);
+                return replacement;
+            }
+            catch
+            {
+                MigrationObject.DestroyTemporaryObject(replacement);
+                throw;
+            }
         }
 
+        /// <summary>
+        /// Sweeps live equipment, carried inventory, and serialized droid contents for retired items and historical instructions.
+        /// </summary>
         public static int RemoveObsoleteItemsFromObject(uint obj)
         {
-            var result = new MigrationResult();
+            using var disposal = new MigrationItemDisposal();
+            var result = new MigrationResult(disposal);
             RemoveObsoleteItemsFromObject(obj, result);
             return result.RemovedItems;
         }
 
+        /// <summary>
+        /// Sweeps live equipment, carried inventory, and serialized droid contents for retired items and historical instructions.
+        /// </summary>
         public static bool RemoveObsoleteItemsFromObject(
             uint obj,
             out int removedCount,
             out int migratedDroidPerkCount)
         {
-            var result = new MigrationResult();
+            using var disposal = new MigrationItemDisposal();
+            return RemoveObsoleteItemsInPass(obj, disposal, out removedCount, out migratedDroidPerkCount);
+        }
+
+        /// <summary>
+        /// Runs an object sweep using the caller-owned disposal context and reports item and droid-state changes.
+        /// </summary>
+        public static bool RemoveObsoleteItemsInPass(
+            uint obj,
+            MigrationItemDisposal disposal,
+            out int removedCount,
+            out int migratedDroidPerkCount)
+        {
+            var result = new MigrationResult(disposal);
             RemoveObsoleteItemsFromObject(obj, result);
             removedCount = result.RemovedItems;
             migratedDroidPerkCount = result.MigratedDroidPerks;
@@ -206,6 +224,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return result.Changed;
         }
 
+        /// <summary>
+        /// Sweeps live equipment, carried inventory, and serialized droid contents for retired items and historical instructions.
+        /// </summary>
         private static void RemoveObsoleteItemsFromObject(uint obj, MigrationResult result)
         {
             if (!GetIsObjectValid(obj))
@@ -218,14 +239,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 var resref = GetResRef(obj);
                 if (TryGetConversionResRef(resref, out var replacementResRef))
                 {
-                    ConvertItem(obj, replacementResRef);
+                    ConvertItem(obj, replacementResRef, result.Disposal);
                     result.RemovedItems++;
                     return;
                 }
 
                 if (IsObsoleteResRef(resref))
                 {
-                    RemoveItem(obj);
+                    result.Disposal.Remove(obj);
                     result.RemovedItems++;
                     return;
                 }
@@ -243,12 +264,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj) || !GetHasInventory(obj))
                 return;
 
-            for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item);)
-            {
-                var nextItem = GetNextItemInInventory(obj);
+            // Moving a retired item out of its container changes the native
+            // inventory cursor. Snapshot all entries before removing any of them.
+            var inventory = new List<uint>();
+            for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
+                inventory.Add(item);
+
+            foreach (var item in inventory)
                 RemoveObsoleteItemsFromObject(item, result);
-                item = nextItem;
-            }
         }
 
         public static bool RemoveObsoleteItemsFromSerializedObject(
@@ -265,6 +288,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 out _);
         }
 
+        /// <summary>
+        /// Owns one disposal scope for a saved-object sweep and reports whether the root itself was retired.
+        /// </summary>
         public static bool RemoveObsoleteItemsFromSerializedObject(
             string serializedObject,
             out string migratedSerializedObject,
@@ -272,6 +298,23 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             out int removedCount,
             out int migratedDroidPerkCount)
         {
+            using var disposal = new MigrationItemDisposal();
+            return RemoveSerializedItemsInPass(serializedObject, disposal, out migratedSerializedObject,
+                out removedRoot, out removedCount, out migratedDroidPerkCount);
+        }
+
+        /// <summary>
+        /// Migrates a saved root or nested droid record with shared disposal capacity and guaranteed temporary-object cleanup.
+        /// </summary>
+        private static bool RemoveSerializedItemsInPass(
+            string serializedObject,
+            MigrationItemDisposal disposal,
+            out string migratedSerializedObject,
+            out bool removedRoot,
+            out int removedCount,
+            out int migratedDroidPerkCount)
+        {
+            var result = new MigrationResult(disposal);
             migratedSerializedObject = serializedObject;
             removedRoot = false;
             removedCount = 0;
@@ -284,42 +327,54 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj))
                 return false;
 
-            if (GetObjectType(obj) == ObjectType.Item)
+            try
             {
-                var resref = GetResRef(obj);
-                if (TryGetConversionResRef(resref, out var replacementResRef))
+                if (GetObjectType(obj) == ObjectType.Item)
                 {
-                    var replacement = ConvertItem(obj, replacementResRef);
-                    migratedSerializedObject = MigrationObject.Serialize(replacement);
-                    DestroyObject(replacement);
-                    removedCount = 1;
-                    return true;
+                    var resref = GetResRef(obj);
+                    if (TryGetConversionResRef(resref, out var replacementResRef))
+                    {
+                        var replacement = ConvertItem(obj, replacementResRef, result.Disposal);
+                        try
+                        {
+                            migratedSerializedObject = MigrationObject.Serialize(replacement);
+                            removedCount = 1;
+                            return true;
+                        }
+                        finally
+                        {
+                            MigrationObject.DestroyTemporaryObject(replacement);
+                        }
+                    }
+
+                    if (IsObsoleteResRef(resref))
+                    {
+                        removedRoot = true;
+                        removedCount = 1;
+                        return true;
+                    }
                 }
 
-                if (IsObsoleteResRef(resref))
+                RemoveObsoleteItemsFromObject(obj, result);
+                removedCount = result.RemovedItems;
+                migratedDroidPerkCount = result.MigratedDroidPerks;
+                if (!result.Changed)
                 {
-                    DestroyObject(obj);
-                    removedRoot = true;
-                    removedCount = 1;
-                    return true;
+                    return false;
                 }
-            }
 
-            var result = new MigrationResult();
-            RemoveObsoleteItemsFromObject(obj, result);
-            removedCount = result.RemovedItems;
-            migratedDroidPerkCount = result.MigratedDroidPerks;
-            if (!result.Changed)
+                migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
+                return true;
+            }
+            finally
             {
-                DestroyObject(obj);
-                return false;
+                MigrationObject.DestroyTemporaryObject(obj);
             }
-
-            migratedSerializedObject = MigrationObject.Serialize(obj);
-            DestroyObject(obj);
-            return true;
         }
 
+        /// <summary>
+        /// Removes retired serialized equipment and reconciles historical learned, active, and displayed droid instructions.
+        /// </summary>
         private static void RemoveObsoleteItemsFromConstructedDroid(uint item, MigrationResult result)
         {
             var serialized = GetLocalString(item, ConstructedDroidVariable);
@@ -340,8 +395,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             changed |= RemoveObsoleteItemsFromDroidDictionary(droid.Inventory, result);
 
             droid.ActivePerks ??= new List<DroidPerk>();
+            // Numeric instructions in old controllers refer to historical perks.
+            // Reused IDs must not grant unrelated replacement abilities.
+            var droidStateChanged = RemoveReassignedDroidPerks(droid.ActivePerks);
+            droidStateChanged |= RemoveReassignedDroidPerks(droid.LearnedPerks);
             var activeInstructionProperties = LoadDroidInstructionProperties(item);
-            var droidStateChanged = MergeDroidPerks(droid.ActivePerks, activeInstructionProperties);
+            droidStateChanged |= MergeDroidPerks(droid.ActivePerks, activeInstructionProperties);
 
             var controllerStats = Droid.LoadDroidItemPropertyDetails(item);
             droidStateChanged |= DroidInstructions.Normalize(droid, controllerStats.Tier, controllerStats.AISlots);
@@ -356,13 +415,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 result.MigratedDroidPerks++;
         }
 
+        /// <summary>
+        /// Replaces or clears one serialized droid component and accumulates its migration counts.
+        /// </summary>
         private static bool RemoveObsoleteItemsFromDroidField(
             string serializedObject,
             Action<string> setSerializedObject,
             MigrationResult result)
         {
-            if (!RemoveObsoleteItemsFromSerializedObject(
+            if (!RemoveSerializedItemsInPass(
                     serializedObject,
+                    result.Disposal,
                     out var migratedSerializedObject,
                     out var removedRoot,
                     out var serializedRemovedCount,
@@ -375,6 +438,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
+        /// <summary>
+        /// Migrates each saved droid inventory entry, removing retired roots without invalidating dictionary enumeration.
+        /// </summary>
         private static bool RemoveObsoleteItemsFromDroidDictionary<TKey>(
             Dictionary<TKey, string> serializedObjects,
             MigrationResult result)
@@ -385,8 +451,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var changed = false;
             foreach (var key in serializedObjects.Keys.ToList())
             {
-                if (!RemoveObsoleteItemsFromSerializedObject(
+                if (!RemoveSerializedItemsInPass(
                         serializedObjects[key],
+                        result.Disposal,
                         out var migratedSerializedObject,
                         out var removedRoot,
                         out var serializedRemovedCount,
@@ -406,6 +473,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return changed;
         }
 
+        /// <summary>
+        /// Removes historical instructions whose numeric IDs now identify different abilities.
+        /// </summary>
+        private static bool RemoveReassignedDroidPerks(List<DroidPerk> perks)
+        {
+            return perks?.RemoveAll(perk => perk != null &&
+                LegacyPerkRefundMigration.IsReassignedLegacyPerk(perk.Perk)) > 0;
+        }
+
+        /// <summary>
+        /// Reads surviving instruction properties and excludes reassigned historical IDs before normalization.
+        /// </summary>
         private static List<DroidPerk> LoadDroidInstructionProperties(uint item)
         {
             var result = new List<DroidPerk>();
@@ -416,7 +495,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                 var perkType = (PerkType)GetItemPropertySubType(ip);
                 var level = GetItemPropertyCostTableValue(ip);
-                if (DroidInstructions.TryNormalize(new DroidPerk(perkType, level), out var normalized))
+                if (!LegacyPerkRefundMigration.IsReassignedLegacyPerk(perkType) &&
+                    DroidInstructions.TryNormalize(new DroidPerk(perkType, level), out var normalized))
                     result.Add(normalized);
             }
 
@@ -443,6 +523,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return changed;
         }
 
+        /// <summary>
+        /// Makes inspection properties match normalized active instructions using immediate native property removal.
+        /// </summary>
         private static bool SyncDroidInstructionProperties(uint item, IReadOnlyList<DroidPerk> activePerks)
         {
             var existingProperties = new List<ItemProperty>();
@@ -467,15 +550,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var perk in activePerks)
             {
-                AddItemProperty(
-                    DurationType.Permanent,
+                MigrationObject.AddProperty(
+                    item,
                     ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)perk.Perk, perk.Level),
-                    item);
+                    AddItemPropertyPolicy.IgnoreExisting);
             }
 
             return true;
         }
 
+        /// <summary>
+        /// Compares ordered instruction identities and ranks so unchanged controllers need no save.
+        /// </summary>
         private static bool AreEqualDroidPerks(IReadOnlyList<DroidPerk> left, IReadOnlyList<DroidPerk> right)
         {
             if (left.Count != right.Count)
@@ -495,6 +581,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private sealed class MigrationResult
         {
+            public MigrationItemDisposal Disposal { get; }
+            public MigrationResult(MigrationItemDisposal disposal) => Disposal = disposal;
             public int RemovedItems { get; set; }
             public int MigratedDroidPerks { get; set; }
 

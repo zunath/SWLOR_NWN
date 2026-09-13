@@ -4,11 +4,55 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using DurationType = SWLOR.NWN.API.NWScript.Enum.DurationType;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class MigrationObject
     {
+        /// <summary>
+        /// Newly expanded blueprints have their own identity and inventory slot;
+        /// they must not inherit the original item's temporary preservation markers.
+        /// </summary>
+        public static void ClearCopiedInventoryMarkers(uint item)
+        {
+            for (var index = ObjectPlugin.GetLocalVariableCount(item) - 1; index >= 0; index--)
+            {
+                var variable = ObjectPlugin.GetLocalVariable(item, index);
+                if (variable.Key.StartsWith(StoredObjectData.IdentityMarkerPrefix, StringComparison.Ordinal) ||
+                    variable.Key.StartsWith(StoredObjectData.EquipmentMarkerPrefix, StringComparison.Ordinal))
+                    DeleteLocalInt(item, variable.Key);
+            }
+        }
+
+        /// <summary>
+        /// Releases temporary inventory UUID registrations immediately, then schedules native destruction after the current script.
+        /// </summary>
+        public static void DestroyTemporaryObject(uint obj)
+        {
+            var visited = new HashSet<uint>();
+            void ReleaseIdentities(uint target)
+            {
+                if (!GetIsObjectValid(target) || !visited.Add(target)) return;
+                if (GetHasInventory(target))
+                    for (var item = GetFirstItemInInventory(target); GetIsObjectValid(item); item = GetNextItemInInventory(target))
+                        ReleaseIdentities(item);
+                if (GetObjectType(target) == ObjectType.Creature)
+                    for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+                        ReleaseIdentities(GetItemInSlot((InventorySlot)slot, target));
+
+                // Destruction is deferred until the startup script returns. The
+                // saved data has already captured these UUIDs; release their
+                // native registrations now so later archived copies can load
+                // the same original identities without losing them on save.
+                if (!string.IsNullOrEmpty(ObjectPlugin.PeekUUID(target)))
+                    NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject().m_pUUID.AssignRandom();
+            }
+            ReleaseIdentities(obj);
+            DestroyObject(obj);
+        }
+
         public static void AddProperty(uint item, ItemProperty property, AddItemPropertyPolicy policy)
         {
             if (!GetIsItemPropertyValid(property))
@@ -83,7 +127,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return obj;
         }
 
-        public static string Serialize(uint obj)
+        /// <summary>
+        /// Serializes the migrated object while preserving the original root identity when an archive payload is supplied.
+        /// </summary>
+        public static string Serialize(uint obj, string originalData = null)
         {
             if (!GetIsObjectValid(obj))
                 throw new InvalidOperationException("A migration object was lost before it could be saved.");
@@ -92,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(data))
                 throw new InvalidOperationException("A migration object could not be serialized.");
 
-            return data;
+            return originalData == null ? data : StoredObjectData.PreserveRootIdentity(originalData, data);
         }
     }
 }

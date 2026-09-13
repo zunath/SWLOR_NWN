@@ -144,18 +144,21 @@ public class CombatUpgradeMigrationCoverageTests
             migration.IndexOf("private static class DroidBoostStoredItemMigration", StringComparison.Ordinal)..];
         droidBoostMigration.Should().Contain("wasMigrated = EquipmentRequirementMigration.MigrateObject(obj)");
         AssertMigrationCalls(migration,
-            "MigrateInventoryItems(progress);",
-            "MigrateMarketItems(progress);",
-            "MigrateWorldPropertyCategories(categories, progress);",
+            "MigrateInventoryItems(progress, disposal);",
+            "MigrateMarketItems(progress, disposal);",
+            "MigrateWorldPropertyCategories(categories, progress, disposal);",
             "MigrateEntityItems(SearchAll<WorldProperty>()",
             "MigrateEntityItems(researchJobs",
             "MigrateEntityItems(SearchAll<PlayerOutfit>()",
             "MigrateEntityItems(SearchAll<DMCreature>()",
-            "MigratePlayerShips(ships, progress);");
+            "MigratePlayerShips(ships, progress, disposal);");
         AssertStoredEntitySurfaces(migration);
         AssertShipSurfaces(migration);
     }
 
+    /// <summary>
+    /// Guards player, database, ship, and nested droid entry points for pistol and ammunition conversion.
+    /// </summary>
     [Test]
     public void PistolBaseItemMigration_CoversPlayersAndStoredItemSurfaces()
     {
@@ -175,7 +178,7 @@ public class CombatUpgradeMigrationCoverageTests
 
         storedMigration.Should().Contain("PistolBaseItemMigration.MigrateStoredObject(obj)");
         pistolMigration.Should().Contain("PistolBaseItemCompatibility.Normalize(obj)");
-        pistolMigration.Should().Contain("GetItemInSlot(InventorySlot.Arrows, creature)");
+        pistolMigration.Should().Contain("GetEquippedItem(creature, InventorySlot.Arrows)");
         pistolMigration.Should().Contain("CreaturePlugin.RunUnequip(creature, legacyAmmo)");
         pistolMigration.Should().Contain("CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Bullets)");
         pistolMigration.Should().Contain("ConstructedDroidVariable");
@@ -189,14 +192,14 @@ public class CombatUpgradeMigrationCoverageTests
         pistolMigration.Should().Contain("MoveEquippedItemToDroidInventory(droid, existingBulletAmmo)");
 
         AssertMigrationCalls(storedMigration,
-            "MigrateInventoryItems(progress);",
-            "MigrateMarketItems(progress);",
-            "MigrateWorldPropertyCategories(categories, progress);",
+            "MigrateInventoryItems(progress, disposal);",
+            "MigrateMarketItems(progress, disposal);",
+            "MigrateWorldPropertyCategories(categories, progress, disposal);",
             "MigrateEntityItems(SearchAll<WorldProperty>()",
             "MigrateEntityItems(researchJobs",
             "MigrateEntityItems(SearchAll<PlayerOutfit>()",
             "MigrateEntityItems(SearchAll<DMCreature>()",
-            "MigratePlayerShips(ships, progress);");
+            "MigratePlayerShips(ships, progress, disposal);");
         AssertStoredEntitySurfaces(storedMigration);
         AssertShipSurfaces(storedMigration);
     }
@@ -624,15 +627,15 @@ public class CombatUpgradeMigrationCoverageTests
         serverMigration.Should().Contain("ClearRecastTimes(jObject)");
         serverMigration.Should().Contain("RemoveUnlockedPerks(dbPlayer)");
         AssertMigrationCalls(storedItemMigration,
-            "MigrateInventoryItems(progress);",
-            "MigrateMarketItems(progress);",
-            "MigrateWorldPropertyCategories(categories, progress);",
+            "MigrateInventoryItems(progress, disposal);",
+            "MigrateMarketItems(progress, disposal);",
+            "MigrateWorldPropertyCategories(categories, progress, disposal);",
             "MigrateEntityItems(SearchAll<WorldProperty>()",
             "MigrateEntityItems(researchJobs",
             "MigrateEntityItems(SearchAll<PlayerOutfit>()",
             "MigrateEntityItems(SearchAll<DMCreature>()",
-            "MigratePlayerShips(ships, progress);");
-        storedItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsFromObject");
+            "MigratePlayerShips(ships, progress, disposal);");
+        storedItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsInPass");
         AssertShipSurfaces(storedItemMigration);
 
         obsoleteItemMigration.Should().Contain("DroidInstructions.Normalize");

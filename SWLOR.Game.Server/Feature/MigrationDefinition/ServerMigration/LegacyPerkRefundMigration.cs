@@ -286,6 +286,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             [130] = new[] { "ProjectileBlueprints" }
         };
 
+        private static readonly HashSet<PerkType> ReassignedPerkIds = LegacyPerks
+            .Where(perk => !Enum.TryParse(perk.Name, out PerkType currentType) || (int)currentType != perk.Id)
+            .Select(perk => (PerkType)perk.Id).ToHashSet();
+
+        /// <summary>
+        /// Detects historical perk IDs whose current definitions no longer describe the original ability.
+        /// </summary>
+        public static bool IsReassignedLegacyPerk(PerkType perk) => ReassignedPerkIds.Contains(perk);
+
         public static int Migrate(JObject player, IEnumerable<PerkType> removedPerks)
         {
             var removed = removedPerks.ToHashSet();

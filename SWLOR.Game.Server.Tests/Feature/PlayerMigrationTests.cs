@@ -212,9 +212,77 @@ public class PlayerMigrationTests
         return new TestMigration(migration.Version, migrate, migration.MigratePlayerData);
     }
 
-    private static void Apply(IPlayerMigration migration, Func<Player> load, Action<Player> save) =>
+    private static void Apply(IPlayerMigration migration, Func<Player> load, Action<Player> save)
+    {
+        var fileVersion = 0;
+        Player Load()
+        {
+            var player = load();
+            fileVersion = player.Version;
+            return player;
+        }
+        ApplyWithFile(migration, Load, save, () => fileVersion, _ => { });
+    }
+
+    private static void ApplyWithFile(IPlayerMigration migration, Func<Player> load, Action<Player> save,
+        Func<int> loadFileVersion, Action<int> saveFileVersion) =>
         typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { migration, 0u, load, save });
+            .Invoke(null, new object[] { migration, 0u, load, save, loadFileVersion, saveFileVersion });
+
+    /// <summary>
+    /// Replays file changes after an old BIC is restored without granting a second database reward.
+    /// </summary>
+    [Test]
+    public void RestoredOlderCharacterFileIsMigratedEvenWhenDatabaseIsCurrent()
+    {
+        var saved = PlayerJson(15);
+        var fileVersion = 14;
+        var liveRuns = 0;
+        ApplyWithFile(TokenMigration(() => liveRuns++), () => saved.ToObject<Player>()!,
+            _ => Assert.Fail("The completed database reward must not run again"),
+            () => fileVersion, version => fileVersion = version);
+        liveRuns.Should().Be(1);
+        fileVersion.Should().Be(15);
+        saved.Should().BeEquivalentTo(PlayerJson(15));
+    }
+
+    /// <summary>
+    /// A saved file is authoritative for native changes when the database checkpoint write must be retried.
+    /// </summary>
+    [Test]
+    public void DatabaseSaveRetryDoesNotRepeatASuccessfullySavedLiveMigration()
+    {
+        var saved = PlayerJson(14);
+        var fileVersion = 14;
+        var liveRuns = 0;
+        var migration = TokenMigration(() => liveRuns++);
+        Action first = () => ApplyWithFile(migration, () => saved.ToObject<Player>()!,
+            _ => throw new InvalidOperationException("Database unavailable"),
+            () => fileVersion, version => fileVersion = version);
+        first.Should().Throw<TargetInvocationException>();
+        fileVersion.Should().Be(15);
+        saved["Version"]!.Value<int>().Should().Be(14);
+
+        ApplyWithFile(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player),
+            () => fileVersion, version => fileVersion = version);
+        liveRuns.Should().Be(1);
+        saved["Version"]!.Value<int>().Should().Be(15);
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
+    }
+
+    /// <summary>
+    /// A character save failure must prevent recording migration completion or its reward in the database.
+    /// </summary>
+    [Test]
+    public void FailedCharacterSaveDoesNotAdvanceTheDatabaseOrGrantTokens()
+    {
+        var saved = PlayerJson(14);
+        Action run = () => ApplyWithFile(TokenMigration(() => { }), () => saved.ToObject<Player>()!,
+            _ => Assert.Fail("Character saving must succeed first"),
+            () => 14, _ => throw new InvalidOperationException("Character file write failed"));
+        run.Should().Throw<TargetInvocationException>();
+        saved.Should().BeEquivalentTo(PlayerJson(14));
+    }
 
     private sealed class TestMigration(int version, Action migrate, Action<Player>? updateRecord = null) : IPlayerMigration
     {

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using Exception = System.Exception;
 
 namespace SWLOR.Game.Server.Service
@@ -15,6 +16,8 @@ namespace SWLOR.Game.Server.Service
     public static class Migration
     {
         private const int ConsoleProgressMigrationVersion = 22;
+        internal const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
+        private const int LastPlayerVersionWithoutFileCheckpoint = 12;
         private static int _currentMigrationVersion;
         private static ServerMigrationState _serverMigrationState = new(0);
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
@@ -143,8 +146,12 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
+            var fileVersion = GetLocalInt(player, PlayerFileVersionVariable);
+            if (fileVersion == 0)
+                fileVersion = Math.Min(dbPlayer.Version, LastPlayerVersionWithoutFileCheckpoint);
+
             var migrations = _playerMigrations
-                .Where(x => x.Key > dbPlayer.Version)
+                .Where(x => x.Key > Math.Min(dbPlayer.Version, fileVersion))
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
 
@@ -156,7 +163,13 @@ namespace SWLOR.Game.Server.Service
                     sw.Start();
                     ApplyPlayerMigration(migration, player,
                         () => DB.Get<Player>(playerId) ?? throw new InvalidOperationException("The player record was lost during migration."),
-                        updatedPlayer => DB.Set(updatedPlayer));
+                        updatedPlayer => DB.Set(updatedPlayer),
+                        () => fileVersion,
+                        version =>
+                        {
+                            SavePlayerFileCheckpoint(player, version);
+                            fileVersion = version;
+                        });
                     sw.Stop();
                     Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
                 }
@@ -171,18 +184,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Stages player data privately, applies live changes, and advances the token and version only with the durable checkpoint.
+        /// Advances character-file and database checkpoints independently so retrying an older file never repeats record rewards.
         /// </summary>
         internal static void ApplyPlayerMigration(
             IPlayerMigration migration,
             uint player,
             Func<Player> loadPlayer,
-            Action<Player> savePlayer)
+            Action<Player> savePlayer,
+            Func<int> loadCharacterVersion,
+            Action<int> saveCharacterVersion)
         {
-            if (loadPlayer().Version >= migration.Version)
-                return;
+            var migratePlayerData = loadPlayer().Version < migration.Version;
+            if (loadCharacterVersion() < migration.Version)
+            {
+                migration.Migrate(player);
+                saveCharacterVersion(migration.Version);
+            }
 
-            migration.Migrate(player);
+            if (!migratePlayerData)
+                return;
 
             // Live-object migrations may save player data. Refresh it, then copy
             // the cached record so failed hooks or saves cannot publish an unsaved
@@ -191,6 +211,30 @@ namespace SWLOR.Game.Server.Service
             migration.MigratePlayerData(dbPlayer);
             dbPlayer.Version = migration.Version;
             savePlayer(dbPlayer);
+        }
+
+        /// <summary>
+        /// Saves the completed live migration before advancing its database checkpoint.
+        /// The ordinary export command queues a later save and cannot establish this ordering.
+        /// </summary>
+        private static void SavePlayerFileCheckpoint(uint player, int version)
+        {
+            var previousVersion = GetLocalInt(player, PlayerFileVersionVariable);
+            SetLocalInt(player, PlayerFileVersionVariable, version);
+            try
+            {
+                var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
+                if (client == null || client.SaveServerCharacter() == 0)
+                    throw new InvalidOperationException("The migrated character file could not be saved.");
+            }
+            catch
+            {
+                if (previousVersion == 0)
+                    DeleteLocalInt(player, PlayerFileVersionVariable);
+                else
+                    SetLocalInt(player, PlayerFileVersionVariable, previousVersion);
+                throw;
+            }
         }
 
         private static void LoadServerMigrations()

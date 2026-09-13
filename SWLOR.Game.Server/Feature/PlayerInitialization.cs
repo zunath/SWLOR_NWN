@@ -28,6 +28,16 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
+            if (dbPlayer.Version == 0 &&
+                (GetHitDice(player) > 1 || GetXP(player) > 0 ||
+                 GetLocalInt(player, Migration.PlayerFileVersionVariable) > 0))
+            {
+                Log.Write(LogGroup.Migration,
+                    $"Refusing new-character initialization for existing character {GetName(player)} [{playerId}]: its initialized player record is missing.", true);
+                BootPC(player, "Your character record could not be loaded. Please contact a server administrator.");
+                return;
+            }
+
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
@@ -66,6 +76,19 @@ namespace SWLOR.Game.Server.Feature
 
         private static void AutoLevelPlayer(uint player)
         {
+            EnsureNativeLevels(player);
+        }
+
+        internal static bool EnsureNativeLevels(uint player)
+        {
+            if (GetHitDice(player) >= 40)
+                return false;
+
+            var @class = GetClassByPosition(1, player);
+            if (!int.TryParse(Get2DAString("classes", "Package", (int)@class), out var package) ||
+                package < 0 || package >= (int)Package.Invalid)
+                throw new InvalidOperationException($"No leveling package is available for class {@class}.");
+
             // Capture original stats before we level up the player.
             var str = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             var con = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
@@ -74,21 +97,29 @@ namespace SWLOR.Game.Server.Feature
             var wis = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             var cha = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
 
-            GiveXPToCreature(player, 800000);
-            var @class = GetClassByPosition(1, player);
-
-            for (var level = 1; level <= 40; level++)
+            try
             {
-                LevelUpHenchman(player, @class);
+                SetXP(player, Math.Max(GetXP(player), 800000));
+                while (GetHitDice(player) < 40)
+                {
+                    var previousLevel = GetHitDice(player);
+                    // Saved characters can retain a package for a retired class.
+                    LevelUpHenchman(player, @class, false, (Package)package);
+                    if (GetHitDice(player) <= previousLevel)
+                        throw new InvalidOperationException($"Unable to advance native character level {previousLevel} using class {@class}.");
+                }
             }
-
-            // Set stats back to how they were on entry.
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, str);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, con);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, dex);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Agility, @int);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, wis);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, cha);
+            finally
+            {
+                // Native level-up ability increases are not SWLOR progression.
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, str);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, con);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, dex);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Agility, @int);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, wis);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, cha);
+            }
+            return true;
         }
 
         /// <summary>

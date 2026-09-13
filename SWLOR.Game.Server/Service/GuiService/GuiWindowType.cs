@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         Techniques = 66,
         Slicing = 67,
         Conversation = 68,
+        Masteries = 69,
+        MasteryReview = 70,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

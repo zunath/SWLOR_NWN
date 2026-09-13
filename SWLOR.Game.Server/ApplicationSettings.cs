@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server
         public string DMShoutWebhookUrl { get; }
         public string PropertyBroadcastWebhookUrl { get; }
         public string ServerNotificationWebhookUrl { get; }
+        public string MasteryStaffWebhookUrl { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
 
         /// <summary>
@@ -46,6 +47,7 @@ namespace SWLOR.Game.Server
             DMShoutWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
             PropertyBroadcastWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL");
             ServerNotificationWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_SERVER_NOTIFICATION_WEBHOOK_URL");
+            MasteryStaffWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_MASTERY_STAFF_WEBHOOK_URL");
 
             EngineTestsEnabled = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TESTS_ENABLED"), false);
             EngineTestResultsDirectory = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_RESULTS_DIRECTORY")

@@ -46,6 +46,8 @@ namespace SWLOR.Game.Server.Service.LogService
         Mimicry,
         [LogGroup("QuestContract", ServerEnvironmentType.All)]
         QuestContract,
+        [LogGroup("Mastery", ServerEnvironmentType.All)]
+        Mastery,
         [LogGroup("EngineTest", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
         EngineTest
     }

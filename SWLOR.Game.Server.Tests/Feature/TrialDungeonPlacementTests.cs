@@ -82,7 +82,8 @@ public class TrialDungeonPlacementTests
         var spawnTag = Text(Load("utw", d.SpawnBlueprint), "Tag");
         List(git, "WaypointList").Count(w => Text(w, "Tag") == spawnTag).Should().Be(20);
         List(Load("git", d.Arena), "WaypointList").Should().NotContain(w => Text(w, "Tag") == spawnTag);
-        Tagged(git, "WaypointList", "STUCK_WAYPOINT");
+        List(git, "WaypointList").Should().ContainSingle(w => Text(w, "Tag") == "STUCK_WAYPOINT",
+            $"{d.Area} needs a STUCK_WAYPOINT recovery point");
         var comments = Load("gic", d.Area);
         foreach (var p in comments.EnumerateObject().Where(p => p.Value.ValueKind == JsonValueKind.Object && p.Value.GetProperty("type").GetString() == "list"))
             List(comments, p.Name).Length.Should().Be(List(git, p.Name).Length);

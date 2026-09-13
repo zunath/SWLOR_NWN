@@ -50,9 +50,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             var wasMigrated = MigrateObject(obj);
             if (wasMigrated)
-                migratedSerializedObject = MigrationObject.Serialize(obj);
+                migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
 
-            DestroyObject(obj);
+            MigrationObject.DestroyTemporaryObject(obj);
             return wasMigrated;
         }
 

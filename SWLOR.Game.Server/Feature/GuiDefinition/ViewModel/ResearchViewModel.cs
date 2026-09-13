@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         if (bonus.DamageType != CombatDamageType.Invalid &&
                             !bonus.DamageType.IsPhysicalDamageType())
                         {
-                            ip = ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)bonus.DamageType, 0);
+                            ip = ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)bonus.DamageType);
                             BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
                         }
                         break;

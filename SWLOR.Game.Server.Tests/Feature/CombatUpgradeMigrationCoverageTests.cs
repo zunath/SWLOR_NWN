@@ -175,7 +175,7 @@ public class CombatUpgradeMigrationCoverageTests
 
         storedMigration.Should().Contain("PistolBaseItemMigration.MigrateStoredObject(obj)");
         pistolMigration.Should().Contain("PistolBaseItemCompatibility.Normalize(obj)");
-        pistolMigration.Should().Contain("GetItemInSlot(InventorySlot.Arrows, creature)");
+        pistolMigration.Should().Contain("GetEquippedItem(creature, InventorySlot.Arrows)");
         pistolMigration.Should().Contain("CreaturePlugin.RunUnequip(creature, legacyAmmo)");
         pistolMigration.Should().Contain("CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Bullets)");
         pistolMigration.Should().Contain("ConstructedDroidVariable");

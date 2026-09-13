@@ -138,6 +138,41 @@ public class PlayerMigrationTests
         saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void FailedMigrationDoesNotAdvanceTheSharedCachedPlayer(bool failInDataHook)
+    {
+        var persisted = PlayerJson(14);
+        var cached = persisted.ToObject<Player>()!;
+        var fail = true;
+        var migration = new TestMigration(15, () => { }, player =>
+        {
+            new _15_RemoveObsoleteCombatInstructionDiscs().MigratePlayerData(player);
+            if (fail && failInDataHook)
+                throw new InvalidOperationException("Data hook failed");
+        });
+        void Save(Player player)
+        {
+            if (fail)
+                throw new InvalidOperationException("Save failed before persistence");
+            persisted = JObject.FromObject(player);
+            cached = player;
+        }
+
+        Action first = () => Apply(migration, () => cached, Save);
+        first.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
+        cached.Version.Should().Be(14, "DB.Get returns the shared cached instance");
+        cached.Currencies[CurrencyType.RebuildToken].Should().Be(3, "an unsaved token must not leak into the cache");
+        persisted.Should().BeEquivalentTo(PlayerJson(14));
+
+        fail = false;
+        Apply(migration, () => cached, Save);
+        cached.Version.Should().Be(15);
+        cached.Currencies[CurrencyType.RebuildToken].Should().Be(4);
+        persisted["Version"]!.Value<int>().Should().Be(15);
+        persisted["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
+    }
+
     [Test]
     public void BonusTokenIsAddedWhenTheCurrencyDictionaryHasNoTokenEntry()
     {

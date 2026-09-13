@@ -132,9 +132,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             var wasMigrated = MigrateObject(obj);
             if (wasMigrated)
-                migratedSerializedObject = MigrationObject.Serialize(obj);
+                migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
 
-            DestroyObject(obj);
+            MigrationObject.DestroyTemporaryObject(obj);
             return wasMigrated;
         }
 
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             {
                 MigrationObject.AddProperty(
                     item,
-                    ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType, 0), AddItemPropertyPolicy.IgnoreExisting);
+                    ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType), AddItemPropertyPolicy.IgnoreExisting);
             }
 
             return true;
@@ -450,16 +450,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (damageEnhancements.Count <= 0)
                 return false;
 
-            foreach (var property in damageEnhancements)
-            {
-                MigrationObject.RemoveProperty(item, property.Property);
-            }
-
-            foreach (var property in damageTypeProperties)
-            {
-                MigrationObject.RemoveProperty(item, property.Property);
-            }
-
             var selectedEnhancements = damageEnhancements
                 .OrderBy(x => x.Index)
                 .Select(x => new EnhancementDamageProperty(
@@ -471,21 +461,42 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (isBlueprint)
                 selectedEnhancements = SelectBlueprintDamageEnhancements(selectedEnhancements);
 
-            foreach (var property in selectedEnhancements)
+            // Retain canonical pairs without forcing the containing inventory to
+            // be saved again. Native reloads can normalize unrelated item fields.
+            var targets = selectedEnhancements.Select(property => property with
             {
-                var amount = property.DamageType.IsPhysicalDamageType()
+                Value = property.DamageType.IsPhysicalDamageType()
                     ? ConvertRawEnhancementDamage(item, property.Value)
-                    : property.Value;
+                    : property.Value
+            }).ToList();
+            if (damageEnhancements.Count == targets.Count &&
+                damageTypeProperties.Count == targets.Count(x => !x.DamageType.IsPhysicalDamageType()) &&
+                damageEnhancements.Zip(targets).All(pair =>
+                    pair.First.SubType == (int)EnhancementSubType.DMG &&
+                    pair.First.Value == pair.Second.Value &&
+                    (pair.Second.DamageType.IsPhysicalDamageType() ||
+                     damageTypeProperties.Any(type => type.Index == pair.First.Index + 1 &&
+                         type.SubType == (int)pair.Second.DamageType))))
+            {
+                return false;
+            }
 
+            foreach (var property in damageEnhancements)
+                MigrationObject.RemoveProperty(item, property.Property);
+            foreach (var property in damageTypeProperties)
+                MigrationObject.RemoveProperty(item, property.Property);
+
+            foreach (var property in targets)
+            {
                 MigrationObject.AddProperty(
                     item,
-                    ItemPropertyCustom(ItemPropertyType.WeaponEnhancement, (int)EnhancementSubType.DMG, amount), AddItemPropertyPolicy.IgnoreExisting);
+                    ItemPropertyCustom(ItemPropertyType.WeaponEnhancement, (int)EnhancementSubType.DMG, property.Value), AddItemPropertyPolicy.IgnoreExisting);
 
                 if (!property.DamageType.IsPhysicalDamageType())
                 {
                     MigrationObject.AddProperty(
                         item,
-                        ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)property.DamageType, 0), AddItemPropertyPolicy.IgnoreExisting);
+                        ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)property.DamageType), AddItemPropertyPolicy.IgnoreExisting);
                 }
             }
 
@@ -575,7 +586,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             MigrationObject.AddProperty(
                 item,
-                ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType, 0), AddItemPropertyPolicy.IgnoreExisting);
+                ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType), AddItemPropertyPolicy.IgnoreExisting);
 
             return true;
         }
@@ -593,7 +604,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
 
             if (damageProperties.Count != 1 ||
-                damageProperties.Any(x => x.SubType != -1 && x.SubType != 0))
+                damageProperties.Any(x => x.SubType != -1 && x.SubType != 0 && x.SubType != ushort.MaxValue))
                 return true;
 
             if (damageType.IsPhysicalDamageType())

@@ -270,12 +270,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             if (NormalizeSabersOnObject(obj) <= 0)
             {
-                DestroyObject(obj);
+                MigrationObject.DestroyTemporaryObject(obj);
                 return false;
             }
 
-            migrated = MigrationObject.Serialize(obj);
-            DestroyObject(obj);
+            migrated = MigrationObject.Serialize(obj, serialized);
+            MigrationObject.DestroyTemporaryObject(obj);
             return true;
         }
     }

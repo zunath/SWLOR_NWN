@@ -729,7 +729,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             if (string.IsNullOrWhiteSpace(serializedObject))
                 return result;
 
-            var obj = MigrationObject.Deserialize(serializedObject);
+            var creatureInventory = StoredObjectData.ReadCreature(serializedObject);
+            ushort? temporaryAppearance = null;
+            if (creatureInventory != null && creatureInventory.Appearance >= 0)
+            {
+                var modelType = Get2DAString("appearance", "MODELTYPE", creatureInventory.Appearance);
+                if (string.IsNullOrWhiteSpace(modelType) || modelType == "****")
+                    temporaryAppearance = (ushort)AppearanceType.Human;
+            }
+            var dataToLoad = creatureInventory?.PrepareForNativeLoad(temporaryAppearance) ?? serializedObject;
+
+            var obj = MigrationObject.Deserialize(dataToLoad);
             if (!GetIsObjectValid(obj))
                 return result;
 
@@ -746,13 +756,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     result.ReplacementName = GetName(replacement);
                     result.ReplacementIcon = Item.GetIconResref(replacement);
                     result.RemovedItems = 1;
-                    DestroyObject(replacement);
+                    MigrationObject.DestroyTemporaryObject(replacement);
                     return result;
                 }
 
                 if (ObsoleteItemMigration.IsObsoleteResRef(resref))
                 {
-                    DestroyObject(obj);
+                    MigrationObject.DestroyTemporaryObject(obj);
                     result.Changed = true;
                     result.RemovedRoot = true;
                     result.RemovedItems = 1;
@@ -762,9 +772,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             result.Changed = MigrateStoredObject(obj, result);
             if (result.Changed)
-                result.Data = MigrationObject.Serialize(obj);
+            {
+                var migrated = MigrationObject.Serialize(obj, serializedObject);
+                result.Data = creatureInventory == null ? migrated : creatureInventory.CopyMigratedInventory(migrated);
+            }
 
-            DestroyObject(obj);
+            MigrationObject.DestroyTemporaryObject(obj);
             return result;
         }
 
@@ -782,9 +795,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             var migrated = DroidBoostStoredItemMigration.MigrateObject(obj);
             if (migrated)
-                migratedSerializedObject = MigrationObject.Serialize(obj);
+                migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
 
-            DestroyObject(obj);
+            MigrationObject.DestroyTemporaryObject(obj);
             return migrated;
         }
 
@@ -822,6 +835,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             if (string.IsNullOrWhiteSpace(serializedObject))
                 return false;
 
+            if (StoredObjectData.IsCreatureData(serializedObject))
+                return false;
+
+            // A native probe claims the saved UUID until deferred destruction.
+            // Only instantiate objects that actually need blueprint expansion;
+            // the ordinary migration must be their first native load.
+            var recipeId = StoredObjectData.ReadRootInteger(serializedObject, DroidBoostStoredItemMigration.BlueprintRecipeIdVariable);
+            if (recipeId <= 0 ||
+                !DroidBoostRecipeMigration.TryGetReplacementRecipeNames(recipeId.ToString(), out var recipeNames) ||
+                DroidBoostRecipeMigration.GetReplacementRecipeIds(recipeNames).Count() <= 1)
+                return false;
+
             var obj = MigrationObject.Deserialize(serializedObject);
             if (!GetIsObjectValid(obj))
                 return false;
@@ -831,7 +856,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 !DroidBoostStoredItemMigration.TryGetReplacementBlueprintRecipeIds(obj, out newRecipeIds) ||
                 newRecipeIds.Length <= 1)
             {
-                DestroyObject(obj);
+                MigrationObject.DestroyTemporaryObject(obj);
                 return false;
             }
 
@@ -850,10 +875,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             {
                 SetLocalInt(obj, DroidBoostStoredItemMigration.BlueprintRecipeIdVariable, newRecipeId);
                 SetName(obj, GetBlueprintName(newRecipeId, GetName(obj)));
-                migratedSerializedObjects.Add(MigrationObject.Serialize(obj));
+                migratedSerializedObjects.Add(MigrationObject.Serialize(obj, serializedObject));
             }
 
-            DestroyObject(obj);
+            MigrationObject.DestroyTemporaryObject(obj);
             return true;
         }
 
@@ -1103,7 +1128,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     // Leave the original recipe unchanged and remove any copies
                     // already made, so retrying a failed login cannot duplicate them.
                     foreach (var copy in copies)
-                        DestroyObject(copy);
+                        MigrationObject.DestroyTemporaryObject(copy);
                     throw;
                 }
 
@@ -1243,8 +1268,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                                 var variantId = GetVariantId(key, recipeIds[index]);
                                 var variant = MigrationObject.Deserialize(variants[index]);
                                 SetLocalString(variant, "DROID_ITEM_ID", variantId);
-                                droid.Inventory[variantId] = MigrationObject.Serialize(variant);
-                                DestroyObject(variant);
+                                droid.Inventory[variantId] = MigrationObject.Serialize(variant, variants[index]);
+                                MigrationObject.DestroyTemporaryObject(variant);
                             }
 
                             migrated = true;
@@ -1288,9 +1313,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 var wasMigrated = EquipmentRequirementMigration.MigrateObject(obj);
                 wasMigrated |= MigrateObject(obj);
                 if (wasMigrated)
-                    migratedSerializedObject = MigrationObject.Serialize(obj);
+                    migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
 
-                DestroyObject(obj);
+                MigrationObject.DestroyTemporaryObject(obj);
                 return wasMigrated;
             }
 

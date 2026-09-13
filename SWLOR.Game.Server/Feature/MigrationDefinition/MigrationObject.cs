@@ -4,11 +4,37 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using DurationType = SWLOR.NWN.API.NWScript.Enum.DurationType;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class MigrationObject
     {
+        public static void DestroyTemporaryObject(uint obj)
+        {
+            var visited = new HashSet<uint>();
+            void ReleaseIdentities(uint target)
+            {
+                if (!GetIsObjectValid(target) || !visited.Add(target)) return;
+                if (GetHasInventory(target))
+                    for (var item = GetFirstItemInInventory(target); GetIsObjectValid(item); item = GetNextItemInInventory(target))
+                        ReleaseIdentities(item);
+                if (GetObjectType(target) == ObjectType.Creature)
+                    for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+                        ReleaseIdentities(GetItemInSlot((InventorySlot)slot, target));
+
+                // Destruction is deferred until the startup script returns. The
+                // saved data has already captured these UUIDs; release their
+                // native registrations now so later archived copies can load
+                // the same original identities without losing them on save.
+                if (!string.IsNullOrEmpty(ObjectPlugin.PeekUUID(target)))
+                    NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject().m_pUUID.AssignRandom();
+            }
+            ReleaseIdentities(obj);
+            DestroyObject(obj);
+        }
+
         public static void AddProperty(uint item, ItemProperty property, AddItemPropertyPolicy policy)
         {
             if (!GetIsItemPropertyValid(property))
@@ -83,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return obj;
         }
 
-        public static string Serialize(uint obj)
+        public static string Serialize(uint obj, string originalData = null)
         {
             if (!GetIsObjectValid(obj))
                 throw new InvalidOperationException("A migration object was lost before it could be saved.");
@@ -92,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (string.IsNullOrWhiteSpace(data))
                 throw new InvalidOperationException("A migration object could not be serialized.");
 
-            return data;
+            return originalData == null ? data : StoredObjectData.PreserveRootIdentity(originalData, data);
         }
     }
 }

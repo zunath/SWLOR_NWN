@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -65,11 +66,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         private static int NormalizeCreatureEquipment(uint creature)
         {
             var migratedItems = 0;
-            var legacyAmmo = GetItemInSlot(InventorySlot.Arrows, creature);
+            var legacyAmmo = GetEquippedItem(creature, InventorySlot.Arrows);
 
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
-                var item = GetItemInSlot((InventorySlot)index, creature);
+                var item = GetEquippedItem(creature, (InventorySlot)index);
                 if (!GetIsObjectValid(item) || item == legacyAmmo)
                     continue;
 
@@ -92,68 +93,102 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 return migratedItems;
             }
 
-            if (TryNormalizeEquippedAmmo(creature, legacyAmmo, originalBaseItem))
-                migratedItems++;
+            NormalizeEquippedAmmo(creature, legacyAmmo, originalBaseItem);
+            migratedItems++;
 
             return migratedItems;
         }
 
-        private static bool TryNormalizeEquippedAmmo(
+        private static void NormalizeEquippedAmmo(
             uint creature,
             uint legacyAmmo,
             BaseItem originalBaseItem)
         {
-            var existingBulletAmmo = GetItemInSlot(InventorySlot.Bullets, creature);
-            if (!CreaturePlugin.RunUnequip(creature, legacyAmmo))
-                return false;
+            var existingBulletAmmo = GetEquippedItem(creature, InventorySlot.Bullets);
+            var nativeCreature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSCreature();
+            var generatedBullets = nativeCreature.m_bMagicalBulletsEquipped != 0;
+            // Acquisition can normalize the base while the item still occupies
+            // the old slot. Native unequip then returns failure after removing it;
+            // verify the equipment state instead of trusting that return value.
+            CreaturePlugin.RunUnequip(creature, legacyAmmo);
+            if (GetEquippedItem(creature, InventorySlot.Arrows) == legacyAmmo)
+                throw new InvalidOperationException("Unable to unequip legacy ammunition for migration.");
 
-            var baseItemChanged = PistolBaseItemCompatibility.Normalize(legacyAmmo);
+            PistolBaseItemCompatibility.Normalize(legacyAmmo);
+            // The engine reserves this slot for ammunition supplied by the
+            // weapon. Keep the converted stack in inventory instead of trying
+            // to replace an engine-owned stack that cannot be unequipped.
+            if (generatedBullets)
+            {
+                var nativeAmmo = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(legacyAmmo)?.AsNWSItem();
+                if (nativeAmmo == null || GetItemPossessor(legacyAmmo) != creature ||
+                    nativeCreature.m_pcItemRepository.GetItemInRepository(nativeAmmo) == 0)
+                    throw new InvalidOperationException("Converted ammunition could not be preserved in inventory.");
+                return;
+            }
             var existingBulletUnequipped = false;
 
             if (GetIsObjectValid(existingBulletAmmo) && existingBulletAmmo != legacyAmmo)
             {
-                existingBulletUnequipped = CreaturePlugin.RunUnequip(creature, existingBulletAmmo);
+                CreaturePlugin.RunUnequip(creature, existingBulletAmmo);
+                existingBulletUnequipped = GetEquippedItem(creature, InventorySlot.Bullets) != existingBulletAmmo;
                 if (!existingBulletUnequipped)
                 {
                     RestoreEquippedAmmo(
                         creature,
                         legacyAmmo,
                         originalBaseItem,
-                        baseItemChanged,
                         existingBulletAmmo,
                         false);
-                    return false;
+                    throw new InvalidOperationException("Unable to clear the ammunition slot for migration.");
                 }
             }
 
-            if (CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Bullets))
-                return true;
+            CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Bullets);
+            if (GetEquippedItem(creature, InventorySlot.Bullets) == legacyAmmo)
+                return;
 
             RestoreEquippedAmmo(
                 creature,
                 legacyAmmo,
                 originalBaseItem,
-                baseItemChanged,
                 existingBulletAmmo,
                 existingBulletUnequipped);
-            return false;
+            throw new InvalidOperationException("Unable to equip migrated ammunition in its canonical slot.");
         }
 
         private static void RestoreEquippedAmmo(
             uint creature,
             uint legacyAmmo,
             BaseItem originalBaseItem,
-            bool baseItemChanged,
             uint existingBulletAmmo,
             bool existingBulletUnequipped)
         {
-            if (baseItemChanged)
-                ItemPlugin.SetBaseItemType(legacyAmmo, originalBaseItem);
-
-            CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Arrows);
+            // The original base may already be Bullet after acquisition. Restore
+            // the historical slot using Arrow, then restore the exact original base.
+            ItemPlugin.SetBaseItemType(legacyAmmo, BaseItem.Arrow);
+            try { CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Arrows); }
+            finally { ItemPlugin.SetBaseItemType(legacyAmmo, originalBaseItem); }
 
             if (existingBulletUnequipped && GetIsObjectValid(existingBulletAmmo))
                 CreaturePlugin.RunEquip(creature, existingBulletAmmo, InventorySlot.Bullets);
+
+            if (GetEquippedItem(creature, InventorySlot.Arrows) != legacyAmmo ||
+                (GetIsObjectValid(existingBulletAmmo) && GetEquippedItem(creature, InventorySlot.Bullets) != existingBulletAmmo))
+                throw new InvalidOperationException("Unable to restore equipped ammunition after a failed migration.");
+        }
+
+        private static uint GetEquippedItem(uint creature, InventorySlot slot)
+        {
+            // Unlimited-ammunition weapons create engine-owned stacks in these
+            // slots. They are excluded from creature saves and cannot be unequipped.
+            var nativeCreature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature)?.AsNWSCreature();
+            if (nativeCreature == null ||
+                (slot == InventorySlot.Arrows && nativeCreature.m_bMagicalArrowsEquipped != 0) ||
+                (slot == InventorySlot.Bullets && nativeCreature.m_bMagicalBulletsEquipped != 0) ||
+                (slot == InventorySlot.Bolts && nativeCreature.m_bMagicalBoltsEquipped != 0))
+                return OBJECT_INVALID;
+            return nativeCreature?.m_pInventory.GetItemInSlot(1u << (int)slot)?.m_idSelf ?? OBJECT_INVALID;
         }
 
         private static int NormalizeConstructedDroid(uint controllerItem)
@@ -299,9 +334,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 : BaseItem.Invalid;
 
             if (normalizedCount > 0)
-                migrated = MigrationObject.Serialize(obj);
+                migrated = MigrationObject.Serialize(obj, serialized);
 
-            DestroyObject(obj);
+            MigrationObject.DestroyTemporaryObject(obj);
             return true;
         }
 
@@ -320,10 +355,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 {
                     itemId = Guid.NewGuid().ToString();
                     SetLocalString(item, DroidItemIdVariable, itemId);
-                    serializedItem = MigrationObject.Serialize(item);
+                    serializedItem = MigrationObject.Serialize(item, serializedItem);
                 }
 
-                DestroyObject(item);
+                MigrationObject.DestroyTemporaryObject(item);
             }
 
             if (string.IsNullOrWhiteSpace(itemId))

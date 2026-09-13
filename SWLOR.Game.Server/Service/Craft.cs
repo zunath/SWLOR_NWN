@@ -561,7 +561,7 @@ namespace SWLOR.Game.Server.Service
             if (TryGetWeaponDamageTypeForEnhancement(subTypeId, damageType, out var resolvedDamageType) &&
                 !resolvedDamageType.IsPhysicalDamageType())
             {
-                yield return ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)resolvedDamageType, 0);
+                yield return ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)resolvedDamageType);
             }
         }
 

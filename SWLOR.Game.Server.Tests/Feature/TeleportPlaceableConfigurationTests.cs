@@ -28,6 +28,14 @@ public class TeleportPlaceableConfigurationTests
         enabledTeleporters.Should().BeEquivalentTo(new[]
         {
             "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
+            "Module/git/veles_sheriff.git.json|Veles Militia Annex|VELES_ANNEX_ENTRY|tele_obj|tele_obj",
+            "Module/git/dan_jedienlibry.git.json|Jedi Enclave Trial Halls|pw_sc_jedihalls_entry|tele_obj|tele_obj",
+            "Module/git/valkorrdung1c.git.json|Forge Caverns|pw_sc_forgecav_entry|tele_obj|tele_obj",
+            "Module/git/anchor_entreenor.git.json|Anchorhead Canyon Range|pw_sc_canyonrng_entry|tele_obj|tele_obj",
+            "Module/git/sol_hutlarqcanyo.git.json|Qion Test Site|pw_sc_qiontest_entry|tele_obj|tele_obj",
+            "Module/git/korr_crypt_zil.git.json|Sith Crypt Depths|pw_sc_cryptdeep_entry|tele_obj|tele_obj",
+            "Module/git/v_repubbase_cd.git.json|Republic Engineering Bunker|pw_sc_repubeng_entry|tele_obj|tele_obj",
+            "Module/git/dath_tarnjungles.git.json|Tarn Jungle Preserve|pw_sc_tarnpres_entry|tele_obj|tele_obj",
             "Module/git/dan_warehouse.git.json|Dantooine Medical Sublevel|to_medsublevel|tele_obj|tele_obj",
             "Module/git/dathgrottocavern.git.json|Enter the Grotto Apex Den|DATH_APEX_DEN_INSIDE|tele_obj|tele_obj",
             "Module/git/pw_ar_nsficlub.git.json|[Back Rooms]|SMUG_BACKROOMS|tele_obj|tele_obj",

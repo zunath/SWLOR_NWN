@@ -194,7 +194,7 @@ public class DantooineMedicalSublevelPlacementTests
     }
 
     [Test]
-    public void InfiniteConduitWardenEncounter_IsOnTheElevatedTileWalkmesh()
+    public void InfiniteConduitWardenEncounter_IsBesideABloodDressedAltarOnTheRoomFloor()
     {
         using var dungeon = LoadModuleJson("git", DungeonArea);
         var activator = EnumerateObjects(dungeon.RootElement)
@@ -205,12 +205,15 @@ public class DantooineMedicalSublevelPlacementTests
             .EnumerateArray()
             .Single(element => GetString(element, "Tag") == "CAPSTONE_INFCONDUIT_WD_SPAWN");
 
-        GetFloat(activator, "X").Should().Be(115f);
-        GetFloat(activator, "Y").Should().Be(115f);
-        GetFloat(activator, "Z").Should().BeApproximately(3.99f, 0.001f);
-        GetFloat(spawn, "XPosition").Should().Be(117f);
-        GetFloat(spawn, "YPosition").Should().Be(115f);
-        GetFloat(spawn, "ZPosition").Should().BeApproximately(3.99f, 0.001f);
+        GetFloat(activator, "Z").Should().BeApproximately(0f, 0.001f);
+        GetFloat(spawn, "ZPosition").Should().BeApproximately(0f, 0.001f);
+        var props = dungeon.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray().ToArray();
+        var altar = props.Single(p => GetString(p, "Tag") == "ZEP_ALTAREVIL3");
+        static double Distance(JsonElement a, JsonElement b) => Math.Sqrt(
+            Math.Pow(GetFloat(a, "X") - GetFloat(b, "X"), 2) + Math.Pow(GetFloat(a, "Y") - GetFloat(b, "Y"), 2));
+        Distance(activator, altar).Should().BeInRange(2, 4);
+        props.Count(p => GetString(p, "Tag").StartsWith("ZEP_BLOODSTAIN") && Distance(p, altar) < 3)
+            .Should().BeGreaterThanOrEqualTo(3);
     }
 
     [Test]

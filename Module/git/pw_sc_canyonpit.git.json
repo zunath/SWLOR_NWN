@@ -10280,7 +10280,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "teleport"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -10361,7 +10361,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": ""
+                "value": "pw_sc_canyonrng_return"
               }
             },
             {

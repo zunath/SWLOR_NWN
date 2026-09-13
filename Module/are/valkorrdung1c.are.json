@@ -10321,7 +10321,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 114
+          "value": 6
         },
         "Tile_MainLight1": {
           "type": "byte",

@@ -45,6 +45,20 @@ public class FightClubBackroomsPlacementTests
     }
 
     [Test]
+    public void FightClubArena_HasOneRecoveryWaypoint()
+    {
+        using var arena = LoadModuleJson("git", "pw_sc_smarena.git.json");
+        var recovery = arena.RootElement
+            .GetProperty("WaypointList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Should().ContainSingle(waypoint => GetString(waypoint, "Tag") == "STUCK_WAYPOINT",
+                "players need a recovery point in the boss arena").Subject;
+
+        GetString(recovery, "TemplateResRef").Should().Be("wp_stuck");
+    }
+
+    [Test]
     public void FightClubFloor_HoldsNoQuestGivers()
     {
         // Quest giver placement is owned by CapstoneQuestGiverPlacementTests; the Fight Club floor

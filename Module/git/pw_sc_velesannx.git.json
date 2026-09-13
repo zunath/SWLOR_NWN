@@ -54284,6 +54284,69 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Viscara - Veles Militia Annex - Rare Elite Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VELES_MILITIA_ANNEX_RARES"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_veles"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 78.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 114.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
       }
     ]
   }

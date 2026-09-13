@@ -49251,6 +49251,69 @@
           "type": "float",
           "value": -1.0
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Korriban - Forge Caverns - Rare Elite Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "KORRIBAN_FORGE_CAVERNS_RARES"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_kforge"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 84.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 94.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
       }
     ]
   }

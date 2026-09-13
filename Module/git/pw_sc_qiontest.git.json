@@ -53535,6 +53535,69 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Hutlar - Qion Test Site - Rare Elite Spawn"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "HUTLAR_QION_TEST_SITE_RARES"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_cap_hutlar"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 80.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 100.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        }
       }
     ]
   }

@@ -120,6 +120,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 .ToHashSet();
         }
 
+        /// <summary>
+        /// Migrates a saved object and releases its temporary native load on success or failure; unchanged payloads remain intact.
+        /// </summary>
         public static bool MigrateSerializedObject(string serializedObject, out string migratedSerializedObject)
         {
             migratedSerializedObject = serializedObject;
@@ -130,12 +133,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj))
                 return false;
 
-            var wasMigrated = MigrateObject(obj);
-            if (wasMigrated)
-                migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
+            try
+            {
+                var wasMigrated = MigrateObject(obj);
+                if (wasMigrated)
+                    migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
 
-            MigrationObject.DestroyTemporaryObject(obj);
-            return wasMigrated;
+                return wasMigrated;
+            }
+            finally
+            {
+                MigrationObject.DestroyTemporaryObject(obj);
+            }
         }
 
         public static bool MigrateObject(uint obj)
@@ -192,6 +201,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return wasMigrated;
         }
 
+        /// <summary>
+        /// Converts legacy weapon damage properties to the current amount and damage-type representation.
+        /// </summary>
         private static bool MigrateWeaponItem(uint item)
         {
             var baseItem = GetBaseItemType(item);
@@ -417,6 +429,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return Math.Max(1, (int)Math.Round(scaled, MidpointRounding.AwayFromZero));
         }
 
+        /// <summary>
+        /// Normalizes weapon enhancement properties while preserving supported nonphysical damage types.
+        /// </summary>
         private static bool MigrateEnhancementItem(uint item)
         {
             var damageEnhancements = new List<(ItemProperty Property, int SubType, int Value, int Index)>();
@@ -552,6 +567,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return RawDamageEnhancementAmountsByResref.GetValueOrDefault(resref, amount);
         }
 
+        /// <summary>
+        /// Converts standalone legacy damage-type properties even when no damage-amount property accompanies them.
+        /// </summary>
         private static bool NormalizeDamageTypePropertiesWithoutDmg(
             uint item,
             BaseItem baseItem,
@@ -591,6 +609,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
+        /// <summary>
+        /// Distinguishes legacy damage-type encodings from canonical properties so retries remain unchanged.
+        /// </summary>
         private static bool ShouldMigrate(
             BaseItem baseItem,
             List<(ItemProperty Property, int SubType, int Value)> damageProperties,

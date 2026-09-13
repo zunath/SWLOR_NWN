@@ -63,6 +63,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return migratedItems;
         }
 
+        /// <summary>
+        /// Converts equipped items and moves historical arrow-slot ammunition into its canonical bullet slot.
+        /// </summary>
         private static int NormalizeCreatureEquipment(uint creature)
         {
             var migratedItems = 0;
@@ -99,6 +102,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return migratedItems;
         }
 
+        /// <summary>
+        /// Converts ammunition without losing the stack when its target slot is occupied or cannot be equipped.
+        /// </summary>
         private static void NormalizeEquippedAmmo(
             uint creature,
             uint legacyAmmo,
@@ -157,6 +163,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             throw new InvalidOperationException("Unable to equip migrated ammunition in its canonical slot.");
         }
 
+        /// <summary>
+        /// Restores a saved ammunition stack to the requested native slot after compatibility conversion.
+        /// </summary>
         private static void RestoreEquippedAmmo(
             uint creature,
             uint legacyAmmo,
@@ -178,6 +187,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 throw new InvalidOperationException("Unable to restore equipped ammunition after a failed migration.");
         }
 
+        /// <summary>
+        /// Reads real equipment slots without treating engine-generated magical ammunition as a saved item.
+        /// </summary>
         private static uint GetEquippedItem(uint creature, InventorySlot slot)
         {
             // Unlimited-ammunition weapons create engine-owned stacks in these
@@ -311,6 +323,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
+        /// <summary>
+        /// Converts a serialized pistol or ammunition item, reports its canonical base type, and always releases the native load.
+        /// </summary>
         private static bool TryNormalizeSerializedItem(
             string serialized,
             out string migrated,
@@ -328,18 +343,27 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj))
                 return false;
 
-            normalizedCount = NormalizeItemsOnObject(obj);
-            canonicalBaseItem = GetObjectType(obj) == ObjectType.Item
-                ? GetBaseItemType(obj)
-                : BaseItem.Invalid;
+            try
+            {
+                normalizedCount = NormalizeItemsOnObject(obj);
+                canonicalBaseItem = GetObjectType(obj) == ObjectType.Item
+                    ? GetBaseItemType(obj)
+                    : BaseItem.Invalid;
 
-            if (normalizedCount > 0)
-                migrated = MigrationObject.Serialize(obj, serialized);
+                if (normalizedCount > 0)
+                    migrated = MigrationObject.Serialize(obj, serialized);
 
-            MigrationObject.DestroyTemporaryObject(obj);
-            return true;
+                return true;
+            }
+            finally
+            {
+                MigrationObject.DestroyTemporaryObject(obj);
+            }
         }
 
+        /// <summary>
+        /// Stows displaced droid ammunition under a collision-free inventory key while preserving the saved item identity.
+        /// </summary>
         private static void MoveEquippedItemToDroidInventory(
             ConstructedDroid droid,
             string serializedItem)
@@ -350,15 +374,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var item = MigrationObject.Deserialize(serializedItem);
             if (GetIsObjectValid(item))
             {
-                itemId = GetLocalString(item, DroidItemIdVariable);
-                if (string.IsNullOrWhiteSpace(itemId) || droid.Inventory.ContainsKey(itemId))
+                try
                 {
-                    itemId = Guid.NewGuid().ToString();
-                    SetLocalString(item, DroidItemIdVariable, itemId);
-                    serializedItem = MigrationObject.Serialize(item, serializedItem);
+                    itemId = GetLocalString(item, DroidItemIdVariable);
+                    if (string.IsNullOrWhiteSpace(itemId) || droid.Inventory.ContainsKey(itemId))
+                    {
+                        itemId = Guid.NewGuid().ToString();
+                        SetLocalString(item, DroidItemIdVariable, itemId);
+                        serializedItem = MigrationObject.Serialize(item, serializedItem);
+                    }
                 }
-
-                MigrationObject.DestroyTemporaryObject(item);
+                finally
+                {
+                    MigrationObject.DestroyTemporaryObject(item);
+                }
             }
 
             if (string.IsNullOrWhiteSpace(itemId))

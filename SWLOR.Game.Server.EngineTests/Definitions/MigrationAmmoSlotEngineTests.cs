@@ -11,18 +11,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static partial class MigrationEngineTests
     {
+        /// <summary>
+        /// Verifies that ammunition migration preserves the equipped slot after base normalization.
+        /// </summary>
         [EngineTest("Ammunition migration preserves the equipped slot after base normalization", Category = "MigrationAmmoSlot")]
         public static Task MigrateEquippedLegacyAmmunition(EngineTestContext ctx) =>
             VerifyLegacyAmmoMigration(ctx, false, BaseItem.Bullet);
 
+        /// <summary>
+        /// Verifies that ammunition migration preserves displaced canonical ammunition.
+        /// </summary>
         [EngineTest("Ammunition migration preserves displaced canonical ammunition", Category = "MigrationAmmoSlot")]
         public static Task MigrateIntoOccupiedAmmunitionSlot(EngineTestContext ctx) =>
             VerifyLegacyAmmoMigration(ctx, true, BaseItem.Bullet);
 
+        /// <summary>
+        /// Verifies that ammunition migration converts an unnormalized equipped arrow stack.
+        /// </summary>
         [EngineTest("Ammunition migration converts an unnormalized equipped arrow stack", Category = "MigrationAmmoSlot")]
         public static Task MigrateUnnormalizedAmmunition(EngineTestContext ctx) =>
             VerifyLegacyAmmoMigration(ctx, false, BaseItem.Arrow);
 
+        /// <summary>
+        /// Verifies that ammunition migration stows saved ammunition when the weapon supplies bullets.
+        /// </summary>
         [EngineTest("Ammunition migration stows saved ammunition when the weapon supplies bullets", Category = "MigrationAmmoSlot")]
         public static async Task PreserveAmmunitionAlongsideGeneratedBullets(EngineTestContext ctx)
         {
@@ -56,6 +68,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Verifies that ammunition migration preserves unlimited-ammunition weapons and inventory stacks.
+        /// </summary>
         [EngineTest("Ammunition migration preserves unlimited-ammunition weapons and inventory stacks", Category = "MigrationAmmoSlot")]
         public static async Task PreserveUnequippedNpcAmmunition(EngineTestContext ctx)
         {
@@ -86,6 +101,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Checks native ammunition slots and saved quantities before conversion, after conversion, and on retry.
+        /// </summary>
         private static async Task VerifyLegacyAmmoMigration(EngineTestContext ctx, bool occupied, BaseItem initialBase)
         {
             var creature = ctx.SpawnCreature("civilian");
@@ -132,6 +150,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Creates a saved legacy ammunition slot layout without applying current engine equip restrictions.
+        /// </summary>
         private static string WithLegacyAmmoSlot(string serialized, bool restoreSlingWeapon = false)
         {
             var data = Convert.FromBase64String(serialized);

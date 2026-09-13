@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class SavedCharacterCorpusEngineTests
     {
+        /// <summary>
+        /// Verifies that saved character item corpus survives conversion and retries.
+        /// </summary>
         [EngineTest("Saved character item corpus survives conversion and retries", Category = "SavedCharacterCorpus", TimeoutSeconds = 7200)]
         public static async Task MigrateSavedCharacters(EngineTestContext ctx)
         {

@@ -17,10 +17,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     /// </summary>
     internal sealed class StoredObjectData
     {
+        internal const string IdentityMarkerPrefix = "MIGRATION_IDENTITY_";
+        internal const string EquipmentMarkerPrefix = "MIGRATION_EQUIPMENT_";
         private readonly byte[] _header;
         private readonly Node _root;
         private string _equipmentMarker;
         private readonly Dictionary<int, Node> _savedEquipment = new();
+        private string _identityMarker;
+        private readonly Dictionary<int, Field> _savedIdentities = new();
+        private bool IsCreature => Encoding.ASCII.GetString(_header, 0, 4) is "BIC " or "UTC ";
 
         private sealed class Node
         {
@@ -112,6 +117,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             _root = ReadNode(0, 0);
         }
 
+        /// <summary>
+        /// Parses BIC or UTC data without native instantiation; NPC archives can also use the BIC file type.
+        /// </summary>
         public static StoredObjectData ReadCreature(string data)
         {
             // NWNX serializes NPCs as BIC too; file type is not a player flag.
@@ -120,6 +128,67 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return new StoredObjectData(Convert.FromBase64String(data));
         }
 
+        /// <summary>
+        /// Parses inventory-bearing archives so nested identities can survive native loading alongside live copies.
+        /// </summary>
+        public static StoredObjectData ReadInventory(string data)
+        {
+            var document = new StoredObjectData(Convert.FromBase64String(data));
+            return document.IsCreature || document._root.Fields.Any(IsInventoryList) ? document : null;
+        }
+
+        /// <summary>
+        /// Identifies GFF lists that contain carried or equipped item objects.
+        /// </summary>
+        private static bool IsInventoryList(Field field) => field.Type == 15 &&
+            (field.Name == "ItemList" || field.Name == "Equip_ItemList");
+
+        /// <summary>
+        /// Traverses nested saved inventory, optionally excluding items and subtrees intentionally retired by conversion.
+        /// </summary>
+        private static IEnumerable<Node> InventoryItems(Node root, bool skipRetired)
+        {
+            foreach (var list in root.Fields.Where(IsInventoryList))
+            foreach (var item in list.Children)
+            {
+                var resref = item.Fields.SingleOrDefault(x => x.Name == "TemplateResRef" && x.Type == 11);
+                var name = resref == null ? "" : Encoding.ASCII.GetString(resref.Data.AsSpan(1));
+                if (skipRetired && (ObsoleteItemMigration.IsObsoleteResRef(name) ||
+                    ObsoleteItemMigration.TryGetConversionResRef(name, out _))) continue;
+                yield return item;
+                foreach (var nested in InventoryItems(item, skipRetired)) yield return nested;
+            }
+        }
+
+        /// <summary>
+        /// Adds a temporary integer local that tracks a saved item independently of native UUID reassignment.
+        /// </summary>
+        private static void AddMarker(Node item, string name, int id)
+        {
+            var variables = item.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
+            if (variables == null)
+            {
+                variables = MakeField(15, "VarTable", children: new List<Node>());
+                item.Fields.Add(variables);
+            }
+            var text = Encoding.UTF8.GetBytes(name);
+            var textData = new byte[4 + text.Length];
+            BinaryPrimitives.WriteInt32LittleEndian(textData, text.Length);
+            text.CopyTo(textData, 4);
+            variables.Children.Add(new Node
+            {
+                Fields = new List<Field>
+                {
+                    MakeField(10, "Name", textData),
+                    MakeField(4, "Type", BitConverter.GetBytes(1u)),
+                    MakeField(5, "Value", BitConverter.GetBytes(id))
+                }
+            });
+        }
+
+        /// <summary>
+        /// Reads a typed integer local directly from saved GFF without claiming its native object identity.
+        /// </summary>
         public static int ReadRootInteger(string data, string name)
         {
             var document = new StoredObjectData(Convert.FromBase64String(data));
@@ -138,6 +207,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return 0;
         }
 
+        /// <summary>
+        /// Restores the archived root UUID in saved bytes without modifying another live object that holds the same UUID.
+        /// </summary>
         public static string PreserveRootIdentity(string original, string migrated)
         {
             var source = new StoredObjectData(Convert.FromBase64String(original));
@@ -161,6 +233,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return target.Serialize();
         }
 
+        /// <summary>
+        /// Recognizes the base64 signatures emitted for saved BIC and UTC objects.
+        /// </summary>
         public static bool IsCreatureData(string data) =>
             data.StartsWith("QklD", StringComparison.Ordinal) || data.StartsWith("VVRD", StringComparison.Ordinal);
 
@@ -173,6 +248,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
         }
 
+        /// <summary>
+        /// Produces a loadable appearance override while leaving the original saved appearance bytes intact.
+        /// </summary>
         public string WithTemporaryAppearance(ushort appearance)
         {
             var field = _root.Fields.Single(x => x.Name == "Appearance_Type" && x.Type == 2);
@@ -183,15 +261,28 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             finally { field.Data = original; }
         }
 
+        /// <summary>
+        /// Marks retained inventory and equipment in a disposable GFF copy before native loading can alter identities or slots.
+        /// </summary>
         public string PrepareForNativeLoad(ushort? appearance)
         {
             // Loading can unequip saved weapons because the current model cannot
             // wield them. Track individual items, including identical un-UUIDed
             // copies, without changing their permanent identity or source data.
             var copy = new StoredObjectData(Convert.FromBase64String(Serialize()));
+            _savedIdentities.Clear();
+            _identityMarker = IdentityMarkerPrefix + Guid.NewGuid().ToString("N");
+            foreach (var item in InventoryItems(copy._root, true).Distinct())
+            {
+                var identity = item.Fields.SingleOrDefault(x => x.Name == "UUID" && x.Type == 10);
+                if (identity == null) continue;
+                var id = _savedIdentities.Count + 1;
+                _savedIdentities.Add(id, identity);
+                AddMarker(item, _identityMarker, id);
+            }
             var equipment = copy._root.Fields.SingleOrDefault(x => x.Name == "Equip_ItemList" && x.Type == 15);
             _savedEquipment.Clear();
-            _equipmentMarker = "MIGRATION_EQUIPMENT_" + Guid.NewGuid().ToString("N");
+            _equipmentMarker = EquipmentMarkerPrefix + Guid.NewGuid().ToString("N");
             if (equipment != null)
             {
                 foreach (var item in equipment.Children)
@@ -205,30 +296,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                     var id = _savedEquipment.Count + 1;
                     _savedEquipment.Add(id, item);
-                    var variables = item.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
-                    if (variables == null)
-                    {
-                        variables = MakeField(15, "VarTable", children: new List<Node>());
-                        item.Fields.Add(variables);
-                    }
-                    var text = Encoding.UTF8.GetBytes(_equipmentMarker);
-                    var textData = new byte[4 + text.Length];
-                    BinaryPrimitives.WriteInt32LittleEndian(textData, text.Length);
-                    text.CopyTo(textData, 4);
-                    variables.Children.Add(new Node
-                    {
-                        Fields = new List<Field>
-                        {
-                            MakeField(10, "Name", textData),
-                            MakeField(4, "Type", BitConverter.GetBytes(1u)),
-                            MakeField(5, "Value", BitConverter.GetBytes(id))
-                        }
-                    });
+                    AddMarker(item, _equipmentMarker, id);
                 }
             }
             return appearance.HasValue ? copy.WithTemporaryAppearance(appearance.Value) : copy.Serialize();
         }
 
+        /// <summary>
+        /// Constructs a GFF field with its fixed-width label and raw scalar payload or child list.
+        /// </summary>
         private static Field MakeField(uint type, string name, byte[] data = null, List<Node> children = null)
         {
             var label = new byte[16];
@@ -236,6 +312,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return new Field { Type = type, Label = label, Data = data, Children = children };
         }
 
+        /// <summary>
+        /// Restores retained equipment to its archived slots while allowing intentional ammunition-slot conversion.
+        /// </summary>
         private void RestoreSavedEquipment(StoredObjectData migrated)
         {
             if (_savedEquipment.Count == 0) return;
@@ -283,10 +362,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
         }
 
+        /// <summary>
+        /// Merges migrated inventory with original creature state and restores saved item identities before writing the result.
+        /// </summary>
         public string CopyMigratedInventory(string migrated)
         {
-            var source = ReadCreature(migrated) ?? throw new InvalidDataException("Migrated object is not a saved creature.");
+            var source = new StoredObjectData(Convert.FromBase64String(migrated));
+            if (IsCreature && !source.IsCreature)
+                throw new InvalidDataException("Migrated object is not a saved creature.");
             RestoreSavedEquipment(source);
+            RestoreSavedIdentities(source);
+            // Item containers retain their migrated root properties; only a
+            // creature needs its unrelated original root state transplanted.
+            if (!IsCreature) return source.Serialize();
             foreach (var name in new[] { "ItemList", "Equip_ItemList" })
             {
                 var replacement = source._root.Fields.SingleOrDefault(x => x.Name == name);
@@ -304,6 +392,36 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return Serialize();
         }
 
+        /// <summary>
+        /// Restores each retained UUID from its unique marker and fails if an expected item was lost or duplicated.
+        /// </summary>
+        private void RestoreSavedIdentities(StoredObjectData migrated)
+        {
+            if (_savedIdentities.Count == 0) return;
+            var restored = new HashSet<int>();
+            foreach (var item in InventoryItems(migrated._root, false).Distinct())
+            {
+                var variables = item.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
+                if (variables == null) continue;
+                var marker = variables.Children.SingleOrDefault(variable => variable.Fields.Any(field =>
+                    field.Name == "Name" && field.Type == 10 && Encoding.UTF8.GetString(field.Data.AsSpan(4)) == _identityMarker));
+                if (marker == null) continue;
+                var value = marker.Fields.Single(x => x.Name == "Value" && x.Type == 5);
+                var id = BinaryPrimitives.ReadInt32LittleEndian(value.Data);
+                if (!_savedIdentities.TryGetValue(id, out var identity) || !restored.Add(id))
+                    throw new InvalidDataException("Saved inventory identity was duplicated during migration.");
+                variables.Children.Remove(marker);
+                if (variables.Children.Count == 0) item.Fields.Remove(variables);
+                item.Fields.RemoveAll(x => x.Name == "UUID");
+                item.Fields.Add(identity);
+            }
+            if (restored.Count != _savedIdentities.Count)
+                throw new InvalidDataException("A retained saved inventory identity disappeared during migration.");
+        }
+
+        /// <summary>
+        /// Writes the edited GFF graph while retaining untouched scalar payloads and shared structure references.
+        /// </summary>
         private string Serialize()
         {
             var structures = new List<(uint Type, uint Offset, uint Count)>();

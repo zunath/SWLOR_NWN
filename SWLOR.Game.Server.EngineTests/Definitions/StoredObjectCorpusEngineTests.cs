@@ -13,6 +13,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class StoredObjectCorpusEngineTests
     {
+        /// <summary>
+        /// Verifies that stored object corpus converts without native errors.
+        /// </summary>
         [EngineTest("Stored object corpus converts without native errors", Category = "StoredObjectCorpus", TimeoutSeconds = 7200)]
         public static async Task MigrateStoredObjects(EngineTestContext ctx)
         {

@@ -116,6 +116,9 @@ public class PlayerMigrationTests
         saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
     }
 
+    /// <summary>
+    /// Verifies a failed data hook cannot leak staged state or duplicate a rebuild token on retry.
+    /// </summary>
     [Test]
     public void FailedDataHookDiscardsUnsavedChangesAndRetryGrantsOnlyOneToken()
     {
@@ -138,6 +141,9 @@ public class PlayerMigrationTests
         saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
     }
 
+    /// <summary>
+    /// Verifies failure leaves the shared cached player at its last durable checkpoint.
+    /// </summary>
     [TestCase(false)]
     [TestCase(true)]
     public void FailedMigrationDoesNotAdvanceTheSharedCachedPlayer(bool failInDataHook)

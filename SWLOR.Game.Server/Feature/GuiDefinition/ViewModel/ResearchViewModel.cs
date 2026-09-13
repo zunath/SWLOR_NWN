@@ -382,6 +382,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 });
         };
 
+        /// <summary>
+        /// Delivers each completed research result using its saved output variant and recipe identity.
+        /// </summary>
         public Action ClickCompleteJob() => () =>
         {
             var dbJob = GetJob();

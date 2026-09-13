@@ -170,6 +170,9 @@ namespace SWLOR.Game.Server.Service
 
         }
 
+        /// <summary>
+        /// Stages player data privately, applies live changes, and advances the token and version only with the durable checkpoint.
+        /// </summary>
         internal static void ApplyPlayerMigration(
             IPlayerMigration migration,
             uint player,

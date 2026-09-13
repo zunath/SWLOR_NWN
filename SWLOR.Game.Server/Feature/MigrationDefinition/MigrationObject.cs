@@ -11,6 +11,24 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class MigrationObject
     {
+        /// <summary>
+        /// Newly expanded blueprints have their own identity and inventory slot;
+        /// they must not inherit the original item's temporary preservation markers.
+        /// </summary>
+        public static void ClearCopiedInventoryMarkers(uint item)
+        {
+            for (var index = ObjectPlugin.GetLocalVariableCount(item) - 1; index >= 0; index--)
+            {
+                var variable = ObjectPlugin.GetLocalVariable(item, index);
+                if (variable.Key.StartsWith(StoredObjectData.IdentityMarkerPrefix, StringComparison.Ordinal) ||
+                    variable.Key.StartsWith(StoredObjectData.EquipmentMarkerPrefix, StringComparison.Ordinal))
+                    DeleteLocalInt(item, variable.Key);
+            }
+        }
+
+        /// <summary>
+        /// Releases temporary inventory UUID registrations immediately, then schedules native destruction after the current script.
+        /// </summary>
         public static void DestroyTemporaryObject(uint obj)
         {
             var visited = new HashSet<uint>();
@@ -109,6 +127,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return obj;
         }
 
+        /// <summary>
+        /// Serializes the migrated object while preserving the original root identity when an archive payload is supplied.
+        /// </summary>
         public static string Serialize(uint obj, string originalData = null)
         {
             if (!GetIsObjectValid(obj))

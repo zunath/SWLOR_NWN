@@ -38,6 +38,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                    CombatReadinessItemNamesByResref.TryGetValue(resref, out name);
         }
 
+        /// <summary>
+        /// Migrates a saved object and releases its temporary native load on success or failure; unchanged payloads remain intact.
+        /// </summary>
         public static bool MigrateSerializedObject(string serializedObject, out string migratedSerializedObject)
         {
             migratedSerializedObject = serializedObject;
@@ -48,12 +51,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj))
                 return false;
 
-            var wasMigrated = MigrateObject(obj);
-            if (wasMigrated)
-                migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
+            try
+            {
+                var wasMigrated = MigrateObject(obj);
+                if (wasMigrated)
+                    migratedSerializedObject = MigrationObject.Serialize(obj, serializedObject);
 
-            MigrationObject.DestroyTemporaryObject(obj);
-            return wasMigrated;
+                return wasMigrated;
+            }
+            finally
+            {
+                MigrationObject.DestroyTemporaryObject(obj);
+            }
         }
 
         public static void ResetCombatReadiness(Player dbPlayer)

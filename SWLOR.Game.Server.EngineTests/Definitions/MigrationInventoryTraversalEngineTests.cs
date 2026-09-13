@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static partial class MigrationEngineTests
     {
+        /// <summary>
+        /// Verifies that migration removes historical droid instructions whose perk IDs were reused.
+        /// </summary>
         [EngineTest("Migration removes historical droid instructions whose perk IDs were reused", Category = "MigrationInventoryTraversal")]
         public static async Task ReassignedDroidInstruction(EngineTestContext ctx)
         {
@@ -46,6 +49,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Verifies that migration visits every inventory item when removing preceding items.
+        /// </summary>
         [EngineTest("Migration visits every inventory item when removing preceding items", Category = "MigrationInventoryTraversal")]
         public static async Task ConsecutiveObsoleteItems(EngineTestContext ctx)
         {

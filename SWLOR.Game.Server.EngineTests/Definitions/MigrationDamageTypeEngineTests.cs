@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static partial class MigrationEngineTests
     {
+        /// <summary>
+        /// Verifies that migration preserves every nonphysical weapon damage type.
+        /// </summary>
         [EngineTest("Migration preserves every nonphysical weapon damage type", Category = "MigrationDamageType")]
         public static async Task NonphysicalWeaponDamageTypes(EngineTestContext ctx)
         {
@@ -40,6 +43,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>
+        /// Verifies that migration preserves nonphysical enhancement and blueprint damage types.
+        /// </summary>
         [EngineTest("Migration preserves nonphysical enhancement and blueprint damage types", Category = "MigrationDamageType")]
         public static async Task NonphysicalEnhancementDamageTypes(EngineTestContext ctx)
         {
@@ -76,6 +82,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>
+        /// Verifies that migration normalizes damage types without a damage amount.
+        /// </summary>
         [EngineTest("Migration normalizes damage types without a damage amount", Category = "MigrationDamageType")]
         public static async Task DamageTypesWithoutDamageAmount(EngineTestContext ctx)
         {
@@ -99,6 +108,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Verifies that canonical physical enhancement bonuses are stable on retry.
+        /// </summary>
         [EngineTest("Canonical physical enhancement bonuses are stable on retry", Category = "MigrationDamageType")]
         public static async Task PhysicalEnhancementRetry(EngineTestContext ctx)
         {
@@ -117,6 +129,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Builds raw historical item properties that current blueprint constructors no longer accept.
+        /// </summary>
         private static uint LegacyPropertyFixture(EngineTestContext ctx, uint item, ItemPropertyType type, int subtype, int table, int value)
         {
             var originalProperties = new List<SWLOR.NWN.API.Engine.ItemProperty>();
@@ -128,6 +143,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return Deserialize(ctx, ObjectPlugin.Serialize(item));
         }
 
+        /// <summary>
+        /// Checks that migration produces exactly the expected current damage-type property.
+        /// </summary>
         private static void AssertDamageType(EngineTestContext ctx, uint item, CombatDamageType expected)
         {
             var types = new List<int>();

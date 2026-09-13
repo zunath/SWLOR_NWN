@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DroidInstructionMigrationTests
 {
+    /// <summary>
+    /// Ensures an old numeric instruction cannot grant an unrelated ability that now uses the same ID.
+    /// </summary>
     [Test]
     public void HistoricalInstructionsDoNotBecomeDifferentAbilitiesWhenAnIdIsReused()
     {
@@ -24,6 +27,9 @@ public class DroidInstructionMigrationTests
         method.Invoke(null, new object[] { perks }).Should().Be(false);
     }
 
+    /// <summary>
+    /// Preserves absent historical instruction collections without inventing migration changes.
+    /// </summary>
     [Test]
     public void MissingHistoricalInstructionListNeedsNoChange()
     {

@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static partial class MigrationEngineTests
     {
+        /// <summary>
+        /// Verifies that saved equipment survives native unequipping without confusing identical items.
+        /// </summary>
         [EngineTest("Saved equipment survives native unequipping without confusing identical items", Category = "MigrationStoredCreature")]
         public static async Task PreserveSavedEquipmentSlots(EngineTestContext ctx)
         {
@@ -46,6 +49,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Verifies that stored inventory replacement does not restore removed equipment effects.
+        /// </summary>
         [EngineTest("Stored inventory replacement does not restore removed equipment effects", Category = "MigrationStoredCreature")]
         public static async Task StoredEquipmentEffects(EngineTestContext ctx)
         {
@@ -79,6 +85,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "The standalone effect survives while the removed equipment bonus does not");
         }
 
+        /// <summary>
+        /// Verifies that stored creature items migrate without replacing a retired appearance.
+        /// </summary>
         [EngineTest("Stored creature items migrate without replacing a retired appearance", Category = "MigrationStoredCreature")]
         public static async Task RetiredCreatureAppearance(EngineTestContext ctx)
         {

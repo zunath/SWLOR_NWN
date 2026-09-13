@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class WeaponDamageMigrationTests
 {
+    /// <summary>
+    /// Guards idempotence for weapons already using the canonical untyped damage representation.
+    /// </summary>
     [TestCase(-1)]
     [TestCase(0)]
     [TestCase(ushort.MaxValue)]

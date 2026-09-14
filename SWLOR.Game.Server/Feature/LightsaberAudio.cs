@@ -46,11 +46,11 @@ namespace SWLOR.Game.Server.Feature
                 type != BaseItem.Saberstaff)
                 return;
 
-            if (RemoveHum(player))
+            if (RemoveHum(player, item))
                 AssignCommand(player, () => PlaySound("saberoff"));
         }
 
-        internal static bool RemoveHum(uint player)
+        internal static bool RemoveHum(uint player, uint unequippedItem = OBJECT_INVALID)
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var creature = server.GetGameObject(player)?.AsNWSCreature();
@@ -61,7 +61,10 @@ namespace SWLOR.Game.Server.Feature
             var retained = 0;
             foreach (var slot in new[] { InventorySlot.RightHand, InventorySlot.LeftHand })
             {
-                var type = GetBaseItemType(GetItemInSlot(slot, player));
+                var equipped = GetItemInSlot(slot, player);
+                // The unequip event can fire before the inventory slot is cleared.
+                if (equipped == unequippedItem) continue;
+                var type = GetBaseItemType(equipped);
                 if (type == BaseItem.Lightsaber || type == BaseItem.Saberstaff) retained++;
             }
             var removed = new List<ulong>();

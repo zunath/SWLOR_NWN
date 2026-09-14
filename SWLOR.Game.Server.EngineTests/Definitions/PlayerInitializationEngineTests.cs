@@ -1,6 +1,8 @@
 using System.Reflection;
+using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CurrencyService;
@@ -11,6 +13,36 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class PlayerInitializationEngineTests
     {
+        [EngineTest("Saved characters without records remain unchanged at every native level", Category = "PlayerInitialization")]
+        public static async Task MissingRecordFiles(EngineTestContext ctx)
+        {
+            var input = Environment.GetEnvironmentVariable("SWLOR_UNMATCHED_PLAYER_FILE_CORPUS_INPUT");
+            if (string.IsNullOrWhiteSpace(input)) ctx.Skip("Supply private saved files without matching database records.");
+            var guard = typeof(Feature.PlayerInitialization).GetMethod("RequiresExistingPlayerRecord", BindingFlags.Static | BindingFlags.NonPublic);
+            var owner = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            using var output = new StreamWriter(input + ".results.jsonl");
+            foreach (var line in File.ReadLines(input))
+            {
+                var fixture = JObject.Parse(line);
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    var obj = ObjectPlugin.Deserialize((string)fixture["Data"]);
+                    ctx.Track(obj);
+                    ctx.Assert(GetIsObjectValid(obj), "The original saved file loads");
+                    var id = GetObjectUUID(obj);
+                    ctx.Assert(DB.Get<Player>(id) == null, "The saved file has no initialized record");
+                    var before = ObjectPlugin.Serialize(obj);
+                    ctx.Assert((bool)guard.Invoke(null, new object[] { new Player(id) }), "Every saved file without creation intent is protected");
+                    var after = ObjectPlugin.Serialize(obj);
+                    ctx.AssertEqual(before, after, "Refusing setup leaves the character byte-identical");
+                    ctx.Assert(DB.Get<Player>(id) == null, "Setup must not replace the missing record");
+                    output.WriteLine(JsonConvert.SerializeObject(new { Id = (string)fixture["Id"], Before = before, After = after,
+                        Level = GetHitDice(obj), Outcome = "MissingRecordProtected" }));
+                });
+            }
+        }
+
         [EngineTest("Unfinished retired-class characters initialize with the current standard class", Category = "PlayerInitialization")]
         public static async Task RetiredStarterClass(EngineTestContext ctx)
         {
@@ -131,10 +163,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         [EngineTest("Male starter inventory is complete before its migration checkpoint", Category = "PlayerInitialization")]
-        public static Task MaleStarterItems(EngineTestContext ctx) => VerifyStarterItems(ctx, RacialType.Human, Gender.Male, "nw_maletatcivout");
+        public static Task MaleStarterItems(EngineTestContext ctx) => VerifyStarterItems(ctx, RacialType.Human, Gender.Male, "traveler_m");
 
         [EngineTest("Female starter inventory is complete before its migration checkpoint", Category = "PlayerInitialization")]
-        public static Task FemaleStarterItems(EngineTestContext ctx) => VerifyStarterItems(ctx, RacialType.Human, Gender.Female, "nw_femtatcivoutf");
+        public static Task FemaleStarterItems(EngineTestContext ctx) => VerifyStarterItems(ctx, RacialType.Human, Gender.Female, "traveler_f");
 
         [EngineTest("Droid starter inventory is complete before its migration checkpoint", Category = "PlayerInitialization")]
         public static Task DroidStarterItems(EngineTestContext ctx) => VerifyStarterItems(ctx, RacialType.Droid, Gender.Male, "dlarproto");
@@ -152,6 +184,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     .Invoke(null, new object[] { owner });
                 typeof(Feature.PlayerInitialization).GetMethod("GiveStartingItems", BindingFlags.Static | BindingFlags.NonPublic)
                     .Invoke(null, new object[] { owner });
+                ctx.Assert(!Item.IsEconomyRestricted(GetItemInSlot(InventorySlot.Chest, owner)), "The starting outfit is a player-facing economy item");
                 var saved = ObjectPlugin.Serialize(owner);
                 var restored = ObjectPlugin.Deserialize(saved);
                 ctx.Track(restored);

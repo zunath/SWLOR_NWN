@@ -28,11 +28,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 var remove = typeof(Feature.LightsaberAudio).GetMethod("RemoveHum", BindingFlags.Static | BindingFlags.NonPublic);
-                remove.Invoke(null, new object[] { owner });
+                remove.Invoke(null, new object[] { owner, OBJECT_INVALID });
                 ctx.AssertEqual(1, CountSaberHum(owner), "The remaining equipped saber keeps one hum");
-                Invoke("PlayerEquipmentStorage", "Unequip", owner, saber, InventorySlot.RightHand);
-                remove.Invoke(null, new object[] { owner });
+                ctx.AssertEqual(saber, GetItemInSlot(InventorySlot.RightHand, owner), "The event still exposes the removed saber in its old slot");
+                ctx.Assert((bool)remove.Invoke(null, new object[] { owner, saber }), "The unequip event removes stale hum synchronously");
                 ctx.AssertEqual(0, CountSaberHum(owner), "Removing the last saber clears every hum before saving");
+                var restored = Deserialize(ctx, ObjectPlugin.Serialize(owner));
+                ctx.AssertEqual(0, CountSaberHum(restored), "Event-time export cannot restore stopped audio");
             });
         }
 
@@ -62,7 +64,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ctx.Assert(CountSaberHum(owner) >= 2, "The fixture starts with duplicate looping saber audio");
                 typeof(Feature.LightsaberAudio).GetMethod("RemoveHum", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, new object[] { owner });
+                    .Invoke(null, new object[] { owner, OBJECT_INVALID });
                 ctx.AssertEqual(0, CountSaberHum(owner), "Stopping saber audio removes every stale effect immediately");
                 var restored = Deserialize(ctx, ObjectPlugin.Serialize(owner));
                 ctx.AssertEqual(0, CountSaberHum(restored), "A same-script save and reload cannot restore unequipped saber audio");

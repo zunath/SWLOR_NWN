@@ -13,19 +13,50 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerMigrationTests
 {
-    [TestCase(0, false, 1, 0, 0, false)]
-    [TestCase(0, false, 5, 10000, 0, true)]
-    [TestCase(0, false, 1, 1, 0, true)]
-    [TestCase(0, false, 1, 0, 15, true)]
-    [TestCase(0, true, 40, 800000, 0, false)]
-    [TestCase(-1, false, 5, 10000, 0, false)]
-    [TestCase(15, false, 40, 800000, 15, false)]
-    public void ExistingCharacterProgressCannotBeReplacedByNewCharacterInitialization(
-        int version, bool pending, int level, int experience, int fileVersion, bool requiresRecord)
+    [TestCase(0, false, true)]
+    [TestCase(0, true, false)]
+    [TestCase(-1, false, false)]
+    [TestCase(15, false, false)]
+    public void MissingRecordsRequireValidatedCreationEvenWithoutCharacterProgress(
+        int version, bool pending, bool requiresRecord)
     {
         var player = new Player("audit-player") { Version = version, CharacterInitializationPending = pending };
         var guard = typeof(Server.Feature.PlayerInitialization).GetMethod("RequiresExistingPlayerRecord", BindingFlags.Static | BindingFlags.NonPublic)!;
-        guard.Invoke(null, new object[] { player, level, experience, fileVersion }).Should().Be(requiresRecord);
+        guard.Invoke(null, new object[] { player }).Should().Be(requiresRecord);
+    }
+
+    [TestCase(0u, false, true)]
+    [TestCase(110633u, false, false)]
+    [TestCase(0u, true, false)]
+    public void OnlyAcceptedNewCharacterCreationRecordsDurableInitializationIntent(uint result, bool exists, bool expectedSave)
+    {
+        Player? saved = exists ? new Player("creation-test") { Version = 15 } : null;
+        var original = saved;
+        var saves = 0;
+        var fileSaved = false;
+        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        void Run() => record.Invoke(null, new object[] { result, "creation-test", (Func<Player?>)(() => saved),
+            (Action)(() => fileSaved = true),
+            (Action<Player>)(player => { fileSaved.Should().BeTrue(); saved = player; saves++; }) });
+        Run();
+        Run();
+        saves.Should().Be(expectedSave ? 1 : 0, "validation must not reset an existing record on repeated calls");
+        if (expectedSave)
+        {
+            saved!.CharacterInitializationPending.Should().BeTrue();
+            saved.Version.Should().Be(0);
+        }
+        else saved.Should().BeSameAs(original);
+    }
+
+    [Test]
+    public void FailedCreationIdentitySaveCannotAuthorizeDestructiveInitialization()
+    {
+        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        Action run = () => record.Invoke(null, new object[] { 0u, "creation-test", (Func<Player?>)(() => null),
+            (Action)(() => throw new InvalidOperationException("Injected identity export failure")),
+            (Action<Player>)(_ => Assert.Fail("No initialization intent may be saved after an export failure")) });
+        run.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
     }
 
     [Test]

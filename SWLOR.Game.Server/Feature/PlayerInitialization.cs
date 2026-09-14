@@ -29,11 +29,10 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
-            if (RequiresExistingPlayerRecord(dbPlayer, GetHitDice(player), GetXP(player),
-                    GetLocalInt(player, Migration.PlayerFileVersionVariable)))
+            if (RequiresExistingPlayerRecord(dbPlayer))
             {
                 Log.Write(LogGroup.Migration,
-                    $"Refusing new-character initialization for existing character {GetName(player)} [{playerId}]: its initialized player record is missing.", true);
+                    $"Refusing character initialization for {GetName(player)} [{playerId}]: no initialized record or validated creation intent exists.", true);
                 BootPC(player, "Your character record could not be loaded. Please contact a server administrator.");
                 return;
             }
@@ -88,10 +87,11 @@ namespace SWLOR.Game.Server.Feature
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
 
-        internal static bool RequiresExistingPlayerRecord(Player player, int nativeLevel, int experience, int fileVersion)
+        internal static bool RequiresExistingPlayerRecord(Player player)
         {
-            return player.Version == 0 && !player.CharacterInitializationPending &&
-                   (nativeLevel > 1 || experience > 0 || fileVersion > 0);
+            // Saved level-one characters can look identical to newly created ones.
+            // Only the engine's accepted creation request may authorize initialization.
+            return player.Version == 0 && !player.CharacterInitializationPending;
         }
 
         private static void AutoLevelPlayer(uint player)
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Feature
             SetItemCursedFlag(item, true);
 
             var clothes = race == RacialType.Droid ? "dlarproto" :
-                GetGender(player) == Gender.Female ? "nw_femtatcivoutf" : "nw_maletatcivout";
+                GetGender(player) == Gender.Female ? "traveler_f" : "traveler_m";
             item = CreateStarterItem(clothes);
             if (race != RacialType.Droid)
                 SetName(item, "Traveler's Clothes");

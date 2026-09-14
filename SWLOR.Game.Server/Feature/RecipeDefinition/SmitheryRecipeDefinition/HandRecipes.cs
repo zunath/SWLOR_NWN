@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
@@ -12,9 +11,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
 
             return _builder.Build();
@@ -28,7 +31,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("bm_bracer")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 2)
                 .Component("fiberp_ruined", 1);
@@ -39,7 +41,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sm_gloves")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1);
@@ -50,18 +51,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("com_gloves")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1);
 
             // Advent Bracer
             _builder.Create(RecipeType.AdventBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("advent_bracer")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -69,11 +68,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Bracer
             _builder.Create(RecipeType.AmateurBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -81,11 +79,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Bracer
             _builder.Create(RecipeType.ClothBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -93,11 +90,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Bracer
             _builder.Create(RecipeType.ChefBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -112,7 +108,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_bracer")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fiberp_flawed", 1);
@@ -123,7 +118,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("viv_gloves")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1);
@@ -134,18 +128,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("val_gloves")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1);
 
             // Frontier Bracer
             _builder.Create(RecipeType.FrontierBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("frontier_bracer")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -153,11 +145,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Bracer
             _builder.Create(RecipeType.WorkerBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -165,11 +156,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Bracer
             _builder.Create(RecipeType.LinenBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -177,11 +167,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Bracer
             _builder.Create(RecipeType.VelveteenBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -196,7 +185,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("qk_bracer")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 2)
                 .Component("fiberp_good", 1);
@@ -207,7 +195,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("reg_gloves")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1);
@@ -218,18 +205,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("for_gloves")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1);
 
             // Majestic Bracer
             _builder.Create(RecipeType.MajesticBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("majestic_bracer")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -237,11 +222,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Bracer
             _builder.Create(RecipeType.MechanicBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -249,11 +233,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Bracer
             _builder.Create(RecipeType.DesignerBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -261,11 +244,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Bracer
             _builder.Create(RecipeType.SilkBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -280,7 +262,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ar_bracer")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 2)
                 .Component("fiberp_imperfect", 1);
@@ -291,7 +272,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("gr_gloves")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 2)
                 .Component("fiberp_imperfect", 1);
@@ -302,18 +282,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sur_gloves")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 2)
                 .Component("fiberp_imperfect", 1);
 
             // Dream Bracer
             _builder.Create(RecipeType.DreamBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("dream_bracer")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -321,11 +299,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Bracer
             _builder.Create(RecipeType.DevotionBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -333,11 +310,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Bracer
             _builder.Create(RecipeType.OasisBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -345,11 +321,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Bracer
             _builder.Create(RecipeType.VintageBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -364,7 +339,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ec_bracer")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 2)
                 .Component("fiberp_high", 1);
@@ -375,7 +349,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tran_gloves")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1);
@@ -386,18 +359,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sup_gloves")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1);
 
             // Eternal Bracer
             _builder.Create(RecipeType.EternalBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("eternal_bracer")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -405,11 +376,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Bracer
             _builder.Create(RecipeType.SkysteelBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -417,11 +387,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Bracer
             _builder.Create(RecipeType.RoseBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -429,11 +398,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Bracer
             _builder.Create(RecipeType.MoonflameBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -445,7 +413,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ch_bracer")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
@@ -464,7 +431,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("mag_gloves")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
@@ -483,7 +449,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("imm_gloves")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
@@ -496,5 +461,137 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
         }
-    }
+        private void Tier1A()
+        {
+            // Warden Bracer
+            _builder.Create(RecipeType.WardenBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("fld_bul_bracer")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 2)
+                .Component("fiberp_ruined", 1);
+
+            // Mystic Gloves
+            _builder.Create(RecipeType.MysticGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("fld_chn_gloves")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 2)
+                .Component("fiberp_ruined", 1);
+
+            // Vanguard Gloves
+            _builder.Create(RecipeType.VanguardGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("fld_skm_gloves")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 2)
+                .Component("fiberp_ruined", 1);
+        }
+
+        private void Tier2A()
+        {
+            // Bastion Bracer
+            _builder.Create(RecipeType.BastionBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("vet_bul_bracer")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 2)
+                .Component("fiberp_flawed", 1);
+
+            // Oracle Gloves
+            _builder.Create(RecipeType.OracleGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("vet_chn_gloves")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 2)
+                .Component("fiberp_flawed", 1);
+
+            // Onslaught Gloves
+            _builder.Create(RecipeType.OnslaughtGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("vet_skm_gloves")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 2)
+                .Component("fiberp_flawed", 1);
+        }
+
+        private void Tier3A()
+        {
+            // Sentinel Bracer
+            _builder.Create(RecipeType.SentinelBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("prm_bul_bracer")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 2)
+                .Component("fiberp_good", 1);
+
+            // Arcanist Gloves
+            _builder.Create(RecipeType.ArcanistGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("prm_chn_gloves")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 2)
+                .Component("fiberp_good", 1);
+
+            // Maverick Gloves
+            _builder.Create(RecipeType.MaverickGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("prm_skm_gloves")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 2)
+                .Component("fiberp_good", 1);
+        }
+
+        private void Tier4A()
+        {
+            // Aegis Bracer
+            _builder.Create(RecipeType.AegisBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("asc_bul_bracer")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 2)
+                .Component("fiberp_imperfect", 1);
+
+            // Luminary Gloves
+            _builder.Create(RecipeType.LuminaryGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("asc_chn_gloves")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 2)
+                .Component("fiberp_imperfect", 1);
+
+            // Apex Gloves
+            _builder.Create(RecipeType.ApexGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("asc_skm_gloves")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 2)
+                .Component("fiberp_imperfect", 1);
+        }
+
+}
 }

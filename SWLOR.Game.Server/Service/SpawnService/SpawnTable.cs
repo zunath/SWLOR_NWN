@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.AIService;
@@ -11,6 +10,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
     {
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
+        public int RespawnDelayMaximumMinutes { get; set; }
         public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             Name = name;
             RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
+            RespawnDelayMaximumMinutes = Spawn.DefaultRespawnMinutes;
             ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }
@@ -26,9 +27,9 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// Retrieves the next spawn resref, object type, and AI flags based on the rules for this specific spawn table.
         /// </summary>
         /// <returns>The detailed spawn object to spawn.</returns>
-        public SpawnObject GetNextSpawn()
+        public SpawnObject GetNextSpawn(bool includeRareSpawns = true)
         {
-            var selectedObject = SelectRandomSpawnObject();
+            var selectedObject = SelectRandomSpawnObject(includeRareSpawns);
             if (selectedObject == null)
                 return new SpawnObject
                 {
@@ -45,18 +46,18 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// Retrieves a random spawn object based on weight.
         /// </summary>
         /// <returns></returns>
-        private SpawnObject SelectRandomSpawnObject()
+        private SpawnObject SelectRandomSpawnObject(bool includeRareSpawns)
         {
-            var filteredList = FilterSpawnObjects();
+            var filteredList = FilterSpawnObjects(includeRareSpawns);
             if (filteredList.Count <= 0) return null;
 
             var weights = filteredList.Select(s => s.Weight).ToArray();
             var index = Random.GetRandomWeightedIndex(weights);
-            
+
             // If GetRandomWeightedIndex returns -1 (no valid weights), return null
             if (index == -1 || index >= filteredList.Count)
                 return null;
-                
+
             return filteredList.ElementAt(index);
         }
 
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// It is possible for this list to be empty so account for that accordingly.
         /// </summary>
         /// <returns>A filtered list of spawn objects.</returns>
-        private List<SpawnObject> FilterSpawnObjects()
+        private List<SpawnObject> FilterSpawnObjects(bool includeRareSpawns)
         {
             var list = Spawns.ToList();
             var now = DateTime.UtcNow;
@@ -77,6 +78,12 @@ namespace SWLOR.Game.Server.Service.SpawnService
             for (var index = list.Count - 1; index >= 0; index--)
             {
                 var obj = list.ElementAt(index);
+
+                if (obj.IsRare && !includeRareSpawns)
+                {
+                    list.RemoveAt(index);
+                    continue;
+                }
 
                 // Day of week restriction
                 if (obj.RealWorldDayOfWeekRestriction.Count > 0 &&

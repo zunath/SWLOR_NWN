@@ -1,0 +1,137 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 77
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "DM-issued token consumed at a Lightsaber Workbench. Cursed + plot so it cannot be traded, stored, sold, or dropped."
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 1
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A rare kyber crystal attuned to its bearer, issued in recognition of their journey toward constructing a lightsaber.\n\nUse this item to attune the crystal, adding one Kyber Token to your currencies. Then visit a Lightsaber Workbench to construct a lightsaber or saberstaff. Workbenches are known to exist at the Sith Academy on Korriban, the Jedi Enclave on Dantooine, and - so the rumors say - somewhere within a hidden cave on Dathomir.\n\nOne Kyber Token is consumed when the weapon is constructed. This item cannot be traded, sold, stored, or dropped."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A rare kyber crystal attuned to its bearer, issued in recognition of their journey toward constructing a lightsaber.\n\nUse this item to attune the crystal, adding one Kyber Token to your currencies. Then visit a Lightsaber Workbench to construct a lightsaber or saberstaff. Workbenches are known to exist at the Sith Academy on Korriban, the Jedi Enclave on Dantooine, and - so the rumors say - somewhere within a hidden cave on Dathomir.\n\nOne Kyber Token is consumed when the weapon is constructed. This item cannot be traded, sold, stored, or dropped."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Kyber Token"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 184
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 54
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 335
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "kyber_token"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "kyber_token"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 184
+  }
+}

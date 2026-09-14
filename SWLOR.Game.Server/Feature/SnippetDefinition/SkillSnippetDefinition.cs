@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -26,9 +25,15 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-any-skill")
                 .Description("Checks whether a player has any skill at a minimum rank.")
+                .Phrase("the player has {skillId} at rank {rank} or better")
+                .NegatedPhrase("the player has no skill in {skillId} at rank {rank}")
+                .Argument("skillId", SnippetArgumentType.SkillId)
+                .Argument("rank", SnippetArgumentType.SkillRank)
+                .Repeats(2)
                 .AppearsWhenAction((player, args) =>
-                {// Missing at least one pair of arguments.
-                    if (args.Length <= 2)
+                {
+                    // Missing at least one pair of arguments.
+                    if (args.Length < 2)
                     {
                         const string Error = "'condition-has-any-skill' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
@@ -48,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    for (var index = 1; index <= args.Length; index++)
+                    for (var index = 0; index < args.Length; index += 2)
                     {
                         var skillId = args[index];
 
@@ -83,21 +88,25 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         if (dbPlayer.Skills[skill].Rank >= requiredRank)
                             return true;
 
-                        index++;
                     }
 
                     return false;
                 });
         }
-        
+
         private void ConditionHasAllSkills()
         {
             _builder.Create("condition-all-skills")
                 .Description("Checks whether a player has all skills at a minimum rank.")
+                .Phrase("the player has every one of {skillId} at rank {rank} or better")
+                .NegatedPhrase("the player is short of rank {rank} in at least one of {skillId}")
+                .Argument("skillId", SnippetArgumentType.SkillId)
+                .Argument("rank", SnippetArgumentType.SkillRank)
+                .Repeats(2)
                 .AppearsWhenAction((player, args) =>
                 {
                     // Missing at least one pair of arguments.
-                    if (args.Length <= 2)
+                    if (args.Length < 2)
                     {
                         const string Error = "'condition-has-all-skills' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
@@ -117,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    for (var index = 1; index <= args.Length; index++)
+                    for (var index = 0; index < args.Length; index += 2)
                     {
                         var skillId = args[index];
 
@@ -152,7 +161,6 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         if (dbPlayer.Skills[skill].Rank < requiredRank)
                             return false;
 
-                        index++;
                     }
 
                     return true;

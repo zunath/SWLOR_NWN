@@ -91,8 +91,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What do ya want to drink?",
-            "2": "'Voulez boire quoi ?"
+            "0": "What would you like to drink?",
+            "2": "What would you like to drink?"
           }
         }
       }
@@ -147,7 +147,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Nothing thanks.",
-            "2": "Rien merci."
+            "2": "Nothing thanks."
           }
         }
       },
@@ -189,7 +189,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Show me what you have in stock.",
-            "2": "Montrez-moi ce que vous avez en stock."
+            "2": "Show me what you have in stock."
           }
         }
       }

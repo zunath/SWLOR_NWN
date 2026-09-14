@@ -9,7 +9,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         BastardSword = 3,
         LightFlail = 4,
         WarHammer = 5,
-        Cannon = 6, 
+        Cannon = 6,
         Rifle = 7,
         Longbow = 8,
         LightMace = 9,
@@ -104,6 +104,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         Saberstaff = 511,
         Lightsaber = 512,
         Electronics1 = 513,
+        LegacyPistol = 514,
 
         BaseFuel = 515,
         Electronics2 = 516,

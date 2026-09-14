@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.LootService;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ore_tilarium", 30)
                 .AddItem("aluminum", 2)
                 .AddItem("quadrenium", 1);
-            
+
             _builder.Create("ASTEROID_CURRIAN")
                 .AddItem("ore_currian", 30)
                 .AddItem("steel", 2)

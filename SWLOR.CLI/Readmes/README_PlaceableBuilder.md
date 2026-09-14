@@ -5,9 +5,9 @@ The PlaceableBuilder generates JSON files for placeable objects used in the SWLO
 
 ## Command
 ```bash
-SWLOR.CLI.exe -c
+RunCLI.cmd -c
 # or
-SWLOR.CLI.exe --placeable
+RunCLI.cmd --placeable
 ```
 
 ## Functionality
@@ -91,4 +91,4 @@ This tool is used during development to:
 - Only processes placeables with recognized category prefixes
 - Clears the output directory before generating new files
 - Uses standardized naming conventions for resource references
-- Generates JSON files compatible with the NWN module system 
+- Generates JSON files compatible with the NWN module system

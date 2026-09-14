@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
+namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 {
     public class ElectrobladeAppearanceDefinition : WeaponAppearanceBaseDefinition
     {
@@ -39,7 +39,7 @@
             509, // Color #5
             // Color #6
             701, // Color #7
-            801, 802, 803, 804, 805, 806, 807, 808, // Color #8 
+            801, 802, 803, 804, 805, 806, 807, 808, // Color #8
             901, 902, 903, 904, 905, 906, 907, 908, // Color #9
         };
     }

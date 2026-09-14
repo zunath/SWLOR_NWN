@@ -176,21 +176,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdatePagination(int totalRecordCount)
         {
             _skipPaginationSearch = true;
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            var pages = (int)(totalRecordCount / PlaceablesPerPage + (totalRecordCount % PlaceablesPerPage == 0 ? 0 : 1));
-
-            pageNumbers.Add(new GuiComboEntry("Page 1", 0));
-            for (var x = 2; x <= pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-            }
-
-            PageNumbers = pageNumbers;
-
-            if (pages <= 0)
-                SelectedPageIndex = 0;
-            else if (SelectedPageIndex > pages - 1)
-                SelectedPageIndex = pages - 1;
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                PlaceablesPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
 
             _skipPaginationSearch = false;
         }

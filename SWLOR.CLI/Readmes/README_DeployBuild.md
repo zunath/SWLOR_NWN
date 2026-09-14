@@ -5,9 +5,10 @@ The DeployBuild command automates the deployment process for the SWLOR game serv
 
 ## Command
 ```bash
-SWLOR.CLI.exe -o
+cd Build
+..\tools\SWLOR.CLI\RunCLI.cmd -o
 # or
-SWLOR.CLI.exe --outputDeploy
+..\tools\SWLOR.CLI\RunCLI.cmd --outputDeploy
 ```
 
 ## Functionality
@@ -24,7 +25,7 @@ Creates the debug server directory structure:
 ```
 
 ### 2. Binary Deployment
-- Copies all files from `../SWLOR.Game.Server/bin/Debug/net8.0/` to `../debugserver/dotnet/`
+- Copies all files from `../SWLOR.Game.Server/bin/Release/net10.0/` to `../debugserver/dotnet/`
 - Excludes the `swlor.env` file to preserve existing configuration
 - Maintains directory structure during copy operations
 
@@ -48,7 +49,7 @@ The tool expects the following structure:
 SWLOR_NWN/
 ├── SWLOR.CLI/
 ├── SWLOR.Game.Server/
-│   ├── bin/Debug/net8.0/
+│   ├── bin/Release/net10.0/
 │   └── Docker/
 └── Module/
     └── Star Wars LOR v2.mod
@@ -70,6 +71,6 @@ This tool is used during development to:
 
 ## Notes
 - The tool preserves the `swlor.env` file to maintain existing configuration
-- All operations are performed relative to the CLI tool's directory
+- All operations are performed relative to the current working directory; use the repository `Build` directory
 - The debug server directory is created if it doesn't exist
 - Existing files in the debug server directory are overwritten 

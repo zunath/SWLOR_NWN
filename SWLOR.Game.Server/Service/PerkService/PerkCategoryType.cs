@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace SWLOR.Game.Server.Service.PerkService
 {
     public enum PerkCategoryType
@@ -7,137 +5,176 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Invalid", false)]
         Invalid = 0,
 
-        [PerkCategory("One Handed - General", true)]
-        OneHandedGeneral = 1,
+        [PerkCategory("Force - Alter", true)]
+        ForceAlter = 1,
 
-        [PerkCategory("One Handed - Vibroblade", true)]
-        OneHandedVibroblade = 2,
-
-        [PerkCategory("One Handed - Finesse Vibroblade", true)]
-        OneHandedFinesseVibroblade = 3,
-
-        [PerkCategory("One Handed - Lightsaber", true)]
-        OneHandedLightsaber = 4,
-
-        [PerkCategory("Two Handed - General", true)]
-        TwoHandedGeneral = 5,
-
-        [PerkCategory("Two Handed - Heavy Vibroblade", true)]
-        TwoHandedHeavyVibroblade = 6,
-
-        [PerkCategory("Two Handed - Polearm", true)]
-        TwoHandedPolearm = 7,
-
-        [PerkCategory("Two Handed - Twin Blade", true)]
-        TwoHandedTwinBlade = 8,
-
-        [PerkCategory("Two Handed - Saberstaff", true)]
-        TwoHandedSaberstaff = 9,
-
-        [PerkCategory("Martial Arts - General", true)]
-        MartialArtsGeneral = 10,
-
-        [PerkCategory("Martial Arts - Katars", true)]
-        MartialArtsKatars = 11,
-
-        [PerkCategory("Martial Arts - Staff", true)]
-        MartialArtsStaff = 12,
-
-        [PerkCategory("Ranged - General", true)]
-        RangedGeneral = 13,
-
-        [PerkCategory("Ranged - Pistol", true)]
-        RangedPistol = 14,
-
-        [PerkCategory("Ranged - Throwing", true)]
-        RangedThrowing = 15,
-
-        [PerkCategory("Ranged - Cannon", true)]
-        RangedCannon = 16,
-
-        [PerkCategory("Ranged - Rifle", true)]
-        RangedRifle = 17,
-
-        [PerkCategory("Force - Universal", true)]
-        ForceUniversal = 18,
-
-        [PerkCategory("Armor - General", true)]
-        ArmorGeneral = 19,
-
-        [PerkCategory("Armor - Heavy", true)]
-        ArmorHeavy = 20,
-
-        [PerkCategory("Armor - Light", true)]
-        ArmorLight = 21,
+        [PerkCategory("General", true)]
+        General = 2,
 
         [PerkCategory("Piloting", true)]
-        Piloting = 22,
+        Piloting = 5,
 
-        [PerkCategory("First Aid", true)]
-        FirstAid = 23,
+        [PerkCategory("First Aid", false)]
+        FirstAid = 6,
 
         [PerkCategory("Smithery", true)]
-        Smithery = 24,
-
-        [PerkCategory("Cybertech", true)]
-        Cybertech = 25,
+        Smithery = 7,
 
         [PerkCategory("Fabrication", true)]
-        Fabrication = 26,
+        Fabrication = 8,
 
         [PerkCategory("Gathering", true)]
-        Gathering = 27,
+        Gathering = 9,
 
         [PerkCategory("Leadership", true)]
-        Leadership = 28,
+        Leadership = 10,
 
-        [PerkCategory("Force - Light", true)]
-        ForceLight = 29,
+        [PerkCategory("Force - Control", true)]
+        ForceControl = 11,
 
-        [PerkCategory("Force - Dark", true)]
-        ForceDark = 30,
-
-        [PerkCategory("General Perks", true)]
-        General = 31,
+        [PerkCategory("Force - Sense", true)]
+        ForceSense = 12,
 
         [PerkCategory("Agriculture", true)]
-        Agriculture = 32,
+        Agriculture = 13,
 
         [PerkCategory("Engineering", true)]
-        Engineering = 33,
+        Engineering = 14,
 
-        [PerkCategory("Devices", true)]
-        Devices = 34,
-
-        [PerkCategory("One Handed - Shield", true)]
-        OneHandedShield = 35,
+        [PerkCategory("Devices", false)]
+        Devices = 15,
 
         [PerkCategory("Beast Mastery - Training", true)]
-        BeastMasteryTraining = 36,
+        BeastMasteryTraining = 16,
 
         [PerkCategory("Beast Mastery - Incubation", true)]
-        BeastMasteryIncubation = 37,
-
-        [PerkCategory("Beast - General", true)]
-        BeastGeneral = 38,
+        BeastMasteryIncubation = 17,
 
         [PerkCategory("Beast - Damage", true)]
-        BeastDamage = 39,
+        BeastDamage = 19,
 
         [PerkCategory("Beast - Tank", true)]
-        BeastTank = 40,
+        BeastTank = 20,
 
         [PerkCategory("Beast - Balanced", true)]
-        BeastBalanced = 41,
+        BeastBalanced = 21,
 
         [PerkCategory("Beast - Bruiser", true)]
-        BeastBruiser = 42,
+        BeastBruiser = 22,
 
         [PerkCategory("Beast - Evasion", true)]
-        BeastEvasion = 43,
+        BeastEvasion = 23,
 
         [PerkCategory("Beast - Force", true)]
-        BeastForce = 44,
+        BeastForce = 24,
+
+        [PerkCategory("Vibroblade - Bulwark", true)]
+        VibrobladeDefense = 25,
+
+        [PerkCategory("Vibroblade - Frenzy", true)]
+        VibrobladeOffense = 26,
+
+        [PerkCategory("Vibroknife - Shadow", true)]
+        VibroknifeShadow = 27,
+
+        [PerkCategory("Vibroknife - Saboteur", true)]
+        VibroknifeSaboteur = 28,
+
+        [PerkCategory("Lightsaber - Severance", true)]
+        LightsaberDefense = 29,
+
+        [PerkCategory("Lightsaber - Ward", true)]
+        LightsaberOffense = 30,
+
+        [PerkCategory("Heavy Vibroblade - Immortal", true)]
+        HeavyVibrobladeDefense = 31,
+
+        [PerkCategory("Heavy Vibroblade - Berserker", true)]
+        HeavyVibrobladeOffense = 32,
+
+        [PerkCategory("Spear - Vigor", true)]
+        SpearDamage = 33,
+
+        [PerkCategory("Spear - Disabler", true)]
+        SpearDisabler = 34,
+
+        [PerkCategory("Twin Blade - Cyclone", true)]
+        TwinBladeCyclone = 35,
+
+        [PerkCategory("Twin Blade - Lacerator", true)]
+        TwinBladeDuelist = 36,
+
+        [PerkCategory("Saberstaff - Conduit", true)]
+        SaberstaffConduit = 37,
+
+        [PerkCategory("Saberstaff - Tempest", true)]
+        SaberstaffTempest = 38,
+
+        [PerkCategory("Katar - Iron Guard", true)]
+        KatarIronGuard = 39,
+
+        [PerkCategory("Katar - Scrapper", true)]
+        KatarVenomCurrent = 40,
+
+        [PerkCategory("Staff - Crusher", true)]
+        StaffCrusher = 41,
+
+        [PerkCategory("Staff - Sentinel", true)]
+        StaffSentinel = 42,
+
+        [PerkCategory("Pistol - Gambler", true)]
+        PistolGunslinger = 43,
+
+        [PerkCategory("Pistol - Skirmisher", true)]
+        PistolSkirmisher = 44,
+
+        [PerkCategory("Rifle - Marksman", true)]
+        RifleMarksman = 45,
+
+        [PerkCategory("Rifle - Suppression", true)]
+        RiflePacification = 46,
+
+        [PerkCategory("Throwing - Ordnance", true)]
+        ThrowingBombardier = 47,
+
+        [PerkCategory("Throwing - Flurry", true)]
+        ThrowingDeadeye = 48,
+
+        [PerkCategory("Leadership - Vanguard Command", true)]
+        LeadershipVanguardCommand = 49,
+
+        [PerkCategory("Leadership - Field Steward", true)]
+        LeadershipFieldSteward = 50,
+
+        [PerkCategory("Devices - Grenadier", true)]
+        DevicesGrenadier = 51,
+
+        [PerkCategory("Devices - Field Engineer", true)]
+        DevicesFieldEngineer = 52,
+
+        [PerkCategory("Devices - Field Support", true)]
+        DevicesFieldSupport = 53,
+
+        [PerkCategory("Devices - Assault Gadgets", true)]
+        DevicesAssaultGadgets = 54,
+
+        [PerkCategory("First Aid - Trauma Medic", true)]
+        FirstAidTraumaMedic = 55,
+
+        [PerkCategory("First Aid - Combat Pharmacology", true)]
+        FirstAidCombatPharmacology = 56,
+
+        [PerkCategory("Mimicry", true)]
+        Mimicry = 57,
+
+        [PerkCategory("Espionage - Infiltrator", true)]
+        EspionageInfiltrator = 58,
+
+        [PerkCategory("Espionage - Saboteur", true)]
+        EspionageSaboteur = 59,
+
+        [PerkCategory("Espionage - Tradecraft", true)]
+        EspionageTradecraft = 60,
     }
 
     public class PerkCategoryAttribute : Attribute

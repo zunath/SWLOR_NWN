@@ -511,7 +511,7 @@
         },
         "Tail_New": {
           "type": "dword",
-          "value": 205
+          "value": 0
         },
         "TemplateList": {
           "type": "list",
@@ -531,7 +531,7 @@
         },
         "Wings_New": {
           "type": "dword",
-          "value": 205
+          "value": 0
         },
         "Wis": {
           "type": "byte",

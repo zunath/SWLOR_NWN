@@ -1,109 +1,128 @@
-﻿using System.Collections.Generic;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class BenevolenceAbilityDefinition : IAbilityListDefinition
+    public sealed class BenevolenceAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private const string BeneRegen = "FORCE_BENEVOLENCE";
-
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            Benevolence1();
-            Benevolence2();
-            Benevolence3();
+            var builder = new AbilityBuilder();
 
-            return _builder.Build();
+            Benevolence1(builder);
+            Benevolence2(builder);
+            Benevolence3(builder);
+
+            return builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int baseAmount)
+        private static void Benevolence1(AbilityBuilder builder)
         {
-            var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
-            var targetBonus = willBonus;
-            if (target != activator && Stat.GetCurrentFP(activator) >= 16)
-            {
-                RemoveEffectByTag(target, BeneRegen);
-
-                var willRestore = (willBonus / 2) * 4;
-                var duration = 90f + (willBonus * 60f);
-                var effect = EffectRegenerate(willRestore, 24f);
-                Stat.ReduceFP(activator, 10);
-                Stat.ReduceStamina(activator, willRestore);
-                Stat.RestoreFP(target, willRestore);
-                Stat.RestoreStamina(target, willRestore);
-                targetBonus = willBonus * 4;
-
-                effect = TagEffect(effect, BeneRegen);
-                ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
-            }
-            var willHeal = baseAmount + (targetBonus * 4) + Random.D4(targetBonus);
-
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(willHeal), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
-
-            Enmity.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-        }
-
-        private void Benevolence1()
-        {
-            _builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
+            builder
+                .Create(FeatType.Benevolence1, PerkType.Benevolence)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Benevolence)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Benevolence, 8f)
-                .HasActivationDelay(2f)
-                .RequirementFP(2)
-                .IsCastedAbility()
-                .HasMaxRange(10f)
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 30);
-                });
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .SkillType(SkillType.Force)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Benevolence1ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementFP(3);
         }
 
-        private void Benevolence2()
+        private static void Benevolence2(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
+            builder
+                .Create(FeatType.Benevolence2, PerkType.Benevolence)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Benevolence)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Benevolence, 8f)
-                .HasActivationDelay(2f)
-                .RequirementFP(4)
-                .IsCastedAbility()
-                .HasMaxRange(10f)
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 60);
-                });
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .SkillType(SkillType.Force)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Benevolence2ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementFP(5);
         }
 
-        private void Benevolence3()
+        private static void Benevolence3(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
+            builder
+                .Create(FeatType.Benevolence3, PerkType.Benevolence)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Benevolence)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Benevolence III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.Benevolence, 8f)
-                .HasActivationDelay(2f)
-                .RequirementFP(6)
-                .IsCastedAbility()
-                .HasMaxRange(10f)
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 90);
-                });
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.Benevolence, 6f)
+                .SkillType(SkillType.Force)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Benevolence3ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementFP(7);
+        }
+
+        private static void Benevolence1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyBenevolence(activator, target, 8);
+        }
+
+        private static void Benevolence2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyBenevolence(activator, target, 14);
+        }
+
+        private static void Benevolence3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyBenevolence(activator, target, 20);
+        }
+
+        private static void ApplyBenevolence(uint activator, uint target, int percent)
+        {
+            var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
+            var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
+            var multiplier = friendly == activator ? 1f : 1.25f;
+            var hitPointsBeforeHealing = GetCurrentHitPoints(friendly);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, percent, multiplier: multiplier);
+            if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+            ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
         }
     }
 }

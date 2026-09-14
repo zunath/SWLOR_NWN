@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
@@ -16,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             //MoveDoor();
             EnmityDebugger();
+            NuiGallery();
+            AnimationTester();
             GetObjectId();
             ResetBeast();
 
@@ -80,9 +83,37 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("enmitydebugger")
                 .Description("Opens enmity debugger window")
                 .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
+                });
+        }
+
+        private void NuiGallery()
+        {
+            _builder.Create("nuigallery")
+                .Description("Opens the NUI control gallery debug window")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.DebugNuiGallery);
+                });
+        }
+
+        private void AnimationTester()
+        {
+            _builder.Create("animations")
+                .Description("Opens the searchable animation tester. Preview moves on your character.")
+                .Permissions(AuthorizationLevel.DM | AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    // Store the window under the owning DM while binding the UI and
+                    // playback to the possessed creature, as with DMTools and Dice.
+                    Gui.TogglePlayerWindow(AnimationPreviewCatalog.GetController(user),
+                        GuiWindowType.AnimationDebug, uiTarget: user);
                 });
         }
 
@@ -108,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var playerId = GetObjectUUID(user);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    
+
                     dbPlayer.ActiveBeastId = string.Empty;
                     DB.Set(dbPlayer);
 

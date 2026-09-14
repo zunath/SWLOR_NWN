@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 570
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -6592,7 +6612,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rouillée"
+            "2": "Rusted Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -6816,7 +6836,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -7043,7 +7063,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -9295,7 +9315,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -9522,7 +9542,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -9749,7 +9769,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -11326,7 +11346,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -11553,8 +11573,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Moisture Vaporator",
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -11781,7 +11801,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -12008,7 +12028,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -12460,7 +12480,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -12687,7 +12707,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -12914,7 +12934,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -13141,7 +13161,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -18725,7 +18745,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -19491,6 +19511,26 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]

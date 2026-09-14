@@ -1,21 +1,25 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using Exception = System.Exception;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Migration
     {
+        private const int ConsoleProgressMigrationVersion = 22;
+        internal const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
+        private const int LastPlayerVersionWithoutFileCheckpoint = 12;
         private static int _currentMigrationVersion;
-        private static int _newMigrationVersion;
+        private static ServerMigrationState _serverMigrationState = new(0);
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
@@ -25,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         {
             var config = GetServerConfiguration();
             _currentMigrationVersion = config.MigrationVersion;
+            _serverMigrationState = new ServerMigrationState(_currentMigrationVersion);
 
             LoadServerMigrations();
             LoadPlayerMigrations();
@@ -41,10 +46,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void UpdateMigrationVersion()
         {
-            if (_newMigrationVersion > _currentMigrationVersion)
+            if (!_serverMigrationState.Failed && _serverMigrationState.CompletedVersion > _currentMigrationVersion)
             {
                 var config = GetServerConfiguration();
-                config.MigrationVersion = _newMigrationVersion;
+                config.MigrationVersion = _serverMigrationState.CompletedVersion;
                 DB.Set(config);
             }
         }
@@ -80,23 +85,34 @@ namespace SWLOR.Game.Server.Service
 
         private static void RunMigrations(MigrationExecutionType executionType)
         {
+            if (_serverMigrationState.Failed)
+                return;
+
             var sw = new Stopwatch();
-            var migrations = GetMigrations(executionType);
-            var newVersion = 0;
+            var migrations = GetMigrations(executionType).ToList();
 
             foreach (var migration in migrations)
             {
                 sw.Reset();
                 try
                 {
+                    if (migration.Version >= ConsoleProgressMigrationVersion)
+                    {
+                        Log.Write(
+                            LogGroup.Migration,
+                            $"Starting server migration ({executionType}) #{migration.Version}.",
+                            true);
+                    }
+
                     sw.Start();
-                    migration.Migrate();
-                    newVersion = migration.Version;
+                    _serverMigrationState.Run(migration, pending => pending.Migrate());
                     sw.Stop();
+
                     Log.Write(LogGroup.Migration, $"Server migration ({executionType}) #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
                 }
                 catch (Exception ex)
                 {
+                    _serverMigrationState.MarkFailed();
                     // It's dangerous to proceed without a successful migration. Shut down the server in this situation.
                     Log.Write(LogGroup.Error, $"Server migration ({executionType}) #{migration.Version} failed to apply. Exception: {ex.ToMessageAndCompleteStacktrace()}. Shutting down server.", true);
                     AdministrationPlugin.ShutdownServer();
@@ -104,8 +120,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (_newMigrationVersion < newVersion)
-                _newMigrationVersion = newVersion;
         }
 
         private static void RunServerMigrationsPostDatabase()
@@ -132,11 +146,14 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
+            var fileVersion = GetLocalInt(player, PlayerFileVersionVariable);
+            if (fileVersion == 0)
+                fileVersion = Math.Min(dbPlayer.Version, LastPlayerVersionWithoutFileCheckpoint);
+
             var migrations = _playerMigrations
-                .Where(x => x.Key > dbPlayer.Version)
+                .Where(x => x.Key > Math.Min(dbPlayer.Version, fileVersion))
                 .OrderBy(o => o.Key)
                 .Select(s => s.Value);
-            var newVersion = dbPlayer.Version;
 
             foreach (var migration in migrations)
             {
@@ -144,26 +161,109 @@ namespace SWLOR.Game.Server.Service
                 try
                 {
                     sw.Start();
-                    migration.Migrate(player);
-                    newVersion = migration.Version;
+                    ApplyPlayerMigration(migration, player,
+                        () => DB.Get<Player>(playerId) ?? throw new InvalidOperationException("The player record was lost during migration."),
+                        updatedPlayer => DB.Set(updatedPlayer),
+                        () => fileVersion,
+                        version =>
+                        {
+                            SavePlayerFileCheckpoint(player, version);
+                            fileVersion = version;
+                        });
                     sw.Stop();
                     Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
                 }
                 catch (Exception ex)
                 {
                     Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} failed to apply for player {GetName(player)} [{playerId}]. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
+                    BootPC(player, "Your character update could not be completed. Please contact a server administrator.");
                     break;
                 }
             }
 
-            // Migrations can edit the database player entity. Refresh it before updating the version.
-            dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-            dbPlayer.Version = newVersion;
-            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Advances character-file and database checkpoints independently so retrying an older file never repeats record rewards.
+        /// </summary>
+        internal static void ApplyPlayerMigration(
+            IPlayerMigration migration,
+            uint player,
+            Func<Player> loadPlayer,
+            Action<Player> savePlayer,
+            Func<int> loadCharacterVersion,
+            Action<int> saveCharacterVersion)
+        {
+            var migratePlayerData = loadPlayer().Version < migration.Version;
+            if (loadCharacterVersion() < migration.Version)
+            {
+                migration.Migrate(player);
+                saveCharacterVersion(migration.Version);
+            }
+
+            if (!migratePlayerData)
+                return;
+
+            // Live-object migrations may save player data. Refresh it, then copy
+            // the cached record so failed hooks or saves cannot publish an unsaved
+            // token or checkpoint through DB.Get's shared instance.
+            var dbPlayer = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(loadPlayer()));
+            migration.MigratePlayerData(dbPlayer);
+            dbPlayer.Version = migration.Version;
+            savePlayer(dbPlayer);
+        }
+
+        /// <summary>
+        /// Saves the completed live migration before advancing its database checkpoint.
+        /// The ordinary export command queues a later save and cannot establish this ordering.
+        /// </summary>
+        internal static void SavePlayerFileCheckpoint(uint player, int version)
+        {
+            var previousVersion = GetLocalInt(player, PlayerFileVersionVariable);
+            SetLocalInt(player, PlayerFileVersionVariable, version);
+            try
+            {
+                var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
+                if (client == null || client.SaveServerCharacter() == 0)
+                    throw new InvalidOperationException("The migrated character file could not be saved.");
+            }
+            catch
+            {
+                if (previousVersion == 0)
+                    DeleteLocalInt(player, PlayerFileVersionVariable);
+                else
+                    SetLocalInt(player, PlayerFileVersionVariable, previousVersion);
+                throw;
+            }
+        }
+
+        /// <summary>Retains initialization intent until both the starter character and its record are saved.</summary>
+        internal static Player RunPlayerInitialization(Player original, Action<Player> initialize,
+            Action<Player> savePlayer, Func<int> loadFileVersion, Action<int> saveFileVersion)
+        {
+            Player Copy(Player value) => JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(value));
+            var pending = Copy(original);
+            if (!pending.CharacterInitializationPending || pending.Version <= 0 || loadFileVersion() < pending.Version)
+            {
+                pending.CharacterInitializationPending = true;
+                savePlayer(pending);
+                // Initialization mutates many fields; don't expose partial results through the shared DB cache.
+                pending = Copy(pending);
+                initialize(pending);
+                savePlayer(pending);
+                saveFileVersion(pending.Version);
+            }
+
+            var completed = Copy(pending);
+            completed.CharacterInitializationPending = false;
+            savePlayer(completed);
+            return completed;
         }
 
         private static void LoadServerMigrations()
         {
+            _serverMigrationsPostDatabase.Clear();
+            _serverMigrationsPostCache.Clear();
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IServerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -174,13 +274,14 @@ namespace SWLOR.Game.Server.Service
 
                 if(instance.ExecutionType == MigrationExecutionType.PostDatabaseLoad)
                     _serverMigrationsPostDatabase.Add(instance.Version, instance);
-                else 
+                else
                     _serverMigrationsPostCache.Add(instance.Version, instance);
             }
         }
 
         private static void LoadPlayerMigrations()
         {
+            _playerMigrations.Clear();
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPlayerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);

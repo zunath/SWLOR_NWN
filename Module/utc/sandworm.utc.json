@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 220.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 36
+    "value": 43
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 2000
+    "value": 7324
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 36
+    "value": 25
   },
   "Disarmable": {
     "type": "byte",
@@ -81,21 +81,21 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "sandwormbite"
+          "value": "sandworm_wp"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "sandwormbite"
+          "value": "sandworm_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "sandworm_hide"
+          "value": "sandworm_sk"
         }
       }
     ]
@@ -111,14 +111,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1744
+          "value": 289
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 1820
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1754
         }
       }
     ]
@@ -143,11 +157,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2000
+    "value": 6924
   },
   "Int": {
     "type": "byte",
-    "value": 38
+    "value": 25
   },
   "Interruptable": {
     "type": "byte",
@@ -177,7 +191,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 2325
+    "value": 7324
   },
   "NaturalAC": {
     "type": "byte",
@@ -482,7 +496,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 35
   },
   "Subrace": {
     "type": "cexostring",
@@ -598,6 +612,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 26
+    "value": 35
   }
 }

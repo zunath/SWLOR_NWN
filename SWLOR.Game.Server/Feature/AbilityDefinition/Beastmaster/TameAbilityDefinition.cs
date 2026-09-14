@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -16,6 +17,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     {
         private readonly AbilityBuilder _builder = new();
 
+        private const int BaseTameChance = 40;
+        private const int SkillLevelDeltaChancePercent = 3;
+        private const int SocialChancePercentPerPoint = 3;
+        private const int MaximumTameChancePercent = 75;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -24,12 +29,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             return _builder.Build();
         }
 
+        public static int CalculateTameChance(int beastMasterySkillRank, int npcLevel, int social)
+        {
+            var baseChance = BaseTameChance + (beastMasterySkillRank - npcLevel) * SkillLevelDeltaChancePercent;
+            var socialChance = System.Math.Max(0, social) * SocialChancePercentPerPoint;
+
+            return System.Math.Clamp(baseChance + socialChance, 0, MaximumTameChancePercent);
+        }
+
         private void Tame()
         {
-            _builder.Create(FeatType.Tame, PerkType.Tame)
+            _builder
+                .Create(FeatType.Tame, PerkType.Tame)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Tame)
                 .Name("Tame")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 2f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(18f)
                 .RequirementStamina(10)
@@ -91,11 +107,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var type = BeastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
                     var npcStats = Stat.GetNPCStats(target);
-                    var socialMod = GetAbilityModifier(AbilityType.Social, activator);
-                    var chance = 40 + (skill - npcStats.Level) * 3 + socialMod * 4;
-
-                    if (chance > 95)
-                        chance = 95;
+                    var social = GetAbilityScore(activator, AbilityType.Social);
+                    var chance = CalculateTameChance(skill, npcStats.Level, social);
 
                     if (Random.D100(1) > chance)
                     {
@@ -122,22 +135,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         EvasionPurity = Random.Next(0, 10),
                         LearningPurity = Random.Next(0, 10),
 
-                        DefensePurities = new Dictionary<CombatDamageType, int>
-                        {
-                            { CombatDamageType.Physical, Random.Next(0, 10) },
-                            { CombatDamageType.Force, Random.Next(0, 10) },
-                            { CombatDamageType.Fire, Random.Next(0, 10) },
-                            { CombatDamageType.Ice, Random.Next(0, 10) },
-                            { CombatDamageType.Poison, Random.Next(0, 10) },
-                            { CombatDamageType.Electrical, Random.Next(0, 10) },
-                        },
-
-                        SavingThrowPurities = new Dictionary<SavingThrow, int>
-                        {
-                            { SavingThrow.Fortitude, Random.Next(0, 10)},
-                            { SavingThrow.Will, Random.Next(0, 10)},
-                            { SavingThrow.Reflex, Random.Next(0, 10)},
-                        }
+                        DefensePurities = BeastResistanceCalculator.CreateRandomDefensePurities(),
+                        ResistancePurities = BeastResistanceCalculator.CreateRandomResistancePurities()
                     };
 
                     DB.Set(dbBeast);
@@ -147,6 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     SendMessageToPC(activator, ColorToken.Green($"Successfully tamed {GetName(target)}!"));
                     DestroyObject(target);
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 });
         }
     }

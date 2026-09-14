@@ -1,10 +1,10 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -25,8 +25,23 @@ namespace SWLOR.Game.Server.Service.QuestService
         public int GuildRank { get; set; } = -1;
         public bool AllowRewardSelection { get; set; }
 
+        /// <summary>
+        /// Whether completing this quest counts toward quest-completion achievements.
+        /// Player-authored content (e.g. quest contracts) should not.
+        /// </summary>
+        public bool CountsTowardAchievements { get; set; } = true;
+
+        /// <summary>
+        /// When set, invoked with the player and the item just before a turned-in collect-item objective item
+        /// is consumed/destroyed. Null for all static quests. Used by systems (such as quest contracts) which
+        /// need to reroute turned-in items instead of letting them be destroyed outright.
+        /// </summary>
+        public Action<uint, uint> CollectedItemHandler { get; set; }
+
         public List<IQuestReward> Rewards { get; } = new List<IQuestReward>();
         public List<IQuestPrerequisite> Prerequisites { get; } = new List<IQuestPrerequisite>();
+        public List<KeyItemType> KeyItemsRemovedOnAbandon { get; } = new();
+        public List<KeyItemType> KeyItemsRemovedOnComplete { get; } = new();
 
         public Dictionary<int, QuestStateDetail> States { get; } = new Dictionary<int, QuestStateDetail>();
         public List<AcceptQuestDelegate> OnAcceptActions { get; } = new List<AcceptQuestDelegate>();
@@ -69,13 +84,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player to check</param>
         /// <returns>true if player can accept, false otherwise</returns>
-        private bool CanAccept(uint player)
+        public bool CanAccept(uint player, bool sendFeedback = true)
         {
             // Retrieve the player's current quest status for this quest.
             // If they haven't accepted it yet, this will be null.
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var quest = dbPlayer.Quests.ContainsKey(playerId) ? dbPlayer.Quests[QuestId] : null;
+            var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : null;
 
             // If the status is null, it's assumed that the player hasn't accepted it yet.
             if (quest != null)
@@ -86,14 +101,16 @@ namespace SWLOR.Game.Server.Service.QuestService
                     // If it's repeatable, then we don't care if they've already completed it.
                     if (!IsRepeatable)
                     {
-                        SendMessageToPC(player, "You have already completed this quest.");
+                        if (sendFeedback)
+                            SendMessageToPC(player, "You have already completed this quest.");
                         return false;
                     }
                 }
                 // If the player already accepted the quest, prevent them from accepting it again.
                 else
                 {
-                    SendMessageToPC(player, "You have already accepted this quest.");
+                    if (sendFeedback)
+                        SendMessageToPC(player, "You have already accepted this quest.");
                     return false;
                 }
             }
@@ -103,7 +120,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             {
                 if (!prereq.MeetsPrerequisite(player))
                 {
-                    SendMessageToPC(player, "You do not meet the prerequisites necessary to accept this quest.");
+                    if (sendFeedback)
+                        SendMessageToPC(player, "You do not meet the prerequisites necessary to accept this quest.");
                     return false;
                 }
             }
@@ -118,6 +136,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>true if player can complete, false otherwise</returns>
         public bool CanComplete(uint player)
         {
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return false;
+
             // Has the player even accepted this quest?
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -149,19 +173,25 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player to request a reward from</param>
         /// <param name="questSource">The source of the quest reward giver</param>
-        private void RequestRewardSelectionFromPC(uint player, uint questSource)
+        private bool RequestRewardSelectionFromPC(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return false;
 
             if (AllowRewardSelection)
             {
                 SetLocalString(player, "QST_REWARD_SELECTION_QUEST_ID", QuestId);
-                Dialog.StartConversation(player, player, nameof(QuestRewardSelectionDialog));
+                ConversationMenu.Start(player, player, nameof(QuestRewardSelectionDialog));
             }
             else
             {
                 Complete(player, questSource, null);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -218,6 +248,12 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player);
             }
 
+            foreach (var keyItem in KeyItemsRemovedOnAbandon)
+            {
+                KeyItem.RemoveKeyItem(player, keyItem);
+            }
+
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             Gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(QuestId));
         }
 
@@ -226,13 +262,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player accepting the quest.</param>
         /// <param name="questSource">The source of the quest giver</param>
-        public void Accept(uint player, uint questSource)
+        public bool Accept(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player)) return false;
 
             if (!CanAccept(player))
             {
-                return;
+                return false;
             }
 
             // By this point, it's assumed the player will accept the quest.
@@ -277,7 +313,9 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player, questSource);
             }
 
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             Gui.PublishRefreshEvent(player, new QuestAcquiredRefreshEvent(QuestId));
+            return true;
         }
 
         /// <summary>
@@ -285,9 +323,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player advancing to the next quest state</param>
         /// <param name="questSource">The source of quest advancement</param>
-        public void Advance(uint player, uint questSource)
+        public bool Advance(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return false;
 
             // Retrieve the player's current quest state.
             var playerId = GetObjectUUID(player);
@@ -299,13 +341,13 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (playerQuest.CurrentState <= 0)
             {
                 SendMessageToPC(player, "You have not accepted this quest yet.");
-                return;
+                return false;
             }
 
             // If this quest has already been completed, exit early.
             // This is used in case a module builder incorrectly configures a quest.
             // We don't want to risk giving duplicate rewards.
-            if (playerQuest.TimesCompleted > 0 && !IsRepeatable) return;
+            if (playerQuest.TimesCompleted > 0 && !IsRepeatable) return false;
 
             var currentState = GetState(playerQuest.CurrentState);
 
@@ -313,7 +355,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             foreach (var objective in currentState.GetObjectives())
             {
                 if (!objective.IsComplete(player, QuestId))
-                    return;
+                    return false;
             }
 
             var lastState = GetStates().Last();
@@ -321,7 +363,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // If this is the last state, the assumption is that it's time to complete the quest.
             if (playerQuest.CurrentState == lastState.Key)
             {
-                RequestRewardSelectionFromPC(player, questSource);
+                return RequestRewardSelectionFromPC(player, questSource);
             }
             else
             {
@@ -333,7 +375,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                 {
                     Name = quest.Name,
-                    Text = currentState.JournalText,
+                    Text = nextState.JournalText,
                     Tag = QuestId,
                     State = playerQuest.CurrentState,
                     Priority = 1,
@@ -357,15 +399,78 @@ namespace SWLOR.Game.Server.Service.QuestService
                     objective.Initialize(player, QuestId);
                 }
 
+                foreach (var keyItem in currentState.KeyItemsGrantedOnAdvance)
+                {
+                    KeyItem.GiveKeyItem(player, keyItem);
+                }
+
                 // Run any quest-specific code.
                 foreach (var action in OnAdvanceActions)
                 {
                     action.Invoke(player, questSource, playerQuest.CurrentState);
                 }
 
+                QuestEncounter.RefreshVisibilityForPlayer(player);
                 Gui.PublishRefreshEvent(player, new QuestProgressedRefreshEvent(QuestId));
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Marks this quest as completed for a player without granting rewards, running completion
+        /// actions, or requiring objectives to be met. Used by DM tooling to open quest-gated
+        /// content such as capstone perk unlocks.
+        /// </summary>
+        /// <param name="player">The player whose quest record is marked complete.</param>
+        public void ForceComplete(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
+            var hadActiveJournalEntry = quest.CurrentState > 0 && quest.TimesCompleted <= 0;
+
+            if (quest.TimesCompleted <= 0)
+            {
+                quest.TimesCompleted = 1;
+                quest.DateLastCompleted = DateTime.UtcNow;
             }
 
+            quest.CurrentState = GetStates().Count();
+            quest.ItemProgresses.Clear();
+            quest.KillProgresses.Clear();
+            dbPlayer.Quests[QuestId] = quest;
+            DB.Set(dbPlayer);
+
+            if (hadActiveJournalEntry)
+            {
+                // The quest was in the player's journal as active. Mirror Complete()'s journal
+                // handling: custom entries cannot be removed outright, so the entry is re-added
+                // flagged as completed and drops off entirely at the player's next login.
+                RemoveJournalQuestEntry(QuestId, player, false);
+
+                if (States.ContainsKey(quest.CurrentState))
+                {
+                    PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                    {
+                        Name = Name,
+                        Text = States[quest.CurrentState].JournalText,
+                        Tag = QuestId,
+                        State = quest.CurrentState,
+                        Priority = 1,
+                        IsQuestCompleted = true,
+                        IsQuestDisplayed = true,
+                        Updated = 1,
+                        CalendarDay = GetCalendarDay(),
+                        TimeOfDay = GetTimeHour()
+                    }, true);
+                }
+            }
+
+            QuestEncounter.RefreshVisibilityForPlayer(player);
+            Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }
 
         /// <summary>
@@ -377,7 +482,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="selectedReward">The reward selected by the player</param>
         public void Complete(uint player, uint questSource, IQuestReward selectedReward)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
             if (!CanComplete(player)) return;
 
             var playerId = GetObjectUUID(player);
@@ -421,10 +530,36 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player, questSource);
             }
 
+            foreach (var keyItem in KeyItemsRemovedOnComplete)
+            {
+                KeyItem.RemoveKeyItem(player, keyItem);
+            }
+
             SendMessageToPC(player, "Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(QuestId, player, false);
 
-            EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
+            // Custom journal entries cannot be removed by RemoveJournalQuestEntry, so the entry is
+            // re-added flagged as completed. This updates the player's journal immediately; the entry
+            // drops off entirely at their next login since only active quests are re-applied then.
+            PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+            {
+                Name = Name,
+                Text = States[quest.CurrentState].JournalText,
+                Tag = QuestId,
+                State = quest.CurrentState,
+                Priority = 1,
+                IsQuestCompleted = true,
+                IsQuestDisplayed = true,
+                Updated = 1,
+                CalendarDay = GetCalendarDay(),
+                TimeOfDay = GetTimeHour()
+            }, true);
+
+            QuestEncounter.RefreshVisibilityForPlayer(player);
+
+            if (CountsTowardAchievements)
+                EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
+
             Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }
     }

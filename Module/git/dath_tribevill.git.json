@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 284
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 64
+            }
+          }
+        ]
       }
     }
   },
@@ -12511,7 +12531,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {
@@ -12738,7 +12758,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {
@@ -12965,7 +12985,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {
@@ -13192,7 +13212,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {
@@ -16137,7 +16157,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {
@@ -16364,7 +16384,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {
@@ -16591,7 +16611,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {
@@ -17043,7 +17063,7 @@
           "id": 14551,
           "type": "cexolocstring",
           "value": {
-            "8": "rocas"
+            "8": "Rocks"
           }
         },
         "OnClick": {

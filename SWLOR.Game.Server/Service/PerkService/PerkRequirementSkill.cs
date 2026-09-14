@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.PerkService
@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             RequiredRank = requiredRank;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.Skill;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
@@ -24,7 +26,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             var skill = dbPlayer.Skills[Type];
             var rank = skill.Rank;
 
-            if (rank >= RequiredRank) 
+            if (rank >= RequiredRank)
                 return string.Empty;
 
             return $"Your skill rank is too low. (Your rank is {rank} versus required rank {RequiredRank})";

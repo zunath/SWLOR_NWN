@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
@@ -144,12 +142,12 @@ namespace SWLOR.Game.Server.Service
             // Weapon Classes
             if (Item.VibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroblade;
-            if (Item.FinesseVibrobladeBaseItemTypes.Contains(baseItemType))
-                return MarketCategoryType.FinesseVibroblade;
+            if (Item.VibroknifeBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Vibroknife;
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.HeavyVibroblade;
-            if (Item.PolearmBaseItemTypes.Contains(baseItemType))
-                return MarketCategoryType.Polearm;
+            if (Item.SpearBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Spear;
             if (Item.StaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Staff;
             if (Item.PistolBaseItemTypes.Contains(baseItemType))
@@ -186,36 +184,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Armor classes
-            var armorType = Item.GetArmorType(item);
-            if (armorType == ArmorType.Heavy)
+            switch (baseItemType)
             {
-                switch (baseItemType)
-                {
-                    case BaseItem.Helmet:
-                        return MarketCategoryType.Helmet;
-                    case BaseItem.Gloves:
-                    case BaseItem.Bracer:
-                        return MarketCategoryType.Bracer;
-                    case BaseItem.Boots:
-                        return MarketCategoryType.Legging;
-                    case BaseItem.Armor:
-                        return MarketCategoryType.Breastplate;
-                }
-            }
-            else if (armorType == ArmorType.Light)
-            {
-                switch (baseItemType)
-                {
-                    case BaseItem.Helmet:
-                        return MarketCategoryType.Cap;
-                    case BaseItem.Gloves:
-                    case BaseItem.Bracer:
-                        return MarketCategoryType.Glove;
-                    case BaseItem.Boots:
-                        return MarketCategoryType.Boot;
-                    case BaseItem.Armor:
-                        return MarketCategoryType.Tunic;
-                }
+                case BaseItem.Helmet:
+                    return MarketCategoryType.Helmet;
+                case BaseItem.Gloves:
+                case BaseItem.Bracer:
+                    return MarketCategoryType.Glove;
+                case BaseItem.Boots:
+                    return MarketCategoryType.Boot;
+                case BaseItem.Armor:
+                    return MarketCategoryType.Armor;
             }
 
             // Recipes
@@ -265,7 +244,7 @@ namespace SWLOR.Game.Server.Service
             //Starship Ammo
             if (Space.IsStarshipAmmo(item))
                 return MarketCategoryType.StarshipAmmo;
-            
+
             return MarketCategoryType.Miscellaneous;
         }
     }

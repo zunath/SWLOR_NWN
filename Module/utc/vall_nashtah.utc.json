@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 15
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 195
+    "value": 189
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 18
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 65536,
         "EquippedRes": {
           "type": "resref",
-          "value": "v_nashtah_bite"
+          "value": "valnashtah_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "v_nashtah_p"
+          "value": "valnashtah_sk"
         }
       }
     ]
@@ -104,14 +104,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1750
+          "value": 289
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 1822
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1760
         }
       }
     ]
@@ -136,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 195
+    "value": 179
   },
   "Int": {
     "type": "byte",
-    "value": 18
+    "value": 15
   },
   "Interruptable": {
     "type": "byte",
@@ -170,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 200
+    "value": 189
   },
   "NaturalAC": {
     "type": "byte",
@@ -467,23 +474,7 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 229
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
@@ -491,7 +482,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -622,6 +613,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 14
+    "value": 10
   }
 }

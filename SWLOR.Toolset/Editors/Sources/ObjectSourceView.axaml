@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             x:Class="SWLOR.Toolset.Editors.Sources.ObjectSourceView"
+             x:DataType="sources:ObjectSourceSectionViewModel">
+  <Grid RowDefinitions="Auto,*" Margin="14,10,22,10">
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+      <TextBlock Grid.Column="0" Text="{Binding Status}" VerticalAlignment="Center" />
+      <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}"
+              IsEnabled="{Binding !IsLoading}" />
+    </Grid>
+
+    <ScrollViewer Grid.Row="1">
+      <ItemsControl ItemsSource="{Binding Placements}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="sources:ObjectPlacementRowViewModel">
+            <Border Classes="card" Padding="12,9" Margin="0,0,0,8" MaxWidth="620"
+                    HorizontalAlignment="Left">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="18">
+                <StackPanel Grid.Column="0">
+                  <TextBlock Text="{Binding AreaName}" Classes="section" />
+                  <TextBlock Text="{Binding AreaResRef}" Classes="resref" />
+                  <TextBlock Text="{Binding Detail}" Classes="dim" Margin="0,3,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="Go To"
+                        Command="{Binding $parent[ItemsControl].((sources:ObjectSourceSectionViewModel)DataContext).GoToCommand}"
+                        CommandParameter="{Binding}" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

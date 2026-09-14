@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.ActivityService
+namespace SWLOR.Game.Server.Service.ActivityService
 {
     public enum ActivityStatusType
     {

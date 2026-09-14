@@ -1,112 +1,168 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
-    public class TreatmentKitAbilityDefinition: FirstAidBaseAbilityDefinition
+    public sealed class TreatmentKitAbilityDefinition : IAbilityListDefinition
     {
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            TreatmentKit1();
-            TreatmentKit2();
+            var builder = new AbilityBuilder();
 
-            return Builder.Build();
+            TreatmentKit1(builder);
+            TreatmentKit2(builder);
+            TreatmentKit3(builder);
+
+            return builder.Build();
         }
 
-        private void TreatmentKit1()
+        private static void TreatmentKit1(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.TreatmentKit1, PerkType.TreatmentKit)
+            builder
+                .Create(FeatType.TreatmentKit1, PerkType.TreatmentKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TreatmentKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.TreatmentKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(3)
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.TreatmentKit, 6f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(TreatmentKit1ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    if (!IsWithinRange(activator, target))
-                    {
-                        return "Your target is too far away.";
-                    }
-
-                    if (!StatusEffect.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison))
-                    {
-                        return "Your target is healthy.";
-                    }
-
-                    if (!HasMedicalSupplies(activator))
-                    {
-                        return "You have no medical supplies.";
-                    }
-
-                    return string.Empty;
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
-                    StatusEffect.Remove(target, StatusEffectType.Bleed);
-                    StatusEffect.Remove(target, StatusEffectType.Poison);
-                    RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
-
-                    TakeMedicalSupplies(activator);
-
-                    Enmity.ModifyEnmityOnAll(activator, 200);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-                });
+                .BreaksStealth()
+                .RequirementStamina(3)
+                .RequirementItem("med_supplies");
         }
-        private void TreatmentKit2()
+
+        private static void TreatmentKit2(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.TreatmentKit2, PerkType.TreatmentKit)
+            builder
+                .Create(FeatType.TreatmentKit2, PerkType.TreatmentKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TreatmentKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Treatment Kit II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.TreatmentKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(3)
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.TreatmentKit, 6f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(TreatmentKit2ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    if (!IsWithinRange(activator, target))
-                    {
-                        return "Your target is too far away.";
-                    }
-
-                    if (!StatusEffect.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison, StatusEffectType.Shock, StatusEffectType.Burn))
-                    {
-                        return "Your target is healthy.";
-                    }
-
-                    if (!HasMedicalSupplies(activator))
-                    {
-                        return "You have no medical supplies.";
-                    }
-
-                    return string.Empty;
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
-                    StatusEffect.Remove(target, StatusEffectType.Bleed);
-                    StatusEffect.Remove(target, StatusEffectType.Poison);
-                    StatusEffect.Remove(target, StatusEffectType.Shock);
-                    StatusEffect.Remove(target, StatusEffectType.Burn);
-                    StatusEffect.Remove(target, StatusEffectType.Disease);
-                    RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
-
-                    TakeMedicalSupplies(activator);
-
-                    Enmity.ModifyEnmityOnAll(activator, 350);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-                });
+                .BreaksStealth()
+                .RequirementStamina(4)
+                .RequirementItem("med_supplies");
         }
+
+        private static void TreatmentKit3(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.TreatmentKit3, PerkType.TreatmentKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_TreatmentKit)
+                .UsesImmediateAuthoredAnimation()
+                .Name("Treatment Kit III")
+                .Level(3)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.TreatmentKit, 12f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(TreatmentKit3ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementStamina(5);
+        }
+
+        private static void TreatmentKit1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            var affectedCount = 0;
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
+                foreach (var statusEffect in new[] { typeof(PoisonStatusEffect), typeof(BleedStatusEffect) })
+                    StatusEffect.RemoveStatusEffect(friendly, statusEffect, false);
+                if (StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
+            }
+
+            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
+        }
+
+        private static void TreatmentKit2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            var affectedCount = 0;
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
+                StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
+                if (StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
+            }
+
+            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
+        }
+
+        private static void TreatmentKit3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            var affectedCount = 0;
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                var statusCountBeforeCleanse = StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count;
+                StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
+                if (StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 30f))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
+            }
+
+            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
+        }
+
+        private static void GrantFirstAidCombatPointIfApplied(uint activator, int affectedCount)
+        {
+            if (affectedCount > 0)
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
+        }
+
+
     }
 }

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 35.0
+    "value": 40.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 28
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 510
+    "value": 676
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 34
+    "value": 18
   },
   "Disarmable": {
     "type": "byte",
@@ -180,21 +180,21 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmwar3"
+          "value": "sithwarrior_wp"
         }
       },
       {
         "__struct_id": 32,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmwar3"
+          "value": "sithwarrior_wp2"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcswar3"
+          "value": "sithwarrior_sk"
         }
       }
     ]
@@ -324,6 +324,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1822
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1760
+        }
       }
     ]
   },
@@ -347,11 +361,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 510
+    "value": 596
   },
   "Int": {
     "type": "byte",
-    "value": 34
+    "value": 26
   },
   "Interruptable": {
     "type": "byte",
@@ -381,7 +395,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 600
+    "value": 676
   },
   "NaturalAC": {
     "type": "byte",
@@ -686,7 +700,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 22
+    "value": 32
   },
   "Subrace": {
     "type": "cexostring",
@@ -722,7 +736,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 18
   },
   "xAppearance_Head": {
     "type": "word",

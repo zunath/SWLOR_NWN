@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -120,11 +120,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("KorribanDungeonLootTemple")
                 .ResourceDespawnDelay(45) // 45 minutes for elite dungeon loot
                 .AddSpawn(ObjectType.Placeable, "korrduntemple")
-                .WithFrequency(1);
-
-            _builder.Create("KorribanDungeonLootForge")
-                .ResourceDespawnDelay(45) // 45 minutes for elite dungeon loot
-                .AddSpawn(ObjectType.Placeable, "korrdunforge")
                 .WithFrequency(1);
         }
     }

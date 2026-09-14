@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(false)
                 .SetInitialGeometry(0, 0, 400f, 240f)
                 .SetTitle("Change Price")
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>

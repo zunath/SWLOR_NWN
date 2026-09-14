@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "2": "Le fusil Outland, qui peut emporter jusqu'à huit cartouches, repose sur une technologie certes primitive mais éprouvée, ne nécessitant qu'un minimum d'entretien et surtout aucun appareil moderne et coûteux.\n\nMunitions : Cellules d'énergie standard"
+      "2": "The Blaster Carbine can hold up to eight cartridges. It relies on primitive but proven technology, requiring little maintenance and no expensive modern equipment.\n\nAmmunition: Standard energy cells"
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "2": "Le fusil Outland, qui peut emporter jusqu'à huit cartouches, repose sur une technologie certes primitive mais éprouvée, ne nécessitant qu'un minimum d'entretien et surtout aucun appareil moderne et coûteux.\n\nMunitions : Cellules d'énergie standard"
+      "2": "The Blaster Carbine can hold up to eight cartridges. It relies on primitive but proven technology, requiring little maintenance and no expensive modern equipment.\n\nAmmunition: Standard energy cells"
     }
   },
   "Identified": {
@@ -43,8 +43,8 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Carabine blaster",
-      "2": "Fusil Outland"
+      "0": "Blaster Carbine",
+      "2": "Blaster Carbine"
     }
   },
   "ModelPart1": {
@@ -53,7 +53,7 @@
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 231
+    "value": 51
   },
   "ModelPart3": {
     "type": "byte",
@@ -99,6 +99,37 @@
         "Subtype": {
           "type": "word",
           "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 52
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 30
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 98
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]
@@ -151,6 +182,21 @@
           "type": "int",
           "value": 0
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
       }
     ]
   },
@@ -160,7 +206,7 @@
   },
   "xModelPart2": {
     "type": "word",
-    "value": 231
+    "value": 51
   },
   "xModelPart3": {
     "type": "word",

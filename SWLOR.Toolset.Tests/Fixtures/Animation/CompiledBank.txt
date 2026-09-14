@@ -1,0 +1,92 @@
+# SWLOR authored animations for hero
+newmodel an_hero
+setsupermodel an_hero NULL
+classification character
+setanimationscale 1
+beginmodelgeom an_hero
+node dummy an_hero
+parent NULL
+position 0 0 0
+orientation 0 0 1 0
+scale 1
+endnode
+node dummy rootdummy
+parent an_hero
+position 0 0 1
+orientation 0 0 1 0
+scale 1
+endnode
+endmodelgeom an_hero
+newanim sw_wave an_hero
+length 1
+transtime 0
+animroot rootdummy
+event 0 cast
+node dummy an_hero
+parent NULL
+positionkey 1
+0 0 0 0
+orientationkey 1
+0 0 0 1 0
+scalekey 1
+0 1
+endnode
+node dummy rootdummy
+parent an_hero
+positionkey 1
+0 0 0 1
+orientationkey 1
+0 0 0 1 0
+scalekey 1
+0 1
+endnode
+doneanim sw_wave an_hero
+newanim sw_wave_in an_hero
+length 0.001
+transtime 0
+animroot rootdummy
+event 0 cast
+node dummy an_hero
+parent NULL
+positionkey 1
+0 0 0 0
+orientationkey 1
+0 0 0 1 0
+scalekey 1
+0 1
+endnode
+node dummy rootdummy
+parent an_hero
+positionkey 1
+0 0 0 1
+orientationkey 1
+0 0 0 1 0
+scalekey 1
+0 1
+endnode
+doneanim sw_wave_in an_hero
+newanim sw_wave_out an_hero
+length 0.2
+transtime 0
+animroot rootdummy
+event 0 cast
+node dummy an_hero
+parent NULL
+positionkey 1
+0 0 0 0
+orientationkey 1
+0 0 0 1 0
+scalekey 1
+0 1
+endnode
+node dummy rootdummy
+parent an_hero
+positionkey 1
+0 0 0 1
+orientationkey 1
+0 0 0 1 0
+scalekey 1
+0 1
+endnode
+doneanim sw_wave_out an_hero
+donemodel an_hero

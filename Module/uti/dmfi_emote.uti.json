@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The DMFI Emote Wand, unlike the PC version, is targetable. If you have a target for the DMFI Emote Wand, the target plays the animation chosen instead of the wand user.\n\nEmotes:\n-Drink\n-Drunk\n-Fall Prone\n-Follow Nearest PC\n-Meditate/Pray\n-Read\n-Sit on the Floor\n-Worship\n\nMore Emotes:\n-Beg\n-Dance\n-Get Low\n-Get Mid\n-Sit in Nearest Chair\n-Sit on the Floor and Drink\n-Sit on the Floor and Read\n-Smoke\n-Threaten\n\n~~\nRedesigned again by: \nDemetrious and Hahnsoo\n\nOriginal Design by Jhenne and Doppleganger."
     }
   },
   "Identified": {
@@ -109,6 +109,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_emote"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

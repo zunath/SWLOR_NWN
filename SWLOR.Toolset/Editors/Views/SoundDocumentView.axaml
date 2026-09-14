@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             x:Class="SWLOR.Toolset.Editors.Sounds.SoundDocumentView"
+             x:DataType="sounds:SoundDocumentViewModel">
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+          <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}"
+                   IsVisible="{Binding IsDirty}" />
+          <TextBlock Text="unsaved" Classes="dim" FontSize="12.5"
+                     IsVisible="{Binding IsDirty}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+          <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+      <TabItem Header="Edit">
+        <sounds:SoundEditorView DataContext="{Binding Editor}" />
+      </TabItem>
+      <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView DataContext="{Binding Source}" />
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</UserControl>

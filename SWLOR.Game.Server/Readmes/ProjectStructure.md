@@ -432,4 +432,4 @@ docker-compose up --build
 
 ---
 
-*This documentation should be updated when project structure changes or new development processes are added.* 
+*This documentation should be updated when project structure changes or new development processes are added.*

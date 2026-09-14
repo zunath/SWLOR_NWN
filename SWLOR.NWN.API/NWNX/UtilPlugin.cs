@@ -170,7 +170,7 @@ namespace SWLOR.NWN.API.NWNX
             /// The calendar day.
             /// </summary>
             public int CalendarDay { get; set; }
-            
+
             /// <summary>
             /// The time of day.
             /// </summary>
@@ -186,7 +186,7 @@ namespace SWLOR.NWN.API.NWNX
             /// The seconds component of the timestamp.
             /// </summary>
             public int Seconds { get; set; }
-            
+
             /// <summary>
             /// The microseconds component of the timestamp.
             /// </summary>

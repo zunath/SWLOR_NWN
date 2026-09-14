@@ -92,7 +92,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Hello! Would you like something?",
-            "2": "Bonjour. desirez vous quelque chose?"
+            "2": "Hello. Would you like something?"
           }
         }
       }
@@ -147,7 +147,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "No thanks.",
-            "2": "Non, merci. "
+            "2": "No thanks."
           }
         }
       },
@@ -189,7 +189,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Let me see what you have.",
-            "2": "Faites-voir ce que vous avez. "
+            "2": "Let me see what you have."
           }
         }
       }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -6,6 +5,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Service
         {
             return _lootTables.ContainsKey(name);
         }
-        
+
         /// <summary>
         /// Returns all of the loot table details found on a creature's local variables.
         /// </summary>
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Service
         {
             var attacker = OBJECT_SELF;
             var target = GetSpellTargetObject();
-            if (GetIsPC(target) || GetIsDM(target)) 
+            if (GetIsPC(target) || GetIsDM(target))
                 return;
 
             var currentCreditFinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
@@ -248,26 +248,9 @@ namespace SWLOR.Game.Server.Service
 
             var creditFinderLevel = Perk.GetPerkLevel(attacker, PerkType.CreditFinder);
             var treasureHunterLevel = Perk.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
-            var sniffLevel = Perk.GetPerkLevel(attacker, PerkType.Sniff);
-            switch (sniffLevel)
-            {
-                case 1:
-                    sniffLevel = 8;
-                    break;
-                case 2:
-                    sniffLevel = 15;
-                    break;
-                case 3:
-                    sniffLevel = 25;
-                    break;
-                default:
-                    sniffLevel = 0;
-                    break;
-            }
-
-            var rareBonusChance = treasureHunterLevel;
-            if (sniffLevel > rareBonusChance)
-                rareBonusChance = sniffLevel;
+            var rareBonusChance = Math.Max(
+                treasureHunterLevel,
+                Stat.GetStatAdjustment(attacker, StatType.RareItemFindChance));
 
             if (creditFinderLevel > currentCreditFinder)
             {
@@ -404,7 +387,7 @@ namespace SWLOR.Game.Server.Service
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
                     SetLocalInt(extractCorpse, BeastMastery.BeastTypeVariable, beastTypeId);
                     SetLocalInt(extractCorpse, BeastMastery.BeastLevelVariable, level);
-                    
+
                     AssignCommand(extractCorpse, () =>
                     {
                         ScheduleCorpseCleanup(extractCorpse);

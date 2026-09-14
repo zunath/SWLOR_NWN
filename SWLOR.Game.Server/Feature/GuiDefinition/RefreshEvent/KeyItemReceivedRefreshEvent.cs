@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent

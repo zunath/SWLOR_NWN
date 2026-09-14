@@ -1,0 +1,10 @@
+<Project>
+  <!-- Keep Visual Studio's startup selector focused on the developer-facing apps. -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'SWLOR.Admin' and
+                        '$(MSBuildProjectName)' != 'SWLOR.CLI' and
+                        '$(MSBuildProjectName)' != 'SWLOR.Runner' and
+                        '$(MSBuildProjectName)' != 'SWLOR.Toolset' and
+                        '$(MSBuildProjectName)' != 'SWLOR.Web'">
+    <ProjectCapability Remove="LaunchProfiles" />
+  </ItemGroup>
+</Project>

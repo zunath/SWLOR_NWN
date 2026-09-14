@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -69,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddGoldReward(1125)
                 .AddXPReward(4000)
-                
+
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Visible);
@@ -84,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 })
-                
+
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "D4C44145731048F1B7DA23D974E59FCE", VisibilityType.Visible);
@@ -110,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void FindCaptainNguth()
         {
             _builder.Create("find_cap_nguth", "Find Captain N'Guth")
-                .PrerequisiteQuest("locate_m_fac") 
+                .PrerequisiteQuest("locate_m_fac")
 
                 .AddState()
                 .SetStateJournalText("Tal'gar needs you to find Captain N'guth, who he sent out to the Wildwoods in search of the Mandalorian facility. Find him and bring him back to Veles Colony.")
@@ -136,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        //todo: review the first rites quest. 
+        //todo: review the first rites quest.
 
         /// <summary>
         /// When a force crystal is touched, run the progression logic for the First Rites quest.
@@ -146,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             const string InactiveQuestText = "The crystal glows quietly...";
             var player = GetLastUsedBy();
-            
+
             // Not a player.
             if (!GetIsPC(player) || GetIsDM(player))
             {
@@ -182,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             {
                 case 1: cluster = "c_cluster_blue"; break; // Blue
                 case 2: cluster = "c_cluster_red"; break; // Red
-                case 3: cluster = "c_cluster_green"; break; // Green 
+                case 3: cluster = "c_cluster_green"; break; // Green
                 case 4: cluster = "c_cluster_yellow"; break; // Yellow
                 default: throw new Exception("Invalid crystal color type.");
             }
@@ -194,13 +193,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
             var waypoint = GetObjectByTag("FORCE_QUEST_LANDING");
             var location = GetLocation(waypoint);
-            
+
             AssignCommand(player, () => ActionJumpToLocation(location));
-            
+
             // todo: unlock perk
             FloatingTextStringOnCreature("You have unlocked the Lightsaber Blueprints perk.", player, false);
         }
-        
+
         private void FirstRites()
         {
             _builder.Create("first_rites", "First Rites")
@@ -212,12 +211,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 // Use object
                 .AddState()
                 .SetStateJournalText("Select a crystal and begin on your path towards becoming one with the Force.")
-                
+
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Visible);
                 })
-                
+
                 .OnAbandonAction(player =>
                 {
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
@@ -277,7 +276,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 // Talk to NPC
                 .AddState()
                 .SetStateJournalText("You found the Mandalorian facility but it's locked. Return to Tal'gar and report your findings.")
-                
+
                 .AddGoldReward(2250)
                 .AddXPReward(2000);
         }
@@ -285,7 +284,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void MandalorianDogTags()
         {
             _builder.Create("mand_dog_tags", "Mandalorian Dog Tags")
-                .PrerequisiteQuest("find_cap_nguth") 
+                .PrerequisiteQuest("find_cap_nguth")
 
                 .AddState()
                 .AddCollectItemObjective("man_tags", 5)
@@ -293,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("Speak to Irene Colsstaad for your reward.")
-                
+
                 .AddXPReward(4000)
                 .AddGoldReward(2625);
         }
@@ -334,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
             _builder.Create("mandalorian_slicing", "Slicing the Mandalorian Facility")
                 .PrerequisiteQuest("war_mand_warriors")
-                .PrerequisiteQuest("blast_mand_rangers") 
+                .PrerequisiteQuest("blast_mand_rangers")
 
                 // Use object
                 .AddState()
@@ -342,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddGoldReward(4125)
                 .AddXPReward(6000)
-                
+
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     AdjustVisibility(player, VisibilityType.Visible);
@@ -358,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc5);
                     KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc6);
                 })
-                
+
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc1);
@@ -437,7 +436,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.MandalorianFacilityKey);
                 })
-                
+
                 .OnAbandonAction(player =>
                 {
                     KeyItem.RemoveKeyItem(player, KeyItemType.MandalorianFacilityKey);
@@ -463,7 +462,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
                 })
-                
+
                 .OnAbandonAction(player =>
                 {
                     KeyItem.RemoveKeyItem(player, KeyItemType.CoxxionBaseKey);
@@ -473,7 +472,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void WarWithTheMandalorianWarriors()
         {
             _builder.Create("war_mand_warriors", "War With the Mandalorian Warriors")
-                .PrerequisiteQuest("find_cap_nguth") 
+                .PrerequisiteQuest("find_cap_nguth")
 
                 .AddState()
                 .AddKillObjective(NPCGroupType.Viscara_MandalorianWarriors, 9)

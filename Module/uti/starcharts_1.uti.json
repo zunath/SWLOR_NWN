@@ -34,7 +34,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A disk containing starcharts.\n\nCharts can be extracted from a navigational computer, or bought from another party.  Use the charts on a navigational computer to add them to that computer's database."
     }
   },
   "Identified": {
@@ -135,6 +135,21 @@
         "Name": {
           "type": "cexostring",
           "value": "Starcharts"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
         },
         "Type": {
           "type": "dword",

@@ -1808,7 +1808,7 @@ namespace SWLOR.NWN.API.NWNX
         /// This returns the chance percentage that the creature can bypass the specified immunity type.
         /// Returns 0 if the creature cannot bypass the immunity type.
         /// </remarks>
-        public static int GetBypassEffectImmunity(uint creature, int immunityType)        
+        public static int GetBypassEffectImmunity(uint creature, int immunityType)
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetBypassEffectImmunity(creature, immunityType);
         }
@@ -1909,6 +1909,22 @@ namespace SWLOR.NWN.API.NWNX
         public static int GetCasterLevelOverride(uint creature, ClassType classId)
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetCasterLevelOverride(creature, (int)classId);
+        }
+
+        /// <summary>
+        /// Instantly equips an item already possessed by a creature.
+        /// </summary>
+        public static bool RunEquip(uint creature, uint item, InventorySlot slot)
+        {
+            return global::NWN.Core.NWNX.CreaturePlugin.RunEquip(creature, item, (int)slot) == 1;
+        }
+
+        /// <summary>
+        /// Instantly unequips an item possessed by a creature.
+        /// </summary>
+        public static bool RunUnequip(uint creature, uint item)
+        {
+            return global::NWN.Core.NWNX.CreaturePlugin.RunUnequip(creature, item) == 1;
         }
     }
 }

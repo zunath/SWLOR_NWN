@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -22,7 +23,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void CallBeast()
         {
-            _builder.Create(FeatType.CallBeast, PerkType.Tame) // Intentionally tied to Tame
+            _builder
+                .Create(FeatType.CallBeast, PerkType.Tame) // Intentionally tied to Tame
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_CallBeast)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Call Beast")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.CallBeast, 60f * 10f)
@@ -74,8 +78,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 {
                     var playerId = GetObjectUUID(activator);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    
-                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
+
+                    var previousBeast = GetAssociate(AssociateType.Henchman, activator);
+                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 100);
+                    var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
+                    if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
 
                     Enmity.ModifyEnmityOnAll(activator, 230);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);

@@ -1,132 +1,119 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class ForceSparkAbilityDefinition : IAbilityListDefinition
+    public sealed class ForceSparkAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private const string Tier1Tag = "ABILITY_FORCE_SPARK_1";
-        private const string Tier2Tag = "ABILITY_FORCE_SPARK_2";
-        private const string Tier3Tag = "ABILITY_FORCE_SPARK_3";
-
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            ForceSpark1();
-            ForceSpark2();
-            ForceSpark3();
+            var builder = new AbilityBuilder();
 
-            return _builder.Build();
-        }
-        private void Impact(uint activator, uint target, int dmg, int evaDecrease, int tier, string effectTag, int dc)
-        {
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
-            dmg += (attackerStat * ((tier - 1) / 2)) + attackerStat;
-            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            ForceSpark1(builder);
+            ForceSpark2(builder);
 
-
-            if (HasMorePowerfulEffect(target, tier,
-                    new(Tier1Tag, 1),
-                    new(Tier2Tag, 2),
-                    new(Tier3Tag, 3)))
-            {
-                SendMessageToPC(activator, "Your target is already afflicted by a more powerful effect.");
-            }
-            else
-            {
-                RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
-
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
-                var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    var breach = TagEffect(EffectACDecrease(evaDecrease), effectTag);
-                    ApplyEffectToObject(DurationType.Temporary, breach, target, 60f);
-                    Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of evasion down.");
-                }
-            }
-
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Silent_Lightning, false, 2f), target);
-
-            if (Stat.GetCurrentFP(activator) < 2 + (tier))
-            {
-                var darkBargain = 7 * ((2 + tier - Stat.GetCurrentFP(activator)));
-                Stat.ReduceFP(activator, Stat.GetCurrentFP(activator));
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
-            }
-            else { Stat.ReduceFP(activator, 2 + tier); }
-
-            Enmity.ModifyEnmity(activator, target, 150 + damage);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            return builder.Build();
         }
 
-        private void ForceSpark1()
+        private static void ForceSpark1(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
+            builder
+                .Create(FeatType.ForceSpark1, PerkType.ForceSpark)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSpark)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Force Spark I")
                 .Level(1)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
-                .HasActivationDelay(2f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_lightn")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasImpactAction(ForceSpark1ImpactAction)
                 .IsCastedAbility()
-                .HasMaxRange(10f)
                 .IsHostileAbility()
+                .TriggersDarkForceConversion()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 0, 2, 1, Tier1Tag, 8);
-                });
+                .RequirementFP(3);
         }
 
-        private void ForceSpark2()
+        private static void ForceSpark2(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
+            builder
+                .Create(FeatType.ForceSpark2, PerkType.ForceSpark)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceSpark)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Force Spark II")
                 .Level(2)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
-                .HasActivationDelay(2f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_lightn")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasImpactAction(ForceSpark2ImpactAction)
                 .IsCastedAbility()
-                .HasMaxRange(10f)
                 .IsHostileAbility()
+                .TriggersDarkForceConversion()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 15, 4, 2, Tier2Tag, 12);
-                });
+                .RequirementFP(4);
         }
 
-        private void ForceSpark3()
+        private static void ForceSpark1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            _builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
-                .Name("Force Spark III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
-                .HasActivationDelay(2f)
-                .IsCastedAbility()
-                .HasMaxRange(10f)
-                .IsHostileAbility()
-                .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 30, 6, 3, Tier3Tag, 14);
-                });
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Force,
+                16,
+                30,
+                typeof(ForceSpark1StatusEffect),
+                false,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Force,
+                afterSuccessfulHit: hitTarget => ApplyForceSparkHitEffects(activator, hitTarget));
         }
+
+        private static void ForceSpark2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Force,
+                32,
+                30,
+                typeof(ForceSpark2StatusEffect),
+                false,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Force,
+                afterSuccessfulHit: hitTarget => ApplyForceSparkHitEffects(activator, hitTarget));
+        }
+
+        private static void ApplyForceSparkHitEffects(uint activator, uint target)
+        {
+            AssignCommand(activator, () =>
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Electric), target));
+            ForcePressureEffects.ApplyUnstablePressure(activator, target);
+        }
+
     }
 }

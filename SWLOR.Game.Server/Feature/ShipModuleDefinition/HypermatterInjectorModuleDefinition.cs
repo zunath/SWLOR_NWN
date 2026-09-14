@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
 using System.Collections.Generic;
@@ -78,11 +78,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Breach), target);
-                    
+
                     var recovery = capRestore + (moduleBonus + activatorShipStatus.Industrial) * 2;
                     Space.RestoreCapacitor(target, targetShipStatus, recovery);
 
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} capacitor charge to {GetName(target)}'s ship.");
+                    Messaging.SendMessageNearbyToPlayers(
+                        activator,
+                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} capacitor charge to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

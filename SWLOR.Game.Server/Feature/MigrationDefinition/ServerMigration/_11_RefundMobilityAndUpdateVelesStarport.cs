@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {
-            {(PerkType.Mobility, 1), 3}
+            {(LegacyPerkType(176), 1), 3}
         };
 
         public int Version => 11;
@@ -23,6 +23,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         {
             RefundPerksByMapping(_refundMap);
             UpdateVelesStarportShipLocations();
+        }
+
+        private static PerkType LegacyPerkType(int perkId)
+        {
+            return (PerkType)perkId;
         }
 
         private void UpdateVelesStarportShipLocations()

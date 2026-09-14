@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 570
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -2624,7 +2644,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Bloc rocheux 1"
+            "2": "Rock Formation 1"
           }
         },
         "OnClick": {
@@ -2851,7 +2871,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Bloc rocheux 1"
+            "2": "Rock Formation 1"
           }
         },
         "OnClick": {
@@ -5414,6 +5434,36 @@
         "Value": {
           "type": "int",
           "value": 67
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SLICING_TERMINAL_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "SLICING_TERMINAL_T4"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SLICING_TERMINAL_SPAWN_COUNT"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
         }
       }
     ]

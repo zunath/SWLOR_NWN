@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 60.0
+    "value": 100.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 31
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 450
+    "value": 1889
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 31
   },
   "Disarmable": {
     "type": "byte",
@@ -180,14 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "danshamspear"
+          "value": "dantarishaman_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "dantarihunter"
+          "value": "dantarishaman_sk"
         }
       }
     ]
@@ -219,6 +219,27 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1768
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1766
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1765
+        }
       }
     ]
   },
@@ -242,11 +263,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 450
+    "value": 1449
   },
   "Int": {
     "type": "byte",
-    "value": 15
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -276,7 +297,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 670
+    "value": 1889
   },
   "NaturalAC": {
     "type": "byte",
@@ -581,7 +602,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -697,7 +718,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 28
+    "value": 38
   },
   "xAppearance_Head": {
     "type": "word",

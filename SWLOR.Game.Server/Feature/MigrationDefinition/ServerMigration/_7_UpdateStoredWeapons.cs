@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
@@ -113,14 +113,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.DMG &&
-                    (GetItemPropertySubType(ip) == (int)CombatDamageType.Physical))
+                    GetItemPropertySubType(ip) == (int)CombatDamageType.Physical)
                 {
                     wpnDmg += GetItemPropertyCostTableValue(ip);
                     RemoveItemProperty(item, ip);
                 }
             }
 
-            var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
+            var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, -1, wpnDmg);
             BiowareXP2.IPSafeAddItemProperty(item, newDmgProperty, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
         }
 

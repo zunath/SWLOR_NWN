@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;

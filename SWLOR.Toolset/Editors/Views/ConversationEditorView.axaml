@@ -1,0 +1,623 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:gamecode="using:SWLOR.Toolset.Domain.GameData.GameCode"
+             xmlns:conversations="using:SWLOR.Toolset.Domain.Conversations"
+             x:Class="SWLOR.Toolset.Editors.ConversationEditorView"
+             x:DataType="editors:ConversationEditorViewModel">
+
+  <UserControl.Styles>
+    <Style Selector="Border.section">
+      <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="Padding" Value="14" />
+    </Style>
+    <Style Selector="Border.bubble">
+      <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4,13,13,13" />
+      <Setter Property="Padding" Value="14,11" />
+    </Style>
+    <Style Selector="Border.choice">
+      <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12,4,12,12" />
+      <Setter Property="Padding" Value="11,8" />
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel>
+    <!-- Behavior is a normal field. Changing it simply changes the authoring surface. -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource ShellBackgroundBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="12,8">
+      <Grid ColumnDefinitions="Auto,230,*,Auto,Auto,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0" Text="NPC BEHAVIOR" Classes="label" VerticalAlignment="Center" />
+        <ComboBox Name="BehaviorSelector" Grid.Column="1" ItemsSource="{Binding BehaviorOptions}"
+                  SelectedItem="{Binding SelectedBehavior, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch"
+                  IsVisible="{Binding ShowEditor}" />
+        <TextBlock Grid.Column="2" Text="{Binding ValidationSummary}" Classes="mono"
+                   FontSize="10.5" VerticalAlignment="Center" Margin="8,0" />
+        <Button Grid.Column="3" Content="Undo" Command="{Binding UndoCommand}" />
+        <Button Grid.Column="4" Content="Redo" Command="{Binding RedoCommand}" />
+        <Button Grid.Column="5" Content="Save" Classes="primary" Command="{Binding SaveCommand}" />
+      </Grid>
+    </Border>
+
+    <!-- Validation is continuous. Only broken findings block save; deterministic fixes are offered. -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource PanelBrush}"
+            BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="0,1,0,0"
+            MaxHeight="180" IsVisible="{Binding HasProblems}">
+      <DockPanel Margin="12,8">
+        <TextBlock DockPanel.Dock="Top" Text="CHECKS" Classes="title" Margin="0,0,0,5" />
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding Problems}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="editors:ProblemRowViewModel">
+                <Grid ColumnDefinitions="62,*,Auto,Auto,Auto" Margin="0,3" ColumnSpacing="8">
+                  <TextBlock Grid.Column="0" Text="{Binding Severity}" Classes="label"
+                             VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap"
+                             VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="{Binding Where}" Classes="dim"
+                             VerticalAlignment="Center" />
+                  <Button Grid.Column="3" Content="Go there" Classes="link"
+                          Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).GoToProblemCommand}"
+                          CommandParameter="{Binding}" />
+                  <Button Grid.Column="4" Content="{Binding FixLabel}" Classes="link"
+                          IsVisible="{Binding CanFix}"
+                          Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).FixProblemCommand}"
+                          CommandParameter="{Binding}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <!-- A new dialogue asks one question, then gets out of the way. -->
+    <Grid IsVisible="{Binding ShowBehaviorChooser}">
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="760" Spacing="18">
+        <StackPanel Spacing="5">
+          <TextBlock Text="What does this NPC do?" FontSize="24" HorizontalAlignment="Center" />
+          <TextBlock Text="Choose the closest fit. You can switch later without losing what you typed in this session."
+                     Classes="dim" HorizontalAlignment="Center" />
+        </StackPanel>
+        <ItemsControl ItemsSource="{Binding BehaviorOptions}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="editors:ConversationBehaviorOption">
+              <Button Margin="6" Padding="18" MinHeight="126"
+                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).ChooseBehaviorCommand}"
+                      CommandParameter="{Binding}">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="{Binding Name}" FontSize="18" HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding Explanation}" Classes="dim" TextWrapping="Wrap"
+                             TextAlignment="Center" />
+                </StackPanel>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </Grid>
+
+    <TabControl IsVisible="{Binding ShowEditor}">
+      <TabItem Header="Write" Content="{Binding}">
+        <TabItem.ContentTemplate>
+          <DataTemplate DataType="editors:ConversationEditorViewModel">
+            <Grid RowDefinitions="*,Auto">
+
+          <!-- Merchant is intentionally a small form. The required outcome and Goodbye are structural. -->
+          <editors:DeferredContentControl Grid.Row="0" DeferredContent="{Binding}"
+                                          IsContentActive="{Binding IsMerchant}"
+                                          IsVisible="{Binding IsMerchant}">
+            <editors:DeferredContentControl.DeferredTemplate>
+              <DataTemplate DataType="editors:ConversationEditorViewModel">
+                <ScrollViewer>
+                  <StackPanel Margin="24" Spacing="15" MaxWidth="760" HorizontalAlignment="Center">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Merchant dialogue" FontSize="21" />
+                <TextBlock Text="A merchant needs a greeting and a shop choice. Goodbye is added automatically."
+                           Classes="dim" />
+              </StackPanel>
+
+              <Border Classes="section">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Greeting" Classes="label" />
+                  <TextBox Text="{Binding MerchantGreeting, Mode=TwoWay}" AcceptsReturn="True"
+                           TextWrapping="Wrap" MinHeight="88" LostFocus="OnMerchantLostFocus"
+                           Watermark="What does the merchant say?" />
+                  <StackPanel Orientation="Horizontal" Spacing="7">
+                    <ComboBox ItemsSource="{Binding DynamicTextTokens}" MinWidth="210"
+                              SelectedItem="{Binding SelectedMerchantDynamicTextToken, Mode=TwoWay}"
+                              PlaceholderText="Insert dynamic text…" />
+                    <Button Content="Insert" Command="{Binding InsertMerchantDynamicTextCommand}" />
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+
+              <Border Classes="section">
+                <StackPanel Spacing="10">
+                  <TextBlock Text="Shop" Classes="label" />
+                  <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Store" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding MerchantStores}"
+                              SelectedItem="{Binding SelectedMerchantStore, Mode=TwoWay}"
+                              DropDownOpened="OnMerchantStoreDropDownOpened"
+                              LostFocus="OnMerchantLostFocus" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Player choice" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MerchantChoiceText, Mode=TwoWay}"
+                             LostFocus="OnMerchantLostFocus" Watermark="Show me what you have for sale." />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Required outcome" VerticalAlignment="Center" />
+                    <Border Grid.Row="2" Grid.Column="1" Background="{DynamicResource PanelRaisedBrush}"
+                            CornerRadius="3" Padding="9,7">
+                      <TextBlock Text="{Binding MerchantRequiredOutcome}" />
+                    </Border>
+                  </Grid>
+                  <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="✓ Goodbye choice is included automatically" Classes="dim"
+                               VerticalAlignment="Center" />
+                    <Button Content="Also do…" Classes="link" Command="{Binding EditMerchantActionsCommand}" />
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+                  </StackPanel>
+                </ScrollViewer>
+              </DataTemplate>
+            </editors:DeferredContentControl.DeferredTemplate>
+          </editors:DeferredContentControl>
+
+          <!-- Quest giver and free conversation share the simple outline writer. -->
+          <editors:DeferredContentControl Grid.Row="0" DeferredContent="{Binding}"
+                                          IsContentActive="{Binding IsOutlineBehavior}"
+                                          IsVisible="{Binding IsOutlineBehavior}">
+            <editors:DeferredContentControl.DeferredTemplate>
+              <DataTemplate DataType="editors:ConversationEditorViewModel">
+                <Grid ColumnDefinitions="310,*">
+            <Border Grid.Column="0" Background="{DynamicResource PanelBrush}"
+                    BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0">
+              <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="12,12,12,7" Spacing="5">
+                  <TextBlock Text="{Binding OutlineTitle}" Classes="title" />
+                  <TextBlock Text="{Binding OutlineHelp}" Classes="dim" TextWrapping="Wrap" />
+                  <TextBlock Text="NWN checks these from top to bottom; the first match wins."
+                             Classes="mono" FontSize="10" TextWrapping="Wrap"
+                             IsVisible="{Binding HasCompetingSituations}" />
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="12" Spacing="8" IsVisible="{Binding IsQuestGiver}">
+                  <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0" Padding="0,10,0,0">
+                    <StackPanel Spacing="7">
+                      <TextBlock Text="Set up from a quest" Classes="label" />
+                      <ComboBox ItemsSource="{Binding ScaffoldableQuests}"
+                                SelectedItem="{Binding QuestToScaffold, Mode=TwoWay}"
+                                PlaceholderText="Choose a quest…" />
+                      <ItemsControl ItemsSource="{Binding ScaffoldPreview}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate DataType="conversations:ScaffoldBeat">
+                            <TextBlock Text="{Binding Title}" Classes="dim" Margin="0,1" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <Button Content="Set up quest dialogue" Classes="primary"
+                              Command="{Binding ScaffoldQuestCommand}" IsVisible="{Binding CanScaffold}" />
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+
+                <Button DockPanel.Dock="Bottom" Margin="12,4,12,10" Content="＋ Add NPC alternative"
+                        Classes="link" HorizontalAlignment="Left" IsVisible="{Binding IsConversation}"
+                        Command="{Binding AddSituationCommand}" />
+
+                <ScrollViewer>
+                  <ItemsControl ItemsSource="{Binding Situations}" Margin="8,0,8,8">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="editors:SituationRowViewModel">
+                        <Border Classes="section" Padding="8" Margin="0,0,0,6">
+                          <Grid ColumnDefinitions="18,*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Marker}" VerticalAlignment="Top" />
+                            <Button Grid.Column="1" Background="Transparent" BorderThickness="0" Padding="0"
+                                    HorizontalContentAlignment="Left"
+                                    Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).SelectSituationCommand}"
+                                    CommandParameter="{Binding}">
+                              <StackPanel Spacing="2">
+                                <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding When}" Classes="dim" FontSize="10.5" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding Summary}" Classes="label" />
+                              </StackPanel>
+                            </Button>
+                            <StackPanel Grid.Column="2" Spacing="3" Margin="8,0,0,0">
+                              <Button Content="↑" Classes="link" ToolTip.Tip="Check earlier"
+                                      IsVisible="{Binding HasCompetingLines}"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveSituationUpCommand}"
+                                      CommandParameter="{Binding}" />
+                              <Button Content="↓" Classes="link" ToolTip.Tip="Check later"
+                                      IsVisible="{Binding HasCompetingLines}"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveSituationDownCommand}"
+                                      CommandParameter="{Binding}" />
+                              <Button Content="Checks" Classes="link"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).EditSituationCommand}"
+                                      CommandParameter="{Binding}" />
+                            </StackPanel>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+              </DockPanel>
+            </Border>
+
+            <ScrollViewer Grid.Column="1">
+              <StackPanel Margin="22,18" Spacing="12" MaxWidth="820" HorizontalAlignment="Left">
+                <TextBlock Text="{Binding WalkStatus}" Classes="mono" FontSize="10.5"
+                           TextWrapping="Wrap" IsVisible="{Binding WalkStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                <StackPanel IsVisible="{Binding HasLine}" Spacing="10">
+                  <TextBlock Text="NPC line" Classes="label" />
+                  <Border Classes="bubble">
+                    <TextBox x:Name="LineBeingEdited" Text="{Binding LineText, Mode=TwoWay}"
+                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="92"
+                             Background="Transparent" BorderThickness="0" Padding="0"
+                             LostFocus="OnLineLostFocus" Watermark="What does the NPC say?" />
+                  </Border>
+                  <StackPanel Orientation="Horizontal" Spacing="7">
+                    <ComboBox ItemsSource="{Binding DynamicTextTokens}" MinWidth="210"
+                              SelectedItem="{Binding SelectedDynamicTextToken, Mode=TwoWay}"
+                              PlaceholderText="Insert dynamic text…" />
+                    <Button Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
+                    <Button Content="When shown / Also do…" Classes="link"
+                            Command="{Binding EditCurrentLineCommand}" />
+                  </StackPanel>
+
+                  <ItemsControl ItemsSource="{Binding CurrentOutcomeSummaries}" IsVisible="{Binding HasCurrentOutcomes}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding}" Classes="dim" Margin="4,1" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <Border Classes="section" IsVisible="{Binding HasReuseWarning}">
+                    <StackPanel Spacing="7">
+                      <TextBlock Text="{Binding ReuseWarning}" TextWrapping="Wrap" />
+                      <StackPanel Orientation="Horizontal" Spacing="9">
+                        <Button Content="Make a separate copy" Classes="link"
+                                Command="{Binding MakeSeparateCopyCommand}" />
+                        <Button Content="Remove from here" Classes="link"
+                                Command="{Binding RemoveCurrentLineFromHereCommand}"
+                                IsVisible="{Binding CanRemoveSharedLine}" />
+                        <Button Content="Delete everywhere" Classes="link"
+                                Command="{Binding DeleteCurrentLineEverywhereCommand}" />
+                      </StackPanel>
+                    </StackPanel>
+                  </Border>
+
+                  <TextBlock Text="Player choices" Classes="label" Margin="0,8,0,0" />
+                  <ItemsControl ItemsSource="{Binding Choices}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="editors:ChoiceRowViewModel">
+                        <Border Classes="choice" Margin="0,0,0,7">
+                          <Grid ColumnDefinitions="24,*,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="7">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Number}" Classes="mono"
+                                       VerticalAlignment="Center" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AuthoringText, Mode=OneWay}"
+                                     Tag="{Binding}" LostFocus="OnChoiceLostFocus"
+                                     Watermark="What can the player say?" />
+                            <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="2"
+                                        IsVisible="{Binding HasSiblings}">
+                              <Button Content="↑" Classes="link" ToolTip.Tip="Show this choice earlier"
+                                      IsEnabled="{Binding CanMoveUp}"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveChoiceUpCommand}"
+                                      CommandParameter="{Binding}" />
+                              <Button Content="↓" Classes="link" ToolTip.Tip="Show this choice later"
+                                      IsEnabled="{Binding CanMoveDown}"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).MoveChoiceDownCommand}"
+                                      CommandParameter="{Binding}" />
+                            </StackPanel>
+                            <Button Grid.Row="0" Grid.Column="3" Content="Remove" Classes="link"
+                                    Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).RemoveChoiceCommand}"
+                                    CommandParameter="{Binding}" />
+                            <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                                        Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
+                              <TextBlock Text="{Binding Consequence}" Classes="dim" VerticalAlignment="Center" />
+                              <Button Content="When shown / Also do…" Classes="link"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).EditChoiceCommand}"
+                                      CommandParameter="{Binding}" />
+                              <Button Content="Add follow-up" Classes="link" IsVisible="{Binding CanAddFollowUp}"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).AddFollowUpCommand}"
+                                      CommandParameter="{Binding}" />
+                              <Button Content="Open next line" Classes="link"
+                                      Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).PickChoiceCommand}"
+                                      CommandParameter="{Binding}" />
+                            </StackPanel>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="＋ Add player choice" Command="{Binding AddChoiceCommand}" />
+                    <Button Content="Continue automatically" Command="{Binding ContinueAutomaticallyCommand}" />
+                    <Button Content="End conversation" Command="{Binding EndConversationCommand}" />
+                  </StackPanel>
+
+                  <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+                          Padding="0,11,0,0" Margin="0,8,0,0">
+                    <StackPanel Spacing="9">
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Advanced" Classes="link" Command="{Binding ToggleAdvancedCommand}" />
+                        <TextBlock Text="has settings" Classes="dim" IsVisible="{Binding HasAdvancedValues}"
+                                   VerticalAlignment="Center" />
+                      </StackPanel>
+                      <Grid ColumnDefinitions="130,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                            RowSpacing="7" IsVisible="{Binding ShowAdvanced}">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Speaker tag" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AdvancedSpeaker, Mode=TwoWay}"
+                                 LostFocus="OnAdvancedLostFocus" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Sound" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AdvancedSound, Mode=TwoWay}"
+                                 LostFocus="OnAdvancedLostFocus" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Animation" />
+                        <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding AdvancedAnimation, Mode=TwoWay}"
+                                       Minimum="0" Maximum="4294967295" LostFocus="OnAdvancedLostFocus" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Builder comment" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding AdvancedComment, Mode=TwoWay}"
+                                 LostFocus="OnAdvancedLostFocus" />
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Custom script" />
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding AdvancedScript, Mode=TwoWay}"
+                                 IsEnabled="{Binding CanEditCustomScript}"
+                                 Watermark="Unavailable while guided outcomes are attached"
+                                 LostFocus="OnAdvancedLostFocus" />
+                      </Grid>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+              </StackPanel>
+            </ScrollViewer>
+                </Grid>
+              </DataTemplate>
+            </editors:DeferredContentControl.DeferredTemplate>
+          </editors:DeferredContentControl>
+
+          <!-- Plain-language checks and multiple outcomes. This opens only when requested. -->
+          <editors:DeferredContentControl Grid.Row="1" DeferredContent="{Binding}"
+                                          IsContentActive="{Binding IsEditingRules}"
+                                          IsVisible="{Binding IsEditingRules}">
+            <editors:DeferredContentControl.DeferredTemplate>
+              <DataTemplate DataType="editors:ConversationEditorViewModel">
+                <Border Classes="section" Margin="12" MaxHeight="310"
+                        BorderBrush="{DynamicResource AccentBorderBrush}">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*" ColumnSpacing="18">
+              <Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" Margin="0,0,0,9">
+                <TextBlock Grid.Column="0" Text="{Binding RulesTitle}" Classes="title" />
+                <Button Grid.Column="1" Content="Done" Classes="link" Command="{Binding CloseRulesEditorCommand}" />
+              </Grid>
+
+              <ScrollViewer Grid.Row="1" Grid.Column="0">
+                <StackPanel Spacing="7">
+                  <TextBlock Text="Show this only when" Classes="label" />
+                  <TextBlock Text="All checks must pass. With no checks, it always shows."
+                             Classes="dim" FontSize="10.5" />
+                  <ItemsControl ItemsSource="{Binding Guards}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="editors:SnippetEditorViewModel">
+                        <Border Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3"
+                                Padding="8" Margin="0,0,0,5">
+                          <StackPanel Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                              <TextBlock Grid.Column="0" Text="{Binding Sentence}" TextWrapping="Wrap" />
+                              <CheckBox Grid.Column="1" Content="Not" IsVisible="{Binding CanNegate}"
+                                        IsChecked="{Binding IsNegated, Mode=TwoWay}" Margin="8,0" />
+                              <Button Grid.Column="2" Content="Remove" Classes="link" Command="{Binding RemoveCommand}" />
+                            </Grid>
+                            <ItemsControl ItemsSource="{Binding Arguments}">
+                              <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="editors:ArgumentEditorViewModel">
+                                  <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,2,10,2">
+                                    <TextBlock Text="{Binding Name}" Classes="label" VerticalAlignment="Center" />
+                                    <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+                                              MinWidth="145" IsVisible="{Binding HasOptions}" />
+                                    <TextBox Text="{Binding FreeText, Mode=TwoWay}" MinWidth="120"
+                                             IsVisible="{Binding IsFreeText}" />
+                                  </StackPanel>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                              <Button Content="+ details" Classes="link" Command="{Binding AddArgumentsCommand}"
+                                      IsVisible="{Binding CanAddArguments}" />
+                              <Button Content="Remove last details" Classes="link"
+                                      Command="{Binding RemoveArgumentsCommand}"
+                                      IsVisible="{Binding CanRemoveArguments}" />
+                            </StackPanel>
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <StackPanel Orientation="Horizontal" Spacing="7">
+                    <ComboBox ItemsSource="{Binding AvailableGuards}" MinWidth="230"
+                              SelectedItem="{Binding GuardToAdd, Mode=TwoWay}"
+                              PlaceholderText="Choose a check…">
+                      <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="gamecode:SnippetDescriptor"><TextBlock Text="{Binding Phrase}" /></DataTemplate>
+                      </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Content="Add check" Command="{Binding AddGuardCommand}" />
+                  </StackPanel>
+                </StackPanel>
+              </ScrollViewer>
+
+              <ScrollViewer Grid.Row="1" Grid.Column="1">
+                <StackPanel Spacing="7">
+                  <TextBlock Text="Also do" Classes="label" />
+                  <TextBlock Text="You can attach more than one outcome. Their order is not significant."
+                             Classes="dim" FontSize="10.5" />
+                  <ItemsControl ItemsSource="{Binding Consequences}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="editors:SnippetEditorViewModel">
+                        <Border Background="{DynamicResource PanelRaisedBrush}" CornerRadius="3"
+                                Padding="8" Margin="0,0,0,5">
+                          <StackPanel Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                              <TextBlock Grid.Column="0" Text="{Binding Sentence}" TextWrapping="Wrap" />
+                              <TextBlock Grid.Column="1" Text="Required" Classes="dim" Margin="8,0"
+                                         IsVisible="{Binding !CanRemove}" />
+                              <Button Grid.Column="2" Content="Remove" Classes="link"
+                                      IsEnabled="{Binding CanRemove}" Command="{Binding RemoveCommand}" />
+                            </Grid>
+                            <ItemsControl ItemsSource="{Binding Arguments}">
+                              <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="editors:ArgumentEditorViewModel">
+                                  <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,2,10,2">
+                                    <TextBlock Text="{Binding Name}" Classes="label" VerticalAlignment="Center" />
+                                    <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+                                              MinWidth="145" IsVisible="{Binding HasOptions}" />
+                                    <TextBox Text="{Binding FreeText, Mode=TwoWay}" MinWidth="120"
+                                             IsVisible="{Binding IsFreeText}" />
+                                  </StackPanel>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                              <Button Content="+ details" Classes="link" Command="{Binding AddArgumentsCommand}"
+                                      IsVisible="{Binding CanAddArguments}" />
+                              <Button Content="Remove last details" Classes="link"
+                                      Command="{Binding RemoveArgumentsCommand}"
+                                      IsVisible="{Binding CanRemoveArguments}" />
+                            </StackPanel>
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <TextBlock Text="Clear the custom action script before adding snippet outcomes."
+                             IsVisible="{Binding HasCustomActionScriptForOutcomes}"
+                             TextWrapping="Wrap" Opacity="0.75" />
+                  <StackPanel Orientation="Horizontal" Spacing="7">
+                    <ComboBox ItemsSource="{Binding AvailableConsequences}" MinWidth="230"
+                              SelectedItem="{Binding ConsequenceToAdd, Mode=TwoWay}"
+                              IsEnabled="{Binding CanAddOutcome}"
+                              PlaceholderText="Choose an outcome…">
+                      <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="gamecode:SnippetDescriptor"><TextBlock Text="{Binding Phrase}" /></DataTemplate>
+                      </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Content="Add outcome" Command="{Binding AddConsequenceCommand}"
+                            IsEnabled="{Binding CanAddOutcome}" />
+                  </StackPanel>
+                </StackPanel>
+              </ScrollViewer>
+            </Grid>
+                </Border>
+              </DataTemplate>
+            </editors:DeferredContentControl.DeferredTemplate>
+          </editors:DeferredContentControl>
+            </Grid>
+          </DataTemplate>
+        </TabItem.ContentTemplate>
+      </TabItem>
+
+      <!-- Preview owns all pretend-player controls and never doubles as the writing surface. -->
+      <TabItem Header="Preview" Content="{Binding}">
+        <TabItem.ContentTemplate>
+          <DataTemplate DataType="editors:ConversationEditorViewModel">
+            <DockPanel>
+          <Border DockPanel.Dock="Top" Background="{DynamicResource PanelBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="12,9">
+            <StackPanel Spacing="7">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="TEST AS" Classes="label" VerticalAlignment="Center" />
+                <ItemsControl ItemsSource="{Binding QuestPills}">
+                  <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="7" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="editors:QuestPillViewModel">
+                      <StackPanel Orientation="Horizontal" Spacing="5">
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                        <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                                  MinWidth="120" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding FactPills}">
+                  <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="7" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="editors:PlayerFactPillViewModel">
+                      <StackPanel Orientation="Horizontal" Spacing="5">
+                        <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn, Mode=TwoWay}"
+                                  IsVisible="{Binding IsToggle}" />
+                        <TextBlock Text="{Binding Label}" IsVisible="{Binding IsAmount}" VerticalAlignment="Center" />
+                        <NumericUpDown Value="{Binding Amount, Mode=TwoWay}" Minimum="0" Width="85"
+                                       IsVisible="{Binding IsAmount}" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Content="Reset" Command="{Binding ResetPlayerCommand}" />
+              </StackPanel>
+              <TextBlock Text="Dynamic text uses sample player values here. This predicts the dialogue rules; it is not a server run."
+                         Classes="dim" FontSize="10.5" />
+            </StackPanel>
+          </Border>
+
+          <ScrollViewer>
+            <StackPanel Margin="28,24" Spacing="14" MaxWidth="760" HorizontalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="7">
+                <Button Content="Back" Command="{Binding BackCommand}" />
+                <Button Content="Start over" Command="{Binding StartOverCommand}" />
+              </StackPanel>
+              <TextBlock Text="{Binding WalkStatus}" Classes="mono" TextWrapping="Wrap"
+                         IsVisible="{Binding WalkStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              <Border Classes="bubble" IsVisible="{Binding HasLine}">
+                <TextBlock Text="{Binding PreviewLineText}" FontSize="15" TextWrapping="Wrap" />
+              </Border>
+              <ItemsControl ItemsSource="{Binding Choices}" IsVisible="{Binding HasLine}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="editors:ChoiceRowViewModel">
+                    <Button Margin="0,0,0,7" Padding="12,9" HorizontalContentAlignment="Left"
+                            IsVisible="{Binding IsVisible}"
+                            Command="{Binding $parent[ItemsControl].((editors:ConversationEditorViewModel)DataContext).PickChoiceCommand}"
+                            CommandParameter="{Binding}">
+                      <TextBlock Text="{Binding PreviewText}" TextWrapping="Wrap" />
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <StackPanel Orientation="Horizontal" Spacing="9" IsVisible="{Binding HasHiddenChoices}">
+                <TextBlock Text="{Binding HiddenChoiceSummary}" Classes="dim" VerticalAlignment="Center" />
+                <Button Content="Reveal failed checks" Classes="link" Command="{Binding ToggleHiddenChoicesCommand}" />
+              </StackPanel>
+              <ItemsControl ItemsSource="{Binding Choices}" IsVisible="{Binding ShowHiddenChoices}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="editors:ChoiceRowViewModel">
+                    <Border Classes="choice" Opacity="0.65" Margin="0,0,0,6" IsVisible="{Binding IsHidden}">
+                      <StackPanel>
+                        <TextBlock Text="{Binding PreviewText}" />
+                        <TextBlock Text="{Binding HiddenBecause}" Classes="dim" FontSize="10.5" />
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </ScrollViewer>
+            </DockPanel>
+          </DataTemplate>
+        </TabItem.ContentTemplate>
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</UserControl>

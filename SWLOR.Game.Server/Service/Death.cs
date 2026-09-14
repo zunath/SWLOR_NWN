@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,7 +15,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleDying)]
         public static void OnPlayerDying()
         {
-            ApplyEffectToObject(DurationType.Instant, EffectDeath(), GetLastPlayerDying());
+            var player = GetLastPlayerDying();
+            if (Combat.TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))
+                return;
+
+            ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
         }
 
         /// <summary>
@@ -24,6 +29,8 @@ namespace SWLOR.Game.Server.Service
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();
+            NamedAnimation.ClearOnDeath(player);
+            Feature.UsePerkFeat.ClearQueuedAbility(player);
             var hostile = GetLastHostileActor(player);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
@@ -37,6 +44,8 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
+            StatusEffect.ClearStatusEffectsOnDeath(player);
+
             if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
             {
                 var hostilePlayerId = GetObjectUUID(hostile);
@@ -44,13 +53,13 @@ namespace SWLOR.Game.Server.Service
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
                 {
                     SendMessageToPC(player, "You have been subdued.");
-                    Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
+                    Messaging.SendMessageNearbyToPlayers(
+                        player,
+                        receiver => $"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.");
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
                     DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAccuracyDecrease(10), player, 300f);
+                    StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
+                    StatusEffect.ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
                 }
             }
             else

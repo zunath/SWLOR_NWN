@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -236,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 IsAtTerminal = true;
             }
-            
+
             ApartmentNames = apartmentNames;
             ApartmentToggles = apartmentToggles;
             SelectedApartmentIndex = selectedApartmentIndex;
@@ -270,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var apartment = GetApartment();
                 var permissions = GetPermissions();
                 var layout = Property.GetLayoutByType(apartment.Layout);
-                var furnitureCount = 
+                var furnitureCount =
                     apartment.ChildPropertyIds.ContainsKey(PropertyChildType.Structure)
                     ? apartment.ChildPropertyIds[PropertyChildType.Structure].Count
                     : 0;
@@ -397,8 +396,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 DB.Set(apartment);
 
-                var instance = Property.GetRegisteredInstance(apartment.Id);
-                SetName(instance.Area, "{PC} " + CustomName);
+                if (Property.TryGetLoadedInstance(apartment.Id, out var instance))
+                    SetName(instance.Area, "{PC} " + CustomName);
 
                 Instruction = $"Saved successfully.";
                 InstructionColor = GuiColor.Green;
@@ -475,7 +474,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Queue the deletion for the next reboot to avoid lag while players are on.
                     apartment.IsQueuedForDeletion = true;
                     DB.Set(apartment);
-                    
+
                     if(Gui.IsWindowOpen(Player, GuiWindowType.ManageApartment))
                         Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
 

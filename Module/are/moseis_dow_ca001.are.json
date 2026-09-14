@@ -54,7 +54,7 @@
   },
   "LoadScreenID": {
     "type": "word",
-    "value": 69
+    "value": 18
   },
   "ModListenCheck": {
     "type": "int",
@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Esper - Baie 94",
-      "2": "Mos Eisley - Baie 94"
+      "0": "Tatooine - Mos Eisley - Docking Bay 94",
+      "2": "Mos Eisley - Docking Bay 94"
     }
   },
   "NoRest": {

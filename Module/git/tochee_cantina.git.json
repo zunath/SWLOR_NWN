@@ -362,7 +362,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Armure de chasseur de prime"
+                  "2": "Bounty Hunter Armor"
                 }
               },
               "Metal1Color": {
@@ -642,7 +642,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Bounty hunter",
-            "2": "Chasseur de primes"
+            "2": "Bounty Hunter"
           }
         },
         "fortbonus": {
@@ -768,6 +768,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 74
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 23
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -921,6 +952,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 74
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 23
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -1734,7 +1796,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements voyants"
+                  "2": "Flashy Clothes"
                 }
               },
               "Metal1Color": {
@@ -2752,8 +2814,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -4789,8 +4851,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -5808,8 +5870,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -6827,8 +6889,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -7066,7 +7128,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Dancer",
-            "2": "Danseuse"
+            "2": "Dancer"
           }
         },
         "fortbonus": {
@@ -7847,7 +7909,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "Civilian Clothes"
                 }
               },
               "Metal1Color": {
@@ -8183,7 +8245,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -8876,7 +8938,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -9142,7 +9204,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Skyracer Pilot",
-            "2": "Pilote de Skyracer"
+            "2": "Skyracer Pilot"
           }
         },
         "fortbonus": {
@@ -9934,7 +9996,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -10186,7 +10248,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Skyracer Pilot",
-            "2": "Pilote de Skyracer"
+            "2": "Skyracer Pilot"
           }
         },
         "fortbonus": {
@@ -10967,7 +11029,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -11996,7 +12058,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -12262,7 +12324,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Skyracer Pilot",
-            "2": "Pilote de Skyracer"
+            "2": "Skyracer Pilot"
           }
         },
         "fortbonus": {
@@ -13056,7 +13118,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Armure légère Trandoschan"
+                  "2": "Light Trandoshan Armor"
                 }
               },
               "Metal1Color": {
@@ -13263,7 +13325,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Blaster Pistol Energy Cell"
                 }
               },
               "ModelPart1": {
@@ -13492,7 +13554,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Bouncer",
-            "2": "Videur"
+            "2": "Bouncer"
           }
         },
         "fortbonus": {
@@ -13569,7 +13631,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Blaster Pistol Energy Cell"
                 }
               },
               "ModelPart1": {
@@ -13816,7 +13878,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 61
+                "value": 514
               },
               "Charges": {
                 "type": "byte",
@@ -13833,13 +13895,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube doté d'une poignée, avec une petite cellule d'énergie située sous le canon.\n\nCette arme a été utilisée par les droïdes de combat de l'Armée Séparatiste durant la Guerre des Clones, et a été appelé \"le Pistolet Blaster Séparatiste\". Probablement gêné par la situation délicate de produire des armes pour un ennemi de la République Galactique, BlasTech a longtemps nié que cette arme venait de leurs usines.\n\nAprès la chute de la République et l'avènement de l'Empire Galactique, BlasTech a été contractée par les Impériaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modèle connu sous le nom SE-14R. Une autre version améliorée, le SE-14C, a été dévoilée par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses déclinaisons."
+                  "2": "The SE-14, sometimes known as the SR Combat Pistol, is a basic blaster pistol produced by BlasTech.\n\nThe SE-14 blaster pistol is built around a compact barrel and grip, with a small energy cell located beneath the barrel.\n\nThis weapon was used by Separatist battle droids during the Clone Wars and was sometimes called the Separatist Blaster Pistol. BlasTech long denied that the weapon came from its factories, likely due to the sensitive issue of producing arms for an enemy of the Galactic Republic.\n\nAfter the fall of the Republic and the rise of the Galactic Empire, BlasTech was contracted by the Imperials to produce the SE-14R as a semi-automatic backup sidearm. An upgraded SE-14C model was later released.\n\nSmugglers and criminals are known to use the SE-14 in its various forms."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube doté d'une poignée, avec une petite cellule d'énergie située sous le canon.\n\nCette arme a été utilisée par les droïdes de combat de l'Armée Séparatiste durant la Guerre des Clones, et a été appelé \"le Pistolet Blaster Séparatiste\". Probablement gêné par la situation délicate de produire des armes pour un ennemi de la République Galactique, BlasTech a longtemps nié que cette arme venait de leurs usines.\n\nAprès la chute de la République et l'avènement de l'Empire Galactique, BlasTech a été contractée par les Impériaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modèle connu sous le nom SE-14R. Une autre version améliorée, le SE-14C, a été dévoilée par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses déclinaisons."
+                  "2": "The SE-14, sometimes known as the SR Combat Pistol, is a basic blaster pistol produced by BlasTech.\n\nThe SE-14 blaster pistol is built around a compact barrel and grip, with a small energy cell located beneath the barrel.\n\nThis weapon was used by Separatist battle droids during the Clone Wars and was sometimes called the Separatist Blaster Pistol. BlasTech long denied that the weapon came from its factories, likely due to the sensitive issue of producing arms for an enemy of the Galactic Republic.\n\nAfter the fall of the Republic and the rise of the Galactic Empire, BlasTech was contracted by the Imperials to produce the SE-14R as a semi-automatic backup sidearm. An upgraded SE-14C model was later released.\n\nSmugglers and criminals are known to use the SE-14 in its various forms."
                 }
               },
               "Identified": {
@@ -13849,12 +13911,12 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Pistolet SE-14"
+                  "2": "SE-14 Pistol"
                 }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 39
+                "value": 41
               },
               "ModelPart2": {
                 "type": "byte",
@@ -13963,6 +14025,37 @@
                       "type": "word",
                       "value": 0
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -13992,7 +14085,7 @@
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 39
+                "value": 41
               },
               "xModelPart2": {
                 "type": "word",
@@ -14867,7 +14960,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -15692,7 +15817,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -16394,7 +16519,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -17219,7 +17376,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -18328,6 +18485,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -18381,14 +18569,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -19562,7 +19750,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -20387,7 +20607,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -22792,7 +23012,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -23179,6 +23399,1220 @@
           "type": "float",
           "value": 0.01000607013702393
         }
+      },
+      {
+        "__struct_id": 4,
+        "Appearance_Head": {
+          "type": "byte",
+          "value": 69
+        },
+        "Appearance_Type": {
+          "type": "word",
+          "value": 6
+        },
+        "ArmorPart_RFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_Belt": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Neck": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Pelvis": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_RThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Torso": {
+          "type": "byte",
+          "value": 1
+        },
+        "Cha": {
+          "type": "byte",
+          "value": 9
+        },
+        "ChallengeRating": {
+          "type": "float",
+          "value": 0.125
+        },
+        "ClassList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "Class": {
+                "type": "int",
+                "value": 4
+              },
+              "ClassLevel": {
+                "type": "short",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 2,
+              "Class": {
+                "type": "int",
+                "value": 52
+              },
+              "ClassLevel": {
+                "type": "short",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "Color_Hair": {
+          "type": "byte",
+          "value": 12
+        },
+        "Color_Skin": {
+          "type": "byte",
+          "value": 6
+        },
+        "Color_Tattoo1": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo2": {
+          "type": "byte",
+          "value": 1
+        },
+        "Con": {
+          "type": "byte",
+          "value": 16
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": "cq_deadhand"
+        },
+        "CRAdjust": {
+          "type": "int",
+          "value": -3
+        },
+        "CurrentHitPoints": {
+          "type": "short",
+          "value": 15
+        },
+        "DecayTime": {
+          "type": "dword",
+          "value": 5000
+        },
+        "Deity": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Pavo Orrel is a old gambler marksman tied to the Dead Man's Hand capstone trials in Anchorhead Canyon Range."
+          }
+        },
+        "Dex": {
+          "type": "byte",
+          "value": 13
+        },
+        "Disarmable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Equip_ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "AddCost": {
+                "type": "dword",
+                "value": 49
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 156
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 101
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 101
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 105
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 240
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 104
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 244
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 101
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 200
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 105
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 240
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 117
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 119
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 118
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 50
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 1
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 22
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 3
+              },
+              "LocalizedName": {
+                "id": 12835,
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Gero's Thug outfit"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 21
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 22
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 6
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 3
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 5
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 65
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 20
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 5
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 20
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 9
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 5
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 20
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 10
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 5
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 70
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 20
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 5
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 20
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "gerothug"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "exchangethug002"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 156
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 105
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 240
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 104
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 244
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 200
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 105
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 240
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 117
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "FactionID": {
+          "type": "word",
+          "value": 2
+        },
+        "FeatList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1089
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 28
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 258
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 106
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 45
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 46
+              }
+            }
+          ]
+        },
+        "FirstName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Pavo"
+          }
+        },
+        "fortbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Gender": {
+          "type": "byte",
+          "value": 0
+        },
+        "GoodEvil": {
+          "type": "byte",
+          "value": 50
+        },
+        "HitPoints": {
+          "type": "short",
+          "value": 15
+        },
+        "Int": {
+          "type": "byte",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 0
+        },
+        "IsImmortal": {
+          "type": "byte",
+          "value": 1
+        },
+        "IsPC": {
+          "type": "byte",
+          "value": 0
+        },
+        "LastName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Orrel"
+          }
+        },
+        "LawfulChaotic": {
+          "type": "byte",
+          "value": 50
+        },
+        "Lootable": {
+          "type": "byte",
+          "value": 0
+        },
+        "MaxHitPoints": {
+          "type": "short",
+          "value": 21
+        },
+        "NaturalAC": {
+          "type": "byte",
+          "value": 0
+        },
+        "NoPermDeath": {
+          "type": "byte",
+          "value": 1
+        },
+        "PerceptionRange": {
+          "type": "byte",
+          "value": 11
+        },
+        "Phenotype": {
+          "type": "int",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 317
+        },
+        "Race": {
+          "type": "byte",
+          "value": 6
+        },
+        "refbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "ScriptAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDialogue": {
+          "type": "resref",
+          "value": "dialog_start"
+        },
+        "ScriptDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptEndRound": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnBlocked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnNotice": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptRested": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpawn": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpellAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "SkillList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "SoundSetFile": {
+          "type": "word",
+          "value": 219
+        },
+        "SpecAbilityList": {
+          "type": "list",
+          "value": []
+        },
+        "StartingPackage": {
+          "type": "byte",
+          "value": 4
+        },
+        "Str": {
+          "type": "byte",
+          "value": 16
+        },
+        "Subrace": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "cq_deadhand"
+        },
+        "Tail_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "TemplateList": {
+          "type": "list",
+          "value": []
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "cq_deadhand"
+        },
+        "WalkRate": {
+          "type": "int",
+          "value": 7
+        },
+        "willbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Wings_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "Wis": {
+          "type": "byte",
+          "value": 10
+        },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 69
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.6343934535980225
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 15.48194694519043
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.7730103135108948
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 34.05881118774414
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
       }
     ]
   },
@@ -23265,7 +24699,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "Lockable": {
           "type": "byte",
@@ -23278,7 +24712,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "tosche_cantina_station"
+            "2": "Tosche Cantina Station"
           }
         },
         "OnClick": {
@@ -23495,7 +24929,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -23712,7 +25146,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante vers le bas"
+            "2": "Downward Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -24161,7 +25595,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Chaine suspendue"
+            "2": "Hanging Chain"
           }
         },
         "OnClick": {
@@ -24388,7 +25822,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Chaine suspendue"
+            "2": "Hanging Chain"
           }
         },
         "OnClick": {
@@ -24615,7 +26049,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Comptoir SF vert"
+            "2": "Green SF Counter"
           }
         },
         "OnClick": {
@@ -24843,7 +26277,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -25071,7 +26505,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -25298,7 +26732,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Plan de travail éclairé"
+            "2": "Lit Workbench"
           }
         },
         "OnClick": {
@@ -25525,7 +26959,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -25752,7 +27186,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur kaki clair"
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -25979,7 +27413,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur kaki clair"
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -26206,7 +27640,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur course swop"
+            "2": "Swoop Race Monitor"
           }
         },
         "OnClick": {
@@ -26433,7 +27867,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur course swop"
+            "2": "Swoop Race Monitor"
           }
         },
         "OnClick": {
@@ -26660,7 +28094,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Comptoir SF vert"
+            "2": "Green SF Counter"
           }
         },
         "OnClick": {
@@ -26888,7 +28322,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -27116,7 +28550,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -27344,7 +28778,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -27572,7 +29006,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -27800,7 +29234,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -28028,7 +29462,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -28255,7 +29689,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -28482,7 +29916,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -28709,7 +30143,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -28936,7 +30370,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -29163,7 +30597,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Pot a café"
+            "2": "Coffee Pot"
           }
         },
         "OnClick": {
@@ -29390,7 +30824,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Verre exotique"
+            "2": "Exotic Glass"
           }
         },
         "OnClick": {
@@ -29617,7 +31051,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Verre exotique 2"
+            "2": "Exotic Glass 2"
           }
         },
         "OnClick": {
@@ -29844,7 +31278,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -30071,8 +31505,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -30299,8 +31733,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -30527,8 +31961,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -30684,7 +32118,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -30755,8 +32189,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Moniteur kaki clair",
-            "2": "Moniteur kaki clair"
+            "0": "Light Khaki Monitor",
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -30983,7 +32417,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -31210,8 +32644,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -31438,8 +32872,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -31666,8 +33100,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -31894,8 +33328,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -32122,7 +33556,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -32349,8 +33783,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -32577,8 +34011,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -32805,8 +34239,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -33033,8 +34467,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -33262,7 +34696,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -33489,7 +34923,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -33716,7 +35150,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -33944,7 +35378,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -34172,7 +35606,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -34399,7 +35833,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Chaine suspendue"
+            "2": "Hanging Chain"
           }
         },
         "OnClick": {
@@ -34627,7 +36061,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -34855,7 +36289,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35083,7 +36517,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35311,7 +36745,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35539,7 +36973,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35767,7 +37201,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35995,7 +37429,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36223,7 +37657,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36451,7 +37885,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36679,7 +38113,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36907,7 +38341,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -37135,7 +38569,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -37363,7 +38797,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -38040,7 +39474,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -38267,7 +39701,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -38494,7 +39928,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -38721,7 +40155,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -38948,7 +40382,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39175,7 +40609,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39402,7 +40836,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39629,7 +41063,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39856,7 +41290,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -40083,7 +41517,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -40310,8 +41744,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -40538,8 +41972,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -40767,7 +42201,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -40995,7 +42429,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41223,7 +42657,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41451,7 +42885,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41679,7 +43113,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41907,7 +43341,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42135,7 +43569,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42363,7 +43797,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42591,7 +44025,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42816,7 +44250,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -42972,7 +44406,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -43043,7 +44477,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console murale, kaki"
+            "2": "Khaki Wall Console"
           }
         },
         "OnClick": {
@@ -43270,7 +44704,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur kaki clair"
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -43781,7 +45215,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -43916,7 +45350,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -44051,7 +45485,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -44186,7 +45620,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Applaudissements foule"
+            "2": "Crowd Applause"
           }
         },
         "Looping": {
@@ -44307,7 +45741,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Applaudissements foule"
+            "2": "Crowd Applause"
           }
         },
         "Looping": {
@@ -44428,7 +45862,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Applaudissements foule"
+            "2": "Crowd Applause"
           }
         },
         "Looping": {
@@ -44549,7 +45983,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rodien"
+            "2": "Rodian"
           }
         },
         "Looping": {
@@ -45013,7 +46447,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Barman générique"
+            "2": "Generic Bartender"
           }
         },
         "MarkDown": {
@@ -45096,7 +46530,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Verre de lait bleu"
+                        "2": "Glass of Blue Milk"
                       }
                     },
                     "ModelPart1": {
@@ -45233,7 +46667,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Verre de Tatooine Sunburn"
+                        "2": "Glass of Tatooine Sunburn"
                       }
                     },
                     "ModelPart1": {
@@ -45370,7 +46804,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Verre de vin corellien"
+                        "2": "Glass of Corellian Wine"
                       }
                     },
                     "ModelPart1": {
@@ -45515,7 +46949,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Crème d'Infâme"
+                        "2": "Cream of Infamy"
                       }
                     },
                     "ModelPart1": {
@@ -45821,7 +47255,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Lait bleu"
+                        "2": "Blue Milk"
                       }
                     },
                     "ModelPart1": {
@@ -46280,7 +47714,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Vin épicé de Zeltronian"
+                        "2": "Zeltronian Spiced Wine"
                       }
                     },
                     "ModelPart1": {
@@ -46435,7 +47869,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Whisky Corellien"
+                        "2": "Corellian Whiskey"
                       }
                     },
                     "ModelPart1": {
@@ -46599,7 +48033,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Capsule remplie d'eau"
+                        "2": "Water-Filled Capsule"
                       }
                     },
                     "ModelPart1": {
@@ -46736,7 +48170,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Ragoût de Bantha"
+                        "2": "Bantha Stew"
                       }
                     },
                     "ModelPart1": {
@@ -46873,7 +48307,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Boite de cigares"
+                        "2": "Box of Cigars"
                       }
                     },
                     "ModelPart1": {
@@ -47012,7 +48446,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Paquet de cigarette"
+                        "2": "Cigarette Pack"
                       }
                     },
                     "ModelPart1": {
@@ -47807,6 +49241,21 @@
         "Value": {
           "type": "int",
           "value": 66
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]

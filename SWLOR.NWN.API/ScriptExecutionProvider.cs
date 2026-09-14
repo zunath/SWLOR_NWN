@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API
         /// Sets the script execution provider. Should only be called during server initialization.
         /// </summary>
         /// <param name="provider">The provider implementation</param>
-        public static void SetProvider(IScriptExecutionProvider provider)
+        public static void SetProvider(IScriptExecutionProvider? provider)
         {
             _provider = provider;
         }

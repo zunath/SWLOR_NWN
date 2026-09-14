@@ -1,4 +1,3 @@
-﻿using System;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.LogService
@@ -13,6 +12,8 @@ namespace SWLOR.Game.Server.Service.LogService
         Error,
         [LogGroup("Chat", ServerEnvironmentType.All)]
         Chat,
+        [LogGroup("PlayerName", ServerEnvironmentType.All)]
+        PlayerName,
         [LogGroup("DM", ServerEnvironmentType.All)]
         DM,
         [LogGroup("DMAuthorization", ServerEnvironmentType.All)]
@@ -27,6 +28,8 @@ namespace SWLOR.Game.Server.Service.LogService
         Property,
         [LogGroup("PlayerMarket", ServerEnvironmentType.All)]
         PlayerMarket,
+        [LogGroup("Bank", ServerEnvironmentType.All)]
+        Bank,
         [LogGroup("Space", ServerEnvironmentType.All)]
         Space,
         [LogGroup("StoreCleanup", ServerEnvironmentType.All)]
@@ -36,7 +39,15 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("Crafting", ServerEnvironmentType.All)]
         Crafting,
         [LogGroup("Incubation", ServerEnvironmentType.All)]
-        Incubation
+        Incubation,
+        [LogGroup("AI", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
+        AI,
+        [LogGroup("Mimicry", ServerEnvironmentType.All)]
+        Mimicry,
+        [LogGroup("QuestContract", ServerEnvironmentType.All)]
+        QuestContract,
+        [LogGroup("EngineTest", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
+        EngineTest
     }
 
     public class LogGroupAttribute : Attribute

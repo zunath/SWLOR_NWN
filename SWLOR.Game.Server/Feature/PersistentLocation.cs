@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Feature
         public static void SaveLocationOnRest()
         {
             var player = GetLastPCRested();
-            if (GetLastRestEventType() != RestEventType.Started) 
+            if (GetLastRestEventType() != RestEventType.Started)
                 return;
 
             SaveLocation(player);
@@ -104,9 +105,31 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            // Shuttle passengers - resume or resolve an in-transit shuttle flight instead of
+            // loading the last saved location.
+            if (Shuttle.TryGetLoginRedirect(player, out var shuttleLocation))
+            {
+                AssignCommand(player, () =>
+                {
+                    ClearAllActions();
+                    ActionJumpToLocation(shuttleLocation);
+                });
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
             var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+            if (!GetIsObjectValid(locationArea))
+            {
+                Log.WriteStructured(
+                    LogGroup.Server,
+                    "Persistent location area resolution failed: PlayerId={PlayerId} AreaResref={AreaResref}",
+                    playerId,
+                    dbPlayer.LocationAreaResref);
+                return;
+            }
+
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
             var location = Location(locationArea, position, dbPlayer.LocationOrientation);

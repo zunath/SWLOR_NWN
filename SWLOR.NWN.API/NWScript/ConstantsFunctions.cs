@@ -11,17 +11,17 @@ namespace SWLOR.NWN.API.NWScript
         /// Number of inventory slots available.
         /// </summary>
         public const int NumberOfInventorySlots = 18;
-        
+
         /// <summary>
         /// Mathematical constant Pi.
         /// </summary>
         public const float PI = 3.141592f;
-        
+
         /// <summary>
         /// Event constant for spell cast at.
         /// </summary>
         public const int EVENT_SPELL_CAST_AT = 1011;
-        
+
         /// <summary>
         /// Invalid portrait constant.
         /// </summary>

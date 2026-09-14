@@ -1,0 +1,176 @@
+using SWLOR.NWN.Formats.Common;
+using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
+
+namespace SWLOR.Toolset.Domain.Documents
+{
+    /// <summary>
+    /// Builds an independent custom blueprint from an existing blueprint, matching Aurora's
+    /// Edit Copy operation.
+    /// </summary>
+    public static class BlueprintCopyFactory
+    {
+        private const int InitialCopyNumberWidth = 3;
+
+        /// <summary>
+        /// Returns the next available copy ResRef across the module and every indexed Standard/HAK
+        /// layer. A module blueprint with an indexed identity overrides that resource, so excluding the
+        /// index could silently retarget existing instances when the copy is created.
+        /// </summary>
+        public static string NextResRef(
+            ModuleWorkspace workspace,
+            ResourceType type,
+            string sourceResRef)
+        {
+            ArgumentNullException.ThrowIfNull(workspace);
+            if (!ModuleWorkspace.BlueprintTypes.Contains(type))
+                throw new ArgumentOutOfRangeException(nameof(type), type, "Not a blueprint resource type.");
+
+            var moduleResRefs = workspace.EnumerateResRefs(type)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var indexedType = ResourceIdentity.TypeFromExtension(type.Extension());
+
+            return NextResRef(
+                sourceResRef,
+                candidate =>
+                    moduleResRefs.Contains(candidate) ||
+                    workspace.ResourceIndex?.TryLookup(
+                        new ResourceIdentity(candidate, indexedType), out _) == true);
+        }
+
+        /// <summary>
+        /// Returns the next available Aurora-style copy ResRef. A source without a three-or-more digit
+        /// suffix gets <c>001</c>; an already numbered copy increments its suffix.
+        /// </summary>
+        public static string NextResRef(string sourceResRef, IEnumerable<string> existingResRefs)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(sourceResRef);
+            ArgumentNullException.ThrowIfNull(existingResRefs);
+
+            var existing = existingResRefs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            return NextResRef(sourceResRef, existing.Contains);
+        }
+
+        private static string NextResRef(string sourceResRef, Func<string, bool> exists)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(sourceResRef);
+            ArgumentNullException.ThrowIfNull(exists);
+
+            var normalized = NormalizeSourceResRef(sourceResRef);
+            if (normalized.Length == 0)
+                throw new ArgumentException("The source ResRef has no legal ResRef characters.", nameof(sourceResRef));
+
+            var digitStart = normalized.Length;
+            while (digitStart > 0 && char.IsAsciiDigit(normalized[digitStart - 1]))
+                digitStart--;
+
+            var trailingDigitCount = normalized.Length - digitStart;
+            var prefix = normalized;
+            ulong copyNumber = 1;
+            var minimumNumberWidth = InitialCopyNumberWidth;
+
+            if (trailingDigitCount >= InitialCopyNumberWidth &&
+                ulong.TryParse(normalized[digitStart..], out var parsedNumber))
+            {
+                prefix = normalized[..digitStart];
+                copyNumber = parsedNumber + 1;
+                minimumNumberWidth = trailingDigitCount;
+            }
+
+            var fellBackFromOversizedNumber = false;
+            for (var attempt = 0; attempt < 1_000_000; attempt++, copyNumber++)
+            {
+                var digits = copyNumber.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                if (digits.Length < minimumNumberWidth)
+                    digits = digits.PadLeft(minimumNumberWidth, '0');
+
+                // An all-numeric 16-character ResRef can overflow to 17 digits. At that point it is no
+                // longer useful as a numeric sequence, so start a conventional 001 suffix from it.
+                if (digits.Length > NwnResRef.MaxLength)
+                {
+                    if (fellBackFromOversizedNumber)
+                        break;
+
+                    fellBackFromOversizedNumber = true;
+                    prefix = normalized;
+                    copyNumber = 1;
+                    minimumNumberWidth = InitialCopyNumberWidth;
+                    attempt--;
+                    continue;
+                }
+
+                var prefixLength = Math.Min(prefix.Length, NwnResRef.MaxLength - digits.Length);
+                var candidate = prefix[..prefixLength] + digits;
+                if (!exists(candidate))
+                    return candidate;
+            }
+
+            throw new InvalidOperationException($"Could not generate an available copy ResRef for '{sourceResRef}'.");
+        }
+
+        /// <summary>
+        /// Deep-copies the source document and changes only its blueprint identity. Tag, name, scripts,
+        /// inventory, variables, unknown fields, and every other authored value are preserved.
+        /// </summary>
+        public static byte[] CreateFileContent(
+            ResourceType type,
+            JsonGffDocument source,
+            string copyResRef)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+            if (!ModuleWorkspace.BlueprintTypes.Contains(type))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(type), type, "Edit Copy is only available for blueprint resource types.");
+            }
+
+            if (!NwnResRef.IsCanonical(copyResRef))
+            {
+                throw new ArgumentException(
+                    $"The copy ResRef must be 1-{NwnResRef.MaxLength} characters " +
+                    "of a-z, 0-9, or underscore.",
+                    nameof(copyResRef));
+            }
+
+            // Serializing and parsing produces an independent document while retaining the source's
+            // unknown fields and JSON formatting characteristics. The copy is not on an undo stack yet.
+            var copy = JsonGffDocument.Parse(source.ToBytes());
+            using (EditScope.EnterConstruction())
+            {
+                copy.Root.SetString(
+                    IdentityFieldName(type),
+                    GffFieldType.ResRef,
+                    copyResRef);
+            }
+
+            return copy.ToBytes();
+        }
+
+        /// <summary>The root field which identifies a blueprint of this type.</summary>
+        public static string IdentityFieldName(ResourceType type)
+        {
+            if (!ModuleWorkspace.BlueprintTypes.Contains(type))
+                throw new ArgumentOutOfRangeException(nameof(type), type, "Not a blueprint resource type.");
+
+            return type == ResourceType.Utm ? "ResRef" : "TemplateResRef";
+        }
+
+        private static string NormalizeSourceResRef(string sourceResRef)
+        {
+            var builder = new System.Text.StringBuilder(NwnResRef.MaxLength);
+            foreach (var character in sourceResRef.Trim())
+            {
+                if (char.IsAsciiLetterOrDigit(character) || character == '_')
+                    builder.Append(char.ToLowerInvariant(character));
+
+                if (builder.Length == NwnResRef.MaxLength)
+                    break;
+            }
+
+            return builder.ToString();
+        }
+
+    }
+}

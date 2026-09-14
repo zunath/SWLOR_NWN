@@ -1,21 +1,30 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using NumericsVector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class ThrowLightsaberAbilityDefinition : IAbilityListDefinition
+    public sealed class ThrowLightsaberAbilityDefinition : IAbilityListDefinition
     {
+        private const float RangeMeters = 15f;
+        private const float PathWidthMeters = 2.5f;
+        private const float PathBoundaryToleranceMeters = 0.001f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
+
             ThrowLightsaber1(builder);
             ThrowLightsaber2(builder);
             ThrowLightsaber3(builder);
@@ -23,157 +32,198 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
-        {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var distance = GetDistanceBetween(activator, target);
-
-            var validWeapon = GetIsObjectValid(weapon) &&
-                                 (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)));
-
-            if (distance > 15)
-                return "You must be within 15 meters of your target.";
-            if (!validWeapon)
-                return "You cannot force throw your currently held object.";
-            else return string.Empty;
-        }
-
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            var dmg = 0;
-            const float Range = 15.0f;
-            var count = 1;
-            var delay = GetDistanceBetween(activator, target) / 10.0f;
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-
-
-
-            // Make the activator face their target.
-            ClearAllActions();
-            BiowarePosition.TurnToFaceObject(target, activator);
-
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
-            var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
-            var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-
-            switch (level)
-            {
-                case 1:
-                    dmg = (willBonus + perBonus) / 2;
-                    break;
-                case 2:
-                    dmg = 20 + ((willBonus + perBonus) * 3 / 4);
-                    break;
-                case 3:
-                    dmg = 40 + (willBonus + perBonus);
-                    break;
-            }
-
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
-
-            // apply to target
-            DelayCommand(delay, () =>
-            {
-                var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-                var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                var damage = Combat.CalculateDamage(
-                    attack,
-                    dmg,
-                    attackerStat,
-                    defense,
-                    defenderStat,
-                    0);
-                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
-                Enmity.ModifyEnmity(activator, target, damage + 200 * level);
-            });
-
-            // apply to next nearest creature in the spellcylinder
-            var nearby = GetFirstObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
-            while (GetIsObjectValid(nearby) && count < level)
-            {
-                if (nearby != target && nearby != activator)
-                {
-                    delay = GetDistanceBetween(activator, nearby) / 10.0f;
-                    var nearbyCopy = nearby;
-                    DelayCommand(delay, () =>
-                    {
-                        var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
-                        var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
-                        var damage = Combat.CalculateDamage(
-                            attack,
-                            dmg,
-                            attackerStat,
-                            defense,
-                            defenderStat,
-                            0);
-                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
-                        CombatPoint.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
-                        Enmity.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
-                    });
-
-                    count++;
-                }
-                nearby = GetNextObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
-            }
-
-        }
-
         private static void ThrowLightsaber1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
-                .Name("Throw Lightsaber I")
-                .Level(1)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
-                .HasActivationDelay(1.5f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(1)
-                .RequirementStamina(1)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation(Validation)
-                .HasImpactAction(ImpactAction);
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber1, Spell.ThrowLightsaber1, "Throw Lightsaber I", 1, 10, 2, 1, 1);
         }
+
         private static void ThrowLightsaber2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
-                .Name("Throw Lightsaber II")
-                .Level(2)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
-                .HasActivationDelay(1.5f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(2)
-                .RequirementStamina(1)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation(Validation)
-                .HasImpactAction(ImpactAction);
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber2, Spell.ThrowLightsaber2, "Throw Lightsaber II", 2, 20, 3, 1, 2);
         }
+
         private static void ThrowLightsaber3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
-                .Name("Throw Lightsaber III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber3, Spell.ThrowLightsaber3, "Throw Lightsaber III", 3, 30, 4, 2, 3);
+        }
+
+        private static void ConfigureThrowLightsaber(
+            AbilityBuilder builder,
+            FeatType feat,
+            Spell spell,
+            string name,
+            int level,
+            int baseDamage,
+            int fp,
+            int stamina,
+            int maxTargets)
+        {
+            builder
+                .Create(feat, PerkType.ThrowLightsaber)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ThrowLightsaber)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(1.5f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(2)
-                .RequirementStamina(2)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 12f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.SaberThrow)
+                .PreservesNativeAnimationChoreography()
+                // Reserve the native start, one loop, and end for tester replay timing.
+                .UsesNativeAnimationPreview(Animation.SaberThrow, 3.833f, 2f)
+                .DisplaysVisualEffectWhenActivating()
+                .IsAreaAbility()
+                .HasTargetingLine(
+                    spell,
+                    RangeMeters,
+                    PathWidthMeters,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .HasMaxRange(RangeMeters)
+                .RequiresTarget()
+                .HasCustomValidation(ValidateWeapon)
+                .HasImpactAction((activator, target, _, targetLocation) =>
+                    ApplyThrowLightsaber(activator, target, targetLocation, name, baseDamage, maxTargets))
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation(Validation)
-                .HasImpactAction(ImpactAction);
+                .RequirementFP(fp)
+                .RequirementStamina(stamina);
+        }
+
+        private static void ApplyThrowLightsaber(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            string abilityName,
+            int baseDamage,
+            int maxTargets)
+        {
+            PlayThrowLightsaberAnimation(activator, target, targetLocation);
+
+            var foundTarget = false;
+            foreach (var hitTarget in GetPathTargets(activator, target, targetLocation, maxTargets))
+            {
+                foundTarget = true;
+                Ability.ApplyCombatImpact(
+                    activator,
+                    hitTarget,
+                    GetLocation(hitTarget),
+                    SkillType.Force,
+                    baseDamage,
+                    0,
+                    null,
+                    false,
+                    Array.Empty<Type>(),
+                    damageType: CombatDamageType.Physical,
+                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                    baseDamageAdjustment: GetEquippedWeaponDamageAdjustment(activator),
+                    playImpactAnimation: false);
+            }
+
+            if (!foundTarget)
+            {
+                Messaging.SendMessageNearbyToPlayers(
+                    activator,
+                    receiver => Combat.BuildAbilityNoTargetCombatLogMessage(
+                        receiver,
+                        activator,
+                        abilityName),
+                    60f);
+            }
+        }
+
+        private static void PlayThrowLightsaberAnimation(uint activator, uint target, Location targetLocation)
+        {
+            NamedAnimation.ReleaseForNativePlayback(activator);
+            if (GetIsObjectValid(target) && target != activator)
+            {
+                BiowarePosition.TurnToFaceObject(target, activator);
+            }
+            else if (GetIsObjectValid(GetAreaFromLocation(targetLocation)))
+            {
+                BiowarePosition.TurnToFaceLocation(targetLocation, activator);
+            }
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
+        }
+
+        private static IEnumerable<uint> GetPathTargets(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int maxTargets)
+        {
+            return AbilityTargeting.GetHostileTargetsNearLocation(
+                activator,
+                GetLocation(activator),
+                RangeMeters,
+                maxTargets,
+                target,
+                candidate => candidate == target || IsTargetAlongPath(activator, target, targetLocation, candidate));
+        }
+
+        private static bool IsTargetAlongPath(uint activator, uint target, Location targetLocation, uint candidate)
+        {
+            var origin = GetPosition(activator);
+            var destination = GetIsObjectValid(target)
+                ? GetPosition(target)
+                : GetPositionFromLocation(targetLocation);
+            return IsPositionAlongPath(origin, destination, GetPosition(candidate));
+        }
+
+        private static bool IsPositionAlongPath(
+            NumericsVector3 origin,
+            NumericsVector3 destination,
+            NumericsVector3 candidate)
+        {
+            var path = destination - origin;
+            var pathLength = path.Length();
+            if (pathLength <= 0.01f)
+                return false;
+
+            pathLength = Math.Min(pathLength, RangeMeters);
+            var direction = NumericsVector3.Normalize(path);
+            var toCandidate = candidate - origin;
+            var distanceAlongPath = NumericsVector3.Dot(toCandidate, direction);
+            if (distanceAlongPath < -PathBoundaryToleranceMeters ||
+                distanceAlongPath > pathLength + PathBoundaryToleranceMeters)
+                return false;
+
+            var closestPoint = origin + direction * distanceAlongPath;
+            var lateralDistance = (candidate - closestPoint).Length();
+            return lateralDistance <= PathWidthMeters * 0.5f + PathBoundaryToleranceMeters;
+        }
+
+        private static Func<uint, int> GetEquippedWeaponDamageAdjustment(uint activator)
+        {
+            var weapon = GetEquippedWeapon(activator);
+            var damage = GetIsObjectValid(weapon)
+                ? Item.GetDMG(weapon)
+                : 0;
+
+            return damage <= 0
+                ? null
+                : _ => damage;
+        }
+
+        private static uint GetEquippedWeapon(uint activator)
+        {
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
+            if (Item.IsBaseItemType(rightHand, Item.WeaponBaseItemTypes))
+                return rightHand;
+
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, activator);
+            if (Item.IsBaseItemType(leftHand, Item.WeaponBaseItemTypes))
+                return leftHand;
+
+            return OBJECT_INVALID;
+        }
+
+        private static string ValidateWeapon(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
+        {
+            return GetIsObjectValid(GetEquippedWeapon(activator))
+                ? string.Empty
+                : "An equipped weapon is required.";
         }
     }
 }

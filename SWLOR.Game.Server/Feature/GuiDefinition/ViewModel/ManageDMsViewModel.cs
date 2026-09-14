@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -102,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (SelectedUserIndex > -1)
                 UserToggles[SelectedUserIndex] = false;
-            
+
             var index = NuiGetEventArrayIndex();
             SelectedUserIndex = index;
             var userId = _userIds[index];
@@ -127,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CDKey = string.Empty,
                 Name = "New User"
             };
-            
+
             _userIds.Add(newUser.Id.ToString());
             Names.Add(newUser.Name);
             UserToggles.Add(false);
@@ -210,5 +209,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             StatusText = string.Empty;
         };
+
     }
 }

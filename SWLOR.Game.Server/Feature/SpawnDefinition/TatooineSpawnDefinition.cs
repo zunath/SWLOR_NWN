@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -23,7 +23,18 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             NorthernDunes();
             TatooineWorldBoss();
             AncientWorm();
+            AnchorheadCanyonRange();
+
+            AnchrangeRareElites();
             return _builder.Build();
+        }
+
+        private void AnchrangeRareElites()
+        {
+            _builder.Create("ANCHORHEAD_CANYON_RANGE_RARES", "Anchorhead Canyon Range - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "canyonbulwrk").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "dunedeadeye").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "deadhandzeph").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void Womprats()
@@ -184,6 +195,54 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RespawnDelay(60 + Random.D100(1));
         }
+
+        private void AnchorheadCanyonRange()
+        {
+            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE", "Anchorhead Canyon Range - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_lastword_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_lastword_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_lastword_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deadhand_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deadhand_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deadhand_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unmovctr_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unmovctr_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unmovctr_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
     }
 }
-

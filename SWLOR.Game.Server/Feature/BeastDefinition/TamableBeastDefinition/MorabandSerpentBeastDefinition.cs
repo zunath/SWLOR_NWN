@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 {
@@ -23,13 +24,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Terentatek)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
-				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
 
-                .CanMutateInto(BeastType.SpinedCrawler)
+
+				.CanMutateInto(BeastType.SpinedCrawler)
 				.MutationWeight(20)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
                 ;
 
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             return _builder.Build();
         }
 
-        
+
 		private void Level1()
 		{
 			_builder
@@ -96,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(20)
 				.FP(2)
 				.STM(2)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 13)
 				.Stat(AbilityType.Perception, 16)
 				.Stat(AbilityType.Vitality, 8)
@@ -108,13 +110,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(0)
 				.MaxDefenseBonus(CombatDamageType.Physical, 0)
 				.MaxDefenseBonus(CombatDamageType.Force, 1)
-				.MaxDefenseBonus(CombatDamageType.Fire, 0)
-				.MaxDefenseBonus(CombatDamageType.Poison, 0)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 0)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 0)
+				.MaxResistanceBonus(ResistanceType.Poison, 0)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 0)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level2()
@@ -124,7 +126,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(54)
 				.FP(3)
 				.STM(2)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 13)
 				.Stat(AbilityType.Perception, 16)
 				.Stat(AbilityType.Vitality, 8)
@@ -136,13 +139,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(2)
 				.MaxDefenseBonus(CombatDamageType.Physical, 0)
 				.MaxDefenseBonus(CombatDamageType.Force, 3)
-				.MaxDefenseBonus(CombatDamageType.Fire, 1)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 1)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 1)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 1)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level3()
@@ -152,7 +155,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(71)
 				.FP(3)
 				.STM(2)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 13)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 8)
@@ -164,13 +168,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(2)
 				.MaxDefenseBonus(CombatDamageType.Physical, 1)
 				.MaxDefenseBonus(CombatDamageType.Force, 5)
-				.MaxDefenseBonus(CombatDamageType.Fire, 2)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
-				.MaxDefenseBonus(CombatDamageType.Ice, 2)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 2)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 5)
+				.MaxResistanceBonus(ResistanceType.Ice, 2)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level4()
@@ -180,7 +184,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(88)
 				.FP(4)
 				.STM(2)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 14)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 8)
@@ -192,13 +197,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(3)
 				.MaxDefenseBonus(CombatDamageType.Physical, 1)
 				.MaxDefenseBonus(CombatDamageType.Force, 6)
-				.MaxDefenseBonus(CombatDamageType.Fire, 2)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 6)
-				.MaxDefenseBonus(CombatDamageType.Ice, 2)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 2)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 6)
+				.MaxResistanceBonus(ResistanceType.Ice, 2)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level5()
@@ -208,7 +213,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(105)
 				.FP(5)
 				.STM(2)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 14)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 9)
@@ -220,13 +226,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(4)
 				.MaxDefenseBonus(CombatDamageType.Physical, 1)
 				.MaxDefenseBonus(CombatDamageType.Force, 7)
-				.MaxDefenseBonus(CombatDamageType.Fire, 3)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 7)
-				.MaxDefenseBonus(CombatDamageType.Ice, 3)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 3)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 7)
+				.MaxResistanceBonus(ResistanceType.Ice, 3)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level6()
@@ -236,7 +242,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(122)
 				.FP(6)
 				.STM(3)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 14)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 9)
@@ -248,13 +255,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(5)
 				.MaxDefenseBonus(CombatDamageType.Physical, 1)
 				.MaxDefenseBonus(CombatDamageType.Force, 8)
-				.MaxDefenseBonus(CombatDamageType.Fire, 4)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 8)
-				.MaxDefenseBonus(CombatDamageType.Ice, 4)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 4)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 8)
+				.MaxResistanceBonus(ResistanceType.Ice, 4)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level7()
@@ -264,7 +271,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(139)
 				.FP(6)
 				.STM(3)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 14)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 9)
@@ -276,13 +284,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(6)
 				.MaxDefenseBonus(CombatDamageType.Physical, 1)
 				.MaxDefenseBonus(CombatDamageType.Force, 9)
-				.MaxDefenseBonus(CombatDamageType.Fire, 4)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 9)
-				.MaxDefenseBonus(CombatDamageType.Ice, 4)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 4)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 9)
+				.MaxResistanceBonus(ResistanceType.Ice, 4)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level8()
@@ -292,7 +300,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(156)
 				.FP(7)
 				.STM(3)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 14)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 9)
@@ -304,13 +313,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(7)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 11)
-				.MaxDefenseBonus(CombatDamageType.Fire, 5)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 11)
-				.MaxDefenseBonus(CombatDamageType.Ice, 5)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 5)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 11)
+				.MaxResistanceBonus(ResistanceType.Ice, 5)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level9()
@@ -320,7 +329,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(173)
 				.FP(8)
 				.STM(3)
-				.DMG(6)
+				.DMG(5)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 14)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 9)
@@ -332,13 +342,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(7)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 12)
-				.MaxDefenseBonus(CombatDamageType.Fire, 6)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 12)
-				.MaxDefenseBonus(CombatDamageType.Ice, 6)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 6)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 12)
+				.MaxResistanceBonus(ResistanceType.Ice, 6)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level10()
@@ -348,7 +358,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(190)
 				.FP(8)
 				.STM(3)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 15)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 9)
@@ -360,13 +371,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(8)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 13)
-				.MaxDefenseBonus(CombatDamageType.Fire, 6)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 13)
-				.MaxDefenseBonus(CombatDamageType.Ice, 6)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 6)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 13)
+				.MaxResistanceBonus(ResistanceType.Ice, 6)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level11()
@@ -376,7 +387,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(207)
 				.FP(9)
 				.STM(3)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 15)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 9)
@@ -388,13 +400,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(9)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 14)
-				.MaxDefenseBonus(CombatDamageType.Fire, 7)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 14)
-				.MaxDefenseBonus(CombatDamageType.Ice, 7)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 7)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 14)
+				.MaxResistanceBonus(ResistanceType.Ice, 7)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level12()
@@ -404,7 +416,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(224)
 				.FP(10)
 				.STM(3)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 15)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 9)
@@ -416,13 +429,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(10)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 15)
-				.MaxDefenseBonus(CombatDamageType.Fire, 7)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 15)
-				.MaxDefenseBonus(CombatDamageType.Ice, 7)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 7)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 15)
+				.MaxResistanceBonus(ResistanceType.Ice, 7)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level13()
@@ -432,7 +445,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(241)
 				.FP(10)
 				.STM(3)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 15)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 9)
@@ -444,13 +458,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(11)
 				.MaxDefenseBonus(CombatDamageType.Physical, 3)
 				.MaxDefenseBonus(CombatDamageType.Force, 17)
-				.MaxDefenseBonus(CombatDamageType.Fire, 8)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 17)
-				.MaxDefenseBonus(CombatDamageType.Ice, 8)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 8)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 17)
+				.MaxResistanceBonus(ResistanceType.Ice, 8)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level14()
@@ -460,7 +474,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(258)
 				.FP(11)
 				.STM(3)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 15)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 9)
@@ -472,13 +487,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(11)
 				.MaxDefenseBonus(CombatDamageType.Physical, 3)
 				.MaxDefenseBonus(CombatDamageType.Force, 18)
-				.MaxDefenseBonus(CombatDamageType.Fire, 9)
-				.MaxDefenseBonus(CombatDamageType.Poison, 6)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 18)
-				.MaxDefenseBonus(CombatDamageType.Ice, 9)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 9)
+				.MaxResistanceBonus(ResistanceType.Poison, 6)
+				.MaxResistanceBonus(ResistanceType.Electrical, 18)
+				.MaxResistanceBonus(ResistanceType.Ice, 9)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level15()
@@ -488,7 +503,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(275)
 				.FP(12)
 				.STM(3)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 15)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 10)
@@ -500,13 +516,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(12)
 				.MaxDefenseBonus(CombatDamageType.Physical, 3)
 				.MaxDefenseBonus(CombatDamageType.Force, 19)
-				.MaxDefenseBonus(CombatDamageType.Fire, 9)
-				.MaxDefenseBonus(CombatDamageType.Poison, 6)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 19)
-				.MaxDefenseBonus(CombatDamageType.Ice, 9)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 9)
+				.MaxResistanceBonus(ResistanceType.Poison, 6)
+				.MaxResistanceBonus(ResistanceType.Electrical, 19)
+				.MaxResistanceBonus(ResistanceType.Ice, 9)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level16()
@@ -516,7 +532,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(292)
 				.FP(13)
 				.STM(4)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 16)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 10)
@@ -528,13 +545,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(13)
 				.MaxDefenseBonus(CombatDamageType.Physical, 3)
 				.MaxDefenseBonus(CombatDamageType.Force, 20)
-				.MaxDefenseBonus(CombatDamageType.Fire, 10)
-				.MaxDefenseBonus(CombatDamageType.Poison, 7)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 20)
-				.MaxDefenseBonus(CombatDamageType.Ice, 10)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 10)
+				.MaxResistanceBonus(ResistanceType.Poison, 7)
+				.MaxResistanceBonus(ResistanceType.Electrical, 20)
+				.MaxResistanceBonus(ResistanceType.Ice, 10)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level17()
@@ -544,7 +561,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(309)
 				.FP(13)
 				.STM(4)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 16)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 10)
@@ -556,13 +574,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(14)
 				.MaxDefenseBonus(CombatDamageType.Physical, 3)
 				.MaxDefenseBonus(CombatDamageType.Force, 21)
-				.MaxDefenseBonus(CombatDamageType.Fire, 10)
-				.MaxDefenseBonus(CombatDamageType.Poison, 7)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 21)
-				.MaxDefenseBonus(CombatDamageType.Ice, 10)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 10)
+				.MaxResistanceBonus(ResistanceType.Poison, 7)
+				.MaxResistanceBonus(ResistanceType.Electrical, 21)
+				.MaxResistanceBonus(ResistanceType.Ice, 10)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level18()
@@ -572,7 +590,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(326)
 				.FP(14)
 				.STM(4)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 16)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 10)
@@ -584,13 +603,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(15)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 23)
-				.MaxDefenseBonus(CombatDamageType.Fire, 11)
-				.MaxDefenseBonus(CombatDamageType.Poison, 7)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 23)
-				.MaxDefenseBonus(CombatDamageType.Ice, 11)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 11)
+				.MaxResistanceBonus(ResistanceType.Poison, 7)
+				.MaxResistanceBonus(ResistanceType.Electrical, 23)
+				.MaxResistanceBonus(ResistanceType.Ice, 11)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level19()
@@ -600,7 +619,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(343)
 				.FP(15)
 				.STM(4)
-				.DMG(10)
+				.DMG(8)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 16)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 10)
@@ -612,13 +632,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(16)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 24)
-				.MaxDefenseBonus(CombatDamageType.Fire, 12)
-				.MaxDefenseBonus(CombatDamageType.Poison, 8)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 24)
-				.MaxDefenseBonus(CombatDamageType.Ice, 12)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 12)
+				.MaxResistanceBonus(ResistanceType.Poison, 8)
+				.MaxResistanceBonus(ResistanceType.Electrical, 24)
+				.MaxResistanceBonus(ResistanceType.Ice, 12)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level20()
@@ -628,7 +648,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(360)
 				.FP(15)
 				.STM(4)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 16)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 10)
@@ -640,13 +661,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(16)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 25)
-				.MaxDefenseBonus(CombatDamageType.Fire, 12)
-				.MaxDefenseBonus(CombatDamageType.Poison, 8)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 25)
-				.MaxDefenseBonus(CombatDamageType.Ice, 12)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 12)
+				.MaxResistanceBonus(ResistanceType.Poison, 8)
+				.MaxResistanceBonus(ResistanceType.Electrical, 25)
+				.MaxResistanceBonus(ResistanceType.Ice, 12)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level21()
@@ -656,7 +677,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(377)
 				.FP(16)
 				.STM(4)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 16)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 10)
@@ -668,13 +690,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(17)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 26)
-				.MaxDefenseBonus(CombatDamageType.Fire, 13)
-				.MaxDefenseBonus(CombatDamageType.Poison, 9)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 26)
-				.MaxDefenseBonus(CombatDamageType.Ice, 13)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 13)
+				.MaxResistanceBonus(ResistanceType.Poison, 9)
+				.MaxResistanceBonus(ResistanceType.Electrical, 26)
+				.MaxResistanceBonus(ResistanceType.Ice, 13)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level22()
@@ -684,7 +706,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(394)
 				.FP(17)
 				.STM(4)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 17)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 10)
@@ -696,13 +719,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(18)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 27)
-				.MaxDefenseBonus(CombatDamageType.Fire, 13)
-				.MaxDefenseBonus(CombatDamageType.Poison, 9)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 27)
-				.MaxDefenseBonus(CombatDamageType.Ice, 13)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 13)
+				.MaxResistanceBonus(ResistanceType.Poison, 9)
+				.MaxResistanceBonus(ResistanceType.Electrical, 27)
+				.MaxResistanceBonus(ResistanceType.Ice, 13)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level23()
@@ -712,7 +735,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(411)
 				.FP(17)
 				.STM(4)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 17)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 10)
@@ -724,13 +748,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(19)
 				.MaxDefenseBonus(CombatDamageType.Physical, 5)
 				.MaxDefenseBonus(CombatDamageType.Force, 29)
-				.MaxDefenseBonus(CombatDamageType.Fire, 14)
-				.MaxDefenseBonus(CombatDamageType.Poison, 9)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 29)
-				.MaxDefenseBonus(CombatDamageType.Ice, 14)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 14)
+				.MaxResistanceBonus(ResistanceType.Poison, 9)
+				.MaxResistanceBonus(ResistanceType.Electrical, 29)
+				.MaxResistanceBonus(ResistanceType.Ice, 14)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level24()
@@ -740,7 +764,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(428)
 				.FP(18)
 				.STM(4)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 17)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 10)
@@ -752,13 +777,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(20)
 				.MaxDefenseBonus(CombatDamageType.Physical, 5)
 				.MaxDefenseBonus(CombatDamageType.Force, 30)
-				.MaxDefenseBonus(CombatDamageType.Fire, 15)
-				.MaxDefenseBonus(CombatDamageType.Poison, 10)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 30)
-				.MaxDefenseBonus(CombatDamageType.Ice, 15)
-				.MaxSavingThrowBonus(SavingThrow.Will, 2)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 15)
+				.MaxResistanceBonus(ResistanceType.Poison, 10)
+				.MaxResistanceBonus(ResistanceType.Electrical, 30)
+				.MaxResistanceBonus(ResistanceType.Ice, 15)
+				.MaxResistanceBonus(ResistanceType.Mind, 2)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level25()
@@ -768,7 +793,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(445)
 				.FP(19)
 				.STM(4)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 17)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 11)
@@ -780,13 +806,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(20)
 				.MaxDefenseBonus(CombatDamageType.Physical, 5)
 				.MaxDefenseBonus(CombatDamageType.Force, 31)
-				.MaxDefenseBonus(CombatDamageType.Fire, 15)
-				.MaxDefenseBonus(CombatDamageType.Poison, 10)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 31)
-				.MaxDefenseBonus(CombatDamageType.Ice, 15)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 15)
+				.MaxResistanceBonus(ResistanceType.Poison, 10)
+				.MaxResistanceBonus(ResistanceType.Electrical, 31)
+				.MaxResistanceBonus(ResistanceType.Ice, 15)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level26()
@@ -796,7 +822,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(462)
 				.FP(20)
 				.STM(5)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 17)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 11)
@@ -808,13 +835,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(21)
 				.MaxDefenseBonus(CombatDamageType.Physical, 5)
 				.MaxDefenseBonus(CombatDamageType.Force, 32)
-				.MaxDefenseBonus(CombatDamageType.Fire, 16)
-				.MaxDefenseBonus(CombatDamageType.Poison, 11)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 32)
-				.MaxDefenseBonus(CombatDamageType.Ice, 16)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 16)
+				.MaxResistanceBonus(ResistanceType.Poison, 11)
+				.MaxResistanceBonus(ResistanceType.Electrical, 32)
+				.MaxResistanceBonus(ResistanceType.Ice, 16)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level27()
@@ -824,7 +851,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(479)
 				.FP(20)
 				.STM(5)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 17)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 11)
@@ -836,13 +864,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(22)
 				.MaxDefenseBonus(CombatDamageType.Physical, 6)
 				.MaxDefenseBonus(CombatDamageType.Force, 34)
-				.MaxDefenseBonus(CombatDamageType.Fire, 17)
-				.MaxDefenseBonus(CombatDamageType.Poison, 11)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 34)
-				.MaxDefenseBonus(CombatDamageType.Ice, 17)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 17)
+				.MaxResistanceBonus(ResistanceType.Poison, 11)
+				.MaxResistanceBonus(ResistanceType.Electrical, 34)
+				.MaxResistanceBonus(ResistanceType.Ice, 17)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level28()
@@ -852,7 +880,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(496)
 				.FP(21)
 				.STM(5)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 18)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 11)
@@ -864,13 +893,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(23)
 				.MaxDefenseBonus(CombatDamageType.Physical, 6)
 				.MaxDefenseBonus(CombatDamageType.Force, 35)
-				.MaxDefenseBonus(CombatDamageType.Fire, 17)
-				.MaxDefenseBonus(CombatDamageType.Poison, 11)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 35)
-				.MaxDefenseBonus(CombatDamageType.Ice, 17)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 17)
+				.MaxResistanceBonus(ResistanceType.Poison, 11)
+				.MaxResistanceBonus(ResistanceType.Electrical, 35)
+				.MaxResistanceBonus(ResistanceType.Ice, 17)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level29()
@@ -880,7 +909,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(513)
 				.FP(22)
 				.STM(5)
-				.DMG(15)
+				.DMG(12)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 18)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 11)
@@ -892,13 +922,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(24)
 				.MaxDefenseBonus(CombatDamageType.Physical, 6)
 				.MaxDefenseBonus(CombatDamageType.Force, 36)
-				.MaxDefenseBonus(CombatDamageType.Fire, 18)
-				.MaxDefenseBonus(CombatDamageType.Poison, 12)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 36)
-				.MaxDefenseBonus(CombatDamageType.Ice, 18)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 18)
+				.MaxResistanceBonus(ResistanceType.Poison, 12)
+				.MaxResistanceBonus(ResistanceType.Electrical, 36)
+				.MaxResistanceBonus(ResistanceType.Ice, 18)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level30()
@@ -908,7 +938,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(530)
 				.FP(22)
 				.STM(5)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 18)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 11)
@@ -920,13 +951,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(24)
 				.MaxDefenseBonus(CombatDamageType.Physical, 6)
 				.MaxDefenseBonus(CombatDamageType.Force, 37)
-				.MaxDefenseBonus(CombatDamageType.Fire, 18)
-				.MaxDefenseBonus(CombatDamageType.Poison, 12)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 37)
-				.MaxDefenseBonus(CombatDamageType.Ice, 18)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 18)
+				.MaxResistanceBonus(ResistanceType.Poison, 12)
+				.MaxResistanceBonus(ResistanceType.Electrical, 37)
+				.MaxResistanceBonus(ResistanceType.Ice, 18)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level31()
@@ -936,7 +967,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(547)
 				.FP(23)
 				.STM(5)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 18)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 11)
@@ -948,13 +980,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(25)
 				.MaxDefenseBonus(CombatDamageType.Physical, 6)
 				.MaxDefenseBonus(CombatDamageType.Force, 38)
-				.MaxDefenseBonus(CombatDamageType.Fire, 19)
-				.MaxDefenseBonus(CombatDamageType.Poison, 13)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 38)
-				.MaxDefenseBonus(CombatDamageType.Ice, 19)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 19)
+				.MaxResistanceBonus(ResistanceType.Poison, 13)
+				.MaxResistanceBonus(ResistanceType.Electrical, 38)
+				.MaxResistanceBonus(ResistanceType.Ice, 19)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level32()
@@ -964,7 +996,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(564)
 				.FP(24)
 				.STM(5)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 18)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 11)
@@ -976,13 +1009,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(26)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 40)
-				.MaxDefenseBonus(CombatDamageType.Fire, 20)
-				.MaxDefenseBonus(CombatDamageType.Poison, 13)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 40)
-				.MaxDefenseBonus(CombatDamageType.Ice, 20)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 20)
+				.MaxResistanceBonus(ResistanceType.Poison, 13)
+				.MaxResistanceBonus(ResistanceType.Electrical, 40)
+				.MaxResistanceBonus(ResistanceType.Ice, 20)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level33()
@@ -992,7 +1025,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(581)
 				.FP(24)
 				.STM(5)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 18)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 11)
@@ -1004,13 +1038,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(27)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 41)
-				.MaxDefenseBonus(CombatDamageType.Fire, 20)
-				.MaxDefenseBonus(CombatDamageType.Poison, 13)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 41)
-				.MaxDefenseBonus(CombatDamageType.Ice, 20)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 20)
+				.MaxResistanceBonus(ResistanceType.Poison, 13)
+				.MaxResistanceBonus(ResistanceType.Electrical, 41)
+				.MaxResistanceBonus(ResistanceType.Ice, 20)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level34()
@@ -1020,7 +1054,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(598)
 				.FP(25)
 				.STM(5)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 19)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 11)
@@ -1032,13 +1067,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(28)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 42)
-				.MaxDefenseBonus(CombatDamageType.Fire, 21)
-				.MaxDefenseBonus(CombatDamageType.Poison, 14)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 42)
-				.MaxDefenseBonus(CombatDamageType.Ice, 21)
-				.MaxSavingThrowBonus(SavingThrow.Will, 3)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 21)
+				.MaxResistanceBonus(ResistanceType.Poison, 14)
+				.MaxResistanceBonus(ResistanceType.Electrical, 42)
+				.MaxResistanceBonus(ResistanceType.Ice, 21)
+				.MaxResistanceBonus(ResistanceType.Mind, 3)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level35()
@@ -1048,7 +1083,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(615)
 				.FP(26)
 				.STM(5)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 19)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 12)
@@ -1060,13 +1096,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(29)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 43)
-				.MaxDefenseBonus(CombatDamageType.Fire, 21)
-				.MaxDefenseBonus(CombatDamageType.Poison, 14)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 43)
-				.MaxDefenseBonus(CombatDamageType.Ice, 21)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 21)
+				.MaxResistanceBonus(ResistanceType.Poison, 14)
+				.MaxResistanceBonus(ResistanceType.Electrical, 43)
+				.MaxResistanceBonus(ResistanceType.Ice, 21)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level36()
@@ -1076,7 +1112,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(632)
 				.FP(27)
 				.STM(6)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 19)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 12)
@@ -1088,13 +1125,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(29)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 44)
-				.MaxDefenseBonus(CombatDamageType.Fire, 22)
-				.MaxDefenseBonus(CombatDamageType.Poison, 15)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 44)
-				.MaxDefenseBonus(CombatDamageType.Ice, 22)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 22)
+				.MaxResistanceBonus(ResistanceType.Poison, 15)
+				.MaxResistanceBonus(ResistanceType.Electrical, 44)
+				.MaxResistanceBonus(ResistanceType.Ice, 22)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level37()
@@ -1104,7 +1141,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(649)
 				.FP(27)
 				.STM(6)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 19)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 12)
@@ -1116,13 +1154,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(30)
 				.MaxDefenseBonus(CombatDamageType.Physical, 8)
 				.MaxDefenseBonus(CombatDamageType.Force, 46)
-				.MaxDefenseBonus(CombatDamageType.Fire, 23)
-				.MaxDefenseBonus(CombatDamageType.Poison, 15)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 46)
-				.MaxDefenseBonus(CombatDamageType.Ice, 23)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 23)
+				.MaxResistanceBonus(ResistanceType.Poison, 15)
+				.MaxResistanceBonus(ResistanceType.Electrical, 46)
+				.MaxResistanceBonus(ResistanceType.Ice, 23)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level38()
@@ -1132,7 +1170,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(666)
 				.FP(28)
 				.STM(6)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 19)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 12)
@@ -1144,13 +1183,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(31)
 				.MaxDefenseBonus(CombatDamageType.Physical, 8)
 				.MaxDefenseBonus(CombatDamageType.Force, 47)
-				.MaxDefenseBonus(CombatDamageType.Fire, 23)
-				.MaxDefenseBonus(CombatDamageType.Poison, 16)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 47)
-				.MaxDefenseBonus(CombatDamageType.Ice, 23)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 23)
+				.MaxResistanceBonus(ResistanceType.Poison, 16)
+				.MaxResistanceBonus(ResistanceType.Electrical, 47)
+				.MaxResistanceBonus(ResistanceType.Ice, 23)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level39()
@@ -1160,7 +1199,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(683)
 				.FP(29)
 				.STM(6)
-				.DMG(19)
+				.DMG(15)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 19)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 12)
@@ -1172,13 +1212,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(32)
 				.MaxDefenseBonus(CombatDamageType.Physical, 8)
 				.MaxDefenseBonus(CombatDamageType.Force, 48)
-				.MaxDefenseBonus(CombatDamageType.Fire, 24)
-				.MaxDefenseBonus(CombatDamageType.Poison, 16)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 48)
-				.MaxDefenseBonus(CombatDamageType.Ice, 24)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 24)
+				.MaxResistanceBonus(ResistanceType.Poison, 16)
+				.MaxResistanceBonus(ResistanceType.Electrical, 48)
+				.MaxResistanceBonus(ResistanceType.Ice, 24)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level40()
@@ -1188,7 +1228,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(700)
 				.FP(29)
 				.STM(6)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 12)
@@ -1200,13 +1241,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(33)
 				.MaxDefenseBonus(CombatDamageType.Physical, 8)
 				.MaxDefenseBonus(CombatDamageType.Force, 49)
-				.MaxDefenseBonus(CombatDamageType.Fire, 24)
-				.MaxDefenseBonus(CombatDamageType.Poison, 16)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 49)
-				.MaxDefenseBonus(CombatDamageType.Ice, 24)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 24)
+				.MaxResistanceBonus(ResistanceType.Poison, 16)
+				.MaxResistanceBonus(ResistanceType.Electrical, 49)
+				.MaxResistanceBonus(ResistanceType.Ice, 24)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level41()
@@ -1216,7 +1257,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(717)
 				.FP(30)
 				.STM(6)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 12)
@@ -1228,13 +1270,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(33)
 				.MaxDefenseBonus(CombatDamageType.Physical, 8)
 				.MaxDefenseBonus(CombatDamageType.Force, 50)
-				.MaxDefenseBonus(CombatDamageType.Fire, 25)
-				.MaxDefenseBonus(CombatDamageType.Poison, 17)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 50)
-				.MaxDefenseBonus(CombatDamageType.Ice, 25)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 25)
+				.MaxResistanceBonus(ResistanceType.Poison, 17)
+				.MaxResistanceBonus(ResistanceType.Electrical, 50)
+				.MaxResistanceBonus(ResistanceType.Ice, 25)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level42()
@@ -1244,7 +1286,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(734)
 				.FP(31)
 				.STM(6)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 25)
 				.Stat(AbilityType.Vitality, 12)
@@ -1256,13 +1299,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(34)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 52)
-				.MaxDefenseBonus(CombatDamageType.Fire, 26)
-				.MaxDefenseBonus(CombatDamageType.Poison, 17)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 52)
-				.MaxDefenseBonus(CombatDamageType.Ice, 26)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 3)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 26)
+				.MaxResistanceBonus(ResistanceType.Poison, 17)
+				.MaxResistanceBonus(ResistanceType.Electrical, 52)
+				.MaxResistanceBonus(ResistanceType.Ice, 26)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 3)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level43()
@@ -1272,7 +1315,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(751)
 				.FP(31)
 				.STM(6)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 25)
 				.Stat(AbilityType.Vitality, 12)
@@ -1284,13 +1328,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(35)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 53)
-				.MaxDefenseBonus(CombatDamageType.Fire, 26)
-				.MaxDefenseBonus(CombatDamageType.Poison, 18)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 53)
-				.MaxDefenseBonus(CombatDamageType.Ice, 26)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 26)
+				.MaxResistanceBonus(ResistanceType.Poison, 18)
+				.MaxResistanceBonus(ResistanceType.Electrical, 53)
+				.MaxResistanceBonus(ResistanceType.Ice, 26)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level44()
@@ -1300,7 +1344,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(768)
 				.FP(32)
 				.STM(6)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 25)
 				.Stat(AbilityType.Vitality, 12)
@@ -1312,13 +1357,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(36)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 54)
-				.MaxDefenseBonus(CombatDamageType.Fire, 27)
-				.MaxDefenseBonus(CombatDamageType.Poison, 18)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 54)
-				.MaxDefenseBonus(CombatDamageType.Ice, 27)
-				.MaxSavingThrowBonus(SavingThrow.Will, 4)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 27)
+				.MaxResistanceBonus(ResistanceType.Poison, 18)
+				.MaxResistanceBonus(ResistanceType.Electrical, 54)
+				.MaxResistanceBonus(ResistanceType.Ice, 27)
+				.MaxResistanceBonus(ResistanceType.Mind, 4)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level45()
@@ -1328,7 +1373,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(785)
 				.FP(33)
 				.STM(6)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 25)
 				.Stat(AbilityType.Vitality, 13)
@@ -1340,13 +1386,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(37)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 55)
-				.MaxDefenseBonus(CombatDamageType.Fire, 28)
-				.MaxDefenseBonus(CombatDamageType.Poison, 18)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 55)
-				.MaxDefenseBonus(CombatDamageType.Ice, 28)
-				.MaxSavingThrowBonus(SavingThrow.Will, 5)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 28)
+				.MaxResistanceBonus(ResistanceType.Poison, 18)
+				.MaxResistanceBonus(ResistanceType.Electrical, 55)
+				.MaxResistanceBonus(ResistanceType.Ice, 28)
+				.MaxResistanceBonus(ResistanceType.Mind, 5)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level46()
@@ -1356,7 +1402,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(802)
 				.FP(34)
 				.STM(7)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 25)
 				.Stat(AbilityType.Vitality, 13)
@@ -1368,13 +1415,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(38)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 56)
-				.MaxDefenseBonus(CombatDamageType.Fire, 28)
-				.MaxDefenseBonus(CombatDamageType.Poison, 19)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 56)
-				.MaxDefenseBonus(CombatDamageType.Ice, 28)
-				.MaxSavingThrowBonus(SavingThrow.Will, 5)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 28)
+				.MaxResistanceBonus(ResistanceType.Poison, 19)
+				.MaxResistanceBonus(ResistanceType.Electrical, 56)
+				.MaxResistanceBonus(ResistanceType.Ice, 28)
+				.MaxResistanceBonus(ResistanceType.Mind, 5)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level47()
@@ -1384,7 +1431,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(819)
 				.FP(34)
 				.STM(7)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 26)
 				.Stat(AbilityType.Vitality, 13)
@@ -1396,13 +1444,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(38)
 				.MaxDefenseBonus(CombatDamageType.Physical, 10)
 				.MaxDefenseBonus(CombatDamageType.Force, 58)
-				.MaxDefenseBonus(CombatDamageType.Fire, 29)
-				.MaxDefenseBonus(CombatDamageType.Poison, 19)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 58)
-				.MaxDefenseBonus(CombatDamageType.Ice, 29)
-				.MaxSavingThrowBonus(SavingThrow.Will, 5)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 29)
+				.MaxResistanceBonus(ResistanceType.Poison, 19)
+				.MaxResistanceBonus(ResistanceType.Electrical, 58)
+				.MaxResistanceBonus(ResistanceType.Ice, 29)
+				.MaxResistanceBonus(ResistanceType.Mind, 5)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level48()
@@ -1412,7 +1460,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(836)
 				.FP(35)
 				.STM(7)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 26)
 				.Stat(AbilityType.Vitality, 13)
@@ -1424,13 +1473,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(39)
 				.MaxDefenseBonus(CombatDamageType.Physical, 10)
 				.MaxDefenseBonus(CombatDamageType.Force, 59)
-				.MaxDefenseBonus(CombatDamageType.Fire, 29)
-				.MaxDefenseBonus(CombatDamageType.Poison, 20)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 59)
-				.MaxDefenseBonus(CombatDamageType.Ice, 29)
-				.MaxSavingThrowBonus(SavingThrow.Will, 5)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 29)
+				.MaxResistanceBonus(ResistanceType.Poison, 20)
+				.MaxResistanceBonus(ResistanceType.Electrical, 59)
+				.MaxResistanceBonus(ResistanceType.Ice, 29)
+				.MaxResistanceBonus(ResistanceType.Mind, 5)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level49()
@@ -1440,7 +1489,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(853)
 				.FP(36)
 				.STM(7)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 26)
 				.Stat(AbilityType.Vitality, 13)
@@ -1452,13 +1502,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(40)
 				.MaxDefenseBonus(CombatDamageType.Physical, 10)
 				.MaxDefenseBonus(CombatDamageType.Force, 60)
-				.MaxDefenseBonus(CombatDamageType.Fire, 30)
-				.MaxDefenseBonus(CombatDamageType.Poison, 20)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 60)
-				.MaxDefenseBonus(CombatDamageType.Ice, 30)
-				.MaxSavingThrowBonus(SavingThrow.Will, 5)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 30)
+				.MaxResistanceBonus(ResistanceType.Poison, 20)
+				.MaxResistanceBonus(ResistanceType.Electrical, 60)
+				.MaxResistanceBonus(ResistanceType.Ice, 30)
+				.MaxResistanceBonus(ResistanceType.Mind, 5)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level50()
@@ -1468,7 +1518,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.HP(860)
 				.FP(36)
 				.STM(7)
-				.DMG(24)
+				.DMG(19)
+				.AttackDelay(ItemPropertyAttackDelay.Delay210)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 26)
 				.Stat(AbilityType.Vitality, 13)
@@ -1480,13 +1531,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MaxEvasionBonus(40)
 				.MaxDefenseBonus(CombatDamageType.Physical, 10)
 				.MaxDefenseBonus(CombatDamageType.Force, 60)
-				.MaxDefenseBonus(CombatDamageType.Fire, 30)
-				.MaxDefenseBonus(CombatDamageType.Poison, 20)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 60)
-				.MaxDefenseBonus(CombatDamageType.Ice, 30)
-				.MaxSavingThrowBonus(SavingThrow.Will, 5)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 4)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 30)
+				.MaxResistanceBonus(ResistanceType.Poison, 20)
+				.MaxResistanceBonus(ResistanceType.Electrical, 60)
+				.MaxResistanceBonus(ResistanceType.Ice, 30)
+				.MaxResistanceBonus(ResistanceType.Mind, 5)
+				.MaxResistanceBonus(ResistanceType.Trauma, 4)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
     }

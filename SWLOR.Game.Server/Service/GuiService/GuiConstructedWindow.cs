@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.Engine;
 
@@ -12,13 +12,15 @@ namespace SWLOR.Game.Server.Service.GuiService
         public CreatePlayerWindowDelegate CreatePlayerWindowAction { get; set; }
         public GuiRectangle InitialGeometry { get; set; }
         public Dictionary<string, Json> PartialViews { get; set; }
+        public IReadOnlyList<string> LayoutFindings { get; set; }
 
         public GuiConstructedWindow(
-            GuiWindowType type, 
-            string windowId, 
+            GuiWindowType type,
+            string windowId,
             Json window,
             GuiRectangle initialGeometry,
             Dictionary<string, Json> partialViews,
+            IReadOnlyList<string> layoutFindings,
             CreatePlayerWindowDelegate createPlayerWindowAction)
         {
             Type = type;
@@ -26,6 +28,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             Window = window;
             InitialGeometry = initialGeometry;
             PartialViews = partialViews;
+            LayoutFindings = layoutFindings;
             CreatePlayerWindowAction = createPlayerWindowAction;
         }
     }

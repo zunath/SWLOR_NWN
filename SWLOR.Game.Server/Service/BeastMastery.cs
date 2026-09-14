@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -10,10 +9,11 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
         {
             const string FileName = "iprp_incubonus";
             var rowCount = Get2DARowCount(FileName);
-            
+
             for (var row = 1; row <= rowCount; row++)
             {
                 var label = Get2DAString(FileName, "Label", row);
@@ -114,6 +114,11 @@ namespace SWLOR.Game.Server.Service
         public static BeastDetail GetBeastDetail(BeastType type)
         {
             return _beasts[type];
+        }
+
+        public static IEnumerable<BeastType> GetAllBeastTypes()
+        {
+            return _beasts.Keys.ToList();
         }
 
         public static BeastRoleAttribute GetBeastRoleDetail(BeastRoleType type)
@@ -164,26 +169,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!ignoreBonuses)
             {
-                // Food Bonus
-                if (StatusEffect.HasStatusEffect(beast, StatusEffectType.PetFood))
-                {
-                    var xpBonus = StatusEffect.GetEffectData<int>(beast, StatusEffectType.PetFood);
-
-                    bonusPercentage += xpBonus * 0.01f;
-                }
-
-                // Dedication bonus
-                if (StatusEffect.HasStatusEffect(beast, StatusEffectType.Dedication))
-                {
-                    var source = StatusEffect.GetEffectData<uint>(beast, StatusEffectType.Dedication);
-
-                    if (GetIsObjectValid(source))
-                    {
-                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
-                        var sourceSocial = GetAbilityScore(source, AbilityType.Social);
-                        bonusPercentage += (10 + effectiveLevel * sourceSocial) * 0.01f;
-                    }
-                }
+                // Status bonus
+                bonusPercentage += Stat.GetStatAdjustment(beast, StatType.ExperiencePercentAdjustment) * 0.01f;
 
                 // Social bonus
                 if (social > 0)
@@ -241,11 +228,29 @@ namespace SWLOR.Game.Server.Service
             return _beastXPRequirements[level] + (int)(_beastXPRequirements[level] * (xpPenalty * 0.01f));
         }
 
-        public static void SpawnBeast(uint player, string beastId, int percentHeal)
+        /// <summary>
+        /// Determines whether a player is free to spawn a new companion (beast or droid).
+        /// The game engine only permits one henchman-type associate at a time, so beast and
+        /// droid activation must share this check to prevent an orphaned, master-less companion.
+        /// </summary>
+        /// <param name="player">The player attempting to spawn a companion.</param>
+        /// <returns>An error message if a companion is already active, otherwise an empty string.</returns>
+        public static string GetCompanionSlotValidationError(uint player)
         {
             if (GetIsObjectValid(GetAssociate(AssociateType.Henchman, player)))
             {
-                SendMessageToPC(player, "Only one companion may be active at a time.");
+                return "Only one companion may be active at a time.";
+            }
+
+            return string.Empty;
+        }
+
+        public static void SpawnBeast(uint player, string beastId, int percentHeal)
+        {
+            var companionSlotError = GetCompanionSlotValidationError(player);
+            if (!string.IsNullOrEmpty(companionSlotError))
+            {
+                SendMessageToPC(player, companionSlotError);
                 return;
             }
 
@@ -268,8 +273,9 @@ namespace SWLOR.Game.Server.Service
             SetObjectVisualTransform(beast, ObjectVisualTransform.Scale, beastDetail.AppearanceScale);
             SetPortraitId(beast, dbBeast.PortraitId > -1 ? dbBeast.PortraitId : beastDetail.PortraitId);
             SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
-            
+
             ApplyStats(beast);
+            AI.SetAIProfile(beast, AIProfileType.BeastCompanion);
 
             AddHenchman(player, beast);
 
@@ -277,15 +283,7 @@ namespace SWLOR.Game.Server.Service
             // Perks
             foreach (var (perk, level) in dbBeast.Perks)
             {
-                var perkDefinition = Perk.GetPerkDetails(perk);
-                var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
-                    ? perkDefinition.PerkLevels[level].GrantedFeats
-                    : new List<FeatType>();
-
-                foreach (var feat in perkFeats)
-                {
-                    CreaturePlugin.AddFeat(beast, feat);
-                }
+                Perk.SyncGrantedFeats(beast, perk, level, false);
             }
 
             // Scripts
@@ -296,7 +294,6 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
             SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
             SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
-            SetEventScript(beast, EventScript.Creature_OnNotice, ScriptName.OnBeastPerception);
             SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
             SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
             SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
@@ -306,6 +303,13 @@ namespace SWLOR.Game.Server.Service
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the beast being created.
             ExecuteScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
+
+            // A normal Call Beast spawn requests 100% health. Restore it immediately so the
+            // companion does not appear near death while waiting for the delayed HP correction.
+            if (percentHeal >= 100)
+            {
+                SetCurrentHitPoints(beast, GetMaxHitPoints(beast));
+            }
 
             AssignCommand(GetModule(), () =>
             {
@@ -318,7 +322,7 @@ namespace SWLOR.Game.Server.Service
                         var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
                     }
-                        
+
                 });
             });
         }
@@ -331,54 +335,54 @@ namespace SWLOR.Game.Server.Service
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
             var claw = GetItemInSlot(InventorySlot.CreatureLeft, beast);
-            
+
             var level = beastDetail.Levels[dbBeast.Level];
-            
+
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, dbBeast.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Stamina, -1, level.STM), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.FP, -1, level.FP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            
-            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, -1, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)level.AttackDelay), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DamageStat, (int)beastDetail.DamageStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            
-            ObjectPlugin.SetMaxHitPoints(beast, beastDetail.Levels[dbBeast.Level].HP);
+
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Willpower, level.Stats[AbilityType.Willpower]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Agility, level.Stats[AbilityType.Agility]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
+            Stat.SetNPCMaxHitPoints(beast, level.HP);
 
             var attackBonus = (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f));
             var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));
             var evasionBonus = (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f));
 
-            var physicalDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f));
-            var forceDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f));
-            var fireDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Fire] * (dbBeast.DefensePurities[CombatDamageType.Fire] * 0.01f));
-            var iceDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Ice] * (dbBeast.DefensePurities[CombatDamageType.Ice] * 0.01f));
-            var poisonDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Poison] * (dbBeast.DefensePurities[CombatDamageType.Poison] * 0.01f));
-            var electricalDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Electrical] * (dbBeast.DefensePurities[CombatDamageType.Electrical] * 0.01f));
-
-            var willBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Will] * (dbBeast.SavingThrowPurities[SavingThrow.Will] * 0.01f));
-            var fortitudeBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * 0.01f));
-            var reflexBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Reflex] * (dbBeast.SavingThrowPurities[SavingThrow.Reflex] * 0.01f));
-
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Evasion, -1, evasionBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, physicalDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, forceDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Fire, fireDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Ice, iceDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, poisonDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, electricalDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            foreach (var damageType in Combat.GetDefenseDamageTypes())
+            {
+                var defenseBonus = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, damageType);
+                BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, defenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
 
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Will, willBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Fortitude, fortitudeBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Reflex, reflexBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            {
+                var resistanceBonus = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, resistanceType);
+                BiowareXP2.IPSafeAddItemProperty(
+                    skin,
+                    ItemPropertyCustom(
+                        ItemPropertyType.Resistance,
+                        (int)resistanceType,
+                        Resistance.EncodeItemPropertyCostTableValue(resistanceBonus)),
+                    0f,
+                    AddItemPropertyPolicy.ReplaceExisting,
+                    false,
+                    false);
+            }
         }
 
         public static (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
@@ -425,6 +429,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = OBJECT_SELF;
             var beast = GetAssociate(AssociateType.Henchman, player);
+            CompanionControl.Clear(beast);
             DestroyObject(beast);
         }
 
@@ -437,7 +442,7 @@ namespace SWLOR.Game.Server.Service
             var beast = GetModuleItemAcquiredBy();
             if (!IsPlayerBeast(beast))
                 return;
-            
+
             var master = GetMaster(beast);
             var item = GetModuleItemAcquired();
             var type = GetBaseItemType(item);
@@ -464,30 +469,27 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastRoundEnd)]
         public static void BeastOnEndCombatRound()
         {
-            var beast = OBJECT_SELF;
-            if (!Activity.IsBusy(beast))
-            {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessPerkAI(AIDefinitionType.Beast, beast, false);
-            }
+            CompanionControl.ProcessCombatRound(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastConversation)]
         public static void BeastOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            if (!CompanionControl.HandleConversation(OBJECT_SELF))
+                ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastDamaged)]
         public static void BeastOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnBeastDeath)]
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
+            CompanionControl.Clear(beast);
             ExecuteScript("x2_hen_death", beast);
 
             var beastId = GetBeastId(beast);
@@ -509,22 +511,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
         public static void BeastOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
-            Stat.RestoreNPCStats(false);
-        }
-
-        [NWNEventHandler(ScriptName.OnBeastPerception)]
-        public static void BeastOnPerception()
-        {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
-
+            Stat.RestoreBeastStats();
+            CompanionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastAttacked)]
         public static void BeastOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
-
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnBeastRest)]
@@ -535,27 +529,27 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(beast, () => ClearAllActions());
 
-            StatusEffect.Apply(beast, beast, StatusEffectType.Rest, 0f);
+            StatusEffect.ApplyStatusEffect(beast, beast, typeof(RestStatusEffect), 0f);
         }
 
         [NWNEventHandler(ScriptName.OnBeastSpawn)]
         public static void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", beast);
             AssignCommand(beast, () =>
             {
                 SetIsDestroyable(true, false, false);
             });
             Stat.LoadNPCStats();
-            Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+            Stat.ApplyCreatureMovementRate(beast);
+            CompanionControl.Initialize(beast);
         }
 
         [NWNEventHandler(ScriptName.OnBeastSpellCast)]
         public static void BeastOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
-
+            if (GetLastSpellHarmful())
+                CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
         }
 
         [NWNEventHandler(ScriptName.OnBeastUserDefined)]
@@ -574,7 +568,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red("Only players may use this terminal."));
                 return;
             }
-            
+
             Gui.TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
         }
 
@@ -705,8 +699,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The percentage associated or 0.0 if not found.</returns>
         public static float GetIncubationPercentageById(int itemPropertyId)
         {
-            return !_incubationPercentages.ContainsKey(itemPropertyId) 
-                ? 0f 
+            return !_incubationPercentages.ContainsKey(itemPropertyId)
+                ? 0f
                 : _incubationPercentages[itemPropertyId];
         }
 
@@ -749,7 +743,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     SendMessageToPC(player, $"Another player's incubation job is active. This job has completed.");
                 }
-                
+
                 return;
             }
 
@@ -797,43 +791,64 @@ namespace SWLOR.Game.Server.Service
 
         public static void CreateBeastEgg(IncubationJob job, uint player)
         {
-            var egg = CreateItemOnObject(BeastEggResref, player);
-
             var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
 
+            // A successful mutation reveals the field note for the beast the player just produced,
+            // documenting every way to incubate it. No-op if already owned.
+            if (mutation != BeastType.Invalid)
+            {
+                IncubationFieldNote.GrantDiscoveredNote(player, mutation);
+            }
+
+            var egg = CreateBeastEgg(beastType, player);
             var itemProperties = new List<ItemProperty>
             {
-                ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType),
-
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, job.AttackPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, job.LearningPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PhysicalDefensePurity, job.DefensePurities[CombatDamageType.Physical]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ForceDefensePurity, job.DefensePurities[CombatDamageType.Force]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FireDefensePurity, job.DefensePurities[CombatDamageType.Fire]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonDefensePurity, job.DefensePurities[CombatDamageType.Poison]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalDefensePurity, job.DefensePurities[CombatDamageType.Electrical]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceDefensePurity, job.DefensePurities[CombatDamageType.Ice]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, job.SavingThrowPurities[SavingThrow.Fortitude]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, job.SavingThrowPurities[SavingThrow.Reflex]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, job.SavingThrowPurities[SavingThrow.Will]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty),
             };
+
+            foreach (var damageType in Combat.GetDefenseDamageTypes())
+            {
+                if (!BeastResistanceCalculator.TryGetDefensePurityIncubationStatType(damageType, out var statType))
+                    continue;
+
+                itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, BeastResistanceCalculator.GetDefensePurity(job, damageType)));
+            }
+
+            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            {
+                if (!BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(resistanceType, out var statType))
+                    continue;
+
+                itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, GetResistancePurity(job, resistanceType)));
+            }
+
+            itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty));
 
             foreach (var ip in itemProperties)
             {
                 BiowareXP2.IPSafeAddItemProperty(egg, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             }
 
-            var beastDetail = GetBeastDetail(beastType);
-            SetName(egg, $"Beast Egg: {beastDetail.Name}");
-
             var addGoldPiece = CalculateEggVendorBonus(job);
             ItemPlugin.SetAddGoldPieceValue(egg, addGoldPiece);
 
             DB.Delete<IncubationJob>(job.Id);
+        }
+
+        public static uint CreateBeastEgg(BeastType beastType, uint player)
+        {
+            var egg = CreateItemOnObject(BeastEggResref, player);
+            var dnaType = ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType);
+            BiowareXP2.IPSafeAddItemProperty(egg, dnaType, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            var beastDetail = GetBeastDetail(beastType);
+            SetName(egg, $"Beast Egg: {beastDetail.Name}");
+
+            return egg;
         }
 
         private static int CalculateEggVendorBonus(IncubationJob job)
@@ -845,16 +860,10 @@ namespace SWLOR.Game.Server.Service
                 job.AccuracyPurity,
                 job.EvasionPurity,
                 job.LearningPurity,
-                job.DefensePurities[CombatDamageType.Physical],
-                job.DefensePurities[CombatDamageType.Force],
-                job.DefensePurities[CombatDamageType.Fire],
-                job.DefensePurities[CombatDamageType.Poison],
-                job.DefensePurities[CombatDamageType.Electrical],
-                job.DefensePurities[CombatDamageType.Ice],
-                job.SavingThrowPurities[SavingThrow.Fortitude],
-                job.SavingThrowPurities[SavingThrow.Reflex],
-                job.SavingThrowPurities[SavingThrow.Will],
             };
+
+            purities.AddRange(Combat.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
+            purities.AddRange(Resistance.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
 
             var averagePurity = purities.Average();
             var qualityPercent = averagePurity / maxPurityValue;
@@ -865,6 +874,14 @@ namespace SWLOR.Game.Server.Service
             var addGoldPiece = (int)Math.Round(baseVendorBonus + (qualityVendorRange * qualityPercent * xpPenaltyAdjustment));
 
             return Math.Max(baseVendorBonus, addGoldPiece);
+        }
+
+        private static int GetResistancePurity(IncubationJob job, ResistanceType type)
+        {
+            return job.ResistancePurities != null &&
+                   job.ResistancePurities.TryGetValue(type, out var purity)
+                ? purity
+                : 0;
         }
 
         /// <summary>

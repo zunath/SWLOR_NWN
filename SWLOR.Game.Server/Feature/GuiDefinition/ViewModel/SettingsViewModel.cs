@@ -1,10 +1,10 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string SettingsView = "SETTINGS_VIEW";
 
         public const string GeneralPartial = "GENERAL_VIEW";
+        public const string IdentityPartial = "IDENTITY_VIEW";
         public const string ChatPartial = "CHAT_VIEW";
 
         private const int NumberOfSystemColors = 2; // OOC, Emotes
@@ -24,19 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool DisplayHolonetChannel
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool SubdualMode
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool ShareLightsaberForceXP
         {
             get => Get<bool>();
             set => Set(value);
@@ -54,7 +43,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool PortraitVitals
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ShowDescriptorsForNamedPlayers
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ShowOwnDescriptor
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ScrambleAccountName
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool DisplayCommsOutOfRangeWarnings
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsGeneralSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsIdentitySelected
         {
             get => Get<bool>();
             set => Set(value);
@@ -120,20 +145,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedIndex = -1;
             SelectedColor = new GuiColor(0, 0, 0);
             IsGeneralSelected = true;
+            IsIdentitySelected = false;
             IsChatSelected = false;
             CurrentRed = 0;
             CurrentGreen = 0;
             CurrentBlue = 0;
 
             LoadGeneralView();
+            LoadIdentityView();
+            LoadChatView();
 
             ChangePartialView(SettingsView, GeneralPartial);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
-            WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
-            WatchOnClient(model => model.ShareLightsaberForceXP);
             WatchOnClient(model => model.DisplayServerResetReminders);
+            WatchOnClient(model => model.PortraitVitals);
+            WatchOnClient(model => model.ShowDescriptorsForNamedPlayers);
+            WatchOnClient(model => model.ShowOwnDescriptor);
+            WatchOnClient(model => model.ScrambleAccountName);
+            WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
             WatchOnClient(model => model.SelectedColor);
         }
 
@@ -145,10 +176,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
 
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
-            DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
-            ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
+            PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
+            DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
+        }
+
+        private void LoadIdentityView()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;
+            ShowOwnDescriptor = dbPlayer.Settings.ShowOwnDescriptor ?? true;
+            ScrambleAccountName = dbPlayer.Settings.ScrambleAccountName ?? true;
         }
 
         private void LoadChatView()
@@ -227,6 +268,55 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChatColorToggles = chatToggles;
         }
 
+        private void ChangeSettingsView(string partialName)
+        {
+            // Capture the client's current position before the partial-view redraw workaround
+            // temporarily changes the window geometry.
+            UpdatePropertyFromClient(nameof(Geometry));
+            ChangePartialView(SettingsView, partialName);
+            RefreshPartialViewBindings();
+        }
+
+        private void RefreshPartialViewBindings()
+        {
+            // Republish scalar bindings after replacing the partial. Newly inserted controls
+            // otherwise render their client-side defaults until the value changes, which makes
+            // default-enabled settings such as account-name hiding appear unchecked.
+            OnPropertyChanged(nameof(DisplayAchievementNotification));
+            OnPropertyChanged(nameof(SubdualMode));
+            OnPropertyChanged(nameof(DisplayServerResetReminders));
+            OnPropertyChanged(nameof(PortraitVitals));
+            OnPropertyChanged(nameof(DisplayCommsOutOfRangeWarnings));
+            OnPropertyChanged(nameof(ShowOwnDescriptor));
+            OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));
+            OnPropertyChanged(nameof(ScrambleAccountName));
+            OnPropertyChanged(nameof(CurrentRed));
+            OnPropertyChanged(nameof(CurrentGreen));
+            OnPropertyChanged(nameof(CurrentBlue));
+
+            // Republish list bindings so any newly inserted list can populate its rows without
+            // reloading persisted values over unsaved changes.
+            ChatColorNames?.ResetBindings();
+            ChatColors?.ResetBindings();
+            ChatColorToggles?.ResetBindings();
+        }
+
+        private string GetSelectedPartial()
+        {
+            if (IsIdentitySelected)
+                return IdentityPartial;
+
+            if (IsChatSelected)
+                return ChatPartial;
+
+            return GeneralPartial;
+        }
+
+        protected override void OnMainViewRestored()
+        {
+            ChangeSettingsView(GetSelectedPartial());
+        }
+
         private void LoadColor()
         {
             if (SelectedIndex < 0)
@@ -252,10 +342,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
-            dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
-            dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
+            dbPlayer.Settings.PortraitVitals = PortraitVitals;
+            dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
+            if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
+            {
+                dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;
+                dbPlayer.Settings.ShowOwnDescriptor = ShowOwnDescriptor;
+                dbPlayer.Settings.ScrambleAccountName = ScrambleAccountName;
+            }
+
+            if (ChatColors == null || ChatColors.Count < NumberOfSystemColors)
+                LoadChatView();
 
             // System Colors - OOC
             var systemColor = ChatColors[0];
@@ -276,11 +375,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbPlayer);
+            Log.Write(LogGroup.Server, $"Settings saved for player {playerId}.");
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
+            // Apply the vitals display preference immediately (portrait overlay vs. docked window).
+            PlayerStatusWindow.ApplyStatusDisplay(Player);
 
-            // Post-save actions
-            UpdateHolonetSetting();
+            PlayerName.RefreshNameOverridesForObserver(Player);
+            PlayerName.RefreshNameOverridesForPlayer(Player);
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
         };
@@ -292,28 +393,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickChangeDescription() => () =>
         {
+            if (Disguise.GetActiveDisguise(Player) != null)
+            {
+                SendMessageToPC(Player, ColorToken.Red("Edit your active disguise's biography from the Disguises window. Deactivate it to edit your normal biography."));
+                return;
+            }
+
             Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
         };
-
-        private void UpdateHolonetSetting()
-        {
-            SetLocalBool(Player, "DISPLAY_HOLONET", DisplayHolonetChannel);
-        }
 
         public Action OnClickGeneral() => () =>
         {
             IsGeneralSelected = true;
+            IsIdentitySelected = false;
             IsChatSelected = false;
-            ChangePartialView(SettingsView, GeneralPartial);
-            LoadGeneralView();
+            ChangeSettingsView(GeneralPartial);
+        };
+
+        public Action OnClickIdentity() => () =>
+        {
+            IsGeneralSelected = false;
+            IsIdentitySelected = true;
+            IsChatSelected = false;
+            ChangeSettingsView(IdentityPartial);
         };
 
         public Action OnClickChat() => () =>
         {
             IsGeneralSelected = false;
+            IsIdentitySelected = false;
             IsChatSelected = true;
-            ChangePartialView(SettingsView, ChatPartial);
-            LoadChatView();
+            ChangeSettingsView(ChatPartial);
         };
 
         public Action OnClickSelectChat() => () =>
@@ -331,6 +441,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickResetColor() => () =>
         {
             var index = NuiGetEventArrayIndex();
+            UpdatePropertyFromClient(nameof(Geometry));
 
             ShowModal("Are you sure you want to reset this color to the default?", () =>
             {
@@ -354,8 +465,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var (red, green, blue) = Language.GetColor(type);
                     ChatColors[index] = new GuiColor(red, green, blue);
                 }
-
-                ChangePartialView(SettingsView, ChatPartial);
             });
         };
     }

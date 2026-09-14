@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Weapon Enhancement - DMG - Force III"
+      "0": "Weapon Enhancement - Force Damage III"
     }
   },
   "ModelPart1": {
@@ -149,7 +149,38 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 19
+          "value": 18
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 134
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
         }
       }
     ]

@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 5093
+    "value": 69
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+    "value": "Uses the built-in Farm: Hay Bundle appearance."
   },
   "Conversation": {
     "type": "resref",

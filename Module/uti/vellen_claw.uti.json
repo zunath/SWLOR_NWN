@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vellen Flesheater Claw"
+      "0": "Vellen Flesheater Secondary Claw"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 36
+          "value": 31
         },
         "Param1": {
           "type": "byte",
@@ -87,7 +87,38 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 1
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 52
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 24
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 98
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]

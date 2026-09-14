@@ -88,7 +88,7 @@
     "type": "cexolocstring",
     "value": {
       "0": "Viscara - Veles - Racin' Jims",
-      "2": "Mos Eisley - Cantina de Chalmun"
+      "2": "Viscara - Veles - Racin' Jims"
     }
   },
   "NoRest": {
@@ -811,7 +811,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 49
+    "value": 50
   },
   "Width": {
     "type": "int",

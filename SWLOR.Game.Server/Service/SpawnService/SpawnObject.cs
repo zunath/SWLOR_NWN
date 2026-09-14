@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.AnimationService;
@@ -13,8 +12,10 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public ObjectType Type { get; set; }
         public string Resref { get; set; }
         public int Weight { get; set; }
+        public bool IsRare { get; set; }
         public AIFlag AIFlags { get; set; }
-        
+        public AIProfileType AIProfile { get; set; }
+
         public List<DayOfWeek> RealWorldDayOfWeekRestriction { get; set; }
         public TimeSpan? RealWorldStartRestriction { get; set; }
         public TimeSpan? RealWorldEndRestriction { get; set; }
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public SpawnObject()
         {
             AIFlags = AIFlag.None;
+            AIProfile = AIProfileType.Invalid;
             RealWorldDayOfWeekRestriction = new List<DayOfWeek>();
             GameHourStartRestriction = -1;
             GameHourEndRestriction = -1;

@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 564
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -436,7 +456,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -1261,7 +1313,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -1963,7 +2015,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -2788,7 +2872,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -3490,7 +3574,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -4315,7 +4431,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4729,7 +4845,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Navette de classe A-309"
+            "2": "A-309 Class Shuttle"
           }
         },
         "OnClick": {
@@ -4954,8 +5070,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "Teleporter",
+            "2": "Teleporter"
           }
         },
         "OnClick": {
@@ -5180,8 +5296,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "Teleporter",
+            "2": "Teleporter"
           }
         },
         "OnClick": {
@@ -5406,8 +5522,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "Teleporter",
+            "2": "Teleporter"
           }
         },
         "OnClick": {
@@ -5563,7 +5679,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -6109,7 +6225,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -6336,7 +6452,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -6942,7 +7058,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -7392,7 +7508,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -7842,7 +7958,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -8067,7 +8183,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -8292,7 +8408,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -8517,7 +8633,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -8967,7 +9083,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -9192,7 +9308,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -9642,7 +9758,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -10092,7 +10208,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -10317,7 +10433,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -10767,7 +10883,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -10992,7 +11108,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -11217,7 +11333,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -11442,7 +11558,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -12117,7 +12233,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -13242,7 +13358,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -13467,7 +13583,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -14367,7 +14483,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -14592,7 +14708,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -15042,7 +15158,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -15267,7 +15383,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -15492,7 +15608,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -15563,7 +15679,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -15944,7 +16060,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -16169,7 +16285,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -16396,7 +16512,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -17298,7 +17414,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -17547,7 +17663,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -17831,7 +17947,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -17966,7 +18082,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Industries - Divers"
+            "2": "Industrial - Miscellaneous"
           }
         },
         "Looping": {
@@ -19031,6 +19147,21 @@
         "Value": {
           "type": "int",
           "value": 69
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]

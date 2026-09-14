@@ -1,7 +1,6 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CurrencyService;
@@ -25,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             Food();
             PetFood();
             RebuildToken();
+            KyberToken();
 
             return _builder.Build();
         }
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var ability = AbilityType.Invalid;
-                    
+
                     switch (Random.Next(5) + 1)
                     {
                         case 1:
@@ -60,8 +60,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     var maxHP = GetMaxHitPoints(user);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(maxHP), user);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(ability, 50), user, 120f);
-
+                    StatusEffect.ApplyStatusEffect(user, user, new SlugShakePenaltyStatusEffect(ability), 120f);
                 });
         }
 
@@ -73,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    if (StatusEffect.HasStatusEffect(user, StatusEffectType.Food))
+                    if (StatusEffect.HasStatusEffect(user, typeof(FoodStatusEffect)))
                     {
                         return "You are not hungry.";
                     }
@@ -119,29 +118,29 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             case FoodItemPropertySubType.XPBonus:
                                 foodEffect.XPBonusPercent += amount;
                                 break;
-                            case FoodItemPropertySubType.RecastReduction:
-                                foodEffect.RecastReductionPercent += amount;
+                            case FoodItemPropertySubType.CombatReadiness:
+                                foodEffect.CombatReadinessPercent += amount;
                                 break;
                             case FoodItemPropertySubType.Duration:
                                 duration += amount * (60f * 5); // 5 minutes per duration bonus
                                 break;
                             case FoodItemPropertySubType.Might:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Might, amount), user, duration);
+                                foodEffect.Might += amount;
                                 break;
                             case FoodItemPropertySubType.Vitality:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, amount), user, duration);
+                                foodEffect.Vitality += amount;
                                 break;
                             case FoodItemPropertySubType.Perception:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Perception, amount), user, duration);
+                                foodEffect.Perception += amount;
                                 break;
                             case FoodItemPropertySubType.Willpower:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Willpower, amount), user, duration);
+                                foodEffect.Willpower += amount;
                                 break;
                             case FoodItemPropertySubType.Agility:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Agility, amount), user, duration);
+                                foodEffect.Agility += amount;
                                 break;
                             case FoodItemPropertySubType.Social:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Social, amount), user, duration);
+                                foodEffect.Social += amount;
                                 break;
                             case FoodItemPropertySubType.DefensePhysical:
                                 foodEffect.DefensePhysical += amount;
@@ -149,17 +148,29 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             case FoodItemPropertySubType.DefenseForce:
                                 foodEffect.DefenseForce += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseFire:
-                                foodEffect.DefenseFire += amount;
+                            case FoodItemPropertySubType.ResistanceFire:
+                                foodEffect.ResistanceFire += amount;
                                 break;
-                            case FoodItemPropertySubType.DefensePoison:
-                                foodEffect.DefensePoison += amount;
+                            case FoodItemPropertySubType.ResistancePoison:
+                                foodEffect.ResistancePoison += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseElectrical:
-                                foodEffect.DefenseElectrical += amount;
+                            case FoodItemPropertySubType.ResistanceElectrical:
+                                foodEffect.ResistanceElectrical += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseIce:
-                                foodEffect.DefenseIce += amount;
+                            case FoodItemPropertySubType.ResistanceIce:
+                                foodEffect.ResistanceIce += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceMind:
+                                foodEffect.ResistanceMind += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceMobility:
+                                foodEffect.ResistanceMobility += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceTrauma:
+                                foodEffect.ResistanceTrauma += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceDisruption:
+                                foodEffect.ResistanceDisruption += amount;
                                 break;
                             case FoodItemPropertySubType.Evasion:
                                 foodEffect.Evasion += amount;
@@ -199,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         }
                     }
 
-                    StatusEffect.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
+                    StatusEffect.ApplyStatusEffect(user, user, new FoodStatusEffect(foodEffect), duration);
                 });
         }
 
@@ -218,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return "You do not have a beast active.";
                     }
 
-                    if (StatusEffect.HasStatusEffect(beast, StatusEffectType.PetFood))
+                    if (StatusEffect.HasStatusEffect(beast, typeof(PetFoodStatusEffect)))
                     {
                         return "Your beast is not hungry.";
                     }
@@ -254,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "Your beast doesn't like this food very much...");
                     }
 
-                    StatusEffect.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
+                    StatusEffect.ApplyStatusEffect(user, beast, new PetFoodStatusEffect(xpBonus), 1800f);
 
                     Item.ReduceItemStack(item, 1);
                 });
@@ -278,6 +289,27 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     Currency.GiveCurrency(user, CurrencyType.RebuildToken, 1);
                     Item.ReduceItemStack(item, 1);
                     SendMessageToPC(user, $"Total Rebuild Tokens: {Currency.GetCurrency(user, CurrencyType.RebuildToken)}");
+                });
+        }
+
+        private void KyberToken()
+        {
+            _builder.Create("kyber_token")
+                .PlaysAnimation(Animation.LoopingGetMid)
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user) || GetIsDMPossessed(user))
+                    {
+                        return "Only players may use this item.";
+                    }
+
+                    return string.Empty;
+                })
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
+                {
+                    Currency.GiveCurrency(user, CurrencyType.KyberToken, 1);
+                    Item.ReduceItemStack(item, 1);
+                    SendMessageToPC(user, $"Total Kyber Tokens: {Currency.GetCurrency(user, CurrencyType.KyberToken)}");
                 });
         }
     }

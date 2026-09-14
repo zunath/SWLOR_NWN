@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This artifact hums faintly with the power of the dark side. Etched with ancient Sith runes, its purpose is unclear, but its presence is undeniable. Such an item is invaluable to the Sith and dangerous in the wrong hands. It must be returned to Inquisitor Dral'kor Keth without delay.\n\nLore:\nThe artifact is believed to be a fragment of a larger Sith relic, imbued with knowledge and power from a bygone era. Stolen by rogue initiates seeking to claim its secrets, it symbolizes the unwavering discipline and loyalty demanded by the Sith Order."
     }
   },
   "Identified": {

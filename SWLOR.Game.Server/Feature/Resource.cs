@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature
             // Spawn the prop and link it back to the actual placeable.
             var location = GetLocation(placeable);
             var prop = CreateObject(ObjectType.Placeable, propResref, location);
+            SetUseableFlag(prop, false);
             SetLocalObject(placeable, "RESOURCE_PROP_OBJ", prop);
             SetLocalBool(placeable, "RESOURCE_PROP_SPAWNED", true);
         }

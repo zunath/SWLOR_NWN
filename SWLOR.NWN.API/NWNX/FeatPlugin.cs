@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWNX
@@ -26,19 +26,19 @@ namespace SWLOR.NWN.API.NWNX
         /// Changes take effect immediately and persist until modified again.
         /// </remarks>
         public static void SetFeatModifier(
-            FeatType featType, 
-            FeatModifierType modifierType, 
-            uint param1 = 0xDEADBEEF, 
+            FeatType featType,
+            FeatModifierType modifierType,
+            uint param1 = 0xDEADBEEF,
             uint param2 = 0xDEADBEEF,
-            uint param3 = 0xDEADBEEF, 
+            uint param3 = 0xDEADBEEF,
             uint param4 = 0xDEADBEEF)
         {
             global::NWN.Core.NWNX.FeatPlugin.SetFeatModifier(
-                (int)featType, 
-                (int)modifierType, 
-                (int)param1, 
-                (int)param2, 
-                (int)param3, 
+                (int)featType,
+                (int)modifierType,
+                (int)param1,
+                (int)param2,
+                (int)param3,
                 (int)param4);
         }
     }

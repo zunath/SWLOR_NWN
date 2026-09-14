@@ -1,4 +1,4 @@
-﻿ using System.Collections.Generic;
+ using System.Collections.Generic;
  using SWLOR.Game.Server.Service;
  using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -73,9 +73,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             while (GetIsObjectValid(nearbyTarget))
                             {
-                                if (nearbyTarget != activator && 
-                                    Random.D4(1) != 1 && 
-                                    GetIsEnemy(nearbyTarget, activator) && 
+                                if (nearbyTarget != activator &&
+                                    Random.D4(1) != 1 &&
+                                    GetIsEnemy(nearbyTarget, activator) &&
                                     Space.GetShipStatus(nearbyTarget) != null)
                                 {
                                     var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);
@@ -99,8 +99,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     }
 
                                     var attackId = isHit ? 1 : 4;
-                                    var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                                    Messaging.SendMessageNearbyToPlayers(nearbyTarget, combatLogMessage, 60f);
+                                    Messaging.SendMessageNearbyToPlayers(
+                                        nearbyTarget,
+                                        receiver => Combat.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),
+                                        60f);
 
                                     Enmity.ModifyEnmity(activator, nearbyTarget, damage);
                                     CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);

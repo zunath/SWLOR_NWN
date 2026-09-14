@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using AssociateType = SWLOR.NWN.API.NWScript.Enum.Associate.AssociateType;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
@@ -25,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             return _builder.Build();
         }
-        
+
         private bool HasPetTreat(uint activator)
         {
             // NPCs don't need supplies.
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             // NPCs don't need supplies.
             if (!GetIsPC(activator))
                 return;
-            
+
             var item = GetItemPossessedBy(activator, PetTreatTag);
             Item.ReduceItemStack(item, 1);
         }
@@ -76,12 +75,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Impact(uint activator, int baseHealingAmount)
         {
-            var willBonus = GetAbilityModifier(AbilityType.Social, activator);
             var beast = GetAssociate(AssociateType.Henchman, activator);
             var maxHP = GetMaxHitPoints(beast);
-            var amount = baseHealingAmount + willBonus * 10 + (maxHP / 5) + Random.D10(1);
+            var baseAmount = baseHealingAmount + (maxHP / 5);
+            var amount = Stat.ScaleEffect(baseAmount, GetAbilityScore(activator, AbilityType.Social));
+            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
+            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
 
+            var hitPointsBeforeHealing = GetCurrentHitPoints(beast);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
+            if (GetCurrentHitPoints(beast) > hitPointsBeforeHealing)
+                Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 
             TakePetTreat(activator);
@@ -91,10 +95,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Reward1()
         {
-            _builder.Create(FeatType.Reward1, PerkType.Reward)
+            _builder
+                .Create(FeatType.Reward1, PerkType.Reward)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Reward)
                 .Name("Reward I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Reward, 18f)
+                .HasRecastDelay(RecastGroup.Reward, 12f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .RequirementStamina(6)
                 .IsCastedAbility()
@@ -107,10 +114,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Reward2()
         {
-            _builder.Create(FeatType.Reward2, PerkType.Reward)
+            _builder
+                .Create(FeatType.Reward2, PerkType.Reward)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Reward)
                 .Name("Reward II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Reward, 18f)
+                .HasRecastDelay(RecastGroup.Reward, 12f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .RequirementStamina(8)
                 .IsCastedAbility()
@@ -123,10 +133,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Reward3()
         {
-            _builder.Create(FeatType.Reward3, PerkType.Reward)
+            _builder
+                .Create(FeatType.Reward3, PerkType.Reward)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Reward)
                 .Name("Reward III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.Reward, 18f)
+                .HasRecastDelay(RecastGroup.Reward, 12f)
+                .UsesImmediateAuthoredAnimation()
                 .UsesAnimation(Animation.LoopingGetMid)
                 .RequirementStamina(10)
                 .IsCastedAbility()

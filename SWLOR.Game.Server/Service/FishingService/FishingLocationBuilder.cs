@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.FishingService
 {
@@ -40,15 +40,15 @@ namespace SWLOR.Game.Server.Service.FishingService
 
         /// <summary>
         /// Adds a new fish for a rod/bait configuration. This fish will only appear
-        /// if both the rod and bait used matches. 
+        /// if both the rod and bait used matches.
         /// </summary>
         /// <param name="fishType">The type of fish to use</param>
         /// <param name="rodType">The type of rod to use</param>
         /// <param name="baitType">The type of bait to use</param>
         /// <returns>A configured FishingLocationBuilder</returns>
         public FishingLocationBuilder AddFish(
-            FishType fishType, 
-            FishingRodType rodType, 
+            FishType fishType,
+            FishingRodType rodType,
             FishingBaitType baitType)
         {
             _activeFishDetail = new FishDetail

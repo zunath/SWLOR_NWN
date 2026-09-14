@@ -1,0 +1,5628 @@
+[
+  {
+    "Id": "CallBeast",
+    "Name": "Call Beast",
+    "DisplayName": "Call Beast",
+    "InternalName": "sw_callbeast",
+    "Category": "Beast Mastery",
+    "Type": "Combat",
+    "Description": "Call your active beast companion.",
+    "Reference": "",
+    "BibleAnimationRow": 121,
+    "PerkId": "Tame",
+    "Feats": [
+      "CallBeast"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/CallBeastAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid",
+    "SourceAnimation": "taunt",
+    "Profile": "Call companion"
+  },
+  {
+    "Id": "GuardingBond",
+    "Name": "Guarding Bond",
+    "DisplayName": "Guarding Bond",
+    "InternalName": "sw_guardbond",
+    "Category": "Beast Mastery",
+    "Type": "Stance",
+    "Description": "While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one stance may be active at a time.",
+    "Reference": "",
+    "BibleAnimationRow": 122,
+    "PerkId": "GuardingBond",
+    "Feats": [
+      "GuardingBond"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/GuardingBondAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "PredatoryBond",
+    "Name": "Predatory Bond",
+    "DisplayName": "Predatory Bond",
+    "InternalName": "sw_predbond",
+    "Category": "Beast Mastery",
+    "Type": "Stance",
+    "Description": "While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one stance may be active at a time.",
+    "Reference": "",
+    "BibleAnimationRow": 123,
+    "PerkId": "PredatoryBond",
+    "Feats": [
+      "PredatoryBond"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/PredatoryBondAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "ReviveBeast",
+    "Name": "Revive Beast",
+    "DisplayName": "Revive Beast",
+    "InternalName": "sw_revi_beas",
+    "Category": "Beast Mastery",
+    "Type": "Combat",
+    "Description": "Revives your pet with (45 + SOC)% HP.",
+    "Reference": "https://chatgpt.com/s/m_6a4015e9342c81918df41e2ad4667952",
+    "BibleAnimationRow": 108,
+    "PerkId": "ReviveBeast",
+    "Feats": [
+      "ReviveBeast1",
+      "ReviveBeast2",
+      "ReviveBeast3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/ReviveBeastAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "Reward",
+    "Name": "Reward",
+    "DisplayName": "Reward",
+    "InternalName": "sw_reward",
+    "Category": "Beast Mastery",
+    "Type": "Combat",
+    "Description": "Restores 130 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.",
+    "Reference": "https://chatgpt.com/s/m_6a401601906c8191a1857b907fdd51e6",
+    "BibleAnimationRow": 106,
+    "PerkId": "Reward",
+    "Feats": [
+      "Reward1",
+      "Reward2",
+      "Reward3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/RewardAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "SoothePet",
+    "Name": "Soothe Pet",
+    "DisplayName": "Soothe Pet",
+    "InternalName": "sw_soothepet",
+    "Category": "Beast Mastery",
+    "Type": "Combat",
+    "Description": "Removes debuffs from your pet.",
+    "Reference": "https://chatgpt.com/s/m_6a401621c730819199d06dd7f9d9ebfa",
+    "BibleAnimationRow": 107,
+    "PerkId": "SoothePet",
+    "Feats": [
+      "SoothePet"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/SoothePetAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "Tame",
+    "Name": "Tame",
+    "DisplayName": "Tame",
+    "InternalName": "sw_tame",
+    "Category": "Beast Mastery",
+    "Type": "Combat",
+    "Description": "Enables you to tame & train creatures between levels 0 and 50. Taming chance increases by 3% per SOC, capped at 75%.",
+    "Reference": "https://chatgpt.com/s/m_6a4015d8dfa8819192c3e4a893e20446",
+    "BibleAnimationRow": 105,
+    "PerkId": "Tame",
+    "Feats": [
+      "Tame"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/TameAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid",
+    "SourceAnimation": "castpoint",
+    "Profile": "Calming gesture"
+  },
+  {
+    "Id": "AdhesiveGrenade",
+    "Name": "Adhesive Grenade",
+    "DisplayName": "Adhesive Grenade",
+    "InternalName": "sw_adhe_gren",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Slows enemies in a 4m blast for 12 seconds. Affects up to 5 targets. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a400e9c692881918417ed815afebbf0",
+    "BibleAnimationRow": 95,
+    "PerkId": "AdhesiveGrenade",
+    "Feats": [
+      "AdhesiveGrenade1",
+      "AdhesiveGrenade2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/AdhesiveGrenadeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "ArcProjector",
+    "Name": "Arc Projector",
+    "DisplayName": "Arc Projector",
+    "InternalName": "sw_arc_proje",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Projects an overcharged electrical arc up to 15m, dealing 60 electrical DMG plus PER scaling to one target.",
+    "Reference": "",
+    "BibleAnimationRow": 124,
+    "PerkId": "ArcProjector",
+    "Feats": [
+      "ArcProjector1",
+      "ArcProjector2",
+      "ArcProjector3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/ArcProjectorAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "BlasterBeacon",
+    "Name": "Blaster Beacon",
+    "DisplayName": "Blaster Beacon",
+    "InternalName": "sw_blas_beac",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 physical DMG plus PER scaling.",
+    "Reference": "https://chatgpt.com/s/m_6a401359343c81918ce3d5d9dc91bb4e",
+    "BibleAnimationRow": 99,
+    "PerkId": "BlasterBeacon",
+    "Feats": [
+      "BlasterBeacon1",
+      "BlasterBeacon2",
+      "BlasterBeacon3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/BlasterBeaconAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "getlow",
+    "Profile": "Deploy beacon"
+  },
+  {
+    "Id": "ClusterGrenade",
+    "Name": "Cluster Grenade",
+    "DisplayName": "Cluster Grenade",
+    "InternalName": "sw_clus_gren",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Throws three adjacent grenades within 3m of the target point. Each grenade deals 18 fire DMG plus PER scaling in a 2m blast, and overlapping blasts can hit the same enemy. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a400f1f20b08191b192bfb65246ba94",
+    "BibleAnimationRow": 96,
+    "PerkId": "ClusterGrenade",
+    "Feats": [
+      "ClusterGrenade1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/ClusterGrenadeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "ConcussionGrenade",
+    "Name": "Concussion Grenade",
+    "DisplayName": "Concussion Grenade",
+    "InternalName": "sw_conc_gren",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 28 electrical DMG plus PER scaling in a 3m blast and knocks down for 3 seconds. Affects up to 5 targets. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a400ceec88c8191917b475a5abeeb8c",
+    "BibleAnimationRow": 92,
+    "PerkId": "ConcussionGrenade",
+    "Feats": [
+      "ConcussionGrenade1",
+      "ConcussionGrenade2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/ConcussionGrenadeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "CryoSprayer",
+    "Name": "Cryo Sprayer",
+    "DisplayName": "Cryo Sprayer",
+    "InternalName": "sw_cryo_spra",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 25 ice DMG plus PER scaling to hostile targets in a 6m x 5m cone and slows their movement for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 125,
+    "PerkId": "CryoSprayer",
+    "Feats": [
+      "CryoSprayer1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/CryoSprayerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "DeflectorShield",
+    "Name": "Deflector Shield",
+    "DisplayName": "Deflector Shield",
+    "InternalName": "sw_defl_shie",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Grants one ally 100 temporary HP plus 12% of the target's maximum HP for 45 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 126,
+    "PerkId": "DeflectorShield",
+    "Feats": [
+      "DeflectorShield1",
+      "DeflectorShield2",
+      "DeflectorShield3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/DeflectorShieldAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "DisruptionPulse",
+    "Name": "Disruption Pulse",
+    "DisplayName": "Disruption Pulse",
+    "InternalName": "sw_disr_puls",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 12 seconds. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a4011a0c1e881919338e80d284504bd",
+    "BibleAnimationRow": 97,
+    "PerkId": "DisruptionPulse",
+    "Feats": [
+      "DisruptionPulse1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/DisruptionPulseAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "EmergencyBunker",
+    "Name": "Emergency Bunker",
+    "DisplayName": "Emergency Bunker",
+    "InternalName": "sw_emer_bunk",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deploys an 8m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less physical and Force damage.",
+    "Reference": "",
+    "BibleAnimationRow": 127,
+    "PerkId": "EmergencyBunker",
+    "Feats": [
+      "EmergencyBunker1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/EmergencyBunkerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "getlow",
+    "Profile": "Deploy bunker"
+  },
+  {
+    "Id": "Flamethrower",
+    "Name": "Flamethrower",
+    "DisplayName": "Flamethrower",
+    "InternalName": "sw_flamethrw",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 42 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone and attempts to inflict Burn for 12 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 128,
+    "PerkId": "Flamethrower",
+    "Feats": [
+      "Flamethrower1",
+      "Flamethrower2",
+      "Flamethrower3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/FlamethrowerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "FlashGrenade",
+    "Name": "Flash Grenade",
+    "DisplayName": "Flash Grenade",
+    "InternalName": "sw_flashgren",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Affects up to 5 targets. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a400d4bfca8819183e54a057e874df2",
+    "BibleAnimationRow": 93,
+    "PerkId": "FlashGrenade",
+    "Feats": [
+      "FlashGrenade1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/FlashGrenadeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "FragGrenade",
+    "Name": "Frag Grenade",
+    "DisplayName": "Frag Grenade",
+    "InternalName": "sw_fraggren",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed for 12 seconds. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a400b5991b481918ca4b286177de545",
+    "BibleAnimationRow": 91,
+    "PerkId": "FragGrenade",
+    "Feats": [
+      "FragGrenade1",
+      "FragGrenade2",
+      "FragGrenade3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/FragGrenadeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "GroupDeflector",
+    "Name": "Group Deflector",
+    "DisplayName": "Group Deflector",
+    "InternalName": "sw_grou_defl",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Allies within 5m gain 70 temporary HP plus 8% of each target's maximum HP for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 129,
+    "PerkId": "GroupDeflector",
+    "Feats": [
+      "GroupDeflector1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/GroupDeflectorAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "IncendiaryField",
+    "Name": "Incendiary Field",
+    "DisplayName": "Incendiary Field",
+    "InternalName": "sw_ince_fiel",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deploys a visible 5m-radius fire field at the target location for 30 seconds. Enemies inside take 16 fire DMG plus PER scaling every 3 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a4013a2d2688191aa52829d0d598e03",
+    "BibleAnimationRow": 100,
+    "PerkId": "IncendiaryField",
+    "Feats": [
+      "IncendiaryField1",
+      "IncendiaryField2",
+      "IncendiaryField3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/IncendiaryFieldAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "IonGrenade",
+    "Name": "Ion Grenade",
+    "DisplayName": "Ion Grenade",
+    "InternalName": "sw_iongren",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and inflicts Shock for 12 seconds. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a400de548c08191a2e52e433e30159e",
+    "BibleAnimationRow": 94,
+    "PerkId": "IonGrenade",
+    "Feats": [
+      "IonGrenade1",
+      "IonGrenade2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/IonGrenadeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "IonLance",
+    "Name": "Ion Lance",
+    "DisplayName": "Ion Lance",
+    "InternalName": "sw_ionlance",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 44 electrical DMG plus PER scaling to hostile targets in the line.",
+    "Reference": "",
+    "BibleAnimationRow": 130,
+    "PerkId": "IonLance",
+    "Feats": [
+      "IonLance1",
+      "IonLance2",
+      "IonLance3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/IonLanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "KillzoneBeacon",
+    "Name": "Killzone Beacon",
+    "DisplayName": "Killzone Beacon",
+    "InternalName": "sw_kill_beac",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Plants a visible 12m killzone sphere for 45 seconds. Every 3 seconds, all hostile targets inside are hit by one 16 physical DMG plus PER scaling pulse and one 16 electrical DMG plus PER scaling shock pulse.",
+    "Reference": "https://chatgpt.com/s/m_6a40150693908191b2415f963e63031b",
+    "BibleAnimationRow": 104,
+    "PerkId": "KillzoneBeacon",
+    "Feats": [
+      "KillzoneBeacon1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/KillzoneBeaconAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "getlow",
+    "Profile": "Deploy beacon"
+  },
+  {
+    "Id": "OverloadBarrage",
+    "Name": "Overload Barrage",
+    "DisplayName": "Overload Barrage",
+    "InternalName": "sw_over_barr",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Unleashes three attacks at your primary target's location: a 42 fire DMG 5m burst plus Burn for 45 seconds, a 48 fire DMG single-target hit plus 3-second Knockdown, and a 24 sonic DMG 5m burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 131,
+    "PerkId": "OverloadBarrage",
+    "Feats": [
+      "OverloadBarrage1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/OverloadBarrageAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "PowerCell",
+    "Name": "Power Cell",
+    "DisplayName": "Power Cell",
+    "InternalName": "sw_powercell",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Restores 18% of maximum STM to the selected ally and allies within 5m and increases physical and Force ability Accuracy by 6% for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 132,
+    "PerkId": "PowerCell",
+    "Feats": [
+      "PowerCell1",
+      "PowerCell2",
+      "PowerCell3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/PowerCellAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "RailDart",
+    "Name": "Rail Dart",
+    "DisplayName": "Rail Dart",
+    "InternalName": "sw_raildart",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Fires a dart that deals 48 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 133,
+    "PerkId": "RailDart",
+    "Feats": [
+      "RailDart1",
+      "RailDart2",
+      "RailDart3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/RailDartAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "RemoteCharge",
+    "Name": "Remote Charge",
+    "DisplayName": "Remote Charge",
+    "InternalName": "sw_remo_char",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 42 fire DMG plus PER scaling and inflicts Knockdown for 6 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a40142040b88191a83f31accd0f22a5",
+    "BibleAnimationRow": 101,
+    "PerkId": "RemoteCharge",
+    "Feats": [
+      "RemoteCharge1",
+      "RemoteCharge2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/RemoteChargeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade",
+    "SourceAnimation": "getlow",
+    "Profile": "Place explosive"
+  },
+  {
+    "Id": "ShockBeacon",
+    "Name": "Shock Beacon",
+    "DisplayName": "Shock Beacon",
+    "InternalName": "sw_shoc_beac",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Plants a visible 5m shock sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit for 14 electrical DMG plus PER scaling and suffers Shock.",
+    "Reference": "https://chatgpt.com/s/m_6a4014c3a4888191b4342b40a181f3ec",
+    "BibleAnimationRow": 103,
+    "PerkId": "ShockBeacon",
+    "Feats": [
+      "ShockBeacon1",
+      "ShockBeacon2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/ShockBeaconAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "getlow",
+    "Profile": "Deploy beacon"
+  },
+  {
+    "Id": "SignalJammer",
+    "Name": "Signal Jammer",
+    "DisplayName": "Signal Jammer",
+    "InternalName": "sw_sign_jamm",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deploys a signal jammer for 45 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.",
+    "Reference": "https://chatgpt.com/s/m_6a401463a6508191ace7b88bbf18e6de",
+    "BibleAnimationRow": 102,
+    "PerkId": "SignalJammer",
+    "Feats": [
+      "SignalJammer1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/SignalJammerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "getlow",
+    "Profile": "Deploy jammer"
+  },
+  {
+    "Id": "SonicBurst",
+    "Name": "Sonic Burst",
+    "DisplayName": "Sonic Burst",
+    "InternalName": "sw_soni_burs",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 18 sonic DMG to hostile targets within 5m, interrupts activation, and reduces Accuracy by 10% for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 134,
+    "PerkId": "SonicBurst",
+    "Feats": [
+      "SonicBurst1",
+      "SonicBurst2",
+      "SonicBurst3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/SonicBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ThermalDetonator",
+    "Name": "Thermal Detonator",
+    "DisplayName": "Thermal Detonator",
+    "InternalName": "sw_ther_deto",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 60 fire DMG plus PER scaling in a 5m blast and inflicts Burn for 45 seconds. Consumes explosives.",
+    "Reference": "https://chatgpt.com/s/m_6a4013144efc8191b0243d89d47fe085",
+    "BibleAnimationRow": 98,
+    "PerkId": "ThermalDetonator",
+    "Feats": [
+      "ThermalDetonator1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/ThermalDetonatorAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "WeaponJam",
+    "Name": "Weapon Jam",
+    "DisplayName": "Weapon Jam",
+    "InternalName": "sw_weaponjam",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Reduce one target's physical and Force ability Accuracy by 6% for 18 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 135,
+    "PerkId": "WeaponJam",
+    "Feats": [
+      "WeaponJam1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/WeaponJamAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "WristRocket",
+    "Name": "Wrist Rocket",
+    "DisplayName": "Wrist Rocket",
+    "InternalName": "sw_wris_rock",
+    "Category": "Devices",
+    "Type": "Combat",
+    "Description": "Deals 48 fire DMG plus PER scaling to one target and knocks down for 3 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 136,
+    "PerkId": "WristRocket",
+    "Feats": [
+      "WristRocket1",
+      "WristRocket2",
+      "WristRocket3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Devices/WristRocketAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "GhostProtocol",
+    "Name": "Ghost Protocol",
+    "DisplayName": "Ghost Protocol",
+    "InternalName": "sw_ghos_prot",
+    "Category": "Espionage",
+    "Type": "Capstone",
+    "Description": "Reduces your enmity by 80%, enters stealth for up to 30 seconds, and causes your next back attack within 30 seconds to critically hit and inflict Exposed, reducing Defense by 20% for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 137,
+    "PerkId": "GhostProtocol",
+    "Feats": [
+      "GhostProtocol"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/GhostProtocolAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "RazorTrap",
+    "Name": "Razor Trap",
+    "DisplayName": "Razor Trap",
+    "InternalName": "sw_razortrap",
+    "Category": "Espionage",
+    "Type": "Combat",
+    "Description": "Places a visible trap that arms after 3 seconds. When triggered, enemies within its 3m blast take 30 physical DMG plus PER scaling and Bleed for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 138,
+    "PerkId": "RazorTrap",
+    "Feats": [
+      "RazorTrap1",
+      "RazorTrap2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/RazorTrapAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid",
+    "SourceAnimation": "getlow",
+    "Profile": "Place trap"
+  },
+  {
+    "Id": "ShadowStep",
+    "Name": "Shadow Step",
+    "DisplayName": "Shadow Step",
+    "InternalName": "sw_shad_step",
+    "Category": "Espionage",
+    "Type": "Combat",
+    "Description": "Dash behind one hostile target within 5m, remove negative movement-speed effects, and increase Evasion by 15% for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 139,
+    "PerkId": "ShadowStep",
+    "Feats": [
+      "ShadowStep1",
+      "ShadowStep2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/ShadowStepAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "dodgelr",
+    "Profile": "Evasive step"
+  },
+  {
+    "Id": "ShockTrap",
+    "Name": "Shock Trap",
+    "DisplayName": "Shock Trap",
+    "InternalName": "sw_shocktrap",
+    "Category": "Espionage",
+    "Type": "Combat",
+    "Description": "Places a visible trap that arms after 3 seconds. When triggered, enemies within its 3m blast take 22 electrical DMG plus PER scaling and suffer Shock for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 140,
+    "PerkId": "ShockTrap",
+    "Feats": [
+      "ShockTrap"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/ShockTrapAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid",
+    "SourceAnimation": "getlow",
+    "Profile": "Place trap"
+  },
+  {
+    "Id": "TacticalEscape",
+    "Name": "Tactical Escape",
+    "DisplayName": "Tactical Escape",
+    "InternalName": "sw_tact_esca",
+    "Category": "Espionage",
+    "Type": "Combat",
+    "Description": "Reduces your enmity by 60%, removes negative movement-speed effects, and increases Evasion by 12% for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 142,
+    "PerkId": "TacticalEscape",
+    "Feats": [
+      "TacticalEscape1",
+      "TacticalEscape2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Espionage/TacticalEscapeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "dodgelr",
+    "Profile": "Evasive step"
+  },
+  {
+    "Id": "AdrenalStim",
+    "Name": "Adrenal Stim",
+    "DisplayName": "Adrenal Stim",
+    "InternalName": "sw_adrenstim",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.",
+    "Reference": "https://chatgpt.com/s/m_6a401866bc6881918bc72a506660384b",
+    "BibleAnimationRow": 115,
+    "PerkId": "AdrenalStim",
+    "Feats": [
+      "AdrenalStim1",
+      "AdrenalStim2",
+      "AdrenalStim3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/AdrenalStimAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "Antitoxin",
+    "Name": "Antitoxin",
+    "DisplayName": "Antitoxin",
+    "InternalName": "sw_antitox",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Grants 50% Poison Resistance for 2 minutes and removes one Poison or Toxin effect. Poison Resistance also weakens Disease and Toxin effects. Consumes a stim pack.",
+    "Reference": "https://chatgpt.com/s/m_6a4018798aa08191b374588b7168c0e5",
+    "BibleAnimationRow": 118,
+    "PerkId": "Antitoxin",
+    "Feats": [
+      "Antitoxin1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/AntitoxinAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "EmergencyCocktail",
+    "Name": "Emergency Cocktail",
+    "DisplayName": "Emergency Cocktail",
+    "InternalName": "sw_emer_cock",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.",
+    "Reference": "https://chatgpt.com/s/m_6a4019777fb481918d23999e264a87a2",
+    "BibleAnimationRow": 120,
+    "PerkId": "EmergencyCocktail",
+    "Feats": [
+      "EmergencyCocktail1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/EmergencyCocktailAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "EmergencyTriage",
+    "Name": "Emergency Triage",
+    "DisplayName": "Emergency Triage",
+    "InternalName": "sw_emer_tria",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.",
+    "Reference": "https://chatgpt.com/s/m_6a40186099688191ae8ad66a6cb03015",
+    "BibleAnimationRow": 114,
+    "PerkId": "EmergencyTriage",
+    "Feats": [
+      "EmergencyTriage1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/EmergencyTriageAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "FocusStim",
+    "Name": "Focus Stim",
+    "DisplayName": "Focus Stim",
+    "InternalName": "sw_focusstim",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack.",
+    "Reference": "https://chatgpt.com/s/m_6a4019135b0081919a93ee984f30d508",
+    "BibleAnimationRow": 119,
+    "PerkId": "FocusStim",
+    "Feats": [
+      "FocusStim1",
+      "FocusStim2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/FocusStimAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "Infusion",
+    "Name": "Infusion",
+    "DisplayName": "Infusion",
+    "InternalName": "sw_infusion",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies.",
+    "Reference": "https://chatgpt.com/s/m_6a40185950b481919ddbdabbcd190525",
+    "BibleAnimationRow": 113,
+    "PerkId": "Infusion",
+    "Feats": [
+      "Infusion1",
+      "Infusion2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/InfusionAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "KoltoMist",
+    "Name": "Kolto Mist",
+    "DisplayName": "Kolto Mist",
+    "InternalName": "sw_koltomist",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.",
+    "Reference": "https://chatgpt.com/s/m_6a40184cfbfc8191b803f7cff849403c",
+    "BibleAnimationRow": 111,
+    "PerkId": "KoltoMist",
+    "Feats": [
+      "KoltoMist1",
+      "KoltoMist2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/KoltoMistAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "MedKit",
+    "Name": "Med Kit",
+    "DisplayName": "Med Kit",
+    "InternalName": "sw_medkit",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.",
+    "Reference": "https://chatgpt.com/s/m_6a40183d93a48191a3929bcfd7344425",
+    "BibleAnimationRow": 109,
+    "PerkId": "MedKit",
+    "Feats": [
+      "MedKit1",
+      "MedKit2",
+      "MedKit3",
+      "MedKit4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/MedKitAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "PainSuppressant",
+    "Name": "Pain Suppressant",
+    "DisplayName": "Pain Suppressant",
+    "InternalName": "sw_painsuppr",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack.",
+    "Reference": "https://chatgpt.com/s/m_6a40187244bc819198879a733c235565",
+    "BibleAnimationRow": 117,
+    "PerkId": "PainSuppressant",
+    "Feats": [
+      "PainSuppressant1",
+      "PainSuppressant2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/PainSuppressantAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "Resuscitation",
+    "Name": "Resuscitation",
+    "DisplayName": "Resuscitation",
+    "InternalName": "sw_resusc",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies.",
+    "Reference": "https://chatgpt.com/s/m_6a401852c2508191a4d7763de334d77d",
+    "BibleAnimationRow": 112,
+    "PerkId": "Resuscitation",
+    "Feats": [
+      "Resuscitation1",
+      "Resuscitation2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/ResuscitationAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "Shielding",
+    "Name": "Shielding",
+    "DisplayName": "Shielding",
+    "InternalName": "sw_shield",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack.",
+    "Reference": "https://chatgpt.com/s/m_6a40186c9484819189f52f8d77a689ce",
+    "BibleAnimationRow": 116,
+    "PerkId": "Shielding",
+    "Feats": [
+      "Shielding1",
+      "Shielding2",
+      "Shielding3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/ShieldingAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "TreatmentKit",
+    "Name": "Treatment Kit",
+    "DisplayName": "Treatment Kit",
+    "InternalName": "sw_treatkit",
+    "Category": "First Aid",
+    "Type": "Combat",
+    "Description": "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a4018460ec08191b59719a93f7c4dea",
+    "BibleAnimationRow": 110,
+    "PerkId": "TreatmentKit",
+    "Feats": [
+      "TreatmentKit1",
+      "TreatmentKit2",
+      "TreatmentKit3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/FirstAid/TreatmentKitAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "Benevolence",
+    "Name": "Benevolence",
+    "DisplayName": "Benevolence",
+    "InternalName": "sw_benevol",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.",
+    "Reference": "https://chatgpt.com/s/m_6a40098b10d4819189fab42aad45880a",
+    "BibleAnimationRow": 79,
+    "PerkId": "Benevolence",
+    "Feats": [
+      "Benevolence1",
+      "Benevolence2",
+      "Benevolence3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/BenevolenceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1",
+    "SourceAnimation": "castpoint",
+    "Profile": "Directed healing"
+  },
+  {
+    "Id": "CreepingTerror",
+    "Name": "Creeping Terror",
+    "DisplayName": "Creeping Terror",
+    "InternalName": "sw_cree_terr",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Creates a visible 8m field within 15m for 30 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a40095b45008191bc0fbd4ed33c7005",
+    "BibleAnimationRow": 72,
+    "PerkId": "CreepingTerror",
+    "Feats": [
+      "CreepingTerror1",
+      "CreepingTerror2",
+      "CreepingTerror3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/CreepingTerrorAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "EclipseOfResolve",
+    "Name": "Eclipse of Resolve",
+    "DisplayName": "Eclipse of Resolve",
+    "InternalName": "sw_eclp_resl",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Enemies within 5m suffer -12% physical and Force ability Accuracy, -12% Evasion, and +20% FP and STM costs for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400af972b8819188653ba7aa1d6ebe",
+    "BibleAnimationRow": 90,
+    "PerkId": "EclipseOfResolve",
+    "Feats": [
+      "EclipseOfResolve1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/EclipseOfResolveAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ForceBurst",
+    "Name": "Force Burst",
+    "DisplayName": "Force Burst",
+    "InternalName": "sw_forc_burs",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m.",
+    "Reference": "",
+    "BibleAnimationRow": 143,
+    "PerkId": "ForceBurst",
+    "Feats": [
+      "ForceBurst1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ForceChoke",
+    "Name": "Force Choke",
+    "DisplayName": "Force Choke",
+    "InternalName": "sw_forc_chok",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Immobilizes one target for 30 seconds, interrupts activation, and deals 34 force DMG plus WIL scaling over the duration.",
+    "Reference": "https://chatgpt.com/s/m_6a400968f6f081918c07dd5e20ea7419",
+    "BibleAnimationRow": 74,
+    "PerkId": "ForceChoke",
+    "Feats": [
+      "ForceChoke1",
+      "ForceChoke2",
+      "ForceChoke3",
+      "ForceChoke4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceChokeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ForceDrain",
+    "Name": "Force Drain",
+    "DisplayName": "Force Drain",
+    "InternalName": "sw_forc_drai",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Deals 36 force DMG plus WIL scaling to one target and heals you for 40% of damage dealt. If the target is below 50% HP, healing increases to 50%.",
+    "Reference": "https://chatgpt.com/s/m_6a4009776b308191b12aaa5344de7739",
+    "BibleAnimationRow": 76,
+    "PerkId": "ForceDrain",
+    "Feats": [
+      "ForceDrain1",
+      "ForceDrain2",
+      "ForceDrain3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceDrainAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ForceIntercept",
+    "Name": "Force Intercept",
+    "DisplayName": "Force Intercept",
+    "InternalName": "sw_forc_inte",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Leap to an ally up to 15m away and absorb 50% of the next hit they take within 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400a8471988191b2d8af89668469cd",
+    "BibleAnimationRow": 89,
+    "PerkId": "ForceIntercept",
+    "Feats": [
+      "ForceIntercept1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceInterceptAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ForceLeap",
+    "SourceAnimation": "castpoint",
+    "Profile": "Protective interception"
+  },
+  {
+    "Id": "ForceJudgment",
+    "Name": "Force Judgment",
+    "DisplayName": "Force Judgment",
+    "InternalName": "sw_forc_judg",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Deals 48 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400a693b108191a1b9976451674119",
+    "BibleAnimationRow": 85,
+    "PerkId": "ForceJudgment",
+    "Feats": [
+      "ForceJudgment1",
+      "ForceJudgment2",
+      "ForceJudgment3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceJudgmentAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ForceLeap",
+    "Name": "Force Leap",
+    "DisplayName": "Force Leap",
+    "InternalName": "sw_forceleap",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Leap to a hostile target up to 18m away, dealing 18 force DMG plus WIL scaling and interrupting activation.",
+    "Reference": "",
+    "BibleAnimationRow": 144,
+    "PerkId": "ForceLeap",
+    "Feats": [
+      "ForceLeap1",
+      "ForceLeap2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceLeapAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "No declared animation",
+    "SourceAnimation": "pause1",
+    "Profile": "Force leap"
+  },
+  {
+    "Id": "ForceLightning",
+    "Name": "Force Lightning",
+    "DisplayName": "Force Lightning",
+    "InternalName": "sw_forc_ligh",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Deals 40 force DMG plus WIL scaling to one target, then arcs to up to three enemies within 5m for 50% damage. Affected targets suffer Shock for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400970d3688191845ccb493ec939ba",
+    "BibleAnimationRow": 75,
+    "PerkId": "ForceLightning",
+    "Feats": [
+      "ForceLightning1",
+      "ForceLightning2",
+      "ForceLightning3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceLightningAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ForcePush",
+    "Name": "Force Push",
+    "DisplayName": "Force Push",
+    "InternalName": "sw_forcepush",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Deals 18 force DMG to up to 3 targets in a 10m x 5m cone, knocks them down for 6 seconds, and slows their movement for 12 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400962514c819182f205b88f37322b",
+    "BibleAnimationRow": 73,
+    "PerkId": "ForcePush",
+    "Feats": [
+      "ForcePush1",
+      "ForcePush2",
+      "ForcePush3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForcePushAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1"
+  },
+  {
+    "Id": "ForceSanctuary",
+    "Name": "Force Sanctuary",
+    "DisplayName": "Force Sanctuary",
+    "InternalName": "sw_forc_sanc",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Creates a 4m sanctuary for 30 seconds. Allies inside gain regeneration equal to 2% of maximum HP plus WIL scaling every 3 seconds and take 5% less force damage.",
+    "Reference": "https://chatgpt.com/s/m_6a400a574ab48191b2b07106e8276349",
+    "BibleAnimationRow": 82,
+    "PerkId": "ForceSanctuary",
+    "Feats": [
+      "ForceSanctuary1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceSanctuaryAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1",
+    "SourceAnimation": "castself",
+    "Profile": "Self protection"
+  },
+  {
+    "Id": "ForceSpark",
+    "Name": "Force Spark",
+    "DisplayName": "Force Spark",
+    "InternalName": "sw_forc_spar",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a40094c0e908191b8a8f1febc24c55c",
+    "BibleAnimationRow": 70,
+    "PerkId": "ForceSpark",
+    "Feats": [
+      "ForceSpark1",
+      "ForceSpark2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceSparkAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "FuryStance",
+    "Name": "Fury Stance",
+    "DisplayName": "Fury Stance",
+    "InternalName": "sw_furystn",
+    "Category": "Force",
+    "Type": "Stance",
+    "Description": "While active, gain +12% weapon and force damage and +15% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active.",
+    "Reference": "",
+    "BibleAnimationRow": 145,
+    "PerkId": "FuryStance",
+    "Feats": [
+      "FuryStance1",
+      "FuryStance2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/FuryStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "GuardianWard",
+    "Name": "Guardian Ward",
+    "DisplayName": "Guardian Ward",
+    "InternalName": "sw_guardward",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Grants a single ally temporary HP equal to 15% of the target's maximum HP plus WIL scaling for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400a49ceb08191aee9fed87c0b0c30",
+    "BibleAnimationRow": 80,
+    "PerkId": "GuardianWard",
+    "Feats": [
+      "GuardianWard1",
+      "GuardianWard2",
+      "GuardianWard3",
+      "GuardianWard4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/GuardianWardAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1",
+    "SourceAnimation": "castpoint",
+    "Profile": "Directed protection"
+  },
+  {
+    "Id": "HungerOfTheDark",
+    "Name": "Hunger of the Dark",
+    "DisplayName": "Hunger of the Dark",
+    "InternalName": "sw_hung_dark",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "For 45 seconds, Dark damage you deal heals you for 12% of damage dealt and defeated enemies restore 3 FP.",
+    "Reference": "https://chatgpt.com/s/m_6a400a5d5ad4819198dfc336049032db",
+    "BibleAnimationRow": 83,
+    "PerkId": "HungerOfTheDark",
+    "Feats": [
+      "HungerOfTheDark1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/HungerOfTheDarkAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "LastStandOfTheLight",
+    "Name": "Last Stand of the Light",
+    "DisplayName": "Last Stand of the Light",
+    "InternalName": "sw_lightlast",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "For 45 seconds, damage that would drop the target below 1 HP is prevented once and the target gains temporary HP equal to 15% of maximum HP plus WIL scaling.",
+    "Reference": "https://chatgpt.com/s/m_6a400984230c81919d6e8c836dc07f32",
+    "BibleAnimationRow": 78,
+    "PerkId": "LastStandOfTheLight",
+    "Feats": [
+      "LastStandOfTheLight1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/LastStandOfTheLightAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1",
+    "SourceAnimation": "castpoint",
+    "Profile": "Protective invocation"
+  },
+  {
+    "Id": "MindTrick",
+    "Name": "Mind Trick",
+    "DisplayName": "Mind Trick",
+    "InternalName": "sw_mindtrick",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Attempts to inflict Confusion on the selected non-mechanical target and one non-mechanical target within 5m for 30 seconds. Caster Willpower increases duration, while target Willpower and Mind Resistance reduce it.",
+    "Reference": "https://chatgpt.com/s/m_6a400a7614fc8191a6f932c5661cc4c0",
+    "BibleAnimationRow": 87,
+    "PerkId": "MindTrick",
+    "Feats": [
+      "MindTrick1",
+      "MindTrick2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/MindTrickAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "NightmareField",
+    "Name": "Nightmare Field",
+    "DisplayName": "Nightmare Field",
+    "InternalName": "sw_nigh_fiel",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Enemies within 5m suffer -10% physical and Force ability Accuracy and -10% Evasion for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400a7d61388191926547ac4ceab3ad",
+    "BibleAnimationRow": 88,
+    "PerkId": "NightmareField",
+    "Feats": [
+      "NightmareField1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/NightmareFieldAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "PurifyingWave",
+    "Name": "Purifying Wave",
+    "DisplayName": "Purifying Wave",
+    "InternalName": "sw_puri_wave",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Releases a 5m wave of focused light, dealing 22 force DMG plus WIL scaling to enemies and removing one minor negative effect (Bleed, Poison, or Hobble) from allies within 5m.",
+    "Reference": "https://chatgpt.com/s/m_6a40097daae881919bdf9917c345ae1e",
+    "BibleAnimationRow": 77,
+    "PerkId": "PurifyingWave",
+    "Feats": [
+      "PurifyingWave1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/PurifyingWaveAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1"
+  },
+  {
+    "Id": "RadiantLance",
+    "Name": "Radiant Lance",
+    "DisplayName": "Radiant Lance",
+    "InternalName": "sw_radi_lanc",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 44 force DMG plus WIL scaling to hostile targets in the line.",
+    "Reference": "https://chatgpt.com/s/m_6a400a6ed4e48191a8e11a2bfe1b2464",
+    "BibleAnimationRow": 86,
+    "PerkId": "RadiantLance",
+    "Feats": [
+      "RadiantLance1",
+      "RadiantLance2",
+      "RadiantLance3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/RadiantLanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "Renewal",
+    "Name": "Renewal",
+    "DisplayName": "Renewal",
+    "InternalName": "sw_renewal",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Applies regeneration to a single ally, restoring 6% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400a514d7c819181e47316026a28d0",
+    "BibleAnimationRow": 81,
+    "PerkId": "Renewal",
+    "Feats": [
+      "Renewal1",
+      "Renewal2",
+      "Renewal3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/RenewalAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1"
+  },
+  {
+    "Id": "ThrowLightsaber",
+    "Name": "Throw Lightsaber",
+    "DisplayName": "Throw Lightsaber",
+    "InternalName": "sw_thro_sabe",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Hurls your equipped weapon with the Force through a 15m x 2.5m line, dealing weapon DMG + 30 physical DMG plus WIL/PER scaling to the selected target and up to two additional enemies in the line.",
+    "Reference": "",
+    "BibleAnimationRow": 146,
+    "PerkId": "ThrowLightsaber",
+    "Feats": [
+      "ThrowLightsaber1",
+      "ThrowLightsaber2",
+      "ThrowLightsaber3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ThrowLightsaberAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "SaberThrow",
+    "SourceAnimation": "throwr",
+    "Profile": "Weapon throw"
+  },
+  {
+    "Id": "ThrowRock",
+    "Name": "Throw Rock",
+    "DisplayName": "Throw Rock",
+    "InternalName": "sw_throwrock",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Hurls a crushing mass of stone and debris with the Force up to 30m, dealing 60 physical DMG plus WIL/PER scaling to one target.",
+    "Reference": "https://chatgpt.com/s/m_6a400953c9188191a5966bb5d3cbae36",
+    "BibleAnimationRow": 71,
+    "PerkId": "ThrowRock",
+    "Feats": [
+      "ThrowRock1",
+      "ThrowRock2",
+      "ThrowRock3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ThrowRockAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "throwr",
+    "Profile": "Force throw"
+  },
+  {
+    "Id": "WeakenResolve",
+    "Name": "Weaken Resolve",
+    "DisplayName": "Weaken Resolve",
+    "InternalName": "sw_weak_resl",
+    "Category": "Force",
+    "Type": "Combat",
+    "Description": "Increases force damage taken by 10% for 24 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400a639be881918c9e1a55d8896cbb",
+    "BibleAnimationRow": 84,
+    "PerkId": "WeakenResolve",
+    "Feats": [
+      "WeakenResolve1",
+      "WeakenResolve2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Force/WeakenResolveAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "Provoke",
+    "Name": "Provoke",
+    "DisplayName": "Provoke",
+    "InternalName": "sw_provoke",
+    "Category": "General",
+    "Type": "Combat",
+    "Description": "Goads the selected target and all other enemies within 8m of it into attacking you. Enmity generated increases by 1% per VIT.",
+    "Reference": "",
+    "BibleAnimationRow": 147,
+    "PerkId": "Provoke",
+    "Feats": [
+      "Provoke1",
+      "Provoke2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Armor/ProvokeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "AbsoluteDefense",
+    "Name": "Absolute Defense",
+    "DisplayName": "Absolute Defense",
+    "InternalName": "sw_abs_defen",
+    "Category": "Heavy Vibroblade",
+    "Type": "Capstone",
+    "Description": "For 45 seconds, party members within 5m including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe7c6a37081919d42f7a0d219ff19",
+    "BibleAnimationRow": 19,
+    "PerkId": "AbsoluteDefense",
+    "Feats": [
+      "AbsoluteDefense1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/AbsoluteDefenseAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ShieldWall",
+    "SourceAnimation": "2hreadyr",
+    "Profile": "Defensive guard"
+  },
+  {
+    "Id": "BastionStance",
+    "Name": "Bastion Stance",
+    "DisplayName": "Bastion Stance",
+    "InternalName": "sw_baststn",
+    "Category": "Heavy Vibroblade",
+    "Type": "Stance",
+    "Description": "While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack.",
+    "Reference": "",
+    "BibleAnimationRow": 148,
+    "PerkId": "BastionStance",
+    "Feats": [
+      "BastionStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/BastionStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ShieldWall"
+  },
+  {
+    "Id": "BlazingSpikes",
+    "Name": "Blazing Spikes",
+    "DisplayName": "Blazing Spikes",
+    "InternalName": "sw_blaz_spik",
+    "Category": "Heavy Vibroblade",
+    "Type": "Toggle",
+    "Description": "While active, this effect delivers 10% of physical damage received back to the attacker. Damage dealt increases by 1% per MGT. (Maximum 40%)",
+    "Reference": "",
+    "BibleAnimationRow": 149,
+    "PerkId": "BlazingSpikes",
+    "Feats": [
+      "BlazingSpikes1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/BlazingSpikesAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "Earthshatter",
+    "Name": "Earthshatter",
+    "DisplayName": "Earthshatter",
+    "InternalName": "sw_earthshtr",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "You deal weapon DMG + 35 to all enemies in an 8m x 2.5m line from you. Inflicts Force Disruption on each target which disables the use of force abilities for 30 seconds and generates +350 Enmity.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe7bd01f0819198b545b822a5f39c",
+    "BibleAnimationRow": 18,
+    "PerkId": "Earthshatter",
+    "Feats": [
+      "Earthshatter1",
+      "Earthshatter2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/EarthshatterAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust"
+  },
+  {
+    "Id": "Flash",
+    "Name": "Flash",
+    "DisplayName": "Flash",
+    "InternalName": "sw_flash",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "Enemies within a 5m sphere around you receive Flash, reducing Ability Accuracy by 20% for 30 seconds (physical and Force abilities). Deals no damage. You generate +650 bonus Enmity toward these enemies.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe7aa0b688191bc1ffbae3f88fc70",
+    "BibleAnimationRow": 16,
+    "PerkId": "Flash",
+    "Feats": [
+      "Flash1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/FlashAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation",
+    "SourceAnimation": "taunt",
+    "Profile": "Provoking flash"
+  },
+  {
+    "Id": "FortressStrike",
+    "Name": "Fortress Strike",
+    "DisplayName": "Fortress Strike",
+    "InternalName": "sw_fort_stri",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "Your next attack deals weapon DMG + 30 and generates +550 Enmity plus damage dealt as Enmity. You gain +30% Physical Defense for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe7a1be3c819197e428ac4ec63190",
+    "BibleAnimationRow": 15,
+    "PerkId": "FortressStrike",
+    "Feats": [
+      "FortressStrike1",
+      "FortressStrike2",
+      "FortressStrike3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/FortressStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Native queued weapon swing"
+  },
+  {
+    "Id": "Rampart",
+    "Name": "Rampart",
+    "DisplayName": "Rampart",
+    "InternalName": "sw_rampart",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "All allies within a 5m sphere take 15% less physical damage for 1 minute.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe7b4d5f48191a3a293ad2a04bb2e",
+    "BibleAnimationRow": 17,
+    "PerkId": "Rampart",
+    "Feats": [
+      "Rampart1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/RampartAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ShieldWall",
+    "SourceAnimation": "2hreadyr",
+    "Profile": "Defensive guard"
+  },
+  {
+    "Id": "SacrificialBlade",
+    "Name": "Sacrificial Blade",
+    "DisplayName": "Sacrificial Blade",
+    "InternalName": "sw_sacr_blad",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "Deal weapon DMG + 25 to a single target. Costs 8% max HP.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe78ce94c8191923c385dce69df01",
+    "BibleAnimationRow": 12,
+    "PerkId": "SacrificialBlade",
+    "Feats": [
+      "SacrificialBlade1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/SacrificialBladeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SoulBurst",
+    "Name": "Soul Burst",
+    "DisplayName": "Soul Burst",
+    "InternalName": "sw_soulburst",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "Deal weapon DMG + 35 to all enemies in a 5m x 5m cone. Costs 40% HP which is reduced by 1% per MGT. (Minimum 10%)",
+    "Reference": "https://chatgpt.com/s/m_6a3fe7935e0881919f9a8977f0355c6d",
+    "BibleAnimationRow": 13,
+    "PerkId": "SoulBurst",
+    "Feats": [
+      "SoulBurst1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/SoulBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "SoulDevourer",
+    "Name": "Soul Devourer",
+    "DisplayName": "Soul Devourer",
+    "InternalName": "sw_soul_devo",
+    "Category": "Heavy Vibroblade",
+    "Type": "Stance",
+    "Description": "While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)",
+    "Reference": "",
+    "BibleAnimationRow": 150,
+    "PerkId": "SoulDevourer",
+    "Feats": [
+      "SoulDevourer1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/SoulDevourerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "SoulStorm",
+    "Name": "Soul Storm",
+    "DisplayName": "Soul Storm",
+    "InternalName": "sw_soulstorm",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "Sacrifice 40% HP to increase the damage of all allies within a 5m sphere by 20% for 1 minute. HP sacrificed decreases by 1 percentage point per MGT. (Minimum 10%)",
+    "Reference": "https://chatgpt.com/s/m_6a3fe79af88881919763eacb51c9ec26",
+    "BibleAnimationRow": 14,
+    "PerkId": "SoulStorm",
+    "Feats": [
+      "SoulStorm1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/SoulStormAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Whirlwind"
+  },
+  {
+    "Id": "SoulStrike",
+    "Name": "Soul Strike",
+    "DisplayName": "Soul Strike",
+    "InternalName": "sw_soul_stri",
+    "Category": "Heavy Vibroblade",
+    "Type": "Combat",
+    "Description": "Your next attack deals +45 DMG and heals you for 30% of damage dealt. Amount healed increases by 1 percentage point per 2 MGT to a maximum of 40%.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe784c430819197b751a58dd7821e",
+    "BibleAnimationRow": 11,
+    "PerkId": "SoulStrike",
+    "Feats": [
+      "SoulStrike1",
+      "SoulStrike2",
+      "SoulStrike3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/SoulStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Native queued weapon swing"
+  },
+  {
+    "Id": "AdamantineGuard",
+    "Name": "Adamantine Guard",
+    "DisplayName": "Adamantine Guard",
+    "InternalName": "sw_adamguard",
+    "Category": "Katar",
+    "Type": "Capstone",
+    "Description": "For 45 seconds, gain +25 Guard. Guarded hits reduce damage by an additional 20% and generate 75% more enmity.",
+    "Reference": "https://chatgpt.com/s/m_6a3feed7eb30819199286c5ceb4124bc",
+    "BibleAnimationRow": 39,
+    "PerkId": "AdamantineGuard",
+    "Feats": [
+      "AdamantineGuard1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/AdamantineGuardAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwreadyr",
+    "Profile": "Unarmed guard"
+  },
+  {
+    "Id": "GuardCounter",
+    "Name": "Guard Counter",
+    "DisplayName": "Guard Counter",
+    "InternalName": "sw_guar_coun",
+    "Category": "Katar",
+    "Type": "Combat",
+    "Description": "Queue your next auto attack to deal weapon DMG + 28. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 45 instead and inflicts Dazed for 15 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3feebf76d8819188bcb73a39478976",
+    "BibleAnimationRow": 37,
+    "PerkId": "GuardCounter",
+    "Feats": [
+      "GuardCounter1",
+      "GuardCounter2",
+      "GuardCounter3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/GuardCounterAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike; Native queued weapon swing"
+  },
+  {
+    "Id": "HookingStrike",
+    "Name": "Hooking Strike",
+    "DisplayName": "Hooking Strike",
+    "InternalName": "sw_hook_stri",
+    "Category": "Katar",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38 and inflicts Hamstring for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 151,
+    "PerkId": "HookingStrike",
+    "Feats": [
+      "HookingStrike1",
+      "HookingStrike2",
+      "HookingStrike3",
+      "HookingStrike4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/HookingStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "InterruptingSweep",
+    "Name": "Interrupting Sweep",
+    "DisplayName": "Interrupting Sweep",
+    "InternalName": "sw_intr_swee",
+    "Category": "Katar",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to enemies within 5m and interrupts current hostile actions when possible.",
+    "Reference": "",
+    "BibleAnimationRow": 152,
+    "PerkId": "InterruptingSweep",
+    "Feats": [
+      "InterruptingSweep1",
+      "InterruptingSweep2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/InterruptingSweepAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "IronWallStance",
+    "Name": "Iron Wall Stance",
+    "DisplayName": "Iron Wall Stance",
+    "InternalName": "sw_ironwall",
+    "Category": "Katar",
+    "Type": "Stance",
+    "Description": "While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%.",
+    "Reference": "",
+    "BibleAnimationRow": 153,
+    "PerkId": "IronWallStance",
+    "Feats": [
+      "IronWallStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/IronWallStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "JointLock",
+    "Name": "Joint Lock",
+    "DisplayName": "Joint Lock",
+    "InternalName": "sw_jointlock",
+    "Category": "Katar",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36. Inflicts Dazed for 15 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 154,
+    "PerkId": "JointLock",
+    "Feats": [
+      "JointLock1",
+      "JointLock2",
+      "JointLock3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/JointLockAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ScrapheapLockdown",
+    "Name": "Scrapheap Lockdown",
+    "DisplayName": "Scrapheap Lockdown",
+    "InternalName": "sw_scra_lock",
+    "Category": "Katar",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Dazed and Hamstring for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 155,
+    "PerkId": "ScrapheapLockdown",
+    "Feats": [
+      "ScrapheapLockdown1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/ScrapheapLockdownAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ScrapperStance",
+    "Name": "Scrapper Stance",
+    "DisplayName": "Scrapper Stance",
+    "InternalName": "sw_scrapstn",
+    "Category": "Katar",
+    "Type": "Stance",
+    "Description": "While active, your control effects last +20% longer, but hostile ability cooldowns are increased by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 156,
+    "PerkId": "ScrapperStance",
+    "Feats": [
+      "ScrapperStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/ScrapperStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "TwinGuardStance",
+    "Name": "Steel Shoulder",
+    "DisplayName": "Steel Shoulder",
+    "InternalName": "sw_steelshld",
+    "Category": "Katar",
+    "Type": "Combat",
+    "Description": "Target party ally becomes Guarded while you gain Guarding. While within 5 meters, the Guarded target gains Guard equal to 50% of your Guard. Only one ward or guard link may protect a target.",
+    "Reference": "",
+    "BibleAnimationRow": 157,
+    "PerkId": "TwinGuardStance",
+    "Feats": [
+      "TwinGuardStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/SteelShoulderAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "TwinIntercept",
+    "Name": "Tag In",
+    "DisplayName": "Tag In",
+    "InternalName": "sw_tagin",
+    "Category": "Katar",
+    "Type": "Combat",
+    "Description": "Automatically targets your current Guarded ally if they are within 5 meters. Grants that target temporary HP equal to 15% of your maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 158,
+    "PerkId": "TwinIntercept",
+    "Feats": [
+      "TwinIntercept1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/TagInAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "WhirlingGuard",
+    "Name": "Whirling Guard",
+    "DisplayName": "Whirling Guard",
+    "InternalName": "sw_whir_guar",
+    "Category": "Katar",
+    "Type": "Combat",
+    "Description": "For 30 seconds, you gain +20 Guard. Whenever you guard a hit, deal 8 physical DMG to that attacker. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.",
+    "Reference": "https://chatgpt.com/s/m_6a3feed1190c81918f2c0d047cdf6d64",
+    "BibleAnimationRow": 38,
+    "PerkId": "WhirlingGuard",
+    "Feats": [
+      "WhirlingGuard1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Katar/WhirlingGuardAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "nwreadyr",
+    "Profile": "Unarmed guard"
+  },
+  {
+    "Id": "BreakMorale",
+    "Name": "Break Morale",
+    "DisplayName": "Break Morale",
+    "InternalName": "sw_brea_mora",
+    "Category": "Leadership",
+    "Type": "Combat",
+    "Description": "Enemies within Leadership range (5m base) suffer Flash, reducing Ability Accuracy by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid enemies within Leadership range (5m base).",
+    "Reference": "",
+    "BibleAnimationRow": 159,
+    "PerkId": "BreakMorale",
+    "Feats": [
+      "BreakMorale1",
+      "BreakMorale2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/BreakMoraleAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "ChargeOrder",
+    "Name": "Charge Order",
+    "DisplayName": "Charge Order",
+    "InternalName": "sw_char_orde",
+    "Category": "Leadership",
+    "Type": "Aura",
+    "Description": "Aura: Party members within Leadership range (5m base) gain +15% movement speed and +50 Mobility Resistance. SOC scaling can raise these to +18% movement speed and +65 Mobility Resistance.",
+    "Reference": "",
+    "BibleAnimationRow": 160,
+    "PerkId": "ChargeOrder",
+    "Feats": [
+      "ChargeOrder1",
+      "ChargeOrder2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/ChargeOrderAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointForward"
+  },
+  {
+    "Id": "CleanseOrder",
+    "Name": "Cleanse Order",
+    "DisplayName": "Cleanse Order",
+    "InternalName": "sw_clea_orde",
+    "Category": "Leadership",
+    "Type": "Combat",
+    "Description": "Removes one major negative status effect from party members within Leadership range (5m base) and grants temporary HP equal to 12% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 15%.",
+    "Reference": "",
+    "BibleAnimationRow": 161,
+    "PerkId": "CleanseOrder",
+    "Feats": [
+      "CleanseOrder1",
+      "CleanseOrder2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/CleanseOrderAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetSalute"
+  },
+  {
+    "Id": "CoordinatedFocus",
+    "Name": "Coordinated Focus",
+    "DisplayName": "Coordinated Focus",
+    "InternalName": "sw_coor_focu",
+    "Category": "Leadership",
+    "Type": "Aura",
+    "Description": "Aura: Party members within Leadership range (5m base) gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%.",
+    "Reference": "",
+    "BibleAnimationRow": 162,
+    "PerkId": "CoordinatedFocus",
+    "Feats": [
+      "CoordinatedFocus1",
+      "CoordinatedFocus2",
+      "CoordinatedFocus3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/CoordinatedFocusAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FollowMe"
+  },
+  {
+    "Id": "DecisiveCommand",
+    "Name": "Decisive Command",
+    "DisplayName": "Decisive Command",
+    "InternalName": "sw_decis_cmd",
+    "Category": "Leadership",
+    "Type": "Combat",
+    "Description": "For 45 seconds, party members within Leadership range (5m base), including you, gain +12% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +15%, +8%, and +8%.",
+    "Reference": "",
+    "BibleAnimationRow": 163,
+    "PerkId": "DecisiveCommand",
+    "Feats": [
+      "DecisiveCommand1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/DecisiveCommandAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointForward"
+  },
+  {
+    "Id": "FieldRecovery",
+    "Name": "Field Recovery",
+    "DisplayName": "Field Recovery",
+    "InternalName": "sw_fiel_reco",
+    "Category": "Leadership",
+    "Type": "Aura",
+    "Description": "Aura: Party members within Leadership range (5m base) restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick.",
+    "Reference": "",
+    "BibleAnimationRow": 164,
+    "PerkId": "FieldRecovery",
+    "Feats": [
+      "FieldRecovery1",
+      "FieldRecovery2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/FieldRecoveryAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingGetMid"
+  },
+  {
+    "Id": "HoldTheLine",
+    "Name": "Hold the Line",
+    "DisplayName": "Hold the Line",
+    "InternalName": "sw_holdline",
+    "Category": "Leadership",
+    "Type": "Combat",
+    "Description": "For 45 seconds, party members within Leadership range (5m base), including you, gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.",
+    "Reference": "",
+    "BibleAnimationRow": 165,
+    "PerkId": "HoldTheLine",
+    "Feats": [
+      "HoldTheLine1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/HoldTheLineAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ShieldWall"
+  },
+  {
+    "Id": "PressTheAttack",
+    "Name": "Press the Attack",
+    "DisplayName": "Press the Attack",
+    "InternalName": "sw_pres_atta",
+    "Category": "Leadership",
+    "Type": "Combat",
+    "Description": "Party members within Leadership range (5m base) gain +10% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +12% damage and +7% hit chance.",
+    "Reference": "",
+    "BibleAnimationRow": 166,
+    "PerkId": "PressTheAttack",
+    "Feats": [
+      "PressTheAttack1",
+      "PressTheAttack2",
+      "PressTheAttack3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/PressTheAttackAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointForward"
+  },
+  {
+    "Id": "RallyingStandard",
+    "Name": "Rallying Standard",
+    "DisplayName": "Rallying Standard",
+    "InternalName": "sw_rall_stan",
+    "Category": "Leadership",
+    "Type": "Aura",
+    "Description": "Aura: Party members within Leadership range (5m base) gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%.",
+    "Reference": "",
+    "BibleAnimationRow": 167,
+    "PerkId": "RallyingStandard",
+    "Feats": [
+      "RallyingStandard1",
+      "RallyingStandard2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/RallyingStandardAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FollowMe"
+  },
+  {
+    "Id": "RousingShout",
+    "Name": "Rousing Shout",
+    "DisplayName": "Rousing Shout",
+    "InternalName": "sw_rous_shou",
+    "Category": "Leadership",
+    "Type": "Combat",
+    "Description": "Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 30 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less physical and Force damage, scaling up to 25%.",
+    "Reference": "",
+    "BibleAnimationRow": 168,
+    "PerkId": "RousingShout",
+    "Feats": [
+      "RousingShout1",
+      "RousingShout2",
+      "RousingShout3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/RousingShoutAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "SteadyFormation",
+    "Name": "Steady Formation",
+    "DisplayName": "Steady Formation",
+    "InternalName": "sw_stea_form",
+    "Category": "Leadership",
+    "Type": "Aura",
+    "Description": "Aura: Party members within Leadership range (5m base) gain +5% evasion chance, +50 Mind Resistance, and +50 Mobility Resistance. SOC scaling can raise these to +6% evasion chance, +65 Mind Resistance, and +65 Mobility Resistance.",
+    "Reference": "",
+    "BibleAnimationRow": 169,
+    "PerkId": "SteadyFormation",
+    "Feats": [
+      "SteadyFormation1",
+      "SteadyFormation2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/SteadyFormationAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FollowMe"
+  },
+  {
+    "Id": "WatchfulPresence",
+    "Name": "Watchful Presence",
+    "DisplayName": "Watchful Presence",
+    "InternalName": "sw_watc_pres",
+    "Category": "Leadership",
+    "Type": "Aura",
+    "Description": "Aura: Party members within Leadership range (5m base) take 8% less physical and Force damage. SOC scaling can raise this to 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 170,
+    "PerkId": "WatchfulPresence",
+    "Feats": [
+      "WatchfulPresence1",
+      "WatchfulPresence2",
+      "WatchfulPresence3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/WatchfulPresenceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingLookFar"
+  },
+  {
+    "Id": "AegisEternal",
+    "Name": "Aegis Eternal",
+    "DisplayName": "Aegis Eternal",
+    "InternalName": "sw_aegi_eter",
+    "Category": "Lightsaber",
+    "Type": "Capstone",
+    "Description": "For 30 seconds, enter Perfect Aegis, replacing Saber Ward: convert 40% of incoming physical damage to Force damage and gain + 8% Defense, + 12% Force Defense, and + 25% Enmity. Embattled is treated as 5 stacks and Deflecting Return reflects 50% of damage, up to 125% of your normal weapon damage.",
+    "Reference": "",
+    "BibleAnimationRow": 171,
+    "PerkId": "AegisEternal",
+    "Feats": [
+      "AegisEternal1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/AegisEternalAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "Epicenter",
+    "Name": "Epicenter",
+    "DisplayName": "Epicenter",
+    "InternalName": "sw_epicenter",
+    "Category": "Lightsaber",
+    "Type": "Capstone",
+    "Description": "Inflicts Knockdown on enemies within 6m of you for 6 seconds, dealing 25 Force DMG and inflicting Sunder. Enemies that already had Sunder when struck take an additional 15 Force DMG.",
+    "Reference": "",
+    "BibleAnimationRow": 172,
+    "PerkId": "Epicenter",
+    "Feats": [
+      "Epicenter1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/EpicenterAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SaberForceLink",
+    "Name": "Force Link",
+    "DisplayName": "Force Link",
+    "InternalName": "sw_forcelink",
+    "Category": "Lightsaber",
+    "Type": "Combat",
+    "Description": "Target ally becomes your Link for 45 seconds. While within 20m, 45% of the Link's incoming damage is redirected to you as Force damage. Only one ward or guard link may protect a target.",
+    "Reference": "",
+    "BibleAnimationRow": 173,
+    "PerkId": "SaberForceLink",
+    "Feats": [
+      "ForceLink1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/ForceLinkAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "castpoint",
+    "Profile": "Protective link"
+  },
+  {
+    "Id": "ForceSheath",
+    "Name": "Force Sheath",
+    "DisplayName": "Force Sheath",
+    "InternalName": "sw_forc_shea",
+    "Category": "Lightsaber",
+    "Type": "Combat",
+    "Description": "On your next hit, deal + 30 Force DMG.",
+    "Reference": "",
+    "BibleAnimationRow": 174,
+    "PerkId": "ForceSheath",
+    "Feats": [
+      "ForceSheath1",
+      "ForceSheath2",
+      "ForceSheath3",
+      "ForceSheath4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/ForceSheathAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike; Native queued weapon swing"
+  },
+  {
+    "Id": "GuardiansChallenge",
+    "Name": "Guardian's Challenge",
+    "DisplayName": "Guardian's Challenge",
+    "InternalName": "sw_guar_chal",
+    "Category": "Lightsaber",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 24 to enemies in an 8m x 3m line. For each struck enemy that damaged you within the last 30 seconds, gain +30% Enmity toward it for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe5dbd65c8191bccdb46f63441053",
+    "BibleAnimationRow": 10,
+    "PerkId": "GuardiansChallenge",
+    "Feats": [
+      "GuardiansChallenge1",
+      "GuardiansChallenge2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/GuardiansChallengeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ImbuementStance",
+    "Name": "Imbuement Stance",
+    "DisplayName": "Imbuement Stance",
+    "InternalName": "sw_imbuestn",
+    "Category": "Lightsaber",
+    "Type": "Stance",
+    "Description": "While active, your hostile auto-attacks deal Force damage instead of physical and cost 2 FP each.",
+    "Reference": "",
+    "BibleAnimationRow": 175,
+    "PerkId": "ImbuementStance",
+    "Feats": [
+      "ImbuementStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/ImbuementStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ImmovableStance",
+    "Name": "Immovable Stance",
+    "DisplayName": "Immovable Stance",
+    "InternalName": "sw_immovstn",
+    "Category": "Lightsaber",
+    "Type": "Stance",
+    "Description": "While active, generate + 30% Enmity and gain + 8 Mobility Resistance, but your Attack and Force Attack are reduced by 25%.",
+    "Reference": "",
+    "BibleAnimationRow": 176,
+    "PerkId": "ImmovableStance",
+    "Feats": [
+      "ImmovableStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/ImmovableStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "Reprisal",
+    "Name": "Reprisal",
+    "DisplayName": "Reprisal",
+    "InternalName": "sw_reprisal",
+    "Category": "Lightsaber",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30. If the target has damaged you within the last 30 seconds, inflict Dazed for 15 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 177,
+    "PerkId": "Reprisal",
+    "Feats": [
+      "Reprisal1",
+      "Reprisal2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/ReprisalAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SaberWard",
+    "Name": "Saber Ward",
+    "DisplayName": "Saber Ward",
+    "InternalName": "sw_saberward",
+    "Category": "Lightsaber",
+    "Type": "Combat",
+    "Description": "For 30 seconds, convert 30% of incoming physical damage to Force damage and gain + 6% Defense and + 9% Force Defense. Only the highest rank of Saber Ward applies.",
+    "Reference": "",
+    "BibleAnimationRow": 178,
+    "PerkId": "SaberWard",
+    "Feats": [
+      "SaberWard1",
+      "SaberWard2",
+      "SaberWard3",
+      "SaberWard4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/SaberWardAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike",
+    "SourceAnimation": "1hreadyr",
+    "Profile": "Defensive guard"
+  },
+  {
+    "Id": "ShatteringStrike",
+    "Name": "Shattering Strike",
+    "DisplayName": "Shattering Strike",
+    "InternalName": "sw_shat_stri",
+    "Category": "Lightsaber",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 28 and inflicts Sunder, reducing Defense and Force Defense by 12% for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 179,
+    "PerkId": "ShatteringStrike",
+    "Feats": [
+      "ShatteringStrike1",
+      "ShatteringStrike2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/ShatteringStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SunderingSweep",
+    "Name": "Sundering Sweep",
+    "DisplayName": "Sundering Sweep",
+    "InternalName": "sw_sund_swee",
+    "Category": "Lightsaber",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 16 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to one other enemy in melee range for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 180,
+    "PerkId": "SunderingSweep",
+    "Feats": [
+      "SunderingSweep1",
+      "SunderingSweep2",
+      "SunderingSweep3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Lightsaber/SunderingSweepAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ApexCollapseTechnique",
+    "Name": "Apex Collapse",
+    "DisplayName": "Apex Collapse",
+    "InternalName": "sw_apex_coll",
+    "Category": "Mimicry",
+    "Type": "Stance",
+    "Description": "While active, grants +25% Attack and +15% Critical Rate at the cost of -20% Physical Defense and -20% Force Defense.",
+    "Reference": "",
+    "BibleAnimationRow": 181,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "ApexCollapseTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ApexCollapseTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ArcPulseTechnique",
+    "Name": "Arc Pulse",
+    "DisplayName": "Arc Pulse",
+    "InternalName": "sw_arcpulse",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Shock on enemies within 4.5m of you for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 182,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "ArcPulseTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ArcPulseTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "BarbedVolleyTechnique",
+    "Name": "Barbed Volley",
+    "DisplayName": "Barbed Volley",
+    "InternalName": "sw_barb_voll",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 18 physical DMG plus PER scaling in an 8m x 5m cone. Inflicts Bleed for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 183,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "BarbedVolleyTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/BarbedVolleyTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "BloodFrenzyFlurryTechnique",
+    "Name": "Blood Frenzy Flurry",
+    "DisplayName": "Blood Frenzy Flurry",
+    "InternalName": "sw_bloodflry",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 physical DMG plus AGI scaling in a 5m x 5m cone. Inflicts Bleed for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 184,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "BloodFrenzyFlurryTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/BloodFrenzyFlurryTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Whirlwind"
+  },
+  {
+    "Id": "BraceBreakerTechnique",
+    "Name": "Brace Breaker",
+    "DisplayName": "Brace Breaker",
+    "InternalName": "sw_brac_brea",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target, inflicting Dazed for 15 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 185,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "BraceBreakerTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/BraceBreakerTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ShieldWall"
+  },
+  {
+    "Id": "BrutalBashTechnique",
+    "Name": "Brutal Bash",
+    "DisplayName": "Brutal Bash",
+    "InternalName": "sw_brut_bash",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 22 physical DMG plus MGT scaling to a single target. Inflicts Knockdown for 6 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 186,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "BrutalBashTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/BrutalBashTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust"
+  },
+  {
+    "Id": "CapacitorSurgeTechnique",
+    "Name": "Capacitor Surge",
+    "DisplayName": "Capacitor Surge",
+    "InternalName": "sw_capa_surg",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Shock on enemies within 4m of you for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 187,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "CapacitorSurgeTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/CapacitorSurgeTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ConcussiveChallengeTechnique",
+    "Name": "Concussive Challenge",
+    "DisplayName": "Concussive Challenge",
+    "InternalName": "sw_conc_chal",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Dazed on enemies within 6m of you for 15 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 188,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "ConcussiveChallengeTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ConcussiveChallengeTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "CrossfireDrillTechnique",
+    "Name": "Crossfire Drill",
+    "DisplayName": "Crossfire Drill",
+    "InternalName": "sw_cros_dril",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Suppression on enemies in a 5m x 5m cone for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 189,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "CrossfireDrillTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/CrossfireDrillTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetDodgeSide"
+  },
+  {
+    "Id": "CryoBileTechnique",
+    "Name": "Cryo Bile",
+    "DisplayName": "Cryo Bile",
+    "InternalName": "sw_cryobile",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Freezing and Immobilized on enemies in an 8m x 5m cone for 6 seconds and generates 100 additional Enmity per target. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 190,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "CryoBileTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/CryoBileTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "DarkShockTechnique",
+    "Name": "Dark Shock",
+    "DisplayName": "Dark Shock",
+    "InternalName": "sw_darkshock",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Makes separate WIL-based Mimicry hit checks against enemies within 4.5m of you. On a hit, inflicts Force Suppression for 30 seconds, reducing Attack by 10% and Force Attack by an additional 15% (25% total). Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 191,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "DarkShockTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/DarkShockTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "DisorientingScreechTechnique",
+    "Name": "Disorienting Screech",
+    "DisplayName": "Disorienting Screech",
+    "InternalName": "sw_diso_scre",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Disoriented on enemies within 9m of you for 30 seconds and reduces their Accuracy by 10%. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 192,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "DisorientingScreechTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/DisorientingScreechTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "DreadWaveTechnique",
+    "Name": "Dread Wave",
+    "DisplayName": "Dread Wave",
+    "InternalName": "sw_dreadwave",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 sonic DMG plus WIL scaling to enemies within 6m of you. Inflicts Weakened for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 193,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "DreadWaveTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/DreadWaveTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "FinalEclipseTechnique",
+    "Name": "Final Eclipse",
+    "DisplayName": "Final Eclipse",
+    "InternalName": "sw_fina_eclp",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Uses Mimicry rank and MGT for its hit check. Deals 40 Force DMG plus MGT scaling in an 8m x 2.5m line, increased by 40% against Weakened targets. Force is the damage type; this remains a Mimicry ability. Inflicts Force Disruption for 30 seconds and restores 5 FP to you per hit.",
+    "Reference": "",
+    "BibleAnimationRow": 194,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "FinalEclipseTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/FinalEclipseTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "FinalLineTechnique",
+    "Name": "Final Line",
+    "DisplayName": "Final Line",
+    "InternalName": "sw_finalline",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Uses Mimicry rank and MGT for its hit check. Deals 40 physical DMG plus MGT scaling in an 8m x 2.5m line and inflicts Exposed for 30 seconds. After the normal damage roll, each hit gains +0% damage at full HP, scaling smoothly up to +35% as that target nears defeat.",
+    "Reference": "",
+    "BibleAnimationRow": 195,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "FinalLineTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/FinalLineTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetDodgeSide"
+  },
+  {
+    "Id": "FinalMandateTechnique",
+    "Name": "Final Mandate",
+    "DisplayName": "Final Mandate",
+    "InternalName": "sw_fina_mand",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Issues a command that grants you and allies within 8m of you +15% Attack and +10% Accuracy for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 196,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "FinalMandateTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/FinalMandateTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "FinalSuppressionTechnique",
+    "Name": "Final Suppression",
+    "DisplayName": "Final Suppression",
+    "InternalName": "sw_fina_supp",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Stunned on enemies in an 8m x 2.5m line for 6 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 197,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "FinalSuppressionTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/FinalSuppressionTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "FinishingDriveTechnique",
+    "Name": "Finishing Drive",
+    "DisplayName": "Finishing Drive",
+    "InternalName": "sw_fini_driv",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Each cast adds one Momentum stack, granting +8% technique damage per stack, up to 3 stacks. Casting refreshes all stacks to 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 198,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "FinishingDriveTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/FinishingDriveTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "FrostSpitTechnique",
+    "Name": "Frost Spit",
+    "DisplayName": "Frost Spit",
+    "InternalName": "sw_frostspit",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target, inflicting Hamstring for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 199,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "FrostSpitTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/FrostSpitTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "GoringChargeTechnique",
+    "Name": "Goring Charge",
+    "DisplayName": "Goring Charge",
+    "InternalName": "sw_gori_char",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 physical DMG plus MGT scaling in an 8m x 2.5m line. Inflicts Bleed for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 200,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "GoringChargeTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/GoringChargeTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ForceLeap"
+  },
+  {
+    "Id": "GrenadeBurstTechnique",
+    "Name": "Grenade Burst",
+    "DisplayName": "Grenade Burst",
+    "InternalName": "sw_grenburst",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 fire DMG plus PER scaling to enemies within 4.5m of you. Inflicts Burn for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 201,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "GrenadeBurstTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/GrenadeBurstTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "HoldfastSlamTechnique",
+    "Name": "Holdfast Slam",
+    "DisplayName": "Holdfast Slam",
+    "InternalName": "sw_hold_slam",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target within 6m, inflicting Sunder and Exposed for 30 seconds, generating 100 additional enmity. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 202,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "HoldfastSlamTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/HoldfastSlamTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust",
+    "SourceAnimation": "nwslasho",
+    "Profile": "Downward strike"
+  },
+  {
+    "Id": "InfernoBlastTechnique",
+    "Name": "Inferno Blast",
+    "DisplayName": "Inferno Blast",
+    "InternalName": "sw_infe_blas",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 40 fire DMG plus MGT scaling in a 10m x 7m cone, increased by 50% against targets already suffering Burn. Inflicts Burn for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 203,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "InfernoBlastTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/InfernoBlastTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "InnerCircleBindTechnique",
+    "Name": "Inner Circle Bind",
+    "DisplayName": "Inner Circle Bind",
+    "InternalName": "sw_inr_bind",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target, inflicting Weapon Jam and Immobilized for 15 seconds, interrupting their current action. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 204,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "InnerCircleBindTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/InnerCircleBindTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "InnerCirclePounceTechnique",
+    "Name": "Inner Circle Pounce",
+    "DisplayName": "Inner Circle Pounce",
+    "InternalName": "sw_inr_pounc",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 48 physical DMG plus SOC scaling to a single target within 6m. Inflicts Exposed for 30 seconds, with +25% critical chance.",
+    "Reference": "",
+    "BibleAnimationRow": 205,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "InnerCirclePounceTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/InnerCirclePounceTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust"
+  },
+  {
+    "Id": "InnerCircleSurgeTechnique",
+    "Name": "Inner Circle Surge",
+    "DisplayName": "Inner Circle Surge",
+    "InternalName": "sw_inr_surge",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 48 electrical DMG plus SOC scaling to a single target, increased by 50% if it is suffering Shock. Inflicts Exposed for 30 seconds, then arcs to up to 3 enemies within 6m of the target for 16 electrical DMG plus SOC scaling and Shock for 30 seconds each.",
+    "Reference": "",
+    "BibleAnimationRow": 206,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "InnerCircleSurgeTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/InnerCircleSurgeTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "InnerCircleVolleyTechnique",
+    "Name": "Inner Circle Volley",
+    "DisplayName": "Inner Circle Volley",
+    "InternalName": "sw_inr_volly",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 48 sonic DMG plus SOC scaling to a single target, increased by 50% if it is Dazed or Disoriented. Inflicts Disoriented for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 207,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "InnerCircleVolleyTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/InnerCircleVolleyTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetDodgeSide"
+  },
+  {
+    "Id": "InnerRingFlurryTechnique",
+    "Name": "Inner Ring Flurry",
+    "DisplayName": "Inner Ring Flurry",
+    "InternalName": "sw_inr_flury",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target within 6m, inflicting Bleed for 30 seconds and refunding 4 STM on a successful hit. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 208,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "InnerRingFlurryTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/InnerRingFlurryTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CrossCut"
+  },
+  {
+    "Id": "InnerVoidTechnique",
+    "Name": "Inner Void",
+    "DisplayName": "Inner Void",
+    "InternalName": "sw_inrvoid",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 48 force DMG plus WIL scaling to a single target. Inflicts Weakened for 30 seconds, restoring 5 FP to you per hit.",
+    "Reference": "",
+    "BibleAnimationRow": 209,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "InnerVoidTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/InnerVoidTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "IonBurstTechnique",
+    "Name": "Ion Burst",
+    "DisplayName": "Ion Burst",
+    "InternalName": "sw_ionburst",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Disoriented on enemies in an 8m x 5m cone for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 210,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "IonBurstTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/IonBurstTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "LastBastionTechnique",
+    "Name": "Last Bastion",
+    "DisplayName": "Last Bastion",
+    "InternalName": "sw_lastbast",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Anchors a defensive line, granting allies within 8m of you a shield that absorbs 30 damage for 30 seconds; enemies within 8m generate +25% Enmity toward you for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 211,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "LastBastionTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/LastBastionTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "LockstepCrushTechnique",
+    "Name": "Lockstep Crush",
+    "DisplayName": "Lockstep Crush",
+    "InternalName": "sw_lockcrush",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 40 physical DMG plus AGI scaling in a 5m x 5m cone. Inflicts Knockdown for 6 seconds and Sunder for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 212,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "LockstepCrushTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/LockstepCrushTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ShieldWall"
+  },
+  {
+    "Id": "MercilessAngleTechnique",
+    "Name": "Merciless Angle",
+    "DisplayName": "Merciless Angle",
+    "InternalName": "sw_merc_angl",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 40 physical DMG plus SOC scaling in a 5m x 5m cone, increased by 50% against targets already suffering Bleed or Hemorrhage. Afflicted targets consume those effects to take another 40 physical DMG plus SOC scaling; other targets instead gain Hemorrhage for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 213,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "MercilessAngleTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/MercilessAngleTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust"
+  },
+  {
+    "Id": "NullShockTechnique",
+    "Name": "Null Shock",
+    "DisplayName": "Null Shock",
+    "InternalName": "sw_nullshock",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Makes separate WIL-based Mimicry hit checks against enemies in a 4.5m-radius area at the target location. On a hit, inflicts Force Suppression for 30 seconds, reducing Attack by 10% and Force Attack by an additional 15% (25% total), and drains 10 FP and 10 STM. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 214,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "NullShockTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/NullShockTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "OverclockedAnalyzer",
+    "Name": "Overclocked Analyzer",
+    "DisplayName": "Overclocked Analyzer",
+    "InternalName": "sw_overanlyz",
+    "Category": "Mimicry",
+    "Type": "Capstone",
+    "Description": "Overclocks the combat analyzer, granting 2 additional technique slots and an activated ability that briefly boosts your equipped techniques' potency and on-hit effect chance.",
+    "Reference": "",
+    "BibleAnimationRow": 215,
+    "PerkId": "OverclockedAnalyzer",
+    "Feats": [
+      "Overload"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/CombatAnalyzer/OverclockedAnalyzerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "LoopingConjure1",
+    "SourceAnimation": "getmid",
+    "Profile": "Operate analyzer"
+  },
+  {
+    "Id": "PackHarrierTechnique",
+    "Name": "Pack Harrier",
+    "DisplayName": "Pack Harrier",
+    "InternalName": "sw_pack_harr",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target, inflicting Hobble for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 216,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "PackHarrierTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/PackHarrierTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust"
+  },
+  {
+    "Id": "PermafrostRuptureTechnique",
+    "Name": "Permafrost Rupture",
+    "DisplayName": "Permafrost Rupture",
+    "InternalName": "sw_perm_rupt",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Freezing on enemies within 5.5m of you for 6 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 217,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "PermafrostRuptureTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/PermafrostRuptureTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust"
+  },
+  {
+    "Id": "PiercingQuillsTechnique",
+    "Name": "Piercing Quills",
+    "DisplayName": "Piercing Quills",
+    "InternalName": "sw_pier_quil",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Launches quills in an 8m x 5m cone, inflicting Sunder and reducing struck enemies' Physical and Force Defense by 15% for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 218,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "PiercingQuillsTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/PiercingQuillsTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "PouncingStrikeTechnique",
+    "Name": "Pouncing Strike",
+    "DisplayName": "Pouncing Strike",
+    "InternalName": "sw_poun_stri",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 22 physical DMG plus MGT scaling to a single target. Inflicts Knockdown for 6 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 219,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "PouncingStrikeTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/PouncingStrikeTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ForceLeap"
+  },
+  {
+    "Id": "PressureLockTechnique",
+    "Name": "Pressure Lock",
+    "DisplayName": "Pressure Lock",
+    "InternalName": "sw_pres_lock",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Immobilized on enemies in a 5m x 5m cone for 15 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 220,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "PressureLockTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/PressureLockTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "RakingClawsTechnique",
+    "Name": "Raking Claws",
+    "DisplayName": "Raking Claws",
+    "InternalName": "sw_raki_claw",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 12 physical DMG plus AGI scaling to a single target. Inflicts Hamstring for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 221,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "RakingClawsTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/RakingClawsTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CrossCut"
+  },
+  {
+    "Id": "RallyBreakerTechnique",
+    "Name": "Rally Breaker",
+    "DisplayName": "Rally Breaker",
+    "InternalName": "sw_rall_brea",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target, inflicting Marked for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 222,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "RallyBreakerTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/RallyBreakerTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "RupturingQuakeTechnique",
+    "Name": "Rupturing Quake",
+    "DisplayName": "Rupturing Quake",
+    "InternalName": "sw_ruptquake",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 40 physical DMG plus MGT scaling to enemies within 9m of you. Inflicts Knockdown for 6 seconds and Sunder for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 223,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "RupturingQuakeTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/RupturingQuakeTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust"
+  },
+  {
+    "Id": "SavageRoarTechnique",
+    "Name": "Savage Roar",
+    "DisplayName": "Savage Roar",
+    "InternalName": "sw_sava_roar",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Weakened on enemies within 6m of you for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 224,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "SavageRoarTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SavageRoarTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "ScorchingBreathTechnique",
+    "Name": "Scorching Breath",
+    "DisplayName": "Scorching Breath",
+    "InternalName": "sw_scor_brea",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 40 fire DMG plus MGT scaling in an 8m x 5m cone. Inflicts Burn and Weakened for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 225,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "ScorchingBreathTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ScorchingBreathTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "SeismicSlamTechnique",
+    "Name": "Seismic Slam",
+    "DisplayName": "Seismic Slam",
+    "InternalName": "sw_seis_slam",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 physical DMG plus MGT scaling to enemies within 6m of you and knocks them down for 6 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 226,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "SeismicSlamTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SeismicSlamTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust",
+    "SourceAnimation": "nwkicks",
+    "Profile": "Ground impact"
+  },
+  {
+    "Id": "ShrapnelBurstTechnique",
+    "Name": "Shrapnel Burst",
+    "DisplayName": "Shrapnel Burst",
+    "InternalName": "sw_shra_burs",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 physical DMG plus PER scaling in an 8m x 5m cone. Inflicts Sunder for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 227,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "ShrapnelBurstTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ShrapnelBurstTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "SignalSnareTechnique",
+    "Name": "Signal Snare",
+    "DisplayName": "Signal Snare",
+    "InternalName": "sw_sign_snar",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Strikes a single target, inflicting Disoriented for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 228,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "SignalSnareTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SignalSnareTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "SnapRushTechnique",
+    "Name": "Snap Rush",
+    "DisplayName": "Snap Rush",
+    "InternalName": "sw_snaprush",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "A burst of speed that restores 10 STM and grants +15% Haste for 15 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 229,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "SnapRushTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SnapRushTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "SonicShriekTechnique",
+    "Name": "Sonic Shriek",
+    "DisplayName": "Sonic Shriek",
+    "InternalName": "sw_soni_shri",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 18 sonic DMG plus WIL scaling in an 8m x 5m cone. Inflicts Disoriented for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 230,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "SonicShriekTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SonicShriekTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "StaticBurstTechnique",
+    "Name": "Static Burst",
+    "DisplayName": "Static Burst",
+    "InternalName": "sw_stat_burs",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 electrical DMG plus PER scaling to enemies within 4.5m of you and inflicts Shock for 30 seconds. It then arcs to up to 2 nearby enemies, dealing 10 electrical DMG plus PER scaling and inflicting Shock for 30 seconds on each.",
+    "Reference": "",
+    "BibleAnimationRow": 231,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "StaticBurstTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/StaticBurstTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "StaticWebTechnique",
+    "Name": "Static Web",
+    "DisplayName": "Static Web",
+    "InternalName": "sw_staticweb",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Shock on enemies within 4.5m of you for 30 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 232,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "StaticWebTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/StaticWebTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "StimCanisterTechnique",
+    "Name": "Stim Canister",
+    "DisplayName": "Stim Canister",
+    "InternalName": "sw_stim_cani",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deploys a stim canister that grants you and allies within 4m of you +10% Attack and +10% Haste for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 233,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "StimCanisterTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/StimCanisterTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "SuppressingShotTechnique",
+    "Name": "Suppressing Shot",
+    "DisplayName": "Suppressing Shot",
+    "InternalName": "sw_mim_suppr",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Dazed on enemies in a 10m x 2.5m line for 15 seconds. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 234,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "SuppressingShotTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SuppressingShotTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "SustainBurnTechnique",
+    "Name": "Sustain Burn",
+    "DisplayName": "Sustain Burn",
+    "InternalName": "sw_sust_burn",
+    "Category": "Mimicry",
+    "Type": "Stance",
+    "Description": "While active, your attacks inflict Poison for 30 seconds, dealing poison damage every 6 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 235,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "SustainBurnTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SustainBurnTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "TailSweepTechnique",
+    "Name": "Tail Sweep",
+    "DisplayName": "Tail Sweep",
+    "InternalName": "sw_tailsweep",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 18 physical DMG plus MGT scaling to enemies within 4.5m of you. Inflicts Dazed for 15 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 236,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "TailSweepTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/TailSweepTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Whirlwind"
+  },
+  {
+    "Id": "TerrifyingBellowTechnique",
+    "Name": "Terrifying Bellow",
+    "DisplayName": "Terrifying Bellow",
+    "InternalName": "sw_terr_bell",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Dazed on enemies within 6m of you for 15 seconds and interrupts their current actions. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 237,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "TerrifyingBellowTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/TerrifyingBellowTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "ToxicCloudTechnique",
+    "Name": "Toxic Cloud",
+    "DisplayName": "Toxic Cloud",
+    "InternalName": "sw_toxi_clou",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 28 poison DMG plus PER scaling to enemies in a 4.5m-radius area at the target location. Inflicts Toxin for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 238,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "ToxicCloudTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ToxicCloudTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "ToxicSpitTechnique",
+    "Name": "Toxic Spit",
+    "DisplayName": "Toxic Spit",
+    "InternalName": "sw_toxicspit",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 12 poison DMG plus PER scaling to a single target. Inflicts Poison for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 239,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "ToxicSpitTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ToxicSpitTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "VenomSprayTechnique",
+    "Name": "Venom Spray",
+    "DisplayName": "Venom Spray",
+    "InternalName": "sw_veno_spra",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Deals 18 poison DMG plus PER scaling in an 8m x 5m cone. Inflicts Poison for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 240,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "VenomSprayTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/VenomSprayTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "WardenClampTechnique",
+    "Name": "Warden Clamp",
+    "DisplayName": "Warden Clamp",
+    "InternalName": "sw_ward_clam",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Dazed on enemies within 5.5m of you for 15 seconds and generates 75 additional Enmity per target. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 241,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WardenClampTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenClampTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetTaunt"
+  },
+  {
+    "Id": "WardenMarkTechnique",
+    "Name": "Warden Mark",
+    "DisplayName": "Warden Mark",
+    "InternalName": "sw_ward_mark",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Marked on enemies within 5.5m of you for 30 seconds and generates 75 additional Enmity per target. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 242,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WardenMarkTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenMarkTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "FireForgetDodgeSide"
+  },
+  {
+    "Id": "WardenMaulTechnique",
+    "Name": "Warden Maul",
+    "DisplayName": "Warden Maul",
+    "InternalName": "sw_ward_maul",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Knocks down enemies within 5.5m of you for 6 seconds, pulls them to you, and generates 100 additional Enmity per target. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 243,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WardenMaulTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenMaulTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleThrust",
+    "SourceAnimation": "nwslasho",
+    "Profile": "Groundward force"
+  },
+  {
+    "Id": "WardenOrderTechnique",
+    "Name": "Warden Order",
+    "DisplayName": "Warden Order",
+    "InternalName": "sw_ward_orde",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Sounds a restorative order, healing you and allies within 5.5m of you for 15% of maximum HP.",
+    "Reference": "",
+    "BibleAnimationRow": 244,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WardenOrderTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenOrderTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "WardenRendTechnique",
+    "Name": "Warden Rend",
+    "DisplayName": "Warden Rend",
+    "InternalName": "sw_ward_rend",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Weakened on enemies within 5.5m of you for 30 seconds, restores 4 FP to you per hit, and generates 75 additional Enmity per target. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 245,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WardenRendTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenRendTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "WardenSweepTechnique",
+    "Name": "Warden Sweep",
+    "DisplayName": "Warden Sweep",
+    "InternalName": "sw_ward_swee",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Takes a retaliatory guard for 30 seconds, reflecting 20% of physical damage dealt to you back at the attacker.",
+    "Reference": "",
+    "BibleAnimationRow": 246,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WardenSweepTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenSweepTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "WardenWallTechnique",
+    "Name": "Warden Wall",
+    "DisplayName": "Warden Wall",
+    "InternalName": "sw_ward_wall",
+    "Category": "Mimicry",
+    "Type": "Stance",
+    "Description": "While active, you and allies within 10m gain +20% Defense and +20% Force Defense.",
+    "Reference": "",
+    "BibleAnimationRow": 247,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WardenWallTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenWallTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "WillFractureTechnique",
+    "Name": "Will Fracture",
+    "DisplayName": "Will Fracture",
+    "InternalName": "sw_will_frac",
+    "Category": "Mimicry",
+    "Type": "Combat",
+    "Description": "Inflicts Foggy Mind on enemies in a 5m x 5m cone for 30 seconds and restores 4 FP to you per hit. Deals no direct damage.",
+    "Reference": "",
+    "BibleAnimationRow": 248,
+    "PerkId": "CombatAnalyzer",
+    "Feats": [
+      "WillFractureTechnique"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WillFractureTechniqueAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "CastOutAnimation"
+  },
+  {
+    "Id": "DeadMansHand",
+    "Name": "Dead Man's Hand",
+    "DisplayName": "Dead Man's Hand",
+    "InternalName": "sw_deadhand",
+    "Category": "Pistol",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 30. If this critically hits, your next three ranged attacks have +20% Critical Rate and no extra attack delay.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff489b4948191ae682f2f17d1ba23",
+    "BibleAnimationRow": 52,
+    "PerkId": "DeadMansHand",
+    "Feats": [
+      "DeadMansHand1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/DeadMansHandAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "DisarmingShot",
+    "Name": "Disarming Shot",
+    "DisplayName": "Disarming Shot",
+    "InternalName": "sw_disa_shot",
+    "Category": "Pistol",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 18%.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff5571f5881918a8f6b9b5378bec4",
+    "BibleAnimationRow": 53,
+    "PerkId": "DisarmingShot",
+    "Feats": [
+      "DisarmingShot1",
+      "DisarmingShot2",
+      "DisarmingShot3",
+      "DisarmingShot4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/DisarmingShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "DoubleShot",
+    "Name": "Double Shot",
+    "DisplayName": "Double Shot",
+    "InternalName": "sw_doub_shot",
+    "Category": "Pistol",
+    "Type": "Combat",
+    "Description": "Fires twice for weapon DMG + 20 each. If either shot critically hits, restore 4 STM.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff37a1db08191bae5a69dbfa57476",
+    "BibleAnimationRow": 50,
+    "PerkId": "DoubleShot",
+    "Feats": [
+      "DoubleShot1",
+      "DoubleShot2",
+      "DoubleShot3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/DoubleShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleShot"
+  },
+  {
+    "Id": "FanTheHammer",
+    "Name": "Fan the Hammer",
+    "DisplayName": "Fan the Hammer",
+    "InternalName": "sw_fanhammer",
+    "Category": "Pistol",
+    "Type": "Combat",
+    "Description": "Fires at up to 3 enemies within 5m for weapon DMG + 26. Each hit has +12% Critical Rate.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff3f1963c8191a6a7e92cc6bd1d19",
+    "BibleAnimationRow": 51,
+    "PerkId": "FanTheHammer",
+    "Feats": [
+      "FanTheHammer1",
+      "FanTheHammer2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/FanTheHammerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "GamblerStance",
+    "Name": "Gambler Stance",
+    "DisplayName": "Gambler Stance",
+    "InternalName": "sw_gambl_stn",
+    "Category": "Pistol",
+    "Type": "Stance",
+    "Description": "While active, gain +12% Critical Rate, but non-critical hostile ranged abilities cost 2 additional STM.",
+    "Reference": "",
+    "BibleAnimationRow": 249,
+    "PerkId": "GamblerStance",
+    "Feats": [
+      "GamblerStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/GamblerStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "InterruptingShot",
+    "Name": "Interrupting Shot",
+    "DisplayName": "Interrupting Shot",
+    "InternalName": "sw_intr_shot",
+    "Category": "Pistol",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36. If the target is using an ability, also inflicts Disoriented for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff55ebe0c81918e686b927544c95e",
+    "BibleAnimationRow": 54,
+    "PerkId": "InterruptingShot",
+    "Feats": [
+      "InterruptingShot1",
+      "InterruptingShot2",
+      "InterruptingShot3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/InterruptingShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "LastWord",
+    "Name": "Last Word",
+    "DisplayName": "Last Word",
+    "InternalName": "sw_lastword",
+    "Category": "Pistol",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 35. For 45 seconds, evading an attack refreshes Snap Roll and quickens your next shot.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff7d3ae4c81918c21c16da3970181",
+    "BibleAnimationRow": 56,
+    "PerkId": "LastWord",
+    "Feats": [
+      "LastWord1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/LastWordAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "PointBlankBurst",
+    "Name": "Point Blank Burst",
+    "DisplayName": "Point Blank Burst",
+    "InternalName": "sw_ptblkbst",
+    "Category": "Pistol",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to enemies within 5m and grants Point Blank Burst, providing +15% Evasion for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff56613808191a298ad6413e3e2f5",
+    "BibleAnimationRow": 55,
+    "PerkId": "PointBlankBurst",
+    "Feats": [
+      "PointBlankBurst1",
+      "PointBlankBurst2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/PointBlankBurstAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "QuickDraw",
+    "Name": "Quick Draw",
+    "DisplayName": "Quick Draw",
+    "InternalName": "sw_quickdraw",
+    "Category": "Pistol",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. Has +18% Critical Rate if used within 30 seconds after switching targets.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff2c1b5c481919e430baf9844a155",
+    "BibleAnimationRow": 49,
+    "PerkId": "QuickDraw",
+    "Feats": [
+      "QuickDraw1",
+      "QuickDraw2",
+      "QuickDraw3",
+      "QuickDraw4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/QuickDrawAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "QuickDraw"
+  },
+  {
+    "Id": "SkirmisherStance",
+    "Name": "Skirmisher Stance",
+    "DisplayName": "Skirmisher Stance",
+    "InternalName": "sw_skirmstn",
+    "Category": "Pistol",
+    "Type": "Stance",
+    "Description": "While active, grants +15% Evasion and +10% Movement Speed, but reduces Attack by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 250,
+    "PerkId": "SkirmisherStance",
+    "Feats": [
+      "SkirmisherStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Pistol/SkirmisherStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "AimedShot",
+    "Name": "Aimed Shot",
+    "DisplayName": "Aimed Shot",
+    "InternalName": "sw_aimedshot",
+    "Category": "Rifle",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. If you have not attacked for 3 seconds, this deals +26 DMG.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff929e9f081919edfe50f6a9bc5bd",
+    "BibleAnimationRow": 57,
+    "PerkId": "AimedShot",
+    "Feats": [
+      "AimedShot1",
+      "AimedShot2",
+      "AimedShot3",
+      "AimedShot4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/AimedShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "CripplingShot",
+    "Name": "Crippling Shot",
+    "DisplayName": "Crippling Shot",
+    "InternalName": "sw_criplshot",
+    "Category": "Rifle",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 and inflicts Hamstring for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff959cff8819195f3e521c2094032",
+    "BibleAnimationRow": 62,
+    "PerkId": "CripplingShot",
+    "Feats": [
+      "CripplingShot1",
+      "CripplingShot2",
+      "CripplingShot3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/CripplingShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "Headshot",
+    "Name": "Headshot",
+    "DisplayName": "Headshot",
+    "InternalName": "sw_headshot",
+    "Category": "Rifle",
+    "Type": "Combat",
+    "Description": "Queues your next auto-attack to deal weapon DMG + 30. If Headshot is used after 3 seconds without attacking, that attack gains +25% Critical Rate.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff9421f988191a70ab53a7cecaebc",
+    "BibleAnimationRow": 60,
+    "PerkId": "Headshot",
+    "Feats": [
+      "Headshot1",
+      "Headshot2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/HeadshotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "Native queued weapon swing; PointPistol"
+  },
+  {
+    "Id": "KillBox",
+    "Name": "Kill Box",
+    "DisplayName": "Kill Box",
+    "InternalName": "sw_killbox",
+    "Category": "Rifle",
+    "Type": "Capstone",
+    "Description": "Target an enemy or location to deal weapon DMG + 20 to enemies within 8m and apply Kill Box for 45 seconds. While Kill Box remains, any player's ranged attacks against affected enemies add Suppression stacks lasting 30 seconds using the Kill Box caster's Suppressing Shot stack strength; each stack reduces Evasion by an additional 3%.",
+    "Reference": "",
+    "BibleAnimationRow": 251,
+    "PerkId": "KillBox",
+    "Feats": [
+      "KillBox1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/KillBoxAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "OneShot",
+    "Name": "One Shot",
+    "DisplayName": "One Shot",
+    "InternalName": "sw_oneshot",
+    "Category": "Rifle",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 50. If used after 3 seconds without attacking, gains +25% Critical Rate and ignores 25% Defense.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff9494ef08191b725662a6b7db435",
+    "BibleAnimationRow": 61,
+    "PerkId": "OneShot",
+    "Feats": [
+      "OneShot1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/OneShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "PiercingRound",
+    "Name": "Piercing Round",
+    "DisplayName": "Piercing Round",
+    "InternalName": "sw_pier_roun",
+    "Category": "Rifle",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 in a 20m x 3m line and ignores 20% Defense.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff93387f88191ba24c62c9810a099",
+    "BibleAnimationRow": 58,
+    "PerkId": "PiercingRound",
+    "Feats": [
+      "PiercingRound1",
+      "PiercingRound2",
+      "PiercingRound3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/PiercingRoundAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "SniperStance",
+    "Name": "Sniper Stance",
+    "DisplayName": "Sniper Stance",
+    "InternalName": "sw_sniperstn",
+    "Category": "Rifle",
+    "Type": "Stance",
+    "Description": "While active, long-range hostile ranged abilities deal +15% damage, but attack delay is increased by 15%.",
+    "Reference": "",
+    "BibleAnimationRow": 252,
+    "PerkId": "SniperStance",
+    "Feats": [
+      "SniperStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/SniperStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "SuppressingShot",
+    "Name": "Suppressing Shot",
+    "DisplayName": "Suppressing Shot",
+    "InternalName": "sw_supprshot",
+    "Category": "Rifle",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. Grants a Suppression stack for 30 seconds. Your Suppression stacks reduce Evasion by 5% each.",
+    "Reference": "",
+    "BibleAnimationRow": 253,
+    "PerkId": "SuppressingShot",
+    "Feats": [
+      "SuppressingShot1",
+      "SuppressingShot2",
+      "SuppressingShot3",
+      "SuppressingShot4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/SuppressingShotAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "SuppressionStance",
+    "Name": "Suppression Stance",
+    "DisplayName": "Suppression Stance",
+    "InternalName": "sw_supprstn",
+    "Category": "Rifle",
+    "Type": "Stance",
+    "Description": "While active, ranged attacks gain +10% Haste and add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, but critical damage is reduced by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 254,
+    "PerkId": "SuppressionStance",
+    "Feats": [
+      "SuppressionStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/SuppressionStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "SuppressiveLine",
+    "Name": "Suppressive Line",
+    "DisplayName": "Suppressive Line",
+    "InternalName": "sw_supprline",
+    "Category": "Rifle",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 in a 20m x 3m line. Targets hit by multiple Suppression stacks are Disoriented for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff93ab4f08191aca5d7136d5b2830",
+    "BibleAnimationRow": 59,
+    "PerkId": "SuppressiveLine",
+    "Feats": [
+      "SuppressiveLine1",
+      "SuppressiveLine2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Rifle/SuppressiveLineAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "PointPistol"
+  },
+  {
+    "Id": "CircleSlash",
+    "Name": "Circle Slash",
+    "DisplayName": "Circle Slash",
+    "InternalName": "sw_circslash",
+    "Category": "Saberstaff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 to enemies within 5m and grants +8 Ranged Deflection for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fed315eb4819195d121b9e931ee33",
+    "BibleAnimationRow": 30,
+    "PerkId": "CircleSlash",
+    "Feats": [
+      "CircleSlash1",
+      "CircleSlash2",
+      "CircleSlash3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/CircleSlashAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ConduitStance",
+    "Name": "Conduit Stance",
+    "DisplayName": "Conduit Stance",
+    "InternalName": "sw_condstn",
+    "Category": "Saberstaff",
+    "Type": "Stance",
+    "Description": "While active, Saberstaff abilities restore FP equal to 25% of STM spent and Force abilities restore STM equal to 25% of FP spent, but Attack and Force Attack are reduced by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 255,
+    "PerkId": "ConduitStance",
+    "Feats": [
+      "ConduitStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/ConduitStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "DoubleStrike",
+    "Name": "Double Strike",
+    "DisplayName": "Double Strike",
+    "InternalName": "sw_doub_stri",
+    "Category": "Saberstaff",
+    "Type": "Combat",
+    "Description": "Strikes twice for weapon DMG + 23 each. If both hits land, gain +5 FP.",
+    "Reference": "https://chatgpt.com/s/m_6a3fecf4fa2c81918c225fa425db24f2",
+    "BibleAnimationRow": 29,
+    "PerkId": "DoubleStrike",
+    "Feats": [
+      "DoubleStrike1",
+      "DoubleStrike2",
+      "DoubleStrike3",
+      "DoubleStrike4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/DoubleStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "FocusedArc",
+    "Name": "Focused Arc",
+    "DisplayName": "Focused Arc",
+    "InternalName": "sw_focus_arc",
+    "Category": "Saberstaff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. If FP and STM are both above 60%, this deals +10 DMG.",
+    "Reference": "https://chatgpt.com/s/m_6a3fed1db99c81918c206e57f8d9278d",
+    "BibleAnimationRow": 33,
+    "PerkId": "FocusedArc",
+    "Feats": [
+      "FocusedArc1",
+      "FocusedArc2",
+      "FocusedArc3",
+      "FocusedArc4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/FocusedArcAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "GuardedChannel",
+    "Name": "Guarded Channel",
+    "DisplayName": "Guarded Channel",
+    "InternalName": "sw_guar_chan",
+    "Category": "Saberstaff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 and grants +20% Defense while both FP and STM are above 40%.",
+    "Reference": "https://chatgpt.com/s/m_6a3fed2441348191876b215fa365c80b",
+    "BibleAnimationRow": 34,
+    "PerkId": "GuardedChannel",
+    "Feats": [
+      "GuardedChannel1",
+      "GuardedChannel2",
+      "GuardedChannel3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/GuardedChannelAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "InfiniteConduit",
+    "Name": "Infinite Conduit",
+    "DisplayName": "Infinite Conduit",
+    "InternalName": "sw_infcond",
+    "Category": "Saberstaff",
+    "Type": "Capstone",
+    "Description": "For 45 seconds, Saberstaff abilities restore FP equal to 50% of STM spent and Force abilities restore STM equal to 50% of FP spent. When both resources are above 70%, hostile combat abilities also deal +20 DMG.",
+    "Reference": "https://chatgpt.com/s/m_6a3fed0138f88191bce1e1ce63928598",
+    "BibleAnimationRow": 36,
+    "PerkId": "InfiniteConduit",
+    "Feats": [
+      "InfiniteConduit1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/InfiniteConduitAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "MaelstromArc",
+    "Name": "Maelstrom Arc",
+    "DisplayName": "Maelstrom Arc",
+    "InternalName": "sw_maelarc",
+    "Category": "Saberstaff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 in a 5m x 5m cone. If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 8 FP.",
+    "Reference": "https://chatgpt.com/s/m_6a3fed10e6e481919b13b472c15510a7",
+    "BibleAnimationRow": 31,
+    "PerkId": "MaelstromArc",
+    "Feats": [
+      "MaelstromArc1",
+      "MaelstromArc2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/MaelstromArcAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SaberCyclone",
+    "Name": "Saber Cyclone",
+    "DisplayName": "Saber Cyclone",
+    "InternalName": "sw_sabe_cycl",
+    "Category": "Saberstaff",
+    "Type": "Capstone",
+    "Description": "For 45 seconds, area combat abilities restore 4 FP and grant +8 Ranged Deflection for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fed37bd988191b63f6fb90f4504b4",
+    "BibleAnimationRow": 32,
+    "PerkId": "SaberCyclone",
+    "Feats": [
+      "SaberCyclone1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/SaberCycloneAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SeverFocus",
+    "Name": "Sever Focus",
+    "DisplayName": "Sever Focus",
+    "InternalName": "sw_seve_focu",
+    "Category": "Saberstaff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30. If either FP or STM is above 80%, drains 8 of that resource from the target.",
+    "Reference": "https://chatgpt.com/s/m_6a3fed2c09788191a4341f85af19a06f",
+    "BibleAnimationRow": 35,
+    "PerkId": "SeverFocus",
+    "Feats": [
+      "SeverFocus1",
+      "SeverFocus2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/SeverFocusAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "TempestStance",
+    "Name": "Tempest Stance",
+    "DisplayName": "Tempest Stance",
+    "InternalName": "sw_tempe_stn",
+    "Category": "Saberstaff",
+    "Type": "Stance",
+    "Description": "While active, area combat abilities gain +10% damage and +5 Ranged Deflection for 30 seconds, but single-target damage is reduced by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 256,
+    "PerkId": "TempestStance",
+    "Feats": [
+      "TempestStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Saberstaff/TempestStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "CripplingDefense",
+    "Name": "Crippling Defense",
+    "DisplayName": "Crippling Defense",
+    "InternalName": "sw_crip_defe",
+    "Category": "Spear",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 30. For 45 seconds, your high-STM abilities also inflict Exposed for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 257,
+    "PerkId": "CripplingDefense",
+    "Feats": [
+      "CripplingDefense1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/CripplingDefenseAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "DisablingStrike",
+    "Name": "Disabling Strike",
+    "DisplayName": "Disabling Strike",
+    "InternalName": "sw_disa_stri",
+    "Category": "Spear",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. Inflicts Foggy Mind for 30 seconds, increasing ability costs.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe871140081918c87ef4e2429460a",
+    "BibleAnimationRow": 20,
+    "PerkId": "DisablingStrike",
+    "Feats": [
+      "DisablingStrike1",
+      "DisablingStrike2",
+      "DisablingStrike3",
+      "DisablingStrike4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/DisablingStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "DisruptionField",
+    "Name": "Disruption Field",
+    "DisplayName": "Disruption Field",
+    "InternalName": "sw_disr_fiel",
+    "Category": "Spear",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to enemies within 5m of you and inflicts Force Disruption for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe8905f688191b14ae04d2c3db16e",
+    "BibleAnimationRow": 22,
+    "PerkId": "DisruptionField",
+    "Feats": [
+      "DisruptionField1",
+      "DisruptionField2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/DisruptionFieldAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "Forcebane",
+    "Name": "Forcebane",
+    "DisplayName": "Forcebane",
+    "InternalName": "sw_forcebane",
+    "Category": "Spear",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 258,
+    "PerkId": "Forcebane",
+    "Feats": [
+      "Forcebane1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/ForcebaneAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "HamperingBarrage",
+    "Name": "Hampering Barrage",
+    "DisplayName": "Hampering Barrage",
+    "InternalName": "sw_hamp_barr",
+    "Category": "Spear",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 in a 5m x 5m cone and inflicts Hamstring for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe8b8c3848191a3aac508f6c58844",
+    "BibleAnimationRow": 24,
+    "PerkId": "HamperingBarrage",
+    "Feats": [
+      "HamperingBarrage1",
+      "HamperingBarrage2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/HamperingBarrageAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "InterruptionStrike",
+    "Name": "Interruption Strike",
+    "DisplayName": "Interruption Strike",
+    "InternalName": "sw_intr_stri",
+    "Category": "Spear",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36. If the target is using an ability, also drains 10 FP and STM.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe88072d48191a75a90cd774757b6",
+    "BibleAnimationRow": 21,
+    "PerkId": "InterruptionStrike",
+    "Feats": [
+      "InterruptionStrike1",
+      "InterruptionStrike2",
+      "InterruptionStrike3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/InterruptionStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "PerceptiveStance",
+    "Name": "Perceptive Stance",
+    "DisplayName": "Perceptive Stance",
+    "InternalName": "sw_perce_stn",
+    "Category": "Spear",
+    "Type": "Stance",
+    "Description": "While active, hostile abilities you land drain 2 FP and 2 STM, but your Defense is reduced by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 259,
+    "PerkId": "PerceptiveStance",
+    "Feats": [
+      "PerceptiveStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/PerceptiveStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SweepingFlank",
+    "Name": "Sweeping Flank",
+    "DisplayName": "Sweeping Flank",
+    "InternalName": "sw_swee_flan",
+    "Category": "Spear",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 to enemies within 5m. If you are beside or behind a target, that target takes +24 DMG.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe8b1d0c88191ab583f1203b76d96",
+    "BibleAnimationRow": 23,
+    "PerkId": "SweepingFlank",
+    "Feats": [
+      "SweepingFlank1",
+      "SweepingFlank2",
+      "SweepingFlank3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/SweepingFlankAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "VigorStance",
+    "Name": "Vigor Stance",
+    "DisplayName": "Vigor Stance",
+    "InternalName": "sw_vigorstn",
+    "Category": "Spear",
+    "Type": "Stance",
+    "Description": "While active, all outgoing damage is increased by 10%. Using any hostile combat ability costs 2 additional STM and grants +8% Evasion for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 260,
+    "PerkId": "VigorStance",
+    "Feats": [
+      "VigorStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/VigorStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "VigorThrust",
+    "Name": "Vigor Thrust",
+    "DisplayName": "Vigor Thrust",
+    "InternalName": "sw_vigo_thru",
+    "Category": "Spear",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38 and grants +12% Evasion for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 261,
+    "PerkId": "VigorThrust",
+    "Feats": [
+      "VigorThrust1",
+      "VigorThrust2",
+      "VigorThrust3",
+      "VigorThrust4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/VigorThrustAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "CrusherStance",
+    "Name": "Crusher Stance",
+    "DisplayName": "Crusher Stance",
+    "InternalName": "sw_crush_stn",
+    "Category": "Staff",
+    "Type": "Stance",
+    "Description": "While active, deal +15% damage to enemies affected by control effects, but your attack delay is increased by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 262,
+    "PerkId": "CrusherStance",
+    "Feats": [
+      "CrusherStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/CrusherStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "GroundQuake",
+    "Name": "Ground Quake",
+    "DisplayName": "Ground Quake",
+    "InternalName": "sw_grou_quak",
+    "Category": "Staff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 6 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff0488754819184e0403c1c74ae77",
+    "BibleAnimationRow": 47,
+    "PerkId": "GroundQuake",
+    "Feats": [
+      "GroundQuake1",
+      "GroundQuake2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/GroundQuakeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "LegSweep",
+    "Name": "Leg Sweep",
+    "DisplayName": "Leg Sweep",
+    "InternalName": "sw_legsweep",
+    "Category": "Staff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 and inflicts Knockdown for 6 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fefe794008191b8615bb2e87149ad",
+    "BibleAnimationRow": 40,
+    "PerkId": "LegSweep",
+    "Feats": [
+      "LegSweep1",
+      "LegSweep2",
+      "LegSweep3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/LegSweepAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "LineBreaker",
+    "Name": "Line Breaker",
+    "DisplayName": "Line Breaker",
+    "InternalName": "sw_line_brea",
+    "Category": "Staff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38 in an 8m x 3m line and inflicts Disoriented for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff00a3b6481918127ff80a66682d3",
+    "BibleAnimationRow": 41,
+    "PerkId": "LineBreaker",
+    "Feats": [
+      "LineBreaker1",
+      "LineBreaker2",
+      "LineBreaker3",
+      "LineBreaker4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/LineBreakerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "RibBreaker",
+    "Name": "Rib Breaker",
+    "DisplayName": "Rib Breaker",
+    "InternalName": "sw_rib_break",
+    "Category": "Staff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 and inflicts Dazed for 15 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff051ae6881918e2ad558fedf815a",
+    "BibleAnimationRow": 46,
+    "PerkId": "RibBreaker",
+    "Feats": [
+      "RibBreaker1",
+      "RibBreaker2",
+      "RibBreaker3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/RibBreakerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SentinelStance",
+    "Name": "Sentinel Stance",
+    "DisplayName": "Sentinel Stance",
+    "InternalName": "sw_senti_stn",
+    "Category": "Staff",
+    "Type": "Stance",
+    "Description": "While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%.",
+    "Reference": "",
+    "BibleAnimationRow": 263,
+    "PerkId": "SentinelStance",
+    "Feats": [
+      "SentinelStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/SentinelStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ShelterCircle",
+    "Name": "Shelter Circle",
+    "DisplayName": "Shelter Circle",
+    "InternalName": "sw_shel_circ",
+    "Category": "Staff",
+    "Type": "Combat",
+    "Description": "For 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff0114d788191a14c2825cb423b4b",
+    "BibleAnimationRow": 43,
+    "PerkId": "ShelterCircle",
+    "Feats": [
+      "ShelterCircle1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/ShelterCircleAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "Slam",
+    "Name": "Slam",
+    "DisplayName": "Slam",
+    "InternalName": "sw_slam",
+    "Category": "Staff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38. Targets affected by control effects take +26 DMG.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff0290324819199c87607d710dd83",
+    "BibleAnimationRow": 45,
+    "PerkId": "Slam",
+    "Feats": [
+      "Slam1",
+      "Slam2",
+      "Slam3",
+      "Slam4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/SlamAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SweepingGuard",
+    "Name": "Sweeping Guard",
+    "DisplayName": "Sweeping Guard",
+    "InternalName": "sw_swee_guar",
+    "Category": "Staff",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 16 to enemies within 5m and grants +20% Defense for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3feff0f6c08191ab91239ef0a61bd1",
+    "BibleAnimationRow": 42,
+    "PerkId": "SweepingGuard",
+    "Feats": [
+      "SweepingGuard1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/SweepingGuardAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "UnmovingCenter",
+    "Name": "Unmoving Center",
+    "DisplayName": "Unmoving Center",
+    "InternalName": "sw_unmo_cent",
+    "Category": "Staff",
+    "Type": "Capstone",
+    "Description": "For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Melee Deflection, and generate +30% Enmity.",
+    "Reference": "https://chatgpt.com/s/m_6a3feff740e081918630adc8a76cad6f",
+    "BibleAnimationRow": 44,
+    "PerkId": "UnmovingCenter",
+    "Feats": [
+      "UnmovingCenter1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/UnmovingCenterAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "Worldbreaker",
+    "Name": "Worldbreaker",
+    "DisplayName": "Worldbreaker",
+    "InternalName": "sw_worldbrk",
+    "Category": "Staff",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 35 to enemies within 5m of you. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ff01958588191844f832d8d688922",
+    "BibleAnimationRow": 48,
+    "PerkId": "Worldbreaker",
+    "Feats": [
+      "Worldbreaker1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Staff/WorldbreakerAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "ConcussiveToss",
+    "Name": "Concussive Toss",
+    "DisplayName": "Concussive Toss",
+    "InternalName": "sw_conc_toss",
+    "Category": "Throwing",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to enemies within 5m of you and inflicts Dazed for 15 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a40070080208191a579612616aaff9c",
+    "BibleAnimationRow": 65,
+    "PerkId": "ConcussiveToss",
+    "Feats": [
+      "ConcussiveToss1",
+      "ConcussiveToss2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/ConcussiveTossAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "ExplosiveToss",
+    "Name": "Explosive Toss",
+    "DisplayName": "Explosive Toss",
+    "InternalName": "sw_expl_toss",
+    "Category": "Throwing",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 32 to enemies in a 5m-radius area at the target location and inflicts Burn for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3ffe6945a08191bcf51a9e8427fd41",
+    "BibleAnimationRow": 63,
+    "PerkId": "ExplosiveToss",
+    "Feats": [
+      "ExplosiveToss1",
+      "ExplosiveToss2",
+      "ExplosiveToss3",
+      "ExplosiveToss4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/ExplosiveTossAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "FlashToss",
+    "Name": "Flash Toss",
+    "DisplayName": "Flash Toss",
+    "InternalName": "sw_flashtoss",
+    "Category": "Throwing",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 and inflicts Blind for 15 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a4007412ea48191b692312556342a6e",
+    "BibleAnimationRow": 64,
+    "PerkId": "FlashToss",
+    "Feats": [
+      "FlashToss1",
+      "FlashToss2",
+      "FlashToss3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/FlashTossAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "FlurryStance",
+    "Name": "Flurry Stance",
+    "DisplayName": "Flurry Stance",
+    "InternalName": "sw_flrystn",
+    "Category": "Throwing",
+    "Type": "Stance",
+    "Description": "While active, thrown attacks against bleeding targets gain +10% Haste, but your Defense is reduced by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 264,
+    "PerkId": "FlurryStance",
+    "Feats": [
+      "FlurryStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/FlurryStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "OrdnanceStance",
+    "Name": "Ordnance Stance",
+    "DisplayName": "Ordnance Stance",
+    "InternalName": "sw_ordna_stn",
+    "Category": "Throwing",
+    "Type": "Stance",
+    "Description": "While active, thrown area abilities deal +10% damage, but single-target thrown damage is reduced by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 265,
+    "PerkId": "OrdnanceStance",
+    "Feats": [
+      "OrdnanceStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/OrdnanceStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "PerfectFlurry",
+    "Name": "Perfect Flurry",
+    "DisplayName": "Perfect Flurry",
+    "InternalName": "sw_perf_flry",
+    "Category": "Throwing",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 30. Bleeding targets take +45 DMG and spread Bleed to enemies within 5m for 45 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 266,
+    "PerkId": "PerfectFlurry",
+    "Feats": [
+      "PerfectFlurry1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/PerfectFlurryAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "PiercingToss",
+    "Name": "Piercing Toss",
+    "DisplayName": "Piercing Toss",
+    "InternalName": "sw_pier_toss",
+    "Category": "Throwing",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 38 and inflicts Bleed for 60 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a40073b0444819197ab073f888024dd",
+    "BibleAnimationRow": 67,
+    "PerkId": "PiercingToss",
+    "Feats": [
+      "PiercingToss1",
+      "PiercingToss2",
+      "PiercingToss3",
+      "PiercingToss4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/PiercingTossAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "PinningToss",
+    "Name": "Pinning Toss",
+    "DisplayName": "Pinning Toss",
+    "InternalName": "sw_pinn_toss",
+    "Category": "Throwing",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 36 and inflicts Hamstring for 30 seconds. Bleeding targets also suffer Disoriented for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a40072b849c819185dda0a37c68b941",
+    "BibleAnimationRow": 68,
+    "PerkId": "PinningToss",
+    "Feats": [
+      "PinningToss1",
+      "PinningToss2",
+      "PinningToss3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/PinningTossAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "RainOfSteel",
+    "Name": "Rain of Steel",
+    "DisplayName": "Rain of Steel",
+    "InternalName": "sw_rainsteel",
+    "Category": "Throwing",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 20 to enemies within 5m of you. For 45 seconds, thrown area abilities leave fragmentation zones that deal 8 physical DMG every 6 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a40071269fc8191bcfe7a571de155ea",
+    "BibleAnimationRow": 66,
+    "PerkId": "RainOfSteel",
+    "Feats": [
+      "RainOfSteel1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/RainOfSteelAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "SeveringToss",
+    "Name": "Severing Toss",
+    "DisplayName": "Severing Toss",
+    "InternalName": "sw_seve_toss",
+    "Category": "Throwing",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30. Bleeding targets suffer Hemorrhage for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a400733b3b0819183b7edfbb348bc2d",
+    "BibleAnimationRow": 69,
+    "PerkId": "SeveringToss",
+    "Feats": [
+      "SeveringToss1",
+      "SeveringToss2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Throwing/SeveringTossAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ThrowGrenade"
+  },
+  {
+    "Id": "BladeVortex",
+    "Name": "Blade Vortex",
+    "DisplayName": "Blade Vortex",
+    "InternalName": "sw_blad_vort",
+    "Category": "Twin Blade",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to enemies within 5m. If this hits 3 or more enemies, restore 6 STM.",
+    "Reference": "https://chatgpt.com/s/m_6a3feb60a5f48191ab43313be342cfb3",
+    "BibleAnimationRow": 27,
+    "PerkId": "BladeVortex",
+    "Feats": [
+      "BladeVortex1",
+      "BladeVortex2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/BladeVortexAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "CrossCut",
+    "Name": "Cross Cut",
+    "DisplayName": "Cross Cut",
+    "InternalName": "sw_crosscut",
+    "Category": "Twin Blade",
+    "Type": "Combat",
+    "Description": "Instantly attacks twice, each for weapon DMG + 27. If both attacks hit, gain a stack of Momentum for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3feb52ed80819195c17d3ba5a7dab7",
+    "BibleAnimationRow": 25,
+    "PerkId": "CrossCut",
+    "Feats": [
+      "CrossCut1",
+      "CrossCut2",
+      "CrossCut3",
+      "CrossCut4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/CrossCutAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "CycloneStance",
+    "Name": "Cyclone Stance",
+    "DisplayName": "Cyclone Stance",
+    "InternalName": "sw_cyclo_stn",
+    "Category": "Twin Blade",
+    "Type": "Stance",
+    "Description": "While active, grants +15% Haste and +10% Attack, but reduces Defense by 20%.",
+    "Reference": "",
+    "BibleAnimationRow": 267,
+    "PerkId": "CycloneStance",
+    "Feats": [
+      "CycloneStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/CycloneStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "LaceratingTwinCut",
+    "Name": "Lacerating Twin Cut",
+    "DisplayName": "Lacerating Twin Cut",
+    "InternalName": "sw_lacer_cut",
+    "Category": "Twin Blade",
+    "Type": "Combat",
+    "Description": "Strikes twice for weapon DMG + 23 each and inflicts Bleed for 60 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 268,
+    "PerkId": "LaceratingTwinCut",
+    "Feats": [
+      "LaceratingTwinCut1",
+      "LaceratingTwinCut2",
+      "LaceratingTwinCut3",
+      "LaceratingTwinCut4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/LaceratingTwinCutAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "LaceratorStance",
+    "Name": "Lacerator Stance",
+    "DisplayName": "Lacerator Stance",
+    "InternalName": "sw_lacrstn",
+    "Category": "Twin Blade",
+    "Type": "Stance",
+    "Description": "While active, your attacks against bleeding targets deal +10% damage, but your Evasion is reduced by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 269,
+    "PerkId": "LaceratorStance",
+    "Feats": [
+      "LaceratorStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/LaceratorStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "RedBloom",
+    "Name": "Red Bloom",
+    "DisplayName": "Red Bloom",
+    "InternalName": "sw_redbloom",
+    "Category": "Twin Blade",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 20 to enemies within 5m. Bleeding enemies take +40 DMG and spread Hemorrhage for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 270,
+    "PerkId": "RedBloom",
+    "Feats": [
+      "RedBloom1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/RedBloomAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SerratedArc",
+    "Name": "Serrated Arc",
+    "DisplayName": "Serrated Arc",
+    "InternalName": "sw_serra_arc",
+    "Category": "Twin Blade",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 to enemies within 5m. Bleeding targets spread Bleed to one additional enemy within 5m.",
+    "Reference": "",
+    "BibleAnimationRow": 271,
+    "PerkId": "SerratedArc",
+    "Feats": [
+      "SerratedArc1",
+      "SerratedArc2",
+      "SerratedArc3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/SerratedArcAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "SpinningWhirl",
+    "Name": "Spinning Whirl",
+    "DisplayName": "Spinning Whirl",
+    "InternalName": "sw_spin_whir",
+    "Category": "Twin Blade",
+    "Type": "Combat",
+    "Description": "Attacks up to 3 enemies within 5m for weapon DMG + 30 each.",
+    "Reference": "https://chatgpt.com/s/m_6a3feb595e8881919865af1495a6aadf",
+    "BibleAnimationRow": 26,
+    "PerkId": "SpinningWhirl",
+    "Feats": [
+      "SpinningWhirl1",
+      "SpinningWhirl2",
+      "SpinningWhirl3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/SpinningWhirlAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "TempestBloom",
+    "Name": "Tempest Bloom",
+    "DisplayName": "Tempest Bloom",
+    "InternalName": "sw_temp_bloo",
+    "Category": "Twin Blade",
+    "Type": "Capstone",
+    "Description": "Deal weapon DMG + 25 to enemies within 5m. For 45 seconds, each hostile area ability that lands creates one immediate pulse for 8 physical DMG to enemies within 5m of its first struck target.",
+    "Reference": "https://chatgpt.com/s/m_6a3feb6f01608191afeabf6292bfb388",
+    "BibleAnimationRow": 28,
+    "PerkId": "TempestBloom",
+    "Feats": [
+      "TempestBloom1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/TempestBloomAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "TwinRupture",
+    "Name": "Twin Rupture",
+    "DisplayName": "Twin Rupture",
+    "InternalName": "sw_twin_rupt",
+    "Category": "Twin Blade",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 32. Bleeding targets suffer Hemorrhage for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 272,
+    "PerkId": "TwinRupture",
+    "Feats": [
+      "TwinRupture1",
+      "TwinRupture2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/TwinBlade/TwinRuptureAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "BerserkerStance",
+    "Name": "Berserker Stance",
+    "DisplayName": "Berserker Stance",
+    "InternalName": "sw_berse_stn",
+    "Category": "Vibroblade",
+    "Type": "Stance",
+    "Description": "While active, grants +25% Attack, +15% Haste, -20% Defense, and -20% Force Defense.",
+    "Reference": "",
+    "BibleAnimationRow": 273,
+    "PerkId": "BerserkerStance",
+    "Feats": [
+      "BerserkerStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/BerserkerStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "OneHandedStance"
+  },
+  {
+    "Id": "CoveringStrike",
+    "Name": "Covering Strike",
+    "DisplayName": "Covering Strike",
+    "InternalName": "sw_coverings",
+    "Category": "Vibroblade",
+    "Type": "Combat",
+    "Description": "Strike all enemies within 5m for weapon DMG + 30. Enemies hit generate +25% Enmity toward you for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fde0e8a34819181290c21cdf5dc91",
+    "BibleAnimationRow": 4,
+    "PerkId": "CoveringStrike",
+    "Feats": [
+      "CoveringStrike1",
+      "CoveringStrike2",
+      "CoveringStrike3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/CoveringStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "sw_coverings"
+  },
+  {
+    "Id": "DefensiveStance",
+    "Name": "Defensive Stance",
+    "DisplayName": "Defensive Stance",
+    "InternalName": "sw_defstn",
+    "Category": "Vibroblade",
+    "Type": "Stance",
+    "Description": "While active, grants +30% Enmity generation, +20% Defense and +20% Force Defense, -20% Attack, and -20% Force Attack.",
+    "Reference": "",
+    "BibleAnimationRow": 274,
+    "PerkId": "DefensiveStance",
+    "Feats": [
+      "DefensiveStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/DefensiveStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "ShieldWall"
+  },
+  {
+    "Id": "Invincible",
+    "Name": "Invincible",
+    "DisplayName": "Invincible",
+    "InternalName": "sw_invincibl",
+    "Category": "Vibroblade",
+    "Type": "Capstone",
+    "Description": "For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Dazed.",
+    "Reference": "https://chatgpt.com/s/m_6a3fde75a0d48191afd875e8ee2478e4",
+    "BibleAnimationRow": 5,
+    "PerkId": "Invincible",
+    "Feats": [
+      "Invincible1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/InvincibleAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "sw_invincibl"
+  },
+  {
+    "Id": "RendingStrike",
+    "Name": "Rending Strike",
+    "DisplayName": "Rending Strike",
+    "InternalName": "sw_rendingst",
+    "Category": "Vibroblade",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 32. Inflicts Exposed which reduces Defense by 15% for 30 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fdf4096e48191a17110bd8b912105",
+    "BibleAnimationRow": 7,
+    "PerkId": "RendingStrike",
+    "Feats": [
+      "RendingStrike1",
+      "RendingStrike2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/RendingStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "sw_rendingst"
+  },
+  {
+    "Id": "RiotBlade",
+    "Name": "Riot Blade",
+    "DisplayName": "Riot Blade",
+    "InternalName": "sw_riotblade",
+    "Category": "Vibroblade",
+    "Type": "Combat",
+    "Description": "On your next hit, deal weapon DMG + 25.",
+    "Reference": "https://chatgpt.com/s/m_6a3fdf350b2c8191afe4955dd4f3799e",
+    "BibleAnimationRow": 6,
+    "PerkId": "RiotBlade",
+    "Feats": [
+      "RiotBlade1",
+      "RiotBlade2",
+      "RiotBlade3",
+      "RiotBlade4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/RiotBladeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "sw_riotblade"
+  },
+  {
+    "Id": "SavageCleave",
+    "Name": "Savage Cleave",
+    "DisplayName": "Savage Cleave",
+    "InternalName": "sw_savagecle",
+    "Category": "Vibroblade",
+    "Type": "Combat",
+    "Description": "Deal weapon DMG + 20 in a 5m radius around you and restore 2 STM per secondary target hit.",
+    "Reference": "https://chatgpt.com/s/m_6a3fdf48482c81918a027a9a66430b3c",
+    "BibleAnimationRow": 8,
+    "PerkId": "SavageCleave",
+    "Feats": [
+      "SavageCleave1",
+      "SavageCleave2",
+      "SavageCleave3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/SavageCleaveAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "sw_savagecle"
+  },
+  {
+    "Id": "ShieldBash",
+    "Name": "Shield Bash",
+    "DisplayName": "Shield Bash",
+    "InternalName": "sw_shieldbas",
+    "Category": "Vibroblade",
+    "Type": "Combat",
+    "Description": "On your next hit, deal weapon DMG and an additional instance of damage equal to 10% of your Physical Defense.",
+    "Reference": "https://chatgpt.com/s/m_6a3fdd47b8f88191a44d7c29b566f837",
+    "BibleAnimationRow": 2,
+    "PerkId": "ShieldBash",
+    "Feats": [
+      "ShieldBash1",
+      "ShieldBash2",
+      "ShieldBash3",
+      "ShieldBash4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/ShieldBashAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "sw_shieldbas"
+  },
+  {
+    "Id": "ShieldWall",
+    "Name": "Shield Wall",
+    "DisplayName": "Shield Wall",
+    "InternalName": "sw_shieldwal",
+    "Category": "Vibroblade",
+    "Type": "Combat",
+    "Description": "Channel for up to 30 seconds. While channeling you and any allies within 5m gain 35% damage reduction.",
+    "Reference": "https://chatgpt.com/s/m_6a3fdd84a41c8191ab3fcad9d97786f7",
+    "BibleAnimationRow": 3,
+    "PerkId": "ShieldWall",
+    "Feats": [
+      "ShieldWall1",
+      "ShieldWall2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/ShieldWallAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "sw_shieldwal"
+  },
+  {
+    "Id": "AssassinsStance",
+    "Name": "Assassin's Stance",
+    "DisplayName": "Assassin's Stance",
+    "InternalName": "sw_assnstn",
+    "Category": "Vibroknife",
+    "Type": "Stance",
+    "Description": "While active, grants +20% Poison Damage, but reduces Attack by 10%.",
+    "Reference": "",
+    "BibleAnimationRow": 275,
+    "PerkId": "AssassinsStance",
+    "Feats": [
+      "AssassinsStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/AssassinsStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "Backstab",
+    "Name": "Backstab",
+    "DisplayName": "Backstab",
+    "InternalName": "sw_backstab",
+    "Category": "Vibroknife",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 25. If you are behind your target, deal an additional +20 DMG and inflict Knockdown for 6 seconds.",
+    "Reference": "https://chatgpt.com/s/m_6a3fe24b167c8191bd0127d264800c95",
+    "BibleAnimationRow": 9,
+    "PerkId": "Backstab",
+    "Feats": [
+      "Backstab1",
+      "Backstab2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/BackstabAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "CripplingSlice",
+    "Name": "Crippling Slice",
+    "DisplayName": "Crippling Slice",
+    "InternalName": "sw_crip_slic",
+    "Category": "Vibroknife",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 28 and inflicts Exposed for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 276,
+    "PerkId": "CripplingSlice",
+    "Feats": [
+      "CripplingSlice1",
+      "CripplingSlice2",
+      "CripplingSlice3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/CripplingSliceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "EscapeArtist",
+    "Name": "Escape Artist",
+    "DisplayName": "Escape Artist",
+    "InternalName": "sw_esca_arti",
+    "Category": "Vibroknife",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 30 and Blinds the target for 12 seconds and grants Invisibility for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 277,
+    "PerkId": "EscapeArtist",
+    "Feats": [
+      "EscapeArtist1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/EscapeArtistAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "PathogenStrike",
+    "Name": "Pathogen Strike",
+    "DisplayName": "Pathogen Strike",
+    "InternalName": "sw_path_stri",
+    "Category": "Vibroknife",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 19. Extends your Venom and Infection effects on the target by 6 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 278,
+    "PerkId": "PathogenStrike",
+    "Feats": [
+      "PathogenStrike1",
+      "PathogenStrike2",
+      "PathogenStrike3",
+      "PathogenStrike4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/PathogenStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike; Native queued weapon swing"
+  },
+  {
+    "Id": "ShadowflowStance",
+    "Name": "Shadowflow Stance",
+    "DisplayName": "Shadowflow Stance",
+    "InternalName": "sw_shadf_stn",
+    "Category": "Vibroknife",
+    "Type": "Stance",
+    "Description": "While active, your Vibroknife auto-attacks inflict Hamstring for 18 seconds, but your Defense is reduced by 20%.",
+    "Reference": "",
+    "BibleAnimationRow": 279,
+    "PerkId": "ShadowflowStance",
+    "Feats": [
+      "ShadowflowStance1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowStanceAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "VeiledStrike",
+    "Name": "Veiled Strike",
+    "DisplayName": "Veiled Strike",
+    "InternalName": "sw_veil_stri",
+    "Category": "Vibroknife",
+    "Type": "Combat",
+    "Description": "On your next attack, deal +16 DMG and an additional +12 DMG if the target is inflicted with Exposed.",
+    "Reference": "",
+    "BibleAnimationRow": 280,
+    "PerkId": "VeiledStrike",
+    "Feats": [
+      "VeiledStrike1",
+      "VeiledStrike2",
+      "VeiledStrike3",
+      "VeiledStrike4"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/VeiledStrikeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike; Native queued weapon swing"
+  },
+  {
+    "Id": "ViralCascade",
+    "Name": "Viral Cascade",
+    "DisplayName": "Viral Cascade",
+    "InternalName": "sw_vira_casc",
+    "Category": "Vibroknife",
+    "Type": "Capstone",
+    "Description": "Deals weapon DMG + 30, deals an additional +20 DMG if the target is inflicted with your Venom and +8 DMG per stack of your Infection on the target. Consumes your Venom and Infection stacks from the target.",
+    "Reference": "",
+    "BibleAnimationRow": 281,
+    "PerkId": "ViralCascade",
+    "Feats": [
+      "ViralCascade1"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ViralCascadeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  },
+  {
+    "Id": "VirulentBlade",
+    "Name": "Virulent Blade",
+    "DisplayName": "Virulent Blade",
+    "InternalName": "sw_viru_blad",
+    "Category": "Vibroknife",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 16. Inflicts Venom for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 282,
+    "PerkId": "VirulentBlade",
+    "Feats": [
+      "VirulentBlade1",
+      "VirulentBlade2",
+      "VirulentBlade3"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/VirulentBladeAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike; Native queued weapon swing"
+  },
+  {
+    "Id": "VolatileCompound",
+    "Name": "Volatile Compound",
+    "DisplayName": "Volatile Compound",
+    "InternalName": "sw_vola_comp",
+    "Category": "Vibroknife",
+    "Type": "Combat",
+    "Description": "Deals weapon DMG + 30 and inflicts -25 Poison Resistance for 30 seconds.",
+    "Reference": "",
+    "BibleAnimationRow": 283,
+    "PerkId": "VolatileCompound",
+    "Feats": [
+      "VolatileCompound1",
+      "VolatileCompound2"
+    ],
+    "DefinitionFiles": [
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/VolatileCompoundAbilityDefinition.cs"
+    ],
+    "CurrentPlayback": "DoubleStrike"
+  }
+]

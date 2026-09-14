@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 569
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -143,7 +163,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -360,7 +380,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -577,7 +597,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -794,7 +814,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -1011,7 +1031,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -1228,7 +1248,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -1445,7 +1465,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -1662,7 +1682,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -1879,7 +1899,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -2096,7 +2116,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -2313,7 +2333,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -2530,7 +2550,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte vitrée"
+            "2": "Glass Door"
           }
         },
         "OnClick": {
@@ -2982,7 +3002,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Militia Station",
-            "2": "Poste de Police"
+            "2": "Militia Station"
           }
         },
         "OnClick": {
@@ -3408,7 +3428,7 @@
           "id": 14565,
           "type": "cexolocstring",
           "value": {
-            "2": "Une borne taillée avec soin indiquant un endroit intéressant."
+            "2": "A carefully carved marker indicating an interesting location."
           }
         },
         "DisarmDC": {
@@ -3459,8 +3479,8 @@
           "id": 14561,
           "type": "cexolocstring",
           "value": {
-            "0": "Mining Guild",
-            "2": "Guilde des marchands"
+            "0": "Merchants Guild",
+            "2": "Merchants Guild"
           }
         },
         "OnClick": {
@@ -16962,7 +16982,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -17189,8 +17209,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Moisture Vaporator",
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -17417,7 +17437,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -23445,7 +23465,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -23715,7 +23735,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Industries - Divers"
+            "2": "Industrial - Miscellaneous"
           }
         },
         "Looping": {
@@ -24225,7 +24245,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -24360,7 +24380,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Décolage"
+            "2": "Starship - Takeoff"
           }
         },
         "Looping": {
@@ -24481,7 +24501,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Atterrissage"
+            "2": "Starship - Landing"
           }
         },
         "Looping": {

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 7.0
+    "value": 9.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 12
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 198
+    "value": 247
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 17
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vellen_claw"
+          "value": "velflesheater_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "flesheater_skin"
+          "value": "velflesheater_sk"
         }
       }
     ]
@@ -113,6 +113,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
+        }
       }
     ]
   },
@@ -136,11 +150,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 198
+    "value": 239
   },
   "Int": {
     "type": "byte",
-    "value": 14
+    "value": 17
   },
   "Interruptable": {
     "type": "byte",
@@ -170,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 222
+    "value": 247
   },
   "NaturalAC": {
     "type": "byte",
@@ -467,38 +481,7 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 274
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 871
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
@@ -506,7 +489,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 18
+    "value": 12
   },
   "Subrace": {
     "type": "cexostring",
@@ -622,6 +605,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 21
   }
 }

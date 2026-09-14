@@ -17,21 +17,19 @@ All builders use a fluent interface, allowing method chaining for clean, readabl
 
 **Location**: `Service/AbilityService/AbilityBuilder.cs`
 
-The AbilityBuilder is used to create player abilities and combat skills. It's one of the most complex builders, supporting various ability types including casted abilities, weapon abilities, and concentration abilities.
+The AbilityBuilder is used to create player abilities and combat skills. It's one of the most complex builders, supporting casted abilities and weapon-triggered abilities.
 
 #### Basic Usage
 
 ```csharp
 var builder = new AbilityBuilder();
-builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-    .Name("Force Lightning I")
+builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+    .Name("Smoke Bomb")
     .Level(1)
-    .HasRecastDelay(RecastGroup.ForceLightning, 30f)
     .HasActivationDelay(2f)
-    .HasMaxRange(30.0f)
+    .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
     .IsCastedAbility()
     .IsHostileAbility()
-    .UsesAnimation(Animation.LoopingConjure1)
     .HasImpactAction(ImpactAction);
 ```
 
@@ -42,7 +40,6 @@ builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
 - **Level(int)** - Set the ability level
 - **IsCastedAbility()** - Mark as a casted ability with delay
 - **IsWeaponAbility()** - Mark as a weapon-triggered ability
-- **IsConcentrationAbility(StatusEffectType)** - Mark as a concentration ability
 - **HasRecastDelay(RecastGroup, float)** - Set cooldown timer
 - **HasActivationDelay(float)** - Set casting time
 - **HasMaxRange(float)** - Set maximum range
@@ -52,20 +49,18 @@ builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
 - **RequirementFP(int)** - Set Force Point cost
 - **RequirementStamina(int)** - Set Stamina cost
 
-#### Example from ForceLightningAbilityDefinition.cs
+#### Example from SmokeBombAbilityDefinition.cs
 
 ```csharp
-private static void ForceLightning1(AbilityBuilder builder)
+private static void SmokeBomb(AbilityBuilder builder)
 {
-    builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-        .Name("Force Lightning I")
+    builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+        .Name("Smoke Bomb")
         .Level(1)
-        .HasRecastDelay(RecastGroup.ForceLightning, 30f)
         .HasActivationDelay(2f)
-        .HasMaxRange(30.0f)
+        .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
         .IsCastedAbility()
         .IsHostileAbility()
-        .UsesAnimation(Animation.LoopingConjure1)
         .HasImpactAction(ImpactAction);
 }
 ```
@@ -80,9 +75,9 @@ The PerkBuilder creates player perks that can be purchased with skill points. Pe
 
 ```csharp
 var builder = new PerkBuilder();
-builder.Create(PerkCategoryType.Force, PerkType.ForceLightning)
-    .Name("Force Lightning")
-    .Description("Unleash devastating lightning from your fingertips.")
+builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
+    .Name("Anger Strike")
+    .Description("A defensive heavy vibroblade strike that generates enmity.")
     .AddPerkLevel()
     .Price(1)
     .Description("Deals electrical damage to enemies.")
@@ -255,29 +250,11 @@ builder.Create("xwing_item")
 - **CapitalShip()** - Mark as capital ship
 - **RequirePerk(PerkType, int)** - Set required pilot level
 
-### 9. StatusEffectBuilder
+### 9. Status Effects
 
-**Location**: `Service/StatusEffectService/StatusEffectBuilder.cs`
+**Location**: `Feature/StatusEffectDefinition`
 
-The StatusEffectBuilder creates status effects that can be applied to creatures.
-
-#### Basic Usage
-
-```csharp
-var builder = new StatusEffectBuilder();
-builder.Create(StatusEffectType.ForceLightning)
-    .Name("Force Lightning")
-    .CanStack()
-    .TickAction((target, effectData) => {
-        // Damage over time logic
-    });
-```
-
-#### Key Methods
-
-- **Create(StatusEffectType)** - Initialize status effect
-- **Name(string)** - Set effect name
-- **CanStack()** - Allow multiple instances
+Status effects are concrete `StatusEffectBase` classes. Define the effect's icon, stat changes, replacement rules, and tick/apply/remove behavior on the status effect class itself.
 - **TickAction(StatusEffectTickAction)** - Set periodic effect
 
 ### 10. DialogBuilder
@@ -434,6 +411,48 @@ builder.Create("rat_loot")
 - **IsRare()** - Mark as rare loot table
 - **AddItem(string, int, int, int)** - Add item with chance and quantity range
 
+### 17. GuiWindowBuilder
+
+**Location**: `Service/GuiService/GuiWindowBuilder.cs`
+
+The GuiWindowBuilder creates NUI windows (definition + partial views) for the MVVM GUI
+layer. Windows also need a `GuiWindowType` enum entry and a ViewModel deriving
+`GuiViewModelBase<TDerived, TPayload>`.
+
+#### Basic Usage
+
+```csharp
+var builder = new GuiWindowBuilder<ExampleViewModel>();
+var window = builder.CreateWindow(GuiWindowType.Example)
+    .SetInitialGeometry(0, 0, 900f, 560f)
+    .SetTitle("Example")
+    .SetIsResizable(true)
+    .DefinePartialView(ExampleViewModel.FirstTabPartial, AddFirstTab);
+
+// The only root layout shape proven to track window geometry (rule R5):
+window.AddStandardLayout(layout =>
+{
+    layout.SetTabPanelHeight(48f);
+    layout.AddTabRow(row => { /* toggles row */ });
+    layout.SetContentPartialElement(ExampleViewModel.TabContentElement);
+    layout.AddSideColumn(AddSideRail, 240f);
+});
+
+return builder.Build();
+```
+
+#### Key Methods
+
+- **CreateWindow(GuiWindowType)** - Initialize the window (returns `GuiWindow<T>`)
+- **SetInitialGeometry / SetTitle / SetIsResizable / SetIsCollapsible** - Window chrome
+- **DefinePartialView(string, Action<GuiGroup<T>>)** - Declare a swappable layout
+- **AddStandardLayout(Action<GuiStandardLayoutConfig<T>>)** - Emit the proven tab/content/rail shape (`GuiStandardLayout` extension)
+- **AddLeadingColumn / AddSideColumn** - Place fixed or flexible rails before or after the standard content column
+- **Build()** - Normalize and validate the root, log confirmed findings, and return the constructed window
+
+Full guide: `GuiWindowAuthoring.md`. Layout rules: `NuiLayoutRules.md`. Living widget
+reference: the DebugNuiGallery window (`/nuigallery`).
+
 ## Best Practices
 
 1. **Always call Build()** - Most builders require calling Build() to return the final result
@@ -448,10 +467,9 @@ builder.Create("rat_loot")
 
 ```csharp
 var builder = new AbilityBuilder();
-ForceLightning1(builder);
-ForceLightning2(builder);
-ForceLightning3(builder);
-ForceLightning4(builder);
+AngerStrike(builder);
+BloodWeapon(builder);
+FortressStrike(builder);
 return builder.Build();
 ```
 
@@ -459,14 +477,14 @@ return builder.Build();
 
 ```csharp
 var builder = new PerkBuilder();
-builder.Create(PerkCategoryType.Force, PerkType.ForceLightning)
-    .Name("Force Lightning");
+builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
+    .Name("Anger Strike");
 
 if (isActive)
 {
     builder.AddPerkLevel()
         .Price(1)
-        .Description("Basic lightning attack");
+        .Description("Defensive heavy vibroblade strike");
 }
 ```
 
@@ -479,4 +497,4 @@ ConfigureManaPotion(itemBuilder);
 return itemBuilder.Build();
 ```
 
-This documentation covers all the major builders in the SWLOR.Game.Server project. Each builder follows the fluent interface pattern and provides a clean, readable way to create complex game objects. 
+This documentation covers all the major builders in the SWLOR.Game.Server project. Each builder follows the fluent interface pattern and provides a clean, readable way to create complex game objects.

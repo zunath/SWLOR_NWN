@@ -131,8 +131,8 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Revêtement de droïde éboueur",
-      "2": "Revêtement de droïde mécano"
+      "0": "Droid Scavenger Plating",
+      "2": "Droid Mechanic Plating"
     }
   },
   "Metal1Color": {
@@ -170,6 +170,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "arm_dromecano001"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xArmorPart_Belt": {
     "type": "word",

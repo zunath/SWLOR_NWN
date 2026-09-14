@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -39,22 +37,8 @@ namespace SWLOR.Game.Server.Service
 
             var skill = Skill.GetSkillTypeByBaseItem(baseItemType);
             if (skill == SkillType.Invalid) return;
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var levelDelta = dbPlayer.Skills[SkillType.Force].Rank - dbPlayer.Skills[skill].Rank;
 
             AddCombatPoint(player, target, skill);
-
-            // Lightsabers and Saberstaffs automatically grant combat points toward Force if player has the setting enabled.
-            // Additionally, a force combat point is only added if the force skill is not 5 more levels above the one-handed or two-handed skill being used.
-            if ((Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
-                Item.SaberstaffBaseItemTypes.Contains(baseItemType)) &&
-                dbPlayer.CharacterType == CharacterType.ForceSensitive &&
-                dbPlayer.Settings.IsLightsaberForceShareEnabled &&
-                levelDelta <= 5)
-            {
-                AddCombatPoint(player, target, SkillType.Force);
-            }
 
             // If player has a beast active, add a combat point for Beast Mastery.
             var associate = GetAssociate(AssociateType.Henchman, player);
@@ -105,6 +89,8 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(player) ||
                         !GetIsPC(player) ||
                         GetIsDM(player) ||
+                        GetIsDead(player) ||
+                        GetCurrentHitPoints(player) <= 0 ||
                         GetDistanceBetween(player, npc) > 40.0f ||
                         GetArea(player) != GetArea(npc))
                         continue;
@@ -256,6 +242,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Returns true if the player has already earned any combat points against the given creature,
+        /// i.e. they are actively participating in the fight with it.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <param name="creature">The creature to check against.</param>
+        public static bool HasCombatPoints(uint player, uint creature)
+        {
+            return _creatureCombatPointTracker.TryGetValue(creature, out var byPlayer) &&
+                   byPlayer.ContainsKey(player);
+        }
+
+        /// <summary>
         /// Updates the level of the last creature associated with an added combat point.
         /// Also refreshes the expiration time by 2 minutes.
         /// </summary>
@@ -306,7 +304,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to check for tagged NPCs.</param>
         /// <returns>
-        /// Number of creatures tagged by the player. 
+        /// Number of creatures tagged by the player.
         /// 0 is none, -1 if the player is not initialized in the playerToCreatureTracker.
         /// </returns>
         public static int GetTaggedCreatureCount(uint player)

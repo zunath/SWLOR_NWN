@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CombatService;
@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service
     public static class Craft
     {
         public const int MaxResearchLevel = 10;
+        public const int RecipeSkillUnlockOffset = 3;
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Service
                     _activeCategories[category] = categoryDetail;
                 }
             }
-            
+
             Console.WriteLine($"Loaded {_allCategories.Count} recipe category types.");
         }
 
@@ -90,10 +91,10 @@ namespace SWLOR.Game.Server.Service
                         recipe.IsItemIntendedForCrafting = true;
                     }
                 }
-                
+
                 DestroyObject(item);
             }
-            
+
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IRecipeListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -170,7 +171,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
-            
+
             Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
@@ -189,10 +190,10 @@ namespace SWLOR.Game.Server.Service
                 var detail = type.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>();
                 _enhancementSubTypes[type] = detail;
             }
-            
+
             Console.WriteLine($"Loaded {_enhancementSubTypes.Count} enhancement sub types.");
         }
-        
+
         /// <summary>
         /// Retrieves the details about a recipe.
         /// If recipe type has not been registered, an exception will be raised.
@@ -319,6 +320,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Calculates the skill rank required to craft a recipe.
+        /// </summary>
+        /// <param name="recipe">The recipe to check.</param>
+        /// <returns>The required skill rank.</returns>
+        public static int GetRequiredSkillRankForRecipe(RecipeDetail recipe)
+        {
+            var requiredRank = recipe.Level - RecipeSkillUnlockOffset;
+            return Math.Max(requiredRank, 0);
+        }
+
+        private static string CheckRecipeSkillRequirement(uint player, RecipeDetail recipe)
+        {
+            var requiredRank = GetRequiredSkillRankForRecipe(recipe);
+            if (requiredRank <= 0)
+                return string.Empty;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var skillRank = dbPlayer.Skills.TryGetValue(recipe.Skill, out var skill)
+                ? skill.Rank
+                : 0;
+
+            return skillRank >= requiredRank
+                ? string.Empty
+                : $"{Skill.GetSkillDetails(recipe.Skill).Name} must be level {requiredRank}.";
+        }
+
+        /// <summary>
         /// Retrieves all of the researchable recipes associated with a skill and category.
         /// </summary>
         /// <param name="skill">The skill to search by.</param>
@@ -386,6 +415,16 @@ namespace SWLOR.Game.Server.Service
 
             recipeDetails.Add("[REQUIREMENTS]");
             recipeDetailColors.Add(GuiColor.Cyan);
+
+            var requiredSkillRank = GetRequiredSkillRankForRecipe(detail);
+            if (requiredSkillRank > 0)
+            {
+                recipeDetails.Add($"{Skill.GetSkillDetails(detail.Skill).Name} lvl {requiredSkillRank}");
+                recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, detail))
+                    ? GuiColor.Green
+                    : GuiColor.Red);
+            }
+
             foreach (var req in detail.Requirements)
             {
                 recipeDetails.Add(req.RequirementText);
@@ -401,18 +440,18 @@ namespace SWLOR.Game.Server.Service
             recipeDetailColors.Add(GuiColor.Cyan);
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(detail.Resref, tempStorage);
-            
+
             foreach (var ip in Item.BuildItemPropertyList(item))
             {
                 recipeDetails.Add(ip);
                 recipeDetailColors.Add(GuiColor.White);
             }
-            
+
             DestroyObject(item);
 
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.White);
-            
+
             if (blueprint != null && blueprint.Recipe != RecipeType.Invalid)
             {
                 recipeDetails.Add("[BLUEPRINT]");
@@ -448,9 +487,9 @@ namespace SWLOR.Game.Server.Service
                         recipeDetailColors.Add(GuiColor.White);
                     }
                 }
-                
+
             }
-            
+
             return (recipeDetails, recipeDetailColors);
         }
 
@@ -464,6 +503,9 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerCraftRecipe(uint player, RecipeType recipeType)
         {
             var recipe = GetRecipe(recipeType);
+            if (!string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, recipe)))
+                return false;
+
             if (recipe.Requirements.Count <= 0) return true;
 
             foreach (var requirement in recipe.Requirements)
@@ -492,7 +534,7 @@ namespace SWLOR.Game.Server.Service
 
             return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
         }
-        
+
         /// <summary>
         /// Retrieves a recipe's level detail by the given level number.
         /// </summary>
@@ -509,6 +551,20 @@ namespace SWLOR.Game.Server.Service
         /// <param name="subTypeId">The sub type of the enhancement</param>
         /// <param name="amount">The amount to apply.</param>
         /// <returns></returns>
+        public static IEnumerable<ItemProperty> BuildItemPropertiesForEnhancement(
+            EnhancementSubType subTypeId,
+            int amount,
+            CombatDamageType damageType = CombatDamageType.Invalid)
+        {
+            yield return BuildItemPropertyForEnhancement(subTypeId, amount);
+
+            if (TryGetWeaponDamageTypeForEnhancement(subTypeId, damageType, out var resolvedDamageType) &&
+                !resolvedDamageType.IsPhysicalDamageType())
+            {
+                yield return ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)resolvedDamageType);
+            }
+        }
+
         public static ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
         {
             switch (subTypeId)
@@ -517,14 +573,22 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, amount);
                 case EnhancementSubType.DefenseForce: // Defense - Force
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, amount);
-                case EnhancementSubType.DefenseFire: // Defense - Fire
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Fire, amount);
-                case EnhancementSubType.DefensePoison: // Defense - Poison
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, amount);
-                case EnhancementSubType.DefenseElectrical: // Defense - Electrical
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, amount);
-                case EnhancementSubType.DefenseIce: // Defense - Ice
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Ice, amount);
+                case EnhancementSubType.ResistanceFire: // Resistance - Fire
+                    return BuildResistanceItemProperty(ResistanceType.Fire, amount);
+                case EnhancementSubType.ResistancePoison: // Resistance - Poison
+                    return BuildResistanceItemProperty(ResistanceType.Poison, amount);
+                case EnhancementSubType.ResistanceElectrical: // Resistance - Electrical
+                    return BuildResistanceItemProperty(ResistanceType.Electrical, amount);
+                case EnhancementSubType.ResistanceIce: // Resistance - Ice
+                    return BuildResistanceItemProperty(ResistanceType.Ice, amount);
+                case EnhancementSubType.ResistanceMind: // Resistance - Mind
+                    return BuildResistanceItemProperty(ResistanceType.Mind, amount);
+                case EnhancementSubType.ResistanceMobility: // Resistance - Mobility
+                    return BuildResistanceItemProperty(ResistanceType.Mobility, amount);
+                case EnhancementSubType.ResistanceTrauma: // Resistance - Trauma
+                    return BuildResistanceItemProperty(ResistanceType.Trauma, amount);
+                case EnhancementSubType.ResistanceDisruption: // Resistance - Disruption
+                    return BuildResistanceItemProperty(ResistanceType.Disruption, amount);
                 case EnhancementSubType.Evasion: // Evasion
                     return ItemPropertyCustom(ItemPropertyType.Evasion, -1, amount);
                 case EnhancementSubType.HP: // HP
@@ -543,29 +607,21 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.Control, 1, amount);
                 case EnhancementSubType.CraftsmanshipSmithery: // Craftsmanship - Smithery
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 1, amount);
-                
+                case EnhancementSubType.ShieldDeflection: // Shield Deflection
+                    return ItemPropertyCustom(ItemPropertyType.ShieldDeflection, -1, amount);
+
                 // 16 and 17 are applied within the view model, as they are not actually item properties.
-                
-                case EnhancementSubType.DMGPhysical: // DMG - Physical
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, amount);
-                case EnhancementSubType.DMGForce: // DMG - Force
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Force, amount);
-                case EnhancementSubType.DMGFire: // DMG - Fire
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Fire, amount);
-                case EnhancementSubType.DMGPoison: // DMG - Poison
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Poison, amount);
-                case EnhancementSubType.DMGElectrical: // DMG - Electrical
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Electrical, amount);
-                case EnhancementSubType.DMGIce: // DMG - Ice
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Ice, amount);
+
+                case EnhancementSubType.DMG: // DMG
+                    return ItemPropertyCustom(ItemPropertyType.DMG, -1, amount);
                 case EnhancementSubType.Might: // Might
                     return ItemPropertyAbilityBonus(AbilityType.Might, amount);
                 case EnhancementSubType.Perception: // Perception
                     return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
                 case EnhancementSubType.Accuracy: // Accuracy
                     return ItemPropertyAttackBonus(amount);
-                case EnhancementSubType.RecastReduction: // Recast Reduction
-                    return ItemPropertyCustom(ItemPropertyType.AbilityRecastReduction, -1, amount);
+                case EnhancementSubType.CombatReadiness: // Combat Readiness
+                    return ItemPropertyCustom(ItemPropertyType.CombatReadiness, -1, amount);
                 case EnhancementSubType.StructureBonus: // Structure Bonus
                     return ItemPropertyCustom(ItemPropertyType.StructureBonus, -1, amount);
                 case EnhancementSubType.FoodBonusHPRegen: // Food Bonus - HP Regen
@@ -578,8 +634,8 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RestRegen, amount);
                 case EnhancementSubType.FoodBonusXPBonus: // Food Bonus - XP Bonus
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.XPBonus, amount);
-                case EnhancementSubType.FoodBonusRecastReduction: // Food Bonus - Recast Reduction
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RecastReduction, amount);
+                case EnhancementSubType.FoodBonusCombatReadiness: // Food Bonus - Combat Readiness
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CombatReadiness, amount);
                 case EnhancementSubType.FoodBonusDuration: // Food Bonus - Duration
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, amount);
                 case EnhancementSubType.FoodBonusHP: // Food Bonus - HP
@@ -628,9 +684,9 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 57, amount);
                 case EnhancementSubType.Agility: // Agility
                     return ItemPropertyAbilityBonus(AbilityType.Agility, amount);
-                
+
                 // 59 is free
-                
+
                 case EnhancementSubType.FoodBonusAttack: // Food Bonus - Attack
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Attack, amount);
                 case EnhancementSubType.FoodBonusAccuracy: // Food Bonus - Accuracy
@@ -639,14 +695,22 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePhysical, amount);
                 case EnhancementSubType.FoodBonusForceDefense: // Food Bonus - Force Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseForce, amount);
-                case EnhancementSubType.FoodBonusPoisonDefense: // Food Bonus - Poison Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePoison, amount);
-                case EnhancementSubType.FoodBonusFireDefense: // Food Bonus - Fire Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseFire, amount);
-                case EnhancementSubType.FoodBonusIceDefense: // Food Bonus - Ice Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseIce, amount);
-                case EnhancementSubType.FoodBonusElectricalDefense: // Food Bonus - Electrical Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseElectrical, amount);
+                case EnhancementSubType.FoodBonusPoisonResistance: // Food Bonus - Poison Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistancePoison, amount);
+                case EnhancementSubType.FoodBonusFireResistance: // Food Bonus - Fire Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceFire, amount);
+                case EnhancementSubType.FoodBonusIceResistance: // Food Bonus - Ice Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceIce, amount);
+                case EnhancementSubType.FoodBonusElectricalResistance: // Food Bonus - Electrical Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceElectrical, amount);
+                case EnhancementSubType.FoodBonusMindResistance: // Food Bonus - Mind Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceMind, amount);
+                case EnhancementSubType.FoodBonusMobilityResistance: // Food Bonus - Mobility Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceMobility, amount);
+                case EnhancementSubType.FoodBonusTraumaResistance: // Food Bonus - Trauma Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceTrauma, amount);
+                case EnhancementSubType.FoodBonusDisruptionResistance: // Food Bonus - Disruption Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceDisruption, amount);
                 case EnhancementSubType.FoodBonusEvasion: // Food Bonus - Evasion
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Evasion, amount);
                 case EnhancementSubType.FoodBonusControlSmithery: // Food Bonus - Control Smithery
@@ -682,37 +746,190 @@ namespace SWLOR.Game.Server.Service
                 case EnhancementSubType.ForceAttack: // Force Attack
                     return ItemPropertyCustom(ItemPropertyType.ForceAttack, -1, amount);
 
-                // 83-101 are free
+                case EnhancementSubType.DroidResistanceFire: // Droid: Fire Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, amount);
+                case EnhancementSubType.DroidResistancePoison: // Droid: Poison Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistancePoison, amount);
+                case EnhancementSubType.DroidResistanceElectrical: // Droid: Electrical Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceElectrical, amount);
+                case EnhancementSubType.DroidResistanceIce: // Droid: Ice Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceIce, amount);
+                case EnhancementSubType.DroidResistanceMind: // Droid: Mind Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMind, amount);
+                case EnhancementSubType.DroidResistanceMobility: // Droid: Mobility Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMobility, amount);
+                case EnhancementSubType.DroidResistanceTrauma: // Droid: Trauma Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceTrauma, amount);
+                case EnhancementSubType.DroidResistanceDisruption: // Droid: Disruption Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceDisruption, amount);
 
                 case EnhancementSubType.DroidAISlot: // Droid: AI Slot
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 3, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AISlots, amount);
                 case EnhancementSubType.DroidHP: // Droid: HP
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 4, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HP, amount);
                 case EnhancementSubType.DroidSTM: // Droid: STM
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 5, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.STM, amount);
                 case EnhancementSubType.DroidMGT: // Droid: MGT
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 6, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.MGT, amount);
                 case EnhancementSubType.DroidPER: // Droid: PER
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 7, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.PER, amount);
                 case EnhancementSubType.DroidVIT: // Droid: VIT
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 8, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.VIT, amount);
                 case EnhancementSubType.DroidWIL: // Droid: WIL
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 9, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.WIL, amount);
                 case EnhancementSubType.DroidAGI: // Droid: AGI
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 10, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AGI, amount);
                 case EnhancementSubType.DroidSOC: // Droid: SOC
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 11, amount);
-                case EnhancementSubType.Droid1Handed: // Droid: 1-Handed
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 12, amount);
-                case EnhancementSubType.Droid2Handed: // Droid: 2-Handed
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 13, amount);
-                case EnhancementSubType.DroidMartialArts: // Droid: Martial Arts
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 14, amount);
-                case EnhancementSubType.DroidRanged: // Droid: Ranged
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 15, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.SOC, amount);
+                case EnhancementSubType.DroidVibroblade: // Droid: Vibroblade
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade, amount);
+                case EnhancementSubType.DroidVibroknife: // Droid: Vibroknife
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroknife, amount);
+                case EnhancementSubType.DroidLightsaber: // Droid: Lightsaber
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Lightsaber, amount);
+                case EnhancementSubType.DroidHeavyVibroblade: // Droid: Heavy Vibroblade
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HeavyVibroblade, amount);
+                case EnhancementSubType.DroidSpear: // Droid: Spear
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Spear, amount);
+                case EnhancementSubType.DroidTwinBlade: // Droid: Twin Blade
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinBlade, amount);
+                case EnhancementSubType.DroidSaberstaff: // Droid: Saberstaff
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Saberstaff, amount);
+                case EnhancementSubType.DroidKatar: // Droid: Katar
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Katar, amount);
+                case EnhancementSubType.DroidStaff: // Droid: Staff
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Staff, amount);
+                case EnhancementSubType.DroidPistol: // Droid: Pistol
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, amount);
+                case EnhancementSubType.DroidRifle: // Droid: Rifle
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, amount);
+                case EnhancementSubType.DroidThrowing: // Droid: Throwing
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, amount);
             }
 
             throw new Exception("Unsupported enhancement type.");
+        }
+
+        private static ItemProperty BuildResistanceItemProperty(ResistanceType type, int amount)
+        {
+            return ItemPropertyCustom(
+                ItemPropertyType.Resistance,
+                (int)type,
+                Resistance.EncodeItemPropertyCostTableValue(amount));
+        }
+
+        public static bool IsWeaponDamageEnhancement(EnhancementSubType subTypeId)
+        {
+            return subTypeId == EnhancementSubType.DMG;
+        }
+
+        public static bool TryGetWeaponDamageTypeForEnhancement(
+            EnhancementSubType subTypeId,
+            CombatDamageType explicitDamageType,
+            out CombatDamageType damageType)
+        {
+            if (!IsWeaponDamageEnhancement(subTypeId))
+            {
+                damageType = CombatDamageType.Invalid;
+                return false;
+            }
+
+            if (explicitDamageType.IsCharacterDamageType())
+            {
+                damageType = explicitDamageType;
+                return true;
+            }
+
+            damageType = CombatDamageType.Physical;
+            return true;
+        }
+
+        /// <summary>
+        /// Applies an enhancement-provided item property onto a crafted item,
+        /// merging with any existing property of the same type. DMG amounts are
+        /// summed together; a conflicting WeaponDamageType is resolved by randomly
+        /// keeping one of the two rather than always favoring the latest one applied.
+        /// </summary>
+        public static void ApplyCraftedItemProperty(uint item, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var subType = GetItemPropertySubType(ip);
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (type == ItemPropertyType.WeaponDamageType)
+            {
+                ApplyWeaponDamageTypeProperty(item, ip, subType);
+                return;
+            }
+
+            // Scan for matches first and remove them in a separate pass afterward -
+            // removing an item property while GetNextItemProperty is still iterating
+            // shifts the underlying list, which silently skips every other match.
+            //
+            // Subtype matching is judged off the INCOMING property's subtype, not the
+            // existing property's. Property types with no subtype table in
+            // itempropdef.2da (DMG, Attack, ForceAttack, Evasion, HPBonus, FP, Stamina,
+            // ShieldDeflection, CombatReadiness, StructureBonus, ...) are always packed
+            // with subtype -1, but re-querying that -1 back off a property already
+            // attached to a live item is not reliable - the engine has no subtype table
+            // to round-trip it through. Trusting the freshly-built incoming property's
+            // subtype instead of re-reading the attached one is what actually holds: if
+            // the enhancement never had a meaningful subtype to begin with, any existing
+            // property of the same type is a match; if it does (Defense, Resistance,
+            // FoodBonus, DroidStat), only the same subtype matches.
+            var matches = new List<ItemProperty>();
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == type &&
+                    (subType == -1 || GetItemPropertySubType(property) == subType))
+                {
+                    amount += GetItemPropertyCostTableValue(property);
+                    matches.Add(property);
+                }
+            }
+
+            foreach (var property in matches)
+            {
+                RemoveItemProperty(item, property);
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            ip = ItemPropertyPlugin.PackIP(unpacked);
+
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
+        /// <summary>
+        /// A weapon can only carry one damage type. If it already has a different
+        /// type than the one being applied now, keep only one - chosen at random
+        /// rather than always letting whichever enhancement was socketed last
+        /// silently win.
+        /// </summary>
+        private static void ApplyWeaponDamageTypeProperty(uint item, ItemProperty ip, int subType)
+        {
+            var damageTypeMatches = new List<ItemProperty>();
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
+                {
+                    damageTypeMatches.Add(property);
+                }
+            }
+
+            var keepExisting = damageTypeMatches.Count > 0 &&
+                                GetItemPropertySubType(damageTypeMatches[0]) != subType &&
+                                Random.D100(1) <= 50;
+
+            if (keepExisting)
+                return;
+
+            foreach (var property in damageTypeMatches)
+            {
+                RemoveItemProperty(item, property);
+            }
+
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
         }
 
         [NWNEventHandler(ScriptName.OnRefineryUsed)]
@@ -735,7 +952,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, $"Perk 'Research I' is required to use research terminals.");
                 return;
             }
-            
+
             var propertyId = Property.GetPropertyId(terminal);
 
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -777,7 +994,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
-        
+
         /// <summary>
         /// Retrieves a blueprint detail object about an item.
         /// If item is not a blueprint, resulting recipe type will be Invalid.
@@ -791,11 +1008,22 @@ namespace SWLOR.Game.Server.Service
             blueprintDetail.Recipe = (RecipeType)recipeId;
             blueprintDetail.RandomEnhancementSlotGranted = GetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED");
 
+            var blueprintProperties = new List<(ItemProperty Property, ItemPropertyType Type, int SubType, int CostValue)>();
             for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
             {
-                var type = GetItemPropertyType(ip);
-                var subType = GetItemPropertySubType(ip);
-                var costValue = GetItemPropertyCostTableValue(ip);
+                blueprintProperties.Add((
+                    ip,
+                    GetItemPropertyType(ip),
+                    GetItemPropertySubType(ip),
+                    GetItemPropertyCostTableValue(ip)));
+            }
+
+            for (var index = 0; index < blueprintProperties.Count; index++)
+            {
+                var property = blueprintProperties[index];
+                var type = property.Type;
+                var subType = property.SubType;
+                var costValue = property.CostValue;
 
                 if (type == ItemPropertyType.Blueprint)
                 {
@@ -832,10 +1060,21 @@ namespace SWLOR.Game.Server.Service
                          type == ItemPropertyType.ModuleEnhancement ||
                          type == ItemPropertyType.DroidEnhancement)
                 {
-                    var enhancementIP = BuildItemPropertyForEnhancement((EnhancementSubType)subType, costValue);
-                    blueprintDetail.GuaranteedBonuses.Add(enhancementIP);
+                    var damageType = CombatDamageType.Invalid;
+                    var enhancementSubType = (EnhancementSubType)subType;
+                    if (type == ItemPropertyType.WeaponEnhancement &&
+                        IsWeaponDamageEnhancement(enhancementSubType) &&
+                        index + 1 < blueprintProperties.Count &&
+                        blueprintProperties[index + 1].Type == ItemPropertyType.WeaponDamageType &&
+                        Enum.IsDefined(typeof(CombatDamageType), blueprintProperties[index + 1].SubType))
+                    {
+                        damageType = (CombatDamageType)blueprintProperties[index + 1].SubType;
+                        index++;
+                    }
+
+                    blueprintDetail.GuaranteedBonuses.AddRange(BuildItemPropertiesForEnhancement(enhancementSubType, costValue, damageType));
                 }
-                
+
             }
 
             return blueprintDetail;
@@ -854,17 +1093,17 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(blueprint);
                 return;
             }
-            
+
             SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", (int)blueprintDetail.Recipe);
             SetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED", blueprintDetail.RandomEnhancementSlotGranted);
-            
+
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprintDetail.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.LicensedRuns, blueprintDetail.LicensedRuns), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.ItemBonuses, blueprintDetail.ItemBonuses), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.CreditReduction, blueprintDetail.CreditReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.TimeReduction, blueprintDetail.TimeReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.EnhancementSlots, blueprintDetail.EnhancementSlots), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            
+
         }
 
         private static int CalculateResearchCost(RecipeType recipe, int blueprintLevel, int baseConstant, float reductionBonus)
@@ -935,3 +1174,4 @@ namespace SWLOR.Game.Server.Service
         }
     }
 }
+

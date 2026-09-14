@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
@@ -11,12 +11,14 @@ namespace SWLOR.Game.Server.Service.PerkService
             _perkType = perkType;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.Unlock;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            return !dbPlayer.UnlockedPerks.ContainsKey(_perkType) 
-                ? "Perk has not been unlocked yet." 
+            return !dbPlayer.UnlockedPerks.ContainsKey(_perkType)
+                ? "Perk has not been unlocked yet."
                 : string.Empty;
         }
 

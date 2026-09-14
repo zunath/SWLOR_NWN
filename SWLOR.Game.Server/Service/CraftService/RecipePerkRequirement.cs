@@ -1,32 +1,28 @@
-﻿using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
     public class RecipePerkRequirement: IRecipeRequirement
     {
-        private readonly PerkType _perk;
+        private readonly PerkType _perkType;
         private readonly int _requiredLevel;
-        private readonly PerkDetail _perkDetail;
+        private readonly string _perkName;
 
-        public RecipePerkRequirement(PerkType perk, int requiredLevel)
+        public RecipePerkRequirement(PerkType perkType, int requiredLevel, string perkName)
         {
-            _perk = perk;
+            _perkType = perkType;
             _requiredLevel = requiredLevel;
-            _perkDetail = Perk.GetPerkDetails(_perk);
+            _perkName = perkName;
         }
 
         public string CheckRequirements(uint player)
         {
-            var effectiveLevel = Perk.GetPerkLevel(player, _perk);
-
-            if (effectiveLevel < _requiredLevel)
-            {
-                return $"{_perkDetail.Name} must be level {_requiredLevel}.";
-            }
+            if (Perk.GetPerkLevel(player, _perkType) < _requiredLevel)
+                return RequirementText;
 
             return string.Empty;
         }
 
-        public string RequirementText => $"{_perkDetail.Name} lvl {_requiredLevel}";
+        public string RequirementText => $"Requires {_perkName} {_requiredLevel}.";
     }
 }

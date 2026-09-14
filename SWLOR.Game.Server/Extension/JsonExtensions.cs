@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Extension
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Extension
 
             // Note: to avoid triggering a clone of the existing property's value,
             // we need to save a reference to it and then null out property.Value
-            // before adding the value to the new JProperty.  
+            // before adding the value to the new JProperty.
             // Thanks to @dbc for the suggestion.
 
             var existingValue = property.Value;

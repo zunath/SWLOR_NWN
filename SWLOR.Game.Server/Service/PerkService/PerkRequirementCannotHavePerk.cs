@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             _cannotHavePerkType = cannotHavePerkType;
         }
+
+        public PerkRequirementCategory Category => PerkRequirementCategory.CannotHavePerk;
 
         public string CheckRequirements(uint player)
         {

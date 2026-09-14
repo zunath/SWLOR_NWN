@@ -15,7 +15,7 @@ The HakBuilder tool compiles NWN hak files from source directories. It includes 
 #### Enable checksum checking (default behavior)
 ```json
 {
-  "TlkPath": "./swlor2_tlk/swlor2_tlk.tlk",
+  "TlkPath": "./sw_tlk/sw_tlk.tlk",
   "OutputPath": "./output/",
   "EnableChecksumChecking": true,
   "HakList": [...]
@@ -25,7 +25,7 @@ The HakBuilder tool compiles NWN hak files from source directories. It includes 
 #### Disable checksum checking (for large haks or faster builds)
 ```json
 {
-  "TlkPath": "./swlor2_tlk/swlor2_tlk.tlk",
+  "TlkPath": "./sw_tlk/sw_tlk.tlk",
   "OutputPath": "./output/",
   "EnableChecksumChecking": false,
   "HakList": [...]

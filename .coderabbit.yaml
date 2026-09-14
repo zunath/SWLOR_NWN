@@ -1,4 +1,8 @@
 reviews:
+  auto_review:
+    enabled: true
+    base_branches:
+      - ".*"
   path_instructions:
     - path: "Module/git/*.git.json"
       instructions: |

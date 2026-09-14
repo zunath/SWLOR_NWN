@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SWLOR.Toolset.Shell.Views.EditorChoiceDialog"
+        Title="SWLOR Toolset"
+        Width="560" SizeToContent="Height"
+        MinHeight="170" MaxHeight="420"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+  <StackPanel Margin="16" Spacing="12">
+    <TextBlock x:Name="HeadlineText"
+               FontWeight="Bold" FontSize="14" TextWrapping="Wrap" />
+    <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button x:Name="PrimaryButton" MinWidth="90" IsDefault="True" Click="OnPrimaryClicked" />
+      <Button x:Name="SecondaryButton" MinWidth="90" Click="OnSecondaryClicked" />
+      <Button Content="Cancel" MinWidth="90" IsCancel="True" Click="OnCancelClicked" />
+    </StackPanel>
+  </StackPanel>
+</Window>

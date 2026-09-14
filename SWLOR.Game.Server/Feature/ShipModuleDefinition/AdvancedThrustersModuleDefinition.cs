@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return _builder.Build();
         }
 
-        private void AdvancedThrusters(string itemTag, 
-            string name, 
+        private void AdvancedThrusters(string itemTag,
+            string name,
             string shortName,
             int boostAmount)
         {

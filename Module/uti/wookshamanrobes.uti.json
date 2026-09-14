@@ -42,7 +42,7 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 42
+    "value": 41
   },
   "ArmorPart_RBicep": {
     "type": "byte",
@@ -512,6 +512,26 @@
     "type": "resref",
     "value": "wookshamanrobes"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xArmorPart_Belt": {
     "type": "word",
     "value": 0
@@ -550,7 +570,7 @@
   },
   "xArmorPart_Pelvi": {
     "type": "word",
-    "value": 42
+    "value": 41
   },
   "xArmorPart_RBice": {
     "type": "word",

@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
@@ -27,7 +26,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("mynock_mball")
                 .Level(1)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("mynock_meat", 3)
                 .Component("mynock_wing", 2)
@@ -38,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("waro_potpie")
                 .Level(1)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("warocas_meat", 3)
                 .Component("waro_leg", 2)
@@ -50,7 +47,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("roast_carp")
                 .Level(1)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("moat_carp", 3)
                 .Component("distilled_water", 1);
@@ -60,7 +56,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("sugar_cookies")
                 .Level(2)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("sugar", 4)
                 .Component("v_flour", 3)
@@ -72,7 +67,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("marimo_stew")
                 .Level(2)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("lamp_marimo", 3)
                 .Component("distilled_water", 1);
@@ -82,7 +76,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("orange_juice")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_orange", 3)
                 .Component("distilled_water", 1);
@@ -92,7 +85,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pebble_soup")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_pebble", 3)
                 .Component("distilled_water", 1);
@@ -102,7 +94,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("mynock_broth")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("mynock_wing", 3)
                 .Component("distilled_water", 1);
@@ -113,7 +104,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("urchin_sushi")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("visc_urchin", 3)
                 .Component("distilled_water", 1);
@@ -123,7 +113,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("noodles")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_flour", 4)
                 .Component("butter_1", 1)
@@ -134,7 +123,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("kath_sandwich")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("kath_meat_1", 3)
                 .Component("v_flour", 2);
@@ -145,7 +133,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("blackened_newt")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("phan_newt", 3)
                 .Component("distilled_water", 1);
@@ -155,7 +142,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("kinrath_mball")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("kinrath_meat", 3)
                 .Component("kinrath_limb", 2)
@@ -167,7 +153,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cooked_jellyfish")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("cobalt_jellyfish", 3)
                 .Component("distilled_water", 1);
@@ -177,7 +162,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("lemon_cookies")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("sugar", 2)
                 .Component("v_flour", 1)
@@ -188,7 +172,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("v_herb_soup")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("herb_v", 3)
                 .Component("distilled_water", 1)
@@ -199,7 +182,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("orange_curry")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_orange", 4)
                 .Component("distilled_water", 1);
@@ -210,7 +192,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("denzi_treat")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("denizanasi", 3)
                 .Component("distilled_water", 1);
@@ -220,7 +201,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("o_aulait")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_orange", 3)
                 .Component("distilled_water", 2)
@@ -232,7 +212,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("peeled_crayfish")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("crayfish", 3)
                 .Component("distilled_water", 1);
@@ -242,7 +221,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("k_blood_broth")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("kath_blood", 3)
                 .Component("distilled_water", 1)
@@ -254,7 +232,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("peeled_lobster")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("cala_lobster", 3)
                 .Component("distilled_water", 1);
@@ -264,7 +241,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("g_sandwich")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("gimp_meat", 3)
                 .Component("distilled_water", 1)
@@ -277,7 +253,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cooked_bibikibo")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("bibikibo", 3)
                 .Component("distilled_water", 1);
@@ -287,7 +262,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("g_stew")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("gimp_blood", 2)
                 .Component("gimp_meat", 2);
@@ -298,7 +272,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("sliced_sardine")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("dath_sardine", 3)
                 .Component("distilled_water", 1);
@@ -309,7 +282,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_dur1")
                 .Level(1)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("mynock_meat", 2)
                 .Component("mynock_wing", 1);
 
@@ -319,7 +291,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fp1")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("mynock_wing", 2)
                 .Component("mynock_meat", 1);
 
@@ -329,7 +300,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fpr1")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("kath_blood", 4)
                 .Component("herb_v", 2);
 
@@ -339,7 +309,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hp1")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("warocas_meat", 3)
                 .Component("v_pebble", 3);
 
@@ -349,17 +318,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hpr1")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("kinrath_meat", 3)
                 .Component("herb_v", 2);
 
-            // Cooking Enhancement - Recast Reduction I
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction1, SkillType.Agriculture)
+            // Cooking Enhancement - Combat Readiness I
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness1, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast1")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("gimp_meat", 3)
                 .Component("waro_leg", 2);
 
@@ -369,7 +336,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_rest1")
                 .Level(2)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("herb_v", 2)
                 .Component("mynock_wing", 2);
 
@@ -379,7 +345,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stm1")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("kinrath_limb", 3)
                 .Component("gimp_meat", 2);
 
@@ -389,7 +354,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stmr1")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("v_orange", 4)
                 .Component("herb_v", 3);
 
@@ -399,9 +363,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_xp1")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("gimp_blood", 3)
                 .Component("kinrath_limb", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire1, "cen_res_fir1", 5, "gimp_meat", 3, "waro_leg", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison1, "cen_res_psn1", 6, "kath_blood", 3, "herb_v", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical1, "cen_res_elec1", 7, "gimp_blood", 3, "kinrath_limb", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce1, "cen_res_ice1", 8, "v_orange", 3, "herb_v", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind1, "cen_res_mnd1", 5, "mynock_wing", 3, "mynock_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility1, "cen_res_mob1", 6, "kinrath_limb", 3, "gimp_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma1, "cen_res_tra1", 7, "warocas_meat", 3, "v_pebble", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption1, "cen_res_dis1", 8, "kinrath_meat", 3, "herb_v", 2);
         }
 
         private void Tier2()
@@ -411,7 +383,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("raivor_mball")
                 .Level(11)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("raivor_meat", 3)
                 .Component("raivor_scale", 2)
@@ -422,7 +393,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cairn_potpie")
                 .Level(11)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("cairnmog_meat", 3)
                 .Component("cairnmog_tooth", 2)
@@ -434,7 +404,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("fish_broth")
                 .Level(11)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("hamsi", 3)
                 .Component("distilled_water", 1);
@@ -444,7 +413,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("choco_cookies")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("bubble_choc", 4)
                 .Component("b_flour", 3)
@@ -455,19 +423,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("slug_surprise")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("klorslug_meat", 3)
                 .Component("klorslug_tail", 2)
                 .Component("klorslug_innards", 1);
 
-            // Sardine Ball
-            _builder.Create(RecipeType.SardineBall, SkillType.Agriculture)
+            // Cooked Sardine
+            _builder.Create(RecipeType.CookedSardine, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
-                .Resref("sardine_ball")
+                .Resref("cooked_sardine")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("sen_sardine", 3)
                 .Component("distilled_water", 1);
@@ -477,7 +443,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("apple_juice")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_apple", 3)
                 .Component("distilled_water", 1);
@@ -488,7 +453,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("rakaz_special")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("rakaz_shellfish", 3)
                 .Component("distilled_water", 1);
@@ -498,7 +462,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pea_soup")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_peas", 3)
                 .Component("distilled_water", 1);
@@ -508,7 +471,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("raivor_broth")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("raivor_scale", 3)
                 .Component("distilled_water", 1);
@@ -518,7 +480,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("soba_noodles")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("b_flour", 4)
                 .Component("sweet_butter", 1)
@@ -529,7 +490,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cairn_sandwich")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("cairnmog_meat", 3)
                 .Component("b_flour", 2);
@@ -540,7 +500,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("maringna")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("bast_sweeper", 3)
                 .Component("distilled_water", 1);
@@ -550,7 +509,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("nash_mball")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("nashtah_meat", 3)
                 .Component("nashtah_foot", 2)
@@ -562,7 +520,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cooked_mackerel")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("mackerel", 3)
                 .Component("distilled_water", 1);
@@ -572,7 +529,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("mystery_cookies")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("sugar", 2)
                 .Component("b_flour", 1)
@@ -583,7 +539,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("mando_herbsoup")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("herb_m", 3)
                 .Component("distilled_water", 1)
@@ -594,7 +549,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("green_curry")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("passion_fruit", 4)
                 .Component("distilled_water", 1);
@@ -605,7 +559,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("greedie_stew")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("greedie", 3)
                 .Component("distilled_water", 1);
@@ -615,7 +568,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("apple_aulait")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("v_apple", 3)
                 .Component("distilled_water", 2)
@@ -627,7 +579,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("blackened_frog")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("copper_frog", 3)
                 .Component("distilled_water", 1);
@@ -637,7 +588,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("raiv_bloodbroth")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("raivor_blood", 3)
                 .Component("distilled_water", 1)
@@ -649,7 +599,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("brain_stew")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("yellow_globe", 3)
                 .Component("distilled_water", 1);
@@ -659,7 +608,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("nash_sandwich")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("nashtah_meat", 3)
                 .Component("distilled_water", 1)
@@ -671,7 +619,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cooked_siredon")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("muddy_siredon", 3)
                 .Component("distilled_water", 1);
@@ -681,7 +628,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("nash_stew")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("nash_blood", 2)
                 .Component("nashtah_meat", 2);
@@ -692,7 +638,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cooked_istavrit")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
                 .Component("istavrit", 3)
                 .Component("distilled_water", 1);
@@ -703,7 +648,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_dur2")
                 .Level(11)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("raivor_meat", 2)
                 .Component("raivor_scale", 1);
 
@@ -713,7 +657,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fp2")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("raivor_scale", 2)
                 .Component("raivor_meat", 1);
 
@@ -723,7 +666,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fpr2")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("cairnmog_meat", 4)
                 .Component("herb_m", 2);
 
@@ -733,7 +675,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hp2")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("cairnmog_meat", 3)
                 .Component("passion_fruit", 3);
 
@@ -743,17 +684,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hpr2")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("raivor_blood", 3)
                 .Component("herb_m", 2);
 
-            // Cooking Enhancement - Recast Reduction II
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction2, SkillType.Agriculture)
+            // Cooking Enhancement - Combat Readiness II
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness2, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast2")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("nashtah_meat", 3)
                 .Component("nashtah_foot", 2);
 
@@ -763,7 +702,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_rest2")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("herb_v", 2)
                 .Component("nashtah_meat", 2);
 
@@ -773,7 +711,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stm2")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("nashtah_foot", 3)
                 .Component("v_apple", 2);
 
@@ -783,7 +720,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stmr2")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("passion_fruit", 4)
                 .Component("herb_m", 3);
 
@@ -793,9 +729,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_xp2")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("nashtah_meat", 3)
                 .Component("raivor_scale", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire2, "cen_res_fir2", 15, "nashtah_meat", 3, "nashtah_foot", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison2, "cen_res_psn2", 16, "raivor_blood", 3, "herb_m", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical2, "cen_res_elec2", 17, "raivor_scale", 3, "raivor_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce2, "cen_res_ice2", 18, "passion_fruit", 3, "herb_m", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind2, "cen_res_mnd2", 15, "raivor_meat", 3, "raivor_scale", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility2, "cen_res_mob2", 16, "nashtah_foot", 3, "v_apple", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma2, "cen_res_tra2", 17, "cairnmog_meat", 3, "passion_fruit", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption2, "cen_res_dis2", 18, "cairnmog_meat", 3, "herb_m", 2);
         }
 
         private void Tier3()
@@ -805,7 +749,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("aradile_mball")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("aradile_meat", 3)
                 .Component("aradile_tail", 2)
@@ -816,7 +759,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("tiger_potpie")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tiger_meat", 3)
                 .Component("q_tiger_paw", 2)
@@ -828,7 +770,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cooked_salpa")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("trans_salpa", 3)
                 .Component("distilled_water", 1);
@@ -838,7 +779,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("acorn_cookies")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("h_acorn", 4)
                 .Component("p_flour", 3)
@@ -850,7 +790,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("herb_quus")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("quus", 3)
                 .Component("distilled_water", 1);
@@ -860,7 +799,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pine_juice")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("s_pineapple", 3)
                 .Component("distilled_water", 1);
@@ -871,7 +809,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("veg_soup")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("veggie_clump", 3)
                 .Component("distilled_water", 1);
@@ -881,7 +818,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("ara_broth")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("aradile_innards", 3)
                 .Component("distilled_water", 1);
@@ -892,7 +828,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("carp_sushi")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("forest_carp", 3)
                 .Component("distilled_water", 1);
@@ -902,7 +837,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("ramen_noodles")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("p_flour", 4)
                 .Component("c_butter", 1)
@@ -913,7 +847,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("ara_sandwich")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("aradile_meat", 3)
                 .Component("p_flour", 2);
@@ -924,7 +857,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("goldfish_bowl")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tiny_goldfish", 3)
                 .Component("distilled_water", 1);
@@ -934,7 +866,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("byysk_mball")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("byysk_meat", 3)
                 .Component("byysk_tail", 2)
@@ -946,7 +877,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("b_hoptoad")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("hoptoad", 3)
                 .Component("distilled_water", 1);
@@ -956,7 +886,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cinna_cookies")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sugar", 2)
                 .Component("p_flour", 1)
@@ -967,7 +896,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("moncal_hsoup")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("herb_c", 3)
                 .Component("distilled_water", 1)
@@ -978,7 +906,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("red_curry")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("h_acorn", 2)
                 .Component("distilled_water", 1)
@@ -990,7 +917,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("smoked_salmon")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("cheval_salmon", 3)
                 .Component("distilled_water", 1);
@@ -1000,7 +926,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pine_aulait")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("s_pineapple", 3)
                 .Component("distilled_water", 2)
@@ -1012,7 +937,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("deep_broth")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("yorchete", 3)
                 .Component("distilled_water", 1);
@@ -1022,7 +946,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("amphi_bbroth")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("amphi_blood", 3)
                 .Component("distilled_water", 1)
@@ -1034,7 +957,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("white_p_lobster")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("white_lobster", 3)
                 .Component("distilled_water", 1);
@@ -1044,7 +966,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("snake_sandwich")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("viper_meat", 3)
                 .Component("distilled_water", 1)
@@ -1056,7 +977,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("fat_greedie_stew")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("fat_greedie", 3)
                 .Component("distilled_water", 1);
@@ -1066,7 +986,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("snake_stew")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("viper_guts", 2)
                 .Component("viper_meat", 2);
@@ -1077,7 +996,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("idol_sushi")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("moorish_idol", 3)
                 .Component("distilled_water", 1);
@@ -1088,7 +1006,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_dur3")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("aradile_meat", 2)
                 .Component("aradile_tail", 1);
 
@@ -1098,7 +1015,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fp3")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("aradile_tail", 2)
                 .Component("aradile_meat", 1);
 
@@ -1108,7 +1024,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fpr3")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("q_tiger_paw", 4)
                 .Component("herb_c", 2);
 
@@ -1118,7 +1033,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hp3")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("aradile_meat", 3)
                 .Component("viper_guts", 3);
 
@@ -1128,17 +1042,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hpr3")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("byysk_meat", 3)
                 .Component("herb_c", 2);
 
-            // Cooking Enhancement - Recast Reduction III
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction3, SkillType.Agriculture)
+            // Cooking Enhancement - Combat Readiness III
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness3, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast3")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("amphi_blood", 3)
                 .Component("byysk_tail", 2);
 
@@ -1148,7 +1060,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_rest3")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("herb_c", 2)
                 .Component("aradile_innards", 2);
 
@@ -1158,7 +1069,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stm3")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("viper_meat", 3)
                 .Component("byysk_tail", 2);
 
@@ -1168,7 +1078,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stmr3")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("s_pineapple", 4)
                 .Component("herb_c", 3);
 
@@ -1178,9 +1087,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_xp3")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("viper_guts", 3)
                 .Component("aradile_tail", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire3, "cen_res_fir3", 25, "amphi_blood", 3, "byysk_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison3, "cen_res_psn3", 26, "byysk_meat", 3, "herb_c", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical3, "cen_res_elec3", 27, "aradile_tail", 3, "aradile_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce3, "cen_res_ice3", 28, "s_pineapple", 3, "herb_c", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind3, "cen_res_mnd3", 25, "aradile_meat", 3, "aradile_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility3, "cen_res_mob3", 26, "viper_meat", 3, "byysk_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma3, "cen_res_tra3", 27, "viper_guts", 3, "aradile_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption3, "cen_res_dis3", 28, "q_tiger_paw", 3, "herb_c", 2);
         }
 
         private void Tier4()
@@ -1190,7 +1107,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("womp_mball")
                 .Level(31)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wompratmeat", 3)
                 .Component("womp_innards", 2)
@@ -1201,7 +1117,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("sanddem_potpie")
                 .Level(31)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sanddemon_meat", 3)
                 .Component("sand_demon_leg", 2)
@@ -1213,7 +1128,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("gurnard_stew")
                 .Level(31)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("gurnard", 3)
                 .Component("distilled_water", 1);
@@ -1223,7 +1137,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("ging_cookies")
                 .Level(32)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("ginger", 4)
                 .Component("r_flour", 3)
@@ -1235,7 +1148,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("baked_nebimon")
                 .Level(32)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("nebimonite", 3)
                 .Component("distilled_water", 1);
@@ -1245,7 +1157,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("melon_juice")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("melon", 3)
                 .Component("distilled_water", 1);
@@ -1256,7 +1167,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("mush_soup")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mushroom", 3)
                 .Component("distilled_water", 1);
@@ -1266,7 +1176,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("womp_broth")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("womp_innards", 3)
                 .Component("distilled_water", 1);
@@ -1277,7 +1186,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("tricolored_sushi")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tricolored_carp", 3)
                 .Component("distilled_water", 1);
@@ -1287,7 +1195,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("soy_ramen")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("r_flour", 4)
                 .Component("plant_butter", 1)
@@ -1295,10 +1202,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             _builder.Create(RecipeType.SurpriseSandwich, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
-                .Resref("surprise_sandwich")
+                .Resref("surprise_sandwic")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sanddemon_meat", 3)
                 .Component("r_flour", 2);
@@ -1308,7 +1214,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("dathomir_pie")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("spider_leg", 3)
                 .Component("spider_guts", 2)
@@ -1321,7 +1226,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("fish_n_chips")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("blindfish", 3)
                 .Component("distilled_water", 1);
@@ -1331,7 +1235,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("tusken_mball")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tusken_meat", 3)
                 .Component("tusken_bones", 2)
@@ -1343,7 +1246,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("roast_pipira")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("pipira", 3)
                 .Component("distilled_water", 1);
@@ -1353,7 +1255,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("walnut_cookies")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sugar", 2)
                 .Component("r_flour", 1)
@@ -1364,7 +1265,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("des_herbsoup")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("herb_t", 3)
                 .Component("distilled_water", 1)
@@ -1375,7 +1275,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("yellow_curry")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("ginger", 2)
                 .Component("distilled_water", 1)
@@ -1387,7 +1286,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("sliced_cod")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tiger_cod", 3)
                 .Component("distilled_water", 1);
@@ -1397,7 +1295,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("melon_aulait")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("melon", 3)
                 .Component("distilled_water", 2)
@@ -1409,7 +1306,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("bonefish_broth")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("bonefish", 3)
                 .Component("distilled_water", 1);
@@ -1419,7 +1315,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("tusk_b_broth")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tusken_blood", 3)
                 .Component("distilled_water", 1)
@@ -1431,7 +1326,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("steamed_catfish")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("giant_catfish", 3)
                 .Component("distilled_water", 1);
@@ -1441,7 +1335,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("dem_sandwich")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sanddemon_meat", 3)
                 .Component("distilled_water", 1)
@@ -1453,7 +1346,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cooked_yayin")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("yayinbaligi", 3)
                 .Component("distilled_water", 1);
@@ -1463,7 +1355,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("demon_stew")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sand_demon_leg", 2)
                 .Component("sanddemon_meat", 2);
@@ -1474,7 +1365,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("dead_stew")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("deadmoiselle", 3)
                 .Component("distilled_water", 1);
@@ -1485,7 +1375,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_dur4")
                 .Level(31)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("wompratmeat", 2)
                 .Component("womp_innards", 1);
 
@@ -1495,7 +1384,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fp4")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("womp_innards", 2)
                 .Component("wompratmeat", 1);
 
@@ -1505,7 +1393,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fpr4")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("tusken_bones", 4)
                 .Component("herb_t", 2);
 
@@ -1515,7 +1402,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hp4")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("sanddemon_meat", 3)
                 .Component("plant_butter", 3);
 
@@ -1525,17 +1411,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hpr4")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("sanddemon_meat", 3)
                 .Component("herb_t", 2);
 
-            // Cooking Enhancement - Recast Reduction IV
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction4, SkillType.Agriculture)
+            // Cooking Enhancement - Combat Readiness IV
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness4, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast4")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("sand_demon_leg", 3)
                 .Component("tusken_bones", 2);
 
@@ -1545,7 +1429,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_rest4")
                 .Level(32)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("herb_t", 2)
                 .Component("mushroom", 2);
 
@@ -1555,7 +1438,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stm4")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("sand_demon_leg", 3)
                 .Component("sanddemon_meat", 2);
 
@@ -1565,7 +1447,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stmr4")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("melon", 4)
                 .Component("herb_t", 3);
 
@@ -1575,9 +1456,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_xp4")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("gimp_blood", 3)
                 .Component("kinrath_limb", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire4, "cen_res_fir4", 35, "sand_demon_leg", 3, "tusken_bones", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison4, "cen_res_psn4", 36, "sanddemon_meat", 3, "herb_t", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical4, "cen_res_elec4", 37, "tusken_bones", 3, "wompratmeat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce4, "cen_res_ice4", 38, "melon", 3, "herb_t", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind4, "cen_res_mnd4", 35, "wompratmeat", 3, "womp_innards", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility4, "cen_res_mob4", 36, "sand_demon_leg", 3, "sanddemon_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma4, "cen_res_tra4", 37, "sanddemon_meat", 3, "plant_butter", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption4, "cen_res_dis4", 38, "tusken_bones", 3, "herb_t", 2);
         }
 
         private void Tier5()
@@ -1587,7 +1476,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_mball")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_meat", 3)
                 .Component("wild_innards", 2)
@@ -1598,7 +1486,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_potpie")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_meat", 3)
                 .Component("wild_leg", 2)
@@ -1610,7 +1497,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("long_ling_lung")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("lungfish", 3)
                 .Component("distilled_water", 1);
@@ -1620,7 +1506,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_cookies")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("turnip", 4)
                 .Component("bread_flour", 3)
@@ -1632,7 +1517,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("bass_meuniere")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("dark_bass", 3)
                 .Component("distilled_water", 1);
@@ -1643,7 +1527,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("munch_fungusb")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mushroom", 3)
                 .Component("b_flour", 3)
@@ -1654,7 +1537,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("tomato_juice")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tomato", 3)
                 .Component("distilled_water", 1);
@@ -1664,7 +1546,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("miso_soup")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tofu", 3)
                 .Component("distilled_water", 1);
@@ -1674,7 +1555,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_broth")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_innards", 3)
                 .Component("distilled_water", 1);
@@ -1685,7 +1565,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("crystal_sushi")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("crystal_bass", 3)
                 .Component("distilled_water", 1);
@@ -1695,7 +1574,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("miso_ramen")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("bread_flour", 4)
                 .Component("cultured_butter", 1)
@@ -1706,7 +1584,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_sandwich")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_meat", 3)
                 .Component("bread_flour", 2);
@@ -1717,7 +1594,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("eelectric_soup")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("ogre_eel", 3)
                 .Component("distilled_water", 1);
@@ -1727,7 +1603,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("grand_mball")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_meat", 3)
                 .Component("wild_leg", 2)
@@ -1739,7 +1614,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("shining_stew")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("shining_trout", 3)
                 .Component("distilled_water", 1);
@@ -1749,7 +1623,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wizard_cookies")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("sugar", 2)
                 .Component("bread_flour", 1)
@@ -1760,7 +1633,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("dath_hsoup")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("herb_x", 3)
                 .Component("distilled_water", 1)
@@ -1771,7 +1643,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_curry")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tofu", 2)
                 .Component("distilled_water", 1)
@@ -1783,7 +1654,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("popper_bowl")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("blowfish", 3)
                 .Component("distilled_water", 1);
@@ -1793,7 +1663,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("tomato_aulait")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("tomato", 3)
                 .Component("distilled_water", 2)
@@ -1805,7 +1674,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pickled_herring")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("nosteau_herring", 3)
                 .Component("distilled_water", 1);
@@ -1815,7 +1683,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_bbroth")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_blood", 3)
                 .Component("distilled_water", 1)
@@ -1827,7 +1694,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("zoni_broth")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("lakerda", 3)
                 .Component("distilled_water", 1);
@@ -1837,7 +1703,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("grand_sandwich")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_meat", 3)
                 .Component("distilled_water", 1)
@@ -1849,7 +1714,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("sea_bass_croute")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("zafmlug_bass", 3)
                 .Component("distilled_water", 1);
@@ -1859,7 +1723,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("wild_stew")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("wild_leg", 2)
                 .Component("wild_meat", 2);
@@ -1870,7 +1733,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("shimm_broth")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("ruddy_seema", 3)
                 .Component("distilled_water", 1);
@@ -1881,7 +1743,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("rancid_broth")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("frigorifish", 3)
                 .Component("distilled_water", 1);
@@ -1894,7 +1755,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mercanbaligi", 6)
                 .Component("distilled_water", 2);
@@ -1907,7 +1767,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("nashmau", 6)
                 .Component("distilled_water", 2);
@@ -1920,7 +1779,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("rhinochimera", 6)
                 .Component("distilled_water", 2);
@@ -1933,7 +1791,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mhaura", 6)
                 .Component("distilled_water", 2);
@@ -1946,7 +1803,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("zitah", 6)
                 .Component("distilled_water", 2);
@@ -1959,11 +1815,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("alzabi", 6)
                 .Component("distilled_water", 2);
-    
+
             // Dantooine Flapjacks
             _builder.Create(RecipeType.DantooineFlapJack, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -1972,7 +1827,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("milk", 6)
                 .Component("b_flour", 3)
@@ -1986,11 +1840,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("milk", 6)
                 .Component("carrot", 3);
-          
+
             // Krafter's Kebab
             _builder.Create(RecipeType.KraftersKebab, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -1999,7 +1852,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("thune_meat", 10)
                 .Component("thune_blood", 2)
@@ -2014,7 +1866,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("froglegs", 10)
                 .Component("frogguts", 2)
@@ -2029,7 +1880,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mushroom", 8)
                 .Component("ns_holo_jelly", 4)
@@ -2043,7 +1893,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("ns_sludge_eel", 4)
                 .Component("distilled_water", 4)
@@ -2057,7 +1906,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("distilled_water", 4)
                 .Component("ns_holo_jelly", 2)
@@ -2071,7 +1919,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("thune_meat", 8)
                 .Component("ns_rack_meat", 4)
@@ -2085,7 +1932,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("ns_rack_meat", 8)
                 .Component("ns_moonspice", 2)
@@ -2099,7 +1945,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Quantity(1)
                 .ResearchCostModifier(0.2f)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mushroom", 4)
                 .Component("ns_holo_jelly", 4)
@@ -2112,7 +1957,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_dur5")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_meat", 2)
                 .Component("wild_leg", 1);
 
@@ -2122,7 +1966,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fp5")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_leg", 2)
                 .Component("wild_meat", 1);
 
@@ -2132,7 +1975,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_fpr5")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_innards", 4)
                 .Component("herb_x", 2);
 
@@ -2142,7 +1984,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hp5")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("warocas_meat", 3)
                 .Component("bread_flour", 3);
 
@@ -2152,17 +1993,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_hpr5")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_innards", 3)
                 .Component("herb_x", 2);
 
-            // Cooking Enhancement - Recast Reduction V
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction5, SkillType.Agriculture)
+            // Cooking Enhancement - Combat Readiness V
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness5, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast5")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_leg", 3)
                 .Component("cultured_butter", 2);
 
@@ -2172,7 +2011,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_rest5")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("herb_x", 2)
                 .Component("wild_blood", 2);
 
@@ -2182,7 +2020,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stm5")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_leg", 3)
                 .Component("wild_meat", 2);
 
@@ -2192,7 +2029,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_stmr5")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("tomato", 4)
                 .Component("herb_x", 3);
 
@@ -2202,9 +2038,35 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("cen_xp5")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_innards", 3)
                 .Component("wild_blood", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire5, "cen_res_fir5", 45, "wild_leg", 3, "cultured_butter", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison5, "cen_res_psn5", 46, "wild_innards", 3, "herb_x", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical5, "cen_res_elec5", 47, "wild_blood", 3, "wild_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce5, "cen_res_ice5", 48, "tomato", 3, "herb_x", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind5, "cen_res_mnd5", 45, "wild_meat", 3, "wild_leg", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility5, "cen_res_mob5", 46, "wild_leg", 3, "wild_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma5, "cen_res_tra5", 47, "wild_innards", 3, "wild_blood", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption5, "cen_res_dis5", 48, "wild_blood", 3, "herb_x", 2);
+        }
+
+        private void CreateCookingResistanceEnhancement(
+            RecipeType recipe,
+            string resref,
+            int level,
+            string component1,
+            int component1Quantity,
+            string component2,
+            int component2Quantity)
+        {
+            _builder.Create(recipe, SkillType.Agriculture)
+                .Category(RecipeCategoryType.CookingEnhancement)
+                .Resref(resref)
+                .Level(level)
+                .Quantity(1)
+                .Component(component1, component1Quantity)
+                .Component(component2, component2Quantity);
         }
     }
 }

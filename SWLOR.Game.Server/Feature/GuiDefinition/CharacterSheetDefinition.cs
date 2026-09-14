@@ -1,5 +1,7 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -8,584 +10,473 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class CharacterSheetDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<CharacterSheetViewModel> _builder = new();
-        private const float IncreaseButtonSize = 14f;
+        private const float IncreaseButtonSize = 18f;
+        private const float RailWidth = 165f;
+        private const float ActionsWidth = 136f;
+        private const float StatRowHeight = 22f;
+        private const float TabPairWidth = 236f;
+        private const float TabRowHeight = 28f;
+        private const float TabPanelHeight = 76f;
+        private const float AttributePanelWidth = 250f;
+        private const float CombatPanelWidth = 250f;
+        private const float StatsPanelWidth = 460f;
+        private const float ResistancePanelWidth = 430f;
+        private const float CraftingPanelWidth = 430f;
 
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.CharacterSheet)
-                .SetInitialGeometry(0, 0, 800f, 400f)
+            var window = _builder.CreateWindow(GuiWindowType.CharacterSheet)
+                .SetInitialGeometry(0, 0, 800f, 460f)
                 .SetTitle("Character Sheet")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .AddColumn(col =>
+                .DefinePartialView(CharacterSheetViewModel.AttributesTabPartial, AddAttributesTab)
+                .DefinePartialView(CharacterSheetViewModel.StatsTabPartial, AddStatsTab)
+                .DefinePartialView(CharacterSheetViewModel.ResistancesTabPartial, AddResistancesTab)
+                .DefinePartialView(CharacterSheetViewModel.CraftingTabPartial, AddCraftingTab);
+
+            window.AddStandardLayout(layout =>
+            {
+                layout.AddLeadingColumn(AddIdentityRail, RailWidth);
+                layout.SetTabPanelHeight(TabPanelHeight);
+                layout.AddTabRow(tabRow =>
                 {
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .BindText(model => model.Name)
-                            .SetHeight(20f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddImage()
-                            .BindResref(model => model.PortraitResref)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetAspect(NuiAspect.ExactScaled)
-                            .SetWidth(128f)
-                            .SetHeight(200f);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton()
-                            .SetText("Customize")
-                            .SetHeight(32f)
-                            .BindOnClicked(model => model.OnClickChangePortrait());
-                        row.AddSpacer();
-                    });
-                })
-
-                .AddColumn(col =>
+                    tabRow.SetHeight(TabRowHeight);
+                    tabRow.AddToggles()
+                        .AddOption("Attributes")
+                        .AddOption("Stats")
+                        .BindSelectedValue(model => model.TopTabId)
+                        .SetWidth(TabPairWidth)
+                        .SetHeight(TabRowHeight);
+                });
+                layout.AddTabRow(tabRow =>
                 {
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .BindText(model => model.CharacterType)
-                            .SetHeight(20f);
-
-                        row.BindIsVisible(model => model.IsPlayerMode);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("HP")
-                            .SetColor(GuiColor.HPColor)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Hit Points - When these hit zero, you die.");
-
-                        row.AddLabel()
-                            .BindText(model => model.HP)
-                            .SetColor(GuiColor.HPColor)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .SetIsVisible(false);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("FP")
-                            .SetColor(GuiColor.FPColor)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Force Points - Resource used to activate force abilities. Force sensitive characters only.");
-
-                        row.AddLabel()
-                            .BindText(model => model.FP)
-                            .SetColor(GuiColor.FPColor)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .SetIsVisible(false);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("STM")
-                            .SetColor(GuiColor.STMColor)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Stamina - Resource used to activate non-force abilities.");
-
-                        row.AddLabel()
-                            .BindText(model => model.STM)
-                            .SetColor(GuiColor.STMColor)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .SetIsVisible(false);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("SP")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Skill Points - Used to purchase Perks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.SP)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .SetIsVisible(false);
-                        
-                        row.BindIsVisible(model => model.ShowSP);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .BindText(model => model.APOrLevelLabel)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .BindTooltip(model => model.APOrLevelTooltip);
-
-                        row.AddLabel()
-                            .BindText(model => model.APOrLevel)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .SetIsVisible(false);
-
-                            row.BindIsVisible(model => model.ShowAPOrLevel);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Might")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Might - Improves damage dealt by melee weapons, carrying capacity, and fortitude saving throws.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Might)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .BindIsVisible(model => model.IsMightUpgradeAvailable)
-                            .BindOnClicked(model => model.OnClickUpgradeMight());
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Perception")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, increases physical accuracy, and reflex saving throws.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Perception)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .BindIsVisible(model => model.IsPerceptionUpgradeAvailable)
-                            .BindOnClicked(model => model.OnClickUpgradePerception());
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Vitality")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Vitality - Improves your max hit points and reduces damage received.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Vitality)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .BindIsVisible(model => model.IsVitalityUpgradeAvailable)
-                            .BindOnClicked(model => model.OnClickUpgradeVitality());
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Willpower")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Willpower - Improves your force attack, force defense, max force points, and will saving throws.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Willpower)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .BindIsVisible(model => model.IsWillpowerUpgradeAvailable)
-                            .BindOnClicked(model => model.OnClickUpgradeWillpower());
-                    });
-
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Agility")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Agility - Improves ranged accuracy, evasion, and max stamina.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Agility)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .BindIsVisible(model => model.IsAgilityUpgradeAvailable)
-                            .BindOnClicked(model => model.OnClickUpgradeAgility());
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Social")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Social - Improves your XP gain and leadership capabilities.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Social)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddButton()
-                            .SetWidth(IncreaseButtonSize)
-                            .SetHeight(IncreaseButtonSize)
-                            .SetText("+")
-                            .BindIsVisible(model => model.IsSocialUpgradeAvailable)
-                            .BindOnClicked(model => model.OnClickUpgradeSocial());
-                    });
-                })
-
-                .AddColumn(col =>
+                    tabRow.SetHeight(TabRowHeight);
+                    tabRow.AddToggles()
+                        .AddOption("Resistances")
+                        .AddOption("Crafting")
+                        .BindSelectedValue(model => model.BottomTabId)
+                        .SetWidth(TabPairWidth)
+                        .SetHeight(TabRowHeight);
+                });
+                layout.SetContentPartialElement(CharacterSheetViewModel.TabContentPartialElement);
+                layout.AddSideColumn(col =>
                 {
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .BindText(model => model.Race)
-                            .SetHeight(20f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Main Hand")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Main Hand DMG - Baseline damage ratio before stats and target defenses are taken into account.");
-
-                        row.AddLabel()
-                            .BindText(model => model.MainHandDMG)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .BindTooltip(model => model.MainHandTooltip);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Off Hand")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Off Hand DMG - Baseline damage ratio before stats and target defenses are taken into account.");
-
-                        row.AddLabel()
-                            .BindText(model => model.OffHandDMG)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .BindTooltip(model => model.OffHandTooltip);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Attack")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Attack - Improves damage dealt by physical attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Attack)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Accuracy")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Accuracy - Improves your chance to hit.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Accuracy)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Evasion")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Evasion - Improves your ability to dodge attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.Evasion)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Phys. DEF")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Physical Defense - Reduces the amount of damage taken by physical attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.DefensePhysical)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Force DEF")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Force Defense - Reduces the amount of damage taken by force attacks.");
-
-                        row.AddLabel()
-                            .BindText(model => model.DefenseForce)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Elem. DEF")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Elemental Defenses - Reduces the amount of damage taken by elemental damage. (Order: Fire/Poison/Electrical/Ice)");
-
-                        row.AddLabel()
-                            .BindText(model => model.DefenseElemental)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Control")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Control - Improves quality of crafted items. Also improves chance to auto-craft items. (Order: Smithery/Engineering/Fabrication/Agriculture)");
-
-                        row.AddLabel()
-                            .BindText(model => model.Control)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Craftsmanship")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Craftsmanship - Improves progress of crafted items. Also improves chance to auto-craft items. (Order: Smithery/Engineering/Fabrication/Agriculture)");
-
-                        row.AddLabel()
-                            .BindText(model => model.Craftsmanship)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Sav. Throws")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Saving Throws - Used to resist certain attacks. (Order: Fortitude, Reflex, Will)");
-
-                        row.AddLabel()
-                            .BindText(model => model.SavingThrows)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-                })
-                
-                .AddColumn(col =>
-                {
-                    col.AddRow(row =>
-                    {
-                        row.AddGroup(group =>
-                        {
-                            group.AddColumn(col2 =>
-                            {
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Skills")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickSkills());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Perks")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickPerks());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Quests")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickQuests());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Appearance")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickAppearance());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Recipes")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickRecipes());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("HoloCom")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickHoloCom())
-                                        .BindIsEnabled(model => model.IsHolocomEnabled);
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Key Items")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickKeyItems());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Currencies")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickCurrencies());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Achievements")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickAchievements());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Notes")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickNotes());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Open Trash")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickOpenTrash());
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddButton()
-                                        .SetText("Settings")
-                                        .SetHeight(32f)
-                                        .SetWidth(100f)
-                                        .BindOnClicked(model => model.OnClickSettings());
-                                });
-                            });
-                            group.SetScrollbars(NuiScrollbars.Y);
-                            group.SetWidth(130f);
-                            group.SetShowBorder(false);
-                        });
-                    });
-
+                    AddActionsRail(col);
                     col.BindIsVisible(model => model.IsPlayerMode);
-                })
-                
-                
-                ;
+                }, ActionsWidth);
+            });
 
             return _builder.Build();
+        }
+
+        private static void AddIdentityRail(GuiColumn<CharacterSheetViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.Name)
+                    .SetHeight(24f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.Race)
+                    .SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .BindIsVisible(model => model.IsPlayerMode);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.CharacterType)
+                    .SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .BindIsVisible(model => model.IsPlayerMode);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddImage()
+                    .BindResref(model => model.PortraitResref)
+                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                    .SetAspect(NuiAspect.ExactScaled)
+                    .SetWidth(120f)
+                    .SetHeight(170f);
+                row.AddSpacer();
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddButton()
+                    .SetText("Customize")
+                    .SetHeight(34f)
+                    .SetWidth(140f)
+                    .BindOnClicked(model => model.OnClickChangePortrait());
+                row.AddSpacer();
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddGroup(group =>
+                {
+                    group.SetShowBorder(false);
+                    group.SetScrollbars(NuiScrollbars.Auto);
+                    group.AddColumn(resourceCol =>
+                    {
+                        AddBoundValueRow(resourceCol, "HP", model => model.HP, null, null, 36f, GuiColor.HPColor);
+                        AddBoundValueRow(resourceCol, "FP", model => model.FP, "Force ability resource.", null, 36f, GuiColor.FPColor);
+                        AddBoundValueRow(resourceCol, "STM", model => model.STM, "Non-Force ability resource.", null, 36f, GuiColor.STMColor);
+                        AddBoundValueRow(resourceCol, "Ranks", model => model.SkillRanks, $"Skill ranks contributing to the {Skill.SkillCap}-rank limit.", null, 36f, null, model => model.ShowSkillRanks);
+                        AddBoundValueRow(resourceCol, "SP", model => model.SP, "Perk purchase points.", null, 36f, null, model => model.ShowSP);
+                        AddBoundValueRow(resourceCol, model => model.APOrLevelLabel, model => model.APOrLevel, null, model => model.APOrLevelTooltip, 36f, null, model => model.ShowAPOrLevel);
+                    });
+                });
+            });
+        }
+
+        private static void AddAttributesTab(GuiGroup<CharacterSheetViewModel> group)
+        {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
+            group.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(attributeGroup =>
+                    {
+                        attributeGroup.SetScrollbars(NuiScrollbars.None);
+                        attributeGroup.AddColumn(attributeCol =>
+                        {
+                            AddSectionHeader(attributeCol, "Attributes");
+                            AddAttributeRow(attributeCol, "Might", model => model.Might, "Melee damage, STM, and carry weight.", model => model.IsMightUpgradeAvailable, model => model.OnClickUpgradeMight());
+                            AddAttributeRow(attributeCol, "Perception", model => model.Perception, "Melee accuracy, ranged damage, and crit support.", model => model.IsPerceptionUpgradeAvailable, model => model.OnClickUpgradePerception());
+                            AddAttributeRow(attributeCol, "Vitality", model => model.Vitality, "Max HP, HP regen, and physical toughness.", model => model.IsVitalityUpgradeAvailable, model => model.OnClickUpgradeVitality());
+                            AddAttributeRow(attributeCol, "Willpower", model => model.Willpower, "Force attack, defense, and FP.", model => model.IsWillpowerUpgradeAvailable, model => model.OnClickUpgradeWillpower());
+                            AddAttributeRow(attributeCol, "Agility", model => model.Agility, "Ranged accuracy and evasion.", model => model.IsAgilityUpgradeAvailable, model => model.OnClickUpgradeAgility());
+                            AddAttributeRow(attributeCol, "Social", model => model.Social, "XP gain and leadership.", model => model.IsSocialUpgradeAvailable, model => model.OnClickUpgradeSocial());
+                        });
+                    })
+                        .SetWidth(AttributePanelWidth);
+
+                    row.AddGroup(combatGroup =>
+                    {
+                        combatGroup.SetScrollbars(NuiScrollbars.None);
+                        combatGroup.AddColumn(combatCol =>
+                        {
+                            AddSectionHeader(combatCol, "Combat");
+                            AddBoundValueRow(combatCol, "Main Hand", model => model.MainHandDMG, "Estimated main-hand weapon damage.", model => model.MainHandTooltip, 94f);
+                            AddBoundValueRow(combatCol, "Off Hand", model => model.OffHandDMG, "Estimated off-hand weapon damage.", model => model.OffHandTooltip, 94f);
+                            AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, 94f);
+                            AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical attack rating used to scale weapon and physical ability damage.", null, 94f);
+                            AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force attack rating used to scale Force ability damage.", null, 94f);
+                            AddBoundValueRow(combatCol, "Weapon Acc.", model => model.WeaponAccuracy, "Underlying main-hand weapon accuracy rating. Actual hit chance depends on target Evasion and ability-specific modifiers.", null, 94f);
+                            AddBoundValueRow(combatCol, "Force Acc.", model => model.ForceAccuracy, "Underlying Force ability accuracy rating. Actual hit chance depends on target Evasion, Force affinity, and direct ability hit chance modifiers.", null, 94f);
+                            AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Evasion rating used to oppose attacks and detrimental abilities.", null, 94f);
+                            AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, 94f);
+                            AddBoundValueRow(combatCol, "Force DEF", model => model.ForceDefense, "Defense against Force attacks.", null, 94f);
+                        });
+                    })
+                        .SetWidth(CombatPanelWidth);
+                });
+            });
+        }
+
+        private static void AddStatsTab(GuiGroup<CharacterSheetViewModel> group)
+        {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
+            group.AddColumn(col =>
+            {
+                col.AddRow(tableRow =>
+                {
+                    tableRow.AddGroup(table =>
+                    {
+                        table.SetScrollbars(NuiScrollbars.None);
+                        table.AddColumn(tableCol =>
+                        {
+                            tableCol.AddTable<CharacterSheetViewModel>(t => t
+                                .AddColumn("STAT", 190f, model => model.StatNames, model => model.StatTooltips, "Character stat.")
+                                .AddColumn("VALUE", 0f, model => model.StatValues, model => model.StatTooltips, "Current value.")
+                                .SetRowHeight(24f));
+                        });
+                    })
+                        .SetWidth(StatsPanelWidth);
+                });
+            });
+        }
+
+        private static void AddResistancesTab(GuiGroup<CharacterSheetViewModel> group)
+        {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
+            group.AddColumn(col =>
+            {
+                col.AddRow(tableRow =>
+                {
+                    tableRow.AddGroup(table =>
+                    {
+                        table.SetScrollbars(NuiScrollbars.None);
+                        table.AddColumn(tableCol =>
+                        {
+                            tableCol.AddTable<CharacterSheetViewModel>(t => t
+                                .AddColumn("TYPE", 90f, "Resistance family.", model => model.ResistanceNames)
+                                .AddColumn("SCORE", 55f, "Higher reduces impact.", model => model.ResistanceScores)
+                                .AddColumn("DAMAGE", 90f, "Damage received.", model => model.ResistanceDamageTaken)
+                                .AddColumn("STATUS", 0f, "Status duration.", model => model.ResistanceStatusDurations)
+                                .SetRowHeight(24f));
+                        });
+                    })
+                        .SetWidth(ResistancePanelWidth);
+                });
+            });
+        }
+
+        private static void AddCraftingTab(GuiGroup<CharacterSheetViewModel> group)
+        {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
+            group.AddColumn(col =>
+            {
+                col.AddRow(tableRow =>
+                {
+                    tableRow.AddGroup(table =>
+                    {
+                        table.SetScrollbars(NuiScrollbars.None);
+                        table.AddColumn(tableCol =>
+                        {
+                            tableCol.AddTable<CharacterSheetViewModel>(t => t
+                                .AddColumn("CRAFT", 135f, "Crafting skill.", model => model.CraftNames)
+                                .AddColumn("CONTROL", 82f, "Craft quality and auto-craft chance.", model => model.CraftControls)
+                                .AddColumn("CRAFTSMANSHIP", 0f, "Craft progress and auto-craft chance.", model => model.CraftCraftsmanship)
+                                .SetRowHeight(28f));
+                        });
+                    })
+                        .SetWidth(CraftingPanelWidth);
+                });
+            });
+        }
+
+        private static void AddActionsRail(GuiColumn<CharacterSheetViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddGroup(group =>
+                {
+                    group.SetScrollbars(NuiScrollbars.Y);
+                    group.SetShowBorder(false);
+                    group.AddColumn(actions =>
+                    {
+                        AddActionButton(actions, "Skills", model => model.OnClickSkills());
+                        AddActionButton(actions, "Perks", model => model.OnClickPerks());
+                        AddActionButton(actions, "Techniques", model => model.OnClickTechniques(), model => model.IsTechniquesEnabled);
+                        AddActionButton(actions, "Appearance", model => model.OnClickAppearance());
+                        AddActionButton(actions, "Disguises", model => model.OnClickDisguises());
+                        AddActionButton(actions, "Quests", model => model.OnClickQuests());
+                        AddActionButton(actions, "Open Trash", model => model.OnClickOpenTrash());
+                        AddActionButton(actions, "HoloCom", model => model.OnClickHoloCom(), model => model.IsHolocomEnabled);
+                        AddActionButton(actions, "Recipes", model => model.OnClickRecipes());
+                        AddActionButton(actions, "Currencies", model => model.OnClickCurrencies());
+                        AddActionButton(actions, "Key Items", model => model.OnClickKeyItems());
+                        AddActionButton(actions, "Notes", model => model.OnClickNotes());
+                        AddActionButton(actions, "Guide", model => model.OnClickGuide());
+                        AddActionButton(actions, "Achievements", model => model.OnClickAchievements());
+                        AddActionButton(actions, "Settings", model => model.OnClickSettings());
+                    });
+                })
+                    .SetWidth(128f);
+            });
+        }
+
+        private static void AddSectionHeader(GuiColumn<CharacterSheetViewModel> col, string text)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText(text)
+                    .SetHeight(22f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+        }
+
+        private static void AddActionButton(
+            GuiColumn<CharacterSheetViewModel> col,
+            string text,
+            Expression<Func<CharacterSheetViewModel, Action>> clickExpression,
+            Expression<Func<CharacterSheetViewModel, bool>> enabledExpression = null)
+        {
+            col.AddRow(row =>
+            {
+                var button = row.AddButton()
+                    .SetText(text)
+                    .SetHeight(32f)
+                    .SetWidth(104f)
+                    .BindOnClicked(clickExpression);
+
+                if (enabledExpression != null)
+                {
+                    button.BindIsEnabled(enabledExpression);
+                }
+
+                row.AddSpacer();
+            });
+        }
+
+        private static void AddAttributeRow(
+            GuiColumn<CharacterSheetViewModel> col,
+            string label,
+            Expression<Func<CharacterSheetViewModel, int>> valueExpression,
+            string tooltip,
+            Expression<Func<CharacterSheetViewModel, bool>> upgradeVisibleExpression,
+            Expression<Func<CharacterSheetViewModel, Action>> clickExpression)
+        {
+            const string attributeCapTooltip = " AP upgrades stop at 26. A racial bonus may raise one attribute to 27; that extra point remains part of combat formulas, while direct-effect scaling reaches its designed cap at 26.";
+
+            col.AddRow(row =>
+            {
+                row.SetHeight(StatRowHeight);
+
+                row.AddLabel()
+                    .SetText(label)
+                    .SetWidth(112f)
+                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetTooltip(tooltip + attributeCapTooltip);
+
+                row.AddLabel()
+                    .BindText(valueExpression)
+                    .SetWidth(42f)
+                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                row.AddButton()
+                    .SetWidth(IncreaseButtonSize)
+                    .SetHeight(IncreaseButtonSize)
+                    .SetText("+")
+                    .BindIsVisible(upgradeVisibleExpression)
+                    .BindOnClicked(clickExpression);
+            });
+        }
+
+        private static void AddBoundValueRow<TValue>(
+            GuiColumn<CharacterSheetViewModel> col,
+            string label,
+            Expression<Func<CharacterSheetViewModel, TValue>> valueExpression,
+            string labelTooltip = null,
+            Expression<Func<CharacterSheetViewModel, string>> valueTooltipExpression = null,
+            float labelWidth = 72f,
+            GuiColor color = null,
+            Expression<Func<CharacterSheetViewModel, bool>> visibleExpression = null)
+        {
+            col.AddRow(row =>
+            {
+                row.SetHeight(StatRowHeight);
+
+                var labelElement = row.AddLabel()
+                    .SetText(label)
+                    .SetWidth(labelWidth)
+                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                if (!string.IsNullOrWhiteSpace(labelTooltip))
+                {
+                    labelElement.SetTooltip(labelTooltip);
+                }
+
+                if (color != null)
+                {
+                    labelElement.SetColor(color);
+                }
+
+                var value = row.AddLabel()
+                    .BindText(valueExpression)
+                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                if (!string.IsNullOrWhiteSpace(labelTooltip))
+                {
+                    value.SetTooltip(labelTooltip);
+                }
+
+                if (valueTooltipExpression != null)
+                {
+                    value.BindTooltip(valueTooltipExpression);
+                }
+
+                if (color != null)
+                {
+                    value.SetColor(color);
+                }
+
+                if (visibleExpression != null)
+                {
+                    row.BindIsVisible(visibleExpression);
+                }
+            });
+        }
+
+        private static void AddBoundValueRow<TLabel, TValue>(
+            GuiColumn<CharacterSheetViewModel> col,
+            Expression<Func<CharacterSheetViewModel, TLabel>> labelExpression,
+            Expression<Func<CharacterSheetViewModel, TValue>> valueExpression,
+            string labelTooltip = null,
+            Expression<Func<CharacterSheetViewModel, string>> valueTooltipExpression = null,
+            float labelWidth = 72f,
+            GuiColor color = null,
+            Expression<Func<CharacterSheetViewModel, bool>> visibleExpression = null)
+        {
+            col.AddRow(row =>
+            {
+                row.SetHeight(StatRowHeight);
+
+                var label = row.AddLabel()
+                    .BindText(labelExpression)
+                    .SetWidth(labelWidth)
+                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                if (!string.IsNullOrWhiteSpace(labelTooltip))
+                {
+                    label.SetTooltip(labelTooltip);
+                }
+
+                if (color != null)
+                {
+                    label.SetColor(color);
+                }
+
+                var value = row.AddLabel()
+                    .BindText(valueExpression)
+                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                if (!string.IsNullOrWhiteSpace(labelTooltip))
+                {
+                    value.SetTooltip(labelTooltip);
+                }
+
+                if (valueTooltipExpression != null)
+                {
+                    label.BindTooltip(valueTooltipExpression);
+                    value.BindTooltip(valueTooltipExpression);
+                }
+
+                if (color != null)
+                {
+                    value.SetColor(color);
+                }
+
+                if (visibleExpression != null)
+                {
+                    row.BindIsVisible(visibleExpression);
+                }
+            });
         }
     }
 }

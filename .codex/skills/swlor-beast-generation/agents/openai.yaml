@@ -1,0 +1,4 @@
+interface:
+  display_name: "SWLOR Beast Generation"
+  short_description: "Add SWLOR beast data safely"
+  default_prompt: "Use $swlor-beast-generation to add a new SWLOR beast from source data through implementation and validation."

@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             x:Class="SWLOR.Toolset.Editors.Items.ItemDocumentView"
+             x:DataType="items:ItemDocumentViewModel">
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                   Foreground="{DynamicResource AmberBrush}" FontSize="12"
+                   TextTrimming="CharacterEllipsis"
+                   DataContext="{Binding Editor}" x:DataType="items:ItemEditorViewModel"
+                   Text="{Binding Incomplete}" IsVisible="{Binding IsIncomplete}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+          <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <items:ItemEditorView DataContext="{Binding Editor}" />
+  </DockPanel>
+</UserControl>

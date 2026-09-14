@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Core.Async.Awaiters
+namespace SWLOR.Game.Server.Core.Async.Awaiters
 {
     public interface IAwaitable
     {

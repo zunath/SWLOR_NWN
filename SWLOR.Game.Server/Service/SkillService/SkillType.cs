@@ -1,4 +1,3 @@
-﻿using System;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SkillService
@@ -16,49 +15,6 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false)]
         Invalid = 0,
-
-        [Skill(SkillCategoryType.Combat,
-            "One-Handed",
-            50,
-            true,
-            "Ability to use one-handed weapons like vibroblades, finesse vibroblades, and lightsabers.",
-            true,
-            false,
-            false,
-            CombatPointCategoryType.Weapon)]
-        OneHanded = 1,
-
-        [Skill(SkillCategoryType.Combat,
-            "Two-Handed",
-            50,
-            true,
-            "Ability to use heavy weapons like heavy vibroblades, polearms, and saberstaffs in combat.",
-            true,
-            false,
-            false,
-            CombatPointCategoryType.Weapon)]
-        TwoHanded = 2,
-
-        [Skill(SkillCategoryType.Combat,
-            "Martial Arts", 50,
-            true,
-            "Ability to fight using katars and staves in combat.",
-            true,
-            false,
-            false,
-            CombatPointCategoryType.Weapon)]
-        MartialArts = 3,
-
-        [Skill(SkillCategoryType.Combat,
-            "Ranged",
-            50,
-            true,
-            "Ability to use ranged weapons like pistols, shurikens, and rifles in combat.",
-            true,
-            false,
-            false,
-            CombatPointCategoryType.Weapon)]
-        Ranged = 4,
 
         [Skill(SkillCategoryType.Combat,
             "Force",
@@ -128,7 +84,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to harvest raw materials and scavenge for supplies.",
             true,
-            false, 
+            false,
             false)]
         Gathering = 11,
 
@@ -362,7 +318,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false,
             false)]
-            Nautila = 34,
+        Nautila = 34,
 
         [Skill(SkillCategoryType.Languages,
             "Ewokese",
@@ -372,7 +328,174 @@ namespace SWLOR.Game.Server.Service.SkillService
            false,
            false,
            false)]
-           Ewokese = 35,
+        Ewokese = 35,
+
+        [Skill(SkillCategoryType.Combat,
+            "Vibroblade",
+            50,
+            true,
+            "Ability to use vibroblades in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Vibroblade = 36,
+
+        [Skill(SkillCategoryType.Combat,
+            "Vibroknife",
+            50,
+            true,
+            "Ability to use vibroknives in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Vibroknife = 37,
+
+        [Skill(SkillCategoryType.Combat,
+            "Lightsaber",
+            50,
+            true,
+            "Ability to use lightsabers in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon,
+            CharacterType.ForceSensitive)]
+        Lightsaber = 38,
+
+        [Skill(SkillCategoryType.Combat,
+            "Heavy Vibroblade",
+            50,
+            true,
+            "Ability to use heavy vibroblades in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        HeavyVibroblade = 39,
+
+        [Skill(SkillCategoryType.Combat,
+            "Spear",
+            50,
+            true,
+            "Ability to use spears and polearms in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Spear = 40,
+
+        [Skill(SkillCategoryType.Combat,
+            "Twin Blade",
+            50,
+            true,
+            "Ability to use twin blades in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        TwinBlade = 41,
+
+        [Skill(SkillCategoryType.Combat,
+            "Saberstaff",
+            50,
+            true,
+            "Ability to use saberstaffs in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon,
+            CharacterType.ForceSensitive)]
+        Saberstaff = 42,
+
+        [Skill(SkillCategoryType.Combat,
+            "Katar",
+            50,
+            true,
+            "Ability to use katars in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Katar = 43,
+
+        [Skill(SkillCategoryType.Combat,
+            "Staff",
+            50,
+            true,
+            "Ability to use staves in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Staff = 44,
+
+        [Skill(SkillCategoryType.Combat,
+            "Pistol",
+            50,
+            true,
+            "Ability to use pistols in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Pistol = 45,
+
+        [Skill(SkillCategoryType.Combat,
+            "Rifle",
+            50,
+            true,
+            "Ability to use rifles in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Rifle = 46,
+
+        [Skill(SkillCategoryType.Combat,
+            "Throwing",
+            50,
+            true,
+            "Ability to use throwing weapons in combat.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon)]
+        Throwing = 47,
+
+        [Skill(SkillCategoryType.Combat,
+            "Mimicry",
+            50,
+            true,
+            "Ability to analyze enemy creatures and replicate their combat techniques.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Utility)]
+        Mimicry = 48,
+
+        [Skill(SkillCategoryType.Utility,
+            "Espionage",
+            50,
+            true,
+            "Ability to craft poisons, traps, employ stealth, and slice security systems.",
+            true,
+            true,
+            false,
+            CombatPointCategoryType.Utility,
+            CharacterType.Standard)]
+        Espionage = 49,
+
+        [Skill(SkillCategoryType.Languages,
+            "Arkanian",
+            20,
+            true,
+            "Ability to speak the Arkanian language.",
+            false,
+            false,
+            false)]
+        Arkanian = 50,
     }
 
     public class SkillAttribute : Attribute
@@ -387,7 +510,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         public bool IsShownInResearchMenu { get; set; }
         public CharacterType CharacterTypeRestriction { get; set; }
 
-        public CombatPointCategoryType CombatPointCategory { get; set; } 
+        public CombatPointCategoryType CombatPointCategory { get; set; }
 
         public SkillAttribute(
             SkillCategoryType category,

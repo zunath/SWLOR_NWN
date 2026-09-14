@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
-    
+
     public delegate void ShipModuleEquippedDelegate(ShipStatus shipStatus, int moduleBonus);
     public delegate void ShipModuleUnequippedDelegate(ShipStatus shipStatus, int moduleBonus);
     public delegate float ShipModuleCalculateRecastDelegate(uint creature, ShipStatus shipStatus, int moduleBonus);

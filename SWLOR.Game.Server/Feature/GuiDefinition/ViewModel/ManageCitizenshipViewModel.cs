@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -70,9 +69,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(Entity.Player.IsDeleted), false));
 
             var cityDetails = new GuiBindingList<string>();
+            var mayorName = PlayerName.GetPlainDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name);
 
             cityDetails.Add($"City Name: {dbCity.CustomName}");
-            cityDetails.Add($"Mayor: {dbMayorPlayer.Name}");
+            cityDetails.Add($"Mayor: {mayorName}");
             cityDetails.Add($"# Citizens: {dbCitizenCount}");
             cityDetails.Add($"Level: {Property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
             cityDetails.Add($"Established: {dbCity.DateCreated:yyyy-MM-dd hh:mm:ss}");
@@ -131,6 +131,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
         }
 
+        /// <summary>
+        /// Creates the confirmation action for registering or revoking citizenship in this city.
+        /// Successful membership changes clear unpaid citizenship taxes before saving the player.
+        /// </summary>
+        /// <returns>The citizenship registration or revocation action.</returns>
         public Action RegisterRevoke() => () =>
         {
             var playerId = GetObjectUUID(Player);
@@ -185,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             s.ChildPropertyIds.ContainsKey(PropertyChildType.Interior)
                                 ? s.ChildPropertyIds[PropertyChildType.Interior]
                                 : new List<string>()).ToList();
-                        
+
                         // Always remove any city permissions
                         interiorPropertyIds.Add(_cityPropertyId);
 
@@ -234,6 +239,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
+                        // Clear any stale debt left by a previously deleted city.
+                        dbPlayer.PropertyOwedTaxes = 0;
 
                         DB.Set(dbPlayer);
 

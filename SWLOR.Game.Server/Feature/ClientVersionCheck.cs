@@ -1,4 +1,3 @@
-using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             // Version requirements are not met. Cancel the connection event and provide a reason why as well as instructions to the player on what to do.
-            
+
             var playerName = EventsPlugin.GetEventData("PLAYER_NAME");
             var cdKey = EventsPlugin.GetEventData("CDKEY");
             var ipAddress = EventsPlugin.GetEventData("IP_ADDRESS");

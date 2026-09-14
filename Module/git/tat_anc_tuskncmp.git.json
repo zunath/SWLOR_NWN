@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 567
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -130,7 +150,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "Lockable": {
           "type": "byte",
@@ -143,7 +163,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -3782,7 +3802,7 @@
           "id": 14817,
           "type": "cexolocstring",
           "value": {
-            "2": "q1_entrance_tusken"
+            "2": "Tusken Entrance"
           }
         },
         "MapNote": {

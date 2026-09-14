@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace SWLOR.Game.Server.Service.KeyItemService
 {
     public enum KeyItemCategoryType
@@ -15,7 +13,9 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItemCategory("Blueprints", true)]
         Blueprints = 4,
         [KeyItemCategory("Keys", true)]
-        Keys = 5
+        Keys = 5,
+        [KeyItemCategory("Incubation Field Notes", true)]
+        FieldNotes = 6
     }
 
     public class KeyItemCategoryAttribute : Attribute

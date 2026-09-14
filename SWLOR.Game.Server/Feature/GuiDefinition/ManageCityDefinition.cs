@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Manage City")
-                
+
                 .AddColumn(layout =>
                 {
                     layout.AddRow(row =>
@@ -55,23 +55,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(25f)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle);
-                            });
-
-                            col.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(25f)
-                                    .BindText(model => model.BankUpgradeLevel)
-                                    .BindTooltip(model => model.BankCurrentUpgrade);
-
-                                row.AddButton()
-                                    .SetText("Upgrade Banks")
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.UpgradeBankLevel())
-                                    .BindIsEnabled(model => model.CanUpgradeBanks)
-                                    .BindTooltip(model => model.BankNextUpgrade);
                             });
 
                             col.AddRow(row =>

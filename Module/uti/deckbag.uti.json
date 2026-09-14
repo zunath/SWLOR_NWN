@@ -34,7 +34,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This bag is used to store the decks you are not playing with.  Make sure you put your unused decks in this bag before the game or you may find yourself playing with cards you did not intend."
     }
   },
   "Identified": {
@@ -79,6 +79,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "deckbag"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

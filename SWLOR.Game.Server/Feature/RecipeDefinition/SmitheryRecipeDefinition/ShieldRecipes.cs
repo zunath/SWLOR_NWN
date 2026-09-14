@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
@@ -12,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Shields();
+            IntermediateShields();
 
             return _builder.Build();
         }
@@ -24,7 +24,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("bm_shield")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 4)
                 .Component("wood", 2);
@@ -35,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_shield")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
@@ -46,7 +44,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("qk_shield")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 4)
                 .Component("ancient_wood", 2);
@@ -57,7 +54,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ar_shield")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 4)
                 .Component("aracia_wood", 2);
@@ -68,7 +64,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ec_shield")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 4)
                 .Component("hyphae_wood", 2);
@@ -79,7 +74,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ch_shield")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
@@ -91,6 +85,50 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
+        }
+
+        private void IntermediateShields()
+        {
+            // Warden Shield
+            _builder.Create(RecipeType.WardenShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("fld_bul_shield")
+                .Level(11)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 4)
+                .Component("wood", 2);
+
+            // Bastion Shield
+            _builder.Create(RecipeType.BastionShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("vet_bul_shield")
+                .Level(21)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 4)
+                .Component("fine_wood", 2);
+
+            // Sentinel Shield
+            _builder.Create(RecipeType.SentinelShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("prm_bul_shield")
+                .Level(31)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 4)
+                .Component("ancient_wood", 2);
+
+            // Aegis Shield
+            _builder.Create(RecipeType.AegisShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("asc_bul_shield")
+                .Level(41)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 4)
+                .Component("aracia_wood", 2);
+
         }
 
     }

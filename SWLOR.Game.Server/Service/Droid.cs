@@ -1,16 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -21,7 +22,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class Droid
     {
-        private static readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
         private static readonly Dictionary<int, int> _levelsByTier = new();
         private static readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
@@ -34,6 +34,23 @@ namespace SWLOR.Game.Server.Service
         private const string DroidItemId = "DROID_ITEM_ID";
         private const float RecastDelaySeconds = 1800f;
 
+        public static string GetInstructionDiscValidationError(uint user, uint item)
+        {
+            if (!GetIsObjectValid(item) || GetItemPossessor(item) != user)
+                return "Select an instruction disc from your inventory.";
+
+            if (GetResRef(item) == DroidControlItemResref)
+                return "A droid controller cannot be used as an instruction disc.";
+
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == ItemPropertyType.DroidInstruction)
+                    return string.Empty;
+            }
+
+            return "That item is not a droid instruction disc.";
+        }
+
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
@@ -42,7 +59,6 @@ namespace SWLOR.Game.Server.Service
         {
             CacheDroidLevels();
             CachePersonalities();
-            CacheDefaultTierPerks();
         }
 
         private static void CacheDroidLevels()
@@ -62,121 +78,6 @@ namespace SWLOR.Game.Server.Service
             _droidPersonalities[DroidPersonalityType.Slang] = new DroidSlangPersonality();
             _droidPersonalities[DroidPersonalityType.Bland] = new DroidBlandPersonality();
             _droidPersonalities[DroidPersonalityType.Worshipful] = new DroidWorshipfulPersonality();
-        }
-
-        private static void CacheDefaultTierPerks()
-        {
-            _defaultPerksByTier[1] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[2] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[3] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[4] = new Dictionary<PerkType, int>();
-            _defaultPerksByTier[5] = new Dictionary<PerkType, int>();
-
-            // Tier 1
-            _defaultPerksByTier[1][PerkType.WeaponFocusVibroblades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusFinesseVibroblades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusHeavyVibroblades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusPolearms] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusTwinBlades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusKatars] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusStaves] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusPistols] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusRifles] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusThrowingWeapons] = 1;
-            _defaultPerksByTier[1][PerkType.PointBlankShot] = 1;
-
-            // Tier 2
-            _defaultPerksByTier[2][PerkType.WeaponFocusVibroblades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusFinesseVibroblades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusHeavyVibroblades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusPolearms] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusTwinBlades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusKatars] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusStaves] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusPistols] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusRifles] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusThrowingWeapons] = 2;
-            _defaultPerksByTier[2][PerkType.RapidReload] = 1;
-
-            // Tier 3
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalVibroblades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalFinesseVibroblades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalHeavyVibroblades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalPolearms] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalTwinBlades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalKatars] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalStaves] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalPistols] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalRifles] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalThrowingWeapons] = 1;
-
-            _defaultPerksByTier[3][PerkType.VibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.FinesseVibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.HeavyVibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.PolearmMastery] = 1;
-            _defaultPerksByTier[3][PerkType.TwinBladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.KatarMastery] = 1;
-            _defaultPerksByTier[3][PerkType.StaffMastery] = 1;
-            _defaultPerksByTier[3][PerkType.PistolMastery] = 1;
-            _defaultPerksByTier[3][PerkType.RifleMastery] = 1;
-            _defaultPerksByTier[3][PerkType.ThrowingWeaponMastery] = 1;
-
-            // Tier 4
-
-            // Tier 5
-            _defaultPerksByTier[5][PerkType.VibrobladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.FinesseVibrobladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.HeavyVibrobladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.PolearmMastery] = 2;
-            _defaultPerksByTier[5][PerkType.TwinBladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.KatarMastery] = 2;
-            _defaultPerksByTier[5][PerkType.StaffMastery] = 2;
-            _defaultPerksByTier[5][PerkType.PistolMastery] = 2;
-            _defaultPerksByTier[5][PerkType.RifleMastery] = 2;
-            _defaultPerksByTier[5][PerkType.ThrowingWeaponMastery] = 2;
-
-            for (var level = 5; level >= 1; level--)
-            {
-                // Standard perks to give droids per level.
-                _defaultPerksByTier[level][PerkType.VibrobladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.FinesseVibrobladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.HeavyVibrobladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.PolearmProficiency] = level;
-                _defaultPerksByTier[level][PerkType.TwinBladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.KatarProficiency] = level;
-                _defaultPerksByTier[level][PerkType.StaffProficiency] = level;
-                _defaultPerksByTier[level][PerkType.PistolProficiency] = level;
-                _defaultPerksByTier[level][PerkType.RifleProficiency] = level;
-                _defaultPerksByTier[level][PerkType.ThrowingWeaponProficiency] = level;
-                _defaultPerksByTier[level][PerkType.CloakProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BeltProficiency] = level;
-                _defaultPerksByTier[level][PerkType.RingProficiency] = level;
-                _defaultPerksByTier[level][PerkType.NecklaceProficiency] = level;
-                _defaultPerksByTier[level][PerkType.ShieldProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BreastplateProficiency] = level;
-                _defaultPerksByTier[level][PerkType.HelmetProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BracerProficiency] = level;
-                _defaultPerksByTier[level][PerkType.LeggingProficiency] = level;
-                _defaultPerksByTier[level][PerkType.TunicProficiency] = level;
-                _defaultPerksByTier[level][PerkType.CapProficiency] = level;
-                _defaultPerksByTier[level][PerkType.GloveProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BootProficiency] = level;
-
-                // Previous levels' perks
-                var levelCopy = level;
-                var previousPerks = _defaultPerksByTier.Where(x => x.Key < levelCopy)
-                    .OrderByDescending(o => o.Key);
-                foreach (var (_, perksForThisLevel) in previousPerks)
-                {
-                    foreach (var (perkType, perkLevel) in perksForThisLevel)
-                    {
-                        if (!_defaultPerksByTier[level].ContainsKey(perkType))
-                        {
-                            _defaultPerksByTier[level][perkType] = perkLevel;
-                        }
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -336,7 +237,33 @@ namespace SWLOR.Game.Server.Service
 
             constructedDroid.EquippedItems[slot] = constructedDroid.Inventory[itemId];
             constructedDroid.Inventory.Remove(itemId);
-            
+
+            SaveConstructedDroid(controller, constructedDroid);
+        }
+
+        /// <summary>
+        /// Updates the controller-backed snapshot for an item currently equipped by a droid.
+        /// </summary>
+        /// <param name="droid">The droid wearing the item.</param>
+        /// <param name="item">The equipped item to serialize.</param>
+        public static void UpdateEquippedItemSnapshot(uint droid, uint item)
+        {
+            if (!IsDroid(droid) || !GetIsObjectValid(item))
+                return;
+
+            var controller = GetControllerItem(droid);
+            if (!GetIsObjectValid(controller))
+                return;
+
+            var slot = Item.GetItemSlot(droid, item);
+            if (slot == InventorySlot.Invalid)
+                return;
+
+            var constructedDroid = LoadConstructedDroid(controller);
+            if (!constructedDroid.EquippedItems.ContainsKey(slot))
+                return;
+
+            constructedDroid.EquippedItems[slot] = ObjectPlugin.Serialize(item);
             SaveConstructedDroid(controller, constructedDroid);
         }
 
@@ -368,9 +295,9 @@ namespace SWLOR.Game.Server.Service
 
             var constructedDroid = LoadConstructedDroid(controller);
 
-            constructedDroid.Inventory[itemId] = constructedDroid.EquippedItems[slot];
+            constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
             constructedDroid.EquippedItems.Remove(slot);
-            
+
             SaveConstructedDroid(controller, constructedDroid);
         }
 
@@ -394,9 +321,7 @@ namespace SWLOR.Game.Server.Service
                     switch (subType)
                     {
                         case DroidStatSubType.Tier:
-                            details.Tier = value < 1 ? 1 : value;
-                            details.Perks = _defaultPerksByTier[details.Tier]
-                                .ToDictionary(x => x.Key, y => y.Value);
+                            details.Tier = Math.Clamp(value, 1, 5);
                             break;
                         case DroidStatSubType.AISlots:
                             details.AISlots += value;
@@ -425,43 +350,74 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.SOC:
                             details.SOC += value;
                             break;
-                        case DroidStatSubType.OneHanded:
-                            if (!details.Skills.ContainsKey(SkillType.OneHanded))
-                                details.Skills[SkillType.OneHanded] = value;
-                            else
-                                details.Skills[SkillType.OneHanded] += value;
+                        case DroidStatSubType.Armor:
+                            AddSkillBonus(details.Skills, SkillType.Armor, value);
                             break;
-                        case DroidStatSubType.TwoHanded:
-                            if (!details.Skills.ContainsKey(SkillType.TwoHanded))
-                                details.Skills[SkillType.TwoHanded] = value;
-                            else
-                                details.Skills[SkillType.TwoHanded] += value;
+                        case DroidStatSubType.ResistanceFire:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Fire, value);
                             break;
-                        case DroidStatSubType.MartialArts:
-                            if (!details.Skills.ContainsKey(SkillType.MartialArts))
-                                details.Skills[SkillType.MartialArts] = value;
-                            else
-                                details.Skills[SkillType.MartialArts] += value;
+                        case DroidStatSubType.ResistancePoison:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Poison, value);
                             break;
-                        case DroidStatSubType.Ranged:
-                            if (!details.Skills.ContainsKey(SkillType.Ranged))
-                                details.Skills[SkillType.Ranged] = value;
-                            else
-                                details.Skills[SkillType.Ranged] += value;
+                        case DroidStatSubType.ResistanceElectrical:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Electrical, value);
+                            break;
+                        case DroidStatSubType.ResistanceIce:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Ice, value);
+                            break;
+                        case DroidStatSubType.ResistanceMind:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mind, value);
+                            break;
+                        case DroidStatSubType.ResistanceMobility:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mobility, value);
+                            break;
+                        case DroidStatSubType.ResistanceTrauma:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Trauma, value);
+                            break;
+                        case DroidStatSubType.ResistanceDisruption:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Disruption, value);
+                            break;
+                        case DroidStatSubType.Vibroblade:
+                            AddSkillBonus(details.Skills, SkillType.Vibroblade, value);
+                            break;
+                        case DroidStatSubType.Vibroknife:
+                            AddSkillBonus(details.Skills, SkillType.Vibroknife, value);
+                            break;
+                        case DroidStatSubType.Lightsaber:
+                            AddSkillBonus(details.Skills, SkillType.Lightsaber, value);
+                            break;
+                        case DroidStatSubType.HeavyVibroblade:
+                            AddSkillBonus(details.Skills, SkillType.HeavyVibroblade, value);
+                            break;
+                        case DroidStatSubType.Spear:
+                            AddSkillBonus(details.Skills, SkillType.Spear, value);
+                            break;
+                        case DroidStatSubType.TwinBlade:
+                            AddSkillBonus(details.Skills, SkillType.TwinBlade, value);
+                            break;
+                        case DroidStatSubType.Saberstaff:
+                            AddSkillBonus(details.Skills, SkillType.Saberstaff, value);
+                            break;
+                        case DroidStatSubType.Katar:
+                            AddSkillBonus(details.Skills, SkillType.Katar, value);
+                            break;
+                        case DroidStatSubType.Staff:
+                            AddSkillBonus(details.Skills, SkillType.Staff, value);
+                            break;
+                        case DroidStatSubType.Pistol:
+                            AddSkillBonus(details.Skills, SkillType.Pistol, value);
+                            break;
+                        case DroidStatSubType.Rifle:
+                            AddSkillBonus(details.Skills, SkillType.Rifle, value);
+                            break;
+                        case DroidStatSubType.Throwing:
+                            AddSkillBonus(details.Skills, SkillType.Throwing, value);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }
 
-                else if (type == ItemPropertyType.DroidInstruction)
-                {
-                    var perkType = (PerkType)GetItemPropertySubType(ip);
-                    var level = GetItemPropertyCostTableValue(ip);
-
-                    if(!details.Perks.ContainsKey(perkType) || details.Perks[perkType] < level)
-                        details.Perks[perkType] = level;
-                }
                 else if (type == ItemPropertyType.DroidPersonality)
                 {
                     var personalityType = (DroidPersonalityType)GetItemPropertySubType(ip);
@@ -474,8 +430,26 @@ namespace SWLOR.Game.Server.Service
 
             var constructedDroid = LoadConstructedDroid(controller);
             details.CustomName = constructedDroid.Name;
+            details.Perks = DroidInstructions.SelectActive(constructedDroid.ActivePerks, details.Tier, details.AISlots)
+                .ToDictionary(instruction => instruction.Perk, instruction => instruction.Level);
 
             return details;
+        }
+
+        private static void AddSkillBonus(IDictionary<SkillType, int> skills, SkillType skill, int value)
+        {
+            if (!skills.ContainsKey(skill))
+                skills[skill] = value;
+            else
+                skills[skill] += value;
+        }
+
+        private static void AddResistanceBonus(IDictionary<ResistanceType, int> resistances, ResistanceType type, int value)
+        {
+            if (!resistances.ContainsKey(type))
+                resistances[type] = value;
+            else
+                resistances[type] += value;
         }
 
         /// <summary>
@@ -498,7 +472,7 @@ namespace SWLOR.Game.Server.Service
                     switch (subType)
                     {
                         case DroidStatSubType.Tier:
-                            details.Tier = value < 1 ? 1 : value;
+                            details.Tier = Math.Clamp(value, 1, 5);
                             break;
                         case DroidStatSubType.AISlots:
                             details.AISlots += value;
@@ -527,17 +501,68 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.SOC:
                             details.SOC += value;
                             break;
-                        case DroidStatSubType.OneHanded:
-                            details.OneHanded += value;
+                        case DroidStatSubType.Armor:
+                            details.Armor += value;
                             break;
-                        case DroidStatSubType.TwoHanded:
-                            details.TwoHanded += value;
+                        case DroidStatSubType.ResistanceFire:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Fire, value);
                             break;
-                        case DroidStatSubType.MartialArts:
-                            details.MartialArts += value;
+                        case DroidStatSubType.ResistancePoison:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Poison, value);
                             break;
-                        case DroidStatSubType.Ranged:
-                            details.Ranged += value;
+                        case DroidStatSubType.ResistanceElectrical:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Electrical, value);
+                            break;
+                        case DroidStatSubType.ResistanceIce:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Ice, value);
+                            break;
+                        case DroidStatSubType.ResistanceMind:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mind, value);
+                            break;
+                        case DroidStatSubType.ResistanceMobility:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mobility, value);
+                            break;
+                        case DroidStatSubType.ResistanceTrauma:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Trauma, value);
+                            break;
+                        case DroidStatSubType.ResistanceDisruption:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Disruption, value);
+                            break;
+                        case DroidStatSubType.Vibroblade:
+                            details.Vibroblade += value;
+                            break;
+                        case DroidStatSubType.Vibroknife:
+                            details.Vibroknife += value;
+                            break;
+                        case DroidStatSubType.Lightsaber:
+                            details.Lightsaber += value;
+                            break;
+                        case DroidStatSubType.HeavyVibroblade:
+                            details.HeavyVibroblade += value;
+                            break;
+                        case DroidStatSubType.Spear:
+                            details.Spear += value;
+                            break;
+                        case DroidStatSubType.TwinBlade:
+                            details.TwinBlade += value;
+                            break;
+                        case DroidStatSubType.Saberstaff:
+                            details.Saberstaff += value;
+                            break;
+                        case DroidStatSubType.Katar:
+                            details.Katar += value;
+                            break;
+                        case DroidStatSubType.Staff:
+                            details.Staff += value;
+                            break;
+                        case DroidStatSubType.Pistol:
+                            details.Pistol += value;
+                            break;
+                        case DroidStatSubType.Rifle:
+                            details.Rifle += value;
+                            break;
+                        case DroidStatSubType.Throwing:
+                            details.Throwing += value;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -549,7 +574,7 @@ namespace SWLOR.Game.Server.Service
                     details.PartType = (DroidPartItemPropertySubType)GetItemPropertySubType(ip);
                 }
             }
-            details.Level = _levelsByTier[details.Tier];
+            details.Level = _levelsByTier.GetValueOrDefault(details.Tier);
 
             return details;
         }
@@ -588,19 +613,18 @@ namespace SWLOR.Game.Server.Service
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, droid);
 
-            SetName(droid, string.IsNullOrWhiteSpace(details.CustomName) 
-                ? $"{GetName(player)}'s Droid" 
+            SetName(droid, string.IsNullOrWhiteSpace(details.CustomName)
+                ? "Droid"
                 : details.CustomName);
 
             // Raw stats
-            ObjectPlugin.SetMaxHitPoints(droid, details.HP);
-            ObjectPlugin.SetCurrentHitPoints(droid, details.HP);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Might, details.MGT);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Perception, details.PER);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Vitality, details.VIT);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Willpower, details.WIL);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Agility, details.AGI);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Social, details.SOC);
+            Stat.SetNPCMaxHitPoints(droid, details.HP, true);
             CreaturePlugin.SetBaseAC(droid, 10);
             CreaturePlugin.SetBaseAttackBonus(droid, 1);
 
@@ -613,6 +637,15 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(skin, hpIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
             BiowareXP2.IPSafeAddItemProperty(skin, stmIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
 
+            foreach (var (resistance, value) in details.Resistances)
+            {
+                var resistanceIP = ItemPropertyCustom(
+                    ItemPropertyType.Resistance,
+                    (int)resistance,
+                    Resistance.EncodeItemPropertyCostTableValue(value));
+                BiowareXP2.IPSafeAddItemProperty(skin, resistanceIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            }
+
             // Skin skills
             foreach (var (skill, level) in details.Skills)
             {
@@ -623,16 +656,10 @@ namespace SWLOR.Game.Server.Service
             // Perks
             foreach (var (perk, level) in details.Perks)
             {
-                var perkDefinition = Perk.GetPerkDetails(perk);
-                var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
-                    ? perkDefinition.PerkLevels[level].GrantedFeats
-                    : new List<FeatType>();
-
-                foreach (var feat in perkFeats)
-                {
-                    CreaturePlugin.AddFeat(droid, feat);
-                }
+                Perk.SyncGrantedFeats(droid, perk, level, false);
             }
+
+            AI.SetAIProfile(droid, AIProfileType.DroidCompanion);
 
             // Scripts
             SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
@@ -642,7 +669,6 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(droid, EventScript.Creature_OnDeath, ScriptName.OnDroidDeath);
             SetEventScript(droid, EventScript.Creature_OnDisturbed, ScriptName.OnDroidDisturbed);
             SetEventScript(droid, EventScript.Creature_OnHeartbeat, ScriptName.OnDroidHeartbeat);
-            SetEventScript(droid, EventScript.Creature_OnNotice, ScriptName.OnDroidPerception);
             SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, ScriptName.OnDroidAttacked);
             SetEventScript(droid, EventScript.Creature_OnRested, ScriptName.OnDroidRest);
             SetEventScript(droid, EventScript.Creature_OnSpawnIn, ScriptName.OnDroidSpawn);
@@ -765,6 +791,8 @@ namespace SWLOR.Game.Server.Service
                     : defaultDroid.LeftFootId,
                 droid);
 
+            TintMapService.RestoreDroidOverrides(droid, constructedDroid.TintOverrides);
+
             if (constructedDroid.PortraitId == -1)
             {
                 constructedDroid.PortraitId = GetPortraitId(droid);
@@ -824,10 +852,11 @@ namespace SWLOR.Game.Server.Service
                 SpeakString(personality.DismissedPhrase());
             });
 
+            CompanionControl.Clear(droid);
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
             CloseAppearanceEditor(player);
         }
 
@@ -903,7 +932,7 @@ namespace SWLOR.Game.Server.Service
                 itemType == BaseItem.CreatureSlashWeapon ||
                 itemType == BaseItem.CreatureItem)
                 return;
-            
+
             var controller = GetControllerItem(droid);
             var constructedDroid = LoadConstructedDroid(controller);
 
@@ -935,8 +964,15 @@ namespace SWLOR.Game.Server.Service
             var serialized = GetLocalString(controller, ConstructedDroidVariable);
             if (!string.IsNullOrWhiteSpace(serialized))
             {
-                constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
+                constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized) ?? new ConstructedDroid();
             }
+
+            constructedDroid.LearnedPerks ??= new List<DroidPerk>();
+            constructedDroid.ActivePerks ??= new List<DroidPerk>();
+            constructedDroid.EquippedItems ??= new Dictionary<InventorySlot, string>();
+            constructedDroid.Inventory ??= new Dictionary<string, string>();
+            constructedDroid.AppearanceParts ??= new Dictionary<CreaturePart, int>();
+            constructedDroid.TintOverrides ??= new Dictionary<string, int>();
 
             return constructedDroid;
         }
@@ -951,7 +987,22 @@ namespace SWLOR.Game.Server.Service
             var serialized = JsonConvert.SerializeObject(constructedDroid);
             SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
-        
+
+        public static void SaveInstructions(uint controller, ConstructedDroid constructedDroid)
+        {
+            // JSON is the authoritative loadout; properties mirror it for item inspection.
+            var properties = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            for (var property = GetFirstItemProperty(controller); GetIsItemPropertyValid(property); property = GetNextItemProperty(controller))
+                if (GetItemPropertyType(property) == ItemPropertyType.DroidInstruction)
+                    properties.Add(property);
+            foreach (var property in properties)
+                RemoveItemProperty(controller, property);
+            foreach (var instruction in constructedDroid.ActivePerks)
+                AddItemProperty(DurationType.Permanent,
+                    ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)instruction.Perk, instruction.Level), controller);
+            SaveConstructedDroid(controller, constructedDroid);
+        }
+
         [NWNEventHandler(ScriptName.OnDroidBlocked)]
         public static void DroidOnBlocked()
         {
@@ -961,25 +1012,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidRoundEnd)]
         public static void DroidOnEndCombatRound()
         {
-            var droid = OBJECT_SELF;
-            if (!Activity.IsBusy(droid))
-            {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
-            }
+            CompanionControl.ProcessCombatRound(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidConversation)]
         public static void DroidOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            if (!CompanionControl.HandleConversation(OBJECT_SELF))
+                ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidDamaged)]
         public static void DroidOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
-
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnDroidDeath)]
@@ -987,6 +1033,7 @@ namespace SWLOR.Game.Server.Service
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
+            CompanionControl.Clear(droid);
             ExecuteScript("x2_hen_death", droid);
 
             var item = GetControllerItem(droid);
@@ -995,7 +1042,7 @@ namespace SWLOR.Game.Server.Service
 
             SpeakString(personality.DeathPhrase());
             ClearTemporaryData(player, droid);
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
             CloseAppearanceEditor(player);
         }
 
@@ -1008,22 +1055,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
         public static void DroidOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             Stat.RestoreNPCStats(false);
-        }
-
-        [NWNEventHandler(ScriptName.OnDroidPerception)]
-        public static void DroidOnPerception()
-        {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
-
+            CompanionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidAttacked)]
         public static void DroidOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
-
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnDroidRest)]
@@ -1034,26 +1073,27 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(droid, () => ClearAllActions());
 
-            StatusEffect.Apply(droid, droid, StatusEffectType.Rest, 0f);
+            StatusEffect.ApplyStatusEffect(droid, droid, typeof(RestStatusEffect), 0f);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpawn)]
         public static void DroidOnSpawn()
         {
             var droid = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", droid);
             AssignCommand(droid, () =>
             {
                 SetIsDestroyable(true, false, false);
-            }); 
+            });
             Stat.LoadNPCStats();
+            Stat.ApplyCreatureMovementRate(droid);
+            CompanionControl.Initialize(droid, true);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpellCast)]
         public static void DroidOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
-
+            if (GetLastSpellHarmful())
+                CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
         }
 
         [NWNEventHandler(ScriptName.OnDroidUserDefined)]

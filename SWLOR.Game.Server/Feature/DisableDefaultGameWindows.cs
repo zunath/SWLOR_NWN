@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            // Spell Book - Completely unused
+            // Spell Book - A NUI replacement is used for the Player Guide.
             SetGuiPanelDisabled(player, GuiPanel.SpellBook, true);
 
             // Character Sheet - A NUI replacement is used

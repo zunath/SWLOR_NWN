@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using SWLOR.NWN.API.Engine;
 using static System.Math;
 

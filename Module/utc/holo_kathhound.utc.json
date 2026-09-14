@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 9
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 5000
+    "value": 85
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 13
   },
   "Disarmable": {
     "type": "byte",
@@ -78,10 +78,17 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "holokathhound_wp"
+        }
+      },
+      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "holoregenhide"
+          "value": "holokathhound_sk"
         }
       }
     ]
@@ -97,14 +104,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1745
+          "value": 289
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
         }
       }
     ]
@@ -129,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 5000
+    "value": 87
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 13
   },
   "Interruptable": {
     "type": "byte",
@@ -163,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 5000
+    "value": 85
   },
   "NaturalAC": {
     "type": "byte",
@@ -468,7 +482,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 9
   },
   "Subrace": {
     "type": "cexostring",
@@ -539,6 +553,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 4
+    "value": 15
   }
 }

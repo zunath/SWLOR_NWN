@@ -54,7 +54,7 @@
   },
   "LoadScreenID": {
     "type": "word",
-    "value": 69
+    "value": 18
   },
   "ModListenCheck": {
     "type": "int",
@@ -88,7 +88,7 @@
     "type": "cexolocstring",
     "value": {
       "0": "Tatooine - North Hills",
-      "2": "Anchorhead - Portes du désert"
+      "2": "Anchorhead - Desert Gates"
     }
   },
   "NoRest": {

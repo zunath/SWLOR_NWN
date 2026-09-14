@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Service
             public float Z { get; set; }
             public float Facing { get; set; }
             public int RespawnDelayMinutes { get; set; }
+            public int RespawnDelayMaximumMinutes { get; set; }
             public bool UseRandomSpawnLocation { get; set; }
         }
 
@@ -35,6 +35,13 @@ namespace SWLOR.Game.Server.Service
         {
             public Guid SpawnDetailId { get; set; }
             public uint SpawnObject { get; set; }
+            public bool IsRare { get; set; }
+        }
+
+        private class SpawnResult
+        {
+            public uint SpawnObject { get; set; }
+            public bool IsRare { get; set; }
         }
 
         private class QueuedSpawn
@@ -121,7 +128,7 @@ namespace SWLOR.Game.Server.Service
                         Log.Write(LogGroup.Error, $"Area has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
                         return;
                     }
-                    
+
                     var spawnTable = _spawnTables[spawnTableId];
                     if (spawnTable.Spawns == null || spawnTable.Spawns.Count == 0)
                     {
@@ -137,6 +144,7 @@ namespace SWLOR.Game.Server.Service
                             SpawnTableId = spawnTableId,
                             Area = area,
                             RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                            RespawnDelayMaximumMinutes = spawnTable.RespawnDelayMaximumMinutes,
                             UseRandomSpawnLocation = true
                         });
 
@@ -161,7 +169,7 @@ namespace SWLOR.Game.Server.Service
                     // Hand-placed creature information is stored and the actual NPC is destroyed so it can be spawned by the system.
                     if (type == ObjectType.Creature)
                     {
-                        // Some plot creatures use the Object Visibility service.  This relies on object references so we 
+                        // Some plot creatures use the Object Visibility service.  This relies on object references so we
                         // should not spawn new instances of those creatures.  Just leave them as they are.
                         if (!String.IsNullOrEmpty(GetLocalString(obj, "VISIBILITY_OBJECT_ID")))
                         {
@@ -176,7 +184,8 @@ namespace SWLOR.Game.Server.Service
                             Z = position.Z,
                             Facing = facing,
                             Area = area,
-                            RespawnDelayMinutes = 5
+                            RespawnDelayMinutes = 5,
+                            RespawnDelayMaximumMinutes = 5
                         });
 
                         // Add this entry to the spawns by area cache.
@@ -202,7 +211,8 @@ namespace SWLOR.Game.Server.Service
                                 Z = position.Z,
                                 Facing = facing,
                                 Area = area,
-                                RespawnDelayMinutes = spawnTable.RespawnDelayMinutes
+                                RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                                RespawnDelayMaximumMinutes = spawnTable.RespawnDelayMaximumMinutes
                             });
 
                             // Add this entry to the spawns by area cache.
@@ -214,10 +224,12 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                // Resource and creature spawn tables can be placed as a local variable on the area.
+                // Resource, creature, and slicing-terminal spawn tables can be placed as a local variable on the area.
                 // If one is found, it will be registered.
                 RegisterAreaSpawnTable(area, "RESOURCE_SPAWN_TABLE_ID", CalculateResourceSpawnCount(area));
                 RegisterAreaSpawnTable(area, "CREATURE_SPAWN_TABLE_ID", CalculateCreatureSpawnCount(area));
+                var slicingTerminalCount = Math.Max(1, GetLocalInt(area, "SLICING_TERMINAL_SPAWN_COUNT"));
+                RegisterAreaSpawnTable(area, "SLICING_TERMINAL_SPAWN_TABLE_ID", slicingTerminalCount);
             }
         }
 
@@ -235,7 +247,7 @@ namespace SWLOR.Game.Server.Service
             // Found the local variable. Use that count.
             if (count > 0) return count;
 
-            // Local variable wasn't found or was zero. 
+            // Local variable wasn't found or was zero.
             // Determine the count by the size of the area.
             var width = GetAreaSize(Dimension.Width, area);
             var height = GetAreaSize(Dimension.Height, area);
@@ -264,7 +276,7 @@ namespace SWLOR.Game.Server.Service
             // Found the local variable. Use that count.
             if (count > 0) return count;
 
-            // Local variable wasn't found or was zero. 
+            // Local variable wasn't found or was zero.
             // Determine the count by the size of the area.
             var width = GetAreaSize(Dimension.Width, area);
             var height = GetAreaSize(Dimension.Height, area);
@@ -346,16 +358,16 @@ namespace SWLOR.Game.Server.Service
         private static void QueueResourceDespawn(uint resourceObject, Guid spawnDetailId, int despawnMinutes)
         {
             var now = DateTime.UtcNow;
-            
+
             // Add random variance of ±25% to stagger despawn times
             var variancePercent = Random.Next(-25, 26); // -25% to +25%
             var variance = (int)(despawnMinutes * (variancePercent / 100.0f));
             var actualDespawnMinutes = despawnMinutes + variance;
-            
+
             // Ensure minimum despawn time of 1 minute
             if (actualDespawnMinutes < 1)
                 actualDespawnMinutes = 1;
-            
+
             var resourceDespawn = new ResourceDespawn
             {
                 ResourceObject = resourceObject,
@@ -415,10 +427,47 @@ namespace SWLOR.Game.Server.Service
 
             var spawnGuid = new Guid(spawnId);
             var detail = _spawns[spawnGuid];
-            var respawnTime = DateTime.UtcNow.AddMinutes(detail.RespawnDelayMinutes);
+            var respawnTime = GetRespawnTime(detail);
 
             CreateQueuedSpawn(spawnGuid, respawnTime);
+            RemoveActiveSpawn(detail, creature);
             SetLocalInt(creature, "RESPAWN_QUEUED", 1);
+        }
+
+        /// <summary>
+        /// Removes an active spawned object and queues its replacement using its spawn
+        /// table's respawn window. Used by interactable resources which are consumed
+        /// without firing a placeable death event.
+        /// </summary>
+        public static bool DespawnAndQueueRespawn(uint spawnObject)
+        {
+            if (!GetIsObjectValid(spawnObject))
+                return false;
+
+            var spawnId = GetLocalString(spawnObject, "SPAWN_ID");
+            if (!Guid.TryParse(spawnId, out var spawnGuid) || !_spawns.TryGetValue(spawnGuid, out var detail))
+            {
+                DestroyObject(spawnObject);
+                return false;
+            }
+
+            if (GetLocalInt(spawnObject, "RESPAWN_QUEUED") == 1)
+                return false;
+
+            CreateQueuedSpawn(spawnGuid, GetRespawnTime(detail));
+            RemoveActiveSpawn(detail, spawnObject);
+            SetLocalInt(spawnObject, "RESPAWN_QUEUED", 1);
+            DestroyObject(spawnObject);
+            return true;
+        }
+
+        private static DateTime GetRespawnTime(SpawnDetail detail)
+        {
+            var maximum = Math.Max(detail.RespawnDelayMinutes, detail.RespawnDelayMaximumMinutes);
+            var delay = maximum == detail.RespawnDelayMinutes
+                ? detail.RespawnDelayMinutes
+                : Random.Next(detail.RespawnDelayMinutes, maximum + 1);
+            return DateTime.UtcNow.AddMinutes(delay);
         }
 
         /// <summary>
@@ -447,14 +496,14 @@ namespace SWLOR.Game.Server.Service
                 if (now > queuedSpawn.RespawnTime)
                 {
                     var detail = _spawns[queuedSpawn.SpawnDetailId];
-                    var spawnedObject = SpawnObject(queuedSpawn.SpawnDetailId, detail);
+                    var spawnResult = SpawnObject(queuedSpawn.SpawnDetailId, detail);
 
                     // A valid spawn wasn't found because the spawn table didn't provide a resref.
                     // Either the table is configured wrong or the requirements for that specific table weren't met.
-                    if (spawnedObject == OBJECT_INVALID)
+                    if (spawnResult.SpawnObject == OBJECT_INVALID)
                     {
                         queuedSpawn.FailureCount++;
-                        
+
                         // If we've failed too many times (10 attempts), remove this spawn to prevent infinite loops
                         if (queuedSpawn.FailureCount >= 10)
                         {
@@ -462,7 +511,7 @@ namespace SWLOR.Game.Server.Service
                             RemoveQueuedSpawn(queuedSpawn);
                             continue;
                         }
-                        
+
                         // Exponential backoff: delay gets longer with each failure
                         var backoffMinutes = detail.RespawnDelayMinutes * Math.Pow(2, Math.Min(queuedSpawn.FailureCount - 1, 4)); // Cap at 16x delay
                         queuedSpawn.RespawnTime = now.AddMinutes(backoffMinutes);
@@ -475,7 +524,8 @@ namespace SWLOR.Game.Server.Service
                     var activeSpawn = new ActiveSpawn
                     {
                         SpawnDetailId = queuedSpawn.SpawnDetailId,
-                        SpawnObject = spawnedObject
+                        SpawnObject = spawnResult.SpawnObject,
+                        IsRare = spawnResult.IsRare
                     };
 
                     _activeSpawnsByArea[detail.Area].Add(activeSpawn);
@@ -558,7 +608,7 @@ namespace SWLOR.Game.Server.Service
             for (var index = _queuedResourceDespawns.Count - 1; index >= 0; index--)
             {
                 var resourceDespawn = _queuedResourceDespawns[index];
-                
+
                 // Resource object no longer exists, remove from queue
                 if (!GetIsObjectValid(resourceDespawn.ResourceObject))
                 {
@@ -582,7 +632,7 @@ namespace SWLOR.Game.Server.Service
                     DestroyObject(resourceDespawn.ResourceObject);
 
                     // Queue for respawn
-                    var respawnTime = now.AddMinutes(spawnDetail.RespawnDelayMinutes);
+                    var respawnTime = GetRespawnTime(spawnDetail);
                     CreateQueuedSpawn(resourceDespawn.SpawnDetailId, respawnTime);
 
                     _queuedResourceDespawns.RemoveAt(index);
@@ -600,6 +650,7 @@ namespace SWLOR.Game.Server.Service
             if (type == ObjectType.Creature)
             {
                 var originalSpawnScript = GetEventScript(spawn, EventScript.Creature_OnSpawnIn);
+                ObjectPlugin.SetConversationPrivate(spawn, true);
 
                 SetEventScript(spawn, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
                 SetEventScript(spawn, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
@@ -676,6 +727,35 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void RemoveActiveSpawn(SpawnDetail detail, uint spawnObject)
+        {
+            if (!_activeSpawnsByArea.TryGetValue(detail.Area, out var activeSpawns))
+                return;
+
+            activeSpawns.RemoveAll(x => x.SpawnObject == spawnObject);
+        }
+
+        private static bool HasActiveRareSpawn(uint area, string spawnTableId)
+        {
+            if (string.IsNullOrWhiteSpace(spawnTableId) ||
+                !_activeSpawnsByArea.TryGetValue(area, out var activeSpawns))
+                return false;
+
+            activeSpawns.RemoveAll(x => !GetIsObjectValid(x.SpawnObject));
+
+            foreach (var activeSpawn in activeSpawns)
+            {
+                if (!activeSpawn.IsRare)
+                    continue;
+
+                var detail = _spawns[activeSpawn.SpawnDetailId];
+                if (detail.SpawnTableId == spawnTableId)
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// When a DM spawns a creature, attach all required scripts to it.
         /// </summary>
@@ -700,7 +780,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="spawnId">The ID of the spawn</param>
         /// <param name="detail">The details of the spawn</param>
-        private static uint SpawnObject(Guid spawnId, SpawnDetail detail)
+        private static SpawnResult SpawnObject(Guid spawnId, SpawnDetail detail)
         {
             // Hand-placed spawns are stored as a serialized string.
             // Deserialize and add it to the area.
@@ -718,21 +798,22 @@ namespace SWLOR.Game.Server.Service
                 AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
+                Stat.LoadNPCStats(deserialized);
 
-                return deserialized;
+                return new SpawnResult { SpawnObject = deserialized };
             }
             // Spawn tables have their own logic which must be run to determine the spawn to use.
             // Create the object at the stored location.
             else if (!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
-                var spawnObject = spawnTable.GetNextSpawn();
+                var spawnObject = spawnTable.GetNextSpawn(!HasActiveRareSpawn(detail.Area, detail.SpawnTableId));
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.
                 // In this case, exit early.
                 if (string.IsNullOrWhiteSpace(spawnObject.Resref))
                 {
-                    return OBJECT_INVALID;
+                    return new SpawnResult { SpawnObject = OBJECT_INVALID };
                 }
 
                 var position = detail.UseRandomSpawnLocation ?
@@ -746,8 +827,16 @@ namespace SWLOR.Game.Server.Service
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
                 AI.SetAIFlag(spawn, spawnObject.AIFlags);
+                if (spawnObject.AIProfile != AIProfileType.Invalid)
+                {
+                    AI.SetAIProfile(spawn, spawnObject.AIProfile);
+                }
                 AdjustScripts(spawn);
                 AdjustStats(spawn);
+                if (spawnObject.Type == ObjectType.Creature)
+                {
+                    Stat.LoadNPCStats(spawn);
+                }
 
                 foreach (var animator in spawnObject.Animators)
                 {
@@ -765,10 +854,14 @@ namespace SWLOR.Game.Server.Service
                     QueueResourceDespawn(spawn, spawnId, spawnTable.ResourceDespawnMinutes);
                 }
 
-                return spawn;
+                return new SpawnResult
+                {
+                    SpawnObject = spawn,
+                    IsRare = spawnObject.IsRare
+                };
             }
 
-            return OBJECT_INVALID;
+            return new SpawnResult { SpawnObject = OBJECT_INVALID };
         }
     }
 }

@@ -809,6 +809,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -862,14 +893,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -1265,7 +1296,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2416,6 +2447,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -2469,14 +2531,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -2872,7 +2934,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -3903,14 +3965,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -4306,7 +4368,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -5457,6 +5519,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -5510,14 +5603,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -5913,7 +6006,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -6917,7 +7010,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -10084,6 +10177,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -10137,14 +10261,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -10736,7 +10860,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -11720,7 +11844,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 4350
         },
         "Race": {
           "type": "byte",
@@ -12916,7 +13040,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3579
         },
         "Race": {
           "type": "byte",
@@ -14950,7 +15074,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3905
         },
         "Race": {
           "type": "byte",
@@ -16180,7 +16304,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -17184,7 +17308,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -18188,7 +18312,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -20200,7 +20324,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -21204,7 +21328,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -23192,7 +23316,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3712
+          "value": 4385
         },
         "Race": {
           "type": "byte",
@@ -25396,7 +25520,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3905
         },
         "Race": {
           "type": "byte",
@@ -26592,7 +26716,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 4346
         },
         "Race": {
           "type": "byte",
@@ -27600,7 +27724,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3905
         },
         "Race": {
           "type": "byte",
@@ -28608,7 +28732,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3905
         },
         "Race": {
           "type": "byte",
@@ -32203,7 +32327,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first product—the GSI-B4 blaster pistol—was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
+            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first productâ€”the GSI-B4 blaster pistolâ€”was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
           }
         },
         "Dex": {
@@ -33213,7 +33337,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first product—the GSI-B4 blaster pistol—was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
+            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first productâ€”the GSI-B4 blaster pistolâ€”was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
           }
         },
         "Dex": {
@@ -34371,7 +34495,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first product—the GSI-B4 blaster pistol—was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
+            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first productâ€”the GSI-B4 blaster pistolâ€”was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
           }
         },
         "Dex": {
@@ -34888,7 +35012,7 @@
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 1
+                      "value": 0
                     }
                   },
                   {
@@ -34951,6 +35075,68 @@
                     "Subtype": {
                       "type": "word",
                       "value": 91
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
                     }
                   }
                 ]
@@ -35735,7 +35921,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first product—the GSI-B4 blaster pistol—was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
+            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first productâ€”the GSI-B4 blaster pistolâ€”was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
           }
         },
         "Dex": {
@@ -36252,7 +36438,7 @@
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 1
+                      "value": 0
                     }
                   },
                   {
@@ -36315,6 +36501,68 @@
                     "Subtype": {
                       "type": "word",
                       "value": 91
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
                     }
                   }
                 ]
@@ -37099,7 +37347,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first product—the GSI-B4 blaster pistol—was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
+            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first productâ€”the GSI-B4 blaster pistolâ€”was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
           }
         },
         "Dex": {
@@ -38719,6 +38967,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -38772,14 +39051,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -39175,7 +39454,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -40326,6 +40605,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -40379,14 +40689,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -40782,7 +41092,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -41933,6 +42243,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -41986,14 +42327,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -42389,7 +42730,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -43540,6 +43881,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -43593,14 +43965,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -43996,7 +44368,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -47000,7 +47372,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3905
         },
         "Race": {
           "type": "byte",
@@ -48008,7 +48380,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3905
         },
         "Race": {
           "type": "byte",
@@ -49016,7 +49388,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3905
         },
         "Race": {
           "type": "byte",
@@ -53649,7 +54021,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first product—the GSI-B4 blaster pistol—was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
+            "0": "    \"We stay neutral, so you don't have to.\"\n    -GSI motto                                                                                        \nGalactic Solutions Industries was a weapons-manufacturing company that was founded by Addalar Hyland, a well-known inventor and business tycoon, around the year 3642 BBY as the Galactic War broke out between the Galactic Republic and the Sith Empire. Based in the GSI Headquarters on the Promenade on the moon Nar Shaddaa, GSI soon became a popular source of weaponry, and the company's first productâ€”the GSI-B4 blaster pistolâ€”was praised for its impressive firepower compared to its small size as an easily concealed holdout weapon. As war resumed, GSI remained neutral and did business with both the Republic and the Empire, and it often recruited various combatants on planets across the galaxy to aid in the company's research. GSI maintained a number of weapons research divisions, including their Animal Weaponization, Biodesign, Metallurgical, Natural Weapons, Starfighter, and Superweapons Divisions. Employees of the company typically wore GSI's colors of white, orange, and light blue."
           }
         },
         "Dex": {
@@ -54118,7 +54490,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -123678,6 +124050,233 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
+            "0": "Contract Board"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "qcontract_board"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "qcontract_board"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "qcontract_board"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 65.59430694580078
+        },
+        "Y": {
+          "type": "float",
+          "value": 79.22598266601563
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 31529
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 1.570796251296997
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
             "0": "Market Terminal"
           }
         },
@@ -124586,41 +125185,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ITEM_LIMIT"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 30
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "NARSHADDAA_BANK"
-              }
-            }
-          ]
         },
         "Will": {
           "type": "byte",
@@ -126364,7 +126928,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "generic_convo"
+          "value": "dialog_start"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -145075,41 +145639,6 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ITEM_LIMIT"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 30
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "NARSHADDAA_BANK"
-              }
-            }
-          ]
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -145336,41 +145865,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ITEM_LIMIT"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 30
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "NARSHADDAA_BANK"
-              }
-            }
-          ]
         },
         "Will": {
           "type": "byte",
@@ -309749,6 +310243,21 @@
                 "type": "int",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
             }
           ]
         },
@@ -310079,6 +310588,21 @@
               "Name": {
                 "type": "cexostring",
                 "value": "VISIBILITY_HIDDEN_DEFAULT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
               },
               "Type": {
                 "type": "dword",
@@ -433093,6 +433617,21 @@
                 "type": "int",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
             }
           ]
         },
@@ -433423,6 +433962,21 @@
               "Name": {
                 "type": "cexostring",
                 "value": "VISIBILITY_HIDDEN_DEFAULT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
               },
               "Type": {
                 "type": "dword",
@@ -433904,6 +434458,345 @@
         "Z": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 479
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 4.731723942882083e-037
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "id": 14533,
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "id": 5670,
+          "type": "cexolocstring",
+          "value": {
+            "0": "[Enter Czerka Weapons Testing Facility]"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "teleport"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tele_obj"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tele_obj"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "SMUG_CZERKA_WEAPONS_TEST_ENT"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "MISSING_KEY_ITEM_MESSAGE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "The testing facility's blast doors are sealed. A Czerka Arms Test Range access key is required."
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "KEY_ITEM_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 113
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_OBJECT_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_HIDDEN_DEFAULT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 94.93000030517578
+        },
+        "Y": {
+          "type": "float",
+          "value": 149.3600006103516
+        },
+        "Z": {
+          "type": "float",
+          "value": -0.1800000071525574
         }
       }
     ]
@@ -435112,6 +436005,66 @@
         "ZPosition": {
           "type": "float",
           "value": -1.9073486328125e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SMUG_CZERKA_WEAPONS_TEST_EXIT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 94.95247650146484
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 148.0312042236328
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.2500095367431641
         }
       }
     ]

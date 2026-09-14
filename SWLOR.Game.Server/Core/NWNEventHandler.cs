@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Game.Server.Core
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]

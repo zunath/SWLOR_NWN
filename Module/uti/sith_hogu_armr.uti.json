@@ -815,11 +815,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 33
+          "value": 48
         },
         "CostValue": {
           "type": "word",
-          "value": 45
+          "value": 100
         },
         "Param1": {
           "type": "byte",
@@ -831,7 +831,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 100
+          "value": 131
         },
         "Subtype": {
           "type": "word",
@@ -855,6 +855,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sith_hogu_armr"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xArmorPart_Belt": {
     "type": "word",

@@ -1,8 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -19,25 +18,19 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
+            ApplyLowResourceIntervalRestore(player);
+
             if (tick >= 5) // 6 seconds * 5 = 30 seconds
             {
-                var vitalityBonus = GetAbilityModifier(AbilityType.Vitality, player);
-                if (vitalityBonus < 0)
-                    vitalityBonus = 0;
+                var vitality = Math.Max(0, GetAbilityScore(player, AbilityType.Vitality));
+                var willpower = Math.Max(0, GetAbilityScore(player, AbilityType.Willpower));
+                var might = Math.Max(0, GetAbilityScore(player, AbilityType.Might));
 
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
-                var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4;
-                var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2;
-                var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2;
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-
-                if (foodEffect != null)
-                {
-                    hpRegen += foodEffect.HPRegen;
-                    fpRegen += foodEffect.FPRegen;
-                    stmRegen += foodEffect.STMRegen;
-                }
+                var hpRegen = dbPlayer.HPRegen + vitality + Stat.GetStatAdjustment(player, StatType.HPRegen);
+                var fpRegen = 1 + dbPlayer.FPRegen + willpower / 4 + Stat.GetStatAdjustment(player, StatType.FPRegen);
+                var stmRegen = 1 + dbPlayer.STMRegen + might / 4 + Stat.GetStatAdjustment(player, StatType.StaminaRegen);
 
                 if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))
                 {
@@ -46,18 +39,38 @@ namespace SWLOR.Game.Server.Feature
 
                 if (fpRegen > 0)
                 {
-                    Stat.RestoreFP(player, fpRegen, dbPlayer);
+                    Stat.RestoreFP(player, fpRegen, dbPlayer, sendFeedback: false);
                 }
 
                 if (stmRegen > 0)
                 {
-                    Stat.RestoreStamina(player, stmRegen, dbPlayer);
+                    Stat.RestoreStamina(player, stmRegen, dbPlayer, sendFeedback: false);
                 }
 
                 tick = 0;
             }
 
             SetLocalInt(player, "NATURAL_REGENERATION_TICK", tick);
+        }
+
+        private static void ApplyLowResourceIntervalRestore(uint player)
+        {
+            var threshold = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalThresholdPercent);
+            if (threshold <= 0 || !Combat.IsCurrentFPAndStaminaAtOrBelowPercent(player, threshold))
+                return;
+
+            var fpRestore = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalFPRestore);
+            var staminaRestore = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalStaminaRestore);
+            if (fpRestore <= 0 && staminaRestore <= 0)
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+
+            if (fpRestore > 0)
+                Stat.RestoreFP(player, fpRestore, dbPlayer, sendFeedback: false);
+
+            if (staminaRestore > 0)
+                Stat.RestoreStamina(player, staminaRestore, dbPlayer, sendFeedback: false);
         }
     }
 }

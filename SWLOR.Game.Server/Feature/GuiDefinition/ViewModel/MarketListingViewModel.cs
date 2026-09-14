@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -250,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbListing = DB.Get<MarketItem>(itemId);
 
-                // The item was either bought or removed already. 
+                // The item was either bought or removed already.
                 // Remove it from the client's view, but don't take any action on the server.
                 if (dbListing != null)
                 {
@@ -304,8 +303,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     continue;
 
                 // Only do updates if either the price or listing status has changed.
-                if (dbListing.Price == _itemPrices[index] && 
-                    dbListing.IsListed == ItemListed[index]) 
+                if (dbListing.Price == _itemPrices[index] &&
+                    dbListing.IsListed == ItemListed[index])
                     continue;
 
                 // Do the update for this record.
@@ -317,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 DB.Set(dbListing);
             }
-            
+
             LoadData();
         };
 
@@ -332,7 +331,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickChangePrice() => () =>
         {
             // There is a defect with NUI which prevents text boxes from working within lists.
-            // As a workaround, we use a button to display a price change window. 
+            // As a workaround, we use a button to display a price change window.
             // The price is entered by the user and saved, which then updates this window.
             // If/when the defect gets fixed, this can be replaced in favor of a simple text edit control.
             var index = NuiGetEventArrayIndex();

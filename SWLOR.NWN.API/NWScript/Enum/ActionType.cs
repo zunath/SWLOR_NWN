@@ -1,4 +1,4 @@
-﻿namespace SWLOR.NWN.API.NWScript.Enum
+namespace SWLOR.NWN.API.NWScript.Enum
 {
     public enum ActionType
     {
@@ -24,7 +24,7 @@
         PickPocket = 34,
         PickUpItem = 1,
         RandomWalk = 43,
-        RecoverTrap = 9, 
+        RecoverTrap = 9,
         Rest = 17,
         SetTrap = 12,
         Sit = 37,

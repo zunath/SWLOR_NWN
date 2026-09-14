@@ -45,7 +45,7 @@
     "id": 90461,
     "type": "cexolocstring",
     "value": {
-      "0": "[NPC] Byysk Guardian Shield"
+      "0": "Byysk Guardian Shield"
     }
   },
   "ModelPart1": {
@@ -173,6 +173,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "byysk_shield002"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

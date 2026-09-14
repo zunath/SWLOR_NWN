@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace SWLOR.Game.Server.Service.PlayerMarketService
 {
     public enum MarketRegionType
@@ -19,9 +17,9 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         public float TaxRate { get; }
 
         public MarketRegionAttribute(
-            string name, 
-            string marketId, 
-            bool isActive, 
+            string name,
+            string marketId,
+            bool isActive,
             bool isStandardMarket,
             float taxRate)
         {

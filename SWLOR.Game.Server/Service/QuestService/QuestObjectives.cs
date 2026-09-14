@@ -1,6 +1,4 @@
-﻿using System;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -137,12 +135,12 @@ namespace SWLOR.Game.Server.Service.QuestService
     public class KillTargetObjective : IQuestObjective
     {
         public NPCGroupType Group { get; }
-        private readonly int _amount;
+        public int Amount { get; }
 
         public KillTargetObjective(NPCGroupType group, int amount)
         {
             Group = group;
-            _amount = amount;
+            Amount = amount;
         }
 
         public void Initialize(uint player, string questId)
@@ -150,8 +148,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : new PlayerQuest();
-            
-            quest.KillProgresses[Group] = _amount;
+
+            quest.KillProgresses[Group] = Amount;
             dbPlayer.Quests[questId] = quest;
             DB.Set(dbPlayer);
         }
@@ -208,8 +206,8 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             var npcGroup = NPCGroup.GetNPCGroup(Group);
             var numberRemaining = dbPlayer.Quests[questId].KillProgresses[Group];
-            
-            return $"{_amount - numberRemaining} / {_amount} {npcGroup.Name}";
+
+            return $"{Amount - numberRemaining} / {Amount} {npcGroup.Name}";
         }
     }
 }

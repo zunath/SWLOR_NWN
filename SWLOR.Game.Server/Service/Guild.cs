@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -72,9 +71,9 @@ namespace SWLOR.Game.Server.Service
             var rankBonus = 0.25f * dbGuild.Rank;
             var perkBonus = Perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f;
             var socialBonus = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
-            var amount = baseAmount + 
-                         (perkBonus * baseAmount) + 
-                         (rankBonus * baseAmount) + 
+            var amount = baseAmount +
+                         (perkBonus * baseAmount) +
+                         (rankBonus * baseAmount) +
                          (socialBonus * baseAmount);
 
             return (int)amount;

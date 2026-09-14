@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -98,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedCandidateId = election.VoterSelections.ContainsKey(cdKey)
                 ? election.VoterSelections[cdKey].CandidatePlayerId
                 : new ElectionVoter().CandidatePlayerId;
-            
+
             _candidatePlayerIds.Clear();
             _candidatePlayerIds.Add(string.Empty);
             candidateNames.Add("[ABSTAIN]");
@@ -109,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var candidate in candidates)
             {
                 _candidatePlayerIds.Add(candidate.Id);
-                candidateNames.Add(candidate.Name);
+                candidateNames.Add(PlayerName.GetPlainDisplayNameByPlayerId(Player, candidate.Id, candidate.Name));
                 if (selectedCandidateId == candidate.Id)
                 {
                     candidateToggles.Add(true);
@@ -170,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If we're in the 'Voting' process, it will cast the player's vote toward the selected candidate.
             if (dbElection.Stage == ElectionStageType.Registration)
             {
-                // Player is currently in the race. 
+                // Player is currently in the race.
                 if (dbElection.CandidatePlayerIds.Contains(playerId))
                 {
                     ShowModal("Are you sure you want to withdraw the race? Any votes cast for you will be lost should you decide to enter again.",
@@ -240,7 +239,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         VoterPlayerId = playerId
                     };
 
-                    SendMessageToPC(Player, $"Your vote for {dbCandidate.Name} has been cast.");
+                    var candidateName = PlayerName.GetDisplayNameByPlayerId(Player, selectedCandidateId, dbCandidate.Name);
+                    SendMessageToPC(Player, $"Your vote for {candidateName} has been cast.");
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
                 }
 

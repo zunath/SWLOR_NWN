@@ -4,7 +4,7 @@ This document provides detailed information about how ability definitions work i
 
 ## Overview
 
-Ability definitions are located in the `Feature/AbilityDefinition/` directory and are organized by category (Force, OneHanded, TwoHanded, etc.). Each ability definition implements the `IAbilityListDefinition` interface and uses the `AbilityBuilder` to create complex ability configurations.
+Ability definitions are located in the `Feature/AbilityDefinition/` directory and are organized by category (Force, Blade, HeavyWeapon, etc.). Each ability definition implements the `IAbilityListDefinition` interface and uses the `AbilityBuilder` to create complex ability configurations.
 
 ## Directory Structure
 
@@ -18,11 +18,11 @@ Feature/AbilityDefinition/
 ├── Force/
 ├── General/
 ├── Leadership/
-├── MartialArts/
+├── KatarStaff/
 ├── NPC/
-├── OneHanded/
+├── Blade/
 ├── Ranged/
-└── TwoHanded/
+└── HeavyWeapon/
 ```
 
 ## How Ability Definitions Work
@@ -43,15 +43,12 @@ public interface IAbilityListDefinition
 Ability definitions use the `AbilityBuilder` to create abilities with a fluent interface:
 
 ```csharp
-public class ForceLightningAbilityDefinition : IAbilityListDefinition
+public class SmokeBombAbilityDefinition : IAbilityListDefinition
 {
     public Dictionary<FeatType, AbilityDetail> BuildAbilities()
     {
         var builder = new AbilityBuilder();
-        ForceLightning1(builder);
-        ForceLightning2(builder);
-        ForceLightning3(builder);
-        ForceLightning4(builder);
+        SmokeBomb(builder);
 
         return builder.Build();
     }
@@ -62,22 +59,20 @@ public class ForceLightningAbilityDefinition : IAbilityListDefinition
 
 ### 1. Casted Abilities
 
-Casted abilities have a casting time and are typically used for Force powers and spells.
+Casted abilities have a casting time and are typically used for Force powers, combat techniques, and tech activations.
 
-**Example: Force Lightning**
+**Example: Smoke Bomb**
 
 ```csharp
-private static void ForceLightning1(AbilityBuilder builder)
+private static void SmokeBomb(AbilityBuilder builder)
 {
-    builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-        .Name("Force Lightning I")
+    builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+        .Name("Smoke Bomb")
         .Level(1)
-        .HasRecastDelay(RecastGroup.ForceLightning, 30f)
         .HasActivationDelay(2f)
-        .HasMaxRange(30.0f)
+        .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
         .IsCastedAbility()
         .IsHostileAbility()
-        .UsesAnimation(Animation.LoopingConjure1)
         .HasImpactAction(ImpactAction);
 }
 ```
@@ -93,15 +88,16 @@ private static void ForceLightning1(AbilityBuilder builder)
 
 Weapon abilities trigger on the next weapon hit and are used for combat skills.
 
-**Example: Power Attack**
+**Example: Anger Strike**
 
 ```csharp
-private static void PowerAttack1(AbilityBuilder builder)
+private static void AngerStrike(AbilityBuilder builder)
 {
-    builder.Create(FeatType.PowerAttack1, PerkType.PowerAttack)
-        .Name("Power Attack I")
+    builder.Create(FeatType.AngerStrike1, PerkType.AngerStrike)
+        .Name("Anger Strike")
         .Level(1)
-        .HasRecastDelay(RecastGroup.PowerAttack, 12f)
+        .HasRecastDelay(RecastGroup.AngerStrike, 45f)
+        .RequirementStamina(4)
         .IsWeaponAbility()
         .HasImpactAction(ImpactAction);
 }
@@ -112,28 +108,28 @@ private static void PowerAttack1(AbilityBuilder builder)
 - No activation delay (triggers on next hit)
 - Typically shorter cooldowns
 
-### 3. Concentration Abilities
+### 3. Toggle Abilities
 
-Concentration abilities stay active and drain resources until turned off.
+Toggle abilities apply or remove a persistent status effect.
 
-**Example: Force Shield**
+**Example: Bastion Stance**
 
 ```csharp
-private static void ForceShield1(AbilityBuilder builder)
+private static void BastionStance(AbilityBuilder builder)
 {
-    builder.Create(FeatType.ForceShield1, PerkType.ForceShield)
-        .Name("Force Shield I")
+    builder.Create(FeatType.BastionStance1, PerkType.BastionStance)
+        .Name("Bastion Stance")
         .Level(1)
-        .IsConcentrationAbility(StatusEffectType.ForceShield)
-        .RequirementFP(1)
-        .HasImpactAction(ImpactAction);
+        .HasRecastDelay(RecastGroup.BastionStance, 180f)
+        .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(BastionStanceStatusEffect)))
+        .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(BastionStanceStatusEffect)));
 }
 ```
 
 **Key Features:**
-- `IsConcentrationAbility(StatusEffectType)` - Marks as concentration ability
+- `HasActivationAction(AbilityActivationAction)` - Runs when activating the ability
 - Requires corresponding status effect
-- Drains resources over time
+- Usually toggles one stance/status at a time
 
 ## Common Ability Builder Methods
 
@@ -212,11 +208,11 @@ private static void ImpactAction(uint activator, uint target, int level, Locatio
     }
 
     dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-    
+
     // Apply damage to target
     var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
-    
+
     // Add combat points and enmity
     CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
     Enmity.ModifyEnmity(activator, target, 100 * level + damage);
@@ -243,7 +239,7 @@ Located in `Feature/AbilityDefinition/Force/`
 
 ### Combat Abilities
 
-Located in `Feature/AbilityDefinition/OneHanded/`, `TwoHanded/`, `Ranged/`
+Located in `Feature/AbilityDefinition/Blade/`, `HeavyWeapon/`, `Ranged/`
 
 **Examples:**
 - Power Attack
@@ -279,11 +275,11 @@ Located in `Feature/AbilityDefinition/FirstAid/`, `Leadership/`
 
 ```csharp
 // Good
-builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-    .Name("Force Lightning I")
+builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+    .Name("Smoke Bomb")
 
 // Bad
-builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
+builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
     .Name("Lightning Bolt I")
 ```
 
@@ -294,7 +290,7 @@ private static void ConfigureAbility(AbilityBuilder builder, int level)
 {
     var damage = level * 10;
     var cooldown = 30f - (level * 5f);
-    
+
     builder.Create(GetFeatType(level), PerkType.AbilityName)
         .Name($"Ability Name {GetRomanNumeral(level)}")
         .Level(level)
@@ -313,10 +309,10 @@ private static void ImpactAction(uint activator, uint target, int level, Locatio
     // Common logic for all levels
     var baseDamage = CalculateBaseDamage(level);
     var finalDamage = ApplyBonuses(activator, baseDamage);
-    
+
     // Apply damage
     ApplyDamage(activator, target, finalDamage);
-    
+
     // Common effects
     AddCombatPoints(activator, target);
     ModifyEnmity(activator, target, finalDamage);
@@ -348,13 +344,13 @@ else
 public Dictionary<FeatType, AbilityDetail> BuildAbilities()
 {
     var builder = new AbilityBuilder();
-    
+
     // Create multiple levels
     for (int i = 1; i <= 4; i++)
     {
         CreateAbilityLevel(builder, i);
     }
-    
+
     return builder.Build();
 }
 
@@ -374,7 +370,7 @@ private static void CreateAbilityLevel(AbilityBuilder builder, int level)
 private static void CreateAbility(AbilityBuilder builder, bool isActive)
 {
     if (!isActive) return;
-    
+
     builder.Create(FeatType.AbilityName, PerkType.AbilityName)
         .Name("Ability Name")
         .Level(1)
@@ -389,7 +385,7 @@ private static void SharedImpactAction(uint activator, uint target, int level, L
 {
     // Common setup
     var damage = CalculateDamage(activator, level);
-    
+
     // Apply effects
     ApplyDamage(activator, target, damage);
     AddCombatPoints(activator, target);
@@ -421,11 +417,7 @@ builder.Create(FeatType.AbilityName, PerkType.AbilityPerk)
 
 ### Status Effects
 
-Concentration abilities require corresponding status effects:
-
-```csharp
-.IsConcentrationAbility(StatusEffectType.AbilityStatus)
-```
+Many abilities apply status effects through their impact action.
 
 ### Combat System
 
@@ -435,4 +427,4 @@ Abilities integrate with the combat system for damage calculation and combat poi
 
 Abilities can use skills for damage bonuses and other calculations.
 
-This documentation provides a comprehensive guide to creating and configuring abilities in SWLOR.Game.Server using the builder pattern. 
+This documentation provides a comprehensive guide to creating and configuring abilities in SWLOR.Game.Server using the builder pattern.

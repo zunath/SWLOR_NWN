@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
@@ -11,10 +11,16 @@ namespace SWLOR.Game.Server.Service.PerkService
             _requiredLevel = requiredLevel;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.BeastLevel;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
+                return "You do not have a beast tamed.";
+
             var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
             if (dbBeast == null)

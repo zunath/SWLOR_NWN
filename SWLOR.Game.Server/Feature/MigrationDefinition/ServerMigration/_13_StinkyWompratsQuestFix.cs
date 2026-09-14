@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
@@ -28,11 +28,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                             dbPlayer.Quests["stinky_womprats"].ItemProgresses["womprathide"] < 1)
                             dbPlayer.Quests["stinky_womprats"].ItemProgresses["womprathide"] = 1;
                     }
-                    
+
                     DB.Set(dbPlayer);
                 }
             }
-            
+
         }
     }
 }

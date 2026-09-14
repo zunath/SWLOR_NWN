@@ -1,16 +1,18 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -29,6 +31,67 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<int, int[]> _2daCache = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
+        private static readonly IReadOnlyList<BaseItem> _meleeStatMappedBaseItems = new[]
+        {
+            BaseItem.BastardSword,
+            BaseItem.BattleAxe,
+            BaseItem.Dagger,
+            BaseItem.HandAxe,
+            BaseItem.Kama,
+            BaseItem.Katana,
+            BaseItem.Kukri,
+            BaseItem.LightFlail,
+            BaseItem.LightHammer,
+            BaseItem.LightMace,
+            BaseItem.Longsword,
+            BaseItem.MorningStar,
+            BaseItem.Rapier,
+            BaseItem.Scimitar,
+            BaseItem.ShortSword,
+            BaseItem.Sickle,
+            BaseItem.Whip,
+            BaseItem.Lightsaber,
+            BaseItem.Electroblade,
+            BaseItem.DireMace,
+            BaseItem.DwarvenWarAxe,
+            BaseItem.GreatAxe,
+            BaseItem.GreatSword,
+            BaseItem.Halberd,
+            BaseItem.HeavyFlail,
+            BaseItem.Scythe,
+            BaseItem.Trident,
+            BaseItem.WarHammer,
+            BaseItem.ShortSpear,
+            BaseItem.TwoBladedSword,
+            BaseItem.DoubleAxe,
+            BaseItem.Saberstaff,
+            BaseItem.TwinElectroBlade,
+            BaseItem.Club,
+            BaseItem.Bracer,
+            BaseItem.Gloves,
+            BaseItem.QuarterStaff,
+            BaseItem.Katar,
+            BaseItem.CreatureBludgeonWeapon,
+            BaseItem.CreaturePierceWeapon,
+            BaseItem.CreatureSlashPierceWeapon,
+            BaseItem.CreatureSlashWeapon,
+        };
+        private static readonly IReadOnlyList<BaseItem> _rangedStatMappedBaseItems = new[]
+        {
+            BaseItem.Cannon,
+            BaseItem.Rifle,
+            BaseItem.Longbow,
+            BaseItem.Pistol,
+            BaseItem.LegacyPistol,
+            BaseItem.Arrow,
+            BaseItem.Bolt,
+            BaseItem.Bullet,
+            BaseItem.Sling,
+            BaseItem.Grenade,
+            BaseItem.Shuriken,
+            BaseItem.ThrowingAxe,
+            BaseItem.Dart,
+        };
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
@@ -84,140 +147,32 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadItemToDamageStatMapping()
         {
-            // One-Handed Skills
-            _itemToDamageAbilityMapping[BaseItem.BastardSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.BattleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Dagger] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.HandAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Kama] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Katana] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Kukri] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.LightFlail] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.LightHammer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.LightMace] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Longsword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.MorningStar] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Rapier] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Scimitar] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ShortSword] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Sickle] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Whip] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
+            foreach (var itemType in _meleeStatMappedBaseItems)
+            {
+                _itemToDamageAbilityMapping[itemType] = AbilityType.Might;
+            }
 
-            // Two-Handed Skills
-            _itemToDamageAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.GreatAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.GreatSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Halberd] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.HeavyFlail] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Scythe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Trident] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.WarHammer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ShortSpear] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Perception;
-
-            // Martial Arts Skills
-            _itemToDamageAbilityMapping[BaseItem.Club] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Bracer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Gloves] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.QuarterStaff] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Katar] = AbilityType.Perception;
-
-            // Ranged Skills
-            _itemToDamageAbilityMapping[BaseItem.Cannon] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Rifle] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Longbow] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Pistol] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Arrow] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Bolt] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Bullet] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Sling] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Grenade] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Shuriken] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ThrowingAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Dart] = AbilityType.Might;
-
-            // NPCs
-            _itemToDamageAbilityMapping[BaseItem.CreatureBludgeonWeapon] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.CreaturePierceWeapon] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.CreatureSlashPierceWeapon] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.CreatureSlashWeapon] = AbilityType.Might;
+            foreach (var itemType in _rangedStatMappedBaseItems)
+            {
+                _itemToDamageAbilityMapping[itemType] = AbilityType.Perception;
+            }
 
             Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to damage ability mappings.");
         }
 
         private static void LoadItemToAccuracyStatMapping()
         {
-            // One-Handed Skills
-            _itemToAccuracyAbilityMapping[BaseItem.BastardSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.BattleAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Dagger] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.HandAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Kama] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Katana] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Kukri] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.LightFlail] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.LightHammer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.LightMace] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Longsword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.MorningStar] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Rapier] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Scimitar] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.ShortSword] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Sickle] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Whip] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Agility;
+            foreach (var itemType in _meleeStatMappedBaseItems)
+            {
+                _itemToAccuracyAbilityMapping[itemType] = AbilityType.Perception;
+            }
 
-            // Two-Handed Skills
-            _itemToAccuracyAbilityMapping[BaseItem.DireMace] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.GreatAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.GreatSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Halberd] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.HeavyFlail] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Scythe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Trident] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.WarHammer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.ShortSpear] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
+            foreach (var itemType in _rangedStatMappedBaseItems)
+            {
+                _itemToAccuracyAbilityMapping[itemType] = AbilityType.Agility;
+            }
 
-            // Martial Arts Skills
-            _itemToAccuracyAbilityMapping[BaseItem.Club] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Bracer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Gloves] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.QuarterStaff] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Katar] = AbilityType.Agility;
-
-            // Ranged Skills
-            _itemToAccuracyAbilityMapping[BaseItem.Cannon] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Rifle] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Longbow] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Pistol] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Arrow] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Bolt] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Bullet] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Sling] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Grenade] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Shuriken] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.ThrowingAxe] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Dart] = AbilityType.Agility;
-
-            // NPCs
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureBludgeonWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreaturePierceWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureSlashPierceWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureSlashWeapon] = AbilityType.Perception;
-
-            Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to accuracy ability mappings.");
+            Console.WriteLine($"Loaded {_itemToAccuracyAbilityMapping.Count} item to accuracy ability mappings.");
         }
 
         /// <summary>
@@ -228,8 +183,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
         public static AbilityType GetWeaponDamageAbilityType(BaseItem itemType)
         {
-            return !_itemToDamageAbilityMapping.ContainsKey(itemType) 
-                ? AbilityType.Invalid 
+            return !_itemToDamageAbilityMapping.ContainsKey(itemType)
+                ? AbilityType.Invalid
                 : _itemToDamageAbilityMapping[itemType];
         }
 
@@ -414,7 +369,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {
-                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
+                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown);
                     }
 
                     // Reduce item charge if specified.
@@ -427,7 +382,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             DestroyObject(item);
                         }
-                        else 
+                        else
                         {
                             SetItemCharges(item, charges);
                         }
@@ -437,29 +392,133 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Checks all of the "Use Limitation: Perk" item properties on an item against a creature's effective level in the required perk.
-        /// If player meets or exceeds the level required for all item properties, returns true. Otherwise returns false.
+        /// Checks all item use limitation properties against a creature's effective requirements.
         /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="item">The item to pull requirements from.</param>
-        /// <returns>true if all requirements met, false otherwise</returns>
         public static bool CanCreatureUseItem(uint creature, uint item)
+        {
+            return string.IsNullOrWhiteSpace(GetCreatureItemUseError(creature, item));
+        }
+
+        public static string GetCreatureItemUseError(uint creature, uint item)
         {
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                if (GetItemPropertyType(ip) == ItemPropertyType.UseLimitationPerk)
+                var type = GetItemPropertyType(ip);
+
+                if (type == ItemPropertyType.UseLimitationPerk)
                 {
                     var perkType = (PerkType)GetItemPropertySubType(ip);
                     var levelRequired = GetItemPropertyCostTableValue(ip);
 
+                    if (perkType == PerkType.Invalid)
+                        continue;
+
                     if (Perk.GetPerkLevel(creature, perkType) < levelRequired)
-                        return false;
+                    {
+                        var perkName = Perk.GetPerkDetails(perkType).Name;
+                        return $"This item requires '{perkName}' level {levelRequired} to use.";
+                    }
+                }
+                else if (type == ItemPropertyType.RequiresSkill)
+                {
+                    var skillType = (SkillType)GetItemPropertySubType(ip);
+                    var rankRequired = GetItemPropertyCostTableValue(ip);
+
+                    if (Skill.GetCreatureSkillRank(creature, skillType) < rankRequired)
+                    {
+                        var skillName = Skill.GetSkillDetails(skillType).Name;
+                        return $"This item requires {skillName} rank {rankRequired} to use.";
+                    }
+                }
+                else if (type == ItemPropertyType.RequiresStat)
+                {
+                    var abilityType = (AbilityType)GetItemPropertySubType(ip);
+                    var statRequired = GetItemPropertyCostTableValue(ip);
+
+                    if (CreaturePlugin.GetRawAbilityScore(creature, abilityType) < statRequired)
+                    {
+                        var abilityNameStrRef = StringToInt(Get2DAString("iprp_reqstat", "Name", (int)abilityType));
+                        var abilityName = abilityNameStrRef == 0
+                            ? abilityType.ToString()
+                            : GetStringByStrRef(abilityNameStrRef);
+
+                        return $"This item requires {abilityName} {statRequired} to use.";
+                    }
                 }
             }
 
-            return true;
+            return string.Empty;
         }
-        
+
+        public static string CanEquip(uint creature, uint item)
+        {
+            var isPlayer = GetIsPC(creature);
+            var isDroid = Droid.IsDroid(creature);
+            var itemType = GetBaseItemType(item);
+
+            if (ForceSensitiveWeaponBaseItemTypes.Contains(itemType) &&
+                !CanEquipForceSensitiveWeapon(creature))
+            {
+                return "Only Force Sensitive characters may equip that item.";
+            }
+
+            if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return string.Empty;
+
+            if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
+                return "Items cannot be equipped while crafting.";
+
+            var itemUseError = GetCreatureItemUseError(creature, item);
+            if (!string.IsNullOrWhiteSpace(itemUseError))
+                return itemUseError;
+
+            var race = GetRacialType(creature);
+
+            var needsDroidLimitation = race == RacialType.Droid && DroidBaseItemTypes.Contains(itemType);
+            var itemHasDroidIP = false;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationRacialType)
+                    continue;
+
+                var limitationRace = (RacialType)GetItemPropertySubType(ip);
+                if (limitationRace != RacialType.Droid)
+                    continue;
+
+                if (race != RacialType.Droid)
+                    return "This item may only be equipped by Droids.";
+
+                if (needsDroidLimitation)
+                    itemHasDroidIP = true;
+            }
+
+            if (needsDroidLimitation && !itemHasDroidIP)
+                return "Droids may not equip that item.";
+
+            return string.Empty;
+        }
+
+        private static bool CanEquipForceSensitiveWeapon(uint creature)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return true;
+
+            if (Droid.IsDroid(creature) ||
+                BeastMastery.GetBeastType(creature) != BeastType.Invalid)
+            {
+                return false;
+            }
+
+            if (!GetIsPC(creature))
+                return true;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            return dbPlayer?.CharacterType == CharacterType.ForceSensitive;
+        }
+
         /// <summary>
         /// Returns an item to a target.
         /// </summary>
@@ -504,33 +563,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the armor type of an item.
-        /// This is based on the Use Limitation: Perk property.
-        /// If it's not specified, ArmorType.Invalid will be returned.
-        /// </summary>
-        /// <param name="item">The item to be checked.</param>
-        /// <returns>The ArmorType value of the item. Returns ArmorType.Invalid if neither Light or Heavy are found.</returns>
-        public static ArmorType GetArmorType(uint item)
-        {
-            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-            {
-                if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationPerk) continue;
-
-                var perkType = (PerkType) GetItemPropertySubType(ip);
-                if (Perk.HeavyArmorPerks.Contains(perkType))
-                {
-                    return ArmorType.Heavy;
-                }
-                else if (Perk.LightArmorPerks.Contains(perkType))
-                {
-                    return ArmorType.Light;
-                }
-            }
-
-            return ArmorType.Invalid;
-        }
-
-        /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>
         public static List<BaseItem> WeaponBaseItemTypes { get; } = new List<BaseItem>
@@ -564,6 +596,8 @@ namespace SWLOR.Game.Server.Service
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
+            BaseItem.LegacyPistol,
+            BaseItem.Sling,
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
             BaseItem.Dart,
@@ -601,6 +635,16 @@ namespace SWLOR.Game.Server.Service
             BaseItem.TowerShield
         };
 
+        public static bool IsBaseItemType(uint item, IReadOnlyCollection<BaseItem> baseItemTypes)
+        {
+            return GetIsObjectValid(item) && baseItemTypes.Contains(GetBaseItemType(item));
+        }
+
+        public static bool IsBaseItemType(global::NWN.Native.API.CNWSItem item, IReadOnlyCollection<BaseItem> baseItemTypes)
+        {
+            return item != null && baseItemTypes.Contains((BaseItem)item.m_nBaseItem);
+        }
+
         /// <summary>
         /// Retrieves the list of Vibroblade base item types.
         /// </summary>
@@ -614,9 +658,9 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of Finesse Vibroblade base item types.
+        /// Retrieves the list of Vibroknife base item types.
         /// </summary>
-        public static List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> VibroknifeBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Dagger,
             BaseItem.Rapier,
@@ -641,15 +685,18 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new List<BaseItem>
         {
+            BaseItem.DireMace,
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
-            BaseItem.DwarvenWarAxe
+            BaseItem.DwarvenWarAxe,
+            BaseItem.HeavyFlail,
+            BaseItem.WarHammer
         };
 
         /// <summary>
-        /// Retrieves the list of Polearm base item types.
+        /// Retrieves the list of Spear base item types.
         /// </summary>
-        public static List<BaseItem> PolearmBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> SpearBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Halberd,
             BaseItem.Scythe,
@@ -676,6 +723,13 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
+        /// Retrieves the list of base item types restricted to Force Sensitive characters.
+        /// </summary>
+        public static List<BaseItem> ForceSensitiveWeaponBaseItemTypes { get; } = LightsaberBaseItemTypes
+            .Concat(SaberstaffBaseItemTypes)
+            .ToList();
+
+        /// <summary>
         /// Retrieves the list of Katar base item types.
         /// </summary>
         public static List<BaseItem> KatarBaseItemTypes { get; } = new List<BaseItem>
@@ -691,7 +745,9 @@ namespace SWLOR.Game.Server.Service
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Club,
-            BaseItem.MorningStar
+            BaseItem.MorningStar,
+            BaseItem.LightFlail,
+            BaseItem.LightHammer
         };
 
         /// <summary>
@@ -699,7 +755,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> PistolBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.Pistol
+            BaseItem.Pistol,
+            BaseItem.LegacyPistol,
+            BaseItem.Sling
         };
 
         /// <summary>
@@ -711,7 +769,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Shuriken,
             BaseItem.Dart
         };
-        
+
         /// <summary>
         /// Retrieves the list of Rifle base item types.
         /// </summary>
@@ -723,8 +781,8 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of One-Handed weapon types.
-        /// These are the weapons which are held in one hand and not necessarily associated with the One-Handed skill.
+        /// Retrieves the list of one-hand melee weapon base item types.
+        /// These are physical equip categories, not skill categories.
         /// </summary>
         public static List<BaseItem> OneHandedMeleeItemTypes { get; } = new List<BaseItem>
         {
@@ -747,8 +805,8 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of Two-Handed melee weapon types.
-        /// These are the weapons which are held in two hand and not necessarily associated with the Two-Handed skill.
+        /// Retrieves the list of two-handed melee weapon base item types.
+        /// These are physical equip categories, not skill categories.
         /// </summary>
         public static List<BaseItem> TwoHandedMeleeItemTypes { get; } = new List<BaseItem>
         {
@@ -794,16 +852,144 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the icon used on the UIs. 
+        /// The icon used when no valid icon resource can be resolved for an item. Prevents the
+        /// red "missing texture" X from appearing in NUI item lists.
+        /// </summary>
+        private const string GenericItemIconResref = "iit_smlmisc_001";
+
+        /// <summary>
+        /// Determines whether an icon resource actually exists (as either a TGA or DDS texture).
+        /// NUI renders a red X for missing textures, so icon resrefs must be verified before use.
+        /// </summary>
+        /// <param name="resref">The icon resref to check.</param>
+        /// <returns>true if the resource exists, false otherwise.</returns>
+        private static bool IconResourceExists(string resref)
+        {
+            if (string.IsNullOrWhiteSpace(resref))
+                return false;
+
+            return ResManGetAliasFor(resref, ResType.TGA) != string.Empty ||
+                   ResManGetAliasFor(resref, ResType.DDS) != string.Empty;
+        }
+
+        /// <summary>
+        /// Retrieves the icon used on the UIs. Every returned resref is verified to exist as a
+        /// texture; unresolvable icons fall back to the base item's default icon and finally to
+        /// a generic icon so NUI never renders a red missing-texture X.
         /// </summary>
         /// <param name="item">The item to retrieve the icon for.</param>
         /// <returns>A resref of the icon to use.</returns>
         public static string GetIconResref(uint item)
         {
+            return ResolveIconResref(item, out _);
+        }
+
+        /// <summary>
+        /// Determines whether an item has a real inventory icon, as opposed to falling back to the
+        /// generic placeholder icon. Items with no real icon are almost always internal, prop, or
+        /// creature items that should not appear on player-facing economy surfaces.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <returns>true if a real icon resource resolved, false if the generic fallback was used.</returns>
+        public static bool HasInventoryIcon(uint item)
+        {
+            ResolveIconResref(item, out var hasRealIcon);
+            return hasRealIcon;
+        }
+
+        /// <summary>
+        /// Creature-equipment base item types. Players never trade these; the "stat skins" that carry
+        /// a creature's combat stats are <see cref="BaseItem.CreatureItem"/>.
+        /// </summary>
+        private static readonly HashSet<BaseItem> EconomyRestrictedBaseItems = new()
+        {
+            BaseItem.Invalid,
+            BaseItem.CreatureSlashWeapon,
+            BaseItem.CreaturePierceWeapon,
+            BaseItem.CreatureBludgeonWeapon,
+            BaseItem.CreatureSlashPierceWeapon,
+            BaseItem.CreatureItem
+        };
+
+        /// <summary>
+        /// Name prefixes the builders reserve for NPC-only gear, anchored to the start of the item name.
+        /// </summary>
+        private static readonly string[] EconomyRestrictedNamePrefixes = { "[NPC]", "(NPC" };
+
+        /// <summary>
+        /// Blueprint local variable that explicitly excludes an item from player-facing economy surfaces.
+        /// Set this on NPC-only blueprints that a normal player item is otherwise indistinguishable from
+        /// (a real base type, a real icon, and no [NPC] name), such as the "Specialist" NPC weapons.
+        /// </summary>
+        public const string NoEconomyVariable = "NO_ECONOMY";
+
+        /// <summary>
+        /// Determines whether an item should be hidden from player-facing economy surfaces (contract
+        /// objective search, and any future market-style blueprint pickers). Combines creature base
+        /// types, the reserved NPC name prefixes, an explicit blueprint opt-out flag, and the absence
+        /// of a real inventory icon. This is the single source of truth; callers must not re-derive it.
+        /// </summary>
+        /// <param name="item">The item to classify.</param>
+        /// <returns>true if the item is NPC/creature/internal and should not be shown to players.</returns>
+        public static bool IsEconomyRestricted(uint item)
+        {
+            var baseItem = GetBaseItemType(item);
+            var name = GetName(item);
+            var noEconomy = GetLocalInt(item, NoEconomyVariable) == 1;
+            if (IsEconomyRestricted(baseItem, name, noEconomy, hasInventoryIcon: true))
+                return true;
+
+            return !HasInventoryIcon(item);
+        }
+
+        /// <summary>
+        /// Data-only form of the shared economy classifier. Builder tools use this overload while
+        /// inspecting UTI data that has not been instantiated by the game engine.
+        /// </summary>
+        public static bool IsEconomyRestricted(
+            BaseItem baseItem,
+            string name,
+            bool noEconomy,
+            bool hasInventoryIcon)
+        {
+            return EconomyRestrictedBaseItems.Contains(baseItem) ||
+                   noEconomy ||
+                   IsEconomyRestrictedName(name) ||
+                   !hasInventoryIcon;
+        }
+
+        /// <summary>
+        /// The name-based portion of <see cref="IsEconomyRestricted"/>, split out so it can be unit
+        /// tested without spawning an item. A blank name denotes an internal/unfinished blueprint.
+        /// </summary>
+        /// <param name="name">The item's display name.</param>
+        /// <returns>true if the name marks the item as NPC-only or internal.</returns>
+        public static bool IsEconomyRestrictedName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return true;
+
+            var trimmed = name.TrimStart();
+
+            foreach (var prefix in EconomyRestrictedNamePrefixes)
+            {
+                if (trimmed.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static string ResolveIconResref(uint item, out bool hasRealIcon)
+        {
+            hasRealIcon = true;
             var baseItem = GetBaseItemType(item);
 
             if (baseItem == BaseItem.Cloak) // Cloaks use PLTs so their default icon doesn't really work
-                return "iit_cloak";
+            {
+                if (IconResourceExists("iit_cloak"))
+                    return "iit_cloak";
+            }
             else if (baseItem == BaseItem.SpellScroll || baseItem == BaseItem.EnchantedScroll)
             {// Scrolls get their icon from the cast spell property
                 if (GetItemHasItemProperty(item, ItemPropertyType.CastSpell))
@@ -811,7 +997,11 @@ namespace SWLOR.Game.Server.Service
                     for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                     {
                         if (GetItemPropertyType(ip) == ItemPropertyType.CastSpell)
-                            return Get2DAString("iprp_spells", "Icon", GetItemPropertySubType(ip));
+                        {
+                            var spellIcon = Get2DAString("iprp_spells", "Icon", GetItemPropertySubType(ip));
+                            if (IconResourceExists(spellIcon))
+                                return spellIcon;
+                        }
                     }
                 }
             }
@@ -822,6 +1012,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     sSimpleModelId = "0" + sSimpleModelId;
                 }
+
+                // The engine convention for simple-model icons is i<ItemClass>_<model>. This covers
+                // custom base items (e.g. DNA, essences) whose DefaultIcon is just iinvalid_2x2.
+                var itemClass = Get2DAString("baseitems", "ItemClass", (int)baseItem);
+                var classIcon = ("i" + itemClass + "_" + sSimpleModelId).ToLower();
+                if (IconResourceExists(classIcon))
+                    return classIcon;
 
                 var sDefaultIcon = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
                 switch (baseItem)
@@ -850,12 +1047,26 @@ namespace SWLOR.Game.Server.Service
                 if (GetSubString(sDefaultIcon, nLength - 4, 1) == "_")// Some items have a default icon of xx_yyy_001, we strip the last 4 symbols if that is the case
                     sDefaultIcon = GetStringLeft(sDefaultIcon, nLength - 4);
                 var sIcon = sDefaultIcon + "_" + sSimpleModelId;
-                if (ResManGetAliasFor(sIcon, ResType.TGA) != "")// Check if the icon actually exists, if not, we'll fall through and return the default icon
+                if (IconResourceExists(sIcon))
                     return sIcon;
             }
 
-            // For everything else use the item's default icon
-            return Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+            // For everything else use the item's default icon, verified to exist. The iinvalid
+            // placeholder icons render as a red X, so they are never acceptable even though the
+            // texture technically exists.
+            var defaultIcon = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+            if (!defaultIcon.StartsWith("iinvalid"))
+            {
+                if (IconResourceExists(defaultIcon))
+                    return defaultIcon;
+
+                // Some default icons are stored with a _XXX variant suffix even though the 2DA omits it.
+                if (IconResourceExists(defaultIcon + "_001"))
+                    return defaultIcon + "_001";
+            }
+
+            hasRealIcon = false;
+            return GenericItemIconResref;
         }
 
         /// <summary>
@@ -1030,20 +1241,6 @@ namespace SWLOR.Game.Server.Service
                 dmg = 1;
 
             return dmg;
-        }
-
-        /// <summary>
-        /// Retrieves the critical modifier for a given item type.
-        /// The value returned is based on the baseitems.2da file.
-        /// </summary>
-        /// <param name="type">The item type to check</param>
-        /// <returns>The critical modifer value.</returns>
-        public static int GetCriticalModifier(BaseItem type)
-        {
-            var mod = _2daCache[(int)type][1];
-            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + type + " is " + mod);
-
-            return mod;
         }
 
         /// <summary>

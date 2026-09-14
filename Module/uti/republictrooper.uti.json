@@ -116,7 +116,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A basic uniform given out to all Republic Troopers enlisted in the military."
+    }
   },
   "Identified": {
     "type": "byte",

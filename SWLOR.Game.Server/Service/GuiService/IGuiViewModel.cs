@@ -1,4 +1,3 @@
-﻿using System;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -26,10 +25,10 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="type">The type of window in use.</param>
         /// <param name="payload">The initial payload passed in by the caller</param>
         /// <param name="tetherObject">The object to tether the window to.</param>
-        void Bind(uint player, 
-            int windowToken, 
-            GuiRectangle initialGeometry, 
-            GuiWindowType type, 
+        void Bind(uint player,
+            int windowToken,
+            GuiRectangle initialGeometry,
+            GuiWindowType type,
             GuiPayloadBase payload,
             uint tetherObject);
 
@@ -64,6 +63,11 @@ namespace SWLOR.Game.Server.Service.GuiService
         string ModalCancelButtonText { get; }
 
         /// <summary>
+        /// Retrieves the text typed into the input modal partial view's text box.
+        /// </summary>
+        string ModalInputText { get; }
+
+        /// <summary>
         /// Runs when the modal closes.
         /// </summary>
         Action OnModalClose();
@@ -77,6 +81,16 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// Runs when the modal cancel button is clicked.
         /// </summary>
         Action OnModalCancelClick();
+
+        /// <summary>
+        /// Runs when the input modal confirmation button is clicked.
+        /// </summary>
+        Action OnInputModalConfirmClick();
+
+        /// <summary>
+        /// Runs when the input modal cancel button is clicked.
+        /// </summary>
+        Action OnInputModalCancelClick();
 
         /// <summary>
         /// Runs when the window is closed.

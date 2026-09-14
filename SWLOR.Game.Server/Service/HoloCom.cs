@@ -17,13 +17,11 @@ namespace SWLOR.Game.Server.Service
         private const string HolocomCallAttempt = "HOLOCOM_CALL_ATTEMPT";
         private const string HolocomHologram = "HOLOCOM_HOLOGRAM";
         private const string HologramOwner = "HOLOGRAM_OWNER";
-        private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
-
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
-            if (IsInCall(player)) 
+            if (IsInCall(player))
                 SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
@@ -32,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnModuleEnter()
         {
             var player = GetEnteringObject();
-            RemoveEffectByTag(player, HolocomCallImmobilize);
+            RemoveEffectByTag(player, PlayerActivityEffectTag.HoloComImmobilize);
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
@@ -65,7 +63,7 @@ namespace SWLOR.Game.Server.Service
 
             var receiver = GetHoloGram(sender);
             if (!GetIsObjectValid(receiver)) return;
-            
+
             var text = GetPCChatMessage().Trim();
 
             if (text.StartsWith("/")) return;
@@ -103,8 +101,9 @@ namespace SWLOR.Game.Server.Service
                 var message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
                 SendMessageToPC(sender, message);
                 SendMessageToPC(receiver, message);
-                var effectImmobilized = EffectCutsceneImmobilize();
-                TagEffect(effectImmobilized, HolocomCallImmobilize);
+                var effectImmobilized = TagEffect(
+                    EffectCutsceneImmobilize(),
+                    PlayerActivityEffectTag.HoloComImmobilize);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, sender);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, receiver);
 
@@ -112,6 +111,8 @@ namespace SWLOR.Game.Server.Service
                 var senderLocation = GetLocation(sender);
                 var holoSender = CopyObject(sender, BiowareVector.MoveLocation(receiverLocation, GetFacing(receiver), 2.0f, 180));
                 var holoReceiver = CopyObject(receiver, BiowareVector.MoveLocation(senderLocation, GetFacing(sender), 2.0f, 180));
+                SetName(holoSender, "HoloCom Hologram");
+                SetName(holoReceiver, "HoloCom Hologram");
 
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoSender)), holoSender);
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoReceiver)), holoReceiver);
@@ -137,29 +138,8 @@ namespace SWLOR.Game.Server.Service
             }
             else // END CALL
             {
-                for(var effect = GetFirstEffect(sender); GetIsEffectValid(effect); effect = GetNextEffect(sender))
-                {
-                    if (GetIsEffectValid(effect))
-                    {
-                        var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
-                        {
-                            RemoveEffect(sender, effect);
-                        }
-                    }
-                }
-
-                for (var effect = GetFirstEffect(receiver); GetIsEffectValid(effect); effect = GetNextEffect(receiver))
-                {
-                    if (GetIsEffectValid(effect))
-                    {
-                        var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
-                        {
-                            RemoveEffect(receiver, effect);
-                        }
-                    }
-                }
+                RemoveEffectByTag(sender, PlayerActivityEffectTag.HoloComImmobilize);
+                RemoveEffectByTag(receiver, PlayerActivityEffectTag.HoloComImmobilize);
 
                 AssignCommand(sender, () =>
                 {
@@ -173,7 +153,7 @@ namespace SWLOR.Game.Server.Service
                 // Destroy holograms if they are valid
                 var senderHologram = GetHoloGram(sender);
                 var receiverHologram = GetHoloGram(receiver);
-                
+
                 if (GetIsObjectValid(senderHologram))
                 {
                     DestroyObject(senderHologram);
@@ -281,7 +261,7 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalObject(receiver, HolocomCallSenderObject);
                 DeleteLocalInt(receiver, HolocomCallAttempt);
             }
-            
+
             // Clean up the sender's call state
             SetIsCallSender(sender, false);
             DeleteLocalObject(sender, HolocomCallSenderObject);
@@ -303,21 +283,21 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Notify the receiver that the call attempt has ended
                     SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
-                    
+
                     // Clean up receiver's state
                     SetIsCallReceiver(receiver, false);
                     DeleteLocalObject(receiver, HolocomCallReceiverObject);
                     DeleteLocalObject(receiver, HolocomCallSenderObject);
                     DeleteLocalInt(receiver, HolocomCallAttempt);
                 }
-                
+
                 // Clean up sender's state
                 SetIsCallSender(player, false);
                 DeleteLocalObject(player, HolocomCallSenderObject);
                 DeleteLocalObject(player, HolocomCallReceiverObject);
                 DeleteLocalInt(player, HolocomCallAttempt);
             }
-            
+
             // Clean up call receiver state
             if (IsCallReceiver(player))
             {
@@ -326,21 +306,21 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Notify the sender that the call attempt has ended
                     SendMessageToPC(sender, "Your HoloCom call went unanswered.");
-                    
+
                     // Clean up sender's state
                     SetIsCallSender(sender, false);
                     DeleteLocalObject(sender, HolocomCallSenderObject);
                     DeleteLocalObject(sender, HolocomCallReceiverObject);
                     DeleteLocalInt(sender, HolocomCallAttempt);
                 }
-                
+
                 // Clean up receiver's state
                 SetIsCallReceiver(player, false);
                 DeleteLocalObject(player, HolocomCallReceiverObject);
                 DeleteLocalObject(player, HolocomCallSenderObject);
                 DeleteLocalInt(player, HolocomCallAttempt);
             }
-            
+
             // Clean up active call state
             if (IsInCall(player))
             {

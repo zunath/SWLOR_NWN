@@ -1,7 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -18,8 +17,7 @@ namespace SWLOR.Game.Server.Feature
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
             ApplyHeadScale(player);
-            RemoveImmobility(player);
-            ReapplyBAB(player);
+            RemoveStaleActivityImmobility(player);
             ReapplySpeed(player);
         }
 
@@ -47,25 +45,25 @@ namespace SWLOR.Game.Server.Feature
                 nScope: ObjectVisualTransformDataScopeType.CreatureHead);
         }
 
-        private static void RemoveImmobility(uint player)
+        private static void RemoveStaleActivityImmobility(uint player)
         {
+            RemoveEffectByTag(player, PlayerActivityEffectTag.CraftingImmobilize);
+            RemoveEffectByTag(player, PlayerActivityEffectTag.HoloComImmobilize);
+            RemoveEffectByTag(player, PlayerActivityEffectTag.RefiningImmobilize);
+
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
-                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
+                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize &&
+                    string.IsNullOrWhiteSpace(GetEffectTag(effect)))
                 {
                     RemoveEffect(player, effect);
                 }
             }
         }
 
-        private static void ReapplyBAB(uint player)
-        {
-            Stat.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
-        }
-
         private static void ReapplySpeed(uint player)
         {
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            Stat.ApplyCreatureMovementRate(player);
         }
     }
 }

@@ -27,6 +27,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Anchorhead Medical Center Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "mag_medic_anchor"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bartender"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "bartender"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Cooking Ingredients"
               },
               "RESREF": {
@@ -60,6 +82,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Dantooine Gym"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "dantooinegym"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Dathomir General Store"
               },
               "RESREF": {
@@ -76,6 +109,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "dockhand_store"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Druzer IX Weapon & Armor"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "druz_wpnarm"
               }
             },
             {
@@ -126,11 +170,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Generic Bartender"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "mag_barman_gen"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Hutlar General Store"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "hutlar_gen_merch"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Incubation Field Notes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "fnote_store"
               }
             },
             {
@@ -148,6 +214,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Lenny's Shop"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "mag_lenny"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Medical Supplies"
               },
               "RESREF": {
@@ -159,11 +236,55 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Medical Supplies"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "street_food001"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Mon Cala General Store"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "moncala_gen_merc"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Republic Armory"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "republicarmor001"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Republic Mess Hall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "rep_messhall001"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Snack Vendor"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "snackvendor"
               }
             },
             {
@@ -197,6 +318,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "tat_gen_merch"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tatooine Leny's"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "blueprint"
               }
             },
             {

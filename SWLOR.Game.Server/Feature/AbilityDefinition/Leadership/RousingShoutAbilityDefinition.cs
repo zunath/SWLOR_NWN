@@ -1,79 +1,187 @@
+using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
-    public class RousingShoutAbilityDefinition : IAbilityListDefinition
+    public sealed class RousingShoutAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            RousingShout();
+            var builder = new AbilityBuilder();
 
-            return _builder.Build();
+            RousingShout1(builder);
+            RousingShout2(builder);
+            RousingShout3(builder);
+
+            return builder.Build();
         }
 
-        private void RousingShout()
+        private static void RousingShout1(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.RousingShout, PerkType.RousingShout)
-                .Name("Rousing Shout")
+            builder
+                .Create(FeatType.RousingShout1, PerkType.RousingShout)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RousingShout)
+                .Name("Rousing Shout I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.RousingShout, 300f)
-                .HasActivationDelay(8f)
-                .IsCastedAbility()
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    if (!GetIsDead(target))
-                    {
-                        return "Your target is not unconscious.";
-                    }
-
-                    if (GetArea(activator) != GetArea(target))
-                    {
-                        return "Your target is too far away.";
-                    }
-
-                    return string.Empty;
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    var social = GetAbilityScore(activator, AbilityType.Social);
-                    var targetMaxHP = GetMaxHitPoints(target);
-                    int hp;
-                    var perkLevel = Perk.GetPerkLevel(activator, PerkType.RousingShout);
-
-                    switch (perkLevel)
-                    {
-                        default:
-                        case 1:
-                            hp = 0;
-                            break;
-                        case 2:
-                            hp = (int)(social * 0.01f * targetMaxHP);
-                            break;
-                        case 3:
-                            hp = (int)(2 * social * 0.01f * targetMaxHP);
-                            break;
-                    }
-
-                    ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                    Ability.ReapplyPlayerAuraAOE(target);
-                    DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
-
-                    if (hp > 0)
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
-                    }
-
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
-                    Enmity.ModifyEnmityOnAll(activator, 850);
-                });
+                .UsesImmediateAuthoredAnimation()
+                .HasRecastDelay(RecastGroup.RousingShout, 45f)
+                .SkillType(SkillType.Leadership)
+                .HasMaxRange(LeadershipAbilityRange.CommandTarget)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation(ValidateRousingShoutTarget)
+                .HasImpactAction(RousingShout1ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementStamina(6);
         }
+
+        private static void RousingShout2(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.RousingShout2, PerkType.RousingShout)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RousingShout)
+                .Name("Rousing Shout II")
+                .Level(2)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesImmediateAuthoredAnimation()
+                .HasRecastDelay(RecastGroup.RousingShout, 45f)
+                .SkillType(SkillType.Leadership)
+                .HasMaxRange(LeadershipAbilityRange.CommandTarget)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation(ValidateRousingShoutTarget)
+                .HasImpactAction(RousingShout2ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementStamina(8);
+        }
+
+        private static void RousingShout3(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.RousingShout3, PerkType.RousingShout)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RousingShout)
+                .Name("Rousing Shout III")
+                .Level(3)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesImmediateAuthoredAnimation()
+                .HasRecastDelay(RecastGroup.RousingShout, 45f)
+                .SkillType(SkillType.Leadership)
+                .HasMaxRange(LeadershipAbilityRange.CommandTarget)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation(ValidateRousingShoutTarget)
+                .HasImpactAction(RousingShout3ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementStamina(10);
+        }
+
+        private static void RousingShout1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyRousingShout(activator, target, 10, 13, typeof(RousingShout1StatusEffect), 30f);
+        }
+
+        private static void RousingShout2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyRousingShout(activator, target, 15, 19, typeof(RousingShout2StatusEffect), 30f);
+        }
+
+        private static void RousingShout3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyRousingShout(activator, target, 20, 25, typeof(RousingShout3StatusEffect), 30f);
+        }
+
+        private static void ApplyRousingShout(
+            uint activator,
+            uint target,
+            int temporaryHPPercent,
+            int temporaryHPCap,
+            Type lowHPStatusEffect,
+            float durationSeconds)
+        {
+            if (!CanRousingShoutAffectTarget(activator, target))
+                return;
+
+            // Temporary HP can raise the engine-reported current HP immediately. Capture the
+            // danger state first so the rescue rider is decided from the target's pre-shout HP.
+            var targetWasInDanger = IsTargetInDanger(target);
+            durationSeconds = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, durationSeconds);
+            ApplyTemporaryHP(
+                target,
+                AbilityEffectScaling.ScaleValueBySourceSocial(activator, temporaryHPPercent, temporaryHPCap),
+                durationSeconds);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
+
+            if (targetWasInDanger)
+            {
+                if (StatusEffect.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, target);
+            }
+
+            LeadershipAbilityEffects.ApplyTriageProtocol(activator, target, durationSeconds);
+            LeadershipAbilityEffects.ApplyBolsterResolve(activator, durationSeconds);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Good_Help), target);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
+        }
+
+        private static bool CanRousingShoutAffectTarget(uint activator, uint target)
+        {
+            var error = ValidateRousingShoutTarget(activator, target, 0, null);
+            if (string.IsNullOrWhiteSpace(error))
+                return true;
+
+            SendMessageToPC(activator, error);
+            return false;
+        }
+
+        private static string ValidateRousingShoutTarget(
+            uint activator,
+            uint target,
+            int effectivePerkLevel,
+            Location targetLocation)
+        {
+            if (!GetIsObjectValid(target) || GetObjectType(target) != ObjectType.Creature)
+                return "Rousing Shout requires a living ally.";
+
+            if (GetIsDead(target) || GetCurrentHitPoints(target) <= 0)
+                return "Rousing Shout cannot affect the dead.";
+
+            if (GetIsReactionTypeHostile(target, activator))
+                return "Rousing Shout can only affect allies.";
+
+            return string.Empty;
+        }
+
+        private static bool IsTargetInDanger(uint target)
+        {
+            return GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * 0.35f;
+        }
+
+        private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)
+        {
+            TemporaryHitPointEffects.ApplyFlat(
+                target,
+                "ROUSING_SHOUT",
+                GameMath.PercentOf(GetMaxHitPoints(target), percent),
+                durationSeconds);
+        }
+
     }
 }

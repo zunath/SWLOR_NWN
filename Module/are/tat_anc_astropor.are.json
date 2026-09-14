@@ -54,7 +54,7 @@
   },
   "LoadScreenID": {
     "type": "word",
-    "value": 69
+    "value": 18
   },
   "ModListenCheck": {
     "type": "int",
@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Anchorhead - Astroport",
-      "2": "Anchorhead - Astroport"
+      "0": "Tatooine - Anchorhead - Spaceport",
+      "2": "Tatooine - Anchorhead - Spaceport"
     }
   },
   "NoRest": {
@@ -14614,7 +14614,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 279
+    "value": 280
   },
   "Width": {
     "type": "int",

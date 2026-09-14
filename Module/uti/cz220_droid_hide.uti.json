@@ -30,18 +30,16 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "CZ-220 Droid Hide"
+      "0": "Scavenger Droid Stat Skin"
     }
   },
   "ModelPart1": {
@@ -67,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 43
+          "value": 54
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 100
         },
         "Param1": {
           "type": "byte",
@@ -83,11 +81,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 99
+          "value": 133
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 102
         }
       }
     ]

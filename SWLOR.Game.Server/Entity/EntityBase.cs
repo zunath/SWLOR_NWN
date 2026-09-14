@@ -1,4 +1,3 @@
-﻿using System;
 using Newtonsoft.Json;
 
 namespace SWLOR.Game.Server.Entity
@@ -7,7 +6,7 @@ namespace SWLOR.Game.Server.Entity
     {
         [Indexed]
         public string Id { get; set; }
-        
+
         public DateTime DateCreated { get; set; }
 
         [Indexed]

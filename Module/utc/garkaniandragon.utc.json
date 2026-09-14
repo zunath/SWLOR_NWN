@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 190.0
+    "value": 196.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 37
+    "value": 31
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 4148
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 38
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -79,21 +79,21 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "narkbite"
+          "value": "gark_bite_wp"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "narkbite"
+          "value": "gark_bite_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "chirodactyl_skin"
+          "value": "garkdragon_sk"
         }
       }
     ]
@@ -132,6 +132,48 @@
           "type": "word",
           "value": 289
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1820
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1821
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1824
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1768
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1844
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1767
+        }
       }
     ]
   },
@@ -155,11 +197,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 4138
   },
   "Int": {
     "type": "byte",
-    "value": 26
+    "value": 31
   },
   "Interruptable": {
     "type": "byte",
@@ -189,7 +231,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4013
+    "value": 4148
   },
   "NaturalAC": {
     "type": "byte",
@@ -600,7 +642,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 36
+    "value": 37
   },
   "Subrace": {
     "type": "cexostring",
@@ -731,6 +773,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 22
   }
 }

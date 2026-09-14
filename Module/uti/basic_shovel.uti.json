@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Use this shovel on a location to dig a hole. You can then plant seeds to grow crops and trees."
     }
   },
   "Identified": {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -22,6 +21,7 @@ namespace SWLOR.Game.Server.Entity
     public class Player: EntityBase
     {
         public const int DefaultOutfitSlotLimit = 25;
+        public const int DefaultDisguiseSlotLimit = 1;
         public const int DefaultMarketListingLimit = 25;
 
         public Player()
@@ -58,14 +58,12 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Willpower, 0}
             };
 
-            Defenses = new Dictionary<CombatDamageType, int>();
+            Defenses = Combat.CreateDefaultDefenseValues();
 
-            foreach (var type in Combat.GetAllDamageTypes())
-            {
-                Defenses[type] = 0;
-            }
+            Resistances = Resistance.CreateDefaultResistanceValues();
 
             ActiveShipId = Guid.Empty.ToString();
+            UnknownDisplayName = string.Empty;
             IsUsingDualPistolMode = false;
             EmoteStyle = EmoteStyle.Regular;
             MovementRate = 1.0f;
@@ -75,10 +73,13 @@ namespace SWLOR.Game.Server.Entity
             Skills = new Dictionary<SkillType, PlayerSkill>();
             Perks = new Dictionary<PerkType, int>();
             RecastTimes = new Dictionary<RecastGroup, DateTime>();
+            EncounterCooldowns = new Dictionary<string, DateTime>();
             Quests = new Dictionary<string, PlayerQuest>();
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
+            LearnedTechniques = new Dictionary<FeatType, DateTime>();
+            EquippedTechniques = new List<FeatType>();
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
@@ -91,15 +92,22 @@ namespace SWLOR.Game.Server.Entity
             Control = new Dictionary<SkillType, int>();
             Craftsmanship = new Dictionary<SkillType, int>();
             CPBonus = new Dictionary<SkillType, int>();
-            AbilityToggles = new Dictionary<AbilityToggleType, bool>();
             Currencies = new Dictionary<CurrencyType, int>();
             OutfitSlotLimit = DefaultOutfitSlotLimit;
+            DisguiseSlotLimit = DefaultDisguiseSlotLimit;
             MarketListingLimit = DefaultMarketListingLimit;
+            ActiveDisguiseId = string.Empty;
+            UndisguisedPortraitId = -1;
+            UndisguisedPortraitResref = string.Empty;
+            UndisguisedSoundSetId = -1;
+            UndisguisedDescription = string.Empty;
+            HasUndisguisedDescriptionSnapshot = false;
         }
 
 
         [Indexed]
         public int Version { get; set; }
+        public bool CharacterInitializationPending { get; set; }
         [Indexed]
         public string Name { get; set; }
         public int MaxHP { get; set; }
@@ -143,11 +151,13 @@ namespace SWLOR.Game.Server.Entity
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public string ActiveShipId { get; set; }
+        public string UnknownDisplayName { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
-        public int AbilityRecastReduction { get; set; }
+        public int CombatReadiness { get; set; }
         public int MarketTill { get; set; }
         public int OutfitSlotLimit { get; set; }
+        public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }
         [Indexed]
         public string CitizenPropertyId { get; set; }
@@ -155,8 +165,20 @@ namespace SWLOR.Game.Server.Entity
         public int Attack { get; set; }
         public int ForceAttack { get; set; }
         public int Evasion { get; set; }
+        public int Stealth { get; set; }
+        public int Detection { get; set; }
+        public int TrapBonus { get; set; }
+        public int TrapDisarm { get; set; }
+        public int PoisonBonus { get; set; }
+        public int Lockpicking { get; set; }
         public bool RebuildComplete { get; set; }
         public string ActiveBeastId { get; set; }
+        public string ActiveDisguiseId { get; set; }
+        public int UndisguisedPortraitId { get; set; }
+        public string UndisguisedPortraitResref { get; set; }
+        public int UndisguisedSoundSetId { get; set; }
+        public string UndisguisedDescription { get; set; }
+        public bool HasUndisguisedDescriptionSnapshot { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }
@@ -171,18 +193,21 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<SkillType, PlayerSkill> Skills { get; set; }
         public Dictionary<PerkType, int> Perks { get; set; }
         public Dictionary<RecastGroup, DateTime> RecastTimes { get; set; }
+        public Dictionary<string, DateTime> EncounterCooldowns { get; set; }
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
+        public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
+        public List<FeatType> EquippedTechniques { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
+        public Dictionary<ResistanceType, int> Resistances { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
-        public Dictionary<AbilityToggleType, bool> AbilityToggles { get; set; }
         public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }
         public float HeadAppearanceScale { get; set; }
@@ -201,6 +226,7 @@ namespace SWLOR.Game.Server.Entity
         public int RPPoints { get; set; }
         public ulong TotalRPExpGained { get; set; }
         public ulong SpamMessageCount { get; set; }
+        public ulong OOCMessageCount { get; set; }
     }
 
     public class PlayerSkill
@@ -224,12 +250,18 @@ namespace SWLOR.Game.Server.Entity
     {
         public int? BattleThemeId { get; set; }
         public bool DisplayAchievementNotification { get; set; }
-        public bool IsHolonetEnabled { get; set; }
         public bool ShowHelmet { get; set; }
         public bool ShowCloak { get; set; }
         public bool IsSubdualModeEnabled { get; set; }
-        public bool IsLightsaberForceShareEnabled { get; set; }
         public bool DisplayServerResetReminders { get; set; }
+        public bool? ShowDescriptorsForNamedPlayers { get; set; }
+        public bool? ShowOwnDescriptor { get; set; }
+        public bool? ScrambleAccountName { get; set; }
+        public bool? DisplayCommsOutOfRangeWarnings { get; set; }
+
+        // When enabled, Stamina and FP are shown as thin bars overlaid on the character portrait
+        // instead of the standalone HP/STM/FP window docked in the lower-right corner.
+        public bool? PortraitVitals { get; set; }
         public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
         public PlayerColor OOCChatColor { get; set; }
         public PlayerColor EmoteChatColor { get; set; }
@@ -239,10 +271,13 @@ namespace SWLOR.Game.Server.Entity
             DisplayAchievementNotification = true;
             ShowHelmet = true;
             ShowCloak = true;
-            IsHolonetEnabled = true;
             IsSubdualModeEnabled = false;
-            IsLightsaberForceShareEnabled = true;
             DisplayServerResetReminders = true;
+            ShowDescriptorsForNamedPlayers = true;
+            ShowOwnDescriptor = true;
+            ScrambleAccountName = true;
+            DisplayCommsOutOfRangeWarnings = true;
+            PortraitVitals = true;
 
             LanguageChatColors = new Dictionary<SkillType, PlayerColor>();
         }

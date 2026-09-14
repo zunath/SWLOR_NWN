@@ -1,17 +1,20 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -23,6 +26,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     {
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private static string[] _spawnBeastEggHelpMessages = Array.Empty<string>();
+
+        private const int SpawnEggTypesPerHelpMessage = 20;
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -34,10 +40,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Resurrect();
             SpawnGold();
             TeleportWaypoint();
+            TeleportToTarget();
             GetLocalVariable();
             SetLocalVariable();
             SetPortrait();
             SpawnItem();
+            SpawnBeastEgg();
             GiveRPXP();
             ResetPerkCooldown();
             PlayVFX();
@@ -58,8 +66,112 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetScale();
             ShipStats();
             RepairShip();
+            LearnAllTechniques();
+            UnlockCapstoneQuests();
 
             return _builder.Build();
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+        public static void CacheSpawnBeastEggHelp()
+        {
+            var beastTypes = BeastMastery.GetAllBeastTypes()
+                .OrderBy(type => type.ToString())
+                .ToArray();
+            var messages = new List<string>
+            {
+                "Usage: /spawnegg <beast type>",
+                "Available beast types:"
+            };
+
+            for (var index = 0; index < beastTypes.Length; index += SpawnEggTypesPerHelpMessage)
+            {
+                messages.Add(string.Join(", ", beastTypes.Skip(index).Take(SpawnEggTypesPerHelpMessage)));
+            }
+
+            _spawnBeastEggHelpMessages = messages.ToArray();
+        }
+
+        private void UnlockCapstoneQuests()
+        {
+            _builder.Create("unlockcapstones")
+                .Description("Marks every perk-gating quest chain (capstone mastery lines) complete for yourself. Testing tool.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        SendMessageToPC(user, "Only players may unlock capstone quest gates.");
+                        return;
+                    }
+
+                    var questIds = GetPerkGatingQuestChains();
+                    foreach (var questId in questIds)
+                    {
+                        Quest.ForceCompleteQuest(user, questId);
+                    }
+
+                    Log.Write(LogGroup.DM,
+                        $"Player '{GetName(user)}' ({GetObjectUUID(user)}) used unlockcapstones to mark {questIds.Count} perk-gating quest(s) complete: {string.Join(", ", questIds.OrderBy(x => x))}");
+
+                    SendMessageToPC(user,
+                        $"Marked {questIds.Count} perk-gating quest(s) complete. Quest-gated perks can now be purchased and their abilities tested.");
+                });
+        }
+
+        private static HashSet<string> GetPerkGatingQuestChains()
+        {
+            var questIds = new HashSet<string>();
+            foreach (var perk in Perk.GetAllPerks().Values)
+            {
+                foreach (var perkLevel in perk.PerkLevels.Values)
+                {
+                    foreach (var requirement in perkLevel.Requirements.OfType<PerkRequirementQuest>())
+                    {
+                        CollectQuestChain(requirement.QuestId, questIds);
+                    }
+                }
+            }
+
+            return questIds;
+        }
+
+        private static void CollectQuestChain(string questId, ISet<string> questIds)
+        {
+            if (string.IsNullOrWhiteSpace(questId) || questIds.Contains(questId))
+                return;
+
+            var quest = Quest.GetQuestByIdOrDefault(questId);
+            if (quest == null)
+                return;
+
+            questIds.Add(questId);
+
+            foreach (var prerequisite in quest.Prerequisites.OfType<RequiredQuestPrerequisite>())
+            {
+                CollectQuestChain(prerequisite.QuestId, questIds);
+            }
+        }
+
+        private void LearnAllTechniques()
+        {
+            _builder.Create("learntechniques")
+                .Description("Grants (learns) every Mimicry technique to yourself. Testing tool.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        SendMessageToPC(user, "Only players may learn Mimicry techniques.");
+                        return;
+                    }
+
+                    var learnedCount = Mimicry.GrantAllTechniques(user);
+                    SendMessageToPC(user,
+                        $"Learned {learnedCount} new Mimicry technique(s). Open the Techniques window to equip them.");
+                });
         }
 
         private void CopyTargetItem()
@@ -212,6 +324,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     AssignCommand(user, () => ActionJumpToLocation(GetLocation(wp)));
+                });
+        }
+
+        private void TeleportToTarget()
+        {
+            _builder.Create("tpto")
+                .Description("Teleports you to a selected creature or ground location.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget(ObjectType.Creature | ObjectType.Tile)
+                .AllowsLocationTarget()
+                .Action((user, target, location, args) =>
+                {
+                    AssignCommand(user, () => ActionJumpToLocation(location));
                 });
         }
 
@@ -463,7 +589,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SetLocalString(target, "DESTINATION", args[0]);
                         SendMessageToPC(user, "Destination tag set to " + args[0] + ".");
                     }
-                }); 
+                });
         }
 
         private void SetPortrait()
@@ -540,10 +666,54 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private void SpawnBeastEgg()
+        {
+            _builder.Create("spawnegg")
+                .Description("Spawns a beast egg by beast type. Use /spawnegg help to list available types.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return ColorToken.Red("Please specify a beast type. Use /spawnegg help to list available types.");
+                    }
+
+                    if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+                        return string.Empty;
+
+                    if (!Enum.TryParse(args[0], true, out BeastType beastType) ||
+                        !BeastMastery.GetAllBeastTypes().Contains(beastType))
+                    {
+                        return ColorToken.Red($"Unknown beast type '{args[0]}'. Use /spawnegg help to list available types.");
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foreach (var message in _spawnBeastEggHelpMessages)
+                        {
+                            SendMessageToPC(user, message);
+                        }
+
+                        return;
+                    }
+
+                    Enum.TryParse(args[0], true, out BeastType beastType);
+                    var egg = BeastMastery.CreateBeastEgg(beastType, user);
+                    var beastDetail = BeastMastery.GetBeastDetail(beastType);
+
+                    SendMessageToPC(user, $"Spawned '{GetName(egg)}' for beast type {beastType} ({beastDetail.Name}).");
+                });
+        }
+
         private void GiveRPXP()
         {
             const int MaxAmount = 500000;
-            
+
             _builder.Create("giverpxp", "xp")
                 .Description("Gives XP to a target player or beast.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -568,7 +738,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         return "Please specify a valid amount between 1 and " + MaxAmount + ".";
                     }
-                    
+
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
@@ -620,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
 
                     DB.Set(dbPlayer);
+                    Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
                     SendMessageToPC(target, $"A DM has reset your perk refund cooldown.");
                 });
         }
@@ -633,40 +804,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Validate((user, args) =>
                 {
-                    if (args.Length < 1)
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
+                    if (args.Length != 1 || !int.TryParse(args[0], out var vfxId) || vfxId < 0)
+                        return "Enter a visualeffects.2da ID. Example: /playvfx 843";
 
-                    if (!int.TryParse(args[0], out var vfxId))
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
-
-                    try
-                    {
-                        var unused = (VisualEffect) vfxId;
-                    }
-                    catch
-                    {
-                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
-                    }
-                    
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
-                {
-                    var vfxId = Convert.ToInt32(args[0]);
-                    var vfx = (VisualEffect) vfxId;
-                    var effect = EffectVisualEffect(vfx);
-                    ApplyEffectToObject(DurationType.Instant, effect, target);
-                });
+                    ApplyEffectToObject(DurationType.Instant,
+                        EffectVisualEffect((VisualEffect)int.Parse(args[0])), target));
         }
 
         private void ResetAbilityRecastTimers()
         {
             _builder.Create("resetcooldown", "resetcooldowns")
-                .Description("Resets a player's ability cooldowns.")
+                .Description("Resets a player's ability, disguise, and perk refund cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -681,9 +832,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var targetName = GetName(target);
                     var playerId = GetObjectUUID(target);
                     var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.RecastTimes ??= new();
                     dbPlayer.RecastTimes.Clear();
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
                     DB.Set(dbPlayer);
-                    
+                    Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
+                    AbilityCooldownVisual.ClearAllRecastDelays(target);
+                    Disguise.ResetActivationCooldowns(target);
+
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");
                 });
@@ -874,10 +1030,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SendMessageToPC(user, "Only players may be targeted with this command.");
                         return;
                     }
-                    
+
                     var playerId = GetObjectUUID(target);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    
+
                     SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus is {dbPlayer.DMXPBonus}%.");
                 });
         }
@@ -892,7 +1048,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var playerId = GetObjectUUID(target);
-                    
+
                     SendMessageToPC(user, $"{GetName(target)}'s player Id is {playerId}.");
                 });
         }
@@ -986,7 +1142,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                         ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
-                    
+
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))
                     {
@@ -1149,7 +1305,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             dbPlayerShip.Status.Hull = targetStatus.Hull;
 
                             DB.Set(dbPlayerShip);
-                            
+
                             // Trigger UI refresh events after database update
                             ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);
                             ExecuteScript(ScriptName.OnPlayerHullAdjusted, target);

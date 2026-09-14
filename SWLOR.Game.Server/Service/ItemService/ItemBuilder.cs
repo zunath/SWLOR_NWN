@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service.ItemService
                 _activeItems.Add(detail);
                 _items[tag] = detail;
             }
-            
+
             return this;
         }
 
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Service.ItemService
 
             return this;
         }
-        
+
         /// <summary>
         /// Indicates that the item will lose a charge when successfully used.
         /// </summary>
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Service.ItemService
 
             return this;
         }
-        
+
         /// <summary>
         /// Enables targeting locations in addition to other objects.
         /// </summary>
@@ -252,6 +252,6 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             return _items;
         }
-        
+
     }
 }

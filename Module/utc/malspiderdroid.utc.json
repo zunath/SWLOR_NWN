@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 3
+          "value": 1
         }
       }
     ]
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 18
+    "value": 42
   },
   "DecayTime": {
     "type": "dword",
@@ -79,14 +79,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_dr_pistol"
+          "value": "probedroid_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_droid_hide"
+          "value": "probedroid_sk"
         }
       }
     ]
@@ -111,6 +111,27 @@
           "type": "word",
           "value": 392
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1879
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1851
+        }
       }
     ]
   },
@@ -134,7 +155,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 18
+    "value": 42
   },
   "Int": {
     "type": "byte",
@@ -168,11 +189,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 18
+    "value": 42
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -473,7 +494,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 7
   },
   "Subrace": {
     "type": "cexostring",
@@ -589,6 +610,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 7
   }
 }

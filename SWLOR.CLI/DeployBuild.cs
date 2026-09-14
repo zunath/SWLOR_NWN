@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SWLOR.CLI
 {
@@ -9,13 +11,31 @@ namespace SWLOR.CLI
         private const string HakPath = DebugServerPath + "hak";
         private const string ModulesPath = DebugServerPath + "modules";
         private const string TlkPath = DebugServerPath + "tlk";
+        private const string DebugServerEnvPath = DebugServerPath + "swlor.env";
+        private const string MaterialNameNullTweakVariable = "NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL";
+        private const string MaterialNameNullTweakValue = "true";
 
         private readonly HakBuilder _hakBuilder = new();
 
-        public void Process()
+        public void Process(string serverOutputPath = null)
         {
+            // RunCLI builds Release for standalone invocations. Post-build deployment
+            // explicitly passes the initiating build's TargetDir (including Debug/custom output).
+            var source = new DirectoryInfo(string.IsNullOrWhiteSpace(serverOutputPath)
+                ? "../SWLOR.Game.Server/bin/Release/net10.0/"
+                : serverOutputPath);
+            foreach (var filename in new[]
+                     {
+                         "SWLOR.Game.Server.dll", "SWLOR.Game.Server.deps.json",
+                         "SWLOR.Game.Server.runtimeconfig.json"
+                     })
+            {
+                if (!File.Exists(Path.Combine(source.FullName, filename)))
+                    throw new FileNotFoundException($"Server build output is incomplete: {Path.Combine(source.FullName, filename)}");
+            }
+
             CreateDebugServerDirectory();
-            CopyBinaries();
+            CopyBinaries(source);
             BuildHaks();
             BuildModule();
         }
@@ -32,15 +52,16 @@ namespace SWLOR.CLI
             var target = new DirectoryInfo(DebugServerPath);
 
             CopyAll(source, target, "swlor.env");
+            EnsureEnvironmentSetting(
+                DebugServerEnvPath,
+                MaterialNameNullTweakVariable,
+                MaterialNameNullTweakValue);
         }
 
-        private void CopyBinaries()
+        private void CopyBinaries(DirectoryInfo source)
         {
-            var binPath = "../SWLOR.Game.Server/bin/Debug/net8.0/";
-
-            var source = new DirectoryInfo(binPath);
             var target = new DirectoryInfo(DotnetPath);
-
+            Console.WriteLine($"Deploying server binaries: {source.FullName} -> {target.FullName}");
             CopyAll(source, target, string.Empty);
         }
 
@@ -73,6 +94,33 @@ namespace SWLOR.CLI
                     target.CreateSubdirectory(diSourceSubDir.Name);
                 CopyAll(diSourceSubDir, nextTargetSubDir, excludeFile);
             }
+        }
+
+        private static void EnsureEnvironmentSetting(string path, string key, string value)
+        {
+            var prefix = key + "=";
+            var updatedLines = new List<string>();
+            var found = false;
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (!line.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    updatedLines.Add(line);
+                    continue;
+                }
+
+                if (!found)
+                {
+                    updatedLines.Add(prefix + value);
+                    found = true;
+                }
+            }
+
+            if (!found)
+                updatedLines.Add(prefix + value);
+
+            File.WriteAllLines(path, updatedLines);
         }
     }
 }

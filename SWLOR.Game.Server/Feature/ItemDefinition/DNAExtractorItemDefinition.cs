@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
@@ -113,17 +112,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         IncubationStatType.AccuracyPurity,
                         IncubationStatType.EvasionPurity,
                         IncubationStatType.LearningPurity,
-                        IncubationStatType.PhysicalDefensePurity,
-                        IncubationStatType.ForceDefensePurity,
-                        IncubationStatType.FireDefensePurity,
-                        IncubationStatType.PoisonDefensePurity,
-                        IncubationStatType.ElectricalDefensePurity,
-                        IncubationStatType.IceDefensePurity,
-                        IncubationStatType.FortitudePurity,
-                        IncubationStatType.ReflexPurity,
-                        IncubationStatType.WillPurity,
-                        IncubationStatType.XPPenalty
                     };
+
+                    possibleStats.AddRange(BeastResistanceCalculator.GetDefensePurityIncubationStatTypes());
+                    possibleStats.AddRange(BeastResistanceCalculator.GetResistancePurityIncubationStatTypes());
+                    possibleStats.Add(IncubationStatType.XPPenalty);
 
                     var itemProperties = new List<ItemProperty>
                     {

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -8,8 +11,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class AbilityBuilder
     {
+        private const Animation DefaultAnimationOverwriteCarrier = Animation.LoopingPause;
+        private const string LoopingPauseSourceAnimationName = "pause1";
+
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
         private AbilityDetail _activeAbility;
+
+        /// <summary>
+        /// The perk the ability currently being built belongs to. Used by shared configuration
+        /// helpers that need a per-perk identity (e.g. temporary HP stacking keys).
+        /// </summary>
+        public PerkType ActiveEffectiveLevelPerkType => _activeAbility?.EffectiveLevelPerkType ?? PerkType.Invalid;
 
         /// <summary>
         /// Creates a new ability.
@@ -56,20 +68,23 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder IsWeaponAbility()
         {
             _activeAbility.ActivationType = AbilityActivationType.Weapon;
+            _activeAbility.RequiresTarget = false;
 
             return this;
         }
 
         /// <summary>
-        /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
-        /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.
+        /// Marks the activation delay as a channel: the ability's impact, costs, and recast delay all
+        /// apply when the channel starts and the granted effects run for the channel itself.
+        /// Interrupting the channel runs the interrupt action so the granted effects end early;
+        /// the recast delay is not refunded.
         /// </summary>
-        /// <param name="concentrationStatusEffectType">The status effect to use for this concentration ability.</param>
+        /// <param name="channelInterruptAction">Action run against the activator when the channel is interrupted.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public AbilityBuilder IsConcentrationAbility(StatusEffectType concentrationStatusEffectType)
+        public AbilityBuilder IsChanneledAbility(Action<uint> channelInterruptAction)
         {
-            _activeAbility.ActivationType = AbilityActivationType.Concentration;
-            _activeAbility.ConcentrationStatusEffectType = concentrationStatusEffectType;
+            _activeAbility.IsChanneled = true;
+            _activeAbility.ChannelInterruptAction = channelInterruptAction;
 
             return this;
         }
@@ -85,6 +100,52 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Retains native action ordering when impact scripts perform movement or their own animation.</summary>
+        public AbilityBuilder PreservesNativeAnimationChoreography()
+        {
+            _activeAbility.PreservesNativeAnimationChoreography = true;
+            return this;
+        }
+
+        /// <summary>Uses a native one-shot in the animation tester instead of an authored clip.</summary>
+        public AbilityBuilder UsesNativeAnimationPreview(Animation animation, float durationSeconds, float speed = 1f)
+        {
+            if (animation == Animation.Invalid || !Enum.IsDefined(animation))
+                throw new ArgumentOutOfRangeException(nameof(animation));
+            if (!float.IsFinite(speed) || speed <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(speed));
+            if (!float.IsFinite(durationSeconds) || durationSeconds <= 0f ||
+                !float.IsFinite(durationSeconds / speed) || durationSeconds / speed > 600f)
+                throw new ArgumentOutOfRangeException(nameof(durationSeconds));
+            _activeAbility.NativeAnimationPreview = animation;
+            _activeAbility.NativeAnimationPreviewSpeed = speed;
+            _activeAbility.NativeAnimationPreviewDuration = durationSeconds;
+            return this;
+        }
+
+        /// <summary>Plays the catalog gesture once at activation without occupying the action queue.</summary>
+        public AbilityBuilder UsesImmediateAuthoredAnimation()
+        {
+            _activeAbility.UsesImmediateAuthoredAnimation = true;
+            return this;
+        }
+
+        /// <summary>Plays the catalog motion once at impact without adding an action-queue delay.</summary>
+        public AbilityBuilder UsesAuthoredAnimationAtImpact()
+        {
+            _activeAbility.UsesAuthoredImpactAnimation = true;
+            return this;
+        }
+
+        /// <summary>Retains a timed native impact gesture without adding an action-queue delay.</summary>
+        public AbilityBuilder UsesImmediateNativeImpactAnimation(float duration)
+        {
+            if (!float.IsFinite(duration) || duration <= 0f || duration > 600f)
+                throw new ArgumentOutOfRangeException(nameof(duration));
+            _activeAbility.ImmediateNativeImpactAnimationDuration = duration;
+            return this;
+        }
+
         /// <summary>
         /// Assigns an animation to the caster of the ability. This will be played when the creature uses the ability.
         /// Calling this more than once will replace the previous animation.
@@ -93,9 +154,186 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options.</returns>
         public AbilityBuilder UsesAnimation(Animation animation)
         {
+            _activeAbility.AuthoredAnimation = null;
             _activeAbility.AnimationType = animation;
+            _activeAbility.AnimationSourceAnimationName = string.Empty;
+            _activeAbility.AnimationReplacementAnimationName = string.Empty;
+            _activeAbility.AnimationRestoreDelaySeconds = 0f;
 
             return this;
+        }
+
+        /// <summary>Plays an installed clip during activation, using its natural length for instant abilities.</summary>
+        public AbilityBuilder UsesAnimation(AnimationService.AnimationClip clip)
+        {
+            ArgumentNullException.ThrowIfNull(clip);
+            UsesAnimation(Animation.PointForward);
+            _activeAbility.AuthoredAnimation = clip;
+            return this;
+        }
+
+        /// <summary>Replaces melee attack swings while this weapon ability is readied.</summary>
+        public AbilityBuilder UsesQueuedAttackAnimation(AnimationService.AnimationClip clip)
+        {
+            ArgumentNullException.ThrowIfNull(clip);
+            _activeAbility.QueuedAttackAnimation = clip;
+            return this;
+        }
+
+        /// <summary>
+        /// Assigns an activation animation that temporarily overwrites a model animation key before playback.
+        /// </summary>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesAnimationOverwrite(
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            return UsesAnimationOverwrite(
+                DefaultAnimationOverwriteCarrier,
+                replacementAnimationName,
+                restoreDelaySeconds);
+        }
+
+        /// <summary>
+        /// Assigns an activation animation that temporarily overwrites the carrier animation's model key before playback.
+        /// </summary>
+        /// <param name="animation">The engine animation used to trigger the source animation key.</param>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesAnimationOverwrite(
+            Animation animation,
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            return UsesAnimationOverwrite(
+                animation,
+                GetAnimationSourceAnimationName(animation),
+                replacementAnimationName,
+                restoreDelaySeconds);
+        }
+
+        /// <summary>
+        /// Assigns an activation animation that temporarily overwrites a specific model animation key before playback.
+        /// </summary>
+        /// <param name="animation">The engine animation used to trigger the source animation key.</param>
+        /// <param name="sourceAnimationName">The existing model animation key to replace.</param>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesAnimationOverwrite(
+            Animation animation,
+            string sourceAnimationName,
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            if (string.IsNullOrWhiteSpace(sourceAnimationName))
+                throw new ArgumentException("Source animation name is required.", nameof(sourceAnimationName));
+            if (string.IsNullOrWhiteSpace(replacementAnimationName))
+                throw new ArgumentException("Replacement animation name is required.", nameof(replacementAnimationName));
+            if (restoreDelaySeconds <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(restoreDelaySeconds), restoreDelaySeconds, "Restore delay must be positive.");
+
+            _activeAbility.AnimationType = animation;
+            _activeAbility.AnimationSourceAnimationName = sourceAnimationName;
+            _activeAbility.AuthoredAnimation = null;
+            _activeAbility.AnimationReplacementAnimationName = replacementAnimationName;
+            _activeAbility.AnimationRestoreDelaySeconds = restoreDelaySeconds;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Assigns an animation to the caster when this ability applies its combat impact.
+        /// Calling this more than once will replace the previous animation.
+        /// </summary>
+        /// <param name="animation">The animation to set.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimation(Animation animation)
+        {
+            _activeAbility.ImpactAnimationType = animation;
+            _activeAbility.ImpactAnimationSourceAnimationName = string.Empty;
+            _activeAbility.ImpactAnimationReplacementAnimationName = string.Empty;
+            _activeAbility.ImpactAnimationRestoreDelaySeconds = 0f;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Assigns an impact animation that temporarily overwrites a model animation key before playback.
+        /// </summary>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimationOverwrite(
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            return UsesImpactAnimationOverwrite(
+                DefaultAnimationOverwriteCarrier,
+                replacementAnimationName,
+                restoreDelaySeconds);
+        }
+
+        /// <summary>
+        /// Assigns an impact animation that temporarily overwrites the carrier animation's model key before playback.
+        /// </summary>
+        /// <param name="animation">The engine animation used to trigger the source animation key.</param>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimationOverwrite(
+            Animation animation,
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            return UsesImpactAnimationOverwrite(
+                animation,
+                GetAnimationSourceAnimationName(animation),
+                replacementAnimationName,
+                restoreDelaySeconds);
+        }
+
+        /// <summary>
+        /// Assigns an impact animation that temporarily overwrites a specific model animation key before playback.
+        /// </summary>
+        /// <param name="animation">The engine animation used to trigger the source animation key.</param>
+        /// <param name="sourceAnimationName">The existing model animation key to replace.</param>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimationOverwrite(
+            Animation animation,
+            string sourceAnimationName,
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            if (string.IsNullOrWhiteSpace(sourceAnimationName))
+                throw new ArgumentException("Source animation name is required.", nameof(sourceAnimationName));
+            if (string.IsNullOrWhiteSpace(replacementAnimationName))
+                throw new ArgumentException("Replacement animation name is required.", nameof(replacementAnimationName));
+            if (restoreDelaySeconds <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(restoreDelaySeconds), restoreDelaySeconds, "Restore delay must be positive.");
+
+            _activeAbility.ImpactAnimationType = animation;
+            _activeAbility.ImpactAnimationSourceAnimationName = sourceAnimationName;
+            _activeAbility.ImpactAnimationReplacementAnimationName = replacementAnimationName;
+            _activeAbility.ImpactAnimationRestoreDelaySeconds = restoreDelaySeconds;
+
+            return this;
+        }
+
+        private static string GetAnimationSourceAnimationName(Animation animation)
+        {
+            return animation switch
+            {
+                Animation.LoopingPause => LoopingPauseSourceAnimationName,
+                _ => throw new ArgumentException(
+                    $"No model animation source key is mapped for {animation}. Use the overload that accepts a source animation name.",
+                    nameof(animation))
+            };
         }
 
         /// <summary>
@@ -110,7 +348,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
-        /// Assigns a visual effect to the caster of the spell. This will display while casting.
+        /// Assigns a visual effect to the activator of the ability. This will display while casting.
         /// Calling this more than once will replace the previous visual effect.
         /// </summary>
         /// <param name="vfx">The visual effect to display.</param>
@@ -118,6 +356,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffect vfx = VisualEffect.Vfx_Dur_Iounstone_Yellow)
         {
             _activeAbility.ActivationVisualEffect = vfx;
+
+            return this;
+        }
+
+        public AbilityBuilder PlaysSoundWhenActivating(string soundResref)
+        {
+            _activeAbility.ActivationSound = soundResref;
+
+            return this;
+        }
+
+        public AbilityBuilder PlaysSoundOnImpact(string soundResref)
+        {
+            _activeAbility.ImpactSound = soundResref;
 
             return this;
         }
@@ -137,19 +389,60 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Sets the finite receipt burst used after a recipient is successfully affected.</summary>
+        public AbilityBuilder DisplaysVisualEffectOnSuccessfulImpact(VisualEffect visualEffect)
+        {
+            _activeAbility.SuccessfulImpactVisualEffect = visualEffect;
+            return this;
+        }
+
         /// <summary>
         /// Assigns an impact action on the active ability we're building.
         /// Calling this more than once will replace the previous action.
         /// Impact actions are fired when a ability is used. The timing of when it fires depends on the activation type.
         /// "Casted" abilities fire the impact action at the end of the casting phase.
         /// "Queued" abilities fire the impact action on the next weapon hit.
-        /// "Concentration" abilities fire the impact action on each concentration cycle.
         /// </summary>
         /// <param name="action">The action to fire when an ability impacts a target.</param>
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder HasImpactAction(AbilityImpactAction action)
         {
             _activeAbility.ImpactAction = action;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Delays impact resolution after activation completes while keeping the activator busy.
+        /// This is intended for effect choreography such as travel animations, not cast time.
+        /// </summary>
+        /// <param name="seconds">The delay between activation completion and impact.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder HasImpactDelay(float seconds)
+        {
+            _activeAbility.ImpactDelay = seconds;
+
+            return this;
+        }
+
+        public AbilityBuilder RemoveStatusEffectOnPerkRefund(Type statusEffectType)
+        {
+            if (statusEffectType == null)
+                throw new ArgumentNullException(nameof(statusEffectType));
+
+            if (!_activeAbility.StatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType))
+                _activeAbility.StatusEffectTypesRemovedOnPerkRefund.Add(statusEffectType);
+
+            return this;
+        }
+
+        public AbilityBuilder RemoveSourceOwnedStatusEffectOnPerkRefund(Type statusEffectType)
+        {
+            if (statusEffectType == null)
+                throw new ArgumentNullException(nameof(statusEffectType));
+
+            if (!_activeAbility.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType))
+                _activeAbility.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Add(statusEffectType);
 
             return this;
         }
@@ -165,6 +458,43 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder HasCustomValidation(AbilityCustomValidationAction action)
         {
             _activeAbility.CustomValidation = action;
+
+            return this;
+        }
+
+        public AbilityBuilder HasAITarget(AITargetSelector selector)
+        {
+            _activeAbility.AITargetSelector = selector;
+
+            return this;
+        }
+
+        public AbilityBuilder HasAIScore(AIScoreCalculation score)
+        {
+            _activeAbility.AIScore = score;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates this ability requires a concrete target object.
+        /// </summary>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder RequiresTarget()
+        {
+            _activeAbility.RequiresTarget = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates this ability should resolve its target from the creature's current attack target.
+        /// </summary>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesActiveAttackTarget()
+        {
+            _activeAbility.UsesActiveAttackTarget = true;
+            _activeAbility.RequiresTarget = false;
 
             return this;
         }
@@ -250,6 +580,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder HasMaxRange(float maxRange)
         {
             _activeAbility.MaxRange = maxRange;
+            _activeAbility.HasExplicitMaxRange = true;
             return this;
         }
 
@@ -267,12 +598,57 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Adds an item requirement to use the ability at this level.
+        /// </summary>
+        /// <param name="itemResref">The resref of the required inventory item.</param>
+        /// <param name="quantity">The number of items consumed on activation.</param>
+        /// <param name="preserveChanceStatType">Optional stat containing the percent chance to preserve the item.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder RequirementItem(
+            string itemResref,
+            int quantity = 1,
+            StatType preserveChanceStatType = StatType.Invalid)
+        {
+            var requirement = new AbilityRequirementItem(
+                itemResref,
+                quantity,
+                preserveChanceStatType);
+            _activeAbility.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates this ability is a hostile ability and should not target friendlies.
         /// </summary>
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder IsHostileAbility()
         {
             _activeAbility.IsHostileAbility = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks this ability as a healing option for explicit companion Heal Me orders.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder IsHealingAbility()
+        {
+            _activeAbility.IsHealingAbility = true;
+
+            return this;
+        }
+
+        public AbilityBuilder DealsDeferredDamage()
+        {
+            _activeAbility.DealsDeferredDamage = true;
+            return this;
+        }
+
+        public AbilityBuilder SuppressesSourceStatusStackRiders()
+        {
+            _activeAbility.SuppressesSourceStatusStackRiders = true;
 
             return this;
         }
@@ -289,6 +665,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Prevents the activation wind-up from clearing stealth before the ability's impact runs.
+        /// Intended for abilities whose impact must inspect or toggle the current stealth state.
+        /// </summary>
+        public AbilityBuilder PreservesStealthDuringActivation()
+        {
+            _activeAbility.PreservesStealthDuringActivation = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Saves the ability level of the ability to be pulled when used later.
         /// </summary>
         /// <param name="level">The level of the ability</param>
@@ -297,6 +684,345 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             _activeAbility.AbilityLevel = level;
 
+            return this;
+        }
+
+        public AbilityBuilder SkillType(SkillType skillType)
+        {
+            _activeAbility.SkillType = skillType;
+
+            return this;
+        }
+
+        public AbilityBuilder CombatImpactDamageAbility(AbilityType abilityType)
+        {
+            _activeAbility.CombatImpactDamageAbility = abilityType;
+
+            return this;
+        }
+
+        public AbilityBuilder IsAreaAbility()
+        {
+            _activeAbility.IsAreaAbility = true;
+            _activeAbility.IsSingleTargetAbility = false;
+
+            return this;
+        }
+
+        public AbilityBuilder HasTargetingSphere(
+            Spell spell,
+            float radius,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                spell,
+                AbilityTargetingShapeType.Sphere,
+                radius,
+                0f,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasActivationTargetingSphere(
+            float radius,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                Spell.Invalid,
+                AbilityTargetingShapeType.Sphere,
+                radius,
+                0f,
+                flags,
+                sizeResolver,
+                false);
+        }
+
+        public AbilityBuilder AddActivationTargetingSphere(
+            float radius,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return AddActivationTargeting(
+                AbilityTargetingShapeType.Sphere,
+                radius,
+                0f,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasTargetingLine(
+            Spell spell,
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                spell,
+                AbilityTargetingShapeType.Rect,
+                length,
+                width,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasActivationTargetingLine(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                Spell.Invalid,
+                AbilityTargetingShapeType.Rect,
+                length,
+                width,
+                flags,
+                sizeResolver,
+                false);
+        }
+
+        public AbilityBuilder AddActivationTargetingLine(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return AddActivationTargeting(
+                AbilityTargetingShapeType.Rect,
+                length,
+                width,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasTargetingCone(
+            Spell spell,
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                spell,
+                AbilityTargetingShapeType.Cone,
+                length,
+                width,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasActivationTargetingCone(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                Spell.Invalid,
+                AbilityTargetingShapeType.Cone,
+                length,
+                width,
+                flags,
+                sizeResolver,
+                false);
+        }
+
+        public AbilityBuilder AddActivationTargetingCone(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return AddActivationTargeting(
+                AbilityTargetingShapeType.Cone,
+                length,
+                width,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasTargeting(
+            Spell spell,
+            AbilityTargetingShapeType shape,
+            float sizeX,
+            float sizeY,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null,
+            bool updatesClientTargeting = true)
+        {
+            _activeAbility.Targeting = new AbilityTargetingDetail(
+                spell,
+                shape,
+                sizeX,
+                sizeY,
+                flags,
+                sizeResolver,
+                updatesClientTargeting);
+
+            return this;
+        }
+
+        public AbilityBuilder AddActivationTargeting(
+            AbilityTargetingShapeType shape,
+            float sizeX,
+            float sizeY,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            _activeAbility.AdditionalActivationTargeting.Add(
+                new AbilityTargetingDetail(
+                    Spell.Invalid,
+                    shape,
+                    sizeX,
+                    sizeY,
+                    flags,
+                    sizeResolver,
+                    false));
+
+            return this;
+        }
+
+        public AbilityBuilder IsSingleTargetAbility()
+        {
+            _activeAbility.IsSingleTargetAbility = true;
+            _activeAbility.IsAreaAbility = false;
+
+            return this;
+        }
+
+        public AbilityBuilder TriggersDarkForceConversion()
+        {
+            _activeAbility.TriggersDarkForceConversion = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the active ability as a Mimicry technique learned from an enemy creature's ability.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this technique is copied from.</param>
+        /// <param name="skillRequirement">The Mimicry rank required to learn and equip this technique.</param>
+        /// <param name="slotCost">The number of technique slots this ability consumes when equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTechnique(FeatType sourceCreatureFeat, int skillRequirement, int slotCost)
+        {
+            if (sourceCreatureFeat == FeatType.Invalid)
+                throw new ArgumentException($"{nameof(sourceCreatureFeat)} must be a real creature ability feat.");
+            if (skillRequirement < 0 || skillRequirement > 50)
+                throw new ArgumentException($"{nameof(skillRequirement)} must be between 0 and 50.");
+            if (slotCost < 1)
+                throw new ArgumentException($"{nameof(slotCost)} must be at least 1.");
+
+            _activeAbility.IsMimicryTechnique = true;
+            _activeAbility.MimicrySourceFeat = sourceCreatureFeat;
+            _activeAbility.MimicrySkillRequirement = skillRequirement;
+            _activeAbility.MimicrySlotCost = slotCost;
+
+            // The NPC original keeps RequiresTarget so the AI only selects it with an enemy in
+            // hand, but the player-facing technique aims with a cursor: a mandatory creature
+            // target would break empty-ground casts of its line/cone/placed area.
+            if (_activeAbility.IsAreaAbility)
+            {
+                _activeAbility.RequiresTarget = false;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the active ability as a Mimicry trait: a passive technique learned from an enemy that
+        /// contributes static stats for as long as it is equipped, instead of granting a hotbar action.
+        /// Otherwise identical to a technique for learning, slot budgeting, and skill gating.
+        ///
+        /// Declare the trait's bonuses with <see cref="MimicryTraitStat"/> and
+        /// <see cref="MimicryTraitResistance"/>. Equipping a trait deliberately applies no persistent
+        /// status effect to the wearer: the bonus is static for the whole time it is slotted, so there
+        /// is no state to show on the status icon bar and nothing to keep in sync across death or
+        /// relog. That covers the trait's own lifecycle only — an on-hit proc trait still inflicts an
+        /// ordinary status effect on its target when it fires.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this trait is copied from.</param>
+        /// <param name="skillRequirement">The Mimicry rank required to learn and equip this trait.</param>
+        /// <param name="slotCost">The number of technique slots this trait consumes when equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTrait(FeatType sourceCreatureFeat, int skillRequirement, int slotCost)
+        {
+            MimicryTechnique(sourceCreatureFeat, skillRequirement, slotCost);
+
+            _activeAbility.IsMimicryTrait = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a flat stat adjustment granted while this Mimicry trait is equipped.
+        /// </summary>
+        /// <param name="stat">The stat to adjust.</param>
+        /// <param name="amount">The amount to adjust it by.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTraitStat(StatType stat, int amount)
+        {
+            if (!_activeAbility.IsMimicryTrait)
+                throw new ArgumentException($"{nameof(MimicryTraitStat)} requires {nameof(MimicryTrait)} to be called first.");
+            if (stat == StatType.Invalid)
+                throw new ArgumentException($"{nameof(stat)} must be a real stat.");
+
+            _activeAbility.MimicryTraitStats[stat] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a resistance adjustment granted while this Mimicry trait is equipped.
+        /// </summary>
+        /// <param name="resistance">The resistance to adjust.</param>
+        /// <param name="amount">The amount to adjust it by.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTraitResistance(ResistanceType resistance, int amount)
+        {
+            if (!_activeAbility.IsMimicryTrait)
+                throw new ArgumentException($"{nameof(MimicryTraitResistance)} requires {nameof(MimicryTrait)} to be called first.");
+            if (resistance == ResistanceType.Invalid)
+                throw new ArgumentException($"{nameof(resistance)} must be a real resistance.");
+
+            _activeAbility.MimicryTraitResistances[resistance] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks a mimicked technique as a self-toggle stance: it activates/deactivates a stance status
+        /// effect rather than casting a hostile ability, so the contract tests exempt it from the
+        /// hostility / damage-element / combat-scaling assertions.
+        /// </summary>
+        public AbilityBuilder MimicryStance(FeatType sourceCreatureFeat, int skillRequirement, int slotCost)
+        {
+            MimicryTechnique(sourceCreatureFeat, skillRequirement, slotCost);
+            _activeAbility.IsMimicryStance = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Marks a mimicked technique as a non-damaging utility active (control, debuff, support, or
+        /// zone) that declares no damage element or scaling attribute — for example an ally-targeting
+        /// support cast. Exempts it from the damage-element / scaling / hostility contract assertions.
+        /// </summary>
+        public AbilityBuilder MimicryUtility()
+        {
+            _activeAbility.IsMimicryUtility = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the damage type a mimicked technique deals, used for damage-type loadout set
+        /// bonuses (elemental resonance).
+        /// </summary>
+        public AbilityBuilder MimicryElement(CombatDamageType element)
+        {
+            _activeAbility.MimicryElement = element;
             return this;
         }
 

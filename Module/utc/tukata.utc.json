@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 19.0
+    "value": 34.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 26
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 240
+    "value": 595
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 26
   },
   "Disarmable": {
     "type": "byte",
@@ -78,10 +78,17 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "tukata_wp"
+        }
+      },
+      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tukataskin"
+          "value": "tukata_sk"
         }
       }
     ]
@@ -92,7 +99,22 @@
   },
   "FeatList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
+        }
+      }
+    ]
   },
   "FirstName": {
     "type": "cexolocstring",
@@ -114,11 +136,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 240
+    "value": 515
   },
   "Int": {
     "type": "byte",
-    "value": 30
+    "value": 26
   },
   "Interruptable": {
     "type": "byte",
@@ -148,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 400
+    "value": 595
   },
   "NaturalAC": {
     "type": "byte",
@@ -453,7 +475,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 31
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -539,6 +561,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 32
   }
 }

@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Raivor Claw"
+      "0": "Raivor Heavy Claw"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 30
+          "value": 27
         },
         "Param1": {
           "type": "byte",
@@ -84,6 +84,37 @@
         "PropertyName": {
           "type": "word",
           "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 52
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 24
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 98
         },
         "Subtype": {
           "type": "word",

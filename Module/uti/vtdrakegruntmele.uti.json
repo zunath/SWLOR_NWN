@@ -93,7 +93,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 1
+          "value": 0
         }
       },
       {
@@ -104,11 +104,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 52
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 22
         },
         "Param1": {
           "type": "byte",
@@ -120,11 +120,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 98
         },
         "Subtype": {
           "type": "word",
-          "value": 4
+          "value": 0
         }
       }
     ]
@@ -144,6 +144,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vtdrakegruntmele"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

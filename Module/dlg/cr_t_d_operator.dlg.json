@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings <FirstName>. I am not authorized to provide you with any work at this time. Please speak to Selan Flembek in reception to obtain authorization. Thank you for your understanding."
+            "0": "Greetings. I am not authorized to provide you with any work at this time. Please speak to Selan Flembek in reception to obtain authorization. Thank you for your understanding."
           }
         }
       },
@@ -190,7 +190,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings <FirstName>. \n\nSelan Flembek has informed us to anticipate your arrival.  I am authorized to present you with one work receipt, in exchange for the creation of one of the items currently in demand. Please take a look at this list and select one of the options then I'll provide you with more details."
+            "0": "Greetings. \n\nSelan Flembek has informed us to anticipate your arrival.  I am authorized to present you with one work receipt, in exchange for the creation of one of the items currently in demand. Please take a look at this list and select one of the options then I'll provide you with more details."
           }
         }
       },
@@ -420,7 +420,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings once again, <FirstName>. Do you have the Basic Knife I requested?"
+            "0": "Greetings once again. Do you have the Basic Knife I requested?"
           }
         }
       },
@@ -577,7 +577,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings once again, <FirstName>. Do you have the Scrap Metal units I requested?"
+            "0": "Greetings once again. Do you have the Scrap Metal units I requested?"
           }
         }
       },
@@ -734,7 +734,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings once again, <FirstName>. Do you have the Bedroll I requested?"
+            "0": "Greetings once again. Do you have the Bedroll I requested?"
           }
         }
       },
@@ -1059,7 +1059,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Thank you for your help, <FirstName>. I hope my work receipt will prove useful to you."
+            "0": "Thank you for your help. I hope my work receipt will prove useful to you."
           }
         }
       }

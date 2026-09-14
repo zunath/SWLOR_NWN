@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 1172
+    "value": 1170
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1173
+    "value": 1171
   },
   "Cursed": {
     "type": "byte",
@@ -72,7 +72,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 17
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -88,7 +88,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 1
+          "value": 0
         }
       },
       {
@@ -99,11 +99,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 33
+          "value": 48
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 40
         },
         "Param1": {
           "type": "byte",
@@ -115,11 +115,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 100
+          "value": 131
         },
         "Subtype": {
           "type": "word",
-          "value": 79
+          "value": 47
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 52
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 22
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 98
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]

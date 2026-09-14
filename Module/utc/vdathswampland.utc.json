@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 58.0
+    "value": 72.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 19
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 235
+    "value": 683
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 28
   },
   "Disarmable": {
     "type": "byte",
@@ -79,21 +79,21 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "jungle_bug_claw"
+          "value": "junglebug_wp"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "jungle_bug_claw"
+          "value": "junglebug_wp2"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "swampbug_skin"
+          "value": "junglebug_sk"
         }
       }
     ]
@@ -139,6 +139,27 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1763
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1843
+        }
       }
     ]
   },
@@ -162,11 +183,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 235
+    "value": 523
   },
   "Int": {
     "type": "byte",
-    "value": 38
+    "value": 28
   },
   "Interruptable": {
     "type": "byte",
@@ -196,11 +217,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 435
+    "value": 683
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 12
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -501,7 +522,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 19
   },
   "Subrace": {
     "type": "cexostring",
@@ -632,6 +653,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 14
+    "value": 34
   }
 }

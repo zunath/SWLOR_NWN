@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 3.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 22
+    "value": 54
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -74,7 +74,22 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "malfsecdroid_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "malfsecdroid_sk"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",
@@ -82,7 +97,22 @@
   },
   "FeatList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1851
+        }
+      }
+    ]
   },
   "FirstName": {
     "type": "cexolocstring",
@@ -104,11 +134,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 22
+    "value": 54
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Interruptable": {
     "type": "byte",
@@ -138,7 +168,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 26
+    "value": 54
   },
   "NaturalAC": {
     "type": "byte",
@@ -443,7 +473,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -479,6 +509,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 8
   }
 }

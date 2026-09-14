@@ -1,4 +1,3 @@
-﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Enumeration;
@@ -17,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             BugReportText = string.Empty;
             WatchOnClient(model => model.BugReportText);
-        }        
+        }
         public string BugReportText
         {
             get => Get<string>();

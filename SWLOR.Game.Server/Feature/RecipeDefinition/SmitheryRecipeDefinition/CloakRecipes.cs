@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
@@ -12,9 +11,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
 
             return _builder.Build();
@@ -28,7 +31,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("bm_cloak")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 5)
                 .Component("fiberp_ruined", 3);
@@ -39,7 +41,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sm_cloak")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 5)
                 .Component("fiberp_ruined", 3);
@@ -50,7 +51,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("com_cloak")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 5)
                 .Component("fiberp_ruined", 3);
@@ -61,7 +61,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("advent_cloak")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -73,7 +72,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("engi_cloak_1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -85,7 +83,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("fabr_belt_1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -97,7 +94,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chef_cloak_1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -112,7 +108,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_cloak")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 5)
                 .Component("fiberp_flawed", 3);
@@ -123,7 +118,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("viv_cloak")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 5)
                 .Component("fiberp_flawed", 3);
@@ -134,7 +128,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("val_cloak")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 5)
                 .Component("fiberp_flawed", 3);
@@ -145,7 +138,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("frontier_cloak")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -157,7 +149,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("engi_cloak_2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -169,7 +160,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("fabr_cloak_2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -181,7 +171,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chef_cloak_2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -196,7 +185,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("qk_cloak")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 5)
                 .Component("fiberp_good", 3);
@@ -207,7 +195,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("reg_cloak")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 5)
                 .Component("fiberp_good", 3);
@@ -218,7 +205,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("for_cloak")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 5)
                 .Component("fiberp_good", 3);
@@ -229,7 +215,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("majestic_cloak")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -241,7 +226,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("engi_cloak_3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -253,7 +237,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("fabr_cloak_3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -265,7 +248,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chef_cloak_3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -281,7 +263,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ar_cloak")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 5)
                 .Component("fiberp_imperfect", 3);
@@ -292,7 +273,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("gre_cloak")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 5)
                 .Component("fiberp_imperfect", 3);
@@ -303,7 +283,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sur_cloak")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 5)
                 .Component("fiberp_imperfect", 3);
@@ -314,7 +293,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("dream_cloak")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -326,7 +304,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("engi_cloak_4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -338,7 +315,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("fabr_cloak_4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -350,7 +326,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chef_cloak_4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -365,7 +340,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ec_cloak")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 5)
                 .Component("fiberp_high", 3);
@@ -376,7 +350,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tran_cloak")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 5)
                 .Component("fiberp_high", 3);
@@ -387,7 +360,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sup_cloak")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 5)
                 .Component("fiberp_high", 3);
@@ -398,7 +370,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("eternal_cloak")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -410,7 +381,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("engi_cloak_5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -422,7 +392,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("fabr_cloak_5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -434,7 +403,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chef_cloak_5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -446,7 +414,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("ch_cloak")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
@@ -465,7 +432,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("mag_cloak")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
@@ -484,7 +450,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("imm_cloak")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.AccessoryBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
@@ -497,5 +462,137 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
         }
-    }
+        private void Tier1A()
+        {
+            // Warden Cloak
+            _builder.Create(RecipeType.WardenCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("fld_bul_cloak")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
+
+            // Mystic Cloak
+            _builder.Create(RecipeType.MysticCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("fld_chn_cloak")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
+
+            // Vanguard Cloak
+            _builder.Create(RecipeType.VanguardCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("fld_skm_cloak")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
+        }
+
+        private void Tier2A()
+        {
+            // Bastion Cloak
+            _builder.Create(RecipeType.BastionCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("vet_bul_cloak")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
+
+            // Oracle Cloak
+            _builder.Create(RecipeType.OracleCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("vet_chn_cloak")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
+
+            // Onslaught Cloak
+            _builder.Create(RecipeType.OnslaughtCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("vet_skm_cloak")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
+        }
+
+        private void Tier3A()
+        {
+            // Sentinel Cloak
+            _builder.Create(RecipeType.SentinelCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("prm_bul_cloak")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
+
+            // Arcanist Cloak
+            _builder.Create(RecipeType.ArcanistCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("prm_chn_cloak")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
+
+            // Maverick Cloak
+            _builder.Create(RecipeType.MaverickCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("prm_skm_cloak")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
+        }
+
+        private void Tier4A()
+        {
+            // Aegis Cloak
+            _builder.Create(RecipeType.AegisCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("asc_bul_cloak")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
+
+            // Luminary Cloak
+            _builder.Create(RecipeType.LuminaryCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("asc_chn_cloak")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
+
+            // Apex Cloak
+            _builder.Create(RecipeType.ApexCloak, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("asc_skm_cloak")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
+        }
+
+}
 }

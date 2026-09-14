@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class GatheringPerkDefinition : IPerkListDefinition
+    public class GatheringPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             TreasureHunter();
@@ -21,12 +22,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             return _builder.Build();
         }
 
+
         private void TreasureHunter()
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.TreasureHunter)
                 .Name("Treasure Hunter")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TreasureHunterTrait)
                 .Description("Increases the chance to find rare items by 10.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 15)
@@ -42,15 +45,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Gathering, 45);
         }
 
+
         private void Creditfinder()
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.CreditFinder)
                 .Name("Creditfinder")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CreditFinderTrait)
                 .Description("Increases the amount of credits found by 20%.")
                 .Price(3)
-                .RequirementSkill(SkillType.Gathering, 15)
+                .RequirementSkill(SkillType.Gathering, 20)
 
                 .AddPerkLevel()
                 .Description("Increases the amount of credits found by 40%.")
@@ -62,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 50);
         }
+
 
         private void Harvesting()
         {
@@ -93,10 +99,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You can use tier 5 harvesters.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Harvesting5);
         }
+
 
         private void Refining()
         {
@@ -115,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Refining2)
 
                 .AddPerkLevel()
-                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, and Idalia.")
+                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, and Idailia.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
                 .GrantsFeat(FeatType.Refining3)
@@ -128,10 +135,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, Barinium, Jasioclase, and Gostian.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Refining5);
         }
+
 
         private void RefineryManagement()
         {
@@ -163,16 +171,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Power cores refine five additional items.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.RefineryManagement5)
 
                 .AddPerkLevel()
                 .Description("Power cores refine six additional items.")
-                .Price(2)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 45)
                 .GrantsFeat(FeatType.RefineryManagement6);
         }
+
 
         private void Scavenging()
         {
@@ -204,10 +213,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You can scavenge tier 5 resources.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Scavenging5);
         }
+
 
         private void HardLook()
         {
@@ -243,6 +253,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.HardLook5);
         }
-
     }
 }
+

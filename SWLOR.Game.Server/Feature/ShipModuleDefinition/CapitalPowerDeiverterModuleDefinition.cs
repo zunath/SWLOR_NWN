@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Texture("iit_ess_038")
-                .Description($"Improves a ship's shield recharge by {boostAmount} at the cost of 40 max capacitor.")
+                .Description($"Improves a ship's shield recharge by {boostAmount} at the cost of 60 max capacitor.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()

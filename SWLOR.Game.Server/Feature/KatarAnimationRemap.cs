@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
@@ -61,11 +60,24 @@ namespace SWLOR.Game.Server.Feature
             (AnimationKey.OneHandParryR, AnimationKey.UnarmedDodgeLR),
         };
 
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public static void RegisterEquipmentAnimationRestoration()
+        {
+            QueuedAttackAnimation.RestoreEquipmentAnimations -= RestoreCurrentEquipmentAnimations;
+            QueuedAttackAnimation.RestoreEquipmentAnimations += RestoreCurrentEquipmentAnimations;
+        }
+
+        private static void RestoreCurrentEquipmentAnimations(uint creature) =>
+            SyncKatarRemapState(creature, forceRefresh: true);
+
+        /// <summary>Synchronizes saved animation state after synchronous equipment changes.</summary>
+        internal static void RefreshEquipmentAnimations(uint creature) => SyncKatarRemapState(creature);
+
         [NWNEventHandler(ScriptName.OnModuleEquip)]
         public static void OnEquip()
         {
             SyncFromEvent(GetPCItemLastEquippedBy());
-        }  
+        }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()
@@ -93,7 +105,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         // Determines whether remaps should be active right now and applies/restores exactly once per state change.
-        private static void SyncKatarRemapState(uint creature)
+        private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
@@ -107,7 +119,7 @@ namespace SWLOR.Game.Server.Feature
                 (HasMainHandKatar(rightHandBaseItem) && !HasOffHandDaggerOrSword(leftHandBaseItem));
             var isRemapActive = GetLocalBool(creature, KatarAnimationRemapActiveVariable);
 
-            if (shouldUseKatarRemap && !isRemapActive)
+            if (shouldUseKatarRemap && (!isRemapActive || forceRefresh))
             {
                 ApplyKatarRemap(creature);
                 SetLocalBool(creature, KatarAnimationRemapActiveVariable, true);

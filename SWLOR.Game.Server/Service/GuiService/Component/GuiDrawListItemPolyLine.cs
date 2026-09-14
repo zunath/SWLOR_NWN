@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -12,15 +11,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
-        
+
         private bool IsFilled { get; set; }
         private string IsFilledBindName { get; set; }
         private bool IsFilledBound => !string.IsNullOrWhiteSpace(IsFilledBindName);
-        
+
         private float LineThickness { get; set; }
         private string LineThicknessBindName { get; set; }
         private bool IsLineThicknessBound => !string.IsNullOrWhiteSpace(LineThicknessBindName);
-        
+
         private List<GuiVector2> Points { get; set; }
         private string PointsBindName { get; set; }
         private bool IsPointsBound => !string.IsNullOrWhiteSpace(PointsBindName);
@@ -124,7 +123,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
-        /// Binds a list of points to the poly line.
+        /// Binds alternating X/Y floats to the poly line, e.g. [x0, y0, x1, y1].
         /// </summary>
         /// <typeparam name="TProperty">The property of the view model.</typeparam>
         /// <param name="expression">Expression to target the property.</param>
@@ -160,7 +159,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             {
                 foreach (var point in Points)
                 {
-                    points = JsonArrayInsert(points, point.ToJson());
+                    // Unlike the other drawing primitives, NuiDrawListPolyLine
+                    // requires a flat Float[] rather than an array of NuiVec objects.
+                    points = JsonArrayInsert(points, JsonFloat(point.X));
+                    points = JsonArrayInsert(points, JsonFloat(point.Y));
                 }
             }
 

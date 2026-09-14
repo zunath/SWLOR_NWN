@@ -1,138 +1,118 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
-    public class ResuscitationAbilityDefinition: FirstAidBaseAbilityDefinition
+    public sealed class ResuscitationAbilityDefinition : IAbilityListDefinition
     {
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            Resuscitation1();
-            Resuscitation2();
-            Resuscitation3();
+            var builder = new AbilityBuilder();
 
-            return Builder.Build();
+            Resuscitation1(builder);
+            Resuscitation2(builder);
+
+            return builder.Build();
         }
 
-        private string Validation(uint activator, uint target, int level, Location location)
+        private static void Resuscitation1(AbilityBuilder builder)
         {
-            if (!IsWithinRange(activator, target))
-            {
-                return "Your target is too far away.";
-            }
-
-            if (GetCurrentHitPoints(target) > 0)
-            {
-                return "Your target is not unconscious.";
-            }
-
-            if (!HasMedicalSupplies(activator))
-            {
-                return "You have no medical supplies.";
-            }
-
-            return string.Empty;
-        }
-
-        private void Impact(uint activator, uint target, int tier)
-        {
-            var willpower = GetAbilityScore(activator, AbilityType.Willpower);
-            var targetMaxHP = GetMaxHitPoints(target);
-            int hp;
-
-            switch (tier)
-            {
-                default:
-                    hp = 0;
-                    break;
-                case 2:
-                    hp = (int)(willpower * 0.01f * targetMaxHP);
-                    break;
-                case 3:
-                    hp = (int)(2 * willpower * 0.01f * targetMaxHP);
-                    break;
-            }
-
-            ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-            Ability.ReapplyPlayerAuraAOE(target);
-            DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
-
-            if (hp > 0)
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
-            }
-
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
-            TakeMedicalSupplies(activator);
-        }
-
-        private void Resuscitation1()
-        {
-            Builder.Create(FeatType.Resuscitation1, PerkType.Resuscitation)
+            builder
+                .Create(FeatType.Resuscitation1, PerkType.Resuscitation)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Resuscitation)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Resuscitation I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Resuscitation, 180f)
-                .HasActivationDelay(6f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(10)
-                .UsesAnimation(Animation.LoopingGetLow)
+                .HasActivationDelay(4f)
+                .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.Resuscitation, 60f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target, requireDead: true))
+                .HasImpactAction(Resuscitation1ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 0);
-
-                    Enmity.ModifyEnmityOnAll(activator, 800);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-                });
+                .BreaksStealth()
+                .RequirementStamina(10)
+                .RequirementItem("med_supplies");
         }
 
-        private void Resuscitation2()
+        private static void Resuscitation2(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.Resuscitation2, PerkType.Resuscitation)
+            builder
+                .Create(FeatType.Resuscitation2, PerkType.Resuscitation)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Resuscitation)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Resuscitation II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Resuscitation, 180f)
-                .HasActivationDelay(6f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(10)
-                .UsesAnimation(Animation.LoopingGetLow)
+                .HasActivationDelay(4f)
+                .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.Resuscitation, 60f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target, requireDead: true))
+                .HasImpactAction(Resuscitation2ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 25);
-
-                    Enmity.ModifyEnmityOnAll(activator, 1400);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-                });
+                .BreaksStealth()
+                .RequirementStamina(10)
+                .RequirementItem("med_supplies");
         }
 
-        private void Resuscitation3()
+        private static void Resuscitation1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Builder.Create(FeatType.Resuscitation3, PerkType.Resuscitation)
-                .Name("Resuscitation III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.Resuscitation, 180f)
-                .HasActivationDelay(6f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(10)
-                .UsesAnimation(Animation.LoopingGetLow)
-                .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 50);
+            if (!GetIsObjectValid(target))
+                return;
 
-                    Enmity.ModifyEnmityOnAll(activator, 2500);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-                });
+            var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
+            ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
+            DelayCommand(0.1f, () =>
+            {
+                Ability.ReapplyAuraEffectsForCreature(target);
+                if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
+                    playResurrectionVisual(target);
+            });
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+        }
+
+        private static void Resuscitation2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            if (!GetIsObjectValid(target))
+                return;
+
+            var playResurrectionVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
+            ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
+            // Resurrection is not settled until after the current engine command finishes.
+            // Healing in the same tick is silently discarded because the target is still dead.
+            DelayCommand(0.1f, () =>
+            {
+                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
+                Ability.ReapplyAuraEffectsForCreature(target);
+                if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
+                    playResurrectionVisual(target);
+            });
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
         }
     }
 }

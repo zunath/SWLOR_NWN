@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "White Wampa is simply vodka, milk and snow. Often served on Hoth at large gatherings, but can be served in bars using shaved ice instead of snow."
+    }
   },
   "Identified": {
     "type": "byte",

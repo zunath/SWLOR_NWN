@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.PerkService
@@ -42,6 +43,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkBuilder Name(string name)
         {
             _activePerk.Name = name;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets an explicit icon resource for a perk instead of deriving it from a granted feat.
+        /// </summary>
+        /// <param name="iconResref">The icon resource reference.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder Icon(string iconResref)
+        {
+            _activePerk.IconResref = iconResref;
             return this;
         }
 
@@ -124,6 +136,20 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Declares a native action mode which should be added to the player's hotbar when this perk is purchased.
+        /// The matching mode is removed from the hotbar when the perk is fully refunded.
+        /// </summary>
+        /// <param name="mode">The native action mode to add to the hotbar.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder AutoAddActionModeToHotBar(ActionMode mode)
+        {
+            if (!_activePerk.HotBarActionModes.Contains(mode))
+                _activePerk.HotBarActionModes.Add(mode);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a feat to grant to the player when the perk is purchased.
         /// </summary>
         /// <param name="feat">The feat to grant</param>
@@ -131,6 +157,27 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkBuilder GrantsFeat(FeatType feat)
         {
             _activeLevel.GrantedFeats.Add(feat);
+            return this;
+        }
+
+        public PerkBuilder IncreasesStat(StatType stat, int amount)
+        {
+            _activeLevel.StatBonuses.Add(new PerkStatBonus(stat, amount));
+            return this;
+        }
+
+        public PerkBuilder ForceAffinity(ForceAffinityType type)
+        {
+            _activePerk.ForceAffinityType = type;
+            _activePerk.StatBonuses.Add(new PerkStatBonus(StatType.ForceAffinity, (int)type));
+            return this;
+        }
+
+        public PerkBuilder IncreasesStat(
+            StatType stat,
+            PerkStatBonusCalculation calculation)
+        {
+            _activeLevel.StatBonuses.Add(new PerkStatBonus(stat, calculation));
             return this;
         }
 
@@ -192,7 +239,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <param name="mustHavePerkType">The type of perk the player must have.</param>
         /// <param name="mustHavePerkLevel">Optionally, the level of the perk required.</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
+        public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 1)
         {
             var requirement = new PerkRequirementMustHavePerk(mustHavePerkType, mustHavePerkLevel);
             _activeLevel.Requirements.Add(requirement);
@@ -318,6 +365,9 @@ namespace SWLOR.Game.Server.Service.PerkService
             // If not found, it will fall back to the 'default_perk' icon instead.
             foreach (var (_, detail) in _perks)
             {
+                if (!string.IsNullOrWhiteSpace(detail.IconResref))
+                    continue;
+
                 detail.IconResref = "default_perk";
                 foreach (var (_, perkLevel) in detail.PerkLevels)
                 {

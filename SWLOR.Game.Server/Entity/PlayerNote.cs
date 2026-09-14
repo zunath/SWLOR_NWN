@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Game.Server.Entity
 {
     public class PlayerNote: EntityBase
     {
@@ -7,6 +7,7 @@
         [Indexed]
         public string Name { get; set; }
         public string Text { get; set; }
+        public string CategoryId { get; set; }
 
         [Indexed]
         public bool IsDMNote { get; set; }
@@ -20,6 +21,7 @@
             IsDMNote = false;
             DMCreatorName = string.Empty;
             DMCreatorCDKey = string.Empty;
+            CategoryId = string.Empty;
         }
     }
 }

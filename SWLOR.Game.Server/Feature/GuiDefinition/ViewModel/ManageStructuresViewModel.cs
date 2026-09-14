@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -124,26 +123,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdatePagination(long totalRecordCount)
         {
             _skipPaginationSearch = true;
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            var pages = (int)(totalRecordCount / StructuresPerPage + (totalRecordCount % StructuresPerPage == 0 ? 0 : 1));
-
-            // Always add page 1. In the event no structures are available,
-            // it still needs to be displayed.
-            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-            for (var x = 2; x <= pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-            }
-
-            PageNumbers = pageNumbers;
-
-            // In the event no results are found, default the index to zero
-            if (pages <= 0)
-                SelectedPageIndex = 0;
-            // Otherwise, if current page is outside the new page bounds,
-            // set it to the last page in the list.
-            else if (SelectedPageIndex > pages - 1)
-                SelectedPageIndex = pages - 1;
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                StructuresPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
 
             _skipPaginationSearch = false;
         }
@@ -220,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var permissions = Property.GetCategoryPermissions(playerId, propertyId);
             var propertyTypeDetail = Property.GetPropertyDetail(property.PropertyType);
 
-            IsOpenStorageEnabled = propertyTypeDetail.HasStorage && 
+            IsOpenStorageEnabled = propertyTypeDetail.HasStorage &&
                                    (permissions.Count > 0 || canEditCategories);
         }
 
@@ -239,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageStructures);
                 return;
             }
-            
+
             var property = DB.Get<WorldProperty>(propertyId);
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
@@ -421,10 +406,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     InstructionColor = GuiColor.Red;
                     return;
                 }
-                
+
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
                 ObjectPlugin.AcquireItem(Player, item);
-                
+
                 // Remove the structure from the parent's child list.
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
                 parentProperty.ItemStorageCount -= structure.ItemStorageCount;
@@ -433,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Some structures have specific logic which must be run when they're picked up. Do that now.
                 Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
-                
+
                 Property.DeleteProperty(structure);
 
                 StructureNames.RemoveAt(SelectedStructureIndex);

@@ -22,7 +22,6 @@ Builders documented include:
 - ItemBuilder - For creating item use configurations
 - QuestBuilder - For creating quest configurations
 - ShipBuilder - For creating ship configurations
-- StatusEffectBuilder - For creating status effects
 - DialogBuilder - For creating NPC conversations
 - SnippetBuilder - For creating conditional dialog options
 - PropertyLayoutBuilder - For creating property layouts
@@ -35,11 +34,41 @@ Builders documented include:
 Detailed documentation specifically for ability definitions and how they use the builder pattern. This includes:
 
 - **Directory structure** of ability definitions
-- **Three main ability types**: Casted, Weapon, and Concentration abilities
+- **Main ability types**: Casted and Weapon abilities
 - **Common patterns** and best practices
 - **Impact action examples** with real code
 - **Integration** with other game systems
 - **Testing guidelines** for new abilities
+
+### [IconStandards.md](IconStandards.md)
+Standards for gameplay icon color, uniqueness, rank display, and audit/generation expectations. This includes:
+
+- **Semantic color categories** for abilities and status effects
+- **Global uniqueness rules** for gameplay icons
+- **Conditional numeric rank badge requirements**
+- **Generator and audit enforcement expectations**
+
+### [VisualEffectSelection.md](VisualEffectSelection.md)
+Guidance and generated reference data for choosing NWN visual effects for perks, abilities, status effects, and scripted gameplay feedback. This includes:
+
+- **Group selection rules** for beam, combat, duration, eyes, fire-and-forget, and impact VFX
+- **Ability implementation patterns** for activation, target, area, marker, and beam visuals
+- **VisualEffectReference.csv** with C# enum names, NWScript constants, visual tags, colors, locations, source pages, and screenshot URLs
+
+### [CombatUpgradeImplementationStatus.md](CombatUpgradeImplementationStatus.md)
+Current combat-upgrade status, latest audit results, verification notes, and remaining release-validation work.
+
+### [CombatUpgradeImplementationPlan.md](CombatUpgradeImplementationPlan.md)
+Combat-upgrade implementation scope, acceptance criteria, generated audit artifact notes, and follow-up work.
+
+### [CombatUpgradeMigration.md](CombatUpgradeMigration.md)
+Migration notes for forced rebuild, perk refunds/removals, defense/resistance data movement, and item-property cleanup.
+
+### [CapstoneQuestLinePlan.md](CapstoneQuestLinePlan.md)
+Plan rules and follow-up tasks for locking level 50 capstone perks behind quest lines, including spawn placement constraints for high-level quest enemies.
+
+### [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md)
+Plan for observer-specific known names, long-running-world migration, combat-log considerations, and a follow-up disguise system.
 
 ### [Services.md](Services.md)
 Comprehensive documentation of the Service layer, which handles the core business logic and game mechanics. This includes:
@@ -160,4 +189,4 @@ This documentation should be updated when:
 
 ---
 
-*This documentation is maintained as part of the SWLOR.Game.Server project and should be kept up-to-date with the codebase.* 
+*This documentation is maintained as part of the SWLOR.Game.Server project and should be kept up-to-date with the codebase.*

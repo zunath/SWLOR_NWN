@@ -1,0 +1,654 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Toolset.Domain.AreaGeneration;
+using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
+using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.GameData.Tilesets;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Domain.Workspace;
+using System.Numerics;
+
+namespace SWLOR.Toolset.Tests.AreaGeneration;
+
+public class AreaGenerationToolsetIntegrationTests
+{
+    private static string RepoRoot
+    {
+        get
+        {
+            var current = new DirectoryInfo(AppContext.BaseDirectory);
+            while (current != null)
+            {
+                if (File.Exists(Path.Combine(current.FullName, "Build", "hakbuilder.json")))
+                    return current.FullName;
+                current = current.Parent;
+            }
+
+            throw new DirectoryNotFoundException("Could not locate the repository root.");
+        }
+    }
+
+    [Test]
+    public void TilesetAdapter_PreservesCanonicalSetData()
+    {
+        var path = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_t_minecave", "tdt01.set");
+        var definition = SetFileParser.ParseFile(path);
+
+        var model = TilesetSetParser.FromDefinition("tdt01", definition);
+
+        model.Resref.Should().Be("tdt01");
+        model.Name.Should().Be(definition.Name);
+        model.FloorTerrain.Should().Be(definition.Floor);
+        model.DefaultTerrain.Should().Be(definition.Default);
+        model.Tiles.Should().HaveCount(definition.Tiles.Count);
+        model.Groups.Should().HaveCount(definition.Groups.Count);
+        model.Tiles[7].Model.Should().Be(definition.Tiles[7].Model);
+        model.Tiles[7].Corners.Should().Equal("Wall", "Wall", "Wall", "Floor");
+        model.Groups[6].TileIds.Should().Equal(73, 74, 71, 72);
+    }
+
+    [Test]
+    public void MineCaveExitDoorType_MatchesTheTilesetSpecificAppearanceRow()
+    {
+        var definition = SetFileParser.ParseFile(
+            Path.Combine(RepoRoot, "SWLOR_Haks", "sw_t_minecave", "tdt01.set"));
+        var model = TilesetSetParser.FromDefinition("tdt01", definition);
+        var exitGroupTileIds = model.Groups
+            .Where(group => group.Name is "Exit01" or "Exit02" or "Exit03")
+            .Select(group => group.TileIds.Single())
+            .ToArray();
+
+        exitGroupTileIds.Should().BeEquivalentTo(new[] { 68, 131, 157 });
+        foreach (var tileId in exitGroupTileIds)
+        {
+            model.Tiles[tileId].Doors.Should().ContainSingle()
+                .Which.Type.Should().Be(176);
+        }
+
+        var doorTypes = new TwoDaService(
+                Path.Combine(RepoRoot, "SWLOR_Haks", "sw_2da"))
+            .GetTable("doortypes");
+        doorTypes.GetString(176, "TileSet").Should().Be("TDT01");
+        doorTypes.GetString(176, "Model").Should().Be("TDM_UDoor_09");
+    }
+
+    [Test]
+    public void AuthoringService_AndPreview_AreDeterministicForTheSameSeed()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231);
+
+        var first = service.Generate(settings);
+        var second = service.Generate(settings);
+
+        first.Result.Success.Should().BeTrue(first.Result.FailureReason);
+        second.Result.Success.Should().BeTrue(second.Result.FailureReason);
+        first.Result.AttemptSeed.Should().Be(second.Result.AttemptSeed);
+        second.Result.Resolved!.Tiles.Select(tile => (tile.TileId, tile.Orientation, tile.Height))
+            .Should().Equal(first.Result.Resolved!.Tiles.Select(tile => (tile.TileId, tile.Orientation, tile.Height)));
+
+        var preview = new AreaGenerationPreviewRenderer(resources: null).Render(
+            first,
+            AreaPreviewMode.Schematic,
+            showRoomOverlay: true,
+            showTransitions: true,
+            showDecorations: true);
+        preview.Width.Should().Be(first.Result.Resolved.Width * 24);
+        preview.Height.Should().Be(first.Result.Resolved.Height * 24);
+        preview.Pixels.Should().HaveCount(preview.Width * preview.Height * 4);
+        preview.MissingTileGraphics.Should().Be(0, "schematic mode never requests tile artwork");
+    }
+
+    [Test]
+    public void AuthoringService_RejectsDimensionsBelowTheSelectedStyleFloor()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231);
+        var undersized = settings with
+        {
+            LayoutProfileKey = StandardLayoutProfiles.Halls,
+            Width = 8,
+            Height = 8,
+            Overrides = settings.Overrides! with
+            {
+                Style = DungeonLayoutStyle.RoomsAndCorridors
+            }
+        };
+
+        var action = () => service.Generate(undersized);
+
+        action.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("*requires width and height of at least 11*");
+    }
+
+    [Test]
+    public void AuthoringService_RejectsATierTheThemeDoesNotDefine()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231) with { Tier = 99 };
+
+        var action = () => service.Generate(settings);
+
+        action.Should().Throw<ArgumentException>()
+            .WithMessage("*does not define tier 99*");
+    }
+
+    [Test]
+    public void AuthoringService_RejectsIncompleteCreatureSettingsForTheSelectedTier()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231);
+        var theme = service.Definitions.Themes.Single(candidate =>
+            candidate.ThemeKey.Equals(settings.ThemeKey, StringComparison.OrdinalIgnoreCase));
+        theme.Tiers[settings.Tier].BossResref = string.Empty;
+
+        var action = () => service.Generate(settings);
+
+        action.Should().Throw<ArgumentException>()
+            .WithMessage("*invalid creature settings*");
+    }
+
+    [Test]
+    public void AuthoringService_RejectsRoomSizesThatWouldBeSilentlyClamped()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231);
+        var unsafeRooms = settings with
+        {
+            Width = 16,
+            Height = 16,
+            Overrides = settings.Overrides! with
+            {
+                Style = DungeonLayoutStyle.RoomsAndCorridors,
+                MinRoomCornerSize = 3,
+                MaxRoomCornerSize = 12
+            }
+        };
+
+        var action = () => service.Generate(unsafeRooms);
+
+        action.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("*Room sizes must be 2-5*");
+    }
+
+    [Test]
+    public void AuthoringService_ClampsLayoutProfileDefaultsBeforeValidation()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231) with
+        {
+            LayoutProfileKey = StandardLayoutProfiles.Halls,
+            Width = 16,
+            Height = 16,
+            Overrides = null
+        };
+
+        var draft = service.Generate(settings);
+
+        draft.Result.Success.Should().BeTrue(draft.Result.FailureReason,
+            "profile and composition defaults use the generator's normal safe clamp");
+    }
+
+    [Test]
+    public void LayoutSupportRules_ProbeTilesetDeclaredCustomTunnelVocabulary()
+    {
+        var definition = SetFileParser.ParseFile(
+            Path.Combine(RepoRoot, "SWLOR_Haks", "sw_t_crypt", "tdc01.set"));
+        var model = TilesetSetParser.FromDefinition("tdc01", definition);
+        var catalog = new DefinitionCatalog();
+        var tileset = catalog.TilesetProfiles[BaseGameTilesetProfiles.CryptGrey];
+        var layout = catalog.LayoutProfiles[StandardLayoutProfiles.Complex];
+
+        LayoutSupportRules.Supports(tileset, layout, model).Should().BeTrue(
+            "Crypt Grey declares a verified GreyCorridor/Doorway tunnel family");
+    }
+
+    [Test]
+    public void TileResolver_RejectsPlateauCandidatesThatWouldProduceNegativeTileHeight()
+    {
+        var corners = new CornerTerrainGrid(2, 1, "Floor");
+        corners.Heights[2, 0] = 1;
+        corners.Heights[2, 1] = 1;
+        var layout = new MacroLayout(corners)
+        {
+            DoorTransitions = false,
+            OpenTerrain = "Floor"
+        };
+        var tileset = new TilesetModel
+        {
+            Resref = "height_test",
+            Tiles =
+            [
+                new TileRecord
+                {
+                    TileId = 0,
+                    Corners = ["Floor", "Floor", "Floor", "Floor"],
+                    CornerHeights = [0, 0, 0, 0],
+                    PathNode = "B"
+                },
+                new TileRecord
+                {
+                    TileId = 1,
+                    Corners = ["Floor", "Floor", "Floor", "Floor"],
+                    CornerHeights = [1, 1, 1, 1],
+                    PathNode = "A"
+                },
+                new TileRecord
+                {
+                    TileId = 2,
+                    Corners = ["Floor", "Floor", "Floor", "Floor"],
+                    CornerHeights = [0, 1, 1, 0],
+                    PathNode = "A"
+                }
+            ]
+        };
+
+        TileResolver.TryResolve(tileset, layout, new Random(42), out var resolved, out var failure)
+            .Should().BeTrue(failure);
+
+        resolved.Tiles.Should().OnlyContain(tile => tile.Height >= 0);
+        resolved.GetTile(0, 0).TileId.Should().Be(0,
+            "the fully-pathable plateau candidate would require an invalid negative height");
+        resolved.GetTile(1, 0).TileId.Should().Be(2);
+    }
+
+    [Test]
+    public void GeneratedAreaWriter_CreatesNormalAreaTripletInOpenModule()
+    {
+        const string canonicalResref = "procgen_12345678";
+        var moduleRoot = CreateFixtureModule();
+        try
+        {
+            var (service, tilesets) = CreateAuthoringService();
+            var draft = service.Generate(CreateSettings(service, seed: 93117));
+            draft.Result.Success.Should().BeTrue(draft.Result.FailureReason);
+
+            var workspace = new ModuleWorkspace(moduleRoot);
+            GeneratedAreaWriter.TryCreate(
+                    workspace,
+                    tilesets,
+                    draft,
+                    " PROCGEN_12345678 ",
+                    "Generated Test Area",
+                    out var error)
+                .Should().BeTrue(error);
+
+            var (are, git, gic) = workspace.LoadArea(canonicalResref);
+            are.Width.Should().Be(draft.Result.Resolved!.Width);
+            are.Height.Should().Be(draft.Result.Resolved.Height);
+            are.Tileset.Should().Be("tdt01");
+            are.Name.Text.Should().Be("Generated Test Area");
+            are.Tiles.Should().HaveCount(draft.Result.Resolved.Width * draft.Result.Resolved.Height);
+            git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(draft.Result.Resolved.Transitions.Count);
+            git.Fields.GetListOrEmpty("WaypointList")
+                .Select(instance => instance.GetStringOrNull("Tag"))
+                .Should().OnlyContain(tag =>
+                    tag != null && tag.StartsWith($"PG_{canonicalResref}_", StringComparison.Ordinal));
+            new[] { "WaypointList", "Door List", "Placeable List" }
+                .SelectMany(listName => git.Fields.GetListOrEmpty(listName))
+                .Select(instance => instance.GetStringOrNull("Tag"))
+                .Where(tag => !string.IsNullOrEmpty(tag))
+                .Should().OnlyContain(tag => tag!.Length <= 32,
+                    "the maximum-length canonical area ResRef must still produce legal tags");
+            gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(draft.Result.Resolved.Transitions.Count);
+            git.Fields.GetListOrEmpty("Creature List").Should().NotBeEmpty();
+            git.Fields.GetListOrEmpty("Creature List")
+                .Should().Contain(instance => instance.GetStringOrNull("Tag") == "Shyrack");
+            git.Fields.GetListOrEmpty("Creature List")
+                .Should().OnlyContain(instance => instance.GetIntOrNull("FactionID") == 1);
+            IfoDocument.Load(Path.Combine(moduleRoot, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().Contain(canonicalResref);
+        }
+        finally
+        {
+            if (Directory.Exists(moduleRoot))
+                Directory.Delete(moduleRoot, recursive: true);
+        }
+    }
+
+    [Test]
+    public void GeneratedCreatureSanitization_RemovesProgressionKeyLootButKeepsOrdinaryLoot()
+    {
+        var shaman = UtcDocument.Load(Path.Combine(
+            CorpusLocator.ModuleDirectory,
+            "utc",
+            "byysk_shaman.utc.json"));
+        shaman.VarTable.GetString("LOOT_TABLE_1").Should().Be("QIONHIVE_SHAMAN_KEY,100,1");
+        var ordinaryLoot = shaman.VarTable.GetString("LOOT_TABLE_2");
+        ordinaryLoot.Should().NotBeNullOrWhiteSpace();
+
+        GeneratedAreaDocumentPopulator.SanitizeCreatureVariables(shaman.Fields);
+
+        shaman.VarTable.GetString("LOOT_TABLE_1").Should().BeNull();
+        shaman.VarTable.GetString("LOOT_TABLE_2").Should().Be(ordinaryLoot);
+    }
+
+    [Test]
+    public void DocumentPopulator_WritesTilesAtmosphereTransitionsDoorsAndDecorations()
+    {
+        var moduleRoot = CorpusLocator.ModuleDirectory;
+        var workspace = new ModuleWorkspace(moduleRoot);
+        var are = AreDocument.Load(Path.Combine(moduleRoot, "are", "area_template.are.json"));
+        var git = GitDocument.Load(Path.Combine(moduleRoot, "git", "area_template.git.json"));
+        var gic = GicDocument.Load(Path.Combine(moduleRoot, "gic", "area_template.gic.json"));
+        var tiles = Enumerable.Range(0, 4)
+            .Select(index => new ResolvedTile { TileId = index, Orientation = index % 4, Height = index })
+            .ToArray();
+        var resolved = new ResolvedLayout
+        {
+            TilesetResref = "tdt01",
+            Width = 2,
+            Height = 2,
+            HeightTransition = 2f,
+            Tiles = tiles,
+            Rooms =
+            [
+                new LayoutRoom
+                {
+                    Id = 1,
+                    Role = RoomRole.Boss,
+                    CenterTile = (0, 0),
+                    Tiles = [(0, 0)]
+                },
+                new LayoutRoom
+                {
+                    Id = 2,
+                    Role = RoomRole.Standard,
+                    CenterTile = (1, 0),
+                    Tiles = [(1, 0)]
+                }
+            ],
+            Transitions =
+            [
+                new TransitionPoint
+                {
+                    Kind = TransitionKind.Entrance,
+                    Tile = (1, 1),
+                    Style = TransitionStyle.Placeable
+                },
+                new TransitionPoint
+                {
+                    Kind = TransitionKind.Exit,
+                    Tile = (1, 1),
+                    Style = TransitionStyle.GroupExit,
+                    DoorX = 10f,
+                    DoorY = 15f,
+                    DoorZ = 1f,
+                    DoorOrientation = 90f,
+                    DoorType = 176
+                },
+                new TransitionPoint
+                {
+                    Kind = TransitionKind.Exit,
+                    Tile = (0, 0),
+                    RoomId = 1,
+                    Style = TransitionStyle.Placeable
+                }
+            ]
+        };
+        var tilesetProfile = new DungeonTilesetProfile
+        {
+            Key = "test",
+            TilesetResref = "tdt01",
+            Lighting = new DungeonTileLighting
+            {
+                MainLight1 = 2,
+                MainLight2 = 3,
+                SourceLight1 = 4,
+                SourceLight2 = 5
+            },
+            Atmosphere = new DungeonAreaAtmosphere
+            {
+                SkyBox = 7,
+                DayNightCycle = false,
+                IsNight = true,
+                ChanceRain = 33,
+                FogClipDist = 88f
+            }
+        };
+        var composition = new DungeonComposition
+        {
+            Content = new DungeonDetail
+            {
+                ExitDoorResref = "_mdrn_dt_rough",
+                ExitPlaceableResref = "structure_rubble",
+                ExitDisplayName = "Test Maintenance Hatch",
+                TreasurePlaceableResref = "structure_rubble",
+                TreasureDisplayName = "Test Treasure Cache",
+                Tiers = new Dictionary<int, DungeonTierDetail>
+                {
+                    [2] = new()
+                    {
+                        Tier = 2,
+                        Creatures =
+                        [
+                            new DungeonCreatureEntry { Resref = "colicoidexp", Weight = 1 }
+                        ],
+                        MinCreaturesPerRoom = 2,
+                        MaxCreaturesPerRoom = 2,
+                        BossResref = "republictrooperf",
+                        TreasureLootTableId = "TEST_LOOT",
+                        TreasureItemCount = 3
+                    }
+                }
+            },
+            Tileset = tilesetProfile,
+            Layout = new DungeonLayoutProfile()
+        };
+        var result = new GenerationResult
+        {
+            Success = true,
+            Resolved = resolved,
+            PlannedDecorations =
+            [
+                new PlannedDecoration
+                {
+                    Resref = "structure_rubble",
+                    Position = new Vector3(16f, 17f, 0.5f),
+                    Facing = 180f,
+                    VisualScale = 1.25f
+                }
+            ]
+        };
+        var draft = new AreaGenerationDraft(
+            new AreaGenerationSettings { ThemeKey = "test", Tier = 2, Width = 2, Height = 2 },
+            composition,
+            new TilesetModel
+            {
+                Resref = "tdt01",
+                Tiles =
+                [
+                    new TileRecord { TileId = 0 },
+                    new TileRecord { TileId = 1 },
+                    new TileRecord { TileId = 2 },
+                    new TileRecord
+                    {
+                        TileId = 3,
+                        CornerHeights = [2, 4, 6, 0]
+                    }
+                ]
+            },
+            result);
+
+        using (EditScope.EnterConstruction())
+        {
+            AreaTemplateFactory.PopulateNewArea(are, "test", "Test", "tdt01", 2, 2, 0, 0);
+            GeneratedAreaDocumentPopulator.Populate(draft, workspace, "test", are, git, gic);
+        }
+
+        AreaTiles.At(are, 1, 1)!.Value.TileId.Should().Be(3);
+        AreaTiles.At(are, 1, 1)!.Value.Orientation.Should().Be(3);
+        AreaTiles.HeightLevelOf(are, 1, 1).Should().Be(3);
+        are.SkyBox.Should().Be(7);
+        are.IsNight.Should().BeTrue();
+        are.ChanceRain.Should().Be(33);
+        are.FogClipDist.Should().Be(88f);
+        git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
+        git.Fields.GetListOrEmpty("WaypointList")
+            .Select(instance => instance.GetStringOrNull("Tag"))
+            .Should().Equal("PG_test_ENT_1", "PG_test_EXIT_1", "PG_test_EXIT_2");
+        git.Fields.GetListOrEmpty("Door List").Should().ContainSingle()
+            .Which.GetStringOrNull("Tag").Should().Be("PG_test_DOOR_EXIT_1");
+        git.Fields.GetListOrEmpty("Door List").Single()
+            .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Maintenance Hatch");
+        git.Fields.GetListOrEmpty("Door List").Single()
+            .GetIntOrNull("Appearance").Should().Be(176);
+        git.Fields.GetListOrEmpty("Door List").Single()
+            .GetIntOrNull("GenericType_New").Should().Be(0);
+        git.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);
+        git.Fields.GetListOrEmpty("Placeable List")
+            .Select(instance => instance.GetStringOrNull("Tag"))
+            .Should().Equal(
+                "PG_test_TRANS_ENT_1",
+                "PG_test_TRANS_EXIT_2",
+                "PG_test_TREASURE",
+                "PG_test_DEC_1");
+        git.Fields.GetListOrEmpty("Placeable List")[0]
+            .GetSingleOrNull("Z").Should().BeApproximately(12f, 0.001f,
+                "placeable transitions use the sloped tile's center height");
+        git.Fields.GetListOrEmpty("Placeable List")[0]
+            .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Maintenance Hatch");
+        git.Fields.GetListOrEmpty("Placeable List")[0]
+            .GetStringOrNull("OnUsed").Should().BeEmpty();
+        new VarTable(git.Fields.GetListOrEmpty("Placeable List")[0])
+            .GetString("Destination").Should().BeNull();
+        var bossExit = git.Fields.GetListOrEmpty("Placeable List")[1];
+        var treasure = git.Fields.GetListOrEmpty("Placeable List")[2];
+        treasure
+            .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Treasure Cache");
+        treasure.GetIntOrNull("Useable").Should().Be(1);
+        treasure.GetIntOrNull("HasInventory").Should().Be(1);
+        treasure.GetStringOrNull("OnOpen").Should().Be("proc_loot_open");
+        treasure.GetStringOrNull("OnClosed").Should().BeEmpty();
+        treasure.GetStringOrNull("OnInvDisturbed").Should().BeEmpty();
+        var treasureVariables = new VarTable(treasure);
+        treasureVariables.GetString("LOOT_TABLE_1").Should().Be("TEST_LOOT,100,3");
+        treasureVariables.GetInt("SCAVENGE_POINT_LEVEL").Should().BeNull();
+        treasureVariables.GetString("SCAVENGE_POINT_LOOT_TABLE_NAME").Should().BeNull();
+        treasure
+            .GetSingleOrNull("Z").Should().BeApproximately(0f, 0.001f,
+                "the boss-room treasure is grounded at its selected point");
+        var treasureDx = treasure.GetSingleOrNull("X")!.Value - bossExit.GetSingleOrNull("X")!.Value;
+        var treasureDy = treasure.GetSingleOrNull("Y")!.Value - bossExit.GetSingleOrNull("Y")!.Value;
+        MathF.Sqrt(treasureDx * treasureDx + treasureDy * treasureDy).Should().BeGreaterThanOrEqualTo(4f,
+            "declared treasure and exit footprints must not intersect in a one-tile Boss room");
+        git.Fields.GetListOrEmpty("Placeable List")[3]
+            .GetSingleOrNull("Z").Should().BeApproximately(11.06f, 0.001f,
+                "ordinary decorations interpolate the rotated tile's corner heights at their XY position");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Select(instance => instance.GetStringOrNull("TemplateResRef"))
+            .Should().Equal("colicoidexp", "colicoidexp", "republictrooperf");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Select(instance => instance.GetStringOrNull("Tag"))
+            .Should().Equal(["colicoidexp", "colicoidexp", "RepublicTrooper"],
+                "generated encounters retain blueprint-authored tags used by creature scripts");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Should().OnlyContain(instance => instance.GetIntOrNull("FactionID") == 1,
+                "every generated dungeon encounter must be hostile even when its source blueprint is set dressing");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Should().OnlyContain(instance => instance.GetIntOrNull("IsImmortal") == 0,
+                "generated dungeon encounters must always be killable");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Should().OnlyContain(instance =>
+                    !new VarTable(instance).Any(variable =>
+                        variable.Name.StartsWith("QUEST_", StringComparison.Ordinal)),
+                "generated encounters must not inherit quest-credit locals from source blueprints");
+        gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
+        gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
+        gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);
+        gic.Fields.GetListOrEmpty("Creature List").Should().HaveCount(3);
+    }
+
+    private static (AreaGenerationAuthoringService Service, TilesetCatalog Tilesets) CreateAuthoringService()
+    {
+        var index = new ResourceIndex(
+            baseLayer: null,
+            new[]
+            {
+                new ResourceIndex.HakLayer(
+                    "minecave-test",
+                    Path.Combine(RepoRoot, "SWLOR_Haks", "sw_t_minecave"))
+            });
+        index.EnsureInitialized();
+        var tilesets = new TilesetCatalog(index);
+        return (new AreaGenerationAuthoringService(tilesets), tilesets);
+    }
+
+    private static AreaGenerationSettings CreateSettings(AreaGenerationAuthoringService service, int seed)
+    {
+        var theme = service.Definitions.Themes.Single(theme =>
+            theme.ThemeKey.Equals(MineCaveDungeonDefinition.ThemeKey, StringComparison.OrdinalIgnoreCase));
+        var tileset = service.Definitions.TilesetProfiles[StandardTilesetProfiles.Cavern];
+        var layout = service.Definitions.LayoutProfiles[StandardLayoutProfiles.Organic];
+        var defaults = new DungeonComposition
+        {
+            Content = theme,
+            Tileset = tileset,
+            Layout = layout
+        }.BuildLayoutParameters();
+
+        return new AreaGenerationSettings
+        {
+            ThemeKey = theme.ThemeKey,
+            TilesetProfileKey = tileset.Key,
+            LayoutProfileKey = layout.Key,
+            Width = 16,
+            Height = 16,
+            Seed = seed,
+            Overrides = new LayoutKnobOverrides
+            {
+                Style = defaults.Style,
+                MinRooms = defaults.MinRooms,
+                MaxRooms = defaults.MaxRooms,
+                MinRoomCornerSize = defaults.MinRoomCornerSize,
+                MaxRoomCornerSize = defaults.MaxRoomCornerSize,
+                CorridorWidth = defaults.CorridorWidth,
+                LoopFactorPercent = (int)Math.Round(defaults.LoopFactor * 100),
+                OpenFillTargetPercent = (int)Math.Round(defaults.OpenFillTarget * 100),
+                EntranceCount = defaults.EntranceCount,
+                ExitCount = defaults.ExitCount,
+                DoorTransitions = false,
+                AccentEnabled = defaults.AccentDensity > 0,
+                AccentDensityPercent = (int)Math.Round(defaults.AccentDensity * 100),
+                FeatureDensityPercent = (int)Math.Round(defaults.FeatureDensity * 100),
+                ElevationRegions = defaults.ElevationRegions,
+                EnableDecorations = false,
+                DecorationDensityPercent = 0
+            }
+        };
+    }
+
+    private static string CreateFixtureModule()
+    {
+        var moduleRoot = Path.Combine(Path.GetTempPath(), "swlor_procgen_" + Guid.NewGuid().ToString("N"));
+        var source = CorpusLocator.ModuleDirectory;
+        foreach (var folder in new[] { "are", "git", "gic", "ifo", "utc", "utp" })
+            Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
+
+        File.Copy(Path.Combine(source, "are", "area_template.are.json"),
+            Path.Combine(moduleRoot, "are", "area_template.are.json"));
+        File.Copy(Path.Combine(source, "git", "area_template.git.json"),
+            Path.Combine(moduleRoot, "git", "area_template.git.json"));
+        File.Copy(Path.Combine(source, "gic", "area_template.gic.json"),
+            Path.Combine(moduleRoot, "gic", "area_template.gic.json"));
+        File.Copy(Path.Combine(source, "ifo", "module.ifo.json"),
+            Path.Combine(moduleRoot, "ifo", "module.ifo.json"));
+        File.Copy(Path.Combine(source, "utp", "_mdrn_placedoord.utp.json"),
+            Path.Combine(moduleRoot, "utp", "_mdrn_placedoord.utp.json"));
+        File.Copy(Path.Combine(source, "utp", "structure_rubble.utp.json"),
+            Path.Combine(moduleRoot, "utp", "structure_rubble.utp.json"));
+        foreach (var resref in new[] { "crystalspider", "ww_kinrath", "silkshade", "shyrack" })
+        {
+            File.Copy(Path.Combine(source, "utc", resref + ".utc.json"),
+                Path.Combine(moduleRoot, "utc", resref + ".utc.json"));
+        }
+        return moduleRoot;
+    }
+}

@@ -1,0 +1,496 @@
+[
+  {
+    "Id": "GhostProtocol",
+    "Description": "Deliberately arm a wrist cloaking control, conceal the control across the torso and settle into a low escape-ready posture before releasing; concealment flows into a genuinely lowered knee brace and a measured weight transfer while checking the escape direction",
+    "Duration": 2.85,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.42,
+        "Label": "Raise cloaking controls",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.06,
+          0.26,
+          1.32
+        ],
+        "LeftHand": [
+          -0.11,
+          0.31,
+          1.3
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.01
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 0.92,
+        "Label": "Confirm ghost protocol",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          -0.03,
+          0.3,
+          1.3
+        ],
+        "LeftHand": [
+          -0.14,
+          0.34,
+          1.3
+        ],
+        "RootOffset": [
+          0.01,
+          0.0,
+          -0.02
+        ],
+        "TorsoDegrees": [
+          3,
+          0,
+          0
+        ]
+      },
+      {
+        "Time": 1.35,
+        "Label": "Conceal armed control across torso",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.01,
+          0.2,
+          1.19
+        ],
+        "LeftHand": [
+          -0.19,
+          0.26,
+          1.17
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          8
+        ],
+        "RootOffset": [
+          -0.02,
+          0.0,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.92,
+        "Label": "Settle into low escape posture",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.27,
+          0.24,
+          1.12
+        ],
+        "LeftHand": [
+          -0.27,
+          0.24,
+          1.12
+        ],
+        "TorsoDegrees": [
+          5,
+          0,
+          -5
+        ],
+        "RootOffset": [
+          -0.02,
+          -0.01,
+          -0.05
+        ]
+      },
+      {
+        "Time": 2.4,
+        "Label": "Check escape direction",
+        "SourceAnimation": "nwreadyr",
+        "SourceTime": 0,
+        "RightHand": [
+          0.28,
+          0.22,
+          1.13
+        ],
+        "LeftHand": [
+          -0.27,
+          0.24,
+          1.12
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          5
+        ],
+        "RootOffset": [
+          0.01,
+          -0.01,
+          -0.04
+        ]
+      },
+      {
+        "Time": 2.85,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "RazorTrap",
+    "Description": "Crouch to lay a trap, draw the trigger line sideways along the ground, then withdraw carefully before rising",
+    "Duration": 2.35,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Crouch with weapon clear",
+        "SourceAnimation": "getlow",
+        "SourceTime": 1,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Place trap low",
+        "SourceAnimation": "getlowlp",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ],
+        "LeftHand": [
+          -0.17,
+          0.48,
+          0.3
+        ]
+      },
+      {
+        "Time": 1.18,
+        "Label": "Lay trigger line sideways",
+        "SourceAnimation": "getlowlp",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ],
+        "LeftHand": [
+          -0.48,
+          0.46,
+          0.31
+        ]
+      },
+      {
+        "Time": 1.57,
+        "Label": "Withdraw from trigger",
+        "SourceAnimation": "getlowlp",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ],
+        "LeftHand": [
+          -0.3,
+          0.15,
+          0.62
+        ]
+      },
+      {
+        "Time": 1.94,
+        "Label": "Rise clear of trap",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.48,
+          0.55,
+          1.02
+        ]
+      },
+      {
+        "Time": 2.35,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ShockTrap",
+    "Description": "Check the trap control while standing, crouch for a precise two-tap arming gesture and rise with the control hand clear",
+    "Duration": 2.45,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Check charge control",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.42,
+          0.35,
+          1.07
+        ],
+        "LeftHand": [
+          -0.04,
+          0.32,
+          1.2
+        ]
+      },
+      {
+        "Time": 0.7,
+        "Label": "Crouch at placement",
+        "SourceAnimation": "getlow",
+        "SourceTime": 1,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ]
+      },
+      {
+        "Time": 1.02,
+        "Label": "First arming tap",
+        "SourceAnimation": "getlowlp",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ],
+        "LeftHand": [
+          -0.15,
+          0.5,
+          0.38
+        ]
+      },
+      {
+        "Time": 1.23,
+        "Label": "Lift control hand",
+        "SourceAnimation": "getlowlp",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ],
+        "LeftHand": [
+          -0.15,
+          0.42,
+          0.55
+        ]
+      },
+      {
+        "Time": 1.44,
+        "Label": "Second arming tap",
+        "SourceAnimation": "getlowlp",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.58,
+          0.6,
+          0.64
+        ],
+        "LeftHand": [
+          -0.15,
+          0.5,
+          0.38
+        ]
+      },
+      {
+        "Time": 1.85,
+        "Label": "Rise and clear",
+        "SourceAnimation": "getlow",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.48,
+          0.55,
+          1.02
+        ],
+        "LeftHand": [
+          -0.28,
+          0.2,
+          1.05
+        ]
+      },
+      {
+        "Time": 2.45,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ShadowStep",
+    "Description": "Compress into a low lateral evasive step and recover facing the target; world-space dash remains native gameplay",
+    "Duration": 1.4,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.2,
+        "Label": "Compress before step",
+        "SourceAnimation": "dodges",
+        "SourceTime": 0.3,
+        "RightHand": [
+          0.58,
+          0.58,
+          0.95
+        ],
+        "LeftHand": [
+          -0.35,
+          0.45,
+          1.05
+        ]
+      },
+      {
+        "Time": 0.49,
+        "Label": "Lateral slip",
+        "SourceAnimation": "dodgelr",
+        "SourceTime": 0.35,
+        "RightHand": [
+          0.58,
+          0.58,
+          0.95
+        ],
+        "LeftHand": [
+          -0.35,
+          0.45,
+          1.05
+        ]
+      },
+      {
+        "Time": 0.78,
+        "Label": "Complete lateral slip",
+        "SourceAnimation": "dodgelr",
+        "SourceTime": 0.75,
+        "RightHand": [
+          0.58,
+          0.58,
+          0.95
+        ],
+        "LeftHand": [
+          -0.35,
+          0.45,
+          1.05
+        ]
+      },
+      {
+        "Time": 1.09,
+        "Label": "Reacquire target",
+        "SourceAnimation": "1hreadyr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.4,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "TacticalEscape",
+    "Description": "Raise the free hand as a distraction, duck behind it and withdraw into a protected low ready",
+    "Duration": 1.8,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.27,
+        "Label": "Present distraction",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0,
+        "RightHand": [
+          0.42,
+          0.25,
+          1.02
+        ],
+        "LeftHand": [
+          -0.24,
+          0.58,
+          1.42
+        ]
+      },
+      {
+        "Time": 0.63,
+        "Label": "Duck behind cover",
+        "SourceAnimation": "dodges",
+        "SourceTime": 0.5,
+        "RightHand": [
+          0.58,
+          0.58,
+          0.95
+        ],
+        "LeftHand": [
+          -0.35,
+          0.45,
+          1.05
+        ]
+      },
+      {
+        "Time": 1.02,
+        "Label": "Withdraw protected",
+        "SourceAnimation": "dodgelr",
+        "SourceTime": 0.6,
+        "RightHand": [
+          0.58,
+          0.58,
+          0.95
+        ],
+        "LeftHand": [
+          -0.35,
+          0.45,
+          1.05
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Recover low ready",
+        "SourceAnimation": "throwr",
+        "SourceTime": 0
+      },
+      {
+        "Time": 1.8,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

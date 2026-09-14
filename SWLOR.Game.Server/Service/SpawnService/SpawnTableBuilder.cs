@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.AIService;
@@ -42,6 +41,21 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             if (minutes < 1) minutes = 1;
             ActiveTable.RespawnDelayMinutes = minutes;
+            ActiveTable.RespawnDelayMaximumMinutes = minutes;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets an inclusive randomized respawn window. The delay is chosen only when a
+        /// spawn is queued, so this adds no new heartbeat or per-object timer work.
+        /// </summary>
+        public SpawnTableBuilder RespawnDelay(int minimumMinutes, int maximumMinutes)
+        {
+            if (minimumMinutes < 1) minimumMinutes = 1;
+            if (maximumMinutes < minimumMinutes) maximumMinutes = minimumMinutes;
+            ActiveTable.RespawnDelayMinutes = minimumMinutes;
+            ActiveTable.RespawnDelayMaximumMinutes = maximumMinutes;
 
             return this;
         }
@@ -91,6 +105,17 @@ namespace SWLOR.Game.Server.Service.SpawnService
             if (frequency < 1) frequency = 1;
 
             ActiveSpawn.Weight = frequency;
+            return this;
+        }
+
+        /// <summary>
+        /// Marks this spawn object as a rare spawn. Rare spawns still use normal weighted
+        /// selection, but only one rare from a table may be active in an area at a time.
+        /// </summary>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder AsRare()
+        {
+            ActiveSpawn.IsRare = true;
             return this;
         }
 
@@ -156,6 +181,17 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             ActiveSpawn.AIFlags |= AIFlag.ReturnHome;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Assigns an AI behavior profile to this spawn object.
+        /// </summary>
+        /// <param name="profile">The AI profile to assign.</param>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder WithAIProfile(AIProfileType profile)
+        {
+            ActiveSpawn.AIProfile = profile;
             return this;
         }
 

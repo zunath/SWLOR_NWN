@@ -1,168 +1,189 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Entity;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
-    public class MedKitAbilityDefinition: FirstAidBaseAbilityDefinition
+    public sealed class MedKitAbilityDefinition : IAbilityListDefinition
     {
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            MedKit1();
-            MedKit2();
-            MedKit3();
-            MedKit4();
-            MedKit5();
+            var builder = new AbilityBuilder();
 
-            return Builder.Build();
+            MedKit1(builder);
+            MedKit2(builder);
+            MedKit3(builder);
+            MedKit4(builder);
+
+            return builder.Build();
         }
 
-        private string Validation(uint activator, uint target, int level, Location location)
+        private static void MedKit1(AbilityBuilder builder)
         {
-            if (!IsWithinRange(activator, target))
-            {
-                return "Your target is too far away.";
-            }
-
-            if (GetCurrentHitPoints(target) >= GetMaxHitPoints(target))
-            {
-                return "Your target is unharmed.";
-            }
-
-            if (!HasMedicalSupplies(activator))
-            {
-                return "You have no medical supplies.";
-            }
-
-            if (BeastMastery.IsPlayerBeast(target))
-            {
-                return "That ability cannot be used on beasts.";
-            }
-
-            return string.Empty;
-        }
-
-        private void Impact(uint activator, uint target, int baseAmount)
-        {
-            var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var amount = baseAmount + willpowerMod * 20 + Random.D10(1);
-
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
-            TakeMedicalSupplies(activator);
-
-            Enmity.ModifyEnmityOnAll(activator, 150 + amount);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-            if (CombatPoint.GetTaggedCreatureCount(activator) == 0)
-            {
-                // Scale XP to the thing we just fought -- only give XP if we're not in combat.
-                // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 
-                // delta function to get base XP based on relative level.
-                // If AddCombatPoint... returns 0, but GetRecentEnemyLevel returns > -1, then we are out of combat but recently were in combat.
-                var enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);
-                var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
-                var nXP = enemyLevel != -1 ? Skill.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
-                Skill.GiveSkillXP(activator, SkillType.FirstAid, nXP);
-                CombatPoint.ClearRecentEnemyLevel(activator);
-            }
-        }
-
-        private void MedKit1()
-        {
-            Builder.Create(FeatType.MedKit1, PerkType.MedKit)
+            builder
+                .Create(FeatType.MedKit1, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(4)
+                .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(MedKit1ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 30);
-                });
+                .BreaksStealth()
+                .RequirementStamina(4)
+                .RequirementItem("med_supplies");
         }
 
-        private void MedKit2()
+        private static void MedKit2(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit2, PerkType.MedKit)
+            builder
+                .Create(FeatType.MedKit2, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(5)
+                .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(MedKit2ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 50);
-                });
+                .BreaksStealth()
+                .RequirementStamina(6)
+                .RequirementItem("med_supplies");
         }
 
-        private void MedKit3()
+        private static void MedKit3(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit3, PerkType.MedKit)
+            builder
+                .Create(FeatType.MedKit3, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(6)
+                .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.MedKit, 6f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(MedKit3ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 80);
-                });
+                .BreaksStealth()
+                .RequirementStamina(7)
+                .RequirementItem("med_supplies");
         }
 
-        private void MedKit4()
+        private static void MedKit4(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit4, PerkType.MedKit)
+            builder
+                .Create(FeatType.MedKit4, PerkType.MedKit)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MedKit)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Med Kit IV")
                 .Level(4)
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(7)
+                .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingGetMid)
-                .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 110);
-                });
-        }
-        private void MedKit5()
-        {
-            Builder.Create(FeatType.MedKit5, PerkType.MedKit)
-                .Name("Med Kit V")
-                .Level(5)
+                .PlaysSoundOnImpact("ksfx_healing")
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(MedKit4ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
                 .RequirementStamina(8)
-                .UsesAnimation(Animation.LoopingGetMid)
-                .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 140);
-                });
+                .RequirementItem("med_supplies");
+        }
+
+        private static void MedKit1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyMedKit(activator, target, 10);
+        }
+
+        private static void MedKit2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyMedKit(activator, target, 20);
+        }
+
+        private static void MedKit3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyMedKit(activator, target, 28);
+        }
+
+        private static void MedKit4ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyMedKit(activator, target, 36);
+        }
+
+        private static void ApplyMedKit(uint activator, uint target, int percent)
+        {
+            var applied = false;
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                HealPercent(activator, friendly, SkillType.FirstAid, percent);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                applied = true;
+            }
+
+            if (applied)
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
+        }
+
+
+        private static void HealPercent(uint activator, uint target, SkillType skill, int percent)
+        {
+            var ability = skill switch
+            {
+                SkillType.Leadership => AbilityType.Social,
+                SkillType.Devices => AbilityType.Perception,
+                SkillType.BeastMastery => AbilityType.Might,
+                _ => AbilityType.Willpower
+            };
+            var baseAmount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
+            var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
+            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
+            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+
+            var hitPointsBeforeHealing = GetCurrentHitPoints(target);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
+            if (GetCurrentHitPoints(target) > hitPointsBeforeHealing)
+                Ability.PlaySuccessfulImpactVisualEffect(activator, target);
+            FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(target);
         }
     }
 }

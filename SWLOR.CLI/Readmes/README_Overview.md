@@ -3,6 +3,8 @@
 ## Introduction
 The SWLOR CLI tool provides various commands for building, generating, and managing game content. Each command serves a specific purpose in the development workflow.
 
+Use `tools/SWLOR.CLI/RunCLI.cmd` from the repository (or `RunCLI.cmd` while in that directory). The wrapper performs an incremental Release build before every command so the invoked CLI always matches the checked-out source.
+
 ## Available Commands
 
 ### Content Generation Commands
@@ -37,41 +39,44 @@ The SWLOR CLI tool provides various commands for building, generating, and manag
 ### Content Generation
 ```bash
 # Generate all content types
-SWLOR.CLI.exe -a -b -d -e -l -c -r -s
+RunCLI.cmd -a -b -d -e -l -c -r -s
 
 # Generate specific content
-SWLOR.CLI.exe -b    # Beast definitions
-SWLOR.CLI.exe -d    # Droid items
-SWLOR.CLI.exe -e    # Enhancement items
-SWLOR.CLI.exe -c    # Placeables
-SWLOR.CLI.exe -r    # Recipes
-SWLOR.CLI.exe -s    # Structures
+RunCLI.cmd -b    # Beast definitions
+RunCLI.cmd -d    # Droid items
+RunCLI.cmd -e    # Enhancement items
+RunCLI.cmd -c    # Placeables
+RunCLI.cmd -r    # Recipes
+RunCLI.cmd -s    # Structures
 ```
 
 ### Build and Deploy
 ```bash
 # Build hak files
-SWLOR.CLI.exe -k
+tools/SWLOR.CLI/RunCLI.cmd -k
 
 # Deploy complete environment
-SWLOR.CLI.exe -o
+cd Build
+..\tools\SWLOR.CLI\RunCLI.cmd -o
 ```
 
 ### Module Operations
 ```bash
 # Pack module
-SWLOR.CLI.exe -p "path/to/module.mod"
+cd Module
+..\tools\SWLOR.CLI\RunCLI.cmd -p ".\Star Wars LOR v2.mod"
 
 # Unpack module
-SWLOR.CLI.exe -u "path/to/module.mod"
+..\tools\SWLOR.CLI\RunCLI.cmd -u ".\Star Wars LOR v2.mod"
 ```
 
 ## Input Files
 
 ### Required Input Files
-- `./InputFiles/beast_levels.tsv` - Beast data for BeastCodeBuilder
+- `../design/bible/SWLOR Design Bible - Combat Upgrade.xlsx` - Public beast stat/listing data for BeastCodeBuilder
+- `../design/bible/SWLOR Design Bible - Private Source Data.xlsx` - Private mutation requirements for BeastCodeBuilder
 - `./InputFiles/droid_item_list.tsv` - Droid data for DroidItemBuilder
-- `./InputFiles/enhancement_list.csv` - Enhancement data for EnhancementItemBuilder
+- `./InputFiles/enhancement_list.tsv` - Enhancement data for EnhancementItemBuilder
 - `./InputFiles/placeables.2da` - Placeable data for PlaceableBuilder
 - `./InputFiles/recipes.tsv` - Recipe data for RecipeCodeBuilder
 
@@ -123,4 +128,4 @@ SWLOR.CLI.exe -u "path/to/module.mod"
 - Most commands clear their output directories before generating new content
 - Template files should be modified carefully as they affect all generated content
 - External tools must be present for module operations
-- Database operations require proper Redis configuration 
+- Database operations require proper Redis configuration

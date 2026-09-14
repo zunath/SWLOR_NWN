@@ -1,0 +1,4 @@
+interface:
+  display_name: "SWLOR Blaster Models"
+  short_description: "Create, import, fit, and deploy SWLOR blasters"
+  default_prompt: "Use $swlor-blaster-models to create or import a pistol blaster, fit its grip, and verify the game assets through the normal build process."

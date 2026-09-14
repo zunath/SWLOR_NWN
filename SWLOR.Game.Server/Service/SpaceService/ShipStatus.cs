@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public DateTime RecastTime { get; set; }
             public int ModuleBonus { get; set; }
         }
-        
+
         public string ItemTag { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }

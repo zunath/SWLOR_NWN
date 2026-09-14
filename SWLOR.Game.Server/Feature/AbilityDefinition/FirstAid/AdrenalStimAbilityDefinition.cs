@@ -1,133 +1,150 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
-    public class AdrenalStimAbilityDefinition : FirstAidBaseAbilityDefinition
+    public sealed class AdrenalStimAbilityDefinition : IAbilityListDefinition
     {
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            AdrenalStim1();
-            AdrenalStim2();
-            AdrenalStim3();
+            var builder = new AbilityBuilder();
 
-            return Builder.Build();
+            AdrenalStim1(builder);
+            AdrenalStim2(builder);
+            AdrenalStim3(builder);
+
+            return builder.Build();
         }
 
-        private void AdrenalStim1()
+        private static void AdrenalStim1(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.AdrenalStim1, PerkType.AdrenalStim)
+            builder
+                .Create(FeatType.AdrenalStim1, PerkType.AdrenalStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdrenalStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(5f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.FireForgetSalute)
+                .PlaysSoundOnImpact("ksfx_frc_buff")
+                .HasRecastDelay(RecastGroup.AdrenalStim, 45f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(AdrenalStim1ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    if (!IsWithinRange(activator, target))
-                    {
-                        return "Your target is too far away.";
-                    }
-
-                    if (!HasStimPack(activator))
-                    {
-                        return "You have no stim packs.";
-                    }
-
-                    if (GetIsEnemy(target, activator) || GetIsEnemy(activator, target))
-                    {
-                        return "You can only use this ability on yourself or an ally.";
-                    }
-
-                    return string.Empty;
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim1, 30f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 30f);
-                });
+                .BreaksStealth()
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
-        private void AdrenalStim2()
+        private static void AdrenalStim2(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.AdrenalStim2, PerkType.AdrenalStim)
+            builder
+                .Create(FeatType.AdrenalStim2, PerkType.AdrenalStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdrenalStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(5f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.FireForgetSalute)
+                .PlaysSoundOnImpact("ksfx_frc_buff")
+                .HasRecastDelay(RecastGroup.AdrenalStim, 45f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(AdrenalStim2ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    if (!IsWithinRange(activator, target))
-                    {
-                        return "Your target is too far away.";
-                    }
-
-                    if (!HasStimPack(activator))
-                    {
-                        return "You have no stim packs.";
-                    }
-
-                    if (GetIsEnemy(target, activator) || GetIsEnemy(activator, target))
-                    {
-                        return "You can only use this ability on yourself or an ally.";
-                    }
-
-                    return string.Empty;
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim2, 30f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 30f);
-                });
+                .BreaksStealth()
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
-        private void AdrenalStim3()
+        private static void AdrenalStim3(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.AdrenalStim3, PerkType.AdrenalStim)
+            builder
+                .Create(FeatType.AdrenalStim3, PerkType.AdrenalStim)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_AdrenalStim)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Adrenal Stim III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(5f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.FireForgetSalute)
+                .PlaysSoundOnImpact("ksfx_frc_buff")
+                .HasRecastDelay(RecastGroup.AdrenalStim, 45f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(AdrenalStim3ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    if (!IsWithinRange(activator, target))
-                    {
-                        return "Your target is too far away.";
-                    }
-
-                    if (!HasStimPack(activator))
-                    {
-                        return "You have no stim packs.";
-                    }
-
-                    if (GetIsEnemy(target, activator) || GetIsEnemy(activator, target))
-                    {
-                        return "You can only use this ability on yourself or an ally.";
-                    }
-
-                    return string.Empty;
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim3, 48f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 6), activator, 48f);
-                });
+                .BreaksStealth()
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
+
+        private static void AdrenalStim1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 10));
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                applied = true;
+            }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+        }
+
+        private static void AdrenalStim2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                applied = true;
+            }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+        }
+
+        private static void AdrenalStim3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
+                if (StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
+                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                applied = true;
+            }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+        }
+
     }
 }

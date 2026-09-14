@@ -92,7 +92,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Help, please, help me!",
-            "2": "Au secours, je vous en prie, aidez-moi ! "
+            "2": "Help! Please, help me!"
           }
         }
       },
@@ -138,7 +138,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Thank you, thank you very much!",
-            "2": "Merci, merci infiniment ! "
+            "2": "Thank you, thank you so much!"
           }
         }
       },
@@ -184,7 +184,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Ah, life is beautiful!",
-            "2": "Ah, la vie est belle ! "
+            "2": "Ah, life is good!"
           }
         }
       }
@@ -239,7 +239,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "But of course ...",
-            "2": "Mais bien sûr ... "
+            "2": "But of course ..."
           }
         }
       },
@@ -281,7 +281,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Don't worry, I'll get you out of there!",
-            "2": "Ne vous inquiétez pas, je vais vous sortir de là ! "
+            "2": "Don't worry, I'll get you out of there!"
           }
         }
       }

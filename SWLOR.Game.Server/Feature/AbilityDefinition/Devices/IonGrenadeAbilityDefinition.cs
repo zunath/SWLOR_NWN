@@ -1,158 +1,157 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
-    public class IonGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
+    public sealed class IonGrenadeAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            IonGrenade1();
-            IonGrenade2();
-            IonGrenade3();
+            var builder = new AbilityBuilder();
 
-            return _builder.Build();
-        }
-        
-        private void Impact(uint activator, uint target, int dmg, int dc)
-        {
-            if (GetFactionEqual(activator, target))
-                return;
+            IonGrenade1(builder);
+            IonGrenade2(builder);
 
-            const float Duration = 6f;
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
-
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
-                attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
-
-            var race = GetRacialType(target);
-            if (dc > 0 &&
-                (race == RacialType.Robot ||
-                race == RacialType.Droid ||
-                race == RacialType.Cyborg))
-            {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
-                var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                    Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
-                }
-            }
-
-            DelayCommand(0f, () =>
-            {
-                AssignCommand(activator, () =>
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
-                });
-            });
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 350);
+            return builder.Build();
         }
 
-        private void IonGrenade1()
+        private static void IonGrenade1(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.IonGrenade1, PerkType.IonGrenade)
+            builder
+                .Create(FeatType.IonGrenade1, PerkType.IonGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IonGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Ion Grenade I")
                 .Level(1)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.IonGrenade, 12f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(1)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.IonGrenade1,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
+                .HasImpactAction(IonGrenade1ImpactAction)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var race = GetRacialType(target);
-                        if (race == RacialType.Robot || race == RacialType.Droid || race == RacialType.Cyborg)
-                        {
-                            perBonus *= 3 / 2;
-                        }
-                        Impact(activator, target, perBonus, -1);
-                    });
-                });
+                .RequirementStamina(3)
+                .RequirementItem("explosives");
         }
 
-        private void IonGrenade2()
+        private static void IonGrenade2(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.IonGrenade2, PerkType.IonGrenade)
+            builder
+                .Create(FeatType.IonGrenade2, PerkType.IonGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IonGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Ion Grenade II")
                 .Level(2)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.IonGrenade, 12f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(2)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.IonGrenade2,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
+                .HasImpactAction(IonGrenade2ImpactAction)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var race = GetRacialType(target);
-                        if (race == RacialType.Robot || race == RacialType.Droid || race == RacialType.Cyborg)
-                        {
-                            perBonus *= 3 / 2;
-                        }
-                        var perDMG = 15 + (perBonus * 3 / 2);
-                        Impact(activator, target, perDMG, 10);
-                    });
-                });
+                .RequirementStamina(5)
+                .RequirementItem("explosives");
         }
 
-        private void IonGrenade3()
+        private static void IonGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            _builder.Create(FeatType.IonGrenade3, PerkType.IonGrenade)
-                .Name("Ion Grenade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.IonGrenade, 12f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
-                .IsCastedAbility()
-                .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var race = GetRacialType(target);
-                        if (race == RacialType.Robot || race == RacialType.Droid || race == RacialType.Cyborg)
-                        {
-                            perBonus *= 3 / 2;
-                        }
-                        var perDMG = 30 + (perBonus * 2);
-                        Impact(activator, target, perDMG, 14);
-                    });
-                });
+            ApplyIonGrenade(activator, target, targetLocation, 20, 50, null);
         }
+
+        private static void IonGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyIonGrenade(activator, target, targetLocation, 34, 60, typeof(ShockStatusEffect));
+        }
+
+        private static void ApplyIonGrenade(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int droidBonusPercent,
+            Type statusEffect)
+        {
+            Ability.PlayAbilityImpactAnimation(activator);
+            var location = GetImpactLocation(activator, target, targetLocation);
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion),
+                location);
+
+            var creature = GetFirstObjectInShape(
+                Shape.Sphere,
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
+                location,
+                true);
+
+            while (GetIsObjectValid(creature))
+            {
+                if (creature != activator && GetIsReactionTypeHostile(creature, activator))
+                {
+                    Ability.ApplyCombatImpact(
+                        activator,
+                        creature,
+                        GetLocation(creature),
+                        SkillType.Devices,
+                        baseDamage,
+                        12,
+                        statusEffect,
+                        false,
+                        Array.Empty<Type>(),
+                        damageType: CombatDamageType.Electrical,
+                        targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
+                        damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0,
+                        playImpactAnimation: false);
+                }
+
+                creature = GetNextObjectInShape(Shape.Sphere, DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f), location, true);
+            }
+        }
+
+        private static Location GetImpactLocation(uint activator, uint target, Location targetLocation)
+        {
+            if (GetIsObjectValid(target))
+                return GetLocation(target);
+
+            return GetIsObjectValid(GetAreaFromLocation(targetLocation))
+                ? targetLocation
+                : GetLocation(activator);
+        }
+
+        private static bool IsDroid(uint target)
+        {
+            var racialType = GetRacialType(target);
+            return racialType == RacialType.Droid ||
+                   racialType == RacialType.Construct ||
+                   racialType == RacialType.Robot;
+        }
+
     }
 }

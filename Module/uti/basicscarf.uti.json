@@ -70,7 +70,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 52
+    "value": 20
   },
   "PaletteID": {
     "type": "byte",
@@ -100,8 +100,28 @@
     "type": "resref",
     "value": "basicscarf"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xModelPart1": {
     "type": "word",
-    "value": 52
+    "value": 20
   }
 }

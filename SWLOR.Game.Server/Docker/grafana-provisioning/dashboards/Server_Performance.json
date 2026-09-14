@@ -173,7 +173,7 @@
       },
       "hideTimeOverride": false,
       "id": 4,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": false,
         "avg": false,
@@ -202,6 +202,7 @@
       "targets": [
         {
           "alias": "$1",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -239,6 +240,7 @@
         },
         {
           "alias": "$1 (mean last 10)",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -367,7 +369,7 @@
       },
       "hideTimeOverride": false,
       "id": 2,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -396,6 +398,7 @@
       "targets": [
         {
           "alias": "$tag_EventName",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -515,7 +518,7 @@
         "y": 13
       },
       "id": 5,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -543,6 +546,7 @@
       "targets": [
         {
           "alias": "$tag_Level",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -640,7 +644,7 @@
         "y": 13
       },
       "id": 7,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -667,6 +671,7 @@
       "targets": [
         {
           "alias": "$1",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {

@@ -1,0 +1,134 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Sounds.SoundEditorView"
+             x:DataType="sounds:SoundEditorViewModel">
+
+  <UserControl.DataTemplates>
+    <!-- The shared row, plus the ordered Sounds list no other editor has. -->
+    <DataTemplate DataType="sounds:SoundRowViewModel">
+      <StackPanel Margin="16,1">
+        <behaviors:BehaviorRowView />
+
+        <!-- Indented under its own row's label when there is room, and full width when there is
+             not - the same rule the rows themselves follow, so the list never overflows the pane. -->
+        <behaviors:LabeledFieldPanel IsVisible="{Binding IsSoundList}">
+          <Panel />
+          <StackPanel Spacing="6"
+                      DataContext="{Binding SoundList}" x:DataType="sounds:SoundListEditorViewModel">
+            <!-- The catalog is a visible select list, not a name to guess at: a builder picking an
+                 ambient sound is choosing from what the module ships, and an autocomplete showed
+                 nothing at all until they had already typed part of an answer they came here to find.
+                 The filter narrows the same list rather than gating it. -->
+            <TextBlock Text="No indexed WAV resources are available."
+                       Classes="label" Foreground="{DynamicResource AmberBrush}"
+                       IsVisible="{Binding !HasAudioCatalog}" />
+            <TextBox Text="{Binding Search, Mode=TwoWay}" IsVisible="{Binding HasAudioCatalog}"
+                     Watermark="Filter audio resources by ResRef" />
+            <TextBlock Text="{Binding SearchSummary}" Classes="count"
+                       IsVisible="{Binding HasAudioCatalog}" />
+            <ListBox ItemsSource="{Binding FilteredSounds}" IsVisible="{Binding HasAudioCatalog}"
+                     SelectedItem="{Binding Candidate, Mode=TwoWay}" MaxHeight="170">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <TextBlock Text="{Binding}" Classes="mono" VerticalAlignment="Center" Margin="4,1" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="Add" Command="{Binding AddCommand}" HorizontalAlignment="Left"
+                    IsVisible="{Binding HasAudioCatalog}" />
+            <TextBlock Text="{Binding Status}" Classes="label"
+                       Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
+                       IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <!-- What the behavior actually plays, in order, with the buttons that act on it beside
+                 it rather than under it. They are all about the highlighted row, and a column of
+                 them stacked below the list reads as belonging to whatever came next on the form -
+                 which on a short window is all a builder can see of either. The original toolset
+                 put them in this column for the same reason. -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <ListBox Grid.Column="0" ItemsSource="{Binding Rows}"
+                       SelectedItem="{Binding SelectedEntry, Mode=TwoWay}" MaxHeight="150">
+                <ListBox.ItemTemplate>
+                  <DataTemplate DataType="sounds:SoundListEntryViewModel">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="4,2">
+                      <TextBlock Grid.Column="0" Text="{Binding Index}" Classes="count"
+                                 VerticalAlignment="Center" />
+                      <TextBlock Grid.Column="1" Text="{Binding ResRef}" Classes="mono"
+                                 VerticalAlignment="Center" />
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+
+              <StackPanel Grid.Column="1" Spacing="4" MinWidth="92">
+                <!-- Play answers the question the names cannot: al_pl_bazarwalla says nothing about
+                     what it sounds like. It plays whatever is highlighted - the entry picked here,
+                     or the catalog row above when nothing here is picked, so a sound can be heard
+                     before it is added rather than after. -->
+                <Button Content="Play" Command="{Binding PlayCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        IsVisible="{Binding CanPreview}" />
+                <Button Content="Stop" Command="{Binding StopPlaybackCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        IsVisible="{Binding CanPreview}" />
+                <Border Height="6" IsVisible="{Binding CanPreview}" />
+                <Button Content="Remove" Command="{Binding RemoveCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                <Button Content="Move up" Command="{Binding MoveUpCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                <Button Content="Move down" Command="{Binding MoveDownCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </behaviors:LabeledFieldPanel>
+      </StackPanel>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding HeaderName}"
+                                    Kind="{Binding HeaderKind}"
+                                    Owner="{Binding HeaderOwner}" />
+
+    <StackPanel DockPanel.Dock="Bottom" Margin="16,6,16,10" Spacing="3">
+      <TextBlock Text="{Binding BehaviorChangeNotice}" Foreground="{DynamicResource AmberBrush}"
+                 TextWrapping="Wrap"
+                 IsVisible="{Binding BehaviorChangeNotice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBlock Text="{Binding Incomplete}" Foreground="{DynamicResource AmberBrush}"
+                 TextWrapping="Wrap" IsVisible="{Binding IsIncomplete}" />
+    </StackPanel>
+
+    <TabControl>
+      <TabItem Header="Basic">
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Behavior">
+        <Grid ColumnDefinitions="210,*">
+          <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
+                                      ChooseCommand="{Binding ChooseBehaviorCommand}" />
+
+          <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
+                        BorderThickness="1,0,0,0">
+            <Border Classes="card" Margin="14,12">
+              <StackPanel>
+                <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,4" />
+                <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="14,2,14,8" />
+              </StackPanel>
+            </Border>
+          </ScrollViewer>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+        <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</UserControl>

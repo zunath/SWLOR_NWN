@@ -1,0 +1,364 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
+             xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
+             xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
+             xmlns:viewport="using:SWLOR.Toolset.Viewport"
+             x:Class="SWLOR.Toolset.Editors.AreaEditorView"
+             x:DataType="editors:AreaEditorViewModel">
+
+  <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text) are shared
+       app-wide from App.axaml's Application.DataTemplates. -->
+  <!-- No per-document toolbar: File > Save (Ctrl+S) and Edit > Undo/Redo (Ctrl+Z/Ctrl+Y) act on the
+       active document tab, so a row of buttons repeating them here only costs height. The shell's
+       Undo prefers whichever of this editor's two histories (.git instances / .are properties) was
+       touched most recently, falling back to the other. -->
+  <DockPanel>
+    <TabControl x:Name="RootTabs" SelectedIndex="{Binding SelectedRootTabIndex, Mode=TwoWay}">
+      <TabItem Header="Scene" x:Name="ViewTab3D">
+        <!-- No toolbar at all now. Placement comes from the Palette panel, the scene rebuilds itself
+             after every edit, and the view options that were here either had no audience or are simply
+             the right default (ceilings hidden, placeables drawn as their models). The map gets the
+             whole tab. -->
+        <!-- One row: the map. Nothing docks under it, because anything that appears only while
+             something is selected resizes the viewport out from under the builder mid-edit - the
+             camera shifts, and whatever they were aiming at moves. What the old selection bar
+             offered lives on the right-click menu below instead. -->
+        <Grid>
+
+          <viewport:GlAreaControl Grid.Row="0" x:Name="AreaView" />
+
+          <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it.
+               This transparent overlay captures camera input and forwards it to the control; the HUD
+               overlays declared after it sit ABOVE it in z-order and keep receiving their own clicks. -->
+          <Border Grid.Row="0" x:Name="ViewportInput" Background="Transparent"
+                  PointerPressed="OnViewportPointerPressed"
+                  PointerMoved="OnViewportPointerMoved"
+                  PointerExited="OnViewportPointerExited"
+                  PointerReleased="OnViewportPointerReleased"
+                  PointerWheelChanged="OnViewportPointerWheel"
+                  ContextRequested="OnViewportContextRequested">
+            <!-- Right-click acts on whatever is under the cursor: the press handler picks it first,
+                 so the menu always describes the thing that was clicked rather than the previous
+                 selection. Suppressed entirely when the click lands on empty ground. -->
+            <Border.ContextMenu>
+              <ContextMenu>
+                <!-- The first two entries are the readout the docked bar used to carry: the name a
+                     builder recognises, and the kind and resref underneath it for anyone scripting
+                     against it. Disabled because they are a caption, not an action. -->
+                <MenuItem Header="{Binding SelectionName}" IsEnabled="False">
+                  <MenuItem.Icon>
+                    <TextBlock Text="{Binding SelectionGlyph}"
+                               Foreground="{DynamicResource AccentBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{Binding SelectionKindLabel}" IsEnabled="False"
+                          ToolTip.Tip="{Binding SelectionResRef}" />
+                <Separator />
+                <MenuItem Header="Open properties..."
+                          Command="{Binding OpenSelectedInstancePropertiesCommand}"
+                          ToolTip.Tip="Edit this placed object's instance properties" />
+                <MenuItem Header="Edit blueprint..."
+                          Command="{Binding EditSelectedBlueprintCommand}"
+                          ToolTip.Tip="Open the blueprint this was placed from" />
+                <MenuItem Header="Edit Copy..."
+                          Command="{Binding EditCopySelectedBlueprintCommand}"
+                          ToolTip.Tip="Create and edit a new Custom blueprint from this object's source" />
+              </ContextMenu>
+            </Border.ContextMenu>
+          </Border>
+
+          <Border Grid.Row="0" Background="#B0202020" CornerRadius="4" Padding="10,6"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding IsBuildingScene}">
+            <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
+          </Border>
+
+          <!-- Viewport HUD. Only present when it has something to say: a failure, a drag hint while
+               something is selected, or a placement prompt. There is deliberately no standing caption
+               describing the area - what the area is belongs on the Properties tab, and an overlay that
+               is always there is an overlay permanently covering part of the map. -->
+          <Border Grid.Row="0" Background="#D00C1017" CornerRadius="3" Padding="9,5"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
+                  IsVisible="{Binding HasViewportHud}">
+            <StackPanel Spacing="3">
+              <TextBlock Text="{Binding SceneStatus}" Classes="mono" FontSize="10.5"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding HasSceneStatus}" />
+              <TextBlock Text="Drag to move &#x00B7; Alt+drag to turn &#x00B7; Ctrl snaps 0.5 m"
+                         Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource InkTertiaryBrush}"
+                         IsVisible="{Binding HasSceneSelection}" />
+              <TextBlock Text="{Binding TileSelectionStatus}" Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource AmberBrush}"
+                         IsVisible="{Binding HasTileSelection}" />
+              <TextBlock Text="Raise and lower move this tile one height level"
+                         Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource InkTertiaryBrush}"
+                         IsVisible="{Binding HasTileSelection}" />
+              <TextBlock Text="{Binding PlacementStatus}" Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource AccentBrush}"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+          </Border>
+
+          <!-- Drag readout. Present only while a drag is in flight, showing where the thing is now and
+               how far it has come - the second half being what a static coordinate box cannot tell you. -->
+          <Border Grid.Row="0" Background="#F00C1017" CornerRadius="3" Padding="10,7"
+                  BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
+                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="18"
+                  IsVisible="{Binding IsDragging}">
+            <StackPanel Spacing="3">
+              <TextBlock Text="{Binding DragPosition}" Classes="mono" FontSize="11.5"
+                         Foreground="{DynamicResource AccentInkBrush}" />
+              <TextBlock Text="{Binding DragFacing}" Classes="mono" FontSize="11.5"
+                         Foreground="{DynamicResource AccentInkBrush}" />
+              <TextBlock Text="{Binding DragDelta}" Classes="mono" FontSize="11"
+                         Foreground="{DynamicResource AmberBrush}"
+                         IsVisible="{Binding DragDelta, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+          </Border>
+
+          <!-- Camera and rotate pad. A pointing device is the fast way to fly the view, but not
+               everyone has three buttons and nothing about a drag is repeatable - "nudge it one more
+               step" is a button. Floated over the map rather than given its own row so it costs no
+               height when a builder is not using it. -->
+          <Border Grid.Row="0" Background="#D00C1017" CornerRadius="4" Padding="6,4"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+            <StackPanel Orientation="Horizontal" Spacing="3">
+              <RepeatButton Classes="pad" Content="&#x2190;" ToolTip.Tip="Pan left" Click="OnPanLeft" />
+              <RepeatButton Classes="pad" Content="&#x2192;" ToolTip.Tip="Pan right" Click="OnPanRight" />
+              <RepeatButton Classes="pad" Content="&#x2191;" ToolTip.Tip="Pan up" Click="OnPanUp" />
+              <RepeatButton Classes="pad" Content="&#x2193;" ToolTip.Tip="Pan down" Click="OnPanDown" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <RepeatButton Classes="pad" Content="&#x21BA;" ToolTip.Tip="Rotate view left" Click="OnOrbitLeft" />
+              <RepeatButton Classes="pad" Content="&#x21BB;" ToolTip.Tip="Rotate view right" Click="OnOrbitRight" />
+              <RepeatButton Classes="pad" Content="&#x2B71;" ToolTip.Tip="Raise the camera" Click="OnOrbitUp" />
+              <RepeatButton Classes="pad" Content="&#x2B73;" ToolTip.Tip="Lower the camera" Click="OnOrbitDown" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <RepeatButton Classes="pad" Content="+" ToolTip.Tip="Zoom in" Click="OnZoomIn" />
+              <RepeatButton Classes="pad" Content="&#x2212;" ToolTip.Tip="Zoom out" Click="OnZoomOut" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <Button Classes="pad" Content="&#x2302;" Click="OnReorient"
+                      ToolTip.Tip="Reorient camera - back to the view the area opened with" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <!-- Rotate repeats and previews while held (see RotateSelectionTick); the document edit
+                   lands once, on release. -->
+              <RepeatButton Classes="pad" Content="&#x27F2;" ToolTip.Tip="Turn the selection anticlockwise"
+                            Click="OnRotateSelectionAnticlockwise"
+                            PointerReleased="OnRotateSelectionReleased"
+                            PointerCaptureLost="OnRotateSelectionCaptureLost"
+                            IsEnabled="{Binding CanRotateSelection}" />
+              <RepeatButton Classes="pad" Content="&#x27F3;" ToolTip.Tip="Turn the selection clockwise"
+                            Click="OnRotateSelectionClockwise"
+                            PointerReleased="OnRotateSelectionReleased"
+                            PointerCaptureLost="OnRotateSelectionCaptureLost"
+                            IsEnabled="{Binding CanRotateSelection}" />
+              <Button Classes="pad" Content="&#x21AF;" ToolTip.Tip="Turn the selection to a random angle"
+                      Command="{Binding RotateSelectionRandomlyCommand}"
+                      IsEnabled="{Binding CanRotateSelection}" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <!-- These act on the selected tile, immediately and once per press, so a RepeatButton
+                   would step it several levels from one held click. Click a cell to select it. -->
+              <Button Classes="pad" Content="&#x21E7;" Command="{Binding RaiseTileCommand}"
+                      ToolTip.Tip="Raise the selected tile one height level - click a grid cell to select one" />
+              <Button Classes="pad" Content="&#x21E9;" Command="{Binding LowerTileCommand}"
+                      ToolTip.Tip="Lower the selected tile one height level (minimum level 0)" />
+            </StackPanel>
+          </Border>
+
+          <Border Grid.Row="0" x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
+                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
+            <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
+          </Border>
+
+        </Grid>
+      </TabItem>
+      <TabItem Header="Properties">
+    <ScrollViewer x:Name="PropertiesScroll">
+      <StackPanel Margin="8" Spacing="6">
+        <Expander Header="Area Properties"
+                  IsExpanded="{Binding AreaPropertiesExpanded, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch">
+          <ItemsControl ItemsSource="{Binding AreaPropertyGroups}" Margin="8,4">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="editors:EditorGroup">
+                <Expander Header="{Binding Title}" IsExpanded="True" Margin="0,0,0,6"
+                          HorizontalAlignment="Stretch">
+                  <ItemsControl ItemsSource="{Binding Fields}" Margin="8,4" />
+                </Expander>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Expander>
+
+        <ItemsControl ItemsSource="{Binding Sections}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="editors:InstanceListSectionViewModel">
+              <Expander HorizontalAlignment="Stretch" Margin="0,0,0,6"
+                        IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                <Expander.Header>
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="{Binding Title}" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Rows.Count}" Opacity="0.6" />
+                  </StackPanel>
+                </Expander.Header>
+                <StackPanel Margin="8,4" Spacing="6">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button Content="Add..." Command="{Binding AddCommand}" />
+                    <Button Content="Duplicate" Command="{Binding DuplicateCommand}" IsEnabled="{Binding HasSelection}" />
+                    <Button Content="Delete" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelection}" />
+                  </StackPanel>
+
+                  <Border IsVisible="{Binding ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}}"
+                          BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
+                          Padding="8" CornerRadius="4">
+                    <StackPanel Spacing="6" DataContext="{Binding ActivePaletteBrowser}"
+                                x:DataType="editors:PaletteBrowserViewModel">
+                      <TextBlock Text="{Binding Title, StringFormat='Choose {0} blueprint'}" FontWeight="Bold" />
+                      <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                                MaxHeight="320">
+                        <TreeView.ItemTemplate>
+                          <TreeDataTemplate DataType="editors:PaletteNodeViewModel" ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                              <TextBlock Text="{Binding DisplayName}" />
+                              <TextBlock Text="{Binding ResRef}" Opacity="0.6" />
+                            </StackPanel>
+                          </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                      </TreeView>
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Button Content="Place" Command="{Binding ChooseCommand}" />
+                        <Button Content="Cancel" Command="{Binding CancelCommand}" />
+                      </StackPanel>
+                      <TextBlock Text="{Binding StatusMessage}" Foreground="Orange"
+                                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+                  </Border>
+
+                  <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                            AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="260"
+                            GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                      <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="2*" />
+                      <DataGridTextColumn Header="Template" Binding="{Binding TemplateResRef}" Width="2*" />
+                      <DataGridTextColumn Header="X" Binding="{Binding X}" Width="*" />
+                      <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="*" />
+                      <DataGridTextColumn Header="Z" Binding="{Binding Z}" Width="*" />
+                    </DataGrid.Columns>
+                  </DataGrid>
+
+                  <StackPanel IsVisible="{Binding HasSelection}" Spacing="4">
+                    <Border IsVisible="{Binding UsesDoorEditor}">
+                      <doors:DoorEditorView DataContext="{Binding DoorEditor}" MinHeight="520" />
+                    </Border>
+                    <!-- Every non-sound instance keeps the existing generic detail form. -->
+                    <StackPanel IsVisible="{Binding !HasSoundBehaviorEditor}" Spacing="4">
+                    <Grid ColumnDefinitions="60,*" ColumnSpacing="6"
+                          IsVisible="{Binding UsesGenericDetailEditor}">
+                      <TextBlock Grid.Column="0" Text="Tag" VerticalAlignment="Center" />
+                      <TextBox Grid.Column="1" Text="{Binding DetailTag, Mode=TwoWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="60,*,60,*,60,*" ColumnSpacing="6">
+                      <TextBlock Grid.Column="0" Text="X" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
+                      <TextBlock Grid.Column="2" Text="Y" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
+                      <TextBlock Grid.Column="4" Text="Z" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
+                    </Grid>
+                    <Grid ColumnDefinitions="60,*,60,*" ColumnSpacing="6">
+                      <TextBlock Grid.Column="0" Text="Facing X" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="1" Value="{Binding DetailXOrientation, Mode=TwoWay}" Increment="0.1" />
+                      <TextBlock Grid.Column="2" Text="Facing Y" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="3" Value="{Binding DetailYOrientation, Mode=TwoWay}" Increment="0.1" />
+                    </Grid>
+                    <Grid ColumnDefinitions="60,*,60,*" ColumnSpacing="6"
+                          IsVisible="{Binding HasTriggerGeometry}">
+                      <TextBlock Grid.Column="0" Text="Width" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="1" Value="{Binding DetailTriggerWidth, Mode=TwoWay}"
+                                     Minimum="0.1" Increment="0.5" />
+                      <TextBlock Grid.Column="2" Text="Height" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="3" Value="{Binding DetailTriggerHeight, Mode=TwoWay}"
+                                     Minimum="0.1" Increment="0.5" />
+                    </Grid>
+                    <Expander Header="Local Variables"
+                              IsVisible="{Binding VarTableSection, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              HorizontalAlignment="Stretch" IsExpanded="False">
+                      <StackPanel Margin="8,4" Spacing="6" DataContext="{Binding VarTableSection}"
+                                  x:DataType="editors:VarTableSectionViewModel">
+                        <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                                  AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="200"
+                                  GridLinesVisibility="Horizontal">
+                          <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                            <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
+                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
+                          </DataGrid.Columns>
+                        </DataGrid>
+                        <!-- Type sizes to its content: as a star column it shrank with the pane
+                             until the drop-down was narrower than the word inside it. -->
+                        <Grid ColumnDefinitions="2*,Auto,Auto,2*,Auto,Auto" ColumnSpacing="6">
+                          <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
+                                           ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
+                          <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
+                          <ComboBox Grid.Column="2" MinWidth="96" ItemsSource="{Binding TypeChoices}"
+                                    SelectedItem="{Binding NewType, Mode=TwoWay}" />
+                          <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
+                          <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
+                          <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
+                        </Grid>
+                        <TextBlock Text="{Binding ValidationHint}" Foreground="Orange"
+                                   IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                      </StackPanel>
+                    </Expander>
+                    </StackPanel>
+
+                    <!-- Waypoint placements carry their behavior fields directly in the area's
+                         GIT. Transform remains an area concern; every other field belongs to the
+                         same editor used by a UTW blueprint. -->
+                    <StackPanel IsVisible="{Binding HasWaypointBehaviorEditor}" Spacing="8">
+                      <waypoints:WaypointEditorView DataContext="{Binding WaypointEditor}" Height="620" />
+                    </StackPanel>
+
+                    <!-- A placed sound owns all UTS behavior fields itself. World position remains
+                         an area concern; Elevation is a sound falloff value inside the editor. -->
+                    <StackPanel IsVisible="{Binding HasSoundBehaviorEditor}" Spacing="8">
+                      <Grid ColumnDefinitions="24,*,24,*,24,*" ColumnSpacing="6">
+                        <TextBlock Grid.Column="0" Text="X" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
+                        <TextBlock Grid.Column="2" Text="Y" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
+                        <TextBlock Grid.Column="4" Text="Z" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
+                      </Grid>
+                      <sounds:SoundEditorView DataContext="{Binding SoundEditor}" Height="620" />
+                    </StackPanel>
+                  </StackPanel>
+                </StackPanel>
+              </Expander>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+      </TabItem>
+
+    </TabControl>
+  </DockPanel>
+</UserControl>

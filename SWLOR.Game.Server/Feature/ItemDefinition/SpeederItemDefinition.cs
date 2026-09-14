@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -18,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             return _builder.Build();
         }
         /// <summary>
-        /// Check player's pheno: 
+        /// Check player's pheno:
         /// Pheno = normal: change tail to speederbike, set pheno to speederbike and movement rate to DMfast.
         /// Pheno = SpeederBike: change tail to none, set pheno and speed to normal.
         /// </summary>
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         SetPhenoType(PhenoType.Normal, user);
                         SetCreatureTailType(TailType.None, user);
-                        CreaturePlugin.SetMovementRate(user, MovementRate.PC);
+                        Stat.ApplyCreatureMovementRate(user);
                         SendMessageToPC(user, "You dismount your speeder.");
                     }
                     else
@@ -51,11 +53,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         CreaturePlugin.SetMovementRate(user, MovementRate.DMFast);
                         SendMessageToPC(user, "You mount your speeder.");
                     }
-                    
+
+                    TintMapService.QueueRefreshAndEditor(user, user);
                 });
         }
         /// <summary>
-        /// On creature damaged if mounted, 25% chance for player to be dazed while getting knocked off the bike. 
+        /// On creature damaged if mounted, 25% chance for player to be dazed while getting knocked off the bike.
         /// Play a matching animation that lasts the duration of the stun.
         /// Set pheno to normal, tailtype to none and movement rate back to normal after.
         /// </summary>
@@ -80,11 +83,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                Stat.ApplyCreatureMovementRate(player);
+                TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
         /// <summary>
-        /// When a creature acquires emnity and is mounted, dismount. 
+        /// When a creature acquires emnity and is mounted, dismount.
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// </summary>
         [NWNEventHandler(ScriptName.OnEnmityAcquired)]
@@ -95,14 +99,15 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             if (GetPhenoType(player) == PhenoType.SpeederBike)
             {
                 SendMessageToPC(player, "You have been dismounted.");
-                FloatingTextStringOnCreature("You have been dismounted.", player, false);
+                PlayerFeedback.ShowDiagnosticFloatingText("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                Stat.ApplyCreatureMovementRate(player);
+                TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
         /// <summary>
-        /// When a creature transitions into an interior and is mounted, dismount. 
+        /// When a creature transitions into an interior and is mounted, dismount.
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// Warning: This is not currently working. Need to hook the right script. *****!
         /// </summary>
@@ -118,7 +123,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted for entering an area with a speeder.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                Stat.ApplyCreatureMovementRate(player);
+                TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
 

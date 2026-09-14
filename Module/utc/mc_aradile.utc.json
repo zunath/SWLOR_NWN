@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 7.0
+    "value": 14.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 26
+    "value": 15
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 150
+    "value": 380
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "aradile_bite"
+          "value": "aradile_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "aradile_skin"
+          "value": "aradile_sk"
         }
       }
     ]
@@ -104,14 +104,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1745
+          "value": 289
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
         }
       }
     ]
@@ -136,11 +143,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 150
+    "value": 368
   },
   "Int": {
     "type": "byte",
-    "value": 14
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -170,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 198
+    "value": 380
   },
   "NaturalAC": {
     "type": "byte",
@@ -475,7 +482,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 24
+    "value": 15
   },
   "Subrace": {
     "type": "cexostring",
@@ -591,6 +598,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 16
+    "value": 26
   }
 }

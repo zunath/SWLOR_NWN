@@ -19,11 +19,11 @@ Feature/
 │   ├── Force/
 │   ├── General/
 │   ├── Leadership/
-│   ├── MartialArts/
+│   ├── KatarStaff/
 │   ├── NPC/
-│   ├── OneHanded/
+│   ├── Blade/
 │   ├── Ranged/
-│   └── TwoHanded/
+│   └── HeavyWeapon/
 ├── AchievementProgression.cs
 ├── AIDefinition/
 ├── AppearanceDefinition/
@@ -59,22 +59,18 @@ Feature/
 **Location**: `Feature/AbilityDefinition/`
 
 **Categories**:
-- **Force** - Force powers and abilities
-- **Combat** - OneHanded, TwoHanded, Ranged combat abilities
-- **Support** - FirstAid, Leadership abilities
-- **Special** - Beastmaster, Devices, MartialArts abilities
+- **Combat** - weapon combat abilities
+- **Support** - Leadership and companion abilities
+- **Special** - Beastmaster and utility abilities
 
 **Example Structure**:
 ```csharp
-public class ForceLightningAbilityDefinition : IAbilityListDefinition
+public class SmokeBombAbilityDefinition : IAbilityListDefinition
 {
     public Dictionary<FeatType, AbilityDetail> BuildAbilities()
     {
         var builder = new AbilityBuilder();
-        ForceLightning1(builder);
-        ForceLightning2(builder);
-        ForceLightning3(builder);
-        ForceLightning4(builder);
+        SmokeBomb(builder);
         return builder.Build();
     }
 }
@@ -143,23 +139,23 @@ public class KillRatsQuestDefinition : IQuestListDefinition
 **Location**: `Feature/PerkDefinition/`
 
 **Categories**:
-- **AgriculturePerkDefinition.cs** - Farming perks
-- **ArmorPerkDefinition.cs** - Armor-related perks
+- **EngineeringPerkDefinition.cs** - Droid assembly perks
+- **Weapon and skill perk definitions** - Combat, utility, crafting, and companion perk trees
 - **BeastBalancedPerkDefinition.cs** - Beast companion perks
 
 **Example**:
 ```csharp
-public class ForceLightningPerkDefinition : IPerkListDefinition
+public class AngerStrikePerkDefinition : IPerkListDefinition
 {
     public Dictionary<PerkType, PerkDetail> BuildPerks()
     {
         var builder = new PerkBuilder();
-        builder.Create(PerkCategoryType.Force, PerkType.ForceLightning)
-            .Name("Force Lightning")
-            .Description("Unleash devastating lightning from your fingertips.")
+        builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
+            .Name("Anger Strike")
+            .Description("A defensive heavy vibroblade strike that generates enmity.")
             .AddPerkLevel()
             .Price(1)
-            .Description("Deals electrical damage to enemies.");
+            .Description("Deals damage and increases enmity.");
         return builder.Build();
     }
 }
@@ -311,12 +307,12 @@ Features use builders to create configurations:
 public Dictionary<FeatType, AbilityDetail> BuildAbilities()
 {
     var builder = new AbilityBuilder();
-    
+
     // Create multiple abilities
     CreateAbility1(builder);
     CreateAbility2(builder);
     CreateAbility3(builder);
-    
+
     return builder.Build();
 }
 
@@ -369,8 +365,8 @@ Within categories, features are further organized:
 ```
 AbilityDefinition/
 ├── Force/                 # Force abilities
-├── OneHanded/            # One-handed combat
-├── TwoHanded/            # Two-handed combat
+├── Blade/            # blade combat
+├── HeavyWeapon/            # heavy weapon combat
 ├── Ranged/               # Ranged combat
 ├── FirstAid/             # Healing abilities
 └── Leadership/           # Support abilities
@@ -385,7 +381,7 @@ Feature files follow consistent naming:
 ```
 
 Examples:
-- `ForceLightningAbilityDefinition.cs`
+- `SmokeBombAbilityDefinition.cs`
 - `HealthPotionItemDefinition.cs`
 - `KillRatsQuestDefinition.cs`
 - `XWingShipDefinition.cs`
@@ -409,17 +405,17 @@ public class MyNewAbilityDefinition : IAbilityListDefinition
     public Dictionary<FeatType, AbilityDetail> BuildAbilities()
     {
         var builder = new AbilityBuilder();
-        
+
         builder.Create(FeatType.MyNewAbility, PerkType.MyNewAbility)
             .Name("My New Ability")
             .Level(1)
             .HasRecastDelay(RecastGroup.MyNewAbility, 30f)
             .IsCastedAbility()
             .HasImpactAction(ImpactAction);
-            
+
         return builder.Build();
     }
-    
+
     private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
     {
         // Ability logic here
@@ -453,10 +449,10 @@ public void TestMyNewAbility()
     // Setup test environment
     var player = CreateTestPlayer();
     var target = CreateTestTarget();
-    
+
     // Test ability usage
     var result = Ability.UseAbility(player, target, FeatType.MyNewAbility);
-    
+
     // Verify results
     Assert.IsTrue(result);
     Assert.IsTrue(Stat.GetCurrentHP(target) < Stat.GetMaxHP(target));
@@ -469,7 +465,7 @@ public void TestMyNewAbility()
 
 ```csharp
 // Good naming
-public class ForceLightningAbilityDefinition : IAbilityListDefinition
+public class SmokeBombAbilityDefinition : IAbilityListDefinition
 public class HealthPotionItemDefinition : IItemListDefinition
 public class KillRatsQuestDefinition : IQuestListDefinition
 
@@ -483,9 +479,9 @@ public class Quest : IQuestListDefinition
 
 ```csharp
 // Organize by category
-Feature/AbilityDefinition/Force/ForceLightningAbilityDefinition.cs
-Feature/AbilityDefinition/Force/ForcePushAbilityDefinition.cs
-Feature/AbilityDefinition/OneHanded/PowerAttackAbilityDefinition.cs
+Feature/AbilityDefinition/Vibroknife/SmokeBombAbilityDefinition.cs
+Feature/AbilityDefinition/HeavyVibroblade/AngerStrikeAbilityDefinition.cs
+Feature/AbilityDefinition/Staff/RibBreakerAbilityDefinition.cs
 ```
 
 ### 3. Reusable Components
@@ -549,10 +545,10 @@ public static void ImpactAction(uint activator, uint target, int level, Location
 {
     // Use combat service
     var damage = Combat.CalculateDamage(/* parameters */);
-    
+
     // Use stat service
     Stat.ModifyStat(target, AbilityType.Constitution, -damage);
-    
+
     // Use logging service
     Log.Write(LogGroup.Combat, $"Ability used: {damage} damage");
 }
@@ -567,13 +563,13 @@ Features use builders for configuration:
 public Dictionary<FeatType, AbilityDetail> BuildAbilities()
 {
     var builder = new AbilityBuilder();
-    
+
     // Configure abilities using builder
     builder.Create(FeatType.Ability, PerkType.Ability)
         .Name("Ability Name")
         .Level(1)
         .HasImpactAction(ImpactAction);
-        
+
     return builder.Build();
 }
 ```
@@ -590,7 +586,7 @@ public static void QuestComplete(uint player, string questId)
     var quest = DB.Query<PCQuest>()
         .Where(x => x.CharacterID == player && x.QuestID == questId)
         .FirstOrDefault();
-        
+
     if (quest != null)
     {
         quest.QuestState = QuestStateType.Completed;
@@ -630,4 +626,4 @@ When deprecating features:
 3. **Remove** - Remove after migration period
 4. **Update** - Update documentation
 
-This documentation provides a comprehensive overview of the Feature layer in SWLOR.Game.Server, covering the main feature categories, patterns, and best practices for working with game content. 
+This documentation provides a comprehensive overview of the Feature layer in SWLOR.Game.Server, covering the main feature categories, patterns, and best practices for working with game content.

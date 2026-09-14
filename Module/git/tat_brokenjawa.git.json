@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 570
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -3526,7 +3546,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Tas de ferraille"
+            "2": "Scrap Pile"
           }
         },
         "OnClick": {
@@ -3751,7 +3771,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vieilles pièces détachées de droïd"
+            "2": "Old Droid Spare Parts"
           }
         },
         "OnClick": {

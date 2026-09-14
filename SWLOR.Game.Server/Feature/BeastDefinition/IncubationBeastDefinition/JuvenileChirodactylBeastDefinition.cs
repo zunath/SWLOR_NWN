@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 {
@@ -20,8 +22,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Damage)
 
-                
-                
+                .CanMutateInto(BeastType.UmbratalonCorvax)
+				.MutationWeight(90)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
+
+
+				.CanMutateInto(BeastType.MustardlashSlime)
+				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
+
                 ;
 
 			Level1();
@@ -79,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             return _builder.Build();
         }
 
-        
+
 		private void Level1()
 		{
 			_builder
@@ -87,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(30)
 				.FP(5)
 				.STM(5)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 11)
 				.Stat(AbilityType.Vitality, 20)
@@ -99,13 +109,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(0)
 				.MaxDefenseBonus(CombatDamageType.Physical, 0)
 				.MaxDefenseBonus(CombatDamageType.Force, 0)
-				.MaxDefenseBonus(CombatDamageType.Fire, 0)
-				.MaxDefenseBonus(CombatDamageType.Poison, 0)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 0)
-				.MaxDefenseBonus(CombatDamageType.Ice, 0)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 0)
+				.MaxResistanceBonus(ResistanceType.Poison, 0)
+				.MaxResistanceBonus(ResistanceType.Electrical, 0)
+				.MaxResistanceBonus(ResistanceType.Ice, 0)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level2()
@@ -115,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(56)
 				.FP(5)
 				.STM(5)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 12)
 				.Stat(AbilityType.Vitality, 20)
@@ -127,13 +138,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(1)
 				.MaxDefenseBonus(CombatDamageType.Physical, 1)
 				.MaxDefenseBonus(CombatDamageType.Force, 1)
-				.MaxDefenseBonus(CombatDamageType.Fire, 2)
-				.MaxDefenseBonus(CombatDamageType.Poison, 0)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 0)
-				.MaxDefenseBonus(CombatDamageType.Ice, 2)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 2)
+				.MaxResistanceBonus(ResistanceType.Poison, 0)
+				.MaxResistanceBonus(ResistanceType.Electrical, 0)
+				.MaxResistanceBonus(ResistanceType.Ice, 2)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level3()
@@ -143,7 +154,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(69)
 				.FP(5)
 				.STM(6)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 12)
 				.Stat(AbilityType.Vitality, 20)
@@ -155,13 +167,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(2)
 				.MaxDefenseBonus(CombatDamageType.Physical, 1)
 				.MaxDefenseBonus(CombatDamageType.Force, 2)
-				.MaxDefenseBonus(CombatDamageType.Fire, 2)
-				.MaxDefenseBonus(CombatDamageType.Poison, 0)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 0)
-				.MaxDefenseBonus(CombatDamageType.Ice, 2)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 2)
+				.MaxResistanceBonus(ResistanceType.Poison, 0)
+				.MaxResistanceBonus(ResistanceType.Electrical, 0)
+				.MaxResistanceBonus(ResistanceType.Ice, 2)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level4()
@@ -171,7 +183,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(82)
 				.FP(6)
 				.STM(6)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 20)
 				.Stat(AbilityType.Perception, 12)
 				.Stat(AbilityType.Vitality, 21)
@@ -183,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(2)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 2)
-				.MaxDefenseBonus(CombatDamageType.Fire, 3)
-				.MaxDefenseBonus(CombatDamageType.Poison, 0)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 0)
-				.MaxDefenseBonus(CombatDamageType.Ice, 3)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxResistanceBonus(ResistanceType.Fire, 3)
+				.MaxResistanceBonus(ResistanceType.Poison, 0)
+				.MaxResistanceBonus(ResistanceType.Electrical, 0)
+				.MaxResistanceBonus(ResistanceType.Ice, 3)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 0);
 		}
 
 		private void Level5()
@@ -199,7 +212,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(95)
 				.FP(6)
 				.STM(7)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 12)
 				.Stat(AbilityType.Vitality, 21)
@@ -211,13 +225,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(3)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 3)
-				.MaxDefenseBonus(CombatDamageType.Fire, 4)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 4)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 4)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 4)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level6()
@@ -227,7 +241,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(108)
 				.FP(6)
 				.STM(7)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 13)
 				.Stat(AbilityType.Vitality, 21)
@@ -239,13 +254,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(4)
 				.MaxDefenseBonus(CombatDamageType.Physical, 2)
 				.MaxDefenseBonus(CombatDamageType.Force, 4)
-				.MaxDefenseBonus(CombatDamageType.Fire, 5)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 5)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 5)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 5)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level7()
@@ -255,7 +270,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(121)
 				.FP(6)
 				.STM(7)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 13)
 				.Stat(AbilityType.Vitality, 21)
@@ -267,13 +283,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(4)
 				.MaxDefenseBonus(CombatDamageType.Physical, 3)
 				.MaxDefenseBonus(CombatDamageType.Force, 4)
-				.MaxDefenseBonus(CombatDamageType.Fire, 6)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 6)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 6)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 6)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level8()
@@ -283,7 +299,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(134)
 				.FP(6)
 				.STM(8)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 13)
 				.Stat(AbilityType.Vitality, 21)
@@ -295,13 +312,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(5)
 				.MaxDefenseBonus(CombatDamageType.Physical, 3)
 				.MaxDefenseBonus(CombatDamageType.Force, 5)
-				.MaxDefenseBonus(CombatDamageType.Fire, 7)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 7)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 7)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 7)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level9()
@@ -311,7 +328,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(147)
 				.FP(7)
 				.STM(8)
-				.DMG(8)
+				.DMG(7)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 13)
 				.Stat(AbilityType.Vitality, 21)
@@ -323,13 +341,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(6)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 6)
-				.MaxDefenseBonus(CombatDamageType.Fire, 7)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 7)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 7)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 7)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level10()
@@ -339,7 +357,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(160)
 				.FP(7)
 				.STM(9)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 14)
 				.Stat(AbilityType.Vitality, 21)
@@ -351,13 +370,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(6)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 6)
-				.MaxDefenseBonus(CombatDamageType.Fire, 8)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 8)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 8)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 8)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level11()
@@ -367,7 +386,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(173)
 				.FP(7)
 				.STM(9)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 14)
 				.Stat(AbilityType.Vitality, 22)
@@ -379,13 +399,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(7)
 				.MaxDefenseBonus(CombatDamageType.Physical, 4)
 				.MaxDefenseBonus(CombatDamageType.Force, 7)
-				.MaxDefenseBonus(CombatDamageType.Fire, 9)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 9)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 9)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 9)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level12()
@@ -395,7 +415,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(186)
 				.FP(7)
 				.STM(9)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 21)
 				.Stat(AbilityType.Perception, 14)
 				.Stat(AbilityType.Vitality, 22)
@@ -407,13 +428,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(7)
 				.MaxDefenseBonus(CombatDamageType.Physical, 5)
 				.MaxDefenseBonus(CombatDamageType.Force, 7)
-				.MaxDefenseBonus(CombatDamageType.Fire, 10)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 10)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 10)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 10)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 0)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level13()
@@ -423,7 +444,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(199)
 				.FP(7)
 				.STM(10)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 14)
 				.Stat(AbilityType.Vitality, 22)
@@ -435,13 +457,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(8)
 				.MaxDefenseBonus(CombatDamageType.Physical, 5)
 				.MaxDefenseBonus(CombatDamageType.Force, 8)
-				.MaxDefenseBonus(CombatDamageType.Fire, 11)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 11)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 11)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 11)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level14()
@@ -451,7 +473,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(212)
 				.FP(8)
 				.STM(10)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 15)
 				.Stat(AbilityType.Vitality, 22)
@@ -463,13 +486,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(9)
 				.MaxDefenseBonus(CombatDamageType.Physical, 6)
 				.MaxDefenseBonus(CombatDamageType.Force, 9)
-				.MaxDefenseBonus(CombatDamageType.Fire, 11)
-				.MaxDefenseBonus(CombatDamageType.Poison, 1)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
-				.MaxDefenseBonus(CombatDamageType.Ice, 11)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxResistanceBonus(ResistanceType.Fire, 11)
+				.MaxResistanceBonus(ResistanceType.Poison, 1)
+				.MaxResistanceBonus(ResistanceType.Electrical, 1)
+				.MaxResistanceBonus(ResistanceType.Ice, 11)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 1);
 		}
 
 		private void Level15()
@@ -479,7 +502,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(225)
 				.FP(8)
 				.STM(11)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 15)
 				.Stat(AbilityType.Vitality, 22)
@@ -491,13 +515,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(9)
 				.MaxDefenseBonus(CombatDamageType.Physical, 6)
 				.MaxDefenseBonus(CombatDamageType.Force, 9)
-				.MaxDefenseBonus(CombatDamageType.Fire, 12)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 12)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 12)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 12)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level16()
@@ -507,7 +531,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(238)
 				.FP(8)
 				.STM(11)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 15)
 				.Stat(AbilityType.Vitality, 22)
@@ -519,13 +544,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(10)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 10)
-				.MaxDefenseBonus(CombatDamageType.Fire, 13)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 13)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 13)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 13)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level17()
@@ -535,7 +560,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(251)
 				.FP(8)
 				.STM(11)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 16)
 				.Stat(AbilityType.Vitality, 22)
@@ -547,13 +573,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(10)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 10)
-				.MaxDefenseBonus(CombatDamageType.Fire, 14)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 14)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 14)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 14)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level18()
@@ -563,7 +589,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(264)
 				.FP(8)
 				.STM(12)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 16)
 				.Stat(AbilityType.Vitality, 23)
@@ -575,13 +602,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(11)
 				.MaxDefenseBonus(CombatDamageType.Physical, 7)
 				.MaxDefenseBonus(CombatDamageType.Force, 11)
-				.MaxDefenseBonus(CombatDamageType.Fire, 15)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 15)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 15)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 15)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level19()
@@ -591,7 +618,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(277)
 				.FP(9)
 				.STM(12)
-				.DMG(16)
+				.DMG(14)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 16)
 				.Stat(AbilityType.Vitality, 23)
@@ -603,13 +631,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(12)
 				.MaxDefenseBonus(CombatDamageType.Physical, 8)
 				.MaxDefenseBonus(CombatDamageType.Force, 12)
-				.MaxDefenseBonus(CombatDamageType.Fire, 16)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 16)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 16)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 16)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level20()
@@ -619,7 +647,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(290)
 				.FP(9)
 				.STM(13)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 22)
 				.Stat(AbilityType.Perception, 16)
 				.Stat(AbilityType.Vitality, 23)
@@ -631,13 +660,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(12)
 				.MaxDefenseBonus(CombatDamageType.Physical, 8)
 				.MaxDefenseBonus(CombatDamageType.Force, 12)
-				.MaxDefenseBonus(CombatDamageType.Fire, 16)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 16)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 16)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 16)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level21()
@@ -647,7 +676,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(303)
 				.FP(9)
 				.STM(13)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 23)
@@ -659,13 +689,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(13)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 13)
-				.MaxDefenseBonus(CombatDamageType.Fire, 17)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 17)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 17)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 17)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level22()
@@ -675,7 +705,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(316)
 				.FP(9)
 				.STM(13)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 23)
@@ -687,13 +718,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(13)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 13)
-				.MaxDefenseBonus(CombatDamageType.Fire, 18)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 18)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 18)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 18)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level23()
@@ -703,7 +734,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(329)
 				.FP(9)
 				.STM(14)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 23)
@@ -715,13 +747,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(14)
 				.MaxDefenseBonus(CombatDamageType.Physical, 9)
 				.MaxDefenseBonus(CombatDamageType.Force, 14)
-				.MaxDefenseBonus(CombatDamageType.Fire, 19)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 19)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 19)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 19)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level24()
@@ -731,7 +763,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(342)
 				.FP(10)
 				.STM(14)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 17)
 				.Stat(AbilityType.Vitality, 23)
@@ -743,13 +776,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(15)
 				.MaxDefenseBonus(CombatDamageType.Physical, 10)
 				.MaxDefenseBonus(CombatDamageType.Force, 15)
-				.MaxDefenseBonus(CombatDamageType.Fire, 20)
-				.MaxDefenseBonus(CombatDamageType.Poison, 2)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
-				.MaxDefenseBonus(CombatDamageType.Ice, 20)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxResistanceBonus(ResistanceType.Fire, 20)
+				.MaxResistanceBonus(ResistanceType.Poison, 2)
+				.MaxResistanceBonus(ResistanceType.Electrical, 2)
+				.MaxResistanceBonus(ResistanceType.Ice, 20)
+				.MaxResistanceBonus(ResistanceType.Mind, 0)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 2);
 		}
 
 		private void Level25()
@@ -759,7 +792,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(355)
 				.FP(10)
 				.STM(15)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 24)
@@ -771,13 +805,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(15)
 				.MaxDefenseBonus(CombatDamageType.Physical, 10)
 				.MaxDefenseBonus(CombatDamageType.Force, 15)
-				.MaxDefenseBonus(CombatDamageType.Fire, 20)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 20)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 20)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 20)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level26()
@@ -787,7 +821,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(368)
 				.FP(10)
 				.STM(15)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 24)
@@ -799,13 +834,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(16)
 				.MaxDefenseBonus(CombatDamageType.Physical, 11)
 				.MaxDefenseBonus(CombatDamageType.Force, 16)
-				.MaxDefenseBonus(CombatDamageType.Fire, 21)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 21)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 21)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 21)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level27()
@@ -815,7 +850,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(381)
 				.FP(10)
 				.STM(15)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 24)
@@ -827,13 +863,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(17)
 				.MaxDefenseBonus(CombatDamageType.Physical, 11)
 				.MaxDefenseBonus(CombatDamageType.Force, 17)
-				.MaxDefenseBonus(CombatDamageType.Fire, 22)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 22)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 22)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 22)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level28()
@@ -843,7 +879,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(394)
 				.FP(10)
 				.STM(16)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 23)
 				.Stat(AbilityType.Perception, 18)
 				.Stat(AbilityType.Vitality, 24)
@@ -855,13 +892,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(17)
 				.MaxDefenseBonus(CombatDamageType.Physical, 11)
 				.MaxDefenseBonus(CombatDamageType.Force, 17)
-				.MaxDefenseBonus(CombatDamageType.Fire, 23)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 23)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 23)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 23)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level29()
@@ -871,7 +908,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(407)
 				.FP(11)
 				.STM(16)
-				.DMG(29)
+				.DMG(25)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 24)
@@ -883,13 +921,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(18)
 				.MaxDefenseBonus(CombatDamageType.Physical, 12)
 				.MaxDefenseBonus(CombatDamageType.Force, 18)
-				.MaxDefenseBonus(CombatDamageType.Fire, 24)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 24)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 24)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 24)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level30()
@@ -899,7 +937,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(420)
 				.FP(11)
 				.STM(17)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 24)
@@ -911,13 +950,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(18)
 				.MaxDefenseBonus(CombatDamageType.Physical, 12)
 				.MaxDefenseBonus(CombatDamageType.Force, 18)
-				.MaxDefenseBonus(CombatDamageType.Fire, 24)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 24)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 24)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 24)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level31()
@@ -927,7 +966,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(433)
 				.FP(11)
 				.STM(17)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 24)
@@ -939,13 +979,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(19)
 				.MaxDefenseBonus(CombatDamageType.Physical, 13)
 				.MaxDefenseBonus(CombatDamageType.Force, 19)
-				.MaxDefenseBonus(CombatDamageType.Fire, 25)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 25)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 25)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 25)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level32()
@@ -955,7 +995,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(446)
 				.FP(11)
 				.STM(17)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 19)
 				.Stat(AbilityType.Vitality, 25)
@@ -967,13 +1008,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(20)
 				.MaxDefenseBonus(CombatDamageType.Physical, 13)
 				.MaxDefenseBonus(CombatDamageType.Force, 20)
-				.MaxDefenseBonus(CombatDamageType.Fire, 26)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 26)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 26)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 26)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level33()
@@ -983,7 +1024,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(459)
 				.FP(11)
 				.STM(18)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 25)
@@ -995,13 +1037,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(20)
 				.MaxDefenseBonus(CombatDamageType.Physical, 13)
 				.MaxDefenseBonus(CombatDamageType.Force, 20)
-				.MaxDefenseBonus(CombatDamageType.Fire, 27)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 27)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 27)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 27)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level34()
@@ -1011,7 +1053,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(472)
 				.FP(12)
 				.STM(18)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 25)
@@ -1023,13 +1066,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(21)
 				.MaxDefenseBonus(CombatDamageType.Physical, 14)
 				.MaxDefenseBonus(CombatDamageType.Force, 21)
-				.MaxDefenseBonus(CombatDamageType.Fire, 28)
-				.MaxDefenseBonus(CombatDamageType.Poison, 3)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
-				.MaxDefenseBonus(CombatDamageType.Ice, 28)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxResistanceBonus(ResistanceType.Fire, 28)
+				.MaxResistanceBonus(ResistanceType.Poison, 3)
+				.MaxResistanceBonus(ResistanceType.Electrical, 3)
+				.MaxResistanceBonus(ResistanceType.Ice, 28)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 3);
 		}
 
 		private void Level35()
@@ -1039,7 +1082,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(485)
 				.FP(12)
 				.STM(19)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 20)
 				.Stat(AbilityType.Vitality, 25)
@@ -1051,13 +1095,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(21)
 				.MaxDefenseBonus(CombatDamageType.Physical, 14)
 				.MaxDefenseBonus(CombatDamageType.Force, 21)
-				.MaxDefenseBonus(CombatDamageType.Fire, 29)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 29)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 29)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 29)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level36()
@@ -1067,7 +1111,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(498)
 				.FP(12)
 				.STM(19)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 24)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 25)
@@ -1079,13 +1124,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(22)
 				.MaxDefenseBonus(CombatDamageType.Physical, 15)
 				.MaxDefenseBonus(CombatDamageType.Force, 22)
-				.MaxDefenseBonus(CombatDamageType.Fire, 29)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 29)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 29)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 29)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 1)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level37()
@@ -1095,7 +1140,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(511)
 				.FP(12)
 				.STM(19)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 25)
@@ -1107,13 +1153,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(23)
 				.MaxDefenseBonus(CombatDamageType.Physical, 15)
 				.MaxDefenseBonus(CombatDamageType.Force, 23)
-				.MaxDefenseBonus(CombatDamageType.Fire, 30)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 30)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 30)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 30)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level38()
@@ -1123,7 +1169,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(524)
 				.FP(12)
 				.STM(20)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 25)
@@ -1135,13 +1182,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(23)
 				.MaxDefenseBonus(CombatDamageType.Physical, 16)
 				.MaxDefenseBonus(CombatDamageType.Force, 23)
-				.MaxDefenseBonus(CombatDamageType.Fire, 31)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 31)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 31)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 31)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level39()
@@ -1151,7 +1198,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(537)
 				.FP(13)
 				.STM(20)
-				.DMG(37)
+				.DMG(32)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 21)
 				.Stat(AbilityType.Vitality, 26)
@@ -1163,13 +1211,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(24)
 				.MaxDefenseBonus(CombatDamageType.Physical, 16)
 				.MaxDefenseBonus(CombatDamageType.Force, 24)
-				.MaxDefenseBonus(CombatDamageType.Fire, 32)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 32)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 32)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 32)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level40()
@@ -1179,7 +1227,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(550)
 				.FP(13)
 				.STM(21)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 26)
@@ -1191,13 +1240,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(24)
 				.MaxDefenseBonus(CombatDamageType.Physical, 16)
 				.MaxDefenseBonus(CombatDamageType.Force, 24)
-				.MaxDefenseBonus(CombatDamageType.Fire, 33)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 33)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 33)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 33)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level41()
@@ -1207,7 +1256,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(563)
 				.FP(13)
 				.STM(21)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 26)
@@ -1219,13 +1269,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(25)
 				.MaxDefenseBonus(CombatDamageType.Physical, 17)
 				.MaxDefenseBonus(CombatDamageType.Force, 25)
-				.MaxDefenseBonus(CombatDamageType.Fire, 33)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 33)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 33)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 33)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level42()
@@ -1235,7 +1285,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(576)
 				.FP(13)
 				.STM(21)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 26)
@@ -1247,13 +1298,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(26)
 				.MaxDefenseBonus(CombatDamageType.Physical, 17)
 				.MaxDefenseBonus(CombatDamageType.Force, 26)
-				.MaxDefenseBonus(CombatDamageType.Fire, 34)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 34)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 34)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 34)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level43()
@@ -1263,7 +1314,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(589)
 				.FP(13)
 				.STM(22)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 22)
 				.Stat(AbilityType.Vitality, 26)
@@ -1275,13 +1327,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(26)
 				.MaxDefenseBonus(CombatDamageType.Physical, 18)
 				.MaxDefenseBonus(CombatDamageType.Force, 26)
-				.MaxDefenseBonus(CombatDamageType.Fire, 35)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 35)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 35)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 35)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level44()
@@ -1291,7 +1343,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(602)
 				.FP(14)
 				.STM(22)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 25)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 26)
@@ -1303,13 +1356,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(27)
 				.MaxDefenseBonus(CombatDamageType.Physical, 18)
 				.MaxDefenseBonus(CombatDamageType.Force, 27)
-				.MaxDefenseBonus(CombatDamageType.Fire, 36)
-				.MaxDefenseBonus(CombatDamageType.Poison, 4)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
-				.MaxDefenseBonus(CombatDamageType.Ice, 36)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxResistanceBonus(ResistanceType.Fire, 36)
+				.MaxResistanceBonus(ResistanceType.Poison, 4)
+				.MaxResistanceBonus(ResistanceType.Electrical, 4)
+				.MaxResistanceBonus(ResistanceType.Ice, 36)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 4);
 		}
 
 		private void Level45()
@@ -1319,7 +1372,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(615)
 				.FP(14)
 				.STM(23)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 26)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 26)
@@ -1331,13 +1385,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(28)
 				.MaxDefenseBonus(CombatDamageType.Physical, 18)
 				.MaxDefenseBonus(CombatDamageType.Force, 28)
-				.MaxDefenseBonus(CombatDamageType.Fire, 37)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
-				.MaxDefenseBonus(CombatDamageType.Ice, 37)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxResistanceBonus(ResistanceType.Fire, 37)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 5)
+				.MaxResistanceBonus(ResistanceType.Ice, 37)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 5);
 		}
 
 		private void Level46()
@@ -1347,7 +1401,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(628)
 				.FP(14)
 				.STM(23)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 26)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 27)
@@ -1359,13 +1414,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(28)
 				.MaxDefenseBonus(CombatDamageType.Physical, 19)
 				.MaxDefenseBonus(CombatDamageType.Force, 28)
-				.MaxDefenseBonus(CombatDamageType.Fire, 38)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
-				.MaxDefenseBonus(CombatDamageType.Ice, 38)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxResistanceBonus(ResistanceType.Fire, 38)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 5)
+				.MaxResistanceBonus(ResistanceType.Ice, 38)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 5);
 		}
 
 		private void Level47()
@@ -1375,7 +1430,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(641)
 				.FP(14)
 				.STM(23)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 26)
 				.Stat(AbilityType.Perception, 23)
 				.Stat(AbilityType.Vitality, 27)
@@ -1387,13 +1443,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(29)
 				.MaxDefenseBonus(CombatDamageType.Physical, 19)
 				.MaxDefenseBonus(CombatDamageType.Force, 29)
-				.MaxDefenseBonus(CombatDamageType.Fire, 38)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
-				.MaxDefenseBonus(CombatDamageType.Ice, 38)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxResistanceBonus(ResistanceType.Fire, 38)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 5)
+				.MaxResistanceBonus(ResistanceType.Ice, 38)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 5);
 		}
 
 		private void Level48()
@@ -1403,7 +1459,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(654)
 				.FP(14)
 				.STM(24)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 26)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 27)
@@ -1415,13 +1472,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(29)
 				.MaxDefenseBonus(CombatDamageType.Physical, 20)
 				.MaxDefenseBonus(CombatDamageType.Force, 29)
-				.MaxDefenseBonus(CombatDamageType.Fire, 39)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
-				.MaxDefenseBonus(CombatDamageType.Ice, 39)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxResistanceBonus(ResistanceType.Fire, 39)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 5)
+				.MaxResistanceBonus(ResistanceType.Ice, 39)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 5);
 		}
 
 		private void Level49()
@@ -1431,7 +1488,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(667)
 				.FP(15)
 				.STM(24)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 26)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 27)
@@ -1443,13 +1501,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(30)
 				.MaxDefenseBonus(CombatDamageType.Physical, 20)
 				.MaxDefenseBonus(CombatDamageType.Force, 30)
-				.MaxDefenseBonus(CombatDamageType.Fire, 40)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
-				.MaxDefenseBonus(CombatDamageType.Ice, 40)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxResistanceBonus(ResistanceType.Fire, 40)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 5)
+				.MaxResistanceBonus(ResistanceType.Ice, 40)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 5);
 		}
 
 		private void Level50()
@@ -1459,7 +1517,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.HP(680)
 				.FP(15)
 				.STM(25)
-				.DMG(43)
+				.DMG(37)
+				.AttackDelay(ItemPropertyAttackDelay.Delay220)
 				.Stat(AbilityType.Might, 26)
 				.Stat(AbilityType.Perception, 24)
 				.Stat(AbilityType.Vitality, 27)
@@ -1471,13 +1530,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 				.MaxEvasionBonus(31)
 				.MaxDefenseBonus(CombatDamageType.Physical, 20)
 				.MaxDefenseBonus(CombatDamageType.Force, 31)
-				.MaxDefenseBonus(CombatDamageType.Fire, 41)
-				.MaxDefenseBonus(CombatDamageType.Poison, 5)
-				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
-				.MaxDefenseBonus(CombatDamageType.Ice, 41)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 2)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxResistanceBonus(ResistanceType.Fire, 41)
+				.MaxResistanceBonus(ResistanceType.Poison, 5)
+				.MaxResistanceBonus(ResistanceType.Electrical, 5)
+				.MaxResistanceBonus(ResistanceType.Ice, 41)
+				.MaxResistanceBonus(ResistanceType.Mind, 1)
+				.MaxResistanceBonus(ResistanceType.Trauma, 2)
+				.MaxResistanceBonus(ResistanceType.Mobility, 5);
 		}
 
     }

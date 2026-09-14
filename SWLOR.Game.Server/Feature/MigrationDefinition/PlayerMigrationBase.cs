@@ -1,10 +1,11 @@
-﻿using System.Linq;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
@@ -12,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     {
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
+        public virtual void MigratePlayerData(Player player) { }
 
         protected void RecalculateStats(uint player)
         {
@@ -30,59 +32,63 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                 var item = GetItemInSlot(slot, player);
 
-                AssignCommand(player, () => ActionUnequipItem(item));
+                if (!GetIsObjectValid(item))
+                    continue;
+                PlayerEquipmentStorage.Unequip(player, item, slot);
             }
 
-            // Unequip is on a delay, waiting one second should be fine given the initial load-in
-            // is not usually that quick.
-            DelayCommand(1f, () =>
+            // Finish before the runner checkpoints this character; delayed work
+            // could otherwise be skipped permanently after a disconnect.
+            KatarAnimationRemap.RefreshEquipmentAnimations(player);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            // HP
+            dbPlayer.MaxHP = Stat.BaseHP;
+            dbPlayer.HPRegen = 0;
+
+            // FP
+            dbPlayer.MaxFP = Stat.BaseFP;
+            dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
+            dbPlayer.FPRegen = 0;
+
+            // STM
+            dbPlayer.MaxStamina = Stat.BaseSTM;
+            dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
+            dbPlayer.STMRegen = 0;
+
+            // Crafting
+            foreach (var (type, _) in Skill.GetActiveCraftingSkills())
             {
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                dbPlayer.Craftsmanship[type] = 0;
+                dbPlayer.Control[type] = 0;
+                dbPlayer.CPBonus[type] = 0;
+            }
 
-                // HP
-                dbPlayer.MaxHP = Stat.BaseHP;
-                dbPlayer.HP = GetMaxHitPoints(player);
-                dbPlayer.HPRegen = 0;
+            // Attack
+            dbPlayer.Attack = 0;
+            dbPlayer.ForceAttack = 0;
+            dbPlayer.CombatReadiness = 0;
 
-                // FP
-                dbPlayer.MaxFP = Stat.BaseFP;
-                dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
-                dbPlayer.FPRegen = 0;
+            // Defenses
+            foreach (var defense in Combat.GetDefenseDamageTypes())
+            {
+                dbPlayer.Defenses[defense] = 0;
+            }
 
-                // STM
-                dbPlayer.MaxStamina = Stat.BaseSTM;
-                dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
-                dbPlayer.STMRegen = 0;
+            // Resistances
+            foreach (var resistance in Resistance.GetAllResistanceTypes())
+            {
+                dbPlayer.Resistances[resistance] = 0;
+            }
 
-                // Crafting
-                foreach (var (type, _) in Skill.GetActiveCraftingSkills())
-                {
-                    dbPlayer.Craftsmanship[type] = 0;
-                    dbPlayer.Control[type] = 0;
-                    dbPlayer.CPBonus[type] = 0;
-                }
+            // Evasion
+            dbPlayer.Evasion = 0;
 
-                // Attack
-                dbPlayer.Attack = 0;
-                dbPlayer.ForceAttack = 0;
-
-                // Defenses
-                foreach (var defense in Combat.GetAllDamageTypes())
-                {
-                    dbPlayer.Defenses[defense] = 0;
-                }
-
-                // Evasion
-                dbPlayer.Evasion = 0;
-
-                DB.Set(dbPlayer);
-                Stat.AdjustPlayerMaxHP(dbPlayer, player, 0);
-                SetCurrentHitPoints(player, GetMaxHitPoints(player));
-
-                // Attacks
-                Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-            });
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, 0);
+            SetCurrentHitPoints(player, GetMaxHitPoints(player));
+            dbPlayer.HP = GetCurrentHitPoints(player);
+            DB.Set(dbPlayer);
         }
 
         protected void RefundPerk(uint player, PerkType perkType)

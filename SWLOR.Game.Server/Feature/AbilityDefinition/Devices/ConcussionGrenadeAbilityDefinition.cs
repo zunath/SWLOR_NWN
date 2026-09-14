@@ -1,143 +1,140 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
-    public class ConcussionGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
+    public sealed class ConcussionGrenadeAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            ConcussionGrenade1();
-            ConcussionGrenade2();
-            ConcussionGrenade3();
+            var builder = new AbilityBuilder();
 
-            return _builder.Build();
-        }
-        
-        private void Impact(uint activator, uint target, int dmg, int dc)
-        {
-            if (GetFactionEqual(activator, target))
-                return;
+            ConcussionGrenade1(builder);
+            ConcussionGrenade2(builder);
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
-
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var damage = Combat.CalculateDamage(
-                attack,
-                dmg,
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
-
-            if (dc > 0)
-            {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
-                var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    const float Duration = 3f;
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-
-                    Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
-                }
-            }
-
-            AssignCommand(activator, () =>
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
-            });
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 180);
+            return builder.Build();
         }
 
-        private void ConcussionGrenade1()
+        private static void ConcussionGrenade1(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
+            builder
+                .Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ConcussionGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Concussion Grenade I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
                 .HasActivationDelay(1f)
-                .RequirementStamina(2)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 45f)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.ConcussionGrenade1,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
+                .HasImpactAction(ConcussionGrenade1ImpactAction)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
-                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
-                    ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        Impact(activator, target, perBonus, -1);
-                    });
-                });
+                .RequirementStamina(3)
+                .RequirementItem("explosives");
         }
 
-        private void ConcussionGrenade2()
+        private static void ConcussionGrenade2(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
+            builder
+                .Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ConcussionGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Concussion Grenade II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 45f)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.ConcussionGrenade2,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
+                .HasImpactAction(ConcussionGrenade2ImpactAction)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
-                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
-                    ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var perDMG = perBonus + 15;
-                        Impact(activator, target, perDMG, 8);
-                    });
-                });
+                .RequirementStamina(4)
+                .RequirementItem("explosives");
         }
 
-        private void ConcussionGrenade3()
+        private static void ConcussionGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            _builder.Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
-                .Name("Concussion Grenade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(4)
-                .UsesAnimation(Animation.ThrowGrenade)
-                .IsCastedAbility()
-                .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
-                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
-                    ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var perDMG = perBonus + 30;
-                        Impact(activator, target, perDMG, 12);
-                    });
-                });
+            ApplyConcussionGrenade(
+                activator,
+                target,
+                targetLocation,
+                14,
+                3,
+                typeof(KnockdownStatusEffect));
         }
+
+        private static void ConcussionGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyConcussionGrenade(
+                activator,
+                target,
+                targetLocation,
+                28,
+                3,
+                typeof(KnockdownStatusEffect));
+        }
+
+        private static void ApplyConcussionGrenade(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int duration,
+            Type statusEffect)
+        {
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion),
+                impactLocation);
+
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                impactLocation,
+                SkillType.Devices,
+                baseDamage,
+                duration,
+                statusEffect,
+                CombatImpactAreaShape.Sphere,
+                0f,
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
+                0f,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Electrical,
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
+                areaVisualEffect: VisualEffect.None,
+                maxTargets: 5);
+        }
+
     }
 }

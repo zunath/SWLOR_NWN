@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -8,6 +7,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
+using PlayerNameService = SWLOR.Game.Server.Service.PlayerName;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private bool CanAdjustPermission(
-            WorldPropertyPermission grantorPermissions, 
+            WorldPropertyPermission grantorPermissions,
             WorldPropertyPermission targetPermissions,
             PropertyPermissionType type,
             string targetPlayerId,
@@ -163,13 +163,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var targetPlayerId = _playerIds[SelectedPlayerIndex];
-            
+
             var dbPlayer = DB.Get<Player>(targetPlayerId);
             var grantorPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
                 .First();
-            
+
             var targetPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var permissionEnabled = new GuiBindingList<bool>();
             var grantPermissionEnabled = new GuiBindingList<bool>();
 
-            PlayerName = dbPlayer.Name;
+            PlayerName = PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, targetPlayerId, dbPlayer.Name);
 
             string ownerPlayerId;
             if (_isCategory)
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 permissionStates.Add(targetPermissions.Permissions[type]);
                 permissionGrantingStates.Add(targetPermissions.GrantPermissions[type]);
 
-                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, ownerPlayerId)) 
+                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, ownerPlayerId))
                     permissionEnabled.Add(true);
                 else
                     permissionEnabled.Add(false);
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else
                     grantPermissionEnabled.Add(false);
             }
-            
+
             PermissionStates = permissionStates;
             PermissionGrantingStates = permissionGrantingStates;
             PermissionNames = permissionNames;
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _propertyType = initialPayload.PropertyType;
             _cityId = initialPayload.CityId;
             IsPlayerSelected = false;
-            
+
             AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType);
 
             if (_isCategory)
@@ -301,27 +301,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(Entity.Player.IsDeleted), false);
                 dbPlayers = DB.Search(query);
             }
-            // Otherwise look for players by their names.
+            // Otherwise look for players by their permission-management names.
             else
             {
-                var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Entity.Player.Name), SearchText, true)
-                    .AddFieldSearch(nameof(Entity.Player.IsDeleted), false)
-                    .AddPaging(25, 0);
-
-                // Searches within City properties require that the players be a citizen.
-                if (!string.IsNullOrWhiteSpace(_cityId))
-                {
-                    query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false);
-                }
-
-                dbPlayers = DB.Search(query);
+                dbPlayers = SearchPlayersByPermissionName();
             }
 
             foreach (var player in dbPlayers)
             {
                 _playerIds.Add(player.Id);
-                playerNames.Add(player.Name);
+                playerNames.Add(PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name));
                 playerToggles.Add(false);
             }
 
@@ -332,6 +321,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PermissionNames.Clear();
             PermissionDescriptions.Clear();
             PlayerName = string.Empty;
+        }
+
+        private List<Player> SearchPlayersByPermissionName()
+        {
+            var sanitizedSearch = PlayerNameService.SanitizeKnownName(SearchText);
+            if (string.IsNullOrWhiteSpace(sanitizedSearch))
+                return new List<Player>();
+
+            var playersById = new Dictionary<string, Player>();
+            var knownPlayerIds = PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
+            foreach (var player in SearchPlayersByIds(knownPlayerIds))
+            {
+                playersById[player.Id] = player;
+            }
+
+            var canonicalQuery = BuildEligiblePlayerQuery()
+                .AddFieldSearch(nameof(Entity.Player.Name), sanitizedSearch, true)
+                .AddPaging(25, 0);
+            foreach (var player in DB.Search(canonicalQuery))
+            {
+                playersById[player.Id] = player;
+            }
+
+            return playersById.Values
+                .OrderBy(player => PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name))
+                .Take(25)
+                .ToList();
+        }
+
+        private IEnumerable<Player> SearchPlayersByIds(List<string> playerIds)
+        {
+            if (playerIds.Count <= 0)
+                return Enumerable.Empty<Player>();
+
+            var query = BuildEligiblePlayerQuery()
+                .AddFieldSearch(nameof(Entity.Player.Id), playerIds)
+                .AddPaging(playerIds.Count, 0);
+
+            return DB.Search(query);
+        }
+
+        private DBQuery<Player> BuildEligiblePlayerQuery()
+        {
+            var query = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Entity.Player.IsDeleted), false);
+
+            // Searches within City properties require that the players be a citizen.
+            if (!string.IsNullOrWhiteSpace(_cityId))
+            {
+                query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false);
+            }
+
+            return query;
         }
 
         public Action OnClickSearch() => Search;

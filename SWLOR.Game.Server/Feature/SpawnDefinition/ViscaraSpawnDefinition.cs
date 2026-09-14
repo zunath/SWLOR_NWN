@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
@@ -18,17 +20,42 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             WildwoodsLooters();
             WildwoodsKinrath();
             WildwoodsGimpassa();
+            WildwoodsNorthMandalorianScout();
+            WildwoodsRuinedMandalorianHunter();
             ValleyCairnmogs();
             CoxxionFlesheaters();
             CoxxionFleshleader();
             DeepMountainRaivors();
             CrystalSpiders();
             Swamplands();
+            WesternSwamplands();
+            EasternSwamplands();
+            SewersDepthsGeneral();
             Veles();
             VelesSewers();
             TwilightPraxeum();
+            VelesMilitiaAnnex();
+            ViscaraRepublicEngineeringBunker();
 
+            VelesRareElites();
+            VisbunkerRareElites();
             return _builder.Build();
+        }
+
+        private void VisbunkerRareElites()
+        {
+            _builder.Create("VISCARA_REPUBLIC_ENGINEERING_BUNKER_RARES", "Viscara Republic Engineering Bunker - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "bunkerbreak").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "beaconmarks").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "decurioncmd").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
+        }
+
+        private void VelesRareElites()
+        {
+            _builder.Create("VELES_MILITIA_ANNEX_RARES", "Veles Militia Annex - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "invictus").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "ruptorvane").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "blackoutwrd").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void Wildlands()
@@ -41,6 +68,18 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "kath_hound")
                 .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "oldscar_kath")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "stormplume")
+                .WithFrequency(1)
+                .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -65,6 +104,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "man_ranger_2")
                 .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "harrek_voss")
+                .WithFrequency(1)
+                .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -107,6 +152,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "looter_2")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "nara_venn")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 
@@ -116,6 +167,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "ww_kinrath")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "silkshade")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 
@@ -124,6 +181,42 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_WILDWOODS_GIMPASSA", "Wildwoods Gimpassa")
                 .AddSpawn(ObjectType.Creature, "ww_gimpassa")
                 .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "mossback")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void WildwoodsNorthMandalorianScout()
+        {
+            _builder.Create("VISCARA_WILDWOODS_NORTH_SCOUT", "Wildwoods North Mandalorian Scout")
+                .AddSpawn(ObjectType.Creature, "man_scout")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "tarn_kyric")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void WildwoodsRuinedMandalorianHunter()
+        {
+            _builder.Create("VISCARA_WILDWOODS_RUINED_HUNTER", "Wildwoods Ruined Mandalorian Hunter")
+                .AddSpawn(ObjectType.Creature, "man_hunter")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "varo_skeld")
+                .WithFrequency(1)
+                .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -144,6 +237,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "valley_cairnmog2")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "greyspine")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 
@@ -157,6 +256,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater2")
                 .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "maw_ghal")
+                .WithFrequency(1)
+                .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -181,6 +286,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "v_raivor2")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "redtail_kor")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 
@@ -189,6 +300,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("VISCARA_CRYSTAL_SPIDERS", "Crystal Spiders")
                 .AddSpawn(ObjectType.Creature, "crystalspider")
                 .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "shardeye")
+                .WithFrequency(1)
+                .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -208,6 +325,82 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater2")
                 .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void WesternSwamplands()
+        {
+            _builder.Create("VISCARA_WESTERN_SWAMPLANDS", "Western Swamplands")
+                .AddSpawn(ObjectType.Creature, "swampvines")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "v_flesheater")
+                .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "v_flesheater2")
+                .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "rootcoil")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void EasternSwamplands()
+        {
+            _builder.Create("VISCARA_EASTERN_SWAMPLANDS", "Eastern Swamplands")
+                .AddSpawn(ObjectType.Creature, "swampvines")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "v_flesheater")
+                .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "v_flesheater2")
+                .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "mirevein")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void SewersDepthsGeneral()
+        {
+            _builder.Create("VISCARA_SEWERS_DEPTHS_GENERAL", "Viscara Sewers Depths - General")
+                .AddSpawn(ObjectType.Creature, "bf_scavenger")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "bf_pulsedroid")
+                .WithFrequency(40)
+                .RandomlyWalks()
+                .ReturnsHome()
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball)
+
+                .AddSpawn(ObjectType.Creature, "bf_duelist")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "vrix7")
+                .WithFrequency(1)
+                .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
         }
@@ -291,6 +484,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "looter_2")
                 .WithFrequency(30)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "soot_rusk")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 
@@ -300,6 +499,111 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "revmynock")
                 .WithFrequency(1)
                 .RespawnDelay(20)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "ashwing")
+                .WithFrequency(1)
+                .AsRare()
+                .RespawnDelay(20)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void VelesMilitiaAnnex()
+        {
+            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX", "Veles Militia Annex - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_invinc_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_invinc_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_invinc_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sysshut_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sysshut_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sysshut_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void ViscaraRepublicEngineeringBunker()
+        {
+            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER", "Viscara Republic Engineering Bunker - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_embunker_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_embunker_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_embunker_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deccommand_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deccommand_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deccommand_ic")
+                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

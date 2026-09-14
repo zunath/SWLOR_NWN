@@ -1,137 +1,167 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
-    public class FragGrenadeAbilityDefinition: ExplosiveBaseAbilityDefinition
+    public sealed class FragGrenadeAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            FragGrenade1();
-            FragGrenade2();
-            FragGrenade3();
+            var builder = new AbilityBuilder();
 
-            return _builder.Build();
-        }
-        
-        private void Impact(uint activator, uint target, int dmg, int dc, float bleedLength)
-        {
-            if (GetFactionEqual(activator, target))
-                return;
+            FragGrenade1(builder);
+            FragGrenade2(builder);
+            FragGrenade3(builder);
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
-
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
-                attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
-
-            if (dc > 0)
-            {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
-                var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    StatusEffect.Apply(activator, target, StatusEffectType.Bleed, bleedLength);
-                }
-            }
-
-            DelayCommand(0f, () =>
-            {
-                AssignCommand(activator, () =>
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
-                });
-            });
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 320);
+            return builder.Build();
         }
 
-        private void FragGrenade1()
+        private static void FragGrenade1(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.FragGrenade1, PerkType.FragGrenade)
+            builder
+                .Create(FeatType.FragGrenade1, PerkType.FragGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.FragGrenade, 12f)
-                .HasActivationDelay(2f)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.FragGrenade, 8f)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.FragGrenade1,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
+                .HasImpactAction(FragGrenade1ImpactAction)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        Impact(activator, target, perBonus, -1, 0f);
-                    });
-                });
+                .RequirementStamina(2)
+                .RequirementItem("explosives");
         }
 
-        private void FragGrenade2()
+        private static void FragGrenade2(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.FragGrenade2, PerkType.FragGrenade)
+            builder
+                .Create(FeatType.FragGrenade2, PerkType.FragGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.FragGrenade, 12f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(2)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.FragGrenade, 8f)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.FragGrenade2,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
+                .HasImpactAction(FragGrenade2ImpactAction)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var perDMG = 20 + (perBonus * 3 / 2);
-                        Impact(activator, target, perDMG, 8, 30f);
-                    });
-                });
+                .RequirementStamina(3)
+                .RequirementItem("explosives");
         }
 
-        private void FragGrenade3()
+        private static void FragGrenade3(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.FragGrenade3, PerkType.FragGrenade)
+            builder
+                .Create(FeatType.FragGrenade3, PerkType.FragGrenade)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.FragGrenade, 12f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.FragGrenade, 8f)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.FragGrenade3,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
+                .HasImpactAction(FragGrenade3ImpactAction)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var perDMG = 40 + (perBonus * 2);
-                        Impact(activator, target, perDMG, 12, 60f);
-                    });
-                });
+                .RequirementStamina(5)
+                .RequirementItem("explosives");
         }
+
+        private static void FragGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyFragGrenade(activator, target, targetLocation, 18, null);
+        }
+
+        private static void FragGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyFragGrenade(activator, target, targetLocation, 32, typeof(BleedStatusEffect));
+        }
+
+        private static void FragGrenade3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyFragGrenade(activator, target, targetLocation, 48, typeof(BleedStatusEffect));
+        }
+
+        private static void ApplyFragGrenade(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            Type statusEffect)
+        {
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Fnf_Fireball),
+                GetFragGrenadeImpactLocation(activator, target, targetLocation));
+
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Devices,
+                baseDamage,
+                12,
+                statusEffect,
+                CombatImpactAreaShape.Sphere,
+                0f,
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
+                0f,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Fire,
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
+                areaVisualEffect: VisualEffect.None);
+        }
+
+        private static Location GetFragGrenadeImpactLocation(uint activator, uint target, Location targetLocation)
+        {
+            if (GetIsObjectValid(target))
+                return GetLocation(target);
+
+            return GetIsObjectValid(GetAreaFromLocation(targetLocation))
+                ? targetLocation
+                : GetLocation(activator);
+        }
+
     }
 }

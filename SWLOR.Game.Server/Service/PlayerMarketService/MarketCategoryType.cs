@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace SWLOR.Game.Server.Service.PlayerMarketService
 {
     public enum MarketCategoryType
@@ -9,12 +7,12 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
 
         [MarketCategory("Vibroblade",  true)]
         Vibroblade = 1,
-        [MarketCategory("Fin. Vibroblade",  true)]
-        FinesseVibroblade = 2,
-        [MarketCategory("Hvy. Vibroblade", true)]
+        [MarketCategory("Vibroknife",  true)]
+        Vibroknife = 2,
+        [MarketCategory("Heavy Vibroblade", true)]
         HeavyVibroblade = 3,
-        [MarketCategory("Polearm",  true)]
-        Polearm = 4,
+        [MarketCategory("Spear",  true)]
+        Spear = 4,
         [MarketCategory("Katar",  true)]
         Katar = 5,
         [MarketCategory("Staff",  true)]
@@ -37,18 +35,10 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         Ring = 14,
         [MarketCategory("Necklace",  true)]
         Necklace = 15,
-        [MarketCategory("Breastplate",  true)]
-        Breastplate = 16,
+        [MarketCategory("Armor",  true)]
+        Armor = 16,
         [MarketCategory("Helmet",  true)]
         Helmet = 17,
-        [MarketCategory("Bracer",  true)]
-        Bracer = 18,
-        [MarketCategory("Legging",  true)]
-        Legging = 19,
-        [MarketCategory("Tunic",  true)]
-        Tunic = 20,
-        [MarketCategory("Cap",  true)]
-        Cap = 21,
         [MarketCategory("Glove",  true)]
         Glove = 22,
         [MarketCategory("Boot",  true)]

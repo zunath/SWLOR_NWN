@@ -126,7 +126,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Setting a server-wide default affects all players who don't have individual settings.
         /// </remarks>
         public static void SetChatHearingDistance(
-            float distance, 
+            float distance,
             uint? listener = null,
             ChatChannel channel = ChatChannel.PlayerTalk)
         {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -24,10 +24,18 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private static readonly SkillType[] _skillsUsedForAverages =
         {
-            SkillType.OneHanded,
-            SkillType.TwoHanded,
-            SkillType.MartialArts,
-            SkillType.Ranged,
+            SkillType.Vibroblade,
+            SkillType.Vibroknife,
+            SkillType.Lightsaber,
+            SkillType.HeavyVibroblade,
+            SkillType.Spear,
+            SkillType.TwinBlade,
+            SkillType.Saberstaff,
+            SkillType.Katar,
+            SkillType.Staff,
+            SkillType.Pistol,
+            SkillType.Rifle,
+            SkillType.Throwing,
             SkillType.Force,
             SkillType.Devices,
             SkillType.FirstAid
@@ -50,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             }
 
             skillLevel += dbPlayer.Skills[SkillType.Armor].Rank;
-            
+
             return (int)(skillLevel / 2f);
         }
 
@@ -81,6 +89,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         if (GetIsObjectValid(droid))
                         {
                             return "Only one droid may be activated at a time.";
+                        }
+
+                        var companionSlotError = BeastMastery.GetCompanionSlotValidationError(user);
+                        if (!string.IsNullOrEmpty(companionSlotError))
+                        {
+                            return companionSlotError;
                         }
 
                         var averageLevel = GetAverageSkillLevel(user);

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _21_SetDefaultOutfitAndMarketLimits : ServerMigrationBase, IServerMigration
     {
         public int Version => 21;
-        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
 
         public void Migrate()
         {

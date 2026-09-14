@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -25,13 +19,44 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
+            var originalBaseItem = GetBaseItemType(item);
+            PistolBaseItemCompatibility.Normalize(item);
+            var canonicalSlot = PistolBaseItemCompatibility.GetCanonicalInventorySlot(
+                originalBaseItem,
+                slot);
+            if (canonicalSlot != slot)
+            {
+                EventsPlugin.SkipEvent();
+                AssignCommand(creature, () => ActionEquipItem(item, canonicalSlot));
+                return;
+            }
+
             var isSwapping = IsItemSwapping(creature, item, slot);
-            var canUseItem = CanItemBeUsed(creature, item);
-            var canDualWield = ValidateDualWield(item, slot);
+            var canUseItem = Item.CanEquip(creature, item);
             var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
-                canDualWield && 
+                (GetIsPC(creature) || Droid.IsDroid(creature)) &&
+                !GetIsDM(creature) &&
+                !GetIsDMPossessed(creature))
+            {
+                var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
+                var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+                var rightHandType = GetIsObjectValid(rightHand)
+                    ? GetBaseItemType(rightHand)
+                    : (BaseItem?)null;
+                var leftHandType = GetIsObjectValid(leftHand)
+                    ? GetBaseItemType(leftHand)
+                    : (BaseItem?)null;
+
+                canUseItem = GetPistolEquipmentError(
+                    GetBaseItemType(item),
+                    slot,
+                    rightHandType,
+                    leftHandType);
+            }
+
+            if (string.IsNullOrWhiteSpace(canUseItem) &&
                 !isSwapping &&
                 !isRingSwappingPositions)
             {
@@ -50,8 +75,45 @@ namespace SWLOR.Game.Server.Feature
                 }
                 SendMessageToPC(messageTarget, ColorToken.Red(canUseItem));
             }
-            
+
             EventsPlugin.SkipEvent();
+        }
+
+        /// <summary>
+        /// Validates pistol hand placement independently of the engine's ranged weapon rules.
+        /// Pistols are one-handed so that a shield can occupy the left hand, but players may
+        /// not place a pistol in that hand or pair one with any non-shield item.
+        /// </summary>
+        public static string GetPistolEquipmentError(
+            BaseItem itemType,
+            InventorySlot slot,
+            BaseItem? rightHandType,
+            BaseItem? leftHandType)
+        {
+            if (itemType == BaseItem.OffHandPistol)
+                return "Off-hand pistols cannot be equipped.";
+
+            var isPistol = Item.PistolBaseItemTypes.Contains(itemType);
+
+            if (isPistol && slot != InventorySlot.RightHand)
+                return "Pistols may only be equipped in the right hand.";
+
+            if (isPistol &&
+                leftHandType.HasValue &&
+                !Item.ShieldBaseItemTypes.Contains(leftHandType.Value))
+            {
+                return "Pistols may only be paired with a shield in the left hand.";
+            }
+
+            if (slot == InventorySlot.LeftHand &&
+                rightHandType.HasValue &&
+                Item.PistolBaseItemTypes.Contains(rightHandType.Value) &&
+                !Item.ShieldBaseItemTypes.Contains(itemType))
+            {
+                return "Pistols may only be paired with a shield in the left hand.";
+            }
+
+            return string.Empty;
         }
 
         private static bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
@@ -64,168 +126,31 @@ namespace SWLOR.Game.Server.Feature
             var leftHandType = GetBaseItemType(leftHand);
 
             // Two-handed weapons
-            if (Item.TwoHandedMeleeItemTypes.Contains(itemType) || 
-                Item.TwinBladeBaseItemTypes.Contains(itemType) || 
+            if (Item.TwoHandedMeleeItemTypes.Contains(itemType) ||
+                Item.TwinBladeBaseItemTypes.Contains(itemType) ||
                 Item.SaberstaffBaseItemTypes.Contains(itemType) ||
-                Item.RifleBaseItemTypes.Contains(itemType) ||
-                Item.PistolBaseItemTypes.Contains(itemType))
+                Item.RifleBaseItemTypes.Contains(itemType))
             {
                 if (GetIsObjectValid(rightHand) ||
                     GetIsObjectValid(leftHand))
                     return true;
             }
             // Shields & One-Handed Weapons
-            else if (Item.ShieldBaseItemTypes.Contains(itemType) || 
-                     Item.OneHandedMeleeItemTypes.Contains(itemType) || 
-                     Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            else if (Item.ShieldBaseItemTypes.Contains(itemType) ||
+                     Item.OneHandedMeleeItemTypes.Contains(itemType) ||
+                     Item.ThrowingWeaponBaseItemTypes.Contains(itemType) ||
+                     Item.PistolBaseItemTypes.Contains(itemType))
             {
-                if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) || 
-                    Item.TwinBladeBaseItemTypes.Contains(rightHandType) || 
+                if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) ||
+                    Item.TwinBladeBaseItemTypes.Contains(rightHandType) ||
                     Item.SaberstaffBaseItemTypes.Contains(rightHandType) ||
-                    Item.RifleBaseItemTypes.Contains(rightHandType) ||
-                    Item.PistolBaseItemTypes.Contains(rightHandType))
+                    Item.RifleBaseItemTypes.Contains(rightHandType))
                 {
                     return true;
                 }
             }
 
             return GetIsObjectValid(itemInSlot);
-        }
-
-        /// <summary>
-        /// When an item is equipped, check if the item is going to be dual wielded. If it is, ensure player has
-        /// at least level 1 of the Dual Wield perk. If they don't, skip the equip event with an error message.
-        /// </summary>
-        private static bool ValidateDualWield(uint item, InventorySlot slot)
-        {
-            var creature = OBJECT_SELF;
-
-            // Not equipping to the left hand, or there's nothing equipped in the right hand.
-            if (slot != InventorySlot.LeftHand) return true;
-            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, creature))) return true;
-            
-            var baseItem = GetBaseItemType(item);
-            var dualWieldWeapons = new[]
-            {
-                BaseItem.ShortSword,
-                BaseItem.Longsword,
-                BaseItem.BattleAxe,
-                BaseItem.BastardSword,
-                BaseItem.LightFlail,
-                BaseItem.LightMace,
-                BaseItem.Dagger,
-                BaseItem.Club,
-                BaseItem.HandAxe,
-                BaseItem.Kama,
-                BaseItem.Katana,
-                BaseItem.Kukri,
-                BaseItem.Rapier,
-                BaseItem.Scimitar,
-                BaseItem.Sickle,
-                BaseItem.Lightsaber,
-                BaseItem.Electroblade
-            };
-            if (!dualWieldWeapons.Contains(baseItem)) return true;
-
-            var dualWieldLevel = Perk.GetPerkLevel(creature, PerkType.DualWield);
-            if (dualWieldLevel <= 0)
-            {
-                SendMessageToPC(creature, ColorToken.Red("Equipping two weapons requires the Dual Wield perk."));
-                EventsPlugin.SkipEvent();
-
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Checks if an item can be used by a creature. Non-PCs and DMs automatically can wear all items.
-        /// If a player is missing a required perk, an error message will be returned.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="item">The item to check.</param>
-        /// <returns>An empty string if successful or an error message if failed</returns>
-        private static string CanItemBeUsed(uint creature, uint item)
-        {
-            var isPlayer = GetIsPC(creature);
-            var isDroid = Droid.IsDroid(creature);
-
-            if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
-                return string.Empty;
-
-            if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
-            {
-                return "Items cannot be equipped while crafting.";
-            }
-
-            var itemType = GetBaseItemType(item);
-
-            // Droids may only equip items in specific slots if the item has the Use Limitation Race: Droid item property.
-            // They are unable to equip any items in these slots if this item property is missing.
-            // Non-Droids may not equip any items which have this item property.
-            var race = GetRacialType(creature);
-            var needsDroidLimitation = race == RacialType.Droid && Item.DroidBaseItemTypes.Contains(itemType);
-            var itemHasDroidIP = false;
-            Dictionary<PerkType, int> creaturePerks;
-
-            if (isPlayer)
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-                creaturePerks = dbPlayer.Perks;
-            }
-            // Droids
-            else
-            {
-                var controller = Droid.GetControllerItem(creature);
-                var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
-                creaturePerks = droidDetails.Perks;
-            }
-
-            // Check for required perk levels.
-            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-            {
-                var type = GetItemPropertyType(ip);
-
-                // Check perk requirements
-                if (type == ItemPropertyType.UseLimitationPerk)
-                {
-                    var perkType = (PerkType)GetItemPropertySubType(ip);
-                    if (perkType == PerkType.Invalid) continue;
-
-                    var requiredLevel = GetItemPropertyCostTableValue(ip);
-                    var perkLevel = creaturePerks.ContainsKey(perkType) ? creaturePerks[perkType] : 0;
-
-                    if (perkLevel < requiredLevel)
-                    {
-                        var perkName = Perk.GetPerkDetails(perkType).Name;
-                        return $"This item requires '{perkName}' level {requiredLevel} to use.";
-                    }
-                }
-                else if (type == ItemPropertyType.UseLimitationRacialType)
-                {
-                    var limitationRace = (RacialType)GetItemPropertySubType(ip);
-
-                    if (limitationRace == RacialType.Droid)
-                    {
-                        // Has the use limitation but is not a droid, return error.
-                        if (race != RacialType.Droid)
-                            return $"This item may only be equipped by Droids.";
-
-                        // Has the use limitation but item does not have droid limitation
-                        if (!needsDroidLimitation)
-                            continue;
-
-                        itemHasDroidIP = true;
-                    }
-                }
-            }
-
-            if (needsDroidLimitation && !itemHasDroidIP)
-                return "Droids may not equip that item.";
-
-            return string.Empty;
         }
 
         private static bool IsRingSwappingPositions(uint creature, uint item, InventorySlot slot)
@@ -255,7 +180,7 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
-            // The unequip event doesn't fire if an item is being swapped out. 
+            // The unequip event doesn't fire if an item is being swapped out.
             // If there's an item in the slot, run the unequip triggers first.
             var existingItemInSlot = GetItemInSlot(slot, player);
             if (GetIsObjectValid(existingItemInSlot))

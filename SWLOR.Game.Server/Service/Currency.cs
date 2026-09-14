@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;

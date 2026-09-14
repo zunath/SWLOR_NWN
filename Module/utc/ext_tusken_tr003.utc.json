@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 8.0
+    "value": 17.0
   },
   "ClassList": {
     "type": "list",
@@ -141,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 17
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -153,7 +153,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 350
+    "value": 617
   },
   "DecayTime": {
     "type": "dword",
@@ -169,7 +169,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 29
+    "value": 26
   },
   "Disarmable": {
     "type": "byte",
@@ -196,14 +196,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenblasterrif"
+          "value": "tuskenraider_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tusken_skin"
+          "value": "tuskenraider_sk"
         }
       }
     ]
@@ -382,6 +382,20 @@
           "type": "word",
           "value": 139
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
+        }
       }
     ]
   },
@@ -406,11 +420,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 350
+    "value": 573
   },
   "Int": {
     "type": "byte",
-    "value": 22
+    "value": 26
   },
   "Interruptable": {
     "type": "byte",
@@ -440,7 +454,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 383
+    "value": 617
   },
   "NaturalAC": {
     "type": "byte",
@@ -745,7 +759,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -861,7 +875,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 32
   },
   "xAppearance_Head": {
     "type": "word",

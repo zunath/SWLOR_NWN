@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace SWLOR.Game.Server.Core.Extensions
 {

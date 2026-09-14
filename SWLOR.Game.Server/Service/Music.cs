@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -65,7 +64,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyBattleThemeToPlayer()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             var playerId = GetObjectUUID(player);

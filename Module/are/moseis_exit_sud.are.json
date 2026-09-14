@@ -54,7 +54,7 @@
   },
   "LoadScreenID": {
     "type": "word",
-    "value": 69
+    "value": 18
   },
   "ModListenCheck": {
     "type": "int",
@@ -88,7 +88,7 @@
     "type": "cexolocstring",
     "value": {
       "0": "Tatooine - Mos Esper - South Entrance",
-      "2": "Mos Eisley - Entrée Sud"
+      "2": "Tatooine - Mos Esper - South Entrance"
     }
   },
   "NoRest": {

@@ -1,17 +1,17 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class BankViewModel: GuiViewModelBase<BankViewModel, GuiPayloadBase>
     {
+        private static readonly GuiColor _storageFreeColor = new(90, 150, 95);
+        private static readonly GuiColor _storageFullColor = new(200, 100, 70);
+
         /// <summary>
         /// When a bank placeable is used, display this UI view.
         /// </summary>
@@ -45,6 +45,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiColor StorageColor
+        {
+            get => Get<GuiColor>();
+            set => Set(value);
+        }
+
         public string SearchText
         {
             get => Get<string>();
@@ -72,43 +78,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshItemCount()
         {
             var playerId = GetObjectUUID(Player);
-            var bank = TetherObject;
-            var storageId = GetLocalString(bank, "STORAGE_ID");
-            var maxItems = GetLocalInt(bank, "STORAGE_ITEM_LIMIT");
-
-            var itemCount = DB.SearchCount(new DBQuery<InventoryItem>()
-                .AddFieldSearch(nameof(InventoryItem.StorageId), storageId, false)
-                .AddFieldSearch(nameof(InventoryItem.PlayerId), playerId, false));
+            var itemCount = Bank.GetItemCount(playerId);
 
             _itemCount = itemCount;
-            ItemCountText = $"{itemCount} / {maxItems} Items";
-            StoragePercentage = (float)itemCount / (float)maxItems;
-
-            // If a city's level has downgraded it's possible for the storage percentage to be higher than 100%.
-            // Clamp this down so as not to confuse the UI progress bar.
-            if (StoragePercentage > 1f)
-                StoragePercentage = 1f;
-
-            IsDepositEnabled = _itemCount < maxItems;
+            ItemCountText = Bank.GetItemCountText(itemCount);
+            StoragePercentage = Bank.GetStoragePercentage(itemCount);
+            IsDepositEnabled = !Bank.IsFull(itemCount);
+            StorageColor = Bank.IsFull(itemCount) ? _storageFullColor : _storageFreeColor;
         }
 
         private void Search()
         {
             var playerId = GetObjectUUID(Player);
-            var bank = TetherObject;
-            var storageId = GetLocalString(bank, "STORAGE_ID");
-
-            var query = new DBQuery<InventoryItem>()
-                .AddFieldSearch(nameof(InventoryItem.StorageId), storageId, false)
-                .AddFieldSearch(nameof(InventoryItem.PlayerId), playerId, false);
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                query.AddFieldSearch(nameof(InventoryItem.Name), SearchText, true);
-            }
 
             _itemIds.Clear();
-            var items = DB.Search(query);
+            var items = Bank.SearchItems(playerId, SearchText);
             var itemResrefs = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
 
@@ -148,24 +132,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var itemId = _itemIds[index];
-            var dbItem = DB.Get<InventoryItem>(itemId);
 
-            var item = ObjectPlugin.Deserialize(dbItem.Data);
-            ObjectPlugin.AcquireItem(Player, item);
-
-            DB.Delete<InventoryItem>(dbItem.Id);
-
+            Bank.WithdrawItem(Player, itemId);
             _itemIds.RemoveAt(index);
             ItemNames.RemoveAt(index);
             ItemResrefs.RemoveAt(index);
-
-            if (Item.IsLegacyItem(item))
-            {
-                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                {
-                    RemoveItemProperty(item, ip);
-                }
-            }
 
             RefreshItemCount();
         };
@@ -175,38 +146,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.",
                 item =>
             {
-                var canStore = Item.CanBePersistentlyStored(Player, item);
-                if (!string.IsNullOrWhiteSpace(canStore))
+                var failure = Bank.GetDepositFailure(Player, item);
+                if (!string.IsNullOrWhiteSpace(failure))
                 {
-                    SendMessageToPC(Player, ColorToken.Red(canStore));
+                    SendMessageToPC(Player, ColorToken.Red(failure));
                     return;
                 }
 
-                var playerId = GetObjectUUID(Player);
-                var bank = TetherObject;
-                var storageId = GetLocalString(bank, "STORAGE_ID");
-                var maxItems = GetLocalInt(bank, "STORAGE_ITEM_LIMIT");
-                if (_itemCount >= maxItems)
-                {
-                    SendMessageToPC(Player, ColorToken.Red("Your bank is full."));
-                    return;
-                }
-
-                var dbItem = new InventoryItem
-                {
-                    StorageId = storageId,
-                    PlayerId = playerId,
-                    Name = GetName(item),
-                    Tag = GetTag(item),
-                    Resref = GetResRef(item),
-                    Quantity = GetItemStackSize(item),
-                    Data = ObjectPlugin.Serialize(item),
-                    IconResref = Item.GetIconResref(item)
-                };
-
-                DB.Set(dbItem);
-
-                DestroyObject(item);
+                var dbItem = Bank.DepositItem(Player, item);
 
                 _itemIds.Add(dbItem.Id);
                 ItemNames.Add($"{dbItem.Quantity}x {dbItem.Name}");

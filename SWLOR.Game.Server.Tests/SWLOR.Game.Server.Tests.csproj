@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.10.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageReference Include="NUnit" Version="4.6.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\tools\PlayerMessagePolicy.cs" Link="Tools\PlayerMessagePolicy.cs" />
+    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
+    <!-- The coverage ratchets (AbilityBehaviorCoverageTests, PerkCoverageTests) assert that
+         every registered ability/perk has an engine-test case, so they reference the
+         engine-test assembly's case sources. -->
+    <ProjectReference Include="..\SWLOR.Game.Server.EngineTests\SWLOR.Game.Server.EngineTests.csproj" />
+  </ItemGroup>
+
+</Project>

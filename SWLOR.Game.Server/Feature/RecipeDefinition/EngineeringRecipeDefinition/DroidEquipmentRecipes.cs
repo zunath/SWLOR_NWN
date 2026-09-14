@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -12,9 +11,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
 
             return _builder.Build();
@@ -28,7 +31,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhcl001")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3);
@@ -39,7 +41,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbe001")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3);
@@ -50,7 +51,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhrg001")
                 .Level(1)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 1)
                 .Component("ref_veldite", 1);
@@ -61,7 +61,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhnk001")
                 .Level(2)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
                 .Component("ref_veldite", 1);
@@ -72,7 +71,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhar001")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 4)
                 .Component("ref_veldite", 2);
@@ -83,7 +81,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhhl001")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2);
@@ -94,7 +91,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbr001")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
                 .Component("ref_veldite", 1);
@@ -105,7 +101,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhlg001")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2);
@@ -116,7 +111,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlcl001")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3);
@@ -127,7 +121,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbe001")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3);
@@ -138,7 +131,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlrg001")
                 .Level(1)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 1)
                 .Component("ref_veldite", 1);
@@ -149,7 +141,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlnk001")
                 .Level(2)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
                 .Component("ref_veldite", 1);
@@ -160,7 +151,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlar001")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 4)
                 .Component("ref_veldite", 2);
@@ -171,7 +161,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlhl001")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2);
@@ -182,7 +171,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbr001")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 2)
                 .Component("ref_veldite", 1);
@@ -193,7 +181,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dllg001")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2);
@@ -204,7 +191,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dscl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -216,7 +202,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("decl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -228,7 +213,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dacl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -240,7 +224,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfcl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -252,7 +235,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbe001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -264,7 +246,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debe001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -276,7 +257,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabe001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -288,7 +268,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbe001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -300,7 +279,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsrg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -312,7 +290,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("derg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -324,7 +301,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("darg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -336,7 +312,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfrg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -348,7 +323,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsnk001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -360,7 +334,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("denk001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -372,7 +345,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dank001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -384,7 +356,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfnk001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -396,7 +367,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsar001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -408,7 +378,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dear001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -420,7 +389,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("daar001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -432,7 +400,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfar001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -444,7 +411,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dshl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -456,7 +422,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dehl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -468,7 +433,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dahl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -480,7 +444,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfhl001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -492,7 +455,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbr001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -504,7 +466,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debr001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -516,7 +477,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabr001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -528,7 +488,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbr001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -540,7 +499,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dslg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -552,7 +510,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("delg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -564,7 +521,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dalg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -576,7 +532,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dflg001")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
@@ -591,7 +546,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhcl002")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3);
@@ -602,7 +556,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbe002")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3);
@@ -613,7 +566,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhrg002")
                 .Level(11)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 1)
                 .Component("ref_scordspar", 1);
@@ -624,7 +576,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhnk002")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
                 .Component("ref_scordspar", 1);
@@ -635,7 +586,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhar002")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 4)
                 .Component("ref_scordspar", 2);
@@ -646,7 +596,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhhl002")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2);
@@ -657,7 +606,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbr002")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
                 .Component("ref_scordspar", 1);
@@ -668,7 +616,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhlg002")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2);
@@ -679,7 +626,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlcl002")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3);
@@ -690,7 +636,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbe002")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3);
@@ -701,7 +646,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlrg002")
                 .Level(11)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 1)
                 .Component("ref_scordspar", 1);
@@ -712,7 +656,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlnk002")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
                 .Component("ref_scordspar", 1);
@@ -723,7 +666,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlar002")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 4)
                 .Component("ref_scordspar", 2);
@@ -734,7 +676,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlhl002")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2);
@@ -745,7 +686,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbr002")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 2)
                 .Component("ref_scordspar", 1);
@@ -756,7 +696,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dllg002")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2);
@@ -767,7 +706,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dscl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -779,7 +717,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("decl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -791,7 +728,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dacl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -803,7 +739,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfcl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -812,10 +747,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // DSBE-002
             _builder.Create(RecipeType.DSBE002, SkillType.Engineering)
                 .Category(RecipeCategoryType.Belt)
-                .Resref("dsbe001")
+                .Resref("dsbe002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -827,7 +761,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debe002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -839,7 +772,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabe002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -851,7 +783,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbe002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -863,7 +794,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsrg002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -875,7 +805,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("derg002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -887,7 +816,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("darg002")
                 .Level(20)
                 .Quantity(2)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -899,7 +827,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfrg002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -911,7 +838,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsnk002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -923,7 +849,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("denk002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -935,7 +860,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dank002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -947,7 +871,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfnk002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -959,7 +882,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsar002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -971,7 +893,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dear002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -983,7 +904,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("daar002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -995,7 +915,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfar002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1007,7 +926,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dshl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1019,7 +937,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dehl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1031,7 +948,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dahl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1043,7 +959,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfhl002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1055,7 +970,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbr002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1067,7 +981,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debr002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1079,7 +992,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabr002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1091,7 +1003,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbr002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1103,7 +1014,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dslg002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1115,7 +1025,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("delg002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1127,7 +1036,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dalg002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1139,7 +1047,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dflg002")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
@@ -1154,7 +1061,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhcl003")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3);
@@ -1165,7 +1071,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbe003")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3);
@@ -1176,7 +1081,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhrg003")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 1)
                 .Component("ref_plagionite", 1);
@@ -1187,7 +1091,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhnk003")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
                 .Component("ref_plagionite", 1);
@@ -1198,7 +1101,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhar003")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 4)
                 .Component("ref_plagionite", 2);
@@ -1209,7 +1111,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhhl003")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2);
@@ -1220,7 +1121,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbr003")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
                 .Component("ref_plagionite", 1);
@@ -1231,7 +1131,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhlg003")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2);
@@ -1242,7 +1141,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlcl003")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3);
@@ -1253,7 +1151,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbe003")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3);
@@ -1264,7 +1161,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlrg003")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 1)
                 .Component("ref_plagionite", 1);
@@ -1275,7 +1171,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlnk003")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
                 .Component("ref_plagionite", 1);
@@ -1286,7 +1181,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlar003")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 4)
                 .Component("ref_plagionite", 2);
@@ -1297,7 +1191,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlhl003")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2);
@@ -1308,7 +1201,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbr003")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 2)
                 .Component("ref_plagionite", 1);
@@ -1319,7 +1211,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dllg003")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2);
@@ -1330,7 +1221,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dscl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1342,7 +1232,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("decl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1354,7 +1243,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dacl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1366,7 +1254,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfcl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1378,7 +1265,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbe003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1390,7 +1276,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debe003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1402,7 +1287,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabe003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1414,7 +1298,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbe003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1426,7 +1309,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsrg003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1438,7 +1320,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("derg003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1450,7 +1331,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("darg003")
                 .Level(30)
                 .Quantity(2)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1462,7 +1342,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfrg003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1474,7 +1353,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsnk003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1486,7 +1364,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("denk003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1498,7 +1375,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dank003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1510,7 +1386,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfnk003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1522,7 +1397,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsar003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1534,7 +1408,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dear003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1546,7 +1419,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("daar003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1558,7 +1430,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfar003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1570,7 +1441,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dshl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1582,7 +1452,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dehl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1594,7 +1463,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dahl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1606,7 +1474,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfhl003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1618,7 +1485,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbr003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1630,7 +1496,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debr003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1642,7 +1507,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabr003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1654,7 +1518,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbr003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1666,7 +1529,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dslg003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1678,7 +1540,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("delg003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1690,7 +1551,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dalg003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1702,7 +1562,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dflg003")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
@@ -1717,7 +1576,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhcl004")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3);
@@ -1728,7 +1586,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbe004")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3);
@@ -1739,7 +1596,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhrg004")
                 .Level(31)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 1)
                 .Component("ref_keromber", 1);
@@ -1750,7 +1606,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhnk004")
                 .Level(32)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
                 .Component("ref_keromber", 1);
@@ -1761,7 +1616,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhar004")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 4)
                 .Component("ref_keromber", 2);
@@ -1772,7 +1626,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhhl004")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2);
@@ -1783,7 +1636,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbr004")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
                 .Component("ref_keromber", 1);
@@ -1794,7 +1646,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhlg004")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2);
@@ -1805,7 +1656,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlcl004")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3);
@@ -1816,7 +1666,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbe004")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3);
@@ -1827,7 +1676,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlrg004")
                 .Level(31)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 1)
                 .Component("ref_keromber", 1);
@@ -1838,7 +1686,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlnk004")
                 .Level(32)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
                 .Component("ref_keromber", 1);
@@ -1849,7 +1696,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlar004")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 4)
                 .Component("ref_keromber", 2);
@@ -1860,7 +1706,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlhl004")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2);
@@ -1871,7 +1716,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbr004")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 2)
                 .Component("ref_keromber", 1);
@@ -1882,7 +1726,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dllg004")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2);
@@ -1893,7 +1736,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dscl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1905,7 +1747,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("decl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1917,7 +1758,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dacl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1929,7 +1769,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfcl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1941,7 +1780,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbe004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1953,7 +1791,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debe004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1965,7 +1802,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabe004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1977,7 +1813,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbe004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -1989,7 +1824,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsrg004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2001,7 +1835,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("derg004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2013,7 +1846,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("darg004")
                 .Level(40)
                 .Quantity(2)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2025,7 +1857,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfrg004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2037,7 +1868,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsnk004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2049,7 +1879,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("denk004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2061,7 +1890,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dank004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2073,7 +1901,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfnk004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2085,7 +1912,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsar004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2097,7 +1923,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dear004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2109,7 +1934,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("daar004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2121,7 +1945,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfar004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2133,7 +1956,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dshl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2145,7 +1967,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dehl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2157,7 +1978,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dahl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2169,7 +1989,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfhl004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2181,7 +2000,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbr004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2193,7 +2011,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debr004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2205,7 +2022,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabr004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2217,7 +2033,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbr004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2229,7 +2044,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dslg004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2241,7 +2055,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("delg004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2253,7 +2066,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dalg004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2265,7 +2077,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dflg004")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
@@ -2280,7 +2091,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhcl005")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
                 .Component("ref_jasioclase", 3);
@@ -2291,7 +2101,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbe005")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
                 .Component("ref_jasioclase", 3);
@@ -2302,7 +2111,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhrg005")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 1)
                 .Component("ref_jasioclase", 1);
@@ -2313,7 +2121,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhnk005")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
                 .Component("ref_jasioclase", 1);
@@ -2324,7 +2131,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhar005")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 4)
                 .Component("ref_jasioclase", 2);
@@ -2335,7 +2141,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhhl005")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
                 .Component("ref_jasioclase", 2);
@@ -2346,7 +2151,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhbr005")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
                 .Component("ref_jasioclase", 1);
@@ -2357,7 +2161,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dhlg005")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
                 .Component("ref_jasioclase", 2);
@@ -2368,7 +2171,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlcl005")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
                 .Component("ref_jasioclase", 3);
@@ -2379,7 +2181,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbe005")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 5)
                 .Component("ref_jasioclase", 3);
@@ -2390,7 +2191,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlrg005")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 1)
                 .Component("ref_jasioclase", 1);
@@ -2401,7 +2201,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlnk005")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
                 .Component("ref_jasioclase", 1);
@@ -2412,7 +2211,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlar005")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 4)
                 .Component("ref_jasioclase", 2);
@@ -2423,7 +2221,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlhl005")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
                 .Component("ref_jasioclase", 2);
@@ -2434,7 +2231,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dlbr005")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 2)
                 .Component("ref_jasioclase", 1);
@@ -2445,322 +2241,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dllg005")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("elec_high", 3)
                 .Component("ref_jasioclase", 2);
 
-            // DHCL-005 C
-            _builder.Create(RecipeType.DHCL005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Cloak)
-                .Resref("dhcl005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DHBE-005 C
-            _builder.Create(RecipeType.DHBE005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Belt)
-                .Resref("dhbe005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DHRG-005 C
-            _builder.Create(RecipeType.DHRG005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Ring)
-                .Resref("dhrg005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DHNK-005 C
-            _builder.Create(RecipeType.DHNK005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Necklace)
-                .Resref("dhnk005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DHAR-005 C
-            _builder.Create(RecipeType.DHAR005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Breastplate)
-                .Resref("dhar005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DHHL-005 C
-            _builder.Create(RecipeType.DHHL005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Helmet)
-                .Resref("dhhl005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DHBR-005 C
-            _builder.Create(RecipeType.DHBR005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
-                .Resref("dhbr005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DHLG-005 C
-            _builder.Create(RecipeType.DHLG005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Legging)
-                .Resref("dhlg005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLCL-005 C
-            _builder.Create(RecipeType.DLCL005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Cloak)
-                .Resref("dlcl005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLBE-005 C
-            _builder.Create(RecipeType.DLBE005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Belt)
-                .Resref("dlbe005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLRG-005 C
-            _builder.Create(RecipeType.DLRG005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Ring)
-                .Resref("dlrg005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLNK-005 C
-            _builder.Create(RecipeType.DLNK005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Necklace)
-                .Resref("dlnk005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLAR-005 C
-            _builder.Create(RecipeType.DLAR005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Breastplate)
-                .Resref("dlar005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLHL-005 C
-            _builder.Create(RecipeType.DLHL005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Helmet)
-                .Resref("dlhl005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLBR-005 C
-            _builder.Create(RecipeType.DLBR005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
-                .Resref("dlbr005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DLLG-005 C
-            _builder.Create(RecipeType.DLLG005C, SkillType.Engineering)
-                .Category(RecipeCategoryType.Legging)
-                .Resref("dllg005c")
-                .Level(52)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("ref_keromber", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_veldite", 5)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2);
-
-            // DSCL-005
+// DSCL-005
             _builder.Create(RecipeType.DSCL005, SkillType.Engineering)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dscl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2772,7 +2262,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("decl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2784,7 +2273,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dacl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2796,7 +2284,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfcl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2808,7 +2295,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbe005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2820,7 +2306,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debe005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2832,7 +2317,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabe005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2844,7 +2328,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbe005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2856,7 +2339,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsrg005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2868,7 +2350,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("derg005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2880,7 +2361,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("darg005")
                 .Level(50)
                 .Quantity(2)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2892,7 +2372,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfrg005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2904,7 +2383,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsnk005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2916,7 +2394,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("denk005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2928,7 +2405,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dank005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2940,7 +2416,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfnk005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2952,7 +2427,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsar005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2964,7 +2438,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dear005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2976,7 +2449,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("daar005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -2988,7 +2460,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfar005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3000,7 +2471,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dshl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3012,7 +2482,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dehl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3024,7 +2493,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dahl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3036,7 +2504,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfhl005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3048,7 +2515,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dsbr005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3060,7 +2526,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("debr005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3072,7 +2537,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dabr005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3084,7 +2548,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dfbr005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3096,7 +2559,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dslg005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3108,7 +2570,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("delg005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3120,7 +2581,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dalg005")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
@@ -3132,11 +2592,663 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("dflg005")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
         }
-    }
+
+        private void Tier1A()
+        {
+            // DHCL-001 A
+            _builder.Create(RecipeType.DHCL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl001a")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DHBE-001 A
+            _builder.Create(RecipeType.DHBE001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe001a")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DHRG-001 A
+            _builder.Create(RecipeType.DHRG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg001a")
+                .Level(6)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 1)
+                .Component("ref_veldite", 1);
+
+            // DHNK-001 A
+            _builder.Create(RecipeType.DHNK001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk001a")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DHAR-001 A
+            _builder.Create(RecipeType.DHAR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar001a")
+                .Level(12)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 4)
+                .Component("ref_veldite", 2);
+
+            // DHHL-001 A
+            _builder.Create(RecipeType.DHHL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl001a")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+
+            // DHBR-001 A
+            _builder.Create(RecipeType.DHBR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr001a")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DHLG-001 A
+            _builder.Create(RecipeType.DHLG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg001a")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+
+            // DLCL-001 A
+            _builder.Create(RecipeType.DLCL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl001a")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DLBE-001 A
+            _builder.Create(RecipeType.DLBE001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe001a")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DLRG-001 A
+            _builder.Create(RecipeType.DLRG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg001a")
+                .Level(6)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 1)
+                .Component("ref_veldite", 1);
+
+            // DLNK-001 A
+            _builder.Create(RecipeType.DLNK001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk001a")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DLAR-001 A
+            _builder.Create(RecipeType.DLAR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar001a")
+                .Level(12)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 4)
+                .Component("ref_veldite", 2);
+
+            // DLHL-001 A
+            _builder.Create(RecipeType.DLHL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl001a")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+
+            // DLBR-001 A
+            _builder.Create(RecipeType.DLBR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr001a")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DLLG-001 A
+            _builder.Create(RecipeType.DLLG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg001a")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+        }
+
+        private void Tier2A()
+        {
+            // DHCL-002 A
+            _builder.Create(RecipeType.DHCL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl002a")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DHBE-002 A
+            _builder.Create(RecipeType.DHBE002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe002a")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DHRG-002 A
+            _builder.Create(RecipeType.DHRG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg002a")
+                .Level(16)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 1)
+                .Component("ref_scordspar", 1);
+
+            // DHNK-002 A
+            _builder.Create(RecipeType.DHNK002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk002a")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DHAR-002 A
+            _builder.Create(RecipeType.DHAR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar002a")
+                .Level(22)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 4)
+                .Component("ref_scordspar", 2);
+
+            // DHHL-002 A
+            _builder.Create(RecipeType.DHHL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl002a")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+
+            // DHBR-002 A
+            _builder.Create(RecipeType.DHBR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr002a")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DHLG-002 A
+            _builder.Create(RecipeType.DHLG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg002a")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+
+            // DLCL-002 A
+            _builder.Create(RecipeType.DLCL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl002a")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DLBE-002 A
+            _builder.Create(RecipeType.DLBE002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe002a")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DLRG-002 A
+            _builder.Create(RecipeType.DLRG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg002a")
+                .Level(16)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 1)
+                .Component("ref_scordspar", 1);
+
+            // DLNK-002 A
+            _builder.Create(RecipeType.DLNK002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk002a")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DLAR-002 A
+            _builder.Create(RecipeType.DLAR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar002a")
+                .Level(22)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 4)
+                .Component("ref_scordspar", 2);
+
+            // DLHL-002 A
+            _builder.Create(RecipeType.DLHL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl002a")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+
+            // DLBR-002 A
+            _builder.Create(RecipeType.DLBR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr002a")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DLLG-002 A
+            _builder.Create(RecipeType.DLLG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg002a")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+        }
+
+        private void Tier3A()
+        {
+            // DHCL-003 A
+            _builder.Create(RecipeType.DHCL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl003a")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DHBE-003 A
+            _builder.Create(RecipeType.DHBE003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe003a")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DHRG-003 A
+            _builder.Create(RecipeType.DHRG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg003a")
+                .Level(26)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 1)
+                .Component("ref_plagionite", 1);
+
+            // DHNK-003 A
+            _builder.Create(RecipeType.DHNK003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk003a")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DHAR-003 A
+            _builder.Create(RecipeType.DHAR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar003a")
+                .Level(32)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 4)
+                .Component("ref_plagionite", 2);
+
+            // DHHL-003 A
+            _builder.Create(RecipeType.DHHL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl003a")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+
+            // DHBR-003 A
+            _builder.Create(RecipeType.DHBR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr003a")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DHLG-003 A
+            _builder.Create(RecipeType.DHLG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg003a")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+
+            // DLCL-003 A
+            _builder.Create(RecipeType.DLCL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl003a")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DLBE-003 A
+            _builder.Create(RecipeType.DLBE003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe003a")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DLRG-003 A
+            _builder.Create(RecipeType.DLRG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg003a")
+                .Level(26)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 1)
+                .Component("ref_plagionite", 1);
+
+            // DLNK-003 A
+            _builder.Create(RecipeType.DLNK003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk003a")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DLAR-003 A
+            _builder.Create(RecipeType.DLAR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar003a")
+                .Level(32)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 4)
+                .Component("ref_plagionite", 2);
+
+            // DLHL-003 A
+            _builder.Create(RecipeType.DLHL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl003a")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+
+            // DLBR-003 A
+            _builder.Create(RecipeType.DLBR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr003a")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DLLG-003 A
+            _builder.Create(RecipeType.DLLG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg003a")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+        }
+
+        private void Tier4A()
+        {
+            // DHCL-004 A
+            _builder.Create(RecipeType.DHCL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl004a")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DHBE-004 A
+            _builder.Create(RecipeType.DHBE004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe004a")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DHRG-004 A
+            _builder.Create(RecipeType.DHRG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg004a")
+                .Level(36)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 1)
+                .Component("ref_keromber", 1);
+
+            // DHNK-004 A
+            _builder.Create(RecipeType.DHNK004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk004a")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DHAR-004 A
+            _builder.Create(RecipeType.DHAR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar004a")
+                .Level(42)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 4)
+                .Component("ref_keromber", 2);
+
+            // DHHL-004 A
+            _builder.Create(RecipeType.DHHL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl004a")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+
+            // DHBR-004 A
+            _builder.Create(RecipeType.DHBR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr004a")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DHLG-004 A
+            _builder.Create(RecipeType.DHLG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg004a")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+
+            // DLCL-004 A
+            _builder.Create(RecipeType.DLCL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl004a")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DLBE-004 A
+            _builder.Create(RecipeType.DLBE004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe004a")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DLRG-004 A
+            _builder.Create(RecipeType.DLRG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg004a")
+                .Level(36)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 1)
+                .Component("ref_keromber", 1);
+
+            // DLNK-004 A
+            _builder.Create(RecipeType.DLNK004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk004a")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DLAR-004 A
+            _builder.Create(RecipeType.DLAR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar004a")
+                .Level(42)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 4)
+                .Component("ref_keromber", 2);
+
+            // DLHL-004 A
+            _builder.Create(RecipeType.DLHL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl004a")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+
+            // DLBR-004 A
+            _builder.Create(RecipeType.DLBR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr004a")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DLLG-004 A
+            _builder.Create(RecipeType.DLLG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg004a")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+        }
+
+}
 }

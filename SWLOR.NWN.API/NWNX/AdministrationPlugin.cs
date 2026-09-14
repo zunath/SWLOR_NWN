@@ -1,4 +1,4 @@
-﻿using NWN.Core.NWNX;
+using NWN.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.NWN.API.NWNX

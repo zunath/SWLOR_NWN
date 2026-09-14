@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -9,11 +8,9 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using Ability = SWLOR.Game.Server.Service.Ability;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
-using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -117,11 +114,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public int CharacterType
         {
             get => Get<int>();
+            set
+            {
+                var normalizedValue = NormalizeCharacterType(value);
+                Set(normalizedValue);
+                SelectedCharacterTypeName = GetCharacterTypeName(normalizedValue);
+            }
+        }
+
+        public bool ShowCharacterTypeOptions
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ShowReadOnlyCharacterType
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string SelectedCharacterTypeName
+        {
+            get => Get<string>();
             set => Set(value);
         }
 
         private const int MaxAbilityIncreases = 15;
-        
+
         private int _remainingAbilityPoints;
         private int _remainingSkillPoints;
         private int _might;
@@ -194,6 +214,55 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private bool CanSelectStandard
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        private bool CanSelectForceSensitive
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        private static ClassType GetCharacterClassType(int value)
+        {
+            return value == 1 ? ClassType.ForceSensitive : ClassType.Standard;
+        }
+
+        private static string GetCharacterTypeName(int value)
+        {
+            return value == 1 ? "Force Sensitive" : "Standard";
+        }
+
+        private int NormalizeCharacterType(int value)
+        {
+            if (value == 1 && CanSelectForceSensitive)
+                return 1;
+
+            if (CanSelectStandard)
+                return 0;
+
+            return CanSelectForceSensitive ? 1 : 0;
+        }
+
+        private void SetCharacterType(int value)
+        {
+            CharacterType = value;
+        }
+
+        private void LoadCharacterTypeControls()
+        {
+            var race = GetRacialType(Player);
+            CanSelectStandard = Race.IsClassAvailableToRace(ClassType.Standard, race);
+            CanSelectForceSensitive = Race.IsClassAvailableToRace(ClassType.ForceSensitive, race);
+
+            ShowCharacterTypeOptions = CanSelectStandard && CanSelectForceSensitive;
+            ShowReadOnlyCharacterType = !ShowCharacterTypeOptions;
+            SetCharacterType(GetClassByPosition(1, Player) == ClassType.ForceSensitive ? 1 : 0);
+        }
+
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
@@ -241,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            CharacterType = GetClassByPosition(1, Player) == ClassType.Standard ? 0 : 1;
+            LoadCharacterTypeControls();
             LoadSkills();
             ResetControls();
             WatchOnClient(model => model.CharacterType);
@@ -292,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var slot = (InventorySlot)index;
                     var item = GetItemInSlot(slot, Player);
                     if (GetIsObjectValid(item)
-                        && slot != InventorySlot.CreatureArmor 
+                        && slot != InventorySlot.CreatureArmor
                         && slot != InventorySlot.CreatureBite
                         && slot != InventorySlot.CreatureLeft
                         && slot != InventorySlot.CreatureRight)
@@ -310,10 +379,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
                 var pcPerks = dbPlayer.Perks.ToDictionary(x => x.Key, y => y.Value);
+                var allPerks = Perk.GetAllPerks();
 
                 foreach (var (type, level) in pcPerks)
                 {
-                    var perkDetail = Perk.GetPerkDetails(type);
+                    if (!allPerks.TryGetValue(type, out var perkDetail))
+                    {
+                        dbPlayer.Perks.Remove(type);
+                        Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Removed undefined perk during full rebuild Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
+                        continue;
+                    }
+
                     var refundAmount = perkDetail.PerkLevels
                         .Where(x => x.Key <= level)
                         .Sum(x => x.Value.Price);
@@ -321,13 +397,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(type);
                     Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
-                   
+
                     // Remove all feats granted by all levels of this perk.
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
                     foreach (var feat in feats)
                     {
                         CreaturePlugin.RemoveFeat(Player, feat);
                     }
+
+                    Perk.RemoveStatusEffectsOnPerkRefund(Player, type);
 
                     // Run all of the triggers related to refunding this perk.
                     foreach (var action in perkDetail.RefundedTriggers)
@@ -343,7 +421,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
-                
+
                 foreach (var (type, _) in dbPlayer.Skills)
                 {
                     var detail = Skill.GetSkillDetails(type);
@@ -358,6 +436,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(dbPlayer);
             }
 
+            void ResetSkillPointPool()
+            {
+                var playerId = GetObjectUUID(Player);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);
+
+                DB.Set(dbPlayer);
+            }
+
+            void ResetFeats()
+            {
+                PlayerInitialization.ResetFeatsToBaseline(Player);
+            }
+
             void ResetStats()
             {
                 var playerId = GetObjectUUID(Player);
@@ -370,10 +463,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
                 CreaturePlugin.SetBaseAttackBonus(Player, 1);
-
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Fortitude, 0);
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Will, 0);
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Reflex, 0);
 
                 dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
                 dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
@@ -391,20 +480,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
                 dbPlayer.RacialStat = AbilityType.Invalid;
+                dbPlayer.CombatReadiness = 0;
                 dbPlayer.RebuildComplete = false;
                 DB.Set(dbPlayer);
             }
 
             ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 and your racial bonus stat will be refunded. You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
-                if (Ability.IsAnyAbilityToggled(Player))
-                {
-                    FloatingTextStringOnCreature(ColorToken.Red("Please toggle all abilities OFF and try again."), Player, false);
-                    return;
-                }
+                // Return the player to a clean state before refunding: drop every stance/status effect and
+                // deactivate all toggled auras so nothing granted by a soon-to-be-refunded perk lingers.
+                StatusEffect.RemoveAllStatusEffects(Player);
+                Ability.ClearAllPlayerAuras(Player);
 
                 UnequipAllItems();
                 RefundAllPerks();
+                ResetFeats();
+                ResetSkillPointPool();
                 RefundAllSkills();
                 ResetStats();
 
@@ -623,6 +714,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Are you sure you'd like to save these changes?", () =>
             {
                 var race = GetRacialType(Player);
+                var selectedCharacterType = NormalizeCharacterType(CharacterType);
+                CharacterType = selectedCharacterType;
+                var selectedClassType = GetCharacterClassType(selectedCharacterType);
 
                 if (_remainingAbilityPoints > 0 || _remainingSkillPoints > 0)
                 {
@@ -633,21 +727,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var forceIndex = _skills.IndexOf(SkillType.Force);
                 var devicesIndex = _skills.IndexOf(SkillType.Devices);
 
-                if (_skillDistributionPoints[forceIndex] > 0 && CharacterType == 0)
+                if (_skillDistributionPoints[forceIndex] > 0 && selectedClassType == ClassType.Standard)
                 {
                     FloatingTextStringOnCreature("Standard characters cannot gain ranks in the Force skill.", Player, false);
                     return;
                 }
 
-                if (_skillDistributionPoints[devicesIndex] > 0 && CharacterType == 1)
+                if (_skillDistributionPoints[devicesIndex] > 0 && selectedClassType == ClassType.ForceSensitive)
                 {
                     FloatingTextStringOnCreature("Force characters cannot gain ranks in the Devices skill.", Player, false);
                     return;
                 }
 
-                if (race == RacialType.Droid && CharacterType == 1)
+                if (!Race.IsClassAvailableToRace(selectedClassType, race))
                 {
-                    FloatingTextStringOnCreature("Droids may not be Force Sensitive.", Player, false);
+                    FloatingTextStringOnCreature("This race cannot select that character type.", Player, false);
                     return;
                 }
 
@@ -668,7 +762,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
                 dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
 
-                if (CharacterType == 0)
+                if (selectedClassType == ClassType.Standard)
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
                     dbPlayer.CharacterType = Enumeration.CharacterType.Standard;

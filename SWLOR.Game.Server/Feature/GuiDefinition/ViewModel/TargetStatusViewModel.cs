@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(target) || targetStatus == null)
                 return;
 
-            TargetName = GetName(target);
+            TargetName = PlayerName.GetDisplayName(Player, target);
 
             Bar1Color = _shieldColor;
             Bar2Color = _hullColor;

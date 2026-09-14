@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 0
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 1
+            }
+          }
+        ]
       }
     }
   },
@@ -49511,7 +49531,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -49738,7 +49758,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -49965,7 +49985,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -50192,7 +50212,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -50419,7 +50439,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -50646,7 +50666,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {

@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Fire agate forms in thin brown layers that refract the incoming light, giving the gem its \"fire.\" The refraction often forms patterns reminiscent of a dragon's scales, which makes it prized by Trandoshans and other lizardfolk. A well-cut stone has its outer layers polished and ground away until only the fire is visible."
+    }
   },
   "Description": {
     "id": 13293,

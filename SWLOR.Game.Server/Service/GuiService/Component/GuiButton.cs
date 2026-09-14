@@ -1,4 +1,3 @@
-﻿using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -43,9 +42,9 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
-            
+
             Events["click"] = GuiHelper<T>.GetMethodInfo(expression);
-            
+
             return this;
         }
 

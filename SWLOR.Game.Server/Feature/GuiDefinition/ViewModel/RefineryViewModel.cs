@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
@@ -130,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var refineryManagement = Perk.GetPerkLevel(Player, PerkType.RefineryManagement);
             var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
             _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
-            
+
             if(_powerCoresRequired == 1)
                 RequiredPowerCores = $"{_powerCoresRequired}x Power Core Required";
             else
@@ -272,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Apply immobilization
             var effect = EffectCutsceneImmobilize();
-            effect = TagEffect(effect, "REFINING_EFFECT");
+            effect = TagEffect(effect, PlayerActivityEffectTag.RefiningImmobilize);
             ApplyEffectToObject(DurationType.Temporary, effect, Player, RefiningDelaySeconds);
 
             // Play an animation

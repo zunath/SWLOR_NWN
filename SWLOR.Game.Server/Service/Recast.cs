@@ -1,13 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -15,6 +11,8 @@ namespace SWLOR.Game.Server.Service
     {
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
+        private static readonly Dictionary<RecastGroup, string> _recastNames = new Dictionary<RecastGroup, string>();
+        private static readonly HashSet<RecastGroup> _visibleRecastGroups = new HashSet<RecastGroup>();
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheRecastGroups()
@@ -27,10 +25,20 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheRecastGroupNames()
         {
+            _recastDescriptions.Clear();
+            _recastNames.Clear();
+            _visibleRecastGroups.Clear();
+
             foreach (var recast in Enum.GetValues(typeof(RecastGroup)).Cast<RecastGroup>())
             {
                 var attr = recast.GetAttribute<RecastGroup, RecastGroupAttribute>();
                 _recastDescriptions[recast] = attr.ShortName;
+                _recastNames[recast] = attr.Name;
+
+                if (attr.IsVisible)
+                {
+                    _visibleRecastGroups.Add(recast);
+                }
             }
         }
 
@@ -47,6 +55,28 @@ namespace SWLOR.Game.Server.Service
             return _recastDescriptions[recastGroup];
         }
 
+        /// <summary>
+        /// Retrieves the full human-readable name of a recast group.
+        /// </summary>
+        /// <param name="recastGroup">The recast group to retrieve.</param>
+        /// <returns>The full name of a recast group.</returns>
+        public static string GetRecastGroupDisplayName(RecastGroup recastGroup)
+        {
+            if (!_recastNames.ContainsKey(recastGroup))
+                throw new KeyNotFoundException($"Recast group {recastGroup} has not been registered. Did you forget the Description attribute?");
+
+            return _recastNames[recastGroup];
+        }
+
+        /// <summary>
+        /// Returns true if a recast group should be shown on player-facing UI.
+        /// </summary>
+        /// <param name="recastGroup">The recast group to check.</param>
+        /// <returns>true if the recast group is visible, false otherwise.</returns>
+        public static bool IsRecastGroupVisible(RecastGroup recastGroup)
+        {
+            return _visibleRecastGroups.Contains(recastGroup);
+        }
 
         /// <summary>
         /// Returns true if a recast delay has not expired yet.
@@ -65,6 +95,12 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer.RecastTimes == null)
+                {
+                    dbPlayer.RecastTimes = new Dictionary<RecastGroup, DateTime>();
+                    DB.Set(dbPlayer);
+                    return (false, string.Empty);
+                }
 
                 if (!dbPlayer.RecastTimes.ContainsKey(recastGroup)) return (false, string.Empty);
 
@@ -74,14 +110,12 @@ namespace SWLOR.Game.Server.Service
             // NPCs and DM-possessed NPCs
             else
             {
-                var unlockDate = GetLocalString(creature, $"ABILITY_RECAST_ID_{(int)recastGroup}");
-                if (string.IsNullOrWhiteSpace(unlockDate))
+                if (!TryGetNpcRecastTime(creature, recastGroup, out var dateTime))
                 {
                     return (false, string.Empty);
                 }
                 else
                 {
-                    var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                     var timeToWait = Time.GetTimeToWaitLongIntervals(now, dateTime, false);
                     return (now < dateTime, timeToWait);
                 }
@@ -95,16 +129,17 @@ namespace SWLOR.Game.Server.Service
         /// <param name="activator">The activator of the ability.</param>
         /// <param name="group">The recast group to put this delay under.</param>
         /// <param name="delaySeconds">The number of seconds to delay.</param>
-        /// <param name="ignoreRecastReduction">If true, recast reduction bonuses are ignored.</param>
-        public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction)
+        public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds)
         {
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
+
+            var now = DateTime.UtcNow;
 
             // NPCs and DM-possessed NPCs
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
-                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
-                var recastDateString = recastDate.ToString("yyyy-MM-dd HH:mm:ss");
+                var recastDate = now.AddSeconds(delaySeconds);
+                var recastDateString = RecastTimestamp.Format(recastDate);
                 SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
             }
             // Players
@@ -112,31 +147,99 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = DB.Get<Player>(playerId);
+                dbPlayer.RecastTimes ??= new Dictionary<RecastGroup, DateTime>();
 
-                if (!ignoreRecastReduction)
-                {
-                    var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
-                    var recastReduction = dbPlayer.AbilityRecastReduction;
-                    if (foodEffect != null)
-                    {
-                        recastReduction += foodEffect.RecastReductionPercent;
-                    }
-
-                    var recastPercentage = recastReduction * 0.01f;
-                    if (recastPercentage > 0.5f)
-                        recastPercentage = 0.5f;
-
-                    delaySeconds -= delaySeconds * recastPercentage;
-                }
-
-
-
-                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
+                var recastDate = now.AddSeconds(delaySeconds);
                 dbPlayer.RecastTimes[group] = recastDate;
 
                 DB.Set(dbPlayer);
+                AbilityCooldownVisual.ApplyRecastDelay(activator, group, now, recastDate);
             }
 
+        }
+
+        public static void ReduceRecastDelay(uint activator, RecastGroup group, float reduceSeconds)
+        {
+            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || reduceSeconds <= 0f)
+                return;
+
+            if (group == RecastGroup.Capstone)
+                return;
+
+            var now = DateTime.UtcNow;
+
+            if (!GetIsPC(activator) || GetIsDMPossessed(activator))
+            {
+                var localName = $"ABILITY_RECAST_ID_{(int)group}";
+                if (!TryGetNpcRecastTime(activator, group, out var dateTime))
+                    return;
+
+                if (dateTime <= now)
+                {
+                    DeleteLocalString(activator, localName);
+                    return;
+                }
+
+                var reducedDate = dateTime.AddSeconds(-reduceSeconds);
+                if (reducedDate <= now)
+                {
+                    DeleteLocalString(activator, localName);
+                }
+                else
+                {
+                    SetLocalString(activator, localName, RecastTimestamp.Format(reducedDate));
+                }
+            }
+            else if (GetIsPC(activator) && !GetIsDM(activator))
+            {
+                var playerId = GetObjectUUID(activator);
+                var dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer.RecastTimes == null)
+                {
+                    dbPlayer.RecastTimes = new Dictionary<RecastGroup, DateTime>();
+                    DB.Set(dbPlayer);
+                    return;
+                }
+
+                if (!dbPlayer.RecastTimes.TryGetValue(group, out var unlockDate))
+                    return;
+
+                if (unlockDate <= now)
+                {
+                    dbPlayer.RecastTimes.Remove(group);
+                    DB.Set(dbPlayer);
+                    AbilityCooldownVisual.ClearRecastDelay(activator, group);
+                    return;
+                }
+
+                var reducedDate = unlockDate.AddSeconds(-reduceSeconds);
+                if (reducedDate <= now)
+                {
+                    dbPlayer.RecastTimes.Remove(group);
+                    AbilityCooldownVisual.ClearRecastDelay(activator, group);
+                }
+                else
+                {
+                    dbPlayer.RecastTimes[group] = reducedDate;
+                    AbilityCooldownVisual.RefreshRecastDelay(activator, group, reducedDate);
+                }
+
+                DB.Set(dbPlayer);
+            }
+        }
+
+        private static bool TryGetNpcRecastTime(uint creature, RecastGroup group, out DateTime endsAt)
+        {
+            var localName = $"ABILITY_RECAST_ID_{(int)group}";
+            var value = GetLocalString(creature, localName);
+            if (RecastTimestamp.TryParse(value, out endsAt))
+                return true;
+
+            // A malformed local must not interrupt the creature's ability processing.
+            if (!string.IsNullOrEmpty(value))
+                DeleteLocalString(creature, localName);
+
+            return false;
         }
     }
 }

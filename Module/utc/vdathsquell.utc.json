@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 64.0
+    "value": 62.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 24
+    "value": 31
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1000
+    "value": 897
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 24
+    "value": 38
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbitesquell"
+          "value": "squellbug_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "squellbug_skin"
+          "value": "squellbug_sk"
         }
       }
     ]
@@ -105,6 +105,27 @@
         "Feat": {
           "type": "word",
           "value": 289
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1839
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1851
         }
       }
     ]
@@ -129,11 +150,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1000
+    "value": 497
   },
   "Int": {
     "type": "byte",
-    "value": 45
+    "value": 31
   },
   "Interruptable": {
     "type": "byte",
@@ -163,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1280
+    "value": 897
   },
   "NaturalAC": {
     "type": "byte",
@@ -468,7 +489,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 34
+    "value": 21
   },
   "Subrace": {
     "type": "cexostring",
@@ -599,6 +620,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 23
+    "value": 21
   }
 }

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 32.0
+    "value": 55.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 23
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 60
+    "value": 744
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 23
+    "value": 25
   },
   "Disarmable": {
     "type": "byte",
@@ -187,14 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcrelite1"
+          "value": "sithtroopvet_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcselite1"
+          "value": "sithtroopvet_sk"
         }
       }
     ]
@@ -282,6 +282,27 @@
           "type": "word",
           "value": 1785
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1854
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1855
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1761
+        }
       }
     ]
   },
@@ -305,11 +326,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 60
+    "value": 584
   },
   "Int": {
     "type": "byte",
-    "value": 23
+    "value": 25
   },
   "Interruptable": {
     "type": "byte",
@@ -359,7 +380,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 744
   },
   "NaturalAC": {
     "type": "byte",
@@ -664,7 +685,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 17
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -700,7 +721,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 23
+    "value": 31
   },
   "xAppearance_Head": {
     "type": "word",

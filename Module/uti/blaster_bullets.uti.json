@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 20
+    "value": 27
   },
   "Charges": {
     "type": "byte",

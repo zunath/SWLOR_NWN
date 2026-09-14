@@ -1,166 +1,160 @@
+using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class ForceLeapAbilityDefinition : IAbilityListDefinition
+    public sealed class ForceLeapAbilityDefinition : IAbilityListDefinition
     {
+        private const float LeapAnimationSpeed = 2.0f;
+        private const float LeapAnimationDurationSeconds = 1.0f;
+        private const float ArrivalDistanceMeters = 1.5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
+
             ForceLeap1(builder);
             ForceLeap2(builder);
-            ForceLeap3(builder);
 
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
-        {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var rightHandType = GetBaseItemType(weapon);
-
-            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) &&
-                !Item.TwoHandedMeleeItemTypes.Contains(rightHandType) &&
-                !Item.SaberstaffBaseItemTypes.Contains(rightHandType))
-            {
-                return "A melee weapon must be equipped in your right hand to use this ability.";
-            }
-
-            if (GetDistanceBetween(activator, target) < 8)
-            {
-                return "You must get further away from the target to use this ability.";
-            }
-
-            return string.Empty;
-        }
-
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            var dmg = 0;
-
-
-            switch (level)
-            {
-                case 1:
-                    dmg = 8;
-                    break;
-                case 2:
-                    dmg = 15;
-                    break;
-                case 3:
-                    dmg = 23;
-                    break;
-                default:
-                    break;
-            }
-
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-
-            const float Delay = 1.2f;
-            ClearAllActions();
-            AssignCommand(activator, () =>
-            {
-                PlaySound("plr_force_flip");
-                ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
-                SetCommandable(false, activator);
-            });
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
-
-            var stat = AbilityType.Perception;
-            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
-            {
-                stat = AbilityType.Might;
-            }
-
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-            var attack = Stat.GetAttack(activator, stat, SkillType.Force);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
-                attack,
-                dmg,
-                attackerStat,
-                defense,
-                defenderStat,
-                0);
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var rightHandBaseItemType = GetBaseItemType(weapon);
-
-            DelayCommand(Delay, () =>
-            {
-                const float Duration = 2f;
-                SetCommandable(true, activator);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
-                AssignCommand(activator, () =>
-                {
-                    if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))
-                    {
-                        PlaySound("cb_ht_saberchan1");
-                    }
-                    else
-                    {
-                        PlaySound("cb_ht_critical");
-                    }
-                    ActionJumpToObject(target);
-                });
-            });
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
-        }
-
         private static void ForceLeap1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLeap1, PerkType.ForceLeap)
+            builder
+                .Create(FeatType.ForceLeap1, PerkType.ForceLeap)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceLeap)
                 .Name("Force Leap I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .HasActivationDelay(0.5f)
-                .RequirementFP(3)
-                .HasMaxRange(20f)
+                .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.ForceLeap, 18f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .PlaysSoundOnImpact("ksfx_frc_speed")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasImpactAction(ForceLeap1ImpactAction)
                 .IsCastedAbility()
+                .PreservesNativeAnimationChoreography()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .HasCustomValidation(Validation)
-                .HasImpactAction(ImpactAction);
+                .RequirementFP(3);
         }
+
         private static void ForceLeap2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLeap2, PerkType.ForceLeap)
+            builder
+                .Create(FeatType.ForceLeap2, PerkType.ForceLeap)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceLeap)
                 .Name("Force Leap II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .RequirementFP(4)
-                .HasActivationDelay(0.5f)
-                .HasMaxRange(20f)
+                .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.ForceLeap, 18f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .PlaysSoundOnImpact("ksfx_frc_speed")
+                .IsSingleTargetAbility()
+                .HasMaxRange(18f)
+                .RequiresTarget()
+                .HasImpactAction(ForceLeap2ImpactAction)
                 .IsCastedAbility()
+                .PreservesNativeAnimationChoreography()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .HasCustomValidation(Validation)
-                .HasImpactAction(ImpactAction);
+                .RequirementFP(4);
         }
-        private static void ForceLeap3(AbilityBuilder builder)
+
+        private static void ForceLeap1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder.Create(FeatType.ForceLeap3, PerkType.ForceLeap)
-                .Name("Force Leap III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .RequirementFP(5)
-                .HasActivationDelay(0.5f)
-                .HasMaxRange(20f)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .HasCustomValidation(Validation)
-                .HasImpactAction(ImpactAction);
+            LeapAndInterrupt(activator, target);
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Force,
+                10,
+                12,
+                null,
+                false,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Force,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+        }
+
+        private static void ForceLeap2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            LeapAndInterrupt(activator, target);
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Force,
+                18,
+                12,
+                null,
+                false,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Force,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+        }
+
+        private static void LeapAndInterrupt(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(target))
+                return;
+
+            AssignCommand(target, () => ClearAllActions());
+            AssignCommand(activator, () =>
+            {
+                ClearAllActions();
+                ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds);
+                ActionDoCommand(() =>
+                {
+                    if (!GetIsObjectValid(target))
+                        return;
+
+                    var destination = GetLeapDestination(activator, target);
+                    JumpToLocation(destination);
+                    SetFacingPoint(GetPosition(target));
+                });
+            });
+        }
+
+        private static Location GetLeapDestination(uint activator, uint target)
+        {
+            var activatorPosition = GetPosition(activator);
+            var targetPosition = GetPosition(target);
+            var offsetX = activatorPosition.X - targetPosition.X;
+            var offsetY = activatorPosition.Y - targetPosition.Y;
+            var distance = Math.Sqrt(offsetX * offsetX + offsetY * offsetY);
+
+            if (distance < 0.01)
+            {
+                var targetFacingRadians = GetFacing(target) * Math.PI / 180.0;
+                offsetX = -(float)Math.Cos(targetFacingRadians);
+                offsetY = -(float)Math.Sin(targetFacingRadians);
+                distance = 1.0;
+            }
+
+            var destinationPosition = Vector3(
+                targetPosition.X + offsetX / (float)distance * ArrivalDistanceMeters,
+                targetPosition.Y + offsetY / (float)distance * ArrivalDistanceMeters,
+                targetPosition.Z);
+
+            return Location(GetArea(target), destinationPosition, GetFacing(activator));
         }
     }
 }

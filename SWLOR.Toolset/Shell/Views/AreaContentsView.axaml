@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="700"
+             x:Class="SWLOR.Toolset.Shell.Views.AreaContentsView"
+             x:DataType="panels:AreaContentsViewModel">
+
+  <!-- What is placed in the area in front. The area list stays in Module Contents; this panel never
+       shows an area, only what is inside one. -->
+  <!-- No title row: this panel's tab is its title (Shell/Controls/RailToolTabs.cs), and a heading
+       repeating the word directly under the tab that says it was just noise. Which area is being
+       shown is the one thing the tab cannot say, so it leads the status line at the bottom. -->
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <Grid Grid.Row="0" RowDefinitions="Auto,Auto" Margin="8,8,8,6" IsVisible="{Binding HasArea}">
+      <TextBox Grid.Row="0" Text="{Binding Filter}" Watermark="Search this area..." />
+      <!-- Grouping is a choice with consequences, not a display toggle: each option's tooltip says
+           what it is for. Name is the default; see AreaContentsGrouping. -->
+      <Grid Grid.Row="1" ColumnDefinitions="Auto,*" Margin="0,6,0,0" ColumnSpacing="6">
+        <TextBlock Grid.Column="0" Classes="label" VerticalAlignment="Center" Text="GROUP BY" />
+        <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                  ItemsSource="{Binding GroupingOptions}"
+                  SelectedItem="{Binding SelectedGrouping, Mode=TwoWay}">
+          <ComboBox.ItemTemplate>
+            <DataTemplate DataType="panels:AreaContentsGroupingOption">
+              <TextBlock Text="{Binding Label}" ToolTip.Tip="{Binding Description}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </Grid>
+    </Grid>
+
+    <!-- KeyDown rather than a KeyBinding: Delete acts on the row the list has selected, and the
+         list is where the key lands. -->
+    <ListBox x:Name="RowsList" Grid.Row="1" Background="Transparent" BorderThickness="0"
+             ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
+             DoubleTapped="OnRowDoubleTapped" KeyDown="OnRowKeyDown">
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="0,2" />
+        </Style>
+      </ListBox.Styles>
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="panels:AreaContentsNodeViewModel">
+          <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}" Background="Transparent"
+                PointerPressed="OnRowPointerPressed" ContextRequested="OnRowContextRequested">
+            <Grid.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="{Binding OpenPropertiesLabel}" Click="OnOpenPropertiesClick" />
+              </ContextMenu>
+            </Grid.ContextMenu>
+
+            <!-- The same wide, short hit box Module Contents gives its twisty: it is the thing
+                 aimed at most in a tree and the glyph itself is a 10px target. -->
+            <Button Grid.Column="0" Content="{Binding Twisty}" Width="26" MinHeight="22" Padding="0"
+                    Background="Transparent" BorderThickness="0" FontSize="11"
+                    Foreground="{DynamicResource InkTertiaryBrush}"
+                    Command="{Binding $parent[ListBox].((panels:AreaContentsViewModel)DataContext).ToggleCommand}"
+                    CommandParameter="{Binding}" />
+
+            <!-- A kind with nothing in it, and the tail of a capped group, read as furniture rather
+                 than content: still there to be read, not competing with what is. -->
+            <TextBlock Grid.Column="1" Classes="name" Classes.dim="{Binding IsDimmed}"
+                       Text="{Binding Name}"
+                       FontWeight="{Binding Weight}" VerticalAlignment="Center" />
+
+            <TextBlock Grid.Column="2" Classes="resref" Margin="12,0,12,0" VerticalAlignment="Center"
+                       Text="{Binding Detail}" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <TextBlock Grid.Row="2" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
+               Text="{Binding StatusMessage}" />
+  </Grid>
+</UserControl>

@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             xmlns:script="using:SWLOR.Toolset.Domain.Script"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="220"
+             x:Class="SWLOR.Toolset.Shell.Views.ScriptSearchView"
+             x:DataType="panels:ScriptSearchViewModel">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="8,6">
+      <TextBox Name="QueryBox" Width="260" Watermark="Find in scripts"
+               Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+      <CheckBox Content="Identifier only" IsChecked="{Binding IdentifierOnly}" VerticalAlignment="Center" />
+      <Button Content="Find" Command="{Binding SearchCommand}" Padding="10,3" />
+    </StackPanel>
+
+    <ListBox Name="ResultsList" Grid.Row="1" Background="Transparent" BorderThickness="0"
+             ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult}"
+             DoubleTapped="OnRowDoubleTapped">
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="0,1" />
+        </Style>
+      </ListBox.Styles>
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="script:ScriptSearchResult">
+          <Grid ColumnDefinitions="180,*,Auto" ColumnSpacing="10" Margin="10,2">
+            <TextBlock Grid.Column="0" Classes="resref" Text="{Binding ResRef}" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Classes="name" Text="{Binding LineText}"
+                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2" Classes="count" Text="{Binding Line}" VerticalAlignment="Center" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <TextBlock Grid.Row="2" Classes="dim" Margin="10,4,10,6" Text="{Binding Summary}" />
+  </Grid>
+</UserControl>

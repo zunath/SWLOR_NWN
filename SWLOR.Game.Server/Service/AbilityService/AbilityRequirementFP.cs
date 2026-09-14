@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Service.StatusEffectService;
+using System;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -14,25 +15,56 @@ namespace SWLOR.Game.Server.Service.AbilityService
             RequiredFP = requiredFP;
         }
 
-        public string CheckRequirements(uint player)
+        public string CheckRequirements(uint player, AbilityDetail ability = null)
         {
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
+            var requiredFP = GetAdjustedRequiredFP(player, ability, false);
             var fp = Stat.GetCurrentFP(player);
 
-            if (fp >= RequiredFP) return string.Empty;
-            return $"Not enough FP. (Required: {RequiredFP})";
+            if (fp >= requiredFP) return string.Empty;
+            return $"Not enough FP. (Required: {requiredFP})";
         }
 
-        public void AfterActivationAction(uint player)
+        public void AfterActivationAction(uint player, AbilityDetail ability = null)
         {
             if (GetIsDM(player)) return;
 
-            // Force Attunement reduces FP costs to zero.
-            if (StatusEffect.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
+            var requiredFP = GetAdjustedRequiredFP(player, ability, true);
+            if (requiredFP <= 0)
+                return;
 
-            Stat.ReduceFP(player, RequiredFP);
+            Stat.ReduceFP(player, requiredFP);
+            Combat.ApplyAbilityFPCostStaminaRestore(player, ability, requiredFP);
+        }
+
+        private int GetAdjustedRequiredFP(uint player, AbilityDetail ability, bool consumeNextAdjustment)
+        {
+            var adjusted = Stat.GetAdjustedRequiredFP(player, RequiredFP);
+            if (ability == null || adjusted <= 0)
+                return adjusted;
+
+            var skillType = Combat.GetAbilitySkillType(player, ability);
+            adjusted += consumeNextAdjustment
+                ? Combat.ConsumeNextAbilityFPCostAdjustment(player, skillType)
+                : Combat.GetNextAbilityFPCostAdjustment(player, skillType);
+
+            adjusted = Math.Max(0, adjusted);
+            return ApplyDarkForceConversionCostAdjustment(player, ability, adjusted);
+        }
+
+        private static int ApplyDarkForceConversionCostAdjustment(uint player, AbilityDetail ability, int adjustedCost)
+        {
+            if (adjustedCost <= 0 || ability.TriggersDarkForceConversion != true)
+                return adjustedCost;
+
+            var percentAdjustment = Stat.GetStatAdjustment(player, StatType.DarkForceConversionFPCostPercentAdjustment);
+            if (percentAdjustment == 0)
+                return adjustedCost;
+
+            var adjusted = (int)Math.Ceiling(adjustedCost * (1 + percentAdjustment / 100f));
+            return Math.Max(0, adjusted);
         }
     }
 }

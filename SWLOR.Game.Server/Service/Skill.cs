@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -15,15 +14,69 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Skill
     {
+        private static readonly Lazy<HashSet<SkillType>> _skillCapContributingSkillTypes = new(() =>
+            Enum.GetValues(typeof(SkillType))
+                .Cast<SkillType>()
+                .Where(x => x.GetAttribute<SkillType, SkillAttribute>().ContributesToSkillCap)
+                .ToHashSet());
+
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
-        public const int SkillCap = 350;
+        public const int SkillCap = 400;
+
+        /// <summary>
+        /// The base amount of SP available to every player before earned skill ranks are counted.
+        /// </summary>
+        public const int StartingSkillPoints = 10;
+
+        /// <summary>
+        /// Maximum spendable player SP, including the starting SP pool.
+        /// </summary>
+        public const int TotalSkillPointCap = SkillCap + StartingSkillPoints;
 
         /// <summary>
         /// This is the maximum number of AP a single character can earn in total. This must be evenly divisible into SkillCap.
         /// </summary>
         public static int APCap { get; } = SkillCap / 10;
+
+        public static int GetTotalSkillPoints(Player dbPlayer)
+        {
+            var earnedSP = dbPlayer.TotalSPAcquired;
+            if (earnedSP < 0)
+                earnedSP = 0;
+
+            if (earnedSP > SkillCap)
+                earnedSP = SkillCap;
+
+            return StartingSkillPoints + earnedSP;
+        }
+
+        public static int GetTotalContributingSkillRanks(Player dbPlayer)
+        {
+            var total = 0;
+            foreach (var (skillType, skill) in dbPlayer.Skills)
+            {
+                if (!IsSkillCapContributingSkill(skillType))
+                    continue;
+
+                total += Math.Max(0, skill.Rank);
+            }
+
+            return total;
+        }
+
+        private static bool IsSkillCapContributingSkill(SkillType skillType)
+        {
+            return _allSkillsContributingToCap.Count > 0
+                ? _allSkillsContributingToCap.ContainsKey(skillType)
+                : _skillCapContributingSkillTypes.Value.Contains(skillType);
+        }
+
+        private static bool ShouldDecaySkillRank(bool contributesToSkillCap, int totalRanks)
+        {
+            return contributesToSkillCap && totalRanks > SkillCap;
+        }
 
         /// <summary>
         /// Gives XP towards a specific skill to a player.
@@ -34,13 +87,19 @@ namespace SWLOR.Game.Server.Service
         /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
         /// <param name="applyHenchmanPenalty">If true, a penalty will apply if the player has a henchman active (droid, pet, etc.)</param>
         public static void GiveSkillXP(
-            uint player, 
-            SkillType skill, 
-            int xp, 
+            uint player,
+            SkillType skill,
+            int xp,
             bool ignoreBonuses = false,
             bool applyHenchmanPenalty = true)
         {
-            if (skill == SkillType.Invalid || xp <= 0 || !GetIsPC(player) || GetIsDM(player)) return;
+            if (skill == SkillType.Invalid ||
+                xp <= 0 ||
+                !GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             var modifiedSkills = new List<SkillType>();
             var playerId = GetObjectUUID(player);
@@ -60,28 +119,11 @@ namespace SWLOR.Game.Server.Service
                 if (social > 0)
                     bonusPercentage += social * 0.025f;
 
-                // Food bonus
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-                if (foodEffect != null)
-                {
-                    bonusPercentage += foodEffect.XPBonusPercent * 0.01f;
-                }
+                // Status bonus
+                bonusPercentage += Stat.GetStatAdjustment(player, StatType.ExperiencePercentAdjustment) * 0.01f;
 
                 // DM bonus
                 bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
-
-                // Dedication bonus
-                if (StatusEffect.HasStatusEffect(player, StatusEffectType.Dedication))
-                {
-                    var source = StatusEffect.GetEffectData<uint>(player, StatusEffectType.Dedication);
-
-                    if (GetIsObjectValid(source))
-                    {
-                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
-                        social = GetAbilityScore(source, AbilityType.Social);
-                        bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
-                    }
-                }
 
                 // Apply bonuses
                 xp += (int)(xp * bonusPercentage);
@@ -113,7 +155,10 @@ namespace SWLOR.Game.Server.Service
             if (debtRemoved > 0)
             {
                 dbPlayer.XPDebt -= debtRemoved;
-                SendMessageToPC(player, $"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})");
+                if (dbPlayer.XPDebt == 0)
+                    SendMessageToPC(player, "Your XP debt has been cleared.");
+                else
+                    SendMessageToPC(player, $"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})");
             }
 
             if (xp <= 0)
@@ -121,7 +166,7 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbPlayer);
                 return;
             }
-            
+
             var totalRanks = dbPlayer.Skills
                 .Where(x =>
                 {
@@ -141,8 +186,13 @@ namespace SWLOR.Game.Server.Service
                 }).Select(s => s.Key).ToList();
 
             // If player is at the skill cap and no skills are available for decay, exit early.
+            // Share the warning limit across skills and overflow: one kill can award several skills,
+            // but they are blocked by the same total-rank cap and require the same unlock action.
             if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
+            {
+                PlayerFeedback.SendWarningToPlayer(player, "SKILL_CAP", ColorToken.Red($"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP."));
                 return;
+            }
 
             SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
             pcSkill.XP += xp;
@@ -181,7 +231,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     ApplyAbilityPoint(player, dbPlayer);
                 }
-                
+
                 totalRanks = dbPlayer.Skills
                     .Where(x =>
                     {
@@ -190,9 +240,9 @@ namespace SWLOR.Game.Server.Service
                     })
                     .Sum(x => x.Value.Rank);
 
-                // If player is at the cap, pick a random skill out of the available decayable skills
-                // reduce its level by 1 and set XP to zero.
-                if (details.ContributesToSkillCap && totalRanks >= SkillCap)
+                // If player is above the cap, pick a random skill out of the available decayable skills,
+                // reduce its level by 1, and set XP to zero.
+                if (ShouldDecaySkillRank(details.ContributesToSkillCap, totalRanks))
                 {
                     // Edge case: Part of the number of levels granted cannot be given because
                     // there are no decayable skills to reduce. All excess XP is lost and we
@@ -200,6 +250,7 @@ namespace SWLOR.Game.Server.Service
                     if (skillsPossibleToDecay.Count <= 0)
                     {
                         dbPlayer.Skills[skill].XP = 0;
+                        PlayerFeedback.SendWarningToPlayer(player, "SKILL_CAP", ColorToken.Red($"You have reached the skill cap of {SkillCap} and all of your other skills are locked from decay. Excess {details.Name} XP was lost."));
                         break;
                     }
 
@@ -252,7 +303,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="dbPlayer">The database entity.</param>
         private static void ApplyAbilityPoint(uint player, Player dbPlayer)
         {
-            // Total AP have been earned (350SP = 35AP)
+            // Total AP have been earned (400SP = 40AP)
             if (dbPlayer.TotalAPAcquired >= SkillCap / 10) return;
 
             if (dbPlayer.TotalSPAcquired % 10 == 0)
@@ -295,7 +346,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The maximum amount of XP that can be safely distributed</returns>
         public static int GetMaxDistributableXP(uint player, SkillType skillType)
         {
-            if (skillType == SkillType.Invalid || !GetIsPC(player) || GetIsDM(player)) 
+            if (skillType == SkillType.Invalid || !GetIsPC(player) || GetIsDM(player))
                 return 0;
 
             var playerId = GetObjectUUID(player);
@@ -316,13 +367,39 @@ namespace SWLOR.Game.Server.Service
             {
                 var requiredXPForNextRank = GetRequiredXP(currentRank);
                 var xpNeededForThisRank = requiredXPForNextRank - currentXP;
-                
+
                 totalDistributableXP += xpNeededForThisRank;
                 currentRank++;
                 currentXP = 0; // After first rank, we start from 0 XP for subsequent ranks
             }
 
             return totalDistributableXP;
+        }
+
+        public static int GetCreatureSkillRank(uint creature, SkillType skillType)
+        {
+            if (GetIsDM(creature) || skillType == SkillType.Invalid)
+                return 0;
+
+            if (Droid.IsDroid(creature))
+            {
+                var controller = Droid.GetControllerItem(creature);
+                var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
+
+                return droidDetails.Skills.TryGetValue(skillType, out var droidSkillRank)
+                    ? droidSkillRank
+                    : 0;
+            }
+
+            if (!GetIsPC(creature))
+                return 0;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            return dbPlayer.Skills.TryGetValue(skillType, out var skill)
+                ? skill.Rank
+                : 0;
         }
     }
 }

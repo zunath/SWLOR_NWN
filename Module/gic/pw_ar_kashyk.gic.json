@@ -1672,6 +1672,14 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Emergency /stuck recovery on the open canopy platform at tile (14, 8), thf02_a13_01 walkable floor Z=2.2. Keep clear of placeables."
+        }
+      }
+    ]
   }
 }

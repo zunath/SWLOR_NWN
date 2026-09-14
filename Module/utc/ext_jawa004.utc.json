@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 3.0
+    "value": 5.0
   },
   "ClassList": {
     "type": "list",
@@ -152,7 +152,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -164,7 +164,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 20
+    "value": 65
   },
   "DecayTime": {
     "type": "dword",
@@ -177,12 +177,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "2": "Les ninjas Jawa sont aussi loufoques que leur cr�ateur. Prenez garde � vous !"
+      "2": "Les ninjas Jawa sont aussi loufoques que leur crÃ©ateur. Prenez garde Ã  vous !"
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -196,6 +196,20 @@
         "EquippedRes": {
           "type": "resref",
           "value": "vet_togejawa002"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "extjawa004_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "extjawa004_sk"
         }
       }
     ]
@@ -360,6 +374,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1851
+        }
       }
     ]
   },
@@ -367,7 +395,7 @@
     "type": "cexolocstring",
     "value": {
       "0": "Jawa",
-      "2": "Ninja Jawa"
+      "2": "Jawa Ninja"
     }
   },
   "fortbonus": {
@@ -384,11 +412,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 20
+    "value": 65
   },
   "Int": {
     "type": "byte",
-    "value": 12
+    "value": 11
   },
   "Interruptable": {
     "type": "byte",
@@ -442,7 +470,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 20
+    "value": 65
   },
   "NaturalAC": {
     "type": "byte",
@@ -747,7 +775,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 6
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -783,7 +811,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 8
   },
   "xAppearance_Head": {
     "type": "word",

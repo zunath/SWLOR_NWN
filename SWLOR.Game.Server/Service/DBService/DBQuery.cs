@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using NRediSearch;
 using SWLOR.Game.Server.Entity;

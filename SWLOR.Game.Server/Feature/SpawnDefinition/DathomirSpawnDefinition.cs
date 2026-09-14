@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -24,8 +24,28 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TarnishedJunglesNorth();
             TribeVillage();
             HiddenTunnel();
+            DathomirTarnJunglePreserve();
+            DathomirGrottoApexDen();
 
+            DathomirGrottoRareElites();
+            DathtarnRareElites();
             return _builder.Build();
+        }
+
+        private void DathtarnRareElites()
+        {
+            _builder.Create("DATHOMIR_TARN_JUNGLE_PRESERVE_RARES", "Dathomir Tarn Jungle Preserve - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "tarnapexmaw").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "quillstalker").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "rhydelalpha").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
+        }
+
+        private void DathomirGrottoRareElites()
+        {
+            _builder.Create("DATHOMIR_GROTTO_APEX_DEN_RARES", "Dathomir Grotto Apex Den - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "grottoalpha").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "spinequill").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "ritestalker").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void CaveRuins()
@@ -94,11 +114,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathturtle")
                 .RandomlyWalks()
                 .WithFrequency(5)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathssurian")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathpurbole")
                 .RandomlyWalks()
                 .WithFrequency(100);
@@ -150,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathsquell")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathssurian")
                 .RandomlyWalks()
                 .WithFrequency(10);
@@ -162,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathsprantal")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathsquell")
                 .RandomlyWalks()
                 .WithFrequency(100);
@@ -202,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathswampland")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathshear")
                 .RandomlyWalks()
                 .WithFrequency(100);
@@ -238,6 +258,104 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(100);
 
+        }
+
+        private void DathomirTarnJunglePreserve()
+        {
+            _builder.Create("CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE", "Dathomir Tarn Jungle Preserve - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_apexbite_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_apexbite_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_apexbite_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unbrbeast_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unbrbeast_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unbrbeast_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_alpharhy_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_alpharhy_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_alpharhy_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void DathomirGrottoApexDen()
+        {
+            _builder.Create("CAPSTONE_DATHOMIR_GROTTO_APEX_DEN", "Dathomir Grotto Apex Den - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_primover_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_primover_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_primover_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_untinst_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_untinst_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_untinst_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_forcebeast_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_forcebeast_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_forcebeast_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

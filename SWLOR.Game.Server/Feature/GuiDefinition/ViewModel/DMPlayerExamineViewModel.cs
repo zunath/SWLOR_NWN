@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
@@ -323,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (_noteIds.Count > MaxNotes)
                 return;
-            
+
             var dbNote = new PlayerNote
             {
                 PlayerId = _playerId,

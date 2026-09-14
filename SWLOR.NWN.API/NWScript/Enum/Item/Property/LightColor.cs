@@ -2,12 +2,12 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
 {
     public enum LightColor
     {
-        BLUE = 0,
-        YELLOW = 1,
-        PURPLE = 2,
-        RED = 3,
-        GREEN = 4,
-        ORANGE = 5,
-        WHITE = 6
+        Blue = 0,
+        Yellow = 1,
+        Purple = 2,
+        Red = 3,
+        Green = 4,
+        Orange = 5,
+        White = 6
     }
 }

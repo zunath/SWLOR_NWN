@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class StarportDockDialog: DialogBase
+    public class StarportDockDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);
@@ -33,16 +33,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void Initialize()
         {
-            var self = OBJECT_SELF;
+            var self = Owner;
             var planetType = (PlanetType)GetLocalInt(self, "PLANET_TYPE_ID");
             var spaceWaypointTag = GetLocalString(self, "STARPORT_TELEPORT_WAYPOINT");
-            var player = GetPC();
+            var player = Player;
 
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
                 Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'STARPORT_TELEPORT_WAYPOINT' and cannot be used by players to dock their ships.");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
+                Close();
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 Log.Write(LogGroup.Error, $"The waypoint associated with '{GetName(self)}' cannot be found. Did you place it in an area?");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
+                Close();
                 return;
             }
 
@@ -60,20 +60,20 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'PLANET_TYPE_ID' or has an invalid value specified..");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
+                Close();
                 return;
             }
 
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
             model.SpaceLocation = GetLocation(spaceWaypoint);
             model.Planet = planetType;
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
             var playerId = GetObjectUUID(player);
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
             var dockPoints = Space.GetDockPointsByPlanet(model.Planet);
 
             page.Header = "Please select a location.";
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 var dockName = dockPoint.IsNPC
                     ? $"[NPC] {dockPoint.Name}"
-                    : $"[PC] {GetName(Property.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
+                    : $"[PC] {DB.Get<WorldProperty>(dockPoint.PropertyId)?.CustomName ?? "Unknown Starport"}";
 
                 page.AddResponse(dockName, () =>
                 {
@@ -102,6 +102,50 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             SendMessageToPC(player, ColorToken.Red("This starport is no longer available for docking."));
                             return;
                         }
+
+                        var starportLoadState = Property.GetPropertyLoadState(dockPoint.PropertyId);
+                        if (starportLoadState != PropertyLoadState.Loaded)
+                        {
+                            Log.WriteStructured(
+                                LogGroup.Property,
+                                "Player starport docking denied: Reason={Reason} PlayerId={PlayerId} PropertyId={PropertyId} LoadState={LoadState}",
+                                "load-state",
+                                playerId,
+                                dockPoint.PropertyId,
+                                starportLoadState);
+
+                            var message = starportLoadState == PropertyLoadState.Failed
+                                ? "This starport could not be loaded. Please notify staff."
+                                : "This starport is still loading. Please try again shortly.";
+                            SendMessageToPC(player, ColorToken.Red(message));
+                            return;
+                        }
+
+                        if (!Property.TryGetLoadedInstance(dockPoint.PropertyId, out var starportInstance))
+                        {
+                            Log.WriteStructured(
+                                LogGroup.Property,
+                                "Player starport docking denied: Reason={Reason} PlayerId={PlayerId} PropertyId={PropertyId}",
+                                "instance-unavailable",
+                                playerId,
+                                dockPoint.PropertyId);
+
+                            SendMessageToPC(player, ColorToken.Red("This starport is still loading. Please try again shortly."));
+                            return;
+                        }
+
+                        if (!GetLocalBool(starportInstance.Area, "BUILDING_EXIT_SET"))
+                        {
+                            Log.WriteStructured(
+                                LogGroup.Property,
+                                "Player starport docking denied: Reason={Reason} PlayerId={PlayerId} PropertyId={PropertyId}",
+                                "building-exit-not-ready",
+                                playerId,
+                                dockPoint.PropertyId);
+
+                            SendMessageToPC(player, ColorToken.Red("This starport is still loading. Please try again shortly."));
+                            return;
+                        }
                     }
 
                     var spaceArea = GetAreaFromLocation(model.SpaceLocation);
@@ -119,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
                     dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
-                    
+
                     // Docking at an NPC starport will update the safety location to that dock.
                     // In the event that the ship is docked at a player starport and it gets destroyed or
                     // otherwise goes away, the player's ship will return back to the last NPC dock it visited.
@@ -149,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             DB.Set(dbOldStarport);
 
                             Log.Write(LogGroup.Property, $"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
-                            
+
                             // Refresh the starport object we're working with in the event the "old" starport
                             // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.
                             if(dbStarport != null && dbOldStarport.Id == dbStarport.Id)

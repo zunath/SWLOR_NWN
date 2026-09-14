@@ -34,7 +34,7 @@
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 31
+    "value": 24
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -74,7 +74,7 @@
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 31
+    "value": 24
   },
   "ArmorPart_Torso": {
     "type": "byte",
@@ -172,6 +172,26 @@
     "type": "resref",
     "value": "nw_femtatcivoutf"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xArmorPart_Belt": {
     "type": "word",
     "value": 0
@@ -202,7 +222,7 @@
   },
   "xArmorPart_LThig": {
     "type": "word",
-    "value": 31
+    "value": 24
   },
   "xArmorPart_Neck": {
     "type": "word",
@@ -242,7 +262,7 @@
   },
   "xArmorPart_RThig": {
     "type": "word",
-    "value": 31
+    "value": 24
   },
   "xArmorPart_Torso": {
     "type": "word",

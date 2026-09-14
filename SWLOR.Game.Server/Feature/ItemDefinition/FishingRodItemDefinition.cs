@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWNX;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create(Fishing.FishingRodTag)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    if (item != target && 
+                    if (item != target &&
                         !Fishing.IsItemBait(target))
                         return "Only bait may be selected.";
 

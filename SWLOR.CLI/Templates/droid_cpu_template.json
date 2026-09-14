@@ -213,38 +213,7 @@
           "type": "word",
           "value": 6
         }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": %%SKILL1VALUE%%
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 121
-        },
-        "Subtype": {
-          "type": "word",
-          "value": %%SKILL1%%
-        }
-      },
+      }%%SKILLS%%,
       {
         "__struct_id": 0,
         "ChanceAppear": {
@@ -367,37 +336,6 @@
         "Subtype": {
           "type": "word",
           "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": %%SKILL2VALUE%%
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 121
-        },
-        "Subtype": {
-          "type": "word",
-          "value": %%SKILL2%%
         }
       },
       {

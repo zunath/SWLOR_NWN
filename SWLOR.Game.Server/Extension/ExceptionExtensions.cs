@@ -1,4 +1,3 @@
-﻿using System;
 using System.Text;
 
 namespace SWLOR.Game.Server.Extension
@@ -15,12 +14,12 @@ namespace SWLOR.Game.Server.Extension
                 s.AppendLine("Message       : " + (e.Message ?? string.Empty));
                 s.AppendLine("Stacktrace:");
                 s.AppendLine(e.StackTrace);
-                
+
                 s.AppendLine();
                 e = e.InnerException;
             }
 
-            
+
 
             return s.ToString();
         }

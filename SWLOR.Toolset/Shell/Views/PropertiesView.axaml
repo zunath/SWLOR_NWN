@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="SWLOR.Toolset.Shell.Views.PropertiesView"
+             x:DataType="panels:PropertiesViewModel">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Padding="11,8" Background="{DynamicResource PanelRaisedBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1">
+      <TextBlock Text="{Binding SelectionTitle}" FontSize="14"
+                 Foreground="{DynamicResource InkBrush}" TextTrimming="CharacterEllipsis" />
+    </Border>
+    <ListBox ItemsSource="{Binding Rows}" Background="Transparent" BorderThickness="0">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="panels:PropertyRow">
+          <Grid ColumnDefinitions="132,*" ColumnSpacing="10">
+            <TextBlock Grid.Column="0" Classes="dim" Text="{Binding Key}"
+                       TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Column="1" Classes="mono" Text="{Binding Value}" TextWrapping="Wrap" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+</UserControl>

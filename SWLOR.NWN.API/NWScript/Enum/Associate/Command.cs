@@ -23,7 +23,8 @@ namespace SWLOR.NWN.API.NWScript.Enum.Associate
         PickLock = -18,
         Inventory = -19,
         DisarmTrap = -20,
-        ToggleCasting = -21,
+        ToggleAbilities = -21,
+        ToggleCasting = ToggleAbilities,
         ToggleStealth = -22,
         ToggleSearch = -23
     }

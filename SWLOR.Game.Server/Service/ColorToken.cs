@@ -1,5 +1,4 @@
-﻿using NWN.Native.API;
-using System;
+using NWN.Native.API;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -19,6 +18,16 @@ namespace SWLOR.Game.Server.Service
     public static class ColorToken
     {
         private static string ColorArray => "     !##$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþþ";
+
+        // Some byte values collapse to the same Unicode character after the engine's CP1252 mapping.
+        // Prefer the semantic colors SWLOR actually emits before falling back to a component lookup.
+        private static readonly (byte Red, byte Green, byte Blue)[] KnownColors =
+        {
+            (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255),
+            (0, 0, 0), (255, 255, 0), (0, 255, 255), (255, 127, 0),
+            (127, 127, 127), (102, 178, 255), (1, 254, 1), (254, 1, 1),
+            (1, 1, 254), (175, 48, 255), (255, 0, 255), (127, 0, 255)
+        };
 
         public static string TokenStart(byte red, byte green, byte blue)
         {
@@ -46,6 +55,56 @@ namespace SWLOR.Game.Server.Service
         public static string TokenEnd()
         {
             return "</c>";
+        }
+
+        /// <summary>
+        /// Decodes an NWN color start token at <paramref name="startIndex"/> without calling native
+        /// APIs. NUI conversation rendering uses this while translating legacy colored strings into
+        /// explicit text blocks.
+        /// </summary>
+        public static bool TryDecodeStartToken(
+            string text,
+            int startIndex,
+            out byte red,
+            out byte green,
+            out byte blue)
+        {
+            red = 0;
+            green = 0;
+            blue = 0;
+            if (string.IsNullOrEmpty(text) ||
+                startIndex < 0 ||
+                startIndex + 5 >= text.Length ||
+                text[startIndex] != '<' ||
+                text[startIndex + 1] != 'c' ||
+                text[startIndex + 5] != '>')
+            {
+                return false;
+            }
+
+            foreach (var known in KnownColors)
+            {
+                if (ColorArray[known.Red] == text[startIndex + 2] &&
+                    ColorArray[known.Green] == text[startIndex + 3] &&
+                    ColorArray[known.Blue] == text[startIndex + 4])
+                {
+                    red = known.Red;
+                    green = known.Green;
+                    blue = known.Blue;
+                    return true;
+                }
+            }
+
+            var redIndex = ColorArray.IndexOf(text[startIndex + 2]);
+            var greenIndex = ColorArray.IndexOf(text[startIndex + 3]);
+            var blueIndex = ColorArray.IndexOf(text[startIndex + 4]);
+            if (redIndex < 0 || greenIndex < 0 || blueIndex < 0)
+                return false;
+
+            red = (byte)redIndex;
+            green = (byte)greenIndex;
+            blue = (byte)blueIndex;
+            return true;
         }
 
         public static string Black(string text)
@@ -187,13 +246,6 @@ namespace SWLOR.Game.Server.Service
             return TokenStart(204, 119, 255) + text + TokenEnd();
         }
 
-        public static string SavingThrow(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text must not be null, empty, or white space.", nameof(text));
-
-            return TokenStart(102, 204, 255) + text + TokenEnd();
-        }
-
         public static string Script(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text must not be null, empty, or white space.", nameof(text));
@@ -253,7 +305,12 @@ namespace SWLOR.Game.Server.Service
         public static string GetNamePCColor(uint oPC)
         {
             var name = GetName(oPC);
-            return TokenStart(153, 255, 255) + name + TokenEnd();
+            return GetPCColor(name);
+        }
+
+        public static string GetPCColor(string name)
+        {
+            return Custom(name, 153, 255, 255);
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -265,21 +322,26 @@ namespace SWLOR.Game.Server.Service
         public static string GetNameNPCColor(uint oNPC)
         {
             var name = GetName(oNPC);
-            return TokenStart(204, 153, 204) + name + TokenEnd();
+            return GetNPCColor(name);
+        }
+
+        public static string GetNPCColor(string name)
+        {
+            return Custom(name, 204, 153, 204);
         }
 
         ///////////////////////////////////////////////////////////////////////////////
         // _.GetNameNPCColor()
         //
         // Returns the name of creature in either light blue or purple, if the creature
-        // is a PC or an NPC. 
+        // is a PC or an NPC.
         //
 
         public static string GetNameColorNative(CNWSCreature creature)
         {
             var creatureName = (creature.GetFirstName().GetSimple() + " " + creature.GetLastName().GetSimple()).Trim();
-            return Convert.ToBoolean(creature.m_bPlayerCharacter) 
-                ? Custom(creatureName, 153, 255, 255) 
+            return Convert.ToBoolean(creature.m_bPlayerCharacter)
+                ? Custom(creatureName, 153, 255, 255)
                 : Custom(creatureName, 204, 153, 204);
         }
 

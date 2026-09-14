@@ -1,177 +1,31 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class BeastMasteryPerkDefinition: IPerkListDefinition
+    public class BeastMasteryPerkDefinition : IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            Tame();
-            Reward();
-            Stabling();
-            Snarl();
-            Growl();
-            SoothePet();
-            ReviveBeast();
-
             DNAManipulation();
             IncubationProcessing();
             ErraticGenius();
             IncubationManagement();
+            Tame();
+            Reward();
+            Stabling();
+            GuardingBond();
+            PredatoryBond();
+            SoothePet();
+            ReviveBeast();
 
             return _builder.Build();
         }
 
-        private void Tame()
-        {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Tame)
-                .Name("Tame")
-
-                .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability.")
-                .Price(3)
-                .GrantsFeat(FeatType.Tame)
-                .GrantsFeat(FeatType.CallBeast)
-
-                .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 20.")
-                .Price(3)
-                .RequirementSkill(SkillType.BeastMastery, 10)
-
-                .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 30.")
-                .Price(4)
-                .RequirementSkill(SkillType.BeastMastery, 20)
-
-                .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 40.")
-                .Price(5)
-                .RequirementSkill(SkillType.BeastMastery, 30)
-
-                .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 50.")
-                .Price(5)
-                .RequirementSkill(SkillType.BeastMastery, 40);
-        }
-
-        private void Reward()
-        {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Reward)
-                .Name("Reward")
-
-                .AddPerkLevel()
-                .Description("Restores 50 HP to your pet. Consumes a treat item on use.")
-                .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 5)
-                .GrantsFeat(FeatType.Reward1)
-
-                .AddPerkLevel()
-                .Description("Restores 90 HP to your pet. Consumes a treat item on use.")
-                .Price(2)
-                .RequirementSkill(SkillType.BeastMastery, 25)
-                .GrantsFeat(FeatType.Reward2)
-
-                .AddPerkLevel()
-                .Description("Restores 130 HP to your pet. Consumes a treat item on use.")
-                .Price(2)
-                .RequirementSkill(SkillType.BeastMastery, 45)
-                .GrantsFeat(FeatType.Reward3);
-        }
-
-        private void Stabling()
-        {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Stabling)
-                .Name("Stabling")
-
-                .AddPerkLevel()
-                .Description("Permits you to store up to two beasts at a stable.")
-                .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 10)
-
-                .AddPerkLevel()
-                .Description("Permits you to store up to three beasts at a stable.")
-                .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 20)
-
-                .AddPerkLevel()
-                .Description("Permits you to store up to four beasts at a stable.")
-                .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 30)
-
-                .AddPerkLevel()
-                .Description("Permits you to store up to five beasts at a stable.")
-                .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 40)
-
-                .AddPerkLevel()
-                .Description("Permits you to store up to six beasts at a stable.")
-                .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 50);
-        }
-        
-        private void Snarl()
-        {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Snarl)
-                .Name("Snarl")
-
-                .AddPerkLevel()
-                .Description("Transfers 50% of your enmity to your pet.")
-                .Price(2)
-                .RequirementSkill(SkillType.BeastMastery, 15)
-                .GrantsFeat(FeatType.Snarl);
-        }
-
-        private void Growl()
-        {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Growl)
-                .Name("Growl")
-
-                .AddPerkLevel()
-                .Description("Transfers 50% of your pet's enmity to you.")
-                .Price(2)
-                .RequirementSkill(SkillType.BeastMastery, 15)
-                .GrantsFeat(FeatType.Growl);
-        }
-
-        private void SoothePet()
-        {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.SoothePet)
-                .Name("Soothe Pet")
-
-                .AddPerkLevel()
-                .Description("Removes debuffs from your pet.")
-                .Price(2)
-                .RequirementSkill(SkillType.BeastMastery, 25)
-                .GrantsFeat(FeatType.SoothePet);
-        }
-
-        private void ReviveBeast()
-        {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.ReviveBeast)
-                .Name("Revive Beast")
-
-                .AddPerkLevel()
-                .Description("Revives your pet with 1 HP.")
-                .Price(1)
-                .GrantsFeat(FeatType.ReviveBeast1)
-
-                .AddPerkLevel()
-                .Description("Revives your pet with (10+SOC)% HP.")
-                .Price(2)
-                .RequirementSkill(SkillType.BeastMastery, 25)
-                .GrantsFeat(FeatType.ReviveBeast2)
-
-                .AddPerkLevel()
-                .Description("Revives your pet with (30+SOC*2)% HP.")
-                .Price(3)
-                .RequirementSkill(SkillType.BeastMastery, 40)
-                .GrantsFeat(FeatType.ReviveBeast3);
-        }
 
         private void DNAManipulation()
         {
@@ -179,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("DNA Manipulation")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DNAManipulationTrait)
                 .Description("Enables you to harvest DNA from creatures between levels 0 and 10 and use incubators.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 5)
@@ -205,12 +60,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         }
 
+
         private void IncubationProcessing()
         {
             _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.IncubationProcessing)
                 .Name("Incubation Processing")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.IncubationProcessingTrait)
                 .Description("Reduces incubation time by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
@@ -231,12 +88,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.BeastMastery, 45);
         }
 
+
         private void ErraticGenius()
         {
             _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.ErraticGenius)
                 .Name("Erratic Genius")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ErraticGeniusTrait)
                 .Description("Increases the mutation chance by 2%.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 20)
@@ -252,12 +111,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }
 
+
         private void IncubationManagement()
         {
             _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.IncubationManagement)
                 .Name("Incubation Management")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.IncubationManagementTrait)
                 .Description("Increases the maximum number of concurrent incubation jobs by 1, for a total of 2.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 25)
@@ -268,5 +129,159 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.BeastMastery, 50);
         }
 
+
+        private void Tame()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Tame)
+                .Name("Tame")
+
+                .AddPerkLevel()
+                .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability. Taming chance increases by 3% per SOC, capped at 75%.")
+                .Price(3)
+                .GrantsFeat(FeatType.Tame)
+                .GrantsFeat(FeatType.CallBeast)
+
+                .AddPerkLevel()
+                .Description("Enables you to tame & train creatures between levels 0 and 20. Taming chance increases by 3% per SOC, capped at 75%.")
+                .Price(3)
+                .RequirementSkill(SkillType.BeastMastery, 10)
+
+                .AddPerkLevel()
+                .Description("Enables you to tame & train creatures between levels 0 and 30. Taming chance increases by 3% per SOC, capped at 75%.")
+                .Price(4)
+                .RequirementSkill(SkillType.BeastMastery, 20)
+
+                .AddPerkLevel()
+                .Description("Enables you to tame & train creatures between levels 0 and 40. Taming chance increases by 3% per SOC, capped at 75%.")
+                .Price(5)
+                .RequirementSkill(SkillType.BeastMastery, 30)
+
+                .AddPerkLevel()
+                .Description("Enables you to tame & train creatures between levels 0 and 50. Taming chance increases by 3% per SOC, capped at 75%.")
+                .Price(5)
+                .RequirementSkill(SkillType.BeastMastery, 40);
+        }
+
+
+        private void Reward()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Reward)
+                .Name("Reward")
+
+                .AddPerkLevel()
+                .Description("Restores 50 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
+                .Price(1)
+                .RequirementSkill(SkillType.BeastMastery, 5)
+                .GrantsFeat(FeatType.Reward1)
+
+                .AddPerkLevel()
+                .Description("Restores 90 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 25)
+                .GrantsFeat(FeatType.Reward2)
+
+                .AddPerkLevel()
+                .Description("Restores 130 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 45)
+                .GrantsFeat(FeatType.Reward3);
+        }
+
+
+        private void Stabling()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Stabling)
+                .Name("Stabling")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.StablingTrait)
+                .Description("Permits you to store up to two beasts at a stable.")
+                .Price(1)
+                .RequirementSkill(SkillType.BeastMastery, 10)
+
+                .AddPerkLevel()
+                .Description("Permits you to store up to three beasts at a stable.")
+                .Price(1)
+                .RequirementSkill(SkillType.BeastMastery, 20)
+
+                .AddPerkLevel()
+                .Description("Permits you to store up to four beasts at a stable.")
+                .Price(1)
+                .RequirementSkill(SkillType.BeastMastery, 30)
+
+                .AddPerkLevel()
+                .Description("Permits you to store up to five beasts at a stable.")
+                .Price(1)
+                .RequirementSkill(SkillType.BeastMastery, 40)
+
+                .AddPerkLevel()
+                .Description("Permits you to store up to six beasts at a stable.")
+                .Price(1)
+                .RequirementSkill(SkillType.BeastMastery, 50);
+        }
+
+
+        private void GuardingBond()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.GuardingBond)
+                .Name("Guarding Bond")
+
+                .AddPerkLevel()
+                .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one stance may be active at a time.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 15)
+                .GrantsFeat(FeatType.GuardingBond);
+        }
+
+
+        private void PredatoryBond()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.PredatoryBond)
+                .Name("Predatory Bond")
+
+                .AddPerkLevel()
+                .Description("While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one stance may be active at a time.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 15)
+                .GrantsFeat(FeatType.PredatoryBond);
+        }
+
+
+        private void SoothePet()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.SoothePet)
+                .Name("Soothe Pet")
+
+                .AddPerkLevel()
+                .Description("Removes debuffs from your pet.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 25)
+                .GrantsFeat(FeatType.SoothePet);
+        }
+
+
+        private void ReviveBeast()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.ReviveBeast)
+                .Name("Revive Beast")
+
+                .AddPerkLevel()
+                .Description("Revives your pet with 1 HP.")
+                .Price(1)
+                .GrantsFeat(FeatType.ReviveBeast1)
+
+                .AddPerkLevel()
+                .Description("Revives your pet with (10 + SOC)% HP.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 25)
+                .GrantsFeat(FeatType.ReviveBeast2)
+
+                .AddPerkLevel()
+                .Description("Revives your pet with (45 + SOC)% HP.")
+                .Price(3)
+                .RequirementSkill(SkillType.BeastMastery, 40)
+                .GrantsFeat(FeatType.ReviveBeast3);
+        }
     }
 }
+

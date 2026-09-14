@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Weapon Enhancement - DMG - Physical II"
+      "0": "Weapon Enhancement - DMG II"
     }
   },
   "ModelPart1": {
@@ -133,7 +133,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 3
         },
         "Param1": {
           "type": "byte",

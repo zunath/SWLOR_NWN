@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 535
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -436,7 +456,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -1261,7 +1313,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -1963,7 +2015,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -2788,7 +2872,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -3490,7 +3574,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -4315,7 +4431,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -5017,7 +5133,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -5842,7 +5990,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -6544,7 +6692,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -7369,7 +7549,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -8071,7 +8251,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -8896,7 +9108,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -10005,6 +10217,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -10058,14 +10301,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -10461,7 +10704,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -11860,6 +12103,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -11913,14 +12187,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -12543,7 +12817,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -13942,6 +14216,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -13995,14 +14300,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -14625,7 +14930,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -16024,6 +16329,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -16077,14 +16413,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -16707,7 +17043,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -19188,7 +19524,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -20192,7 +20528,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -21153,14 +21489,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -21585,6 +21921,37 @@
                     "PropertyName": {
                       "type": "word",
                       "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 25
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
                     },
                     "Subtype": {
                       "type": "word",
@@ -22595,14 +22962,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -23181,6 +23548,37 @@
                     "Subtype": {
                       "type": "word",
                       "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
                     }
                   }
                 ]
@@ -25789,7 +26187,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -30017,7 +30415,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -30740,7 +31138,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte m�tallique coulissante vers le bas bleu"
+            "2": "Door"
           }
         },
         "OnClick": {
@@ -30946,7 +31344,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "Lockable": {
           "type": "byte",
@@ -30959,7 +31357,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "anchor_astro_milice"
+            "2": "Anchorhead Spaceport Militia"
           }
         },
         "OnClick": {
@@ -31397,7 +31795,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -31622,7 +32020,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -32299,7 +32697,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -32526,7 +32924,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -32753,7 +33151,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -32980,7 +33378,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -33207,7 +33605,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -33434,7 +33832,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -33661,7 +34059,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -34113,7 +34511,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Sol crade detritus 2, grand Static"
+            "2": "Dirty Debris Floor 2, Large Static"
           }
         },
         "OnClick": {
@@ -35017,7 +35415,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidit�"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -35244,7 +35642,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidit�"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -35471,7 +35869,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidit�"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -35698,7 +36096,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Landspeeder endommag�"
+            "2": "Damaged Landspeeder"
           }
         },
         "OnClick": {
@@ -35925,7 +36323,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Poteau indicateur, Commerce"
+            "2": "Trade Signpost"
           }
         },
         "OnClick": {
@@ -54543,6 +54941,233 @@
         },
         "Bearing": {
           "type": "float",
+          "value": 1.865320444107056
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Contract Board"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "qcontract_board"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "qcontract_board"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "qcontract_board"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 78.63323974609375
+        },
+        "Y": {
+          "type": "float",
+          "value": 71.48374176025391
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20622
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
           "value": 1.570796251296997
         },
         "BodyBag": {
@@ -55585,7 +56210,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 81
+                "value": 86
               }
             },
             {
@@ -55623,6 +56248,21 @@
               "Name": {
                 "type": "cexostring",
                 "value": "INSTANCE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
               },
               "Type": {
                 "type": "dword",
@@ -55690,7 +56330,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -55811,7 +56451,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -55939,7 +56579,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -56067,7 +56707,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Alarme 05"
+            "2": "Alarm 05"
           }
         },
         "Looping": {
@@ -56188,7 +56828,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Atterrissage"
+            "2": "Starship - Landing"
           }
         },
         "Looping": {
@@ -56309,7 +56949,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - D�colage"
+            "2": "Starship - Takeoff"
           }
         },
         "Looping": {
@@ -56430,7 +57070,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic a�rien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -56565,7 +57205,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic a�rien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -56707,7 +57347,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Bourdonnements �lectriques"
+            "2": "Electrical Humming"
           }
         },
         "Looping": {
@@ -56870,7 +57510,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Industries - Divers"
+            "2": "Industrial - Miscellaneous"
           }
         },
         "Looping": {
@@ -57245,7 +57885,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -57373,7 +58013,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -57501,7 +58141,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -57622,7 +58262,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -57743,7 +58383,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -58819,7 +59459,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -58947,7 +59587,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -59075,7 +59715,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -59196,7 +59836,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -59317,7 +59957,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -59438,7 +60078,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -59559,7 +60199,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -59645,127 +60285,6 @@
         "ZPosition": {
           "type": "float",
           "value": 0.9999947547912598
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Active": {
-          "type": "byte",
-          "value": 1
-        },
-        "Continuous": {
-          "type": "byte",
-          "value": 0
-        },
-        "Elevation": {
-          "type": "float",
-          "value": 1.5
-        },
-        "GeneratedType": {
-          "type": "dword",
-          "value": 0
-        },
-        "Hours": {
-          "type": "dword",
-          "value": 0
-        },
-        "Interval": {
-          "type": "dword",
-          "value": 0
-        },
-        "IntervalVrtn": {
-          "type": "dword",
-          "value": 0
-        },
-        "LocName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Alien Singing"
-          }
-        },
-        "Looping": {
-          "type": "byte",
-          "value": 1
-        },
-        "MaxDistance": {
-          "type": "float",
-          "value": 10.0
-        },
-        "MinDistance": {
-          "type": "float",
-          "value": 1.0
-        },
-        "PitchVariation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "Positional": {
-          "type": "byte",
-          "value": 1
-        },
-        "Priority": {
-          "type": "byte",
-          "value": 3
-        },
-        "Random": {
-          "type": "byte",
-          "value": 0
-        },
-        "RandomPosition": {
-          "type": "byte",
-          "value": 0
-        },
-        "RandomRangeX": {
-          "type": "float",
-          "value": 0.0
-        },
-        "RandomRangeY": {
-          "type": "float",
-          "value": 0.0
-        },
-        "Sounds": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Sound": {
-                "type": "resref",
-                "value": "les_singing"
-              }
-            }
-          ]
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "AlienSinging"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "aliensinging"
-        },
-        "Times": {
-          "type": "byte",
-          "value": 3
-        },
-        "Volume": {
-          "type": "byte",
-          "value": 127
-        },
-        "VolumeVrtn": {
-          "type": "byte",
-          "value": 0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 130.5569152832031
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 110.3340911865234
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.5
         }
       }
     ]
@@ -62615,7 +63134,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Bomber Configuration I"
+                        "0": "Basic Bomber Configuration"
                       }
                     },
                     "ModelPart1": {
@@ -62930,7 +63449,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Basic Industrial Configuration"
+                        "0": "Basic Logistics Configuration"
                       }
                     },
                     "ModelPart1": {
@@ -65981,7 +66500,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Bomber Configuration I"
+                        "0": "Basic Bomber Configuration"
                       }
                     },
                     "ModelPart1": {
@@ -66296,7 +66815,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Basic Industrial Configuration"
+                        "0": "Basic Logistics Configuration"
                       }
                     },
                     "ModelPart1": {
@@ -66762,6 +67281,21 @@
           "type": "int",
           "value": 66
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
+        }
       }
     ]
   },
@@ -66850,7 +67384,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "c2_contact"
+            "2": "C2 Contact"
           }
         },
         "MapNote": {
@@ -66913,7 +67447,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Go-Corp Transportation",
-            "2": "Gare de la Go-Corp"
+            "2": "Go-Corp Station"
           }
         },
         "MapNote": {
@@ -66921,7 +67455,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Go-Corp Transportation",
-            "2": "Gare de la Go-Corp"
+            "2": "Go-Corp Station"
           }
         },
         "MapNoteEnabled": {

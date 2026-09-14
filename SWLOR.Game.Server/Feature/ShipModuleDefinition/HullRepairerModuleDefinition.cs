@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -65,7 +65,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
                     Space.RestoreHull(target, targetShipStatus, recovery);
 
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} hull HP to {GetName(target)}'s ship.");
+                    Messaging.SendMessageNearbyToPlayers(
+                        activator,
+                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} hull HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
 

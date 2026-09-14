@@ -1,0 +1,338 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:merchants="using:SWLOR.Toolset.Editors.Merchants"
+             xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             x:Class="SWLOR.Toolset.Editors.Merchants.MerchantEditorView"
+             x:DataType="merchants:MerchantEditorViewModel">
+
+  <TabControl x:Name="MerchantTabs"
+              SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+    <TabItem Header="Details">
+      <ScrollViewer>
+        <Grid ColumnDefinitions="2*,*" Margin="14,10,22,16" ColumnSpacing="12">
+          <Border Grid.Column="0" Classes="card" Padding="8,6,8,10" VerticalAlignment="Top">
+            <StackPanel>
+              <TextBlock Text="Merchant" Classes="section" Margin="8,6,8,4" />
+              <ItemsControl ItemsSource="{Binding DetailRows}" />
+            </StackPanel>
+          </Border>
+
+          <Border Grid.Column="1" Classes="card" Padding="8,6,8,10" VerticalAlignment="Top">
+            <StackPanel>
+              <TextBlock Text="Pricing" Classes="section" Margin="8,6,8,4" />
+              <ItemsControl ItemsSource="{Binding PricingRows}" />
+            </StackPanel>
+          </Border>
+        </Grid>
+      </ScrollViewer>
+    </TabItem>
+
+    <TabItem Header="Inventory">
+      <Grid ColumnDefinitions="190,2*,260" RowDefinitions="*" Margin="0">
+        <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+                Padding="10">
+          <StackPanel Spacing="8">
+            <TextBlock Text="Categories" Classes="section" Margin="4,2,4,0" />
+            <ListBox ItemsSource="{Binding InventoryCategories}"
+                     SelectedItem="{Binding SelectedInventoryCategory, Mode=TwoWay}">
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="merchants:MerchantInventoryCategoryViewModel">
+                  <TextBlock Text="{Binding Display}" Margin="4,5" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="12" RowSpacing="8">
+          <TextBlock Grid.Row="0" Text="{Binding SelectedInventoryCategory.Name}"
+                     Classes="section" FontSize="15" />
+          <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <TextBox Grid.Column="0" Text="{Binding InventorySearchText, Mode=TwoWay}"
+                     Watermark="Search this category" />
+            <TextBlock Grid.Column="1" Text="{Binding InventorySummary}" Classes="dim"
+                       VerticalAlignment="Center" />
+          </Grid>
+
+          <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+            <CheckBox Grid.Column="0" Content="Select shown" IsThreeState="True"
+                      IsChecked="{Binding ShownInventorySelectionState, Mode=OneWay}"
+                      IsEnabled="{Binding CanToggleShownInventoryItems}"
+                      Command="{Binding ToggleShownInventorySelectionCommand}"
+                      ToolTip.Tip="Select or clear shown items" />
+            <TextBlock Grid.Column="1" Text="{Binding CheckedInventorySummary}" Classes="dim"
+                       VerticalAlignment="Center" />
+            <Button Grid.Column="2" Content="{Binding RemoveCheckedInventoryLabel}"
+                    Command="{Binding RemoveCheckedInventoryItemsCommand}" />
+          </Grid>
+
+          <ListBox Grid.Row="3" ItemsSource="{Binding InventoryItems}"
+                   SelectedItem="{Binding SelectedInventoryItem, Mode=TwoWay}">
+            <ListBox.ItemTemplate>
+              <DataTemplate DataType="merchants:MerchantInventoryItemViewModel">
+                <Grid ColumnDefinitions="Auto,46,*,Auto,Auto" Margin="6,6" ColumnSpacing="10">
+                  <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                            VerticalAlignment="Center" />
+                  <Border Grid.Column="1" Width="42" Height="42"
+                          Background="{DynamicResource PanelRaisedBrush}"
+                          BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                          CornerRadius="3">
+                    <Image Source="{Binding Preview}" Stretch="Uniform" Margin="3" />
+                  </Border>
+                  <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8"
+                          IsVisible="{Binding HasStats}">
+                      <TextBlock Text="{Binding PrimaryStatSummary}" Classes="count"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Grid.Column="1" Text="{Binding AdditionalStatSummary}"
+                                 Classes="count" Foreground="{DynamicResource InkSecondaryBrush}"
+                                 IsVisible="{Binding HasAdditionalStats}" />
+                    </Grid>
+                  </StackPanel>
+                  <StackPanel Grid.Column="3" HorizontalAlignment="Right"
+                              VerticalAlignment="Center">
+                    <TextBlock Text="{Binding SellPrice}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{Binding BuyPrice}" Classes="dim" FontSize="10.5"
+                               HorizontalAlignment="Right" />
+                  </StackPanel>
+                  <Button Grid.Column="4" Classes="utility-icon"
+                          Command="{Binding $parent[ListBox].((merchants:MerchantEditorViewModel)DataContext).OpenItemDetailsCommand}"
+                          CommandParameter="{Binding ResRef}"
+                          ToolTip.Tip="Open item details">
+                    <Path Data="{DynamicResource ToolsetOpenDocumentIconGeometry}" />
+                  </Button>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <Border Grid.Row="4" Classes="card" Padding="10">
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,*" ColumnSpacing="10">
+              <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding ItemSearchText, Mode=TwoWay}"
+                       Watermark="Find an item blueprint to add" />
+              <Button Grid.Column="1" Grid.Row="0" Content="Add item"
+                      Command="{Binding AddInventoryItemCommand}" />
+              <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                    ColumnDefinitions="*,100" ColumnSpacing="10" Margin="2,7">
+                <TextBlock Text="{Binding CandidateSummary}" Classes="count" />
+                <ProgressBar Grid.Column="1" IsIndeterminate="True"
+                             IsVisible="{Binding IsLoadingItemCandidates}" />
+              </Grid>
+              <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+                      BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                      CornerRadius="2" ClipToBounds="True">
+                <ListBox ItemsSource="{Binding ItemCandidates}"
+                         SelectedItem="{Binding SelectedItemCandidate, Mode=TwoWay}"
+                         MaxHeight="220" BorderThickness="0"
+                         ScrollViewer.ScrollChanged="OnItemCandidateScrollChanged">
+                  <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                  </ListBox.ItemsPanel>
+                  <ListBox.ItemTemplate>
+                    <DataTemplate DataType="merchants:MerchantItemCandidateViewModel">
+                      <Border Loaded="OnItemCandidateLoaded" Padding="6,5">
+                        <Grid ColumnDefinitions="40,*,Auto" ColumnSpacing="9">
+                          <Border Grid.Column="0" Width="36" Height="36" CornerRadius="2"
+                                  Background="{DynamicResource FieldBrush}"
+                                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                            <Panel>
+                              <TextBlock Text="{Binding Glyph}" Classes="dim" FontSize="16"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                                         IsVisible="{Binding !HasPreview}" />
+                              <Image Source="{Binding Preview}" Stretch="Uniform" Margin="3"
+                                     IsVisible="{Binding HasPreview}" />
+                            </Panel>
+                          </Border>
+                          <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding ResRef}" Classes="resref" FontSize="10.5" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8"
+                                  IsVisible="{Binding HasStats}">
+                              <TextBlock Text="{Binding PrimaryStatSummary}" Classes="count"
+                                         TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="1" Text="{Binding AdditionalStatSummary}"
+                                         Classes="count"
+                                         Foreground="{DynamicResource InkSecondaryBrush}"
+                                         IsVisible="{Binding HasAdditionalStats}" />
+                            </Grid>
+                          </StackPanel>
+                          <Button Grid.Column="2" Classes="utility-icon"
+                                  Command="{Binding $parent[ListBox].((merchants:MerchantEditorViewModel)DataContext).OpenItemDetailsCommand}"
+                                  CommandParameter="{Binding ResRef}"
+                                  ToolTip.Tip="Open item details">
+                            <Path Data="{DynamicResource ToolsetOpenDocumentIconGeometry}" />
+                          </Button>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Border>
+            </Grid>
+          </Border>
+        </Grid>
+
+        <Border Grid.Column="2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0"
+                Padding="14">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Spacing="9" Margin="0,0,6,0">
+            <TextBlock Text="Selected item" Classes="section" />
+            <Border Height="112" Background="{DynamicResource PanelRaisedBrush}"
+                    BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                    CornerRadius="3">
+              <Image Source="{Binding SelectedItemPreview}"
+                     Stretch="Uniform" Margin="8" />
+            </Border>
+            <TextBlock Text="{Binding SelectedItemName}" FontSize="16"
+                       FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding SelectedItemResRef}" Classes="resref" />
+            <Button Content="Open item details"
+                    Command="{Binding OpenItemDetailsCommand}"
+                    CommandParameter="{Binding SelectedItemResRef}"
+                    IsEnabled="{Binding HasSelectedInventoryItem}" />
+            <Separator Margin="0,3" />
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="6">
+              <TextBlock Grid.Column="0" Grid.Row="0" Text="Store sells for" Classes="dim" />
+              <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding SelectedItemSellPrice}" />
+              <TextBlock Grid.Column="0" Grid.Row="1" Text="Store buys for" Classes="dim" />
+              <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedItemBuyPrice}" />
+            </Grid>
+            <Border Padding="10" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                    CornerRadius="3" IsVisible="{Binding HasSelectedItemStats}">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Item stats" Classes="section" />
+                <ItemsControl ItemsSource="{Binding SelectedItemStatGroups}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="items:ItemStatSummaryGroup">
+                      <StackPanel Spacing="4" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding Title}" Classes="label" />
+                        <ItemsControl ItemsSource="{Binding Entries}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="items:ItemStatSummaryEntry">
+                              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,2">
+                                <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+                                <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                           FontFamily="{DynamicResource MonoFont}" />
+                              </Grid>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+            <TextBlock Text="{Binding SelectedItemStatsStatus}" Classes="dim"
+                       TextWrapping="Wrap" IsVisible="{Binding ShowsSelectedItemStatsStatus}" />
+            <CheckBox Content="Unlimited stock"
+                      IsChecked="{Binding SelectedItemInfinite, Mode=TwoWay}"
+                      IsEnabled="{Binding HasSelectedInventoryItem}" />
+            <Button Content="Remove from inventory" Margin="0,8,0,0"
+                    Command="{Binding RemoveInventoryItemCommand}"
+                    CommandParameter="{Binding SelectedInventoryItem}"
+                    IsEnabled="{Binding HasSelectedInventoryItem}" />
+          </StackPanel>
+          </ScrollViewer>
+        </Border>
+      </Grid>
+    </TabItem>
+
+    <TabItem Header="Buying rules">
+      <Grid RowDefinitions="Auto,Auto,*" Margin="16,12,22,16" RowSpacing="10">
+        <Border Grid.Row="0" Classes="card" Padding="12">
+          <StackPanel Spacing="7">
+            <TextBlock Text="What will this merchant buy?" Classes="section" />
+            <RadioButton Content="Buy every base item type except those selected below"
+                         GroupName="BuyingPolicy"
+                         IsChecked="{Binding BuyAllExceptSelected, Mode=TwoWay}" />
+            <RadioButton Content="Buy only the base item types selected below"
+                         GroupName="BuyingPolicy"
+                         IsChecked="{Binding BuyOnlySelected, Mode=TwoWay}" />
+            <TextBlock Text="{Binding BuyingRuleError}"
+                       Foreground="{DynamicResource AmberBrush}"
+                       TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+          <TextBox Grid.Column="0" Text="{Binding BuyingRuleSearchText, Mode=TwoWay}"
+                   Watermark="Search base item types from baseitems.2da" />
+          <TextBlock Grid.Column="1" Text="{Binding BuyingRuleSummary}" Classes="dim"
+                     VerticalAlignment="Center" />
+        </Grid>
+
+        <Border Grid.Row="2" Classes="card" Padding="8">
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding BuyingRules}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel ItemWidth="260" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="merchants:MerchantBuyingRuleViewModel">
+                  <CheckBox Content="{Binding Name}"
+                            IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="6,5" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Border>
+      </Grid>
+    </TabItem>
+
+    <TabItem Header="Source">
+      <Grid RowDefinitions="Auto,Auto,*" Margin="16,12,22,16" RowSpacing="10">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+          <StackPanel Grid.Column="0">
+            <TextBlock Text="Placed instances" Classes="section" />
+            <TextBlock Text="{Binding InstanceSummary}" Margin="0,3,0,0"
+                       FontWeight="SemiBold" TextWrapping="Wrap" />
+          </StackPanel>
+          <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshPlacedInstancesCommand}" />
+          <Button Grid.Column="2" Content="Update out-of-date" Classes="primary"
+                  Command="{Binding UpdateOutOfDateInstancesCommand}" />
+        </Grid>
+
+        <StackPanel Grid.Row="1" Spacing="5">
+          <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsInstanceOperationBusy}" />
+          <TextBlock Text="{Binding InstanceOperationStatus}" Classes="count"
+                     IsVisible="{Binding IsInstanceOperationBusy}" />
+          <TextBlock Text="{Binding InstanceError}" Foreground="{DynamicResource AmberBrush}"
+                     TextWrapping="Wrap" />
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding PlacedInstances}"
+                  AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Area" Binding="{Binding AreaName}" Width="2*" />
+            <DataGridTextColumn Header="Area ResRef" Binding="{Binding AreaResRef}" Width="1.1*" />
+            <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="1.1*" />
+            <DataGridTextColumn Header="Merchant records"
+                                Binding="{Binding OutOfDateMerchantRecords}" Width="125" />
+            <DataGridTextColumn Header="Item records"
+                                Binding="{Binding OutOfDateItemRecords}" Width="105" />
+            <DataGridTextColumn Header="Status" Binding="{Binding SyncState}" Width="110" />
+            <DataGridTemplateColumn Header="" Width="78">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="merchants:MerchantInstancePlacement">
+                  <Button Content="Go To"
+                          Command="{Binding $parent[DataGrid].((merchants:MerchantEditorViewModel)DataContext).GoToInstanceCommand}"
+                          CommandParameter="{Binding}" Margin="4,1"
+                          ToolTip.Tip="Go to instance" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+      </Grid>
+    </TabItem>
+  </TabControl>
+</UserControl>

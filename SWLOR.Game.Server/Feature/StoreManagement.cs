@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Feature
             var item = GetModuleItemAcquired();
             DeleteLocalBool(item, StoreServiceItem);
         }
-        
+
         private static void HandleIncreasedPriceItemProperty()
         {
             var item = GetModuleItemAcquired();

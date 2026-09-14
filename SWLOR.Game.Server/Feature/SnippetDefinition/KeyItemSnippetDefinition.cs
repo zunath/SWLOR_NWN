@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
@@ -25,6 +25,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-all-key-items")
                 .Description("Checks whether a player has all of the specified key items.")
+                .Phrase("the player has {keyItemId}")
+                .NegatedPhrase("the player does not have {keyItemId}")
+                .Argument("keyItemId", SnippetArgumentType.KeyItemId)
+                .Repeats()
                 .AppearsWhenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -66,13 +70,16 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
                     return true;
                 });
-                    
+
         }
 
         private void ActionGiveKeyItem()
         {
             _builder.Create("action-give-key-items")
                 .Description("Gives a one or more key items to the player.")
+                .Phrase("gives the player {keyItemId}")
+                .Argument("keyItemId", SnippetArgumentType.KeyItemId)
+                .Repeats()
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -80,9 +87,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-give-key-items' requires a keyItemId argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
+                    var keyItems = new List<KeyItemType>();
                     foreach (var arg in args)
                     {
                         KeyItemType type;
@@ -102,11 +110,18 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         if (type == KeyItemType.Invalid)
                         {
                             Log.Write(LogGroup.Error, $"{arg} is not a valid KeyItemType");
-                            return;
+                            return false;
                         }
 
-                        KeyItem.GiveKeyItem(player, type);
+                        keyItems.Add(type);
                     }
+
+                    foreach (var keyItem in keyItems)
+                    {
+                        KeyItem.GiveKeyItem(player, keyItem);
+                    }
+
+                    return true;
                 });
         }
     }

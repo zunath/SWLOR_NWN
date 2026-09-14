@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.PerkService
@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             _requiredCharacterType = type;
         }
+
+        public PerkRequirementCategory Category => PerkRequirementCategory.CharacterType;
 
         public string CheckRequirements(uint player)
         {

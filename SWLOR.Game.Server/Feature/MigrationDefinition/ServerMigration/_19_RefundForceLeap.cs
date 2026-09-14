@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 
@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {
             {(PerkType.ForceLeap, 1), 3},
-            {(PerkType.ForceLeap, 2), 3}, 
-            {(PerkType.ForceLeap, 3), 3}  
+            {(PerkType.ForceLeap, 2), 3},
+            {(PerkType.ForceLeap, 3), 3}
         };
         public int Version => 19;
 

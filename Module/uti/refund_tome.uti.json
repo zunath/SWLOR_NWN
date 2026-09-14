@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This tome can be used to refund a single perk. Only one perk can be refunded per 1 hour (real world time) period.\n\nYou will lose the perk and all perk levels. All SP spent on the perk purchases will be refunded. You may immediately spend this SP on another perk purchase."
     }
   },
   "Identified": {

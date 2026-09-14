@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LanguageService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
@@ -24,6 +23,7 @@ namespace SWLOR.Game.Server.Service
         {
             _translators = new Dictionary<SkillType, ITranslator>
             {
+                { SkillType.Arkanian, new TranslatorArkanian() },
                 { SkillType.Bothese, new TranslatorBothese() },
                 { SkillType.Catharese, new TranslatorCatharese() },
                 { SkillType.Cheunh, new TranslatorCheunh() },
@@ -90,17 +90,8 @@ namespace SWLOR.Game.Server.Service
                 dbListener.Skills[language].Rank;
             var maxRank = languageSkill.MaxRank;
 
-            // Check for the Comprehend Speech concentration ability.
             var grantSenseXP = false;
-            var statusEffectBonus = 0;
-            if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
-                statusEffectBonus = 5;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
-                statusEffectBonus = 10;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
-                statusEffectBonus = 15;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
-                statusEffectBonus = 20;
+            var statusEffectBonus = Stat.GetStatAdjustment(listener, StatType.LanguageComprehension);
 
             if (statusEffectBonus > 0)
             {
@@ -188,6 +179,7 @@ namespace SWLOR.Game.Server.Service
             switch (language)
             {
                 case SkillType.Basic: r = 255; g = 255; b = 255; break;
+                case SkillType.Arkanian: r = 190; g = 210; b = 245; break;
                 case SkillType.Bothese: r = 132; g = 56; b = 18; break;
                 case SkillType.Catharese: r = 235; g = 235; b = 199; break;
                 case SkillType.Cheunh: r = 82; g = 143; b = 174; break;
@@ -215,6 +207,7 @@ namespace SWLOR.Game.Server.Service
         {
             switch (language)
             {
+                case SkillType.Arkanian: return "Arkanian";
                 case SkillType.Bothese: return "Bothese";
                 case SkillType.Catharese: return "Catharese";
                 case SkillType.Cheunh: return "Cheunh";
@@ -273,6 +266,7 @@ namespace SWLOR.Game.Server.Service
                     var languages = new List<LanguageCommand>
                     {
                         new LanguageCommand("Basic", SkillType.Basic, new [] { "basic" }),
+                        new LanguageCommand("Arkanian", SkillType.Arkanian, new [] { "arkanian" }),
                         new LanguageCommand("Bothese", SkillType.Bothese, new[] {"bothese"}),
                         new LanguageCommand("Catharese", SkillType.Catharese, new []{"catharese"}),
                         new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"cheunh"}),

@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             Slots = new List<GuiChartSlot<T>>();
         }
-        
+
         /// <summary>
         /// Builds the GuiChart element.
         /// </summary>

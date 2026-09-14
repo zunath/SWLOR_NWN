@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    In-engine integration tests. This assembly is deliberately SEPARATE from
+    SWLOR.Game.Server so test code never mixes with game code and never ships:
+    the production deploy stages only the game project's output, while the
+    engine-test runner scripts stage THIS project's output (which carries the
+    game assembly along as a project reference).
+
+    Loaded at runtime by ServerBootstrapper only when SWLOR_ENGINE_TESTS_ENABLED
+    is set; when the DLL is absent the load is a no-op. Note the absence of the
+    game project's PostBuild deploy target - that omission is intentional.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <OutputType>Library</OutputType>
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+  </ItemGroup>
+
+</Project>

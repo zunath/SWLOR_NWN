@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 
 namespace SWLOR.Game.Server.Service.PerkService
@@ -12,12 +12,18 @@ namespace SWLOR.Game.Server.Service.PerkService
             _requiredRole = requiredRole;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.BeastRole;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
             var roleDetail = BeastMastery.GetBeastRoleDetail(_requiredRole);
+
+            if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
+                return "You do not have a beast tamed.";
+
+            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
             if (dbBeast == null)
                 return "You do not have a beast tamed.";

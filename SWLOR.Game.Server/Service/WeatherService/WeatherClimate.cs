@@ -1,10 +1,13 @@
-﻿namespace SWLOR.Game.Server.Service.WeatherService
+namespace SWLOR.Game.Server.Service.WeatherService
 {
     public class WeatherClimate
     {
         public int HeatModifier { get; set; } = 0;
         public int HumidityModifier { get; set; } = 0;
         public int WindModifier { get; set; } = 0;
+        public int MinimumHeat { get; set; } = 1;
+        public int MaximumHeat { get; set; } = 10;
+        public bool IsSheltered { get; set; }
 
         public bool HasSandStorms { get; set; } = false;
         public bool HasSnowStorms { get; set; } = false;

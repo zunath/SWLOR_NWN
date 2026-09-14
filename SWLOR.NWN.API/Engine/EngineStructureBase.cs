@@ -1,4 +1,4 @@
-﻿using NWNX.NET;
+using NWNX.NET;
 
 namespace SWLOR.NWN.API.Engine
 {

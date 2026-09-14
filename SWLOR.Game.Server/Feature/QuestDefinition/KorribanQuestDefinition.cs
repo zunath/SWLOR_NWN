@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("The recruiter has instructed you to meet with Inquisitor Dral'kor Keth in the Sith Academy. Speak with him to begin your training.")
-                
+
 
                 .AddState()
                 .SetStateJournalText("You have met Inquisitor Dral'kor Keth. Return to him when you are ready to prove your worth.")
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You have recovered the stolen Sith artifact. Return it to Inquisitor Dral'kor Keth.")
                 .AddXPReward(2000)
                 .AddGoldReward(1500);
-                
+
         }
 
         // Quest 3: The Sith Code Test
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("Inquisitor Dral'kor Keth wishes to test your understanding of the Sith Code. You must answer his questions correctly to proceed.")
-                
+
 
                 .AddState()
                 .SetStateJournalText("You have demonstrated your knowledge of the Sith Code.")
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("The creature is slain. Return to Dral'kor Keth and report your findings.")
                 .AddXPReward(10000)
                 .AddGoldReward(6000);
-                
+
         }
         private void EliminateKlorSlug()
         {
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("A factory worker has requested your help in gathering electronic parts to repair malfunctioning droids.")
-                .AddCollectItemObjective("elec_flawed", 30) 
+                .AddCollectItemObjective("elec_flawed", 30)
 
                 .AddState()
                 .SetStateJournalText("You have collected the electronic parts. Return to the factory worker.")
@@ -144,6 +144,3 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         }
     }
 }
-
-
-

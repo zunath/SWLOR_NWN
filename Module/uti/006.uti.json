@@ -58,7 +58,7 @@
     "id": 90531,
     "type": "cexolocstring",
     "value": {
-      "0": "[NPC] Militia Helmet"
+      "0": "Tatooine Militia Patrol Helmet"
     }
   },
   "Metal1Color": {
@@ -123,11 +123,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 33
+          "value": 48
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 100
         },
         "Param1": {
           "type": "byte",
@@ -139,7 +139,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 100
+          "value": 131
         },
         "Subtype": {
           "type": "word",
@@ -163,6 +163,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "006"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

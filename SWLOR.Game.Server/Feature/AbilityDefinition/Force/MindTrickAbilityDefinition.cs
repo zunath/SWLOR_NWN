@@ -1,111 +1,157 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class MindTrickAbilityDefinition : IAbilityListDefinition
+    public sealed class MindTrickAbilityDefinition : IAbilityListDefinition
     {
+        private const float Radius = 5f;
+        private const int BaseConfusionDurationSeconds = 30;
+        private const int MaximumConfusionDurationSeconds = 38;
+        private const float WillpowerContestDurationSeconds = 0.5f;
+        private const int MindTrick2MaxTargets = 2;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
+
             MindTrick1(builder);
             MindTrick2(builder);
 
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
-        {
-            var race = GetRacialType(target);
-            if (race == RacialType.Cyborg || 
-                race == RacialType.Robot ||
-                race == RacialType.Droid)
-            {
-                return "Mind trick does not work on this creature.";
-            }
-            
-            return string.Empty;
-        }
-
-        private static void ApplyMindTrick(uint activator, uint target)
-        {
-            var race = GetRacialType(target);
-            if (activator == target ||
-                race == RacialType.Cyborg ||
-                race == RacialType.Robot ||
-                race == RacialType.Droid)
-            {
-                return;
-            }
-
-            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
-            const string EffectTag = "StatusEffectType.MindTrick";
-            var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
-
-            if (checkResult == SavingThrowResultType.Failed)
-            {
-                var effect = EffectConfused();
-                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
-                effect = TagEffect(effect, EffectTag);
-                ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
-            }
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            Enmity.ModifyEnmity(activator, target, 400);
-        }
-
         private static void MindTrick1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.MindTrick1, PerkType.MindTrick)
+            builder
+                .Create(FeatType.MindTrick1, PerkType.MindTrick)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MindTrick)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Mind Trick I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.MindTrick, 60f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(3)
-                .UsesAnimation(Animation.LoopingConjure1)
-                .HasCustomValidation(Validation)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.MindTrick, 45f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_mind")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasCustomValidation((_, target, _, _) => ValidateNonMechanicalTarget(target))
+                .HasImpactAction(MindTrick1ImpactAction)
+                .IsCastedAbility()
                 .IsHostileAbility()
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ApplyMindTrick(activator, target);
-                });
+                .BreaksStealth()
+                .RequirementFP(4);
         }
 
         private static void MindTrick2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.MindTrick2, PerkType.MindTrick)
+            builder
+                .Create(FeatType.MindTrick2, PerkType.MindTrick)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_MindTrick)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Mind Trick II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.MindTrick, 60f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(5)
-                .UsesAnimation(Animation.LoopingConjure1)
-                .HasCustomValidation(Validation)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.MindTrick, 45f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_mind")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasCustomValidation((_, target, _, _) => ValidateNonMechanicalTarget(target))
+                .HasImpactAction(MindTrick2ImpactAction)
+                .IsCastedAbility()
                 .IsHostileAbility()
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    const float Radius = RadiusSize.Medium;
-                    ApplyMindTrick(activator, target);
-                    // Target the next nearest creature and do the same thing.
-                    var targetCreature = GetFirstObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
-                    while (GetIsObjectValid(targetCreature))
-                    {
-                        if (GetIsReactionTypeHostile(targetCreature, activator) &&
-                            target != targetCreature)
-                        {
-                            ApplyMindTrick(activator, targetCreature);
-                        }
-                        targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
-                    }
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                });
+                .BreaksStealth()
+                .RequirementFP(5);
         }
+
+        private static void MindTrick1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.PlayAbilityImpactAnimation(activator);
+            ApplyMindTrickImpact(activator, target, targetLocation);
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
+        }
+
+        private static void MindTrick2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.PlayAbilityImpactAnimation(activator);
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            foreach (var hostileTarget in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, Radius, MindTrick2MaxTargets, target, IsNonMechanical))
+            {
+                ApplyMindTrickImpact(activator, hostileTarget, GetLocation(hostileTarget));
+            }
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
+        }
+
+        private static void ApplyMindTrickImpact(uint activator, uint target, Location targetLocation)
+        {
+            var duration = CalculateMindTrickDuration(activator, target);
+            if (duration <= 0)
+            {
+                SendMessageToPC(activator, "Your mind trick was resisted.");
+                return;
+            }
+
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Force,
+                0,
+                duration,
+                typeof(ConfusionStatusEffect),
+                false,
+                damageType: CombatDamageType.Force,
+                statusResistanceType: ResistanceType.Mind,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                playImpactAnimation: false);
+        }
+
+        private static int CalculateMindTrickDuration(uint activator, uint target)
+        {
+            var casterWillpower = GetAbilityScore(activator, AbilityType.Willpower);
+            var targetWillpower = GetAbilityScore(target, AbilityType.Willpower);
+            var contestSeconds = (int)Math.Round(
+                (casterWillpower - targetWillpower) * WillpowerContestDurationSeconds,
+                MidpointRounding.AwayFromZero);
+            var duration = BaseConfusionDurationSeconds + contestSeconds;
+
+            return duration <= 0
+                ? 0
+                : Math.Clamp(duration, BaseConfusionDurationSeconds, MaximumConfusionDurationSeconds);
+        }
+
+        private static bool IsNonMechanical(uint target)
+        {
+            var racialType = GetRacialType(target);
+            return racialType != RacialType.Construct &&
+                   racialType != RacialType.Robot &&
+                   racialType != RacialType.Droid;
+        }
+
+        private static string ValidateNonMechanicalTarget(uint target)
+        {
+            return IsNonMechanical(target)
+                ? string.Empty
+                : "This ability cannot affect mechanical targets.";
+        }
+
     }
 }

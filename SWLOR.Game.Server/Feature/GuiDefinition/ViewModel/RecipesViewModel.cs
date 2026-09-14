@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        
+
         public string SearchText
         {
             get => Get<string>();
@@ -168,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
-        
+
         public bool IsCraftOrResearchVisible
         {
             get => Get<bool>();
@@ -215,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _selectedBlueprintItem = OBJECT_INVALID;
             _craftingFilter = initialPayload?.Skill ?? SkillType.Invalid;
-            
+
             ShowSelectBlueprint = _mode == RecipesUIMode.Crafting || _mode == RecipesUIMode.Research;
             IsSkillEnabled = _craftingFilter == SkillType.Invalid;
 
@@ -263,8 +262,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var skills = new GuiBindingList<GuiComboEntry>();
             skills.Add(new GuiComboEntry("<All Skills>", 0));
 
-            var set = _mode == RecipesUIMode.Research 
-                ? Skill.GetActiveResearchableCraftingSkills() 
+            var set = _mode == RecipesUIMode.Research
+                ? Skill.GetActiveResearchableCraftingSkills()
                 : Skill.GetActiveCraftingSkills();
 
             foreach (var (type, detail) in set)
@@ -370,7 +369,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedLevelId > 0)
             {
                 recipes = recipes
-                    .Where(x => 
+                    .Where(x =>
                     {
                         var level = x.Value.Level;
                         return SelectedLevelId switch
@@ -396,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         : Craft.CanPlayerCraftRecipe(Player, x.Key))
                     .ToDictionary(x => x.Key, y => y.Value);
             }
-            
+
             UpdatePagination(recipes.Count);
 
             recipes = recipes
@@ -432,26 +431,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdatePagination(int totalRecordCount)
         {
             _skipPaginationSearch = true;
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            var pages = (int)(totalRecordCount / RecordsPerPage + (totalRecordCount % RecordsPerPage == 0 ? 0 : 1));
-
-            // Always add page 1. In the event no recipes are found,
-            // it still needs to be displayed.
-            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-            for (var x = 2; x <= pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-            }
-
-            PageNumbers = pageNumbers;
-
-            // In the event no results are found, default the index to zero
-            if (pages <= 0)
-                SelectedPageIndex = 0;
-            // Otherwise, if current page is outside the new page bounds,
-            // set it to the last page in the list.
-            else if (SelectedPageIndex > pages - 1)
-                SelectedPageIndex = pages - 1;
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                RecordsPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
 
             _skipPaginationSearch = false;
 
@@ -600,7 +585,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             return true;
         }
-        
+
         public Action OnClickSelectBlueprint() => () =>
         {
             if (_mode == RecipesUIMode.Crafting)
@@ -626,7 +611,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     if (!ValidateBlueprint(item))
                         return;
-                    
+
                     Gui.CloseWindow(Player, GuiWindowType.Recipes, Player);
 
                     var blueprint = Craft.GetBlueprintDetails(item);
@@ -651,7 +636,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 enhancementSlotType = "Structure";
             else if (detail.EnhancementType == RecipeEnhancementType.Food)
                 enhancementSlotType = "Food";
-            
+
             RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
             RecipeLevel = $"Level: {detail.Level}";
             RecipeEnhancementSlots = $"Enhancement Slots: {detail.EnhancementSlots}x {enhancementSlotType}";
@@ -659,7 +644,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RecipeDetails = recipeDetails;
             RecipeDetailColors = recipeDetailColors;
-            
+
             if(_mode == RecipesUIMode.Crafting)
                 CanCraftOrResearchRecipe = Craft.CanPlayerCraftRecipe(Player, recipe);
             else if (_mode == RecipesUIMode.Research)
@@ -676,7 +661,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _currentRecipeIndex = -1;
             CanCraftOrResearchRecipe = false;
         }
-        
+
         private void LoadRecipeDetail()
         {
             if (_currentRecipeIndex > -1)

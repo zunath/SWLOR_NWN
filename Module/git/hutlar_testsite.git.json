@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 0
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 8
+            }
+          }
+        ]
       }
     }
   },
@@ -12758,6 +12778,21 @@
               "Value": {
                 "type": "cexostring",
                 "value": "H_CloneBase_Entry"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
               }
             }
           ]

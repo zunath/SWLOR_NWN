@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
             return this;
         }
-        
+
         /// <summary>
         /// Deactivates the recipe which will prevent players from learning and crafting the item.
         /// </summary>
@@ -118,25 +118,26 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
-        /// Adds a perk requirement for this recipe.
-        /// </summary>
-        /// <param name="perk">The perk which is required.</param>
-        /// <param name="requiredLevel">The level required.</param>
-        /// <returns>A recipe builder with the configured options</returns>
-        public RecipeBuilder RequirementPerk(PerkType perk, int requiredLevel)
-        {
-            var requirement = new RecipePerkRequirement(perk, requiredLevel);
-            _activeRecipe.Requirements.Add(requirement);
-            return this;
-        }
-
-        /// <summary>
         /// Adds an unlock requirement for this recipe.
         /// </summary>
         /// <returns>A recipe builder with the configured options</returns>
         public RecipeBuilder RequirementUnlocked()
         {
             var requirement = new RecipeUnlockRequirement(_activeType);
+            _activeRecipe.Requirements.Add(requirement);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a perk level requirement to craft this recipe.
+        /// </summary>
+        /// <param name="perkType">The perk required to craft the recipe.</param>
+        /// <param name="requiredLevel">The minimum perk level required.</param>
+        /// <param name="perkName">The player-facing perk name shown in the requirement text.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder RequirementPerk(PerkType perkType, int requiredLevel, string perkName)
+        {
+            var requirement = new RecipePerkRequirement(perkType, requiredLevel, perkName);
             _activeRecipe.Requirements.Add(requirement);
             return this;
         }

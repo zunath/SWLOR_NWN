@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,7 +7,10 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -31,15 +33,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             EndCall();
             Recipes();
             Perks();
+            Techniques();
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
-            ConcentrationAbility();
             Customize();
+            Disguises();
             HeadScale();
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            SetKnownName();
+            ForgetKnownName();
             ChangeDescription();
             OrderCompanion();
             ResetWindows();
@@ -145,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             // Notify the receiver that the call attempt has ended
                             SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
                         }
-                        
+
                         // Clean up call attempt state
                         HoloCom.CleanupCallAttempt(user, callReceiver);
                         SendMessageToPC(user, "You cancel your HoloCom call.");
@@ -178,6 +183,37 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
+        }
+
+        private void Techniques()
+        {
+            _builder.Create("techniques", "tech")
+                .Description("Toggles the techniques menu, where mimicked techniques can be equipped and unequipped.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    if (Perk.GetPerkLevel(user, PerkType.CombatAnalyzer) < 1)
+                    {
+                        return ColorToken.Red("You need the Combat Analyzer perk to use this feature.");
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Techniques, new TechniquesPayload());
+                });
+        }
+
+        private void Disguises()
+        {
+            _builder.Create("disguise", "disguises")
+                .Description("Toggles the disguises menu.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Disguises);
+                });
         }
 
         private void LanguageCommand()
@@ -285,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         var dateTime = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                         if (DateTime.UtcNow <= dateTime.AddSeconds(30))
                         {
-                            // Player submitted a second request within 30 seconds of the last one. 
+                            // Player submitted a second request within 30 seconds of the last one.
                             // This is a confirmation they want to delete.
                             isFirstSubmission = false;
                         }
@@ -311,7 +347,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
-        
+
         private void ToggleEmoteStyle()
         {
             _builder.Create("emotestyle")
@@ -326,35 +362,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-
-        private void ConcentrationAbility()
-        {
-            _builder.Create("concentration", "conc")
-                .Description("Tells you what concentration ability you have active. Follow with 'end' (no quotes) to turn your concentration ability off. Example: /concentration end")
-                .Permissions(AuthorizationLevel.All)
-                .Action((user, target, location, args) =>
-                {
-                    var doEnd = args.Length > 0 && args[0].ToLower() == "end";
-
-                    if (doEnd)
-                    {
-                        Ability.EndConcentrationAbility(user);
-                    }
-                    else
-                    {
-                        var activeConcentration = Ability.GetActiveConcentration(user);
-                        if (activeConcentration.Feat == FeatType.Invalid)
-                        {
-                            SendMessageToPC(user, "No concentration ability is currently active.");
-                        }
-                        else
-                        {
-                            var ability = Ability.GetAbilityDetail(activeConcentration.Feat);
-                            SendMessageToPC(user, $"Currently active concentration ability: {ability.Name}");
-                        }
-                    }
-                });
-        }
 
         private void Customize()
         {
@@ -405,7 +412,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return string.Empty;
                     }
 
-                    if (!float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+                    if (!float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out var value) ||
+                        !float.IsFinite(value))
                     {
                         return $"Please specify a value between {appearance.MinimumHeadScale} and {appearance.MaximumHeadScale}, or use + / -.";
                     }
@@ -543,6 +551,100 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private void SetKnownName()
+        {
+            _builder.Create("name")
+                .Description("Target another player to save a private label only you can see. Target yourself to set your gray public description.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    var rawName = string.Join(" ", args);
+                    return PlayerName.ValidateKnownNameInput(rawName);
+                })
+                .RequiresTarget(ObjectType.Creature)
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, ColorToken.Red("You may only name player characters."));
+                        return;
+                    }
+
+                    var rawName = string.Join(" ", args);
+                    var validationError = PlayerName.ValidateKnownNameInput(rawName);
+                    if (!string.IsNullOrWhiteSpace(validationError))
+                    {
+                        SendMessageToPC(user, ColorToken.Red(validationError));
+                        return;
+                    }
+
+                    var name = PlayerName.SanitizeKnownName(rawName);
+                    if (target == user)
+                    {
+                        PlayerDescriptor.SetUnknownDisplayName(user, name);
+
+                        Log.WriteStructured(
+                            LogGroup.PlayerName,
+                            "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                            "unknown-name-set",
+                            GetObjectUUID(user),
+                            GetObjectUUID(target),
+                            name);
+                        SendMessageToPC(user, ColorToken.Green($"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray."));
+                        return;
+                    }
+
+                    validationError = PlayerName.ValidateKnownNameAssignment(user, target, name);
+                    if (!string.IsNullOrWhiteSpace(validationError))
+                    {
+                        SendMessageToPC(user, ColorToken.Red(validationError));
+                        return;
+                    }
+
+                    PlayerName.SetKnownName(user, target, name);
+
+                    Log.WriteStructured(
+                        LogGroup.PlayerName,
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                        "name-set",
+                        GetObjectUUID(user),
+                        GetObjectUUID(target),
+                        name);
+                    SendMessageToPC(user, ColorToken.Green($"Private label saved as '{name}'. Only you can see this label."));
+                });
+        }
+
+        private void ForgetKnownName()
+        {
+            _builder.Create("forgetname")
+                .Description("Removes the private label only you can see for a targeted player character's current identity.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget(ObjectType.Creature)
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, ColorToken.Red("You may only forget names for player characters."));
+                        return;
+                    }
+
+                    if (target == user)
+                    {
+                        SendMessageToPC(user, ColorToken.Red("You cannot forget your own name."));
+                        return;
+                    }
+
+                    PlayerName.ForgetKnownName(user, target);
+                    Log.WriteStructured(
+                        LogGroup.PlayerName,
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId}",
+                        "name-forget",
+                        GetObjectUUID(user),
+                        GetObjectUUID(target));
+                    SendMessageToPC(user, ColorToken.Green("Private label removed. This changes only what you see."));
+                });
+        }
+
         private void OrderCompanion()
         {
             _builder.Create("ordercompanion", "order", "oc")
@@ -554,6 +656,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var associate = GetHenchman(user);
                     if (target == associate)
                     {
+                        CompanionControl.CancelExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();
@@ -561,6 +664,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else if (GetIsEnemy(target, user) || GetObjectType(target) == ObjectType.Placeable)
                     {
+                        CompanionControl.BeginExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();
@@ -569,6 +673,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else if (GetObjectType(target) == ObjectType.Door && !GetLocked(target))
                     {
+                        CompanionControl.BeginExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();
@@ -620,19 +725,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var playerId = GetObjectUUID(user);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    
+
                     // Clear all stored window geometries
                     dbPlayer.WindowGeometries.Clear();
-                    
+
                     // Save the player data
                     DB.Set(dbPlayer);
-                    
+
                     // Update all player window instances with default geometries
                     // This ensures that when windows are reopened, they use default positions
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
                         if (type == GuiWindowType.Invalid) continue;
-                        
+
                         try
                         {
                             var playerWindow = Gui.GetPlayerWindow(user, type);
@@ -645,7 +750,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             continue;
                         }
                     }
-                    
+
                     SendMessageToPC(user, ColorToken.Green("All window positions and sizes have been reset to their default values."));
                 });
         }

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace SWLOR.Game.Server.Core.Async.Awaiters
 {

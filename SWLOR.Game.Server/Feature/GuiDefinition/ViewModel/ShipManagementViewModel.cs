@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -613,7 +612,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Select(s => s.PropertyId)
                 .ToList();
 
-            if (propertyIds.Count <= 0) 
+            if (propertyIds.Count <= 0)
                 return new List<PlayerShip>();
 
             var shipQuery = new DBQuery<PlayerShip>()
@@ -672,9 +671,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _spaceLocation = Location(spaceArea, spacePosition, spacePropertyLocation.Orientation);
 
                 var landingPropertyLocation = dbProperty.Positions[PropertyLocationType.DockPosition];
-                var landingArea = string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref)
-                    ? Property.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
-                    : Area.GetAreaByResref(landingPropertyLocation.AreaResref);
+                uint landingArea;
+                if (string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref))
+                {
+                    landingArea = Property.TryGetLoadedInstance(landingPropertyLocation.InstancePropertyId, out var landingInstance)
+                        ? landingInstance.Area
+                        : OBJECT_INVALID;
+                }
+                else
+                {
+                    landingArea = Area.GetAreaByResref(landingPropertyLocation.AreaResref);
+                }
+
                 var landingPosition = Vector3(landingPropertyLocation.X, landingPropertyLocation.Y, landingPropertyLocation.Z);
                 _landingLocation = Location(landingArea, landingPosition, landingPropertyLocation.Orientation);
 
@@ -812,8 +820,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), ship.PropertyId, false);
                 var permission = DB.Search(permissionQuery).Single();
-                var currentLocation = GetShipLocation(property);
+                var currentLocation = GetShipLocation(property, out var isDockInstanceLoading);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
+                var isInSpace = property.Positions.ContainsKey(PropertyLocationType.CurrentPosition);
                 var gold = GetGold(Player);
                 var repairPrice = CalculateRepairBill(ship);
 
@@ -1222,7 +1231,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
                 IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
                 IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
-                ShipLocation = currentLocation == OBJECT_INVALID ? "In Space" : GetName(currentLocation);
+                ShipLocation = isInSpace
+                    ? "In Space"
+                    : isDockInstanceLoading
+                        ? "Docked (loading...)"
+                        : GetName(currentLocation);
                 IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
                                   ship.Status.Hull < ship.Status.MaxHull) &&
                                   gold >= repairPrice &&
@@ -1232,22 +1245,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ToggleRegisterButtons();
         }
-        
-        private uint GetShipLocation(WorldProperty property)
+
+        private uint GetShipLocation(WorldProperty property, out bool isDockInstanceLoading)
         {
+            isDockInstanceLoading = false;
+
             if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
                 return OBJECT_INVALID;
             }
+
+            var landingLocation = property.Positions[PropertyLocationType.DockPosition];
+            uint area;
+            if (string.IsNullOrWhiteSpace(landingLocation.AreaResref))
+            {
+                if (Property.TryGetLoadedInstance(landingLocation.InstancePropertyId, out var instance))
+                {
+                    area = instance.Area;
+                }
+                else
+                {
+                    isDockInstanceLoading = true;
+                    area = OBJECT_INVALID;
+                }
+            }
             else
             {
-                var landingLocation = property.Positions[PropertyLocationType.DockPosition];
-                var area = string.IsNullOrWhiteSpace(landingLocation.AreaResref)
-                    ? Property.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
-                    : Area.GetAreaByResref(landingLocation.AreaResref);
-
-                return area;
+                area = Area.GetAreaByResref(landingLocation.AreaResref);
             }
+
+            return area;
         }
 
         private void ToggleRegisterButtons()
@@ -1260,7 +1287,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipId = _shipIds[SelectedShipIndex];
                 var dbShip = DB.Get<PlayerShip>(shipId);
                 var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-                var shipLocation = GetShipLocation(dbProperty);
+                var shipLocation = GetShipLocation(dbProperty, out _);
                 IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
             }
             else
@@ -1322,10 +1349,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Spawn the property associated with this ship.
                 var property = Property.CreateStarship(
-                    Player, 
-                    shipDetail.Layout, 
+                    Player,
+                    shipDetail.Layout,
                     _planetType,
-                    _spaceLocation, 
+                    _spaceLocation,
                     _landingLocation);
 
                 var ship = new PlayerShip
@@ -1355,9 +1382,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 };
                 DB.Set(ship);
-
-                var instance = Property.GetRegisteredInstance(property.Id);
-                SetName(instance.Area, "{PC} " + property.CustomName);
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
@@ -1432,12 +1456,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
             var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-            var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
 
             dbProperty.CustomName = ShipName;
             DB.Set(dbProperty);
 
-            SetName(instance.Area, "{PC} " + ShipName);
+            if (Property.TryGetLoadedInstance(dbShip.PropertyId, out var instance))
+                SetName(instance.Area, "{PC} " + ShipName);
 
             ShipNames[SelectedShipIndex] = ShipName;
         };
@@ -1511,12 +1535,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbShip.Status.HighPowerModules[slot]
                 : null;
 
-            // No module is equipped in this slot. 
+            // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
-                    item => 
+                    item =>
                 {
                     dbShip = DB.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
@@ -1581,7 +1605,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbShip.Status.LowPowerModules[slot]
                 : null;
 
-            // No module is equipped in this slot. 
+            // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
@@ -1652,7 +1676,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbShip.Status.ConfigurationModules[slot]
                 : null;
 
-            // No module is equipped in this slot. 
+            // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
@@ -1827,7 +1851,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
-            var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
+            if (!Property.TryResolveEnterableInstance(Player, dbShip.PropertyId, out var instance))
+                return;
+
             var entrance = Property.GetEntrancePosition(shipDetail.Layout);
             var location = Location(instance.Area, Vector3(entrance.X, entrance.Y, entrance.Z), entrance.W);
 
@@ -1843,7 +1869,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
-            
+
             var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };

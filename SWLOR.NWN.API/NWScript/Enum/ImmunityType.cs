@@ -34,6 +34,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         NegativeLevel = 29,
         SneakAttack = 30,
         CriticalHit = 31,
-        Death = 32
+        Death = 32,
+        Immobilized = 33,
+        HardCrowdControl = 34
     }
 }

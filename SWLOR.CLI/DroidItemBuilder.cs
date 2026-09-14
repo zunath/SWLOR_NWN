@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.CLI
@@ -21,6 +23,7 @@ namespace SWLOR.CLI
         public void Process()
         {
             ClearOutputDirectory();
+            ProcessCPU();
             ProcessPart();
         }
 
@@ -97,24 +100,28 @@ namespace SWLOR.CLI
                 var parsed = line.Split('\t');
                 var name = parsed[0].Trim();
                 var resref = parsed[1].Trim();
-                var (slotType, _) = GetSlotType(parsed[2].Trim());
-                var tier = string.IsNullOrWhiteSpace(parsed[3]) ? 0.ToString() : parsed[3].Trim();
-                var aiSlots = string.IsNullOrWhiteSpace(parsed[4]) ? 0.ToString() : parsed[4].Trim();
-                var hp = string.IsNullOrWhiteSpace(parsed[6]) ? 0.ToString() : parsed[6].Trim();
-                var stm = string.IsNullOrWhiteSpace(parsed[7]) ? 0.ToString() : parsed[7].Trim();
-                var mgt = string.IsNullOrWhiteSpace(parsed[8]) ? 0.ToString() : parsed[8].Trim();
-                var per = string.IsNullOrWhiteSpace(parsed[9]) ? 0.ToString() : parsed[9].Trim();
-                var vit = string.IsNullOrWhiteSpace(parsed[10]) ? 0.ToString() : parsed[10].Trim();
-                var wil = string.IsNullOrWhiteSpace(parsed[11]) ? 0.ToString() : parsed[11].Trim();
-                var agi = string.IsNullOrWhiteSpace(parsed[12]) ? 0.ToString() : parsed[12].Trim();
-                var soc = string.IsNullOrWhiteSpace(parsed[13]) ? 0.ToString() : parsed[13].Trim();
-                var oneHanded = string.IsNullOrWhiteSpace(parsed[14]) ? 0 : Convert.ToInt32(parsed[14].Trim());
-                var twoHanded = string.IsNullOrWhiteSpace(parsed[15]) ? 0 : Convert.ToInt32(parsed[15].Trim());
-                var martialArts = string.IsNullOrWhiteSpace(parsed[16]) ? 0 : Convert.ToInt32(parsed[16].Trim());
-                var ranged = string.IsNullOrWhiteSpace(parsed[17]) ? 0 : Convert.ToInt32(parsed[17].Trim());
-                var iconId = _iconIds[Random.Next(_iconIds.Length - 1)];
+                var partType = parsed[2].Trim();
+                if (!partType.Equals("CPU", StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-                var (skill1Id, skill1Value, skill2Id, skill2Value) = GetSkillLevels(oneHanded, twoHanded, martialArts, ranged);
+                var (slotType, _) = GetSlotType(partType);
+                var tier = GetTextField(parsed, 3);
+                var aiSlots = GetTextField(parsed, 4);
+                var hp = GetTextField(parsed, 6);
+                var stm = GetTextField(parsed, 7);
+                var mgt = GetTextField(parsed, 8);
+                var per = GetTextField(parsed, 9);
+                var vit = GetTextField(parsed, 10);
+                var wil = GetTextField(parsed, 11);
+                var agi = GetTextField(parsed, 12);
+                var soc = GetTextField(parsed, 13);
+                var oneHanded = GetIntField(parsed, 14);
+                var twoHanded = GetIntField(parsed, 15);
+                var martialArts = GetIntField(parsed, 16);
+                var ranged = GetIntField(parsed, 17);
+                var iconId = _iconIds[Random.Next(_iconIds.Length - 1)];
+                var tierValue = Convert.ToInt32(tier);
+                var skillStatTemplates = BuildStatTemplates(GetSkillStats(tierValue, oneHanded, twoHanded, martialArts, ranged));
 
                 var json = templateText
                     .Replace("%%NAME%%", name)
@@ -128,10 +135,7 @@ namespace SWLOR.CLI
                     .Replace("%%PER%%", per)
                     .Replace("%%AISLOTS%%", aiSlots)
                     .Replace("%%HP%%", hp)
-                    .Replace("%%SKILL1VALUE%%", skill1Value.ToString())
-                    .Replace("%%SKILL1%%", skill1Id.ToString())
-                    .Replace("%%SKILL2VALUE%%", skill2Value.ToString())
-                    .Replace("%%SKILL2%%", skill2Id.ToString())
+                    .Replace("%%SKILLS%%", skillStatTemplates)
                     .Replace("%%STM%%", stm)
                     .Replace("%%TIER%%", tier)
 
@@ -152,17 +156,21 @@ namespace SWLOR.CLI
                 var parsed = line.Split('\t');
                 var name = parsed[0].Trim();
                 var resref = parsed[1].Trim();
-                var (slotType, iconId) = GetSlotType(parsed[2].Trim());
-                var tier = string.IsNullOrWhiteSpace(parsed[3]) ? 0.ToString() : parsed[3].Trim();
-                var aiSlots = string.IsNullOrWhiteSpace(parsed[4]) ? 0 : Convert.ToInt32(parsed[4].Trim());
+                var partType = parsed[2].Trim();
+                if (partType.Equals("CPU", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var (slotType, iconId) = GetSlotType(partType);
+                var tier = GetTextField(parsed, 3);
+                var aiSlots = GetIntField(parsed, 4);
                 //var hp = string.IsNullOrWhiteSpace(parsed[6]) ? 0 : parsed[6].Trim();
                 //var stm = string.IsNullOrWhiteSpace(parsed[7]) ? 0 : parsed[7].Trim();
-                var mgt = string.IsNullOrWhiteSpace(parsed[8]) ? 0 : Convert.ToInt32(parsed[8].Trim());
-                var per = string.IsNullOrWhiteSpace(parsed[9]) ? 0 : Convert.ToInt32(parsed[9].Trim());
-                var vit = string.IsNullOrWhiteSpace(parsed[10]) ? 0 : Convert.ToInt32(parsed[10].Trim());
-                var wil = string.IsNullOrWhiteSpace(parsed[11]) ? 0 : Convert.ToInt32(parsed[11].Trim());
-                var agi = string.IsNullOrWhiteSpace(parsed[12]) ? 0 : Convert.ToInt32(parsed[12].Trim());
-                var soc = string.IsNullOrWhiteSpace(parsed[13]) ? 0 : Convert.ToInt32(parsed[13].Trim());
+                var mgt = GetIntField(parsed, 8);
+                var per = GetIntField(parsed, 9);
+                var vit = GetIntField(parsed, 10);
+                var wil = GetIntField(parsed, 11);
+                var agi = GetIntField(parsed, 12);
+                var soc = GetIntField(parsed, 13);
                 //var oneHanded = string.IsNullOrWhiteSpace(parsed[14]) ? 0 : Convert.ToInt32(parsed[14].Trim());
                 //var twoHanded = string.IsNullOrWhiteSpace(parsed[15]) ? 0 : Convert.ToInt32(parsed[15].Trim());
                 //var martialArts = string.IsNullOrWhiteSpace(parsed[16]) ? 0 : Convert.ToInt32(parsed[16].Trim());
@@ -224,72 +232,76 @@ namespace SWLOR.CLI
             throw new ArgumentOutOfRangeException();
         }
 
-        private (int, int, int, int) GetSkillLevels(int oneHanded, int twoHanded, int martialArts, int ranged)
+        private string GetTextField(string[] fields, int index)
         {
-            var skill1Id = -1;
-            var skill1Value = -1;
-            var skill2Id = -1;
-            var skill2Value = -1;
+            return index >= fields.Length || string.IsNullOrWhiteSpace(fields[index])
+                ? "0"
+                : fields[index].Trim();
+        }
+
+        private int GetIntField(string[] fields, int index)
+        {
+            return Convert.ToInt32(GetTextField(fields, index));
+        }
+
+        private string BuildStatTemplates(IEnumerable<(DroidStatSubType Type, int Value)> stats)
+        {
+            return string.Concat(stats.Select(stat => StatTemplate
+                .Replace("%%STATTYPE3%%", ((int)stat.Type).ToString())
+                .Replace("%%STATVALUE3%%", stat.Value.ToString())));
+        }
+
+        private IEnumerable<(DroidStatSubType Type, int Value)> GetSkillStats(
+            int tier,
+            int oneHanded,
+            int twoHanded,
+            int martialArts,
+            int ranged)
+        {
+            var armorRank = GetArmorSkillRank(tier);
+            if (armorRank > 0)
+                yield return (DroidStatSubType.Armor, armorRank);
 
             if (oneHanded > 0)
             {
-                if (skill1Id == -1)
-                {
-                    skill1Id = 12;
-                    skill1Value = oneHanded;
-                }
-                else if (skill2Id == -1)
-                {
-                    skill2Id = 12;
-                    skill2Value = oneHanded;
-                }
+                yield return (DroidStatSubType.Vibroblade, oneHanded);
+                yield return (DroidStatSubType.Vibroknife, oneHanded);
+                yield return (DroidStatSubType.Lightsaber, oneHanded);
             }
 
             if (twoHanded > 0)
             {
-                if (skill1Id == -1)
-                {
-                    skill1Id = 13;
-                    skill1Value = twoHanded;
-
-                }
-                else if (skill2Id == -1)
-                {
-                    skill2Id = 13;
-                    skill2Value = twoHanded;
-                }
-
+                yield return (DroidStatSubType.HeavyVibroblade, twoHanded);
+                yield return (DroidStatSubType.Spear, twoHanded);
+                yield return (DroidStatSubType.TwinBlade, twoHanded);
+                yield return (DroidStatSubType.Saberstaff, twoHanded);
             }
 
             if (martialArts > 0)
             {
-                if (skill1Id == -1)
-                {
-                    skill1Id = 14;
-                    skill1Value = martialArts;
-                }
-                else if (skill2Id == -1)
-                {
-                    skill2Id = 14;
-                    skill2Value = martialArts;
-                }
+                yield return (DroidStatSubType.Katar, martialArts);
+                yield return (DroidStatSubType.Staff, martialArts);
             }
 
             if (ranged > 0)
             {
-                if (skill1Id == -1)
-                {
-                    skill1Id = 15;
-                    skill1Value = ranged;
-                }
-                else if (skill2Id == -1)
-                {
-                    skill2Id = 15;
-                    skill2Value = ranged;
-                }
+                yield return (DroidStatSubType.Pistol, ranged);
+                yield return (DroidStatSubType.Rifle, ranged);
+                yield return (DroidStatSubType.Throwing, ranged);
             }
+        }
 
-            return (skill1Id, skill1Value, skill2Id, skill2Value);
+        private int GetArmorSkillRank(int tier)
+        {
+            return tier switch
+            {
+                1 => 5,
+                2 => 15,
+                3 => 25,
+                4 => 35,
+                5 => 45,
+                _ => 0
+            };
         }
 
         private (int, int, int, int, int, int) GetStatPoints(int mgt, int per, int agi, int vit, int wil, int soc)

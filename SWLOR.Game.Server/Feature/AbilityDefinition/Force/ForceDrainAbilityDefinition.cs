@@ -1,97 +1,169 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class ForceDrainAbilityDefinition : IAbilityListDefinition
+    public sealed class ForceDrainAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
+
             ForceDrain1(builder);
             ForceDrain2(builder);
             ForceDrain3(builder);
-            ForceDrain4(builder);
-            ForceDrain5(builder);
 
             return builder.Build();
         }
 
         private static void ForceDrain1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain1, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain1, PerkType.ForceDrain)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceDrain)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Force Drain I")
                 .Level(1)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(2)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain1)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_drain")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasImpactAction(ForceDrain1ImpactAction)
+                .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating();
+                .TriggersDarkForceConversion()
+                .BreaksStealth()
+                .RequirementFP(4);
         }
 
         private static void ForceDrain2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain2, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain2, PerkType.ForceDrain)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceDrain)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Force Drain II")
                 .Level(2)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(3)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain2)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_drain2")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasImpactAction(ForceDrain2ImpactAction)
+                .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating();
+                .TriggersDarkForceConversion()
+                .BreaksStealth()
+                .RequirementFP(6);
         }
 
         private static void ForceDrain3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain3, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain3, PerkType.ForceDrain)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceDrain)
+                .UsesAuthoredAnimationAtImpact()
                 .Name("Force Drain III")
                 .Level(3)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(4)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain3)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_drain2")
+                .IsSingleTargetAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasImpactAction(ForceDrain3ImpactAction)
+                .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating();
+                .TriggersDarkForceConversion()
+                .BreaksStealth()
+                .RequirementFP(8);
         }
 
-        private static void ForceDrain4(AbilityBuilder builder)
+        private static void ForceDrain1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder.Create(FeatType.ForceDrain4, PerkType.ForceDrain)
-                .Name("Force Drain IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.ForceDrain, 12f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(5)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain4)
-                .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating();
+            ApplyForceDrain(activator, target, targetLocation, 14, 30, 40);
         }
 
-        private static void ForceDrain5(AbilityBuilder builder)
+        private static void ForceDrain2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder.Create(FeatType.ForceDrain5, PerkType.ForceDrain)
-                .Name("Force Drain V")
-                .HasRecastDelay(RecastGroup.ForceDrain, 12f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(15.0f)
-                .RequirementFP(6)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain5)
-                .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating();
+            ApplyForceDrain(activator, target, targetLocation, 24, 35, 45);
         }
+
+        private static void ForceDrain3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyForceDrain(activator, target, targetLocation, 36, 40, 50);
+        }
+
+        private static void ApplyForceDrain(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int healPercent,
+            int lowHPHealPercent)
+        {
+            var damage = Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Force,
+                baseDamage,
+                0,
+                null,
+                false,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Force);
+
+            if (damage <= 0)
+                return;
+
+            ApplyDrainVisual(activator, target);
+
+            var effectiveHealPercent = IsBelowHalfHP(target)
+                ? lowHPHealPercent
+                : healPercent;
+            var healAmount = GameMath.PercentOf(damage, effectiveHealPercent);
+            healAmount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, healAmount);
+            healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black), activator, 1.0f);
+        }
+
+        private static bool IsBelowHalfHP(uint target)
+        {
+            return GetIsObjectValid(target) &&
+                   GetMaxHitPoints(target) > 0 &&
+                   GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * 0.5f;
+        }
+
+        private static void ApplyDrainVisual(uint activator, uint target)
+        {
+            var drainBeam = EffectBeam(VisualEffect.Vfx_Beam_Drain, activator, BodyNode.Hand);
+            AssignCommand(activator, () => ApplyEffectToObject(DurationType.Temporary, drainBeam, target, 2.0f));
+        }
+
     }
 }

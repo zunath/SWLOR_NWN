@@ -1,0 +1,81 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
+{
+    public class SoulStrikeAbilityDefinition : HeavyVibrobladeActiveAbilityDefinitionBase, IAbilityListDefinition
+    {
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            SoulStrike1(builder);
+            SoulStrike2(builder);
+            SoulStrike3(builder);
+
+            return builder.Build();
+        }
+
+        private static void SoulStrike1(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.SoulStrike1, PerkType.SoulStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulStrike)
+                .Name("Soul Strike I")
+                .Level(1)
+                .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.SoulStrike, 24f)
+                .HasImpactAction((activator, target, level, targetLocation) => SoulStrikeImpact(activator, target, targetLocation, 15, 15))
+                .SkillType(SkillType.HeavyVibroblade)
+                .IsWeaponAbility()
+                .IsHostileAbility()
+                .IsSingleTargetAbility()
+                .BreaksStealth()
+                .RequirementStamina(4);
+        }
+
+        private static void SoulStrike2(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.SoulStrike2, PerkType.SoulStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulStrike)
+                .Name("Soul Strike II")
+                .Level(2)
+                .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.SoulStrike, 24f)
+                .HasImpactAction((activator, target, level, targetLocation) => SoulStrikeImpact(activator, target, targetLocation, 30, 25))
+                .SkillType(SkillType.HeavyVibroblade)
+                .IsWeaponAbility()
+                .IsHostileAbility()
+                .IsSingleTargetAbility()
+                .BreaksStealth()
+                .RequirementStamina(10);
+        }
+
+        private static void SoulStrike3(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.SoulStrike3, PerkType.SoulStrike)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulStrike)
+                .Name("Soul Strike III")
+                .Level(3)
+                .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.SoulStrike, 24f)
+                .HasImpactAction((activator, target, level, targetLocation) =>
+                {
+                    var percent = Math.Min(40, 30 + Math.Max(0, GetAbilityScore(activator, AbilityType.Might)) / 2);
+                    SoulStrikeImpact(activator, target, targetLocation, 45, percent);
+                })
+                .SkillType(SkillType.HeavyVibroblade)
+                .IsWeaponAbility()
+                .IsHostileAbility()
+                .IsSingleTargetAbility()
+                .BreaksStealth()
+                .RequirementStamina(15);
+        }
+    }
+}

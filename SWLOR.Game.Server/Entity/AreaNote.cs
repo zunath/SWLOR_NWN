@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Game.Server.Entity
 {
     public class AreaNote: EntityBase
     {

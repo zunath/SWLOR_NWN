@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload

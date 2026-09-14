@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -13,9 +13,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClosed(model => model.OnCloseWindow())
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 480f, 540f)
+                .SetInitialGeometry(0, 0, 520f, 640f)
                 .SetTitle("Droid Assembly")
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         });
                     });
-                    
+
                     col.AddRow(row =>
                     {
                         row.AddColumn(col2 =>
@@ -214,7 +214,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
-                                    .BindText(model => model.TwoHanded);
+                                    .BindText(model => model.Vibroblade);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.HeavyVibroblade);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Katar);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Pistol);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.FireResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.IceResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.MindResistance);
                             });
                         });
                         row.AddColumn(col2 =>
@@ -242,7 +272,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
-                                    .BindText(model => model.MartialArts);
+                                    .BindText(model => model.Vibroknife);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Spear);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Staff);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Rifle);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.PoisonResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.MobilityResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.TraumaResistance);
                             });
                         });
                         row.AddColumn(col2 =>
@@ -251,6 +311,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddLabel()
                                     .BindText(model => model.AISlots);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Armor);
                             });
                             col2.AddRow(row2 =>
                             {
@@ -265,12 +330,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
-                                    .BindText(model => model.OneHanded);
+                                    .BindText(model => model.Lightsaber);
                             });
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
-                                    .BindText(model => model.Ranged);
+                                    .BindText(model => model.TwinBlade);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Saberstaff);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.Throwing);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.ElectricalResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.DisruptionResistance);
                             });
                         });
                     });

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
         {
             CityHall();
-            
+
             return _builder.Build();
         }
 
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.CityHallStyle1)
                 .PropertyType(PropertyType.CityHall)
                 .Name("City Hall")
-                .StructureLimit(80) 
+                .StructureLimit(80)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
                 .ResearchDeviceLimit(0)

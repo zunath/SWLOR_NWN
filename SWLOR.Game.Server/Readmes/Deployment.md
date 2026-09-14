@@ -27,7 +27,7 @@ The main deployment configuration is defined in `Docker/docker-compose.yml`. Thi
 
 - **Redis**: Caching and data storage using `redislabs/redismod:latest`
 - **Redis Commander**: Web interface for Redis management
-- **SWLOR Server**: Main game server using `zunath/nwn-dotnet:8193.37.3-1` image
+- **SWLOR Server**: Main game server using `zunath/nwn-dotnet:8193.37.17-2` with the .NET 10 runtime and a dedicated non-root user
 - **InfluxDB**: Time-series database for metrics storage
 - **Grafana**: Monitoring and visualization dashboard
 
@@ -125,6 +125,21 @@ Logging is handled by Serilog with multiple sinks. The configuration is defined 
 
 ## Build and Deployment Process
 
+The production host uses the guarded, manual-first deployment workflow in
+[`scripts/deployment/README.md`](../../scripts/deployment/README.md). It builds
+and validates a temporary HAK/TLK/module set in the existing NWSync repository
+while the live server continues using separate permanent artifact directories.
+The versioned server image is selected from the tracked deployment image file,
+published once by the owner-approved `dockerhub-publish` GitHub Environment,
+and pulled by every deployment host; deployment hosts do not build it locally.
+After that host's `build.sh` generates the manifest, the workflow takes the
+complete Compose project down, updates `NWN_NWSYNCHASH`, atomically moves the
+new artifacts into the server tree, brings the project up, and health-checks
+startup. The previous live set is retained until the health check passes and
+is restored automatically on a failed cutover. The generic commands below
+remain useful for local development but are not the production release
+procedure.
+
 ### 1. Local Development
 
 ```bash
@@ -210,7 +225,9 @@ Environment-specific configurations can be created by extending the base `docker
 
 **Best Practices**:
 - Use minimal base images
-- Run containers as non-root users
+- The SWLOR image runs NWN/NWNX as the dedicated numeric user `1000:1000`;
+  the deployment script prepares only required writable bind-mount directories
+  for that identity and keeps deployed artifacts root-owned
 - Regularly update container images
 - Scan images for vulnerabilities
 
@@ -291,4 +308,4 @@ Configure resource limits and reservations in the Docker Compose file:
 
 ---
 
-*This documentation should be updated when deployment configuration changes or new deployment processes are added.* 
+*This documentation should be updated when deployment configuration changes or new deployment processes are added.*

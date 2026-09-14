@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             ConditionHasCompletedQuest();
             ConditionHasQuest();
             ConditionOnQuestState();
+            ConditionCanAcceptQuest();
 
             // Actions
             ActionAcceptQuest();
@@ -29,6 +30,10 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-completed-quest")
                 .Description("Checks whether a player has completed one or more quests.")
+                .Phrase("the player has finished {questId}")
+                .NegatedPhrase("the player has not finished {questId}")
+                .Argument("questId", SnippetArgumentType.QuestId)
+                .Repeats()
                 .AppearsWhenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -60,6 +65,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-has-quest")
                 .Description("Checks whether a player has a quest.")
+                .Phrase("the player is doing {questId}")
+                .NegatedPhrase("the player is not doing {questId}")
+                .Argument("questId", SnippetArgumentType.QuestId)
                 .AppearsWhenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -82,6 +90,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-on-quest-state")
                 .Description("Checks if a player is on one or more states of a quest.")
+                .Phrase("the player is on step {state} of {questId}")
+                .NegatedPhrase("the player is not on step {state} of {questId}")
+                .Argument("questId", SnippetArgumentType.QuestId)
+                .Argument("state", SnippetArgumentType.QuestState)
+                .Repeats()
                 .AppearsWhenAction((player, args) =>
                 {
                     if (args.Length < 2)
@@ -95,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var questId = args[0];
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    if (!dbPlayer.Quests.ContainsKey(questId)) 
+                    if (!dbPlayer.Quests.ContainsKey(questId))
                         return false;
 
                     // Try to parse each Id. If it parses, check the player's current state.
@@ -125,10 +138,34 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
         }
 
+        private void ConditionCanAcceptQuest()
+        {
+            _builder.Create("condition-can-accept-quest")
+                .Description("Checks whether a player can accept a quest without sending prerequisite feedback.")
+                .Phrase("the player is allowed to start {questId}")
+                .NegatedPhrase("the player is not yet allowed to start {questId}")
+                .Argument("questId", SnippetArgumentType.QuestId)
+                .AppearsWhenAction((player, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'condition-can-accept-quest' requires a questId argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return false;
+                    }
+
+                    var questId = args[0];
+                    return Quest.CanAcceptQuest(player, questId);
+                });
+        }
+
         private void ActionAcceptQuest()
         {
             _builder.Create("action-accept-quest")
                 .Description("Accepts a quest for a player.")
+                .Phrase("starts {questId}")
+                .Argument("questId", SnippetArgumentType.QuestId)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -136,11 +173,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-accept-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var questId = args[0];
-                    Quest.AcceptQuest(player, questId);
+                    return Quest.AcceptQuest(player, Snippet.GetExecutionOwner(), questId);
                 });
         }
 
@@ -148,6 +185,8 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-advance-quest")
                 .Description("Advances a quest for a player.")
+                .Phrase("moves {questId} to its next step, and pays out on the last one")
+                .Argument("questId", SnippetArgumentType.QuestId)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -155,11 +194,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-advance-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var questId = args[0];
-                    Quest.AdvanceQuest(player, OBJECT_SELF, questId);
+                    return Quest.AdvanceQuest(player, Snippet.GetExecutionOwner(), questId);
                 });
         }
 
@@ -167,20 +206,22 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-request-quest-items")
                 .Description("Spawns a container and forces the player to open it. They are then instructed to insert any quest items inside.")
+                .Phrase("opens the hand-in box for {questId}")
+                .Argument("questId", SnippetArgumentType.QuestId)
                 .ActionsTakenAction((player, args) =>
                 {
-                    if (!GetIsPC(player) || GetIsDM(player)) return;
+                    if (!GetIsPC(player) || GetIsDM(player)) return false;
 
                     if (args.Length <= 0)
                     {
                         const string Error = "'action-request-quest-items' requires a questId argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var questId = args[0];
-                    Quest.RequestItemsFromPlayer(player, questId);
+                    return Quest.RequestItemsFromPlayer(player, Snippet.GetExecutionOwner(), questId);
                 });
         }
 

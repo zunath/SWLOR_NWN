@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The Rod of Spawn Banners allows you to control spawnpoints from Neshke's Extendable Spawn System.\n\nUse on the ground to Show/Hide Spawn Banners.\n\nUse on a Banner to control that spawnpoint."
     }
   },
   "Identified": {
@@ -117,6 +117,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "spawn_ban_rod"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

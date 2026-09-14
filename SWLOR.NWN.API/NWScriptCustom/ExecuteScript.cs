@@ -31,7 +31,9 @@ namespace SWLOR.NWN.API.NWScript
                         }
                         catch (Exception ex)
                         {
-                            throw new InvalidOperationException($"C# Script '{sScript}' threw an exception: {ex.Message}", ex);
+                            // Match top-level ScriptExecutor behavior: one broken handler must not
+                            // prevent the remaining handlers or later cache phases from running.
+                            provider.ReportScriptException(sScript, name, ex);
                         }
                     }
                 }, oTarget);

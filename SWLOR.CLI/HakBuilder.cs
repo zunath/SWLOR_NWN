@@ -20,8 +20,19 @@ namespace SWLOR.CLI
         public void Process()
         {
             // Read the config file.
-            _config = GetConfig();
-            _haksToProcess = _config.HakList.ToList();
+            Process(GetConfig());
+        }
+
+        internal void Process(HakBuilderConfig config)
+        {
+            _config = config;
+            _haksToProcess = _config.HakList
+                .Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name))
+                .ToList();
+            // Validate every input before deleting any previous HAK or TLK.
+            foreach (var hak in _haksToProcess)
+                ValidateArchiveSize(hak.Name, Directory.EnumerateFiles(hak.Path, "*", SearchOption.AllDirectories)
+                    .Select(path => new FileInfo(path).Length));
             // Clean the output folder.
             CleanOutputFolder();
 
@@ -61,6 +72,25 @@ namespace SWLOR.CLI
                 CompileHakpak(hak.Name, hak.Path);
             });
 
+        }
+
+        internal static void ValidateArchiveSize(string hakName, IEnumerable<long> resourceSizes)
+        {
+            // Conservative client compatibility budget, including the ERF V1.0
+            // 160-byte header and each 24-byte key plus 8-byte resource entry.
+            const long maximumExclusive = 2L * 1024 * 1024 * 1024;
+            long estimatedBytes = 160;
+            foreach (var size in resourceSizes)
+            {
+                if (size < 0)
+                    throw new ArgumentOutOfRangeException(nameof(resourceSizes));
+                if (size >= maximumExclusive - estimatedBytes - 32)
+                    throw new InvalidOperationException(
+                        $"HAK '{hakName}' reaches the 2 GiB client compatibility limit including archive tables. " +
+                        "Split its resources across smaller HAKs and add each HAK to the module before rebuilding. " +
+                        "No existing build outputs have been deleted.");
+                estimatedBytes += size + 32;
+            }
         }
 
         /// <summary>
@@ -103,30 +133,30 @@ namespace SWLOR.CLI
                         }
                     }
 
-                    Parallel.ForEach(_config.HakList, hak =>
+                    foreach (var hak in _config.HakList.Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name)))
                     {
                         // Check whether .hak file exists
                         if (!File.Exists(_config.OutputPath + "hak/" + hak.Name + ".hak"))
                         {
                             Console.WriteLine(hak.Name + " needs to be built");
-                            return;
+                            continue;
                         }
 
                         // Skip checksum checking if disabled
                         if (!_config.EnableChecksumChecking)
                         {
                             Console.WriteLine(hak.Name + " needs to be built (checksum checking disabled)");
-                            return;
+                            continue;
                         }
 
                         var checksumFolder = ChecksumUtil.ChecksumFolder(hak.Path);
-                        _checksumDictionary.Add(hak.Name, checksumFolder);
+                        _checksumDictionary[hak.Name] = checksumFolder;
 
                         // Check whether .sha checksum file exists
                         if (!File.Exists(_config.OutputPath + "hak/" + hak.Name + ".md5"))
                         {
                             Console.WriteLine(hak.Name + " needs to be built");
-                            return;
+                            continue;
                         }
 
                         // When checksums are equal or hak folder doesn't exist -> remove hak from the list
@@ -136,10 +166,10 @@ namespace SWLOR.CLI
                             _haksToProcess.Remove(hak);
                             Console.WriteLine(hak.Name + " is up to date");
                         }
-                    });
+                    }
 
                     // Delete outdated haks and checksums
-                    Parallel.ForEach(_haksToProcess, hak =>
+                    foreach (var hak in _haksToProcess.Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name)))
                     {
                         var filePath = _config.OutputPath + "hak/" + hak.Name;
                         if (File.Exists(filePath + ".hak"))
@@ -167,35 +197,13 @@ namespace SWLOR.CLI
                                 Console.WriteLine($"Exception: {ex.ToMessageAndCompleteStacktrace()}");
                             }
                         }
-                    });
+                    }
                 }
                 else
                 {
                     Directory.CreateDirectory(_config.OutputPath);
                 }
             }
-        }
-
-        /// <summary>
-        /// Creates a new background process used for running external programs.
-        /// </summary>
-        /// <param name="command">The command to pass into the cmd instance.</param>
-        /// <returns>A new process</returns>
-        private Process CreateProcess(string command)
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo("cmd.exe", "/K " + command)
-                {
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardInput = true,
-                    CreateNoWindow = false
-                },
-                EnableRaisingEvents = true
-            };
-
-            return process;
         }
 
         /// <summary>
@@ -212,20 +220,17 @@ namespace SWLOR.CLI
                 Directory.CreateDirectory(hakDir);
             }
             
-            var command = $"nwn_erf -f \"{_config.OutputPath}hak/{hakName}.hak\" -e HAK -c ./{folderPath}";
             Console.WriteLine($"Building hak: {hakName}.hak");
 
-            using (var process = CreateProcess(command))
-            {
-                process.Start();
+            var contentPath = Path.IsPathRooted(folderPath)
+                ? folderPath
+                : $"./{folderPath}";
 
-                process.StandardInput.Flush();
-                process.StandardInput.Close();
-
-                process.StandardOutput.ReadToEnd();
-
-                process.WaitForExit();
-            }
+            RunProcess(
+                "nwn_erf.exe",
+                "-f", $"{_config.OutputPath}hak/{hakName}.hak",
+                "-e", "HAK",
+                "-c", contentPath);
 
             // Only perform checksum operations if enabled
             if (_config.EnableChecksumChecking)
@@ -237,6 +242,64 @@ namespace SWLOR.CLI
 
                 ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
             }
+        }
+
+        private static void RunProcess(string fileName, params string[] arguments)
+        {
+            var toolPath = ResolveToolPath(fileName);
+            using (var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(toolPath)
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                },
+                EnableRaisingEvents = true
+            })
+            {
+                foreach (var argument in arguments)
+                {
+                    process.StartInfo.ArgumentList.Add(argument);
+                }
+
+                process.Start();
+
+                var standardOutputTask = process.StandardOutput.ReadToEndAsync();
+                var standardErrorTask = process.StandardError.ReadToEndAsync();
+                process.WaitForExit();
+                var standardOutput = standardOutputTask.GetAwaiter().GetResult();
+                var standardError = standardErrorTask.GetAwaiter().GetResult();
+
+                if (process.ExitCode != 0)
+                {
+                    var command = $"{fileName} {string.Join(" ", arguments.Select(QuoteArgument))}";
+                    throw new InvalidOperationException(
+                        $"Command failed with exit code {process.ExitCode}: {command}{Environment.NewLine}{standardOutput}{standardError}");
+                }
+            }
+        }
+
+        private static string ResolveToolPath(string fileName)
+        {
+            var executableDirectoryPath = Path.Combine(AppContext.BaseDirectory, fileName);
+            if (File.Exists(executableDirectoryPath))
+            {
+                return executableDirectoryPath;
+            }
+
+            var workingDirectoryPath = Path.Combine(Environment.CurrentDirectory, fileName);
+            return File.Exists(workingDirectoryPath)
+                ? workingDirectoryPath
+                : fileName;
+        }
+
+        private static string QuoteArgument(string argument)
+        {
+            return argument.Contains(' ')
+                ? $"\"{argument}\""
+                : argument;
         }
     }
 }

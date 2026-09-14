@@ -1,0 +1,31 @@
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
+{
+    public class BerserkerStanceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    {
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.BerserkerStance1, PerkType.BerserkerStance)
+                    .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_BerserkerStance)
+                    .Name("Berserker Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.BerserkerStance, 30f)
+                    .UsesImmediateAuthoredAnimation()
+                    .UsesAnimation(Animation.OneHandedStance),
+                typeof(BerserkerStanceStatusEffect),
+                () => new BerserkerStanceStatusEffect());
+
+            return builder.Build();
+        }
+    }
+}

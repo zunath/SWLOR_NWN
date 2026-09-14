@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             x:Class="SWLOR.Toolset.Editors.Doors.DoorDocumentView"
+             x:DataType="doors:DoorDocumentViewModel">
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                   Foreground="{DynamicResource AmberBrush}" FontSize="12"
+                   TextTrimming="CharacterEllipsis"
+                   DataContext="{Binding Editor}" x:DataType="doors:DoorEditorViewModel"
+                   Text="{Binding Incomplete}" IsVisible="{Binding IsIncomplete}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+          <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+      <TabItem Header="Edit">
+        <doors:DoorEditorView DataContext="{Binding Editor}" />
+      </TabItem>
+      <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView DataContext="{Binding Source}" />
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</UserControl>

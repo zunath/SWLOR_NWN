@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnCreatureHeartbeatAfter = "crea_hb_aft";
         public const string OnCreaturePerceptionAfter = "crea_perc_aft";
         public const string OnCreatureRoundEndAfter = "crea_rndend_aft";
+        public const string OnCreatureConversationBefore = "crea_convo_bef";
         public const string OnCreatureConversationAfter = "crea_convo_aft";
         public const string OnCreatureAttackAfter = "crea_attack_aft";
         public const string OnCreatureDamagedAfter = "crea_damaged_aft";
@@ -82,38 +83,6 @@ namespace SWLOR.Game.Server.Core
 
         // Dialog events
         public const string OnDialogStart = "dialog_start";
-        public const string OnDialogAction0 = "dialog_action_0";
-        public const string OnDialogAction1 = "dialog_action_1";
-        public const string OnDialogAction2 = "dialog_action_2";
-        public const string OnDialogAction3 = "dialog_action_3";
-        public const string OnDialogAction4 = "dialog_action_4";
-        public const string OnDialogAction5 = "dialog_action_5";
-        public const string OnDialogAction6 = "dialog_action_6";
-        public const string OnDialogAction7 = "dialog_action_7";
-        public const string OnDialogAction8 = "dialog_action_8";
-        public const string OnDialogAction9 = "dialog_action_9";
-        public const string OnDialogAction10 = "dialog_action_10";
-        public const string OnDialogAction11 = "dialog_action_11";
-        public const string OnDialogAppears0 = "dialog_appears_0";
-        public const string OnDialogAppears1 = "dialog_appears_1";
-        public const string OnDialogAppears2 = "dialog_appears_2";
-        public const string OnDialogAppears3 = "dialog_appears_3";
-        public const string OnDialogAppears4 = "dialog_appears_4";
-        public const string OnDialogAppears5 = "dialog_appears_5";
-        public const string OnDialogAppears6 = "dialog_appears_6";
-        public const string OnDialogAppears7 = "dialog_appears_7";
-        public const string OnDialogAppears8 = "dialog_appears_8";
-        public const string OnDialogAppears9 = "dialog_appears_9";
-        public const string OnDialogAppears10 = "dialog_appears10";
-        public const string OnDialogAppears11 = "dialog_appears11";
-        public const string OnDialogAppearsH = "dialog_appears_h";
-        public const string OnDialogAppearsN = "dialog_appears_n";
-        public const string OnDialogActionN = "dialog_action_n";
-        public const string OnDialogAppearsP = "dialog_appears_p";
-        public const string OnDialogActionP = "dialog_action_p";
-        public const string OnDialogAppearsB = "dialog_appears_b";
-        public const string OnDialogActionB = "dialog_action_b";
-        public const string OnDialogEnd = "dialog_end";
         public const string OnDialogStartConversation = "start_convo";
         public const string OnDialogAppear = "appear";
         public const string OnDialogAppears = "appears";
@@ -159,12 +128,18 @@ namespace SWLOR.Game.Server.Core
 
         // Space events
         public const string OnSpaceEnter = "space_enter";
+        public const string OnSpaceExit = "space_exit";
         public const string OnShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
 
         // Aura events
         public const string OnAuraEnter = "aura_enter";
         public const string OnAuraExit = "aura_exit";
+
+        // Status Effect events
+        public const string OnApplyStatusEffect = "status_apply";
+        public const string OnRemoveStatusEffect = "status_remove";
+        public const string OnStatusEffectInterval = "status_interval";
 
         // Beast events
         public const string OnBeastBlocked = "beast_blocked";
@@ -200,9 +175,11 @@ namespace SWLOR.Game.Server.Core
 
         // Craft events
         public const string OnCraftUsed = "craft_on_used";
+        public const string OnEspionageTrapUsed = "espn_trap_used";
         public const string OnCraftSuccess = "craft_success";
         public const string OnRefineryUsed = "refinery_used";
         public const string OnResearchTerminal = "research_term";
+        public const string OnLightsaberWorkbenchUsed = "lsaber_bench";
 
         // Fishing events
         public const string OnFishPoint = "fish_point";
@@ -251,6 +228,8 @@ namespace SWLOR.Game.Server.Core
         public const string OnQuestCollectDisturbed = "qst_collect_dist";
         public const string OnQuestPlaceable = "quest_placeable";
         public const string OnQuestTrigger = "quest_trigger";
+        public const string OnQuestEncounter = "quest_enc";
+        public const string OnQuestContractBoard = "qcontract_board";
 
         // Trash events
         public const string OnTrashOpened = "trash_opened";
@@ -296,13 +275,18 @@ namespace SWLOR.Game.Server.Core
         public const string OnSWLORCombatPointDistributed = "cp_xp_distribute";
         public const string OnSWLORSkillLostByDecay = "swlor_lose_skill";
         public const string OnSWLORDeleteProperty = "swlor_del_prop";
+        public const string OnSWLORDamage = "swlor_damage";
         public const string OnSWLORItemEquipValidBefore = "item_eqp_bef";
+
+        // Telegraph events
+        public const string TelegraphEffect = "telegraph_effect";
 
         // Communication events
         public const string OnNWNXChat = "on_nwnx_chat";
 
         // GUI events
         public const string OnOpenHoloNet = "open_holonet";
+        public const string OnSlicingTerminal = "slice_terminal";
         public const string OnOpenBank = "open_bank";
         public const string OnOpenTrainingStore = "open_train_store";
         public const string OnEnmityChanged = "enmity_changed";
@@ -323,8 +307,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnHarvesterUsed = "harvester_used";
 
         // Grenade events
-        public const string OnGrenadeSmokeEnable = "grenade_smoke_en";
-        public const string OnGrenadeSmokeHeartbeat = "grenade_smoke_hb";
         public const string OnGrenadeKolto1Enable = "grenade_kolt1_en";
         public const string OnGrenadeKolto1Heartbeat = "grenade_kolt1_hb";
         public const string OnGrenadeKolto2Enable = "grenade_kolt2_en";
@@ -345,8 +327,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnGrenadeGas3Heartbeat = "grenade_gas3_hb";
 
         // Burst of Speed events
-        public const string OnBurstOfSpeedApply = "bspeed_apply";
-        public const string OnBurstOfSpeedRemoved = "bspeed_removed";
 
         // Store events
         public const string OnStoreSellAfter = "store_sell_aft";
@@ -360,6 +340,9 @@ namespace SWLOR.Game.Server.Core
         public const string OnScavengeOpened = "scav_opened";
         public const string OnScavengeDisturbed = "scav_disturbed";
         public const string OnScavengeClosed = "scav_closed";
+
+        // Procedural treasure events
+        public const string OnProceduralTreasureOpened = "proc_loot_open";
 
         // NWNX Events - Associate events
         public const string OnAssociateAddAfter = "asso_add_aft";
@@ -665,6 +648,7 @@ namespace SWLOR.Game.Server.Core
         // NWNX Events - Broadcast spell cast events
         public const string OnBroadcastCastSpellBefore = "cast_spell_bef";
         public const string OnBroadcastCastSpellAfter = "cast_spell_aft";
+        public const string OnBroadcastSafeProjectileBefore = "safe_proj_bef";
 
         // NWNX Events - Debug events
         public const string OnDebugRunScriptBefore = "debug_script_bef";
@@ -691,4 +675,4 @@ namespace SWLOR.Game.Server.Core
         public const string OnItemScrollLearnBefore = "scroll_lrn_bef";
         public const string OnItemScrollLearnAfter = "scroll_lrn_aft";
     }
-} 
+}

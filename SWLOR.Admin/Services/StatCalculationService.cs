@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -9,6 +10,9 @@ namespace SWLOR.Admin.Services
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
+        private const int FPPerWillpower = 3;
+        private const int StaminaPerTwoMight = 3;
+        private const float DefenseSkillMultiplier = 1.2f;
 
         /// <summary>
         /// Calculates the ability modifier for a given stat
@@ -64,7 +68,7 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Calculates max FP using the formula: BaseFP + (Willpower Modifier × 10) + Food Bonus
+        /// Calculates max FP using the formula: BaseFP + (Willpower Stat x 3) + Food Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="foodBonus">Optional food bonus (default 0)</param>
@@ -73,12 +77,12 @@ namespace SWLOR.Admin.Services
         {
             if (player == null) return BaseFP;
 
-            var willpowerMod = GetAbilityModifier(player, AbilityType.Willpower);
-            return BaseFP + (willpowerMod * 10) + foodBonus;
+            var willpower = GetAbilityScore(player, AbilityType.Willpower);
+            return BaseFP + (willpower * FPPerWillpower) + foodBonus;
         }
 
         /// <summary>
-        /// Calculates max Stamina using the formula: BaseSTM + (Agility Modifier × 5) + Food Bonus
+        /// Calculates max Stamina using the formula: BaseSTM + floor(Might Stat x 1.5) + Food Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="foodBonus">Optional food bonus (default 0)</param>
@@ -87,8 +91,8 @@ namespace SWLOR.Admin.Services
         {
             if (player == null) return BaseSTM;
 
-            var agilityMod = GetAbilityModifier(player, AbilityType.Agility);
-            return BaseSTM + (agilityMod * 5) + foodBonus;
+            var might = GetAbilityScore(player, AbilityType.Might);
+            return BaseSTM + (might * StaminaPerTwoMight / 2) + foodBonus;
         }
 
         /// <summary>
@@ -109,7 +113,7 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Gets the highest combat skill level from OneHanded, TwoHanded, Ranged, and Force
+        /// Gets the highest combat skill level from explicit weapon skills and Force
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <returns>The highest combat skill level</returns>
@@ -117,7 +121,22 @@ namespace SWLOR.Admin.Services
         {
             if (player?.Skills == null) return 0;
 
-            var combatSkills = new[] { SkillType.OneHanded, SkillType.TwoHanded, SkillType.Ranged, SkillType.Force };
+            var combatSkills = new[]
+            {
+                SkillType.Vibroblade,
+                SkillType.Vibroknife,
+                SkillType.Lightsaber,
+                SkillType.HeavyVibroblade,
+                SkillType.Spear,
+                SkillType.TwinBlade,
+                SkillType.Saberstaff,
+                SkillType.Katar,
+                SkillType.Staff,
+                SkillType.Pistol,
+                SkillType.Rifle,
+                SkillType.Throwing,
+                SkillType.Force
+            };
             return combatSkills.Max(skill => GetSkillLevel(player, skill));
         }
 
@@ -152,22 +171,38 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Calculates defense using the formula: 8 + (Vitality Stat × 1.5) + Armor Skill + Equipment Bonus
+        /// Calculates physical defense using the formula: 8 + (Armor Skill x 1.2) + Vitality Stat + Equipment Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="equipmentBonus">The equipment bonus</param>
         /// <returns>The calculated defense value</returns>
         public static int CalculateDefense(Player player, int equipmentBonus)
         {
-            if (player == null) return 8;
-
-            var vitalityStat = GetAbilityScore(player, AbilityType.Vitality);
-            var armorSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            return 8 + (int)(vitalityStat * 1.5) + armorSkillLevel + equipmentBonus;
+            return CalculateDefense(player, CombatDamageType.Physical, equipmentBonus);
         }
 
         /// <summary>
-        /// Calculates evasion using the formula: (Agility Stat × 3) + Armor Skill + Equipment Bonus
+        /// Calculates defense using the stat attached to the supplied damage type.
+        /// </summary>
+        /// <param name="player">The player entity</param>
+        /// <param name="damageType">The damage type whose defense metadata determines the stat.</param>
+        /// <param name="equipmentBonus">The equipment bonus</param>
+        /// <returns>The calculated defense value</returns>
+        public static int CalculateDefense(Player player, CombatDamageType damageType, int equipmentBonus)
+        {
+            if (player == null) return 8;
+
+            var defenseAbility = damageType.GetDefenseAbilityType();
+            if (defenseAbility == AbilityType.Invalid)
+                defenseAbility = AbilityType.Vitality;
+
+            var defenseStat = GetAbilityScore(player, defenseAbility);
+            var armorSkillLevel = GetSkillLevel(player, SkillType.Armor);
+            return 8 + (int)(armorSkillLevel * DefenseSkillMultiplier) + defenseStat + equipmentBonus;
+        }
+
+        /// <summary>
+        /// Calculates evasion using the formula: 8 + (2 × Armor Skill) + Agility Stat + Equipment Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="equipmentBonus">The equipment bonus</param>
@@ -178,18 +213,17 @@ namespace SWLOR.Admin.Services
 
             var agilityStat = GetAbilityScore(player, AbilityType.Agility);
             var armorSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            return (agilityStat * 3) + armorSkillLevel + equipmentBonus;
+            return 8 + (2 * armorSkillLevel) + agilityStat + equipmentBonus;
         }
 
-        /// <summary>
-        /// Gets the total defense bonus from all equipment
-        /// </summary>
-        /// <param name="player">The player entity</param>
-        /// <returns>The total defense bonus</returns>
-        public static int GetTotalDefenseBonus(Player player)
+        public static int GetDefenseBonus(Player player, CombatDamageType damageType)
         {
-            if (player?.Defenses == null) return 0;
-            return player.Defenses.Values.Sum();
+            if (player?.Defenses == null)
+                return 0;
+
+            return player.Defenses.TryGetValue(damageType.GetDefenseDamageType(), out var bonus)
+                ? bonus
+                : 0;
         }
 
         /// <summary>
@@ -207,21 +241,6 @@ namespace SWLOR.Admin.Services
             var skillLevel = GetSkillLevel(player, skillType);
             var stat = GetAbilityScore(player, abilityType);
             return 8 + (2 * skillLevel) + stat + equipmentBonus;
-        }
-
-        /// <summary>
-        /// Calculates base saving throw using the formula: 8 + (Stat Modifier × 2) + Level
-        /// </summary>
-        /// <param name="player">The player entity</param>
-        /// <param name="abilityType">The ability type to use for calculation</param>
-        /// <param name="level">The character level</param>
-        /// <returns>The calculated saving throw value</returns>
-        public static int CalculateBaseSavingThrow(Player player, AbilityType abilityType, int level)
-        {
-            if (player == null) return 8;
-
-            var statMod = GetAbilityModifier(player, abilityType);
-            return 8 + (statMod * 2) + level;
         }
 
         /// <summary>
@@ -244,31 +263,31 @@ namespace SWLOR.Admin.Services
             };
 
             // FP calculation
-            var willpowerMod = GetAbilityModifier(player, AbilityType.Willpower);
-            var fpBonus = willpowerMod * 10;
+            var willpower = GetAbilityScore(player, AbilityType.Willpower);
+            var fpBonus = willpower * FPPerWillpower;
             var calculatedFP = BaseFP + fpBonus;
             breakdown["MaxFP"] = new
             {
                 Base = BaseFP,
-                WillpowerModifier = willpowerMod,
+                WillpowerStat = willpower,
                 FPBonus = fpBonus,
                 Calculated = calculatedFP,
                 Stored = player.MaxFP,
-                Formula = "BaseFP + (Willpower Modifier × 10) + Food Bonus"
+                Formula = "BaseFP + (Willpower Stat x 3) + Food Bonus"
             };
 
             // Stamina calculation
-            var agilityMod = GetAbilityModifier(player, AbilityType.Agility);
-            var stmBonus = agilityMod * 5;
+            var might = GetAbilityScore(player, AbilityType.Might);
+            var stmBonus = might * StaminaPerTwoMight / 2;
             var calculatedSTM = BaseSTM + stmBonus;
             breakdown["MaxStamina"] = new
             {
                 Base = BaseSTM,
-                AgilityModifier = agilityMod,
+                MightStat = might,
                 StaminaBonus = stmBonus,
                 Calculated = calculatedSTM,
                 Stored = player.MaxStamina,
-                Formula = "BaseSTM + (Agility Modifier × 5) + Food Bonus"
+                Formula = "BaseSTM + floor(Might Stat x 1.5) + Food Bonus"
             };
 
             // Attack calculation
@@ -287,37 +306,49 @@ namespace SWLOR.Admin.Services
                 Formula = "8 + (2 × Skill Level) + Stat + Equipment Bonus"
             };
 
-            // Defense calculation
-            var defenseBase = 8;
-            var defenseStat = GetAbilityScore(player, AbilityType.Vitality);
-            var defenseSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            var defenseBonus = GetTotalDefenseBonus(player);
-            var calculatedDefense = defenseBase + (int)(defenseStat * 1.5) + defenseSkillLevel + defenseBonus;
-            breakdown["Defense"] = new
-            {
-                Base = defenseBase,
-                VitalityStat = defenseStat,
-                ArmorSkillLevel = defenseSkillLevel,
-                EquipmentBonus = defenseBonus,
-                Calculated = calculatedDefense,
-                Formula = "8 + (Vitality Stat × 1.5) + Armor Skill + Equipment Bonus"
-            };
+            breakdown["Defenses"] = player.Defenses?
+                .ToDictionary(
+                    x => x.Key.ToString(),
+                    x =>
+                    {
+                        var defenseAbility = x.Key.GetDefenseAbilityType();
+                        var defenseStat = defenseAbility == AbilityType.Invalid
+                            ? 0
+                            : GetAbilityScore(player, defenseAbility);
+
+                        return (object)new
+                        {
+                            Base = 8,
+                            AbilityType = defenseAbility.ToString(),
+                            Stat = defenseStat,
+                            ArmorSkillLevel = GetSkillLevel(player, SkillType.Armor),
+                            EquipmentBonus = x.Value,
+                            Calculated = CalculateDefense(player, x.Key, x.Value),
+                            Formula = "8 + (Armor Skill x 1.2) + Defense Stat + Equipment Bonus"
+                        };
+                    })
+                ?? new Dictionary<string, object>();
+
+            breakdown["Resistances"] = player.Resistances?
+                .ToDictionary(x => x.Key.ToString(), x => x.Value)
+                ?? new Dictionary<string, int>();
 
             // Evasion calculation
             var evasionStat = GetAbilityScore(player, AbilityType.Agility);
             var evasionSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            var calculatedEvasion = (evasionStat * 3) + evasionSkillLevel + player.Evasion;
+            var calculatedEvasion = 8 + (2 * evasionSkillLevel) + evasionStat + player.Evasion;
             breakdown["Evasion"] = new
             {
+                Base = 8,
                 AgilityStat = evasionStat,
                 ArmorSkillLevel = evasionSkillLevel,
                 EquipmentBonus = player.Evasion,
                 Calculated = calculatedEvasion,
                 Stored = player.Evasion,
-                Formula = "(Agility Stat × 3) + Armor Skill + Equipment Bonus"
+                Formula = "8 + (2 × Armor Skill) + Agility Stat + Equipment Bonus"
             };
 
             return breakdown;
         }
     }
-} 
+}

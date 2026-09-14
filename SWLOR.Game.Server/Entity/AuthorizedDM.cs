@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Entity
 {

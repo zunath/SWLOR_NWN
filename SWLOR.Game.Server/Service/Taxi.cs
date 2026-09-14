@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -23,7 +22,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var destination in taxiDestinationTypes)
             {
                 var detail = destination.GetAttribute<TaxiDestinationType, TaxiDestinationAttribute>();
-                
+
                 if(!_taxiDestinationsByRegionId.ContainsKey(detail.RegionId))
                     _taxiDestinationsByRegionId[detail.RegionId] = new Dictionary<TaxiDestinationType, TaxiDestinationAttribute>();
 

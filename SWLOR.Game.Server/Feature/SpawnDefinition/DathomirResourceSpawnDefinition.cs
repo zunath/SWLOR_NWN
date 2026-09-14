@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             return _builder.Build();
         }
-        
+
         private void Desert()
         {
             _builder.Create("DATHOMIR_DESERT_RESOURCES")
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
                 .WithFrequency(15)
-                
+
                 .AddSpawn(ObjectType.Placeable, "hyphae_tree")
                 .WithFrequency(5);
         }

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 59.0
+    "value": 73.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 29
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 450
+    "value": 911
   },
   "DecayTime": {
     "type": "dword",
@@ -180,14 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "danshamspear"
+          "value": "dantarihunter_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "kwi_shaman_skin"
+          "value": "dantarihunter_sk"
         }
       }
     ]
@@ -219,6 +219,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1822
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1760
+        }
       }
     ]
   },
@@ -242,11 +256,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 450
+    "value": 551
   },
   "Int": {
     "type": "byte",
-    "value": 26
+    "value": 29
   },
   "Interruptable": {
     "type": "byte",
@@ -276,7 +290,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 650
+    "value": 911
   },
   "NaturalAC": {
     "type": "byte",
@@ -581,7 +595,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 36
   },
   "Subrace": {
     "type": "cexostring",
@@ -712,7 +726,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 28
+    "value": 20
   },
   "xAppearance_Head": {
     "type": "word",

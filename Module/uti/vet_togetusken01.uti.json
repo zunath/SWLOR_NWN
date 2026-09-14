@@ -131,8 +131,8 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Guenilles Tusken",
-      "2": "Robe Tusken"
+      "0": "Tusken Rags",
+      "2": "Tusken Rags"
     }
   },
   "Metal1Color": {
@@ -170,6 +170,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vet_togetusken01"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xArmorPart_Belt": {
     "type": "word",

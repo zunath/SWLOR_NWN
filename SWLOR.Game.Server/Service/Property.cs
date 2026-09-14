@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -32,11 +31,24 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, uint> _instanceTemplates = new();
         private static readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
+        private static readonly Dictionary<string, PropertyLoadState> _propertyLoadStates = new();
+        private static readonly Dictionary<string, string> _propertyLoadFailures = new();
+        private static readonly Dictionary<string, HashSet<string>> _propertyLoadWaiters = new();
+        private static readonly HashSet<string> _completedInstanceSpawnActions = new();
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private static readonly List<PropertyLoadJob> _propertyLoadJobs = new();
+        private static readonly List<string> _pendingStartupWorldPropertyIds = new();
+        private static readonly HashSet<string> _startupPropertyLoadIds = new();
+        private static readonly HashSet<string> _completedStartupPropertyLoadIds = new();
+        private static readonly HashSet<string> _failedStartupPropertyLoadIds = new();
+        private static bool _propertyLoadProcessorScheduled;
+        private static int _lastStartupPropertyLoadProgressLoaded = -1;
+        private static int _lastStartupPropertyLoadProgressRemaining = -1;
+        private static int _lastStartupPropertyLoadProgressFailed = -1;
 
         private static readonly Dictionary<int, int> _citizensRequired = new()
         {
@@ -49,6 +61,33 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
         private const int PropertyBroadcastColor = 5763719;
+        private const int PropertyLoadBatchSize = 5;
+        private const int PropertyLoadProgressReportInterval = 25;
+        private static readonly TimeSpan PropertyLoadBatchDelay = TimeSpan.FromSeconds(0.2d);
+
+        private enum PropertyLoadPriority
+        {
+            Startup = 0,
+            PlayerRequest = 1,
+            StaffRequest = 2
+        }
+
+        private enum PropertyLoadJobPhase
+        {
+            CreateArea = 0,
+            SpawnStructures = 1
+        }
+
+        private sealed class PropertyLoadJob
+        {
+            public string PropertyId { get; set; }
+            public PropertyLoadPriority Priority { get; set; }
+            public PropertyLoadJobPhase Phase { get; set; }
+            public WorldProperty Property { get; set; }
+            public uint Area { get; set; }
+            public List<WorldProperty> Structures { get; set; } = new();
+            public int StructureIndex { get; set; }
+        }
 
         /// <summary>
         /// Determines the number of hours before the city will be destroyed due to
@@ -77,13 +116,11 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(url))
                 return;
 
-            var mayorName = GetPlayerName(city.OwnerPlayerId);
             var level = city.Upgrades.ContainsKey(PropertyUpgradeType.CityLevel)
                 ? city.Upgrades[PropertyUpgradeType.CityLevel]
                 : 1;
             var description =
                 $"**City**: {SanitizeDiscordText(city.CustomName)}\n" +
-                $"**Mayor**: {SanitizeDiscordText(mayorName)}\n" +
                 $"**City Level**: {GetCityLevelName(level)} (Lvl. {level})\n\n" +
                 SanitizeDiscordText(details);
 
@@ -108,17 +145,6 @@ namespace SWLOR.Game.Server.Service
             {
                 Log.Write(LogGroup.Error, $"Failed to queue property broadcast '{title}' for city '{city.CustomName}' ({city.Id}): {ex}");
             }
-        }
-
-        private static string GetPlayerName(string playerId)
-        {
-            if (string.IsNullOrWhiteSpace(playerId))
-                return "Unknown";
-
-            var dbPlayer = DB.Get<Player>(playerId);
-            return string.IsNullOrWhiteSpace(dbPlayer?.Name)
-                ? "Unknown"
-                : dbPlayer.Name;
         }
 
         private static string FormatUtcDate(DateTime date)
@@ -391,7 +417,7 @@ namespace SWLOR.Game.Server.Service
         private static Vector4 GetEntrancePosition(string areaResref)
         {
             var area = Area.GetAreaByResref(areaResref);
-            
+
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
                 if (GetTag(obj) != "PROPERTY_ENTRANCE") continue;
@@ -399,7 +425,7 @@ namespace SWLOR.Game.Server.Service
                 var position = GetPosition(obj);
                 return new Vector4(position, GetFacing(obj));
             }
-            
+
             return new Vector4();
         }
 
@@ -436,15 +462,872 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the instanced area associated with a specific property Id.
+        /// Retrieves the current load state for an instanced property.
         /// </summary>
-        /// <param name="propertyId">The property Id</param>
-        /// <returns>An area associated with the property Id.</returns>
-        public static PropertyInstance GetRegisteredInstance(string propertyId)
+        /// <param name="propertyId">The property Id to check.</param>
+        /// <returns>The current property load state.</returns>
+        public static PropertyLoadState GetPropertyLoadState(string propertyId)
         {
-            return _propertyInstances[propertyId];
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return PropertyLoadState.Failed;
+
+            if (_propertyLoadStates.TryGetValue(propertyId, out var state))
+            {
+                if (state != PropertyLoadState.Loaded)
+                    return state;
+
+                if (_propertyInstances.TryGetValue(propertyId, out var registeredInstance) &&
+                    GetIsObjectValid(registeredInstance.Area))
+                    return state;
+
+                var dbProperty = DB.Get<WorldProperty>(propertyId);
+                if (dbProperty == null)
+                {
+                    _propertyInstances.Remove(propertyId);
+                    _completedInstanceSpawnActions.Remove(propertyId);
+                    SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
+                    _propertyLoadFailures[propertyId] = "Property does not exist in the database.";
+                    return PropertyLoadState.Failed;
+                }
+
+                if (_propertyTypes[dbProperty.PropertyType].SpawnType == PropertySpawnType.Instance)
+                {
+                    _propertyInstances.Remove(propertyId);
+                    _completedInstanceSpawnActions.Remove(propertyId);
+                    SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);
+                    return PropertyLoadState.Unloaded;
+                }
+
+                return state;
+            }
+
+            if (_propertyInstances.TryGetValue(propertyId, out var existingInstance))
+            {
+                if (GetIsObjectValid(existingInstance.Area))
+                    return PropertyLoadState.Loaded;
+
+                _propertyInstances.Remove(propertyId);
+                _completedInstanceSpawnActions.Remove(propertyId);
+                return PropertyLoadState.Unloaded;
+            }
+
+            var property = DB.Get<WorldProperty>(propertyId);
+            if (property == null)
+                return PropertyLoadState.Failed;
+
+            var detail = _propertyTypes[property.PropertyType];
+            return detail.SpawnType == PropertySpawnType.Instance
+                ? PropertyLoadState.Unloaded
+                : PropertyLoadState.Loaded;
         }
-        
+
+        /// <summary>
+        /// Retrieves the last failure associated with a property load.
+        /// </summary>
+        /// <param name="propertyId">The property Id to check.</param>
+        /// <returns>The failure message or an empty string.</returns>
+        public static string GetPropertyLoadFailure(string propertyId)
+        {
+            return _propertyLoadFailures.TryGetValue(propertyId, out var failure)
+                ? failure
+                : string.Empty;
+        }
+
+        /// <summary>
+        /// Retrieves runtime load diagnostics for all instanced properties.
+        /// </summary>
+        /// <returns>A list of property load diagnostics.</returns>
+        public static List<PropertyLoadDiagnostic> GetPropertyLoadDiagnostics()
+        {
+            var instanceTypes = _propertyTypes
+                .Where(x => x.Value.SpawnType == PropertySpawnType.Instance)
+                .Select(x => (int)x.Key)
+                .ToList();
+            var query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), instanceTypes);
+            var count = (int)DB.SearchCount(query);
+            var properties = DB.Search(query.AddPaging(count, 0));
+            var diagnostics = new List<PropertyLoadDiagnostic>();
+
+            foreach (var property in properties)
+            {
+                var detail = _propertyTypes[property.PropertyType];
+                var job = _propertyLoadJobs.FirstOrDefault(x => x.PropertyId == property.Id);
+                var state = GetPropertyLoadState(property.Id);
+                var expectedChildCount = job?.Structures.Count > 0
+                    ? job.Structures.Count
+                    : GetPropertyStructures(property.Id).Count;
+                var spawnedChildCount = job != null
+                    ? job.StructureIndex
+                    : state == PropertyLoadState.Loaded
+                        ? expectedChildCount
+                        : 0;
+                var isLoadedAreaValid = _propertyInstances.TryGetValue(property.Id, out var instance) &&
+                                        GetIsObjectValid(instance.Area);
+                diagnostics.Add(new PropertyLoadDiagnostic
+                {
+                    PropertyId = property.Id,
+                    Name = property.CustomName,
+                    OwnerPlayerId = property.OwnerPlayerId,
+                    PropertyType = property.PropertyType,
+                    LoadType = detail.LoadType,
+                    State = state,
+                    QueuePriority = job?.Priority.ToString() ?? string.Empty,
+                    SpawnedChildCount = spawnedChildCount,
+                    ExpectedChildCount = expectedChildCount,
+                    IsLoadedAreaValid = isLoadedAreaValid,
+                    LastPhase = job?.Phase.ToString() ?? state.ToString(),
+                    Failure = GetPropertyLoadFailure(property.Id),
+                    WaiterCount = _propertyLoadWaiters.TryGetValue(property.Id, out var waiters) ? waiters.Count : 0,
+                    IsQueued = job != null
+                });
+            }
+
+            return diagnostics
+                .OrderBy(x => GetDiagnosticSortOrder(x.State))
+                .ThenBy(x => x.PropertyType.ToString())
+                .ThenBy(x => x.Name)
+                .ToList();
+        }
+
+        private static int GetDiagnosticSortOrder(PropertyLoadState state)
+        {
+            return state switch
+            {
+                PropertyLoadState.Failed => 0,
+                PropertyLoadState.Loading => 1,
+                PropertyLoadState.Queued => 2,
+                PropertyLoadState.Unloaded => 3,
+                PropertyLoadState.Loaded => 4,
+                _ => 5
+            };
+        }
+
+        /// <summary>
+        /// Retrieves a loaded property instance without throwing if it is not ready.
+        /// </summary>
+        /// <param name="propertyId">The property Id to retrieve.</param>
+        /// <param name="instance">The loaded property instance.</param>
+        /// <returns>true if the instance is fully loaded; otherwise false.</returns>
+        public static bool TryGetLoadedInstance(string propertyId, out PropertyInstance instance)
+        {
+            instance = null;
+
+            if (GetPropertyLoadState(propertyId) != PropertyLoadState.Loaded)
+                return false;
+
+            if (!_propertyInstances.TryGetValue(propertyId, out var registeredInstance))
+                return false;
+
+            if (!GetIsObjectValid(registeredInstance.Area))
+                return false;
+
+            instance = registeredInstance;
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves all area resrefs used by property instance templates.
+        /// </summary>
+        /// <returns>A list of area resrefs.</returns>
+        public static List<string> GetAllInstanceAreaResrefs()
+        {
+            var resrefs = new List<string>();
+            foreach (var (type, detail) in _propertyTypes)
+            {
+                if (detail.SpawnType != PropertySpawnType.Instance)
+                    continue;
+
+                var layouts = _layoutsByPropertyType.ContainsKey(type)
+                    ? _layoutsByPropertyType[type]
+                    : new List<PropertyLayoutType>();
+
+                foreach (var layoutType in layouts)
+                {
+                    var layout = _activeLayouts[layoutType];
+                    if (!string.IsNullOrWhiteSpace(layout.AreaInstanceResref) &&
+                        !resrefs.Contains(layout.AreaInstanceResref))
+                    {
+                        resrefs.Add(layout.AreaInstanceResref);
+                    }
+                }
+            }
+
+            return resrefs;
+        }
+
+        private static void SetPropertyLoadState(string propertyId, PropertyLoadState state)
+        {
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return;
+
+            _propertyLoadStates[propertyId] = state;
+        }
+
+        private static bool IsPropertyOnDemand(WorldProperty property)
+        {
+            if (property == null)
+                return false;
+
+            var detail = _propertyTypes[property.PropertyType];
+            return detail.SpawnType == PropertySpawnType.Instance &&
+                   (detail.LoadType == PropertyLoadType.OnDemand ||
+                    detail.PublicSetting == PropertyPublicType.Adjustable &&
+                    !property.IsPubliclyAccessible);
+        }
+
+        private static bool IsPropertyStartupLoaded(WorldProperty property)
+        {
+            if (property == null)
+                return false;
+
+            var detail = _propertyTypes[property.PropertyType];
+            return detail.SpawnType == PropertySpawnType.Instance &&
+                   detail.LoadType == PropertyLoadType.Startup &&
+                   !IsPropertyOnDemand(property);
+        }
+
+        private static void AddPropertyLoadWaiter(uint player, string propertyId)
+        {
+            if (!GetIsPC(player) || string.IsNullOrWhiteSpace(propertyId))
+                return;
+
+            if (!_propertyLoadWaiters.ContainsKey(propertyId))
+                _propertyLoadWaiters[propertyId] = new HashSet<string>();
+
+            _propertyLoadWaiters[propertyId].Add(GetObjectUUID(player));
+        }
+
+        private static void NotifyPropertyLoadWaiters(string propertyId, bool loaded)
+        {
+            if (!_propertyLoadWaiters.TryGetValue(propertyId, out var waiterIds) ||
+                waiterIds.Count <= 0)
+            {
+                return;
+            }
+
+            var property = DB.Get<WorldProperty>(propertyId);
+            var propertyName = property?.CustomName ?? "The property";
+            var message = loaded
+                ? $"{propertyName} is ready. Please try entering again."
+                : $"{propertyName} could not be loaded. Please notify staff.";
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!waiterIds.Contains(GetObjectUUID(player)))
+                    continue;
+
+                SendMessageToPC(player, message);
+            }
+
+            _propertyLoadWaiters.Remove(propertyId);
+        }
+
+        public static void NotifyPropertyLoadWaitersForStaff(string propertyId)
+        {
+            var state = GetPropertyLoadState(propertyId);
+            if (state == PropertyLoadState.Loaded ||
+                state == PropertyLoadState.Failed)
+            {
+                NotifyPropertyLoadWaiters(propertyId, state == PropertyLoadState.Loaded);
+                return;
+            }
+
+            NotifyPropertyLoadWaitersWithoutClearing(
+                propertyId,
+                "This property is still loading. Please try again shortly.");
+        }
+
+        private static void NotifyPropertyLoadWaitersWithoutClearing(string propertyId, string message)
+        {
+            if (!_propertyLoadWaiters.TryGetValue(propertyId, out var waiterIds) ||
+                waiterIds.Count <= 0)
+            {
+                return;
+            }
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!waiterIds.Contains(GetObjectUUID(player)))
+                    continue;
+
+                SendMessageToPC(player, message);
+            }
+        }
+
+        private static void SendPropertyLoadingMessage(uint player)
+        {
+            SendMessageToPC(player, "This property is still loading. Please try again shortly.");
+        }
+
+        private static void SendPropertyLoadFailedMessage(uint player)
+        {
+            SendMessageToPC(player, "This property could not be loaded. Please notify staff.");
+        }
+
+        /// <summary>
+        /// Retrieves a usable property instance or starts loading it if it is not ready.
+        /// </summary>
+        /// <param name="player">The player attempting to enter the property.</param>
+        /// <param name="propertyId">The property Id to load.</param>
+        /// <param name="instance">The loaded property instance.</param>
+        /// <returns>true if the property is ready to enter; otherwise false.</returns>
+        public static bool TryResolveEnterableInstance(uint player, string propertyId, out PropertyInstance instance)
+        {
+            instance = null;
+
+            if (TryGetLoadedInstance(propertyId, out instance))
+                return true;
+
+            var state = GetPropertyLoadState(propertyId);
+            if (state == PropertyLoadState.Failed)
+            {
+                SendPropertyLoadFailedMessage(player);
+                return false;
+            }
+
+            var property = DB.Get<WorldProperty>(propertyId);
+            if (property == null)
+            {
+                SendPropertyLoadFailedMessage(player);
+                return false;
+            }
+
+            var detail = _propertyTypes[property.PropertyType];
+            if (detail.SpawnType != PropertySpawnType.Instance)
+            {
+                SendPropertyLoadFailedMessage(player);
+                return false;
+            }
+
+            AddPropertyLoadWaiter(player, propertyId);
+
+            if (state == PropertyLoadState.Unloaded)
+            {
+                QueuePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest);
+            }
+            else if (state == PropertyLoadState.Queued)
+            {
+                PromotePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest);
+            }
+
+            SendPropertyLoadingMessage(player);
+            return false;
+        }
+
+        private static bool QueuePropertyLoad(string propertyId, PropertyLoadPriority priority)
+        {
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return false;
+
+            var property = DB.Get<WorldProperty>(propertyId);
+            if (property == null)
+            {
+                SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
+                _propertyLoadFailures[propertyId] = "Property does not exist in the database.";
+                return false;
+            }
+
+            var detail = _propertyTypes[property.PropertyType];
+            if (detail.SpawnType != PropertySpawnType.Instance)
+                return false;
+
+            var state = GetPropertyLoadState(propertyId);
+            if (state == PropertyLoadState.Loaded)
+                return true;
+
+            if (state == PropertyLoadState.Failed && priority != PropertyLoadPriority.StaffRequest)
+                return false;
+
+            TrackStartupPropertyLoadQueued(propertyId, priority);
+
+            var existing = _propertyLoadJobs.FirstOrDefault(x => x.PropertyId == propertyId);
+            if (existing != null)
+            {
+                if (priority > existing.Priority)
+                    existing.Priority = priority;
+
+                EnsurePropertyLoadProcessor();
+                return true;
+            }
+
+            _propertyLoadFailures.Remove(propertyId);
+            _failedStartupPropertyLoadIds.Remove(propertyId);
+            SetPropertyLoadState(propertyId, PropertyLoadState.Queued);
+            _propertyLoadJobs.Add(new PropertyLoadJob
+            {
+                PropertyId = propertyId,
+                Priority = priority
+            });
+
+            EnsurePropertyLoadProcessor();
+            return true;
+        }
+
+        private static void PromotePropertyLoad(string propertyId, PropertyLoadPriority priority)
+        {
+            var job = _propertyLoadJobs.FirstOrDefault(x => x.PropertyId == propertyId);
+            if (job != null && priority > job.Priority)
+                job.Priority = priority;
+        }
+
+        public static bool RetryPropertyLoad(string propertyId)
+        {
+            var property = DB.Get<WorldProperty>(propertyId);
+            if (property == null)
+                return false;
+
+            var detail = _propertyTypes[property.PropertyType];
+            if (detail.SpawnType != PropertySpawnType.Instance)
+                return false;
+
+            var state = GetPropertyLoadState(propertyId);
+            if (state == PropertyLoadState.Loaded)
+                return QueueExteriorStructuresForInterior(propertyId);
+
+            if (state == PropertyLoadState.Loading)
+            {
+                return false;
+            }
+
+            if (state == PropertyLoadState.Queued)
+            {
+                PromotePropertyLoad(propertyId, PropertyLoadPriority.StaffRequest);
+                EnsurePropertyLoadProcessor();
+                return true;
+            }
+
+            _propertyLoadFailures.Remove(propertyId);
+            SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);
+            return QueuePropertyLoad(propertyId, PropertyLoadPriority.StaffRequest);
+        }
+
+        public static bool AbortQueuedPropertyLoad(string propertyId)
+        {
+            var job = _propertyLoadJobs.FirstOrDefault(x => x.PropertyId == propertyId);
+            if (job == null || GetPropertyLoadState(propertyId) == PropertyLoadState.Loading)
+                return false;
+
+            _propertyLoadJobs.Remove(job);
+            SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
+            _propertyLoadFailures[propertyId] = "Load aborted by staff before it started.";
+            TrackStartupPropertyLoadFailed(propertyId);
+            NotifyPropertyLoadWaiters(propertyId, false);
+            LogStartupPropertyLoadProgress();
+            return true;
+        }
+
+        private static void ResetStartupPropertyLoadProgress()
+        {
+            _startupPropertyLoadIds.Clear();
+            _completedStartupPropertyLoadIds.Clear();
+            _failedStartupPropertyLoadIds.Clear();
+            _lastStartupPropertyLoadProgressLoaded = -1;
+            _lastStartupPropertyLoadProgressRemaining = -1;
+            _lastStartupPropertyLoadProgressFailed = -1;
+        }
+
+        private static void TrackStartupPropertyLoadQueued(string propertyId, PropertyLoadPriority priority)
+        {
+            if (priority == PropertyLoadPriority.Startup)
+                _startupPropertyLoadIds.Add(propertyId);
+        }
+
+        private static void TrackStartupPropertyLoadCompleted(string propertyId)
+        {
+            if (!_startupPropertyLoadIds.Contains(propertyId))
+                return;
+
+            _completedStartupPropertyLoadIds.Add(propertyId);
+            _failedStartupPropertyLoadIds.Remove(propertyId);
+        }
+
+        private static void TrackStartupPropertyLoadFailed(string propertyId)
+        {
+            if (!_startupPropertyLoadIds.Contains(propertyId))
+                return;
+
+            _failedStartupPropertyLoadIds.Add(propertyId);
+            _completedStartupPropertyLoadIds.Remove(propertyId);
+        }
+
+        private static void LogStartupPropertyLoadProgress(bool force = false)
+        {
+            var total = _startupPropertyLoadIds.Count;
+            if (total <= 0)
+                return;
+
+            var loaded = _completedStartupPropertyLoadIds.Count;
+            var failed = _failedStartupPropertyLoadIds.Count;
+            var remaining = Math.Max(total - loaded - failed, 0);
+            var isMilestone = loaded == 0 ||
+                              remaining == 0 ||
+                              failed != _lastStartupPropertyLoadProgressFailed ||
+                              loaded % PropertyLoadProgressReportInterval == 0;
+
+            if (!force && !isMilestone)
+                return;
+
+            if (loaded == _lastStartupPropertyLoadProgressLoaded &&
+                remaining == _lastStartupPropertyLoadProgressRemaining &&
+                failed == _lastStartupPropertyLoadProgressFailed)
+            {
+                return;
+            }
+
+            _lastStartupPropertyLoadProgressLoaded = loaded;
+            _lastStartupPropertyLoadProgressRemaining = remaining;
+            _lastStartupPropertyLoadProgressFailed = failed;
+
+            Log.Write(LogGroup.Property, $"Startup instance property load progress: {loaded} loaded, {remaining} remaining, {failed} failed ({total} total).", true);
+        }
+
+        private static void EnsurePropertyLoadProcessor()
+        {
+            if (_propertyLoadProcessorScheduled)
+                return;
+
+            _propertyLoadProcessorScheduled = true;
+            Scheduler.Schedule(ProcessPropertyLoadQueue, PropertyLoadBatchDelay);
+        }
+
+        private static void ProcessPropertyLoadQueue()
+        {
+            _propertyLoadProcessorScheduled = false;
+
+            var budget = PropertyLoadBatchSize;
+            while (budget > 0)
+            {
+                if (_propertyLoadJobs.Count > 0)
+                {
+                    var job = _propertyLoadJobs
+                        .OrderByDescending(x => x.Priority)
+                        .First();
+
+                    var consumed = ProcessPropertyLoadJob(job, budget);
+                    budget -= Math.Max(consumed, 1);
+                    continue;
+                }
+
+                if (_pendingStartupWorldPropertyIds.Count > 0)
+                {
+                    var consumed = ProcessStartupWorldProperties(budget);
+                    if (consumed <= 0)
+                        break;
+
+                    budget -= consumed;
+                    continue;
+                }
+
+                break;
+            }
+
+            if (_propertyLoadJobs.Count > 0 ||
+                _pendingStartupWorldPropertyIds.Count > 0)
+            {
+                EnsurePropertyLoadProcessor();
+            }
+        }
+
+        private static int ProcessPropertyLoadJob(PropertyLoadJob job, int budget)
+        {
+            try
+            {
+                job.Property ??= DB.Get<WorldProperty>(job.PropertyId);
+                if (job.Property == null)
+                {
+                    FailPropertyLoad(job, "Property does not exist in the database.");
+                    return 1;
+                }
+
+                SetPropertyLoadState(job.PropertyId, PropertyLoadState.Loading);
+
+                if (job.Phase == PropertyLoadJobPhase.CreateArea)
+                {
+                    var layout = GetLayoutByType(job.Property.Layout);
+                    uint targetArea;
+                    if (!_propertyInstances.TryGetValue(job.PropertyId, out var instance) ||
+                        !GetIsObjectValid(instance.Area))
+                    {
+                        targetArea = CreateArea(layout.AreaInstanceResref);
+                        if (!GetIsObjectValid(targetArea))
+                            throw new InvalidOperationException($"Unable to create property area from resref '{layout.AreaInstanceResref}'.");
+
+                        RegisterInstance(job.Property.Id, targetArea, job.Property.Layout);
+
+                        SetName(targetArea, "{PC} " + job.Property.CustomName);
+                    }
+                    else
+                    {
+                        targetArea = instance.Area;
+                    }
+
+                    if (!_completedInstanceSpawnActions.Contains(job.PropertyId))
+                    {
+                        layout.OnSpawnAction?.Invoke(targetArea);
+                        _completedInstanceSpawnActions.Add(job.PropertyId);
+                    }
+
+                    job.Area = _propertyInstances[job.PropertyId].Area;
+                    job.Structures = GetPropertyStructures(job.PropertyId);
+                    job.Phase = PropertyLoadJobPhase.SpawnStructures;
+                    return Math.Max(budget, 1);
+                }
+
+                var consumed = SpawnPropertyStructures(job, budget);
+                if (job.StructureIndex >= job.Structures.Count)
+                {
+                    CompletePropertyLoad(job);
+                }
+
+                return consumed;
+            }
+            catch (Exception ex)
+            {
+                FailPropertyLoad(job, ex.ToString());
+                return 1;
+            }
+        }
+
+        private static List<WorldProperty> GetPropertyStructures(string parentPropertyId)
+        {
+            var query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), parentPropertyId, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
+            var count = (int)DB.SearchCount(query);
+            return DB.Search(query.AddPaging(count, 0)).ToList();
+        }
+
+        private static int SpawnPropertyStructures(PropertyLoadJob job, int budget)
+        {
+            var consumed = 0;
+            while (job.StructureIndex < job.Structures.Count && consumed < budget)
+            {
+                SpawnIntoWorld(job.Structures[job.StructureIndex], job.Area);
+                job.StructureIndex++;
+                consumed++;
+            }
+
+            return consumed;
+        }
+
+        private static void CompletePropertyLoad(PropertyLoadJob job)
+        {
+            _propertyLoadJobs.Remove(job);
+            _propertyLoadFailures.Remove(job.PropertyId);
+            SetPropertyLoadState(job.PropertyId, PropertyLoadState.Loaded);
+            TrackStartupPropertyLoadCompleted(job.PropertyId);
+            QueueExteriorStructuresForInterior(job.PropertyId);
+            NotifyPropertyLoadWaiters(job.PropertyId, true);
+            LogStartupPropertyLoadProgress();
+
+            Log.Write(LogGroup.Property, $"Property '{job.Property.CustomName}' ({job.PropertyId}) loaded on {job.Priority} queue.");
+        }
+
+        private static bool QueueExteriorStructuresForInterior(string interiorPropertyId)
+        {
+            var interior = DB.Get<WorldProperty>(interiorPropertyId);
+            if (interior == null ||
+                string.IsNullOrWhiteSpace(interior.ParentPropertyId))
+            {
+                return false;
+            }
+
+            var structure = DB.Get<WorldProperty>(interior.ParentPropertyId);
+            if (structure == null ||
+                structure.PropertyType != PropertyType.Structure ||
+                !structure.ChildPropertyIds.ContainsKey(PropertyChildType.Interior) ||
+                !structure.ChildPropertyIds[PropertyChildType.Interior].Contains(interiorPropertyId))
+            {
+                return false;
+            }
+
+            var parent = DB.Get<WorldProperty>(structure.ParentPropertyId);
+            if (parent == null)
+                return false;
+
+            var parentDetail = _propertyTypes[parent.PropertyType];
+            if (parentDetail.SpawnType == PropertySpawnType.Instance)
+                return false;
+
+            QueueStartupWorldProperty(structure);
+            return true;
+        }
+
+        private static void FailPropertyLoad(PropertyLoadJob job, string failure)
+        {
+            _propertyLoadJobs.Remove(job);
+            SetPropertyLoadState(job.PropertyId, PropertyLoadState.Failed);
+            var property = job.Property ?? DB.Get<WorldProperty>(job.PropertyId);
+            var structureId = job.Phase == PropertyLoadJobPhase.SpawnStructures &&
+                              job.Structures != null &&
+                              job.StructureIndex >= 0 &&
+                              job.StructureIndex < job.Structures.Count
+                ? job.Structures[job.StructureIndex].Id
+                : string.Empty;
+            var failureDetail =
+                $"PropertyId: {job.PropertyId}; " +
+                $"Type: {property?.PropertyType.ToString() ?? "Unknown"}; " +
+                $"Layout: {property?.Layout.ToString() ?? "Unknown"}; " +
+                $"Phase: {job.Phase}; " +
+                $"StructureId: {structureId}; " +
+                $"Error: {failure}";
+            _propertyLoadFailures[job.PropertyId] = failureDetail;
+            TrackStartupPropertyLoadFailed(job.PropertyId);
+            NotifyPropertyLoadWaiters(job.PropertyId, false);
+            LogStartupPropertyLoadProgress();
+
+            Log.Write(LogGroup.Error, $"Property failed to load. {failureDetail}");
+        }
+
+        private static void QueueStartupWorldProperty(WorldProperty property)
+        {
+            if (property == null)
+                return;
+
+            if (!_pendingStartupWorldPropertyIds.Contains(property.Id))
+                _pendingStartupWorldPropertyIds.Add(property.Id);
+
+            EnsurePropertyLoadProcessor();
+        }
+
+        private static int ProcessStartupWorldProperties(int budget)
+        {
+            var consumed = 0;
+            var scanned = 0;
+
+            while (_pendingStartupWorldPropertyIds.Count > 0 &&
+                   consumed < budget &&
+                   scanned < _pendingStartupWorldPropertyIds.Count)
+            {
+                var propertyId = _pendingStartupWorldPropertyIds[0];
+                var property = DB.Get<WorldProperty>(propertyId);
+                if (property == null)
+                {
+                    _pendingStartupWorldPropertyIds.RemoveAt(0);
+                    consumed++;
+                    continue;
+                }
+
+                bool resolved;
+                bool dependencyFailed;
+                uint area;
+                try
+                {
+                    resolved = TryResolveWorldStructureArea(property, out area, out dependencyFailed);
+                }
+                catch (Exception ex)
+                {
+                    _pendingStartupWorldPropertyIds.RemoveAt(0);
+                    Log.Write(LogGroup.Error, $"World structure '{property.CustomName}' ({property.Id}) failed while resolving dependencies: {ex}");
+                    consumed++;
+                    continue;
+                }
+
+                if (!resolved)
+                {
+                    if (dependencyFailed)
+                    {
+                        _pendingStartupWorldPropertyIds.RemoveAt(0);
+                        Log.Write(LogGroup.Error, $"World structure '{property.CustomName}' ({property.Id}) was not spawned because one of its property dependencies failed to load.");
+                        consumed++;
+                        continue;
+                    }
+
+                    _pendingStartupWorldPropertyIds.RemoveAt(0);
+                    _pendingStartupWorldPropertyIds.Add(propertyId);
+                    scanned++;
+                    continue;
+                }
+
+                try
+                {
+                    SpawnIntoWorld(property, area);
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(LogGroup.Error, $"World structure '{property.CustomName}' ({property.Id}) failed to spawn: {ex}");
+                }
+
+                _pendingStartupWorldPropertyIds.RemoveAt(0);
+                consumed++;
+            }
+
+            return consumed;
+        }
+
+        private static bool TryResolveWorldStructureArea(WorldProperty property, out uint area, out bool dependencyFailed)
+        {
+            area = OBJECT_INVALID;
+            dependencyFailed = false;
+
+            var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+            if (parent == null)
+            {
+                dependencyFailed = true;
+                return false;
+            }
+
+            var parentDetail = _propertyTypes[parent.PropertyType];
+            if (parentDetail.SpawnType == PropertySpawnType.Instance)
+            {
+                var state = GetPropertyLoadState(parent.Id);
+                if (state == PropertyLoadState.Failed)
+                {
+                    dependencyFailed = true;
+                    return false;
+                }
+
+                if (state == PropertyLoadState.Unloaded)
+                    QueuePropertyLoad(parent.Id, PropertyLoadPriority.Startup);
+
+                if (!TryGetLoadedInstance(parent.Id, out var instance))
+                    return false;
+
+                area = instance.Area;
+            }
+            else
+            {
+                area = Area.GetAreaByResref(parent.ParentPropertyId);
+                if (!GetIsObjectValid(area))
+                {
+                    dependencyFailed = true;
+                    return false;
+                }
+            }
+
+            if (!property.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
+                return true;
+
+            var interiorId = property.ChildPropertyIds[PropertyChildType.Interior].SingleOrDefault();
+            if (string.IsNullOrWhiteSpace(interiorId))
+                return true;
+
+            var interior = DB.Get<WorldProperty>(interiorId);
+            if (interior == null)
+            {
+                dependencyFailed = true;
+                return false;
+            }
+
+            var interiorDetail = _propertyTypes[interior.PropertyType];
+            if (interiorDetail.SpawnType != PropertySpawnType.Instance)
+                return true;
+
+            var interiorState = GetPropertyLoadState(interiorId);
+            if (interiorState == PropertyLoadState.Failed)
+            {
+                dependencyFailed = true;
+                return false;
+            }
+
+            if (interiorState == PropertyLoadState.Unloaded && !IsPropertyOnDemand(interior))
+                QueuePropertyLoad(interiorId, PropertyLoadPriority.Startup);
+
+            return IsPropertyOnDemand(interior) ||
+                   TryGetLoadedInstance(interiorId, out _);
+        }
+
         /// <summary>
         /// When the module loads, remove all data marked for deletion and any properties with expired leases.
         /// </summary>
@@ -517,7 +1400,7 @@ namespace SWLOR.Game.Server.Service
                         Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
                     }
                 }
-                
+
                 DB.Set(property);
             }
         }
@@ -649,7 +1532,7 @@ namespace SWLOR.Game.Server.Service
                     .Single();
 
                 DB.Delete<WorldPropertyPermission>(mayorPermission.Id);
-                
+
                 var winnerPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
                         .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), winnerPlayerId, false)
                         .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
@@ -742,7 +1625,7 @@ namespace SWLOR.Game.Server.Service
                             $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
                     }
                     // Otherwise, take the person with the highest votes.
-                    else 
+                    else
                     {
                         var winnerPlayerId = orderedVotes.ElementAt(0).Key;
                         TransferPermissions(winnerPlayerId);
@@ -752,7 +1635,6 @@ namespace SWLOR.Game.Server.Service
                             city,
                             "New Mayor Elected",
                             $"The mayoral election has concluded and a new mayor has been elected.\n" +
-                            $"**New Mayor**: {SanitizeDiscordText(GetPlayerName(winnerPlayerId))}\n" +
                             $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
                             $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
                     }
@@ -772,7 +1654,7 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(city);
                     DB.Delete<Election>(election.Id);
                 }
-                // Registration cut-off has passed. 
+                // Registration cut-off has passed.
                 // If no one has registered, the incumbent mayor wins by default.
                 // If only one person has registered, they become mayor without proceeding to the voting stage.
                 //     -> If this was a different person from the incumbent, they receive mayor power immediately.
@@ -781,7 +1663,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // In the event that absolutely no one ran for election,
                     // the incumbent mayor stays in power and another election is scheduled
-                    // three weeks from now. 
+                    // three weeks from now.
                     if (election.CandidatePlayerIds.Count <= 0)
                     {
                         city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
@@ -825,7 +1707,6 @@ namespace SWLOR.Game.Server.Service
                                 city,
                                 "New Mayor Elected",
                                 $"The mayoral election has concluded. A single candidate ran unopposed and has become mayor.\n" +
-                                $"**New Mayor**: {SanitizeDiscordText(GetPlayerName(winnerPlayerId))}\n" +
                                 $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays).AddDays(21))}");
                         }
 
@@ -867,7 +1748,7 @@ namespace SWLOR.Game.Server.Service
             var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
                 ? mayor.Perks[PerkType.CityManagement] + 1
                 : 1;
-            
+
             // Mayor's perk level has fallen below the city level.
             if (mayorLevel < currentLevel)
             {
@@ -922,7 +1803,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessUpkeep(DateTime now, WorldProperty city)
         {
             Log.Write(LogGroup.Property, $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
-            
+
             // If upkeep wasn't fully paid for this week, process the destruction date
             if (city.Upkeep > 0)
             {
@@ -979,7 +1860,7 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Property, $"City upkeep was paid. Removing destruction date.");
                 }
             }
-            
+
             // Calculate new upkeep price for this week.
             var dbMayor = DB.Get<Player>(city.OwnerPlayerId);
             var upkeepReductionPercent = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
@@ -990,8 +1871,7 @@ namespace SWLOR.Game.Server.Service
             var basePrice = layout.PricePerDay * 7;
             basePrice -= (int)(basePrice * upkeepReductionPercent);
 
-            var upgradePrice = 
-                (city.Upgrades[PropertyUpgradeType.BankLevel] - 1) * UpgradeBasePrice +
+            var upgradePrice =
                 (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.CantinaLevel] - 1) * UpgradeBasePrice;
@@ -1031,6 +1911,11 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
+        /// <summary>
+        /// Deletes a property and its owned children, clears associated data and permissions,
+        /// and revokes its citizens' membership and unpaid citizenship taxes.
+        /// </summary>
+        /// <param name="property">The property to delete.</param>
         public static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
@@ -1107,20 +1992,18 @@ namespace SWLOR.Game.Server.Service
             {
                 Log.Write(LogGroup.Property, $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
                 citizen.CitizenPropertyId = string.Empty;
+                citizen.PropertyOwedTaxes = 0;
                 DB.Set(citizen);
             }
 
-            // Clear any bank items stored within this city.
-            var bankQuery = new DBQuery<InventoryItem>()
-                .AddFieldSearch(nameof(InventoryItem.StorageId), property.Id, false);
-            var bankCount = (int)DB.SearchCount(bankQuery);
-            var dbBankItems = DB.Search(bankQuery.AddPaging(bankCount, 0));
-
-            foreach (var item in dbBankItems)
-            {
-                DB.Delete<InventoryItem>(item.Id);
-                Log.Write(LogGroup.Property, $"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
-            }
+            _propertyInstances.Remove(property.Id);
+            _propertyLoadStates.Remove(property.Id);
+            _propertyLoadFailures.Remove(property.Id);
+            _propertyLoadWaiters.Remove(property.Id);
+            _completedInstanceSpawnActions.Remove(property.Id);
+            _propertyLoadJobs.RemoveAll(x => x.PropertyId == property.Id);
+            _pendingStartupWorldPropertyIds.Remove(property.Id);
+            _structurePropertyIdToPlaceable.Remove(property.Id);
 
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
@@ -1150,7 +2033,7 @@ namespace SWLOR.Game.Server.Service
                     var permissionCount = (int)DB.SearchCount(permissionQuery);
                     var dbPropertyPermissions = DB.Search(permissionQuery.AddPaging(permissionCount, 0))
                         .ToList();
-                    
+
                     foreach (var propertyPermission in dbPropertyPermissions)
                     {
                         // Perform a refresh of permissions (adding/removing as needed)
@@ -1223,6 +2106,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadProperties()
         {
+            _propertyLoadJobs.Clear();
+            _pendingStartupWorldPropertyIds.Clear();
+            _propertyLoadStates.Clear();
+            _propertyLoadFailures.Clear();
+            _propertyLoadWaiters.Clear();
+            _completedInstanceSpawnActions.Clear();
+            ResetStartupPropertyLoadProgress();
+            _propertyLoadProcessorScheduled = false;
+
             var instanceTypes = _propertyTypes
                 .Where(x => x.Value.SpawnType == PropertySpawnType.Instance)
                 .Select(s => (int)s.Key)
@@ -1259,37 +2151,30 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var property in instanceProperties)
             {
-                SpawnIntoWorld(property, OBJECT_INVALID);
+                if (IsPropertyOnDemand(property))
+                {
+                    SetPropertyLoadState(property.Id, PropertyLoadState.Unloaded);
+                    continue;
+                }
+
+                if (IsPropertyStartupLoaded(property))
+                    QueuePropertyLoad(property.Id, PropertyLoadPriority.Startup);
             }
-            
+
             foreach (var property in worldProperties)
             {
-                // If the parent is contained in the instance list, this world property needs to 
-                // be spawned inside the instance.
-                if (_propertyInstances.ContainsKey(property.ParentPropertyId))
+                var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                if (parent == null)
                 {
-                    var instance = _propertyInstances[property.ParentPropertyId];
-                    SpawnIntoWorld(property, instance.Area);
+                    Log.Write(LogGroup.Error, $"Error loading property '{property.Id}'. Its parent object '{property.ParentPropertyId}' does not exist in database.");
+                    continue;
                 }
-                // Otherwise the parent exists within a pre-existing area (non-instance).
-                // We need to find out which area it is by looking at the parent's parent Id,
-                // which will be the resref of the area.
-                else
-                {
-                    var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
 
-                    if (parent == null)
-                    {
-                        Log.Write(LogGroup.Error, $"Error loading property '{property.Id}'. Its parent object '{property.ParentPropertyId}' does not exist in database.");
-                    }
-                    else
-                    {
-                        var areaResref = parent.ParentPropertyId;
-                        var area = Area.GetAreaByResref(areaResref);
+                var parentDetail = _propertyTypes[parent.PropertyType];
+                if (parentDetail.SpawnType == PropertySpawnType.Instance)
+                    continue;
 
-                        SpawnIntoWorld(property, area);
-                    }
-                }
+                QueueStartupWorldProperty(property);
             }
 
             foreach (var property in areaProperties)
@@ -1299,9 +2184,11 @@ namespace SWLOR.Game.Server.Service
             }
 
 
-            Log.Write(LogGroup.Property, $"Loaded {instanceProperties.Count} instanced properties.", true);
-            Log.Write(LogGroup.Property, $"Loaded {worldProperties.Count} world properties.", true);
+            Log.Write(LogGroup.Property, $"Queued {instanceProperties.Count(x => !IsPropertyOnDemand(x))} startup instanced properties.", true);
+            Log.Write(LogGroup.Property, $"Deferred {instanceProperties.Count(IsPropertyOnDemand)} on-demand instanced properties.", true);
+            Log.Write(LogGroup.Property, $"Queued {_pendingStartupWorldPropertyIds.Count} startup world properties.", true);
             Log.Write(LogGroup.Property, $"Loaded {areaProperties.Count} area properties.", true);
+            LogStartupPropertyLoadProgress(true);
         }
 
         /// <summary>
@@ -1337,10 +2224,10 @@ namespace SWLOR.Game.Server.Service
 
         private static WorldProperty CreateProperty(
             uint creatorPlayer,
-            string ownerPlayerId, 
+            string ownerPlayerId,
             string propertyName,
-            PropertyType type, 
-            PropertyLayoutType layout, 
+            PropertyType type,
+            PropertyLayoutType layout,
             uint targetArea = OBJECT_INVALID,
             Action<WorldProperty> constructionAction = null)
         {
@@ -1413,8 +2300,15 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(categoryPermission);
                 }
             }
-            
-            SpawnIntoWorld(property, targetArea);
+
+            if (IsPropertyOnDemand(property))
+            {
+                SetPropertyLoadState(property.Id, PropertyLoadState.Unloaded);
+            }
+            else
+            {
+                SpawnIntoWorld(property, targetArea);
+            }
 
             Log.Write(LogGroup.Property, $"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
 
@@ -1430,7 +2324,7 @@ namespace SWLOR.Game.Server.Service
         public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
             var playerId = GetObjectUUID(player);
-            var propertyName = $"{GetName(player)}'s Apartment";
+            var propertyName = "Apartment";
             return CreateProperty(player, playerId, propertyName, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
             {
                 property.Dates[PropertyDateType.Lease] = DateTime.UtcNow.AddDays(7);
@@ -1447,10 +2341,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="landingLocation">Location of the ground transfer point (when a player is converted back to normal)</param>
         /// <returns>The new world property.</returns>
         public static WorldProperty CreateStarship(
-            uint player, 
-            PropertyLayoutType layout, 
+            uint player,
+            PropertyLayoutType layout,
             PlanetType planetType,
-            Location spaceLocation, 
+            Location spaceLocation,
             Location landingLocation)
         {
             var spacePosition = GetPositionFromLocation(spaceLocation);
@@ -1466,7 +2360,7 @@ namespace SWLOR.Game.Server.Service
 
             // In the event the starport a ship is located at is destroyed or otherwise disappears,
             // we need to know the location of the planet's NPC starport so the ship can be returned there.
-            // If we don't capture this correctly, the ship will be lost in limbo and the players won't be 
+            // If we don't capture this correctly, the ship will be lost in limbo and the players won't be
             // able to access it.
             var planet = Planet.GetPlanetByType(planetType);
             var npcLandingWaypoint = GetWaypointByTag(planet.LandingWaypointTag);
@@ -1476,7 +2370,7 @@ namespace SWLOR.Game.Server.Service
             var npcLandingResref = GetResRef(npcLandingArea);
 
             var playerId = GetObjectUUID(player);
-            var propertyName = $"{GetName(player)}'s Starship";
+            var propertyName = "Starship";
 
             return CreateProperty(player, playerId, propertyName, PropertyType.Starship, layout, OBJECT_INVALID, property =>
             {
@@ -1523,7 +2417,7 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var propertyName = $"{GetName(player)}'s City";
+            var propertyName = "Player City";
             var now = DateTime.UtcNow;
             var city = CreateProperty(player, playerId, propertyName, PropertyType.City, PropertyLayoutType.City, area, property =>
             {
@@ -1546,7 +2440,6 @@ namespace SWLOR.Game.Server.Service
 
                 // Upgrades
                 property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
-                property.Upgrades[PropertyUpgradeType.BankLevel] = 1;
                 property.Upgrades[PropertyUpgradeType.MedicalCenterLevel] = 1;
                 property.Upgrades[PropertyUpgradeType.StarportLevel] = 1;
                 property.Upgrades[PropertyUpgradeType.CantinaLevel] = 1;
@@ -1562,6 +2455,8 @@ namespace SWLOR.Game.Server.Service
                 location);
 
             dbPlayer.CitizenPropertyId = city.Id;
+            // A new citizenship must not inherit taxes from a previously deleted city.
+            dbPlayer.PropertyOwedTaxes = 0;
             DB.Set(dbPlayer);
 
             Log.Write(LogGroup.Property, $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
@@ -1569,7 +2464,6 @@ namespace SWLOR.Game.Server.Service
                 city,
                 "New Player City Founded",
                 $"A new player city has been founded.\n" +
-                $"**Founding Mayor**: {SanitizeDiscordText(dbPlayer.Name)}\n" +
                 $"**First Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep])}\n" +
                 $"**First Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart])}\n" +
                 $"**Citizen Requirement Grace Ends**: {FormatUtcDate(city.Dates[PropertyDateType.BelowRequiredCitizens])}");
@@ -1587,16 +2481,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="location">The location to spawn the structure.</param>
         /// <returns>The new world property.</returns>
         public static void CreateBuilding(
-            uint player, 
-            uint item, 
-            string parentCityId, 
-            PropertyType propertyType, 
+            uint player,
+            uint item,
+            string parentCityId,
+            PropertyType propertyType,
             PropertyLayoutType layout,
             StructureType structureType,
             Location location)
         {
             var layoutDetail = GetLayoutByType(layout);
-            var propertyName = $"{GetName(player)}'s {layoutDetail.Name}";
+            var propertyName = layoutDetail.Name;
             var city = DB.Get<WorldProperty>(parentCityId);
 
             // Hierarchy goes:
@@ -1604,14 +2498,14 @@ namespace SWLOR.Game.Server.Service
             //          -> Contains: Structure (buildings)
             //              -> Contains: Building interiors
             var buildingStructure = CreateStructure(parentCityId, item, structureType, location);
-            
+
             var interior = CreateProperty(
                 player,
                 city.OwnerPlayerId,
-                propertyName, 
-                propertyType, 
-                layout, 
-                OBJECT_INVALID, 
+                propertyName,
+                propertyType,
+                layout,
+                OBJECT_INVALID,
                 interiorProperty =>
             {
                 interiorProperty.ParentPropertyId = buildingStructure.Id;
@@ -1623,6 +2517,12 @@ namespace SWLOR.Game.Server.Service
 
             buildingStructure.ChildPropertyIds[PropertyChildType.Interior].Add(interior.Id);
             DB.Set(buildingStructure);
+
+            var buildingPlaceable = GetPlaceableByPropertyId(buildingStructure.Id);
+            if (GetIsObjectValid(buildingPlaceable))
+            {
+                RunStructureChangedEvent(structureType, StructureChangeType.PositionChanged, buildingStructure, buildingPlaceable);
+            }
         }
 
         /// <summary>
@@ -1633,9 +2533,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The type of structure to spawn.</param>
         /// <param name="location">The location to spawn the structure at.</param>
         public static WorldProperty CreateStructure(
-            string parentPropertyId, 
+            string parentPropertyId,
             uint item,
-            StructureType type, 
+            StructureType type,
             Location location)
         {
             var structureDetail = GetStructureByType(type);
@@ -1677,7 +2577,7 @@ namespace SWLOR.Game.Server.Service
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure] = new List<string>();
 
             parentProperty.ChildPropertyIds[PropertyChildType.Structure].Add(structure.Id);
-            parentProperty.ItemStorageCount += structureItemStorage; 
+            parentProperty.ItemStorageCount += structureItemStorage;
 
             DB.Set(structure);
             DB.Set(parentProperty);
@@ -1804,8 +2704,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A placeable or OBJECT_INVALID if not found.</returns>
         public static uint GetPlaceableByPropertyId(string propertyId)
         {
-            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId) 
-                ? OBJECT_INVALID 
+            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId)
+                ? OBJECT_INVALID
                 : _structurePropertyIdToPlaceable[propertyId];
         }
 
@@ -1830,7 +2730,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
-            
+
             Gui.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
@@ -1847,7 +2747,7 @@ namespace SWLOR.Game.Server.Service
             // DMs always have permission.
             if (GetIsDM(player) || GetIsDMPossessed(player))
                 return true;
-            
+
             if (!GetIsPC(player))
                 return false;
 
@@ -1930,6 +2830,9 @@ namespace SWLOR.Game.Server.Service
             if (!_propertyInstances.ContainsKey(propertyId))
                 return;
 
+            if (GetPropertyLoadState(propertyId) != PropertyLoadState.Loaded)
+                return;
+
             if (!_propertyInstances[propertyId].Players.Contains(player))
                 _propertyInstances[propertyId].Players.Add(player);
         }
@@ -1947,6 +2850,9 @@ namespace SWLOR.Game.Server.Service
             var propertyId = GetPropertyId(OBJECT_SELF);
 
             if (!_propertyInstances.ContainsKey(propertyId))
+                return;
+
+            if (GetPropertyLoadState(propertyId) != PropertyLoadState.Loaded)
                 return;
 
             if (_propertyInstances[propertyId].Players.Contains(player))
@@ -1968,8 +2874,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             var property = DB.Get<WorldProperty>(propertyId);
+            if (property == null)
+            {
+                SendPropertyLoadFailedMessage(player);
+                return;
+            }
+
             var entrance = _entrancesByLayout[property.Layout];
-            var instance = GetRegisteredInstance(property.Id);
+            if (!TryResolveEnterableInstance(player, property.Id, out var instance))
+                return;
+
             var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
             var location = Location(instance.Area, position, entrance.W);
 
@@ -2077,7 +2991,7 @@ namespace SWLOR.Game.Server.Service
                 FloatingTextStringOnCreature($"You do not have permission to access this property.", player, false);
                 return;
             }
-            
+
             Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
         }
 
@@ -2139,10 +3053,10 @@ namespace SWLOR.Game.Server.Service
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_X", position.X);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Y", position.Y);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Z", position.Z);
-                Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
+                ConversationMenu.Start(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
-            
+
             if (structureType == StructureType.Invalid) return;
 
             // Must be in a player property.
@@ -2164,7 +3078,7 @@ namespace SWLOR.Game.Server.Service
                 FloatingTextStringOnCreature($"You do not have permission to place structures within this property.", player, false);
                 return;
             }
-            
+
             var property = DB.Get<WorldProperty>(propertyId);
             var layout = GetLayoutByType(property.Layout);
             int structureLimit;
@@ -2244,11 +3158,11 @@ namespace SWLOR.Game.Server.Service
             {
                 var structureLayout = GetLayoutByType(structureDetail.LayoutType);
                 CreateBuilding(
-                    player, 
-                    item, 
-                    propertyId, 
-                    structureLayout.PropertyType, 
-                    structureDetail.LayoutType, 
+                    player,
+                    item,
+                    propertyId,
+                    structureLayout.PropertyType,
+                    structureDetail.LayoutType,
                     structureType, location);
             }
 
@@ -2269,6 +3183,13 @@ namespace SWLOR.Game.Server.Service
             // World spawns represent placeables within the game world such as furniture and buildings
             if (propertyDetail.SpawnType == PropertySpawnType.World)
             {
+                if (_structurePropertyIdToPlaceable.TryGetValue(property.Id, out var existingPlaceable) &&
+                    GetIsObjectValid(existingPlaceable))
+                {
+                    RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, existingPlaceable);
+                    return;
+                }
+
                 var furniture = GetStructureByType(property.StructureType);
 
                 var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
@@ -2282,28 +3203,48 @@ namespace SWLOR.Game.Server.Service
                 _structurePropertyIdToPlaceable[property.Id] = placeable;
 
                 // Some structures have custom spawn-in actions which also need to be run
-                // when brought into the world. 
+                // when brought into the world.
                 RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
             }
             // Instance spawns are instanced areas that are spawned dynamically into the game world.
             else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
             {
-                // If no interior layout is defined, the provided area will be used.
                 var layout = GetLayoutByType(property.Layout);
+                if (_propertyInstances.TryGetValue(property.Id, out var existingInstance) &&
+                    GetIsObjectValid(existingInstance.Area))
+                {
+                    if (!_completedInstanceSpawnActions.Contains(property.Id))
+                    {
+                        layout.OnSpawnAction?.Invoke(existingInstance.Area);
+                        _completedInstanceSpawnActions.Add(property.Id);
+                    }
+
+                    SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
+                    return;
+                }
+
+                // If no interior layout is defined, the provided area will be used.
                 var targetArea = CreateArea(layout.AreaInstanceResref);
+                if (!GetIsObjectValid(targetArea))
+                    throw new InvalidOperationException($"Unable to create property area from resref '{layout.AreaInstanceResref}'.");
+
                 RegisterInstance(property.Id, targetArea, property.Layout);
-                
+
                 SetName(targetArea, "{PC} " + property.CustomName);
 
                 if (layout.OnSpawnAction != null)
                 {
                     layout.OnSpawnAction(targetArea);
                 }
+
+                _completedInstanceSpawnActions.Add(property.Id);
+                SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
             }
             // Area spawns exist in a pre-built area.
             else if(propertyDetail.SpawnType == PropertySpawnType.Area)
             {
                 AssignPropertyId(area, property.Id);
+                SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
             }
         }
 
@@ -2317,17 +3258,32 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var door = OBJECT_SELF;
-            
+
             // Buildings only ever have one child which is the interior area instance
             var buildingId = GetPropertyId(door);
             var building = DB.Get<WorldProperty>(buildingId);
-            var interiorId = building.ChildPropertyIds[PropertyChildType.Interior].Single();
-            var interior = DB.Get<WorldProperty>(interiorId);
+            if (building == null ||
+                !building.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
+            {
+                SendMessageToPC(player, "This building is not ready yet. Please try again shortly.");
+                return;
+            }
 
-            var instance = GetRegisteredInstance(interior.Id);
-            var entrance = GetEntrancePosition(interior.Layout);
-            var position = Vector3(entrance.X, entrance.Y, entrance.Z);
-            var location = Location(instance.Area, position, entrance.W);
+            var interiorIds = building.ChildPropertyIds[PropertyChildType.Interior];
+            if (interiorIds.Count != 1)
+            {
+                SendMessageToPC(player, "This building is not ready yet. Please try again shortly.");
+                return;
+            }
+
+            var interiorId = interiorIds.Single();
+            var interior = DB.Get<WorldProperty>(interiorId);
+            if (interior == null)
+            {
+                SendPropertyLoadFailedMessage(player);
+                return;
+            }
+
             var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), interiorId, false))
@@ -2337,6 +3293,13 @@ namespace SWLOR.Game.Server.Service
             if (interior.IsPubliclyAccessible ||
                 !interior.IsPubliclyAccessible && permission != null && permission.Permissions[PropertyPermissionType.EnterProperty])
             {
+                if (!TryResolveEnterableInstance(player, interior.Id, out var instance))
+                    return;
+
+                var entrance = GetEntrancePosition(interior.Layout);
+                var position = Vector3(entrance.X, entrance.Y, entrance.Z);
+                var location = Location(instance.Area, position, entrance.W);
+
                 StoreOriginalLocation(player);
                 AssignCommand(player, () => ActionJumpToLocation(location));
             }
@@ -2498,9 +3461,6 @@ namespace SWLOR.Game.Server.Service
 
             switch (upgradeType)
             {
-                case PropertyUpgradeType.BankLevel:
-                    structureType = StructureType.Bank;
-                    break;
                 case PropertyUpgradeType.MedicalCenterLevel:
                     structureType = StructureType.MedicalCenter;
                     break;

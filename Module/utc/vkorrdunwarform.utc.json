@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 56.0
+    "value": 196.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 25
+    "value": 44
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 2720
+    "value": 8785
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 31
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmbot006"
+          "value": "impwarform_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vkorrdunhvyskin"
+          "value": "impwarform_sk"
         }
       }
     ]
@@ -183,6 +183,48 @@
           "type": "word",
           "value": 1785
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1760
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1820
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1821
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1822
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1823
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1824
+        }
       }
     ]
   },
@@ -206,11 +248,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2720
+    "value": 8105
   },
   "Int": {
     "type": "byte",
-    "value": 40
+    "value": 44
   },
   "Interruptable": {
     "type": "byte",
@@ -240,7 +282,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 3000
+    "value": 8785
   },
   "NaturalAC": {
     "type": "byte",
@@ -545,7 +587,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 54
   },
   "Subrace": {
     "type": "cexostring",
@@ -721,6 +763,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 31
   }
 }

@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -15,6 +14,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public List<IGuiWidget> Elements { get; }
         protected float Width { get; private set; }
         protected float Height { get; private set; }
+
+        /// <inheritdoc />
+        public float DeclaredHeight => Height;
+
+        /// <inheritdoc />
+        public float DeclaredMargin => Margin;
         private float AspectRatio { get; set; }
         private float Margin { get; set; } = -1f;
         private float Padding { get; set; }
@@ -23,22 +28,22 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private bool IsEnabled { get; set; }
         private string IsEnabledBindName { get; set; }
         private bool IsEnableBound => !string.IsNullOrWhiteSpace(IsEnabledBindName);
-        
+
         private bool IsVisible { get; set; }
         private string IsVisibleBindName { get; set; }
         private bool IsVisibleBound => !string.IsNullOrWhiteSpace(IsVisibleBindName);
-        
+
         private string Tooltip { get; set; }
         private string TooltipBindName { get; set; }
         private bool IsTooltipBound => !string.IsNullOrWhiteSpace(TooltipBindName);
-        
+
         private string DisabledTooltip { get; set; }
         private string DisabledTooltipBindName { get; set; }
         private bool IsDisabledTooltipBound => !string.IsNullOrWhiteSpace(DisabledTooltipBindName);
 
         private bool IsEncouraged { get; set; }
         private string IsEncouragedBindName { get; set; }
-        private bool IsEncouragedBound { get; set; }
+        private bool IsEncouragedBound => !string.IsNullOrWhiteSpace(IsEncouragedBindName);
 
         private GuiColor? Color { get; set; }
         private string ColorBindName { get; set; }
@@ -402,7 +407,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
                 var binding = Nui.Bind(IsEncouragedBindName);
                 element = Nui.Encouraged(element, binding);
             }
-            else if (!string.IsNullOrWhiteSpace(IsEncouragedBindName))
+            else if (IsEncouraged)
             {
                 element = Nui.Encouraged(element, JsonBool(IsEncouraged));
             }

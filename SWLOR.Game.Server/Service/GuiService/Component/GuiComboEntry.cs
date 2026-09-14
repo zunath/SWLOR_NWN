@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Label = label;
             Value = value;
         }
-        
+
         /// <summary>
         /// Converts this combo entry to json able to be read by NWN.
         /// </summary>

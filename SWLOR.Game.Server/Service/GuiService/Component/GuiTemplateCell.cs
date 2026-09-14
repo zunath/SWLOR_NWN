@@ -1,4 +1,3 @@
-﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -9,7 +8,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         where T: IGuiViewModel
     {
         private bool IsVariable { get; set; } = true;
-        
+
         /// <summary>
         /// Sets whether the cell is variable in size.
         /// </summary>

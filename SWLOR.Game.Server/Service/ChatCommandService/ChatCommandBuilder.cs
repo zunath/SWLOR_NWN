@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -149,6 +149,17 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         {
             _currentDetail.RequiresTarget = true;
             _currentDetail.ValidTargetTypes = objectTypes;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates that ground selections are valid targets for this command.
+        /// </summary>
+        /// <returns>A configured ChatCommandBuilder.</returns>
+        public ChatCommandBuilder AllowsLocationTarget()
+        {
+            _currentDetail.AllowsLocationTarget = true;
 
             return this;
         }

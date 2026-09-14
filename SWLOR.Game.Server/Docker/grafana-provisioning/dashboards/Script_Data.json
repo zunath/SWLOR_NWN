@@ -51,7 +51,7 @@
         "y": 0
       },
       "id": 6,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -80,6 +80,7 @@
       "targets": [
         {
           "alias": "$tag_Script",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -182,7 +183,7 @@
         "y": 8
       },
       "id": 8,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -211,6 +212,7 @@
       "targets": [
         {
           "alias": "$tag_ObjectType",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -313,7 +315,7 @@
         "y": 8
       },
       "id": 7,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -342,6 +344,7 @@
       "targets": [
         {
           "alias": "$tag_Area",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {

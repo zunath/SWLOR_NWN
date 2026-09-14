@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.SkillService
+namespace SWLOR.Game.Server.Service.SkillService
 {
     public enum CombatPointCategoryType
     {

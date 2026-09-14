@@ -1,4 +1,3 @@
-﻿using System;
 using SWLOR.Game.Server.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
@@ -104,6 +103,17 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Elements.Add(newOptions);
 
             return newOptions;
+        }
+
+        /// <summary>
+        /// Adds a set of toggle tabs from which to choose.
+        /// </summary>
+        public GuiToggles<T> AddToggles()
+        {
+            var newToggles = new GuiToggles<T>();
+            Elements.Add(newToggles);
+
+            return newToggles;
         }
 
         /// <summary>

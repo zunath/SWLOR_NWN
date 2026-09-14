@@ -8,7 +8,7 @@ The Core layer contains fundamental systems, abstractions, and utilities that pr
 
 ## Directory Structure
 
-```
+```text
 Core/
 ├── Async/
 │   ├── Awaiters/
@@ -121,20 +121,25 @@ await NwTask.Run(() => {
 - `NuiChartType.cs` - Chart types
 - Various GUI components
 
-**Usage**:
-```csharp
-// Create NUI window
-var window = new NuiWindow("MyWindow", "My Window")
-{
-    Geometry = new NuiRect(0, 0, 400, 300)
-};
+**Usage**: Windows are NOT built against this low-level layer directly. Author them
+with the MVVM wrapper: an `IGuiWindowDefinition` using `GuiWindowBuilder<TViewModel>`
+plus a `GuiViewModelBase` ViewModel:
 
-// Add elements to window
-window.Elements.Add(new NuiLabel("Hello World")
+```csharp
+var window = _builder.CreateWindow(GuiWindowType.Example)
+    .SetInitialGeometry(0, 0, 900f, 560f)
+    .SetTitle("Example");
+
+window.AddStandardLayout(layout =>
 {
-    Geometry = new NuiRect(10, 10, 100, 20)
+    layout.SetContentPartialElement(ExampleViewModel.TabContentElement);
 });
+
+return _builder.Build();
 ```
+
+See `Readmes/GuiWindowAuthoring.md` for the full authoring guide and
+`Readmes/NuiLayoutRules.md` for the layout rules.
 
 ### 5. Bioware Extensions
 
@@ -216,7 +221,7 @@ public class MyEventHandler : ICoreEventHandler
     {
         // Handle player login
     }
-    
+
     public void OnPlayerLogout(uint player)
     {
         // Handle player logout
@@ -243,7 +248,7 @@ public class MyPlugin : IPlugin
     {
         // Initialize plugin
     }
-    
+
     public void Shutdown()
     {
         // Shutdown plugin
@@ -279,10 +284,10 @@ public static async NwTask<bool> MoveToLocation(uint creature, Location target)
     AssignCommand(creature, () => {
         ActionMoveToLocation(target);
     });
-    
+
     // Wait for movement to complete
     await NwTask.Delay(100);
-    
+
     return GetDistanceBetween(creature, target) < 2.0f;
 }
 ```
@@ -307,7 +312,7 @@ if (GetObjectType(object) == ObjectType.Creature)
 }
 
 // Apply damage
-ApplyEffectToObject(DurationType.Instant, 
+ApplyEffectToObject(DurationType.Instant,
     EffectDamage(10, DamageType.Fire), target);
 ```
 
@@ -338,7 +343,7 @@ public static class CombatService
         // Use core damage system
         var effect = EffectDamage(damage, damageType);
         ApplyEffectToObject(DurationType.Instant, effect, target);
-        
+
         // Use core logging
         Log.Write(LogGroup.Combat, $"Applied {damage} {damageType} damage to {target}");
     }
@@ -373,7 +378,7 @@ public static void OnPlayerDamaged(uint player, uint attacker, int damage)
     // Use core combat system
     var damageEffect = EffectDamage(damage, DamageType.Physical);
     ApplyEffectToObject(DurationType.Instant, damageEffect, player);
-    
+
     // Use core logging
     Log.Write(LogGroup.Combat, $"Player {player} took {damage} damage from {attacker}");
 }
@@ -472,7 +477,7 @@ public void TestCoreFunctionality()
 {
     // Test core system
     var result = CoreSystem.DoSomething();
-    
+
     Assert.IsTrue(result);
 }
 ```
@@ -486,7 +491,7 @@ public void TestCoreIntegration()
     // Test core integration with services
     var service = new MyService();
     var result = service.UseCoreFunctionality();
-    
+
     Assert.IsTrue(result);
 }
 ```
@@ -498,10 +503,10 @@ public void TestCoreIntegration()
 public void TestCorePerformance()
 {
     var stopwatch = Stopwatch.StartNew();
-    
+
     // Perform core operation
     CoreSystem.PerformOperation();
-    
+
     stopwatch.Stop();
     Assert.Less(stopwatch.ElapsedMilliseconds, 100);
 }
@@ -536,4 +541,4 @@ Monitor core system performance:
 3. Check for bottlenecks
 4. Optimize as needed
 
-This documentation provides a comprehensive overview of the Core systems in SWLOR.Game.Server, covering the main systems, patterns, and best practices for working with core functionality. 
+This documentation provides a comprehensive overview of the Core systems in SWLOR.Game.Server, covering the main systems, patterns, and best practices for working with core functionality.

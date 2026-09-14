@@ -1,104 +1,104 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
-    public class InfusionAbilityDefinition: FirstAidBaseAbilityDefinition
+    public sealed class InfusionAbilityDefinition : IAbilityListDefinition
     {
-        private const string Tier1Tag = "ABILITY_INFUSION_1";
-        private const string Tier2Tag = "ABILITY_INFUSION_2";
-
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            Infusion1();
-            Infusion2();
+            var builder = new AbilityBuilder();
 
-            return Builder.Build();
+            Infusion1(builder);
+            Infusion2(builder);
+
+            return builder.Build();
         }
 
-        private string Validation(uint activator, uint target, int level)
+        private static void Infusion1(AbilityBuilder builder)
         {
-            if (!IsWithinRange(activator, target))
-            {
-                return "Your target is too far away.";
-            }
-
-            if (HasMorePowerfulEffect(target, level,
-                    new(Tier1Tag, 1),
-                    new(Tier2Tag, 2)))
-            {
-                return "Your target is already enhanced by a more powerful effect.";
-            }
-
-            if (!HasStimPack(activator))
-            {
-                return "You have no stim packs.";
-            }
-
-            return string.Empty;
-        }
-
-        private void Impact(uint activator, uint target, int amount, string effectTag)
-        {
-            const float Duration = 24f;
-            var will = GetAbilityScore(activator, AbilityType.Willpower) - 10;
-            amount += will;
-
-            RemoveEffectByTag(target, Tier1Tag, Tier2Tag);
-
-            var effect = EffectRegenerate(amount, 6f);
-            effect = TagEffect(effect, effectTag);
-            ApplyEffectToObject(DurationType.Temporary, effect, target, Duration);
-
-            TakeStimPack(activator);
-            Enmity.ModifyEnmityOnAll(activator, 5 * amount);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-        }
-
-        private void Infusion1()
-        {
-            Builder.Create(FeatType.Infusion1, PerkType.Infusion)
+            builder
+                .Create(FeatType.Infusion1, PerkType.Infusion)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Infusion)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Infusion I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Infusion, 60f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(6)
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.Infusion, 24f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Infusion1ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    return Validation(activator, target, 1);
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 60, Tier1Tag);
-                });
+                .BreaksStealth()
+                .RequirementStamina(6)
+                .RequirementItem("med_supplies");
         }
 
-        private void Infusion2()
+        private static void Infusion2(AbilityBuilder builder)
         {
-            Builder.Create(FeatType.Infusion2, PerkType.Infusion)
+            builder
+                .Create(FeatType.Infusion2, PerkType.Infusion)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Infusion)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Infusion II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Infusion, 60f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(8)
+                .HasActivationDelay(1f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .PlaysSoundOnImpact("ksfx_healing")
+                .HasRecastDelay(RecastGroup.Infusion, 24f)
+                .SkillType(SkillType.FirstAid)
+                .IsSingleTargetAbility()
+                .IsHealingAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Infusion2ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) =>
-                {
-                    return Validation(activator, target, 2);
-                })
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 120, Tier2Tag);
-                });
+                .BreaksStealth()
+                .RequirementStamina(8)
+                .RequirementItem("med_supplies");
         }
+
+        private static void Infusion1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyInfusion(activator, target, "Infusion I", 15f);
+        }
+
+        private static void Infusion2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyInfusion(activator, target, "Infusion II", 25f);
+        }
+
+        private static void ApplyInfusion(uint activator, uint target, string name, float totalPercent)
+        {
+            var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
+            if (StatusEffect.ApplyStatusEffect(
+                activator,
+                friendly,
+                new RegenerativeHealingStatusEffect(name, totalPercent, 5, true),
+                30f))
+                Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
+            FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
+            FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+        }
+
     }
 }

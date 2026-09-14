@@ -98,7 +98,7 @@ Service/
 ├── SpaceService/                     # Space service components
 ├── SpawnService/                     # Spawn service components
 ├── StatService/                      # Stat service components
-├── StatusEffectService/              # Status effect service components
+├── StatusEffect support              # Status effect support components
 ├── TaxiService/                      # Taxi service components
 └── WeatherService/                   # Weather service components
 ```
@@ -294,4 +294,4 @@ Test service interactions. See the integration test files for examples of cross-
 
 ---
 
-*This documentation should be updated when new services are added or existing services are modified.* 
+*This documentation should be updated when new services are added or existing services are modified.*

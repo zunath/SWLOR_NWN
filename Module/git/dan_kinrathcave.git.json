@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 348
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 128
+            }
+          }
+        ]
       }
     }
   },
@@ -665,7 +685,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -39029,6 +39049,21 @@
                 "type": "int",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
             }
           ]
         },
@@ -41745,14 +41780,14 @@
               "__struct_id": 97869,
               "BaseItem": {
                 "type": "int",
-                "value": 401
+                "value": 400
               }
             },
             {
               "__struct_id": 97869,
               "BaseItem": {
                 "type": "int",
-                "value": 400
+                "value": 401
               }
             },
             {
@@ -41973,6 +42008,21 @@
         "Value": {
           "type": "int",
           "value": 115
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 128
         }
       }
     ]

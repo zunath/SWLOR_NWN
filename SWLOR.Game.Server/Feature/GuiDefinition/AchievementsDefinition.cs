@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -33,29 +33,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindRowCount(model => model.Names);
                     });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton()
-                            .SetText("<")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickPreviousPage());
-
-                        row.AddComboBox()
-                            .BindOptions(model => model.PageNumbers)
-                            .BindSelectedIndex(model => model.SelectedPageIndex);
-
-                        row.AddButton()
-                            .SetText(">")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickNextPage());
-
-                        row.AddSpacer();
-                    });
+                    col.AddPagination(
+                        model => model.PageNumbers,
+                        model => model.SelectedPageIndex,
+                        model => model.OnClickPreviousPage(),
+                        model => model.OnClickNextPage());
                 })
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>

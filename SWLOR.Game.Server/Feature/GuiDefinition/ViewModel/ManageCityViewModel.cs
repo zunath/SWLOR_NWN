@@ -1,4 +1,3 @@
-﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -36,12 +35,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string CityLevel
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string BankUpgradeLevel
         {
             get => Get<string>();
             set => Set(value);
@@ -107,12 +100,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool CanUpgradeBanks
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool CanUpgradeMedicalCenters
         {
             get => Get<bool>();
@@ -137,12 +124,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string BankCurrentUpgrade
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public string MedicalCenterCurrentUpgrade
         {
             get => Get<string>();
@@ -156,12 +137,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string CantinaCurrentUpgrade
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string BankNextUpgrade
         {
             get => Get<string>();
             set => Set(value);
@@ -198,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbProperty = DB.Get<WorldProperty>(propertyId);
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
             _cityId = dbBuilding.ParentPropertyId;
-            
+
             RefreshPermissions();
             RefreshCitizenList();
             RefreshUpgradeLevels();
@@ -226,9 +201,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanManageUpkeep = permission.Permissions[PropertyPermissionType.ManageUpkeep];
 
             // Upgrades
-            CanUpgradeBanks = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
-                              dbCity.Upgrades[PropertyUpgradeType.BankLevel] < MaxUpgradeLevel &&
-                              dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.BankLevel] + 1;
             CanUpgradeMedicalCenters = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
                               dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] + 1;
@@ -244,13 +216,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
 
-            BankUpgradeLevel = $"Bank: Lvl {dbCity.Upgrades[PropertyUpgradeType.BankLevel]}";
             MedicalCenterLevel = $"Medical Center: Lvl {dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]}";
             StarportLevel = $"Starport: Lvl {dbCity.Upgrades[PropertyUpgradeType.StarportLevel]}";
             CantinaLevel = $"Cantina: Lvl {dbCity.Upgrades[PropertyUpgradeType.CantinaLevel]}";
 
-            BankCurrentUpgrade = GetBankUpgrade(dbCity.Upgrades[PropertyUpgradeType.BankLevel]);
-            BankNextUpgrade = GetBankUpgrade(dbCity.Upgrades[PropertyUpgradeType.BankLevel] + 1);
             MedicalCenterCurrentUpgrade = GetMedicalCenterUpgrade(dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]);
             MedicalCenterNextUpgrade = GetMedicalCenterUpgrade(dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] + 1);
             StarportCurrentUpgrade = GetStarportUpgrade(dbCity.Upgrades[PropertyUpgradeType.StarportLevel]);
@@ -270,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var citizen in dbCitizens)
             {
-                citizenNames.Add(citizen.Name);
+                citizenNames.Add(PlayerName.GetPlainDisplayNameByPlayerId(Player, citizen.Id, citizen.Name));
                 citizenCreditsOwed.Add($"Owes {citizen.PropertyOwedTaxes} cr");
             }
 
@@ -288,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Treasury = $"Treasury: {dbCity.Treasury} cr";
             CityLevel = $"Level: {Property.GetCityLevelName(level)} (Lvl. {level})";
         }
-        
+
         private void RefreshUpkeep()
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
@@ -303,24 +272,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TransportationTax = $"{dbCity.Taxes[PropertyTaxType.Transportation]}";
         }
 
-        private string GetBankUpgrade(int level)
-        {
-            switch (level)
-            {
-                case 1:
-                    return "Storage Cap: 40 items per citizen";
-                case 2:
-                    return "Storage Cap: 60 items per citizen";
-                case 3:
-                    return "Storage Cap: 80 items per citizen";
-                case 4:
-                    return "Storage Cap: 100 items per citizen";
-                case 5:
-                    return "Storage Cap: 120 items per citizen";
-                default:
-                    return "UPGRADES MAXED";
-            }
-        }
         private string GetMedicalCenterUpgrade(int level)
         {
             switch (level)
@@ -476,7 +427,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         foreach (var propertyId in instancePropertyIds)
                         {
-                            var instance = Property.GetRegisteredInstance(propertyId);
+                            if (!Property.TryGetLoadedInstance(propertyId, out var instance))
+                                continue;
+
                             var layout = Property.GetLayoutByType(instance.LayoutType);
 
                             if (layout.OnCityUpgradeAction != null)
@@ -487,12 +440,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 });
         }
-        
 
-        public Action UpgradeBankLevel() => () =>
-        {
-            HandleUpgrade(PropertyUpgradeType.BankLevel, PropertyType.Bank);
-        };
 
         public Action UpgradeMedicalCenterLevel() => () =>
         {

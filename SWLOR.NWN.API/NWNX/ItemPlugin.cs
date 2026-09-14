@@ -79,19 +79,19 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>
         /// This will not be visible to PCs until the item is refreshed for them (e.g. by logging out and back in).
         /// Helmet models and simple items ignore nIndex.
-        /// 
+        ///
         /// nType                            nIndex                              nValue
         /// ITEM_APPR_TYPE_SIMPLE_MODEL      [Ignored]                           Model #
         /// ITEM_APPR_TYPE_WEAPON_COLOR      ITEM_APPR_WEAPON_COLOR_*            0-255
         /// ITEM_APPR_TYPE_WEAPON_MODEL      ITEM_APPR_WEAPON_MODEL_*            Model #
         /// ITEM_APPR_TYPE_ARMOR_MODEL       ITEM_APPR_ARMOR_MODEL_*             Model #
         /// ITEM_APPR_TYPE_ARMOR_COLOR       ITEM_APPR_ARMOR_COLOR_* [0]         0-255 [1]
-        /// 
+        ///
         /// [0] Where ITEM_APPR_TYPE_ARMOR_COLOR is specified, if per-part coloring is desired, the following equation can be used for nIndex to achieve that:
         /// ITEM_APPR_ARMOR_NUM_COLORS + (ITEM_APPR_ARMOR_MODEL_ * ITEM_APPR_ARMOR_NUM_COLORS) + ITEM_APPR_ARMOR_COLOR_
-        /// 
+        ///
         /// For example, to change the CLOTH1 channel of the torso, nIndex would be: 6 + (7 * 6) + 2 = 50
-        /// 
+        ///
         /// [1] When specifying per-part coloring, the value 255 corresponds with the logical function 'clear colour override', which clears the per-part override for that part.
         /// </remarks>
         public static void SetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex, int nValue, bool updateCreatureAppearance = false)

@@ -1,0 +1,3739 @@
+[
+  {
+    "ConversationId": "avixtatham",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "banissgolladio",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "bartender",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "bh",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "bh2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "bh3",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "bh4",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "bruenortyuth",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "can_ash",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "capn_sluuk",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cavedweller",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "chefmasteryu",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cherissordo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cleanwatertube",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cooks_journal",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cq_absdef",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_adamguard",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_alpharhy",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_apexbite",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_cripdef",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_darkhung",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_deadhand",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_deccommand",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_eclipse",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_embunker",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_emcocktail",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_forcebane",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_forcebeast",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_guardmst",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_holdline",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_infconduit",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_invinc",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_killbeacon",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_killbox",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_lastword",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_lightstand",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_oneshot",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_overbarr",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_perflurry",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_primover",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_rainsteel",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_redbloom",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_sabcycl",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_sabstorm",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_scraplock",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_soulasc",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_sysshut",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_tempbloom",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_thermdet",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_unbrbeast",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_unmovctr",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_untinst",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_vitrupt",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cq_worldbrk",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 6",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 8",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 13",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 15",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 20",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 22",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 27",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 29",
+        "Message": "Has action parameters but no action dispatcher."
+      },
+      {
+        "Severity": 0,
+        "Location": "reply 34",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "cr_t_d_operator",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "crystal",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cyylan_forevia",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cz_captainbertha",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cz_employee1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cz_employee2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cz_employee3",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cz_receptionist",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cz220_5cr4pconvo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "cz220_datapad",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "czerka_concierge",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "czerkapatrol",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "czerkaranger",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "czerkasoda",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dan_bo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dan_cafebar",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dan_hayquest",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dan_lizards",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dan_medisupp",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dan_questmilk",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dan_thuneconvo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "danciv",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dandialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dangym",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "daninfo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dantherbs",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dantkinrath",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dantlibjedi",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "danttrainer",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dariobeto",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "darrynbeto",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "defmachineconsol",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "denam_reyholm",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dessta_bocktorb",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dialognova",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dlg_selendar",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dmfi_universal",
+    "Status": "RequiresLegacyException",
+    "Issues": [
+      {
+        "Severity": 1,
+        "Location": "conversation",
+        "Message": "DMFI wands launch and restart this conversation through native ActionStartConversation calls."
+      }
+    ]
+  },
+  {
+    "ConversationId": "docjoe",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_barman_gen",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_barman_gen03",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_cantina002",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_cantina008",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_cantina010",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_cntr_magasin",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_doc_velpo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_gocorp_anchor",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_infirmiere001",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_infirmiere002",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_infirmiere003",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_jawa001",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_marche001",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_marche002",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_medic_anchor",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_verpex",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_visi_medic001",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "dt_visi_medic003",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "duskhaven_thug",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "factiontesting",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "farah_oersted",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "fishmaster",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "fnote_vendor",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "galateaallerti",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "gambler",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "gsiquest1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "guylan_verruchi",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "halronlinth",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "harry_mason",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "henry",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "hut_sharbyskbrek",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "irene_colsstaad",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "jawa",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "jhoren_firstrite",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "jhoren_veles",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "kieun_xorxca",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "korrdralquest",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "korrifactory",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "korrinstructor",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "korrislugs",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "leg_med",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "legreception",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "leny",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "lu_shang",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "magasindial",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "maureenliagri",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "mcdce_doctor",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "mcdce_gamemstr",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "mcdce_onmofo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "mcdce_reception",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "mcdce_sergeant",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "merchant1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "mine_foreman",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "moirahalaz",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "mon_p3dr0oilpit",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "moricho_deine",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nar_datasmg_q",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nar_pirate_q",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nar_slaver_q",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nar_sniper_q",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nather_addams",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "night_galaxybar",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "night_viscaccess",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "night_viscflower",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nima_poy",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "npc_l",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_ayebeee",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_blozea",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_booma",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_borkaet",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_chaikss",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_coopemm",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_dusk",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_helene",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_hostra",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_karrav",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_kastod",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_ketchsm",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_khadcro",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_kuklez",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_lameyty",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_lizemon",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_maialen",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_michael",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_moaguar",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_mr03478",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_nickkel",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_nipppi",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_sf91021",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_sizzla",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_slimmat",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_sqammar",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_thurnd",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_trigers",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_trirfho",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_twitrip",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_viiziin",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "nw_convo_wottrok",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "orlando_doon",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron3",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron4",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron5",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron6",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron7",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "patron8",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "q1_nikka_larson",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "quest_example",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rawsewagesys",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "red_journal_mand",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "refugee",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "refugee2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "reid_coxxion",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rennatarsk",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_armgrddialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_armory",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_cavadialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_entrydialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_gardenguard",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_grantdialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_idledialog01",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_idledialog02",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_idleguard",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_idleguard02",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_idleguard03",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_idletechni",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_kashdialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_medicalbay",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_messhall001",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_nahuludialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_offreception",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_offvellen1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_recepdialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_sahodialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_trdrddialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_triguadialog",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_veles_troop1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rep_veles_troop2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "repbase_droid1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "repbase_sgtqon",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "repbase_tech1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "repbase_tech2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "republicsoldier0",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "republicsoldier1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_aco_lenari",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_bartender",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_brigofficer",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_dancer1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_eavmottonel",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_guard",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_inq_tariq",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_lordarrelac",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_medical",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_officer",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_patron1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_patron2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_quartermaste",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_receptdroid",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_shuttleguard",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_sorcererpyxi",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rev_warr_irrian",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "rorrska_buvvien",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "roy_moss",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "selanflembek",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "sera_vonn",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "sewermstrconsole",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "sewersecconsole",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "sewertreatconsol",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "sithbasement",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "sithguide",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "smesk_naia",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "smugthide",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "spawn_banner",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "spy1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "spy2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "star_attend_lau",
+    "Status": "Converted",
+    "Issues": [
+      {
+        "Severity": 0,
+        "Location": "reply 1",
+        "Message": "Has action parameters but no action dispatcher."
+      }
+    ]
+  },
+  {
+    "ConversationId": "start_bountyhunt",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "start_civilian",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "start_mercenary",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "start_musician",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "start_pilot",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "start_wookiee",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "starting_items",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "szaansynko",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "talgarmeyne",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tat_cantinaconvo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tat_civ1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tat_czerka",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tat_militia",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tat_militmurder",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tat_smug",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tat_womp",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tatsmugglerquest",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tina_droidshconv",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tk_omnidye",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tohnden_dahkson",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "train_terminal",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tristan_talyron",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "trooperquest",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "tulak_start",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_bankteller",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_captisabel",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_chef",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist10",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist11",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist12",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist13",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist14",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist15",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist16",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist3",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist4",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist5",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist6",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist7",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist8",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_colonist9",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_cynna",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_dr_ipol",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_engishop",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_gammorean",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_hnnrecept",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_holonews1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_holonews2",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_holonews3",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_jalsheyneo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_mannequin",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_meddroidre",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_mentorsina",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_pho",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_portvendor",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_saddroid",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_shelbquest",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_sheriff",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_sheriffdro",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_smugglers1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_smugshop",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_techvendor",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_thug1",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "veles_volnatu",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "vendor_merchant",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "verpex",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "visc_spicesteph",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "vordlg",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "voryx_ooang",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "wf_droid",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "wf_engineer",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "x0_skill_ctrap",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "yastin_fettias",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "zomb_dataconvo",
+    "Status": "Converted",
+    "Issues": []
+  },
+  {
+    "ConversationId": "zomb_telconv",
+    "Status": "Converted",
+    "Issues": []
+  }
+]

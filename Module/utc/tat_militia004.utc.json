@@ -189,7 +189,7 @@
         }
       },
       {
-        "__struct_id": 2048,
+        "__struct_id": 4096,
         "EquippedRes": {
           "type": "resref",
           "value": "004"
@@ -409,7 +409,7 @@
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": "x2_def_onconv"
+    "value": "dialog_start"
   },
   "ScriptDisturbed": {
     "type": "resref",

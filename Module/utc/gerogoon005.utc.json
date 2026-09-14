@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 13.0
+    "value": 19.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 30
+    "value": 17
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 130
+    "value": 321
   },
   "DecayTime": {
     "type": "dword",
@@ -158,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 35
+    "value": 12
   },
   "Disarmable": {
     "type": "byte",
@@ -178,7 +178,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "exchangepisto002"
+          "value": "gerogoon005_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "gerogoon005_sk"
         }
       }
     ]
@@ -336,6 +343,27 @@
           "type": "word",
           "value": 144
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1853
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1854
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1855
+        }
       }
     ]
   },
@@ -359,11 +387,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 130
+    "value": 285
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 17
   },
   "Interruptable": {
     "type": "byte",
@@ -376,26 +404,6 @@
   "IsPC": {
     "type": "byte",
     "value": 0
-  },
-  "ItemList": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "exchangesword003"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      }
-    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -413,7 +421,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 250
+    "value": 321
   },
   "NaturalAC": {
     "type": "byte",
@@ -718,7 +726,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 35
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -754,7 +762,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 15
+    "value": 12
   },
   "xAppearance_Head": {
     "type": "word",

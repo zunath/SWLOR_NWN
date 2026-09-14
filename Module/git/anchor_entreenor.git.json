@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 570
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 2
+            }
+          }
+        ]
       }
     }
   },
@@ -843,6 +863,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -896,14 +947,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -1299,7 +1350,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2698,6 +2749,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -2751,14 +2833,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -3381,7 +3463,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4780,6 +4862,37 @@
                       "type": "word",
                       "value": 1
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 52
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 30
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 98
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
                   }
                 ]
               },
@@ -4833,14 +4946,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -5463,7 +5576,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -5855,7 +5968,225 @@
   },
   "Door List": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 0
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "GenericType_New": {
+          "type": "dword",
+          "value": 73
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 0
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 1
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Sealed Passage"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnFailToOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 558
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "pw_sc_canyonrng_gate"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "_mdrn_dt_stneint"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "__struct_id": 8,
+        "X": {
+          "type": "float",
+          "value": 155.8
+        },
+        "Y": {
+          "type": "float",
+          "value": 75.0
+        },
+        "Z": {
+          "type": "float",
+          "value": 5.0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -1.5707963267948966
+        }
+      }
+    ]
   },
   "Encounter List": {
     "type": "list",
@@ -5955,7 +6286,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -6183,7 +6514,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -6411,7 +6742,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -6639,7 +6970,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -6867,7 +7198,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -7095,7 +7426,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -7323,7 +7654,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -7551,7 +7882,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -7779,7 +8110,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -8007,7 +8338,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -8235,7 +8566,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -8463,7 +8794,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -8691,7 +9022,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -8919,7 +9250,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -9147,7 +9478,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -9375,7 +9706,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -9603,7 +9934,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -9831,7 +10162,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -10059,7 +10390,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -10287,7 +10618,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -10515,7 +10846,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -10743,7 +11074,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -10971,7 +11302,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -11199,7 +11530,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -11427,7 +11758,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -11655,7 +11986,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -11883,7 +12214,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -12111,7 +12442,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -12339,7 +12670,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -12567,7 +12898,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -12795,7 +13126,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -13023,7 +13354,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -13251,7 +13582,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -13479,7 +13810,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -13707,7 +14038,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -13935,7 +14266,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -14163,7 +14494,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -14391,7 +14722,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -14619,7 +14950,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -14847,7 +15178,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -15075,7 +15406,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -15303,7 +15634,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -15531,7 +15862,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -15759,7 +16090,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -15987,7 +16318,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -16215,7 +16546,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -16443,7 +16774,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -16671,7 +17002,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -16899,7 +17230,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -17127,7 +17458,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -17355,7 +17686,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -17583,7 +17914,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -17811,7 +18142,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -18039,7 +18370,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -18267,7 +18598,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -18495,7 +18826,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -18723,7 +19054,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -18951,7 +19282,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -19179,7 +19510,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -19407,7 +19738,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -19635,7 +19966,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -19863,7 +20194,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -20091,7 +20422,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -20319,7 +20650,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -20547,7 +20878,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -20775,7 +21106,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -21003,7 +21334,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -21231,7 +21562,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -21459,7 +21790,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -21687,7 +22018,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -21915,7 +22246,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -22143,7 +22474,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -22371,7 +22702,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -22599,7 +22930,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -22827,7 +23158,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -23055,7 +23386,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -23283,7 +23614,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -23511,7 +23842,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -23739,7 +24070,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -23967,7 +24298,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -24195,7 +24526,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -24423,7 +24754,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -24651,7 +24982,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -24879,7 +25210,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -25107,7 +25438,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -25335,7 +25666,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -25563,7 +25894,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -25791,7 +26122,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -26019,7 +26350,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -26247,7 +26578,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -26475,7 +26806,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -26703,7 +27034,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -26931,7 +27262,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -27159,7 +27490,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -27387,7 +27718,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -27615,7 +27946,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -27843,7 +28174,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -28071,7 +28402,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -28299,7 +28630,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -28527,7 +28858,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -28755,7 +29086,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -28983,7 +29314,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -29211,7 +29542,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -29439,7 +29770,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -29667,7 +29998,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -29895,7 +30226,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -30123,7 +30454,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -30351,7 +30682,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -30579,7 +30910,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -30807,7 +31138,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -31035,7 +31366,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -31263,7 +31594,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -31491,7 +31822,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -31719,7 +32050,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -31947,7 +32278,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -32175,7 +32506,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -32403,7 +32734,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -32631,7 +32962,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Lampe piquet basse"
+            "2": "Low Stake Lamp"
           }
         },
         "OnClick": {
@@ -32787,7 +33118,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -32809,7 +33140,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Trash that may contain useful recoverable items."
           }
         },
         "DisarmDC": {
@@ -33015,7 +33346,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -33037,7 +33368,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Trash that may contain useful recoverable items."
           }
         },
         "DisarmDC": {
@@ -33265,7 +33596,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Trash that may contain useful recoverable items."
           }
         },
         "DisarmDC": {
@@ -33454,6 +33785,299 @@
           "type": "float",
           "value": 9.999996185302734
         }
+      },
+      {
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 479
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "id": 14533,
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Anchorhead Canyon Range"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "teleport"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tele_obj"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tele_obj"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "pw_sc_canyonrng_entry"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "KEY_ITEM_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 112
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "MISSING_KEY_ITEM_MESSAGE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "You need the Anchorhead Canyon Range key to enter."
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "__struct_id": 9,
+        "X": {
+          "type": "float",
+          "value": 152.5
+        },
+        "Y": {
+          "type": "float",
+          "value": 75.0
+        },
+        "Z": {
+          "type": "float",
+          "value": 5.0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 0.0
+        }
       }
     ]
   },
@@ -33493,7 +34117,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -33628,7 +34252,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -33763,7 +34387,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -34371,13 +34995,13 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead - entree nord vers qn"
+            "0": "Anchorhead - North Entrance to North District"
           }
         },
         "OnClick": {
@@ -34574,13 +35198,13 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead : entrée nord vers désert rocailleux"
+            "0": "Anchorhead: North Entrance to Rocky Desert"
           }
         },
         "OnClick": {
@@ -34777,13 +35401,13 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
           "type": "cexolocstring",
           "value": {
-            "2": "anchor_entreenor_rte_com01"
+            "2": "Anchorhead North Entrance Trade Route 01"
           }
         },
         "OnClick": {
@@ -34912,6 +35536,21 @@
         "Value": {
           "type": "int",
           "value": 66
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]
@@ -35066,11 +35705,11 @@
           "value": {
             "0": "Anchorhead",
             "2": "Anchorhead",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "256": "Anchorhead",
+            "258": "Anchorhead",
+            "260": "Anchorhead",
+            "4": "Anchorhead",
+            "8": "Anchorhead"
           }
         },
         "MapNoteEnabled": {
@@ -35192,13 +35831,13 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Towards the dunes",
-            "2": "Vers le désert de dunes",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "0": "To the Dune Desert",
+            "2": "To the Dune Desert",
+            "256": "To the Dune Desert",
+            "258": "To the Dune Desert",
+            "260": "To the Dune Desert",
+            "4": "To the Dune Desert",
+            "8": "To the Dune Desert"
           }
         },
         "MapNoteEnabled": {
@@ -35261,13 +35900,13 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Ferme du fou",
-            "2": "Ferme du fou",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "0": "Madman's Farm",
+            "2": "Madman's Farm",
+            "256": "Anchorhead",
+            "258": "Anchorhead",
+            "260": "Anchorhead",
+            "4": "Anchorhead",
+            "8": "Anchorhead"
           }
         },
         "MapNoteEnabled": {
@@ -35330,13 +35969,13 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Towards the dunes",
-            "2": "Vers Motesta",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "0": "To Motesta",
+            "2": "To Motesta",
+            "256": "To Motesta",
+            "258": "To Motesta",
+            "260": "To Motesta",
+            "4": "To Motesta",
+            "8": "To Motesta"
           }
         },
         "MapNoteEnabled": {
@@ -35433,6 +36072,69 @@
         "ZPosition": {
           "type": "float",
           "value": 15.00000095367432
+        }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Return from Anchorhead Canyon Range"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "pw_sc_canyonrng_hub"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_velescmd_ent"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 147.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
         }
       }
     ]

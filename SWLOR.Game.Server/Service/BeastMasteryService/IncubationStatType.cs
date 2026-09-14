@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
     // Corresponds to iprp_incubation.2da
     public enum IncubationStatType
@@ -11,13 +11,15 @@
         LearningPurity = 5,
         PhysicalDefensePurity = 6,
         ForceDefensePurity = 7,
-        FireDefensePurity = 8,
-        PoisonDefensePurity = 9,
-        ElectricalDefensePurity = 10,
-        IceDefensePurity = 11,
-        FortitudePurity = 12,
-        ReflexPurity = 13,
-        WillPurity = 14,
+        FireResistancePurity = 8,
+        PoisonResistancePurity = 9,
+        ElectricalResistancePurity = 10,
+        IceResistancePurity = 11,
+        // IDs 12-14 were legacy Fortitude/Reflex/Will purities and are retired.
         XPPenalty = 15,
+        MindResistancePurity = 16,
+        MobilityResistancePurity = 17,
+        TraumaResistancePurity = 18,
+        DisruptionResistancePurity = 19,
     }
 }

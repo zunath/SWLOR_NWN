@@ -1,4 +1,37 @@
-﻿FROM nwnxee/unified:build8193.37.15
+# NWNX 8193.37-17, pinned to the tested immutable upstream commit tag.
+FROM nwnxee/unified:3d4c4e1
+
+ARG SWLOR_RUNTIME_UID=1000
+ARG SWLOR_RUNTIME_GID=1000
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        dotnet-apphost-pack-10.0 \
+        dotnet-runtime-10.0 \
+    && apt-get purge -y \
+        dotnet-apphost-pack-7.0 \
+        dotnet-apphost-pack-8.0 \
+        dotnet-hostfxr-7.0 \
+        dotnet-hostfxr-8.0 \
+        dotnet-runtime-7.0 \
+        dotnet-runtime-8.0 \
+        dotnet-runtime-deps-7.0 \
+        dotnet-runtime-deps-8.0 \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN wget https://aka.ms/getvsdbgsh -O - 2>/dev/null | /bin/sh /dev/stdin -v vs2022 -l /remote_debugger/vsdbg
 
-RUN chmod 777 -R /remote_debugger/vsdbg
+RUN groupadd --gid "$SWLOR_RUNTIME_GID" swlor \
+    && useradd \
+        --uid "$SWLOR_RUNTIME_UID" \
+        --gid "$SWLOR_RUNTIME_GID" \
+        --home-dir /nwn/run \
+        --no-create-home \
+        --shell /usr/sbin/nologin \
+        swlor \
+    && chown -R "$SWLOR_RUNTIME_UID:$SWLOR_RUNTIME_GID" /nwn/home /nwn/run \
+    && chmod -R a=rX,u+w /remote_debugger/vsdbg
+
+ENV HOME=/nwn/run
+
+USER ${SWLOR_RUNTIME_UID}:${SWLOR_RUNTIME_GID}

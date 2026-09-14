@@ -60,8 +60,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "It's Bantha juice its alcohol ... But there's only a cantina on Anchorhead ...",
-            "2": "C'est du jus de Bantha son alcool... Mais y'a qu'une cantina sur Anchorhead..."
+            "0": "It's Bantha juice without the alcohol... but there is only one cantina in Anchorhead...",
+            "2": "It's Bantha juice without the alcohol... but there is only one cantina in Anchorhead..."
           }
         }
       }

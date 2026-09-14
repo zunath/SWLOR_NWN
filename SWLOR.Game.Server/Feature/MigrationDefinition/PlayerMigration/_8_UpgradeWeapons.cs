@@ -1,23 +1,19 @@
-﻿using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _8_UpgradeWeapons : PlayerMigrationBase
     {
+        private const string DamageUpgradeVariable = "WEAPON_DAMAGE_UPGRADED";
         public override int Version => 8;
         public override void Migrate(uint player)
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            RefundPerks(dbPlayer, player);
             UpdateWeapons(player);
         }
 
@@ -69,40 +65,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 { "h_twinelec_5", (25, 28) }
             };
 
-        private static void RefundPerks(Player dbPlayer, uint player)
-        {
-            List<PerkType> refundList = new()
-            {
-                PerkType.DualWield,
-                PerkType.ImprovedTwoWeaponFightingOneHanded,
-                PerkType.ImprovedTwoWeaponFightingTwoHanded
-            };
-
-            foreach (var toRefund in refundList)
-            {
-                if (!dbPlayer.Perks.ContainsKey(toRefund))
-                    continue;
-
-                dbPlayer.UnallocatedSP += 2;
-            }
-
-            if(dbPlayer.Perks.ContainsKey(PerkType.RapidShot))
-            {
-                var rapidShotLevel = dbPlayer.Perks[PerkType.RapidShot];
-                var refundAmount = 3;
-                if (rapidShotLevel == 2) refundAmount += 5; 
-                dbPlayer.UnallocatedSP += refundAmount;
-                dbPlayer.Perks.Remove(PerkType.RapidShot);
-
-                var perkDetail = Perk.GetPerkDetails(PerkType.RapidShot);
-
-                foreach (var action in perkDetail.RefundedTriggers)
-                {
-                    action(player);
-                }
-            }
-        }
-
         private void UpdateWeapons(uint player)
         {
             for (var index = 0; index < NumberOfInventorySlots; index++)
@@ -116,12 +78,23 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 Update(item);
             }
 
-            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            UpdateInventory(player);
+        }
+
+        private void UpdateInventory(uint container)
+        {
+            for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
+            {
                 Update(item);
+                if (GetHasInventory(item))
+                    UpdateInventory(item);
+            }
         }
 
         private void Update (uint item)
         {
+            if (!GetIsObjectValid(item) || GetLocalInt(item, DamageUpgradeVariable) != 0)
+                return;
             var baseItem = GetBaseItemType(item);
             if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
@@ -140,18 +113,22 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             var wpnDmg = newDmg - oldDmg;
             if (wpnDmg <= 0) { return; }
 
+            var oldProperties = new List<ItemProperty>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.DMG &&
-                    (GetItemPropertySubType(ip) == (int)CombatDamageType.Physical))
+                    GetItemPropertySubType(ip) == (int)CombatDamageType.Physical)
                 {
                     wpnDmg += GetItemPropertyCostTableValue(ip);
-                    RemoveItemProperty(item, ip);
+                    oldProperties.Add(ip);
                 }
             }
+            foreach (var property in oldProperties)
+                MigrationObject.RemoveProperty(item, property);
 
-            var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, wpnDmg);
+            var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, -1, wpnDmg);
             BiowareXP2.IPSafeAddItemProperty(item, newDmgProperty, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+            SetLocalInt(item, DamageUpgradeVariable, 1);
         }
     }
 }

@@ -140,7 +140,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 7
         },
         "Param1": {
           "type": "byte",
@@ -156,7 +156,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 1
+          "value": 0
         }
       },
       {
@@ -167,11 +167,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 34
+          "value": 48
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 0
         },
         "Param1": {
           "type": "byte",
@@ -183,11 +183,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 93
+          "value": 131
         },
         "Subtype": {
           "type": "word",
-          "value": 4
+          "value": 37
         }
       },
       {
@@ -198,11 +198,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 33
+          "value": 52
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 22
         },
         "Param1": {
           "type": "byte",
@@ -214,11 +214,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 100
+          "value": 98
         },
         "Subtype": {
           "type": "word",
-          "value": 12
+          "value": 0
         }
       }
     ]

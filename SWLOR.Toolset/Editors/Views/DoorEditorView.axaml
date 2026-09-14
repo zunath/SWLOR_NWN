@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             x:Class="SWLOR.Toolset.Editors.Doors.DoorEditorView"
+             x:DataType="doors:DoorEditorViewModel">
+
+  <UserControl.DataTemplates>
+    <!-- The shared row, plus the one control only a door has: a searchable set of required key
+         items. The picture gallery the appearance and portrait rows use belongs to the shared row,
+         because the trigger editor needs exactly the same thing for its load screens. -->
+    <DataTemplate DataType="doors:DoorRowViewModel">
+      <StackPanel Margin="6,1" IsVisible="{Binding IsVisible}">
+        <behaviors:BehaviorRowView />
+
+        <behaviors:LabeledFieldPanel IsVisible="{Binding IsMultiChoice}">
+          <Panel />
+          <StackPanel Spacing="6">
+            <ItemsControl ItemsSource="{Binding SelectedKeyItems}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="doors:DoorKeyItemViewModel">
+                  <Border Background="{DynamicResource FieldBrush}"
+                          BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                          CornerRadius="3" Padding="7,3" Margin="0,0,6,5">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <TextBlock Text="{Binding Display}" Classes="mono" VerticalAlignment="Center" />
+                      <Button Content="&#x00D7;" Padding="3,0"
+                              Command="{Binding $parent[ItemsControl].((doors:DoorRowViewModel)DataContext).RemoveKeyItemCommand}"
+                              CommandParameter="{Binding}" />
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Every declared key item, searched rather than scrolled: 415 of them is a set a
+                 builder cannot pick from a drop-down without knowing the name first. -->
+            <TextBox Text="{Binding KeyItemSearchText, Mode=TwoWay}"
+                     Watermark="Search key items by name" />
+            <TextBlock Text="{Binding KeyItemSearchSummary}" Classes="count" />
+            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
+                    ClipToBounds="True">
+              <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding MatchingKeyItems}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="doors:DoorKeyItemViewModel">
+                      <Button Classes="behavior" Content="{Binding Display}" Margin="2" Padding="8,5"
+                              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                              Command="{Binding $parent[ItemsControl].((doors:DoorRowViewModel)DataContext).AddKeyItemCommand}"
+                              CommandParameter="{Binding}" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </Border>
+          </StackPanel>
+        </behaviors:LabeledFieldPanel>
+      </StackPanel>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding HeaderName}"
+                                    Kind="{Binding HeaderKind}"
+                                    Owner="{Binding HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
+
+    <Grid ColumnDefinitions="190,*">
+      <Border Grid.Column="0" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+              Padding="10">
+        <Grid RowDefinitions="*,Auto">
+          <Border Grid.Row="0" MinHeight="250" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+            <ContentControl Content="{Binding PreviewView}" />
+          </Border>
+          <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="3">
+            <TextBlock Text="{Binding AppearanceDescription}" Classes="mono" FontSize="10.5"
+                       TextWrapping="Wrap" />
+            <TextBlock Text="{Binding TemplateResRef}" Classes="resref" FontSize="10.5" />
+            <TextBlock Text="{Binding DoorTag}" Classes="dim" FontSize="10.5" />
+            <TextBlock Text="Left-drag to move &#x00B7; right-drag to turn &#x00B7; wheel to zoom"
+                       Classes="dim" FontSize="10" TextWrapping="Wrap" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <TabControl Grid.Column="1">
+        <TabItem Header="Basic">
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
+          </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Appearance">
+          <appearance:AppearanceGalleryView DataContext="{Binding Appearance}" />
+        </TabItem>
+
+        <TabItem Header="Behavior">
+          <Grid ColumnDefinitions="210,*">
+            <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
+                                        ChooseCommand="{Binding ChooseBehaviorCommand}" />
+
+            <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
+                          BorderThickness="1,0,0,0">
+              <Border Classes="card" Margin="8,12">
+                <StackPanel>
+                  <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
+                  <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
+                             TextWrapping="Wrap"
+                             IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="8,2,8,8" />
+                </StackPanel>
+              </Border>
+            </ScrollViewer>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+        </TabItem>
+
+      </TabControl>
+    </Grid>
+  </DockPanel>
+</UserControl>

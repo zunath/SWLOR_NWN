@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOptions(model => model.Categories)
                             .BindIsEnabled(model => model.IsSkillSelected)
                             .SetWidth(200f);
-                        
+
                         row.AddButton()
                             .SetText("Select Blueprint")
                             .BindIsVisible(model => model.ShowSelectBlueprint)
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddOption("Level 40-49", 5)
                             .AddOption("Level 50+", 6)
                             .SetWidth(200f);
-                        
+
                         row.AddCheckBox()
                             .SetText("Show Only Craftable")
                             .BindIsChecked(model => model.ShowOnlyCraftableRecipes)
@@ -100,27 +100,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindRowCount(model => model.RecipeNames);
                             });
 
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddSpacer();
-                                row2.AddButton()
-                                    .SetText("<")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickPreviousPage());
-
-                                row2.AddComboBox()
-                                    .BindOptions(model => model.PageNumbers)
-                                    .BindSelectedIndex(model => model.SelectedPageIndex);
-
-                                row2.AddButton()
-                                    .SetText(">")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickNextPage());
-
-                                row2.AddSpacer();
-                            });
+                            col2.AddPagination(
+                                model => model.PageNumbers,
+                                model => model.SelectedPageIndex,
+                                model => model.OnClickPreviousPage(),
+                                model => model.OnClickNextPage());
                         });
 
                         row.AddColumn(col2 =>

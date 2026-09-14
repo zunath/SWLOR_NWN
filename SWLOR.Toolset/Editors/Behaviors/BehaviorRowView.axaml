@@ -1,0 +1,235 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Behaviors.BehaviorRowView"
+             x:Name="Root"
+             x:DataType="behaviors:BehaviorRowViewModel">
+
+  <!-- The one row every behavior editor draws: a label on the left and whichever control the field
+       kind calls for on the right. Trigger, waypoint, door, and sound each used to carry their own
+       copy of this markup, with three different label-column widths between them.
+
+       The label column is sized to the longest label these editors actually use rather than to a
+       comfortable margin around it. Every pixel it takes comes out of the value, and the value is
+       the part that has to hold a search list, a picture grid, or a tag - at a narrow pane width the
+       generous column was leaving a text box a couple of characters wide. -->
+  <behaviors:LabeledFieldPanel IsVisible="{Binding IsVisible}"
+                               ShowLabel="{Binding ShowLabel, ElementName=Root}"
+                               Margin="0,2" MinHeight="32">
+
+    <StackPanel VerticalAlignment="Top" Margin="0,7,0,0" ClipToBounds="True"
+                IsVisible="{Binding ShowLabel, ElementName=Root}">
+      <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
+      <!-- "required" sits under the label rather than beside it: side by side it was the first
+           thing squeezed out at narrow pane widths, which is exactly when it matters. -->
+      <TextBlock Text="required" FontSize="10" Margin="0,1,0,0"
+                 Foreground="{DynamicResource AmberBrush}"
+                 IsVisible="{Binding IsRequired}" />
+    </StackPanel>
+
+    <StackPanel Spacing="5" Margin="0,3">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding IsTextEntry}">
+        <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}"
+                 MaxLength="{Binding MaxLength}" IsReadOnly="{Binding IsReadOnly}" />
+        <TextBlock Grid.Column="1" Text="{Binding Counter}" Classes="label" MinWidth="34"
+                   VerticalAlignment="Center" IsVisible="{Binding HasCounter}" />
+      </Grid>
+
+      <TextBox Text="{Binding Text, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"
+               MinHeight="88" MaxHeight="200" MaxLength="{Binding MaxLength}"
+               IsReadOnly="{Binding IsReadOnly}" IsVisible="{Binding IsParagraph}" />
+
+      <NumericUpDown Value="{Binding Number, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
+                     HorizontalAlignment="Left"
+                     Minimum="{Binding NumberMinimum}" Maximum="{Binding NumberMaximum}"
+                     FormatString="{Binding NumberFormat}" Increment="{Binding NumberIncrement}"
+                     IsVisible="{Binding IsEditableNumber}" />
+
+      <!-- A read-only number (Total Cost) is a fact, not a control: no spinner chrome. -->
+      <TextBlock Text="{Binding NumberDisplay}" FontFamily="{DynamicResource MonoFont}"
+                 VerticalAlignment="Center"
+                 IsVisible="{Binding IsReadOnlyNumber}" />
+
+      <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}"
+                IsVisible="{Binding IsCheck}" />
+
+      <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice, Mode=TwoWay}"
+                MaxDropDownHeight="400" HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Left"
+                IsEnabled="{Binding !IsReadOnly}" IsVisible="{Binding IsPlainChoice}">
+        <ComboBox.ItemTemplate>
+          <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+            <TextBlock Text="{Binding Display}" TextWrapping="Wrap" MaxWidth="420" />
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+
+      <!-- A long set stays lightweight until this particular picker is opened. The shared control
+           also gives dense editors the same deferred, virtualized catalog in compact mode. -->
+      <behaviors:SearchableChoicePickerView IsVisible="{Binding IsSearchableChoice}" />
+
+      <!-- A set of pictures that fits the page is shown on it. The difference between a blue marker
+           and a treasure marker, or between two load screens, is visible and not sayable, so a list
+           of their names is not a picker for them. Tiles are still published a page at a time and
+           each one's picture is requested only once its tile exists. -->
+      <StackPanel IsVisible="{Binding IsInlineGallery}" Spacing="6" HorizontalAlignment="Stretch">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}" Watermark="{Binding SearchWatermark}" />
+          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </Grid>
+        <TextBlock Text="{Binding GallerySummary}" Classes="count" />
+        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
+                ClipToBounds="True">
+          <ScrollViewer MaxHeight="{Binding GalleryViewportHeight}" VerticalScrollBarVisibility="Auto"
+                        ScrollChanged="OnChoiceGalleryScrollChanged">
+            <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="2">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                  <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                          Margin="3" Padding="4"
+                          Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
+                          CommandParameter="{Binding}">
+                    <StackPanel Width="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).GalleryTileWidth}"
+                                Spacing="3">
+                      <Panel Height="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).GalleryThumbnailHeight}">
+                        <!-- The letter stands in until the picture lands, so the grid is never a
+                             field of empty boxes while it fills. The option that means "any of
+                             them" draws a mark instead: it has no picture because there is no one
+                             picture it means, and a bare letter would read as artwork that failed. -->
+                        <TextBlock Text="{Binding Glyph}" FontSize="24" Classes="dim"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   IsVisible="{Binding ShowsGlyph}" />
+                        <Path Data="{StaticResource ToolsetRandomIconGeometry}"
+                              Stroke="{DynamicResource InkBrush}" StrokeThickness="1.1"
+                              StrokeLineCap="Round" StrokeJoin="Round" Stretch="Uniform"
+                              Width="40" Height="40" IsVisible="{Binding IsAny}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+                      </Panel>
+                      <TextBlock Text="{Binding Display}" FontSize="10.5"
+                                 TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" />
+                      <TextBlock Text="{Binding Detail}" Classes="mono" FontSize="9.5"
+                                 TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"
+                                 IsVisible="{Binding HasDetail}" />
+                      <TextBlock Text="{Binding Summary}" Classes="dim" FontSize="9.5"
+                                 TextWrapping="Wrap" MaxHeight="30"
+                                 IsVisible="{Binding HasSummary}" />
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Border>
+      </StackPanel>
+
+      <!-- A set too large for the page - the portraits run to four figures - keeps its grid behind
+           the picture. The picture IS the button: a builder aiming at the thing they want to change
+           is already aiming at the only control here, so a separate Choose button beside it was one
+           more target for the same intent. -->
+      <StackPanel IsVisible="{Binding IsPopupGallery}" Spacing="6" HorizontalAlignment="Stretch">
+        <!-- The popup shares the picture's cell rather than sitting beside it: as a sibling of the
+             StackPanel it would be spaced like a row of its own, leaving a gap under the picture. -->
+        <Panel HorizontalAlignment="Left">
+          <Button x:Name="ChooseArtworkButton" Classes="behavior" Padding="0"
+                  Command="{Binding OpenGalleryCommand}"
+                  ToolTip.Tip="Click the picture to choose a different one">
+            <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3"
+                    Background="{DynamicResource FieldBrush}" ClipToBounds="True"
+                    Width="256" Height="192">
+              <Panel>
+                <TextBlock Text="{Binding SelectedChoiceDisplay}" FontSize="15"
+                           Foreground="{DynamicResource InkBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           TextWrapping="Wrap" TextAlignment="Center" Margin="10"
+                           IsVisible="{Binding SelectedPreview, Converter={x:Static ObjectConverters.IsNull}}" />
+                <Image Source="{Binding SelectedPreview}" Stretch="Uniform" />
+              </Panel>
+            </Border>
+          </Button>
+          <Popup IsOpen="{Binding IsGalleryOpen, Mode=TwoWay}"
+                 PlacementTarget="{Binding #ChooseArtworkButton}" Placement="Right"
+                 IsLightDismissEnabled="True">
+            <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
+                    BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
+              <Grid RowDefinitions="Auto,Auto,Auto,*" Width="680">
+                <TextBox Grid.Row="0" Text="{Binding GalleryQuery, Mode=TwoWay}"
+                         Watermark="Search by name or resource" />
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,8,0,0">
+                  <ItemsControl Grid.Column="0" ItemsSource="{Binding GalleryFilters}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="behaviors:GalleryFilterViewModel">
+                        <StackPanel Width="142" Spacing="3" Margin="0,0,8,0">
+                          <TextBlock Text="{Binding Label}" Classes="label" />
+                          <ComboBox ItemsSource="{Binding Options}"
+                                    SelectedItem="{Binding SelectedOption, Mode=TwoWay}" />
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <StackPanel Grid.Column="1" Width="142" Spacing="3">
+                    <TextBlock Text="Sort" Classes="label" />
+                    <ComboBox ItemsSource="{Binding GallerySortOptions}"
+                              SelectedItem="{Binding SelectedGallerySort, Mode=TwoWay}" />
+                  </StackPanel>
+                </Grid>
+                <TextBlock Grid.Row="2" Text="{Binding GallerySummary}" Classes="count"
+                           Margin="2,6" />
+                <ScrollViewer Grid.Row="3" MaxHeight="470"
+                              ScrollChanged="OnChoiceGalleryScrollChanged">
+                  <ItemsControl ItemsSource="{Binding GalleryChoices}" Margin="1">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel MaxWidth="640" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                        <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                                Margin="3" Padding="4"
+                                Command="{Binding $parent[ItemsControl].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
+                                CommandParameter="{Binding}">
+                          <StackPanel Width="145" Spacing="4">
+                            <Border Height="126" ClipToBounds="True" CornerRadius="2"
+                                    Background="{DynamicResource FieldBrush}"
+                                    BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                              <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+                            </Border>
+                            <TextBlock Text="{Binding Display}" FontSize="11"
+                                       TextTrimming="CharacterEllipsis" />
+                          </StackPanel>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+              </Grid>
+            </Border>
+          </Popup>
+        </Panel>
+        <TextBlock Text="{Binding SelectedChoiceDisplay}" Classes="mono"
+                   TextTrimming="CharacterEllipsis" />
+      </StackPanel>
+
+      <TextBlock Text="{Binding StatementText}" Classes="mono" IsVisible="{Binding IsStatement}" />
+
+      <TextBlock Text="{Binding Status}" FontSize="11.5"
+                 Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
+                 IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+      <TextBlock Text="{Binding Note}" Classes="label" TextWrapping="Wrap" Margin="0,0,0,4"
+                 IsVisible="{Binding HasNote}" />
+    </StackPanel>
+  </behaviors:LabeledFieldPanel>
+</UserControl>

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 3.0
   },
   "ClassList": {
     "type": "list",
@@ -141,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -153,7 +153,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 32
+    "value": 54
   },
   "DecayTime": {
     "type": "dword",
@@ -169,7 +169,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -189,7 +189,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "blast_jawa_d"
+          "value": "jawa_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "jawa_sk"
         }
       }
     ]
@@ -340,6 +347,20 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1851
+        }
       }
     ]
   },
@@ -347,7 +368,7 @@
     "type": "cexolocstring",
     "value": {
       "0": "Jawa",
-      "2": "Pillard Jawa"
+      "2": "Jawa Raider"
     }
   },
   "fortbonus": {
@@ -364,11 +385,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 32
+    "value": 54
   },
   "Int": {
     "type": "byte",
-    "value": 12
+    "value": 11
   },
   "Interruptable": {
     "type": "byte",
@@ -398,7 +419,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 32
+    "value": 54
   },
   "NaturalAC": {
     "type": "byte",
@@ -703,7 +724,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 6
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -739,7 +760,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 8
   },
   "xAppearance_Head": {
     "type": "word",

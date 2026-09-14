@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 
@@ -26,6 +25,11 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             }
 
             return string.Empty;
+        }
+
+        public string GetRequirementDescription()
+        {
+            return $"Only on {string.Join(", ", _daysOfWeek)}";
         }
     }
 }

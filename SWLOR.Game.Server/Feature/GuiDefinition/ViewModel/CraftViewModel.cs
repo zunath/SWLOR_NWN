@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
@@ -6,11 +5,11 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -31,25 +30,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string BlankTexture = "Blank";
 
         private RecipeType _recipe;
-        
+
         private uint _blueprintItem;
         private BlueprintDetail _activeBlueprint;
         private bool _hasBlueprint;
         private static readonly BlueprintBonuses _blueprintBonuses = new();
 
-        private PerkType _rapidSynthesisPerk;
-        private PerkType _carefulSynthesisPerk;
-        
-        private PerkType _basicTouchPerk;
-        private PerkType _standardTouchPerk;
-        private PerkType _preciseTouchPerk;
-
-        private PerkType _mastersMendPerk;
-        private PerkType _steadyHandPerk;
-        private PerkType _muscleMemoryPerk;
-
-        private PerkType _venerationPerk;
-        private PerkType _wasteNotPerk;
+        private const int RapidSynthesisRequiredSkillRank = 10;
+        private const int CarefulSynthesisRequiredSkillRank = 30;
+        private const int BasicTouchRequiredSkillRank = 5;
+        private const int StandardTouchRequiredSkillRank = 15;
+        private const int PreciseTouchRequiredSkillRank = 35;
+        private const int MastersMendRequiredSkillRank = 10;
+        private const int SteadyHandRequiredSkillRank = 20;
+        private const int MuscleMemoryRequiredSkillRank = 40;
+        private const int VenerationRequiredSkillRank = 25;
+        private const int WasteNotRequiredSkillRank = 8;
 
         public bool IsClosable
         {
@@ -80,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        
+
         public GuiBindingList<string> RecipeDescription
         {
             get => Get<GuiBindingList<string>>();
@@ -387,15 +383,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
-            
+
             var itemName = Cache.GetItemNameByResref(recipe.Resref);
-            
+
             SwitchToSetUpMode();
             StatusColor = GuiColor.Green;
             StatusText = string.Empty;
 
             var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
-            
+
             IsEnhancement1Visible = enhancementSlots >= 1;
             IsEnhancement2Visible = enhancementSlots >= 2;
             IsEnhancement3Visible = enhancementSlots >= 3;
@@ -405,23 +401,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEnhancement7Visible = enhancementSlots >= 7;
             IsEnhancement8Visible = enhancementSlots >= 8;
 
-            CraftText = _hasBlueprint 
+            CraftText = _hasBlueprint
                 ? $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]"
                 : "Craft";
             RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
             RecipeLevel = $"Level: {recipe.Level}";
-            
+
             var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, blueprint);
             RecipeDescription = recipeDescription;
             RecipeColors = recipeColors;
 
             IsRapidSynthesisEnabled = false;
             IsCarefulSynthesisEnabled = false;
-            
+
             IsBasicTouchEnabled = false;
             IsStandardTouchEnabled = false;
             IsPreciseTouchEnabled = false;
-            
+
             IsMastersMendEnabled = false;
             IsSteadyHandEnabled = false;
             IsMuscleMemoryEnabled = false;
@@ -429,77 +425,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsVenerationEnabled = false;
             IsWasteNotEnabled = false;
 
-            LoadRequiredPerks();
             LoadCraftingState();
             RefreshRecipeStats();
-        }
-
-        private void LoadRequiredPerks()
-        {
-            var detail = Craft.GetRecipe(_recipe);
-            switch (detail.Skill)
-            {
-                case SkillType.Smithery:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisSmithery;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisSmithery;
-                    
-                    _basicTouchPerk = PerkType.BasicTouchSmithery;
-                    _standardTouchPerk = PerkType.StandardTouchSmithery;
-                    _preciseTouchPerk = PerkType.PreciseTouchSmithery;
-
-                    _mastersMendPerk = PerkType.MastersMendSmithery;
-                    _steadyHandPerk = PerkType.SteadyHandSmithery;
-                    _muscleMemoryPerk = PerkType.MuscleMemorySmithery;
-
-                    _venerationPerk = PerkType.VenerationSmithery;
-                    _wasteNotPerk = PerkType.WasteNotSmithery;
-                    break;
-                case SkillType.Fabrication:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisFabrication;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisFabrication;
-
-                    _basicTouchPerk = PerkType.BasicTouchFabrication;
-                    _standardTouchPerk = PerkType.StandardTouchFabrication;
-                    _preciseTouchPerk = PerkType.PreciseTouchFabrication;
-
-                    _mastersMendPerk = PerkType.MastersMendFabrication;
-                    _steadyHandPerk = PerkType.SteadyHandFabrication;
-                    _muscleMemoryPerk = PerkType.MuscleMemoryFabrication;
-
-                    _venerationPerk = PerkType.VenerationFabrication;
-                    _wasteNotPerk = PerkType.WasteNotFabrication;
-                    break;
-                case SkillType.Agriculture:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisCooking;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisCooking;
-
-                    _basicTouchPerk = PerkType.BasicTouchCooking;
-                    _standardTouchPerk = PerkType.StandardTouchCooking;
-                    _preciseTouchPerk = PerkType.PreciseTouchCooking;
-
-                    _mastersMendPerk = PerkType.MastersMendCooking;
-                    _steadyHandPerk = PerkType.SteadyHandCooking;
-                    _muscleMemoryPerk = PerkType.MuscleMemoryCooking;
-
-                    _venerationPerk = PerkType.VenerationCooking;
-                    _wasteNotPerk = PerkType.WasteNotCooking;
-                    break;
-                case SkillType.Engineering:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisEngineering;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisEngineering;
-
-                    _basicTouchPerk = PerkType.BasicTouchEngineering;
-                    _standardTouchPerk = PerkType.StandardTouchEngineering;
-                    _preciseTouchPerk = PerkType.PreciseTouchEngineering;
-
-                    _mastersMendPerk = PerkType.MastersMendEngineering;
-                    _steadyHandPerk = PerkType.SteadyHandEngineering;
-                    _muscleMemoryPerk = PerkType.MuscleMemoryEngineering;
-
-                    _venerationPerk = PerkType.VenerationEngineering;
-                    _wasteNotPerk = PerkType.WasteNotEngineering;
-                    break;
-            }
         }
 
         private void LoadCraftingState()
@@ -510,18 +437,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var skill = dbPlayer.Skills[recipe.Skill].Rank;
             var levelDetail = Craft.GetRecipeLevelDetail(recipe.Level);
             _levelDifference = skill - recipe.Level;
-            
+
             // CP from equipment (CPBonus) and skill rank; character abilities do not affect crafting CP.
-            var cp = dbPlayer.CPBonus.ContainsKey(recipe.Skill) 
-                ? dbPlayer.CPBonus[recipe.Skill] 
+            var cp = dbPlayer.CPBonus.ContainsKey(recipe.Skill)
+                ? dbPlayer.CPBonus[recipe.Skill]
                 : 0;
 
             _maxCP = (int)(cp + skill * 0.75f);
             // Veneration passive: +31 max CP (empirically tuned to match pre-attribute-removal crafting).
-            if (Perk.GetPerkLevel(Player, _venerationPerk) > 0)
+            if (skill >= VenerationRequiredSkillRank)
                 _maxCP += 31;
             _cp = _maxCP;
-            
+
             _maxDurability = levelDetail.Durability;
             _durability = _maxDurability;
 
@@ -735,6 +662,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var recipe = Craft.GetRecipe(_recipe);
             var progressPenalty = 0;
+            var weaponDamageType = CombatDamageType.Invalid;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.WeaponDamageType)
+                {
+                    var subType = GetItemPropertySubType(ip);
+                    if (Enum.IsDefined(typeof(CombatDamageType), subType))
+                        weaponDamageType = (CombatDamageType)subType;
+                }
+            }
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
@@ -751,44 +690,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else if (type == ItemPropertyType.ArmorEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Armor)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.WeaponEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Weapon)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount, weaponDamageType));
                 }
                 else if (type == ItemPropertyType.StructureEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Structure)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.FoodEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Food)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.StarshipEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Starship)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.ModuleEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Module)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.DroidEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Droid)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
             }
 
@@ -1110,7 +1042,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if(recipe.Components.ContainsKey(resref))
                     components.Add(item);
             }
-            
+
             return components;
         }
 
@@ -1188,20 +1120,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             YourSkill = $"Your Skill: {Skill.GetSkillDetails(detail.Skill).Name} {dbPlayer.Skills[detail.Skill].Rank}";
         }
 
+        private int GetRecipeSkillRank()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var detail = Craft.GetRecipe(_recipe);
+
+            return dbPlayer.Skills[detail.Skill].Rank;
+        }
+
         private void ApplyImmobility()
         {
-            ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), Player);
+            var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);
+            ApplyEffectToObject(DurationType.Permanent, effect, Player);
         }
 
         private void RemoveImmobility()
         {
-            for (var effect = GetFirstEffect(Player); GetIsEffectValid(effect); effect = GetNextEffect(Player))
-            {
-                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
-                {
-                    RemoveEffect(Player, effect);
-                }
-            }
+            RemoveEffectByTag(Player, PlayerActivityEffectTag.CraftingImmobilize);
         }
 
         private void SwitchToSetUpMode()
@@ -1264,17 +1200,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
                 var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
                 AssignCommand(Player, () => TakeGoldFromCreature(cost, Player, true));
-                
+
                 _activeBlueprint.LicensedRuns--;
                 Craft.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
-                
+
                 SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
 
                 var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
                 RecipeDescription = recipeDescription;
                 RecipeColors = recipeColors;
             }
-            
+
             StatusText = string.Empty;
             StatusColor = GuiColor.Green;
 
@@ -1282,19 +1218,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsInSetupMode = false;
             IsClosable = false;
 
-            IsRapidSynthesisEnabled = Perk.GetPerkLevel(Player, _rapidSynthesisPerk) > 0;
-            IsCarefulSynthesisEnabled = Perk.GetPerkLevel(Player, _carefulSynthesisPerk) > 0;
+            var skillRank = GetRecipeSkillRank();
+            IsRapidSynthesisEnabled = skillRank >= RapidSynthesisRequiredSkillRank;
+            IsCarefulSynthesisEnabled = skillRank >= CarefulSynthesisRequiredSkillRank;
 
-            IsBasicTouchEnabled = Perk.GetPerkLevel(Player, _basicTouchPerk) > 0;
-            IsStandardTouchEnabled = Perk.GetPerkLevel(Player, _standardTouchPerk) > 0;
-            IsPreciseTouchEnabled = Perk.GetPerkLevel(Player, _preciseTouchPerk) > 0;
+            IsBasicTouchEnabled = skillRank >= BasicTouchRequiredSkillRank;
+            IsStandardTouchEnabled = skillRank >= StandardTouchRequiredSkillRank;
+            IsPreciseTouchEnabled = skillRank >= PreciseTouchRequiredSkillRank;
 
-            IsMastersMendEnabled = Perk.GetPerkLevel(Player, _mastersMendPerk) > 0;
-            IsSteadyHandEnabled = Perk.GetPerkLevel(Player, _steadyHandPerk) > 0;
-            IsMuscleMemoryEnabled = Perk.GetPerkLevel(Player, _muscleMemoryPerk) > 0;
+            IsMastersMendEnabled = skillRank >= MastersMendRequiredSkillRank;
+            IsSteadyHandEnabled = skillRank >= SteadyHandRequiredSkillRank;
+            IsMuscleMemoryEnabled = skillRank >= MuscleMemoryRequiredSkillRank;
 
-            IsVenerationEnabled = Perk.GetPerkLevel(Player, _venerationPerk) > 0;
-            IsWasteNotEnabled = Perk.GetPerkLevel(Player, _wasteNotPerk) > 0;
+            IsVenerationEnabled = skillRank >= VenerationRequiredSkillRank;
+            IsWasteNotEnabled = skillRank >= WasteNotRequiredSkillRank;
 
             ApplyImmobility();
         }
@@ -1310,7 +1247,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 return false;
             }
-            
+
             return true;
         }
 
@@ -1325,16 +1262,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 StatusText = $"No licensed runs remaining!";
                 StatusColor = GuiColor.Red;
-                
+
                 return false;
             }
-            
+
             var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
             if (GetGold(Player) < cost)
             {
                 StatusText = $"Insufficient credits!";
                 StatusColor = GuiColor.Red;
-                
+
                 return false;
             }
 
@@ -1343,6 +1280,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickManualCraft() => () =>
         {
+            if (!Craft.CanPlayerCraftRecipe(Player, _recipe))
+            {
+                StatusText = "Recipe requirements not met!";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
             if (ProcessBlueprintRequirements() && ProcessComponents())
             {
                 SwitchToCraftMode();
@@ -1358,7 +1302,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
             // Steady Hand passive: +21 progress (primary 30 + secondary 26 equivalent).
-            var steadyHandBonus = Perk.GetPerkLevel(Player, _steadyHandPerk) > 0 ? 21 : 0;
+            var steadyHandBonus = dbPlayer.Skills[recipe.Skill].Rank >= SteadyHandRequiredSkillRank ? 21 : 0;
             var progress = (int)((baseProgress + steadyHandBonus + craftsmanship * 0.65f) * recipeDiff);
 
             return progress;
@@ -1371,21 +1315,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var control = Stat.CalculateControl(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
-            var recipeDiff = delta < 0 
-                ? 1 + 0.05f * delta 
+            var recipeDiff = delta < 0
+                ? 1 + 0.05f * delta
                 : 1;
 
             // Muscle Memory passive: +115 quality (primary 30 + secondary 26 equivalent).
-            var muscleMemoryBonus = Perk.GetPerkLevel(Player, _muscleMemoryPerk) > 0 ? 115 : 0;
+            var muscleMemoryBonus = dbPlayer.Skills[recipe.Skill].Rank >= MuscleMemoryRequiredSkillRank ? 115 : 0;
             var quality = (int)((baseQuality + muscleMemoryBonus + control * 0.75f) * recipeDiff);
             return quality;
         }
 
         private int CalculateXP(
-            int recipeLevel, 
-            int playerLevel, 
+            int recipeLevel,
+            int playerLevel,
             int blueprintLevel,
-            bool firstTime, 
+            bool firstTime,
             float qualityPercent)
         {
             var delta = recipeLevel - playerLevel;
@@ -1401,24 +1345,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyProperty(uint item, ItemProperty ip)
         {
-            var type = GetItemPropertyType(ip);
-            var subType = GetItemPropertySubType(ip);
-            var amount = GetItemPropertyCostTableValue(ip);
-            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-            {
-                if (GetItemPropertyType(property) == type &&
-                    (GetItemPropertySubType(property) == -1 || GetItemPropertySubType(property) == subType))
-                {
-                    amount += GetItemPropertyCostTableValue(property);
-                    RemoveItemProperty(item, property);
-                }
-            }
-
-            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
-            unpacked.CostTableValue = amount;
-            ip = ItemPropertyPlugin.PackIP(unpacked);
-            
-            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+            Craft.ApplyCraftedItemProperty(item, ip);
         }
 
         private void ProcessSuccess()
@@ -1455,12 +1382,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Concat(_itemPropertiesEnhancement5)
                 .Concat(_itemPropertiesEnhancement6)
                 .Concat(_itemPropertiesEnhancement7)
-                .Concat(_itemPropertiesEnhancement8);
-            foreach (var ip in allProperties)
+                .Concat(_itemPropertiesEnhancement8)
+                .ToList();
+            for (var index = 0; index < allProperties.Count; index++)
             {
+                var propertiesToApply = new List<ItemProperty> { allProperties[index] };
+                if (GetItemPropertyType(allProperties[index]) == ItemPropertyType.DMG &&
+                    index + 1 < allProperties.Count &&
+                    GetItemPropertyType(allProperties[index + 1]) == ItemPropertyType.WeaponDamageType)
+                {
+                    propertiesToApply.Add(allProperties[index + 1]);
+                    index++;
+                }
+
                 if (Random.D100(1) <= propertyTransferChance)
                 {
-                    ApplyProperty(item, ip);
+                    foreach (var property in propertiesToApply)
+                    {
+                        ApplyProperty(item, property);
+                    }
+
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
                 }
                 else
@@ -1485,7 +1426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ProcessBlueprintBonuses(item);
-            
+
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
             {
@@ -1495,10 +1436,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Give XP plus a percent bonus based on the quality achieved.
             var xp = CalculateXP(
-                recipe.Level, 
-                dbPlayer.Skills[recipe.Skill].Rank, 
+                recipe.Level,
+                dbPlayer.Skills[recipe.Skill].Rank,
                 _hasBlueprint ? _activeBlueprint.Level : 0,
-                firstTime, 
+                firstTime,
                 qualityPercent);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
@@ -1525,7 +1466,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshRecipeStats();
             StatusText = "Successfully created the item!";
             StatusColor = GuiColor.Green;
-            
+
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
@@ -1551,13 +1492,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (bonus == null)
                     continue;
 
-                var ip = Craft.BuildItemPropertyForEnhancement(bonus.Type, bonus.Amount);
-                ApplyProperty(item, ip);
+                foreach (var ip in Craft.BuildItemPropertiesForEnhancement(bonus.Type, bonus.Amount, bonus.DamageType))
+                {
+                    ApplyProperty(item, ip);
+                }
 
                 var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
-                SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {subTypeDetail.Name} +{bonus.Amount}"));
+                var bonusName = bonus.DamageType != CombatDamageType.Invalid &&
+                                !bonus.DamageType.IsPhysicalDamageType()
+                    ? $"{subTypeDetail.Name} - {bonus.DamageType}"
+                    : subTypeDetail.Name;
+                SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {bonusName} +{bonus.Amount}"));
             }
-            
+
             // Guaranteed bonuses
             foreach (var ip in _activeBlueprint.GuaranteedBonuses)
             {
@@ -1568,7 +1515,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprintLevelIP = ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, _activeBlueprint.Level);
             BiowareXP2.IPSafeAddItemProperty(item, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
         }
-        
+
         private void ProcessFailure()
         {
             // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
@@ -1665,10 +1612,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // 15% of XP is gained for failures.
             var xp = CalculateXP(
-                recipe.Level, 
+                recipe.Level,
                 dbPlayer.Skills[recipe.Skill].Rank,
                 _hasBlueprint ? _activeBlueprint.Level : 0,
-                false, 
+                false,
                 0f);
             xp = (int)(xp * 0.15f);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
@@ -1677,9 +1624,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private void HandleAction(
-            string abilityName, 
-            int chance, 
-            int cpCost, 
+            string abilityName,
+            int chance,
+            int cpCost,
             int durabilityLoss,
             Action successAction)
         {

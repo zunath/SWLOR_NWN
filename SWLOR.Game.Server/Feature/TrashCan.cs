@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             EventsPlugin.SkipEvent();
-            
+
             SendMessageToPC(player, ColorToken.Red("Please use the trash can option in your character menu to discard items."));
         }
 

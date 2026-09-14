@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.CraftService
+namespace SWLOR.Game.Server.Service.CraftService
 {
     public enum RecipeEnhancementType
     {

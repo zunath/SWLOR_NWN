@@ -1,6 +1,7 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(35f)
                                     .SetWidth(180f)
                                     .BindOnClicked(model => model.OnClickClearFilters());
-                            }); 
+                            });
 
                             col2.AddRow(row2 =>
                             {
@@ -77,92 +78,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             col2.AddRow(row2 =>
                             {
-                                row2.AddList(template =>
+                                row2.AddColumn(col3 =>
                                 {
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetWidth(40f);
-                                        cell.SetIsVariable(false);
-
-                                        cell.AddGroup(group =>
+                                    col3.AddTable<MarketBuyViewModel>(t => t
+                                        .AddComponentColumn("", 40f, cell =>
                                         {
-                                            group.AddImage()
-                                                .BindResref(model => model.ItemIconResrefs)
-                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                .SetVerticalAlign(NuiVerticalAlign.Top)
+                                            cell.AddGroup(group =>
+                                            {
+                                                group.AddImage()
+                                                    .BindResref(model => model.ItemIconResrefs)
+                                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                                    .BindTooltip(model => model.ItemNames);
+                                            });
+                                        })
+                                        .AddComponentColumn("", 0f, cell =>
+                                        {
+                                            cell.AddText()
+                                                .BindText(model => model.ItemNames)
                                                 .BindTooltip(model => model.ItemNames);
-                                        });
-                                    })
-                                        .SetPadding(50f);
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddText()
-                                            .BindText(model => model.ItemNames)
-                                            .BindTooltip(model => model.ItemNames);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(120f);
-
-                                        cell.AddLabel()
-                                            .BindText(model => model.ItemPriceNames);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddLabel()
-                                            .BindText(model => model.ItemSellerNames)
-                                            .BindTooltip(model => model.ItemSellerNames);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetWidth(40f);
-                                        cell.SetIsVariable(false);
-                                        cell.AddButton()
-                                            .SetText("?")
-                                            .SetWidth(40f)
-                                            .SetHeight(40f)
-                                            .BindOnClicked(model => model.OnClickExamine());
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddButton()
-                                            .SetText("Buy")
-                                            .BindOnClicked(model => model.OnClickBuy())
-                                            .BindIsEnabled(model => model.ItemBuyEnabled);
-                                    });
-                                })
-                                    .BindRowCount(model => model.ItemNames)
-                                    .SetRowHeight(40f);
+                                        }, isVariable: true)
+                                        .AddColumn("", 120f, model => model.ItemPriceNames)
+                                        .AddComponentColumn("", 40f, cell =>
+                                        {
+                                            cell.AddButton()
+                                                .SetText("?")
+                                                .SetWidth(40f)
+                                                .SetHeight(40f)
+                                                .BindOnClicked(model => model.OnClickExamine());
+                                        })
+                                        .AddComponentColumn("", 0f, cell =>
+                                        {
+                                            cell.AddButton()
+                                                .SetText("Buy")
+                                                .BindOnClicked(model => model.OnClickBuy())
+                                                .BindIsEnabled(model => model.ItemBuyEnabled);
+                                        }, isVariable: true)
+                                        .SetShowHeader(false)
+                                        .SetPadding(50f)
+                                        .SetRowHeight(40f)
+                                        .BindRowCount(model => model.ItemNames));
+                                });
                             });
 
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddSpacer();
-                                row2.AddButton()
-                                    .SetText("<")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickPreviousPage());
-
-                                row2.AddComboBox()
-                                    .BindOptions(model => model.PageNumbers)
-                                    .BindSelectedIndex(model => model.SelectedPageIndex);
-
-                                row2.AddButton()
-                                    .SetText(">")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickNextPage());
-
-                                row2.AddSpacer();
-                            });
+                            col2.AddPagination(
+                                model => model.PageNumbers,
+                                model => model.SelectedPageIndex,
+                                model => model.OnClickPreviousPage(),
+                                model => model.OnClickNextPage());
                         });
 
                     });

@@ -1,7 +1,5 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using System;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -25,7 +23,7 @@ namespace SWLOR.Game.Server.Feature
             if (buffInt == (int)EffectIconType.Invalid) return;
 
             var buffType = StatusEffect.GetEffectTypeFromIcon((EffectIconType)buffInt);
-            var statusTypes = StatusEffect.GetStatusEffectTypesFromIcon((EffectIconType)buffInt);
+            var statusTypes = StatusEffect.GetStatusEffectsFromIcon(player, (EffectIconType)buffInt);
             var effectName = "Unknown Effect";
 
             if (buffType == EffectTypeScript.Invalideffect && statusTypes.Count == 0) return;
@@ -34,7 +32,7 @@ namespace SWLOR.Game.Server.Feature
                 effectName = GetStringByStrRef(effIconStrRef);
 
             SendBuffInfo(player, buffType, (EffectIconType)buffInt, effectName);
-            SendStatusInfo(player, effectName, statusTypes.ToArray());
+            SendStatusInfo(player, statusTypes.ToArray());
 
         }
 
@@ -63,21 +61,30 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        public static void SendStatusInfo(uint player, string statusName, params StatusEffectType[] statusTypes)
+        public static void SendStatusInfo(uint player, params Type[] statusTypes)
         {
             if (!StatusEffect.HasStatusEffect(player, statusTypes)) return;
 
-            var duration = StatusEffect.GetEffectDuration(player, statusTypes);
-
             SendMessageToPC(player, "Status Effects:");
 
-            if (duration > 0)
+            foreach (var statusType in statusTypes)
             {
-                var durMessage = TimeSpan.FromSeconds(duration).ToString(@"hh\:mm\:ss");
-                SendMessageToPC(player, $"    {ColorToken.White(statusName)}: {durMessage}");
+                if (!StatusEffect.HasStatusEffect(player, statusType))
+                    continue;
+
+                var duration = StatusEffect.GetEffectDuration(player, statusType);
+                var effectName = StatusEffect.GetStatusEffectName(statusType);
+
+                if (duration > 0)
+                {
+                    var durMessage = TimeSpan.FromSeconds(duration).ToString(@"hh\:mm\:ss");
+                    SendMessageToPC(player, $"    {ColorToken.White(effectName)}: {durMessage}");
+                }
+                else
+                {
+                    SendMessageToPC(player, $"    {ColorToken.White(effectName)}: Indefinite");
+                }
             }
-            else
-                SendMessageToPC(player, $"    {ColorToken.White(statusName)}: Indefinite");
         }
     }
 }

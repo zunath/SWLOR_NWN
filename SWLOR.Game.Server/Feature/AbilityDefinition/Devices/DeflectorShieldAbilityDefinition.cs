@@ -1,127 +1,144 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
-    public class DeflectorShieldAbilityDefinition : IAbilityListDefinition
+    public sealed class DeflectorShieldAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private const string Tier1Tag = "ABILITY_DEFLECTOR_SHIELD_1";
-        private const string Tier2Tag = "ABILITY_DEFLECTOR_SHIELD_2";
-        private const string Tier3Tag = "ABILITY_DEFLECTOR_SHIELD_3";
-
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            DeflectorShield1();
-            DeflectorShield2();
-            DeflectorShield3();
+            var builder = new AbilityBuilder();
 
-            return _builder.Build();
+            DeflectorShield1(builder);
+            DeflectorShield2(builder);
+            DeflectorShield3(builder);
+
+            return builder.Build();
         }
 
-        private string Validation(uint target, int tier)
+        private static void DeflectorShield1(AbilityBuilder builder)
         {
-            if (HasMorePowerfulEffect(target, tier,
-                    new(Tier1Tag, 1),
-                    new(Tier2Tag, 2),
-                    new(Tier3Tag, 3)))
-            {
-                return "Your target is already enhanced by a more powerful effect.";
-            }
-
-            return string.Empty;
-        }
-
-        private void Impact(uint activator, float percent, bool affectsParty, float duration, string tag)
-        {
-            ApplyEffect(activator, percent, duration, tag);
-            if (affectsParty)
-            {
-                var member = GetFirstFactionMember(activator);
-                while (GetIsObjectValid(member))
-                {
-                    if (member != activator &&
-                        GetDistanceBetween(activator, member) <= 10f)
-                    {
-                        ApplyEffect(member, percent, duration, tag);
-                    }
-
-                    member = GetNextFactionMember(activator);
-                }
-            }
-
-            Enmity.ModifyEnmityOnAll(activator, 220);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
-        }
-
-        private void ApplyEffect(uint target, float percent, float duration, string tag)
-        {
-            RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
-
-            var maxHP = (int)(GetMaxHitPoints(target) * percent);
-            var effect = EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue);
-            effect = EffectLinkEffects(effect, EffectTemporaryHitpoints(maxHP));
-            effect = TagEffect(effect, tag);
-
-            ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
-        }
-
-        private void DeflectorShield1()
-        {
-            _builder.Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
+            builder
+                .Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_DeflectorShield)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
-                .HasActivationDelay(3f)
-                .RequirementStamina(5)
-                .UsesAnimation(Animation.Kneel)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_act_shield")
+                .HasRecastDelay(RecastGroup.DeflectorShield, 24f)
+                .SkillType(SkillType.Devices)
+                .HasMaxRange(DeviceAbilityRange.Standard)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(DeflectorShield1ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) => Validation(target, 1))
-                .HasImpactAction((activator, target, _, targetLocation) =>
-                {
-                    Impact(activator, 0.05f, false, 180f, Tier1Tag);
-                });
+                .BreaksStealth()
+                .RequirementStamina(3);
         }
 
-        private void DeflectorShield2()
+        private static void DeflectorShield2(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
+            builder
+                .Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_DeflectorShield)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
-                .HasActivationDelay(3f)
-                .RequirementStamina(7)
-                .UsesAnimation(Animation.Kneel)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_act_shield")
+                .HasRecastDelay(RecastGroup.DeflectorShield, 24f)
+                .SkillType(SkillType.Devices)
+                .HasMaxRange(DeviceAbilityRange.Standard)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(DeflectorShield2ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) => Validation(target, 2))
-                .HasImpactAction((activator, target, _, targetLocation) =>
-                {
-                    Impact(activator, 0.10f, false, 300f, Tier2Tag);
-                });
+                .BreaksStealth()
+                .RequirementStamina(4);
         }
 
-        private void DeflectorShield3()
+        private static void DeflectorShield3(AbilityBuilder builder)
         {
-            _builder.Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
+            builder
+                .Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_DeflectorShield)
+                .UsesImmediateAuthoredAnimation()
                 .Name("Deflector Shield III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
-                .HasActivationDelay(3f)
-                .RequirementStamina(9)
-                .UsesAnimation(Animation.Kneel)
+                .HasActivationDelay(1f)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_act_shield")
+                .HasRecastDelay(RecastGroup.DeflectorShield, 24f)
+                .SkillType(SkillType.Devices)
+                .HasMaxRange(DeviceAbilityRange.Standard)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(DeflectorShield3ImpactAction)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level, location) => Validation(target, 3))
-                .HasImpactAction((activator, target, _, targetLocation) =>
-                {
-                    Impact(activator, 0.15f, true, 300f, Tier3Tag);
-                });
+                .BreaksStealth()
+                .RequirementStamina(6);
+        }
+
+        private static void DeflectorShield1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                ApplyShieldTemporaryHP(activator, friendly, 35, 6, 45f);
+            }
+        }
+
+        private static void DeflectorShield2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                ApplyShieldTemporaryHP(activator, friendly, 65, 9, 45f);
+            }
+        }
+
+        private static void DeflectorShield3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                ApplyShieldTemporaryHP(activator, friendly, 100, 12, 45f);
+            }
+        }
+
+        private static void ApplyShieldTemporaryHP(
+            uint activator,
+            uint target,
+            int flatAmount,
+            int percent,
+            float durationSeconds)
+        {
+            var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
+            amount = Ability.ApplyCombatReadinessMagnitude(activator, amount);
+            var duration = durationSeconds;
+
+            TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, "DEFLECTOR_SHIELD", amount, duration);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
+            DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }
     }
 }

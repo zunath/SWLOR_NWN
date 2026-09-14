@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -55,11 +57,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void ReviveBeast1()
         {
-            _builder.Create(FeatType.ReviveBeast1, PerkType.ReviveBeast)
+            _builder
+                .Create(FeatType.ReviveBeast1, PerkType.ReviveBeast)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ReviveBeast)
                 .Name("Revive Beast I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
+                .HasRecastDelay(RecastGroup.ReviveBeast, 90f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .UsesImmediateAuthoredAnimation()
                 .HasActivationDelay(4f)
                 .RequirementStamina(15)
                 .IsCastedAbility()
@@ -74,7 +79,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     DB.Set(dbBeast);
 
+                    var previousBeast = GetAssociate(AssociateType.Henchman, activator);
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
+                    var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
+                    if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
@@ -82,11 +91,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void ReviveBeast2()
         {
-            _builder.Create(FeatType.ReviveBeast2, PerkType.ReviveBeast)
+            _builder
+                .Create(FeatType.ReviveBeast2, PerkType.ReviveBeast)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ReviveBeast)
                 .Name("Revive Beast II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
+                .HasRecastDelay(RecastGroup.ReviveBeast, 90f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .UsesImmediateAuthoredAnimation()
                 .HasActivationDelay(4f)
                 .RequirementStamina(17)
                 .IsCastedAbility()
@@ -101,8 +113,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     DB.Set(dbBeast);
 
-                    var hpPercentage = 10 + GetAbilityScore(activator, AbilityType.Social);
+                    var hpPercentage = Math.Min(100, 10 + GetAbilityScore(activator, AbilityType.Social));
+                    var previousBeast = GetAssociate(AssociateType.Henchman, activator);
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
+                    if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
@@ -110,11 +126,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void ReviveBeast3()
         {
-            _builder.Create(FeatType.ReviveBeast3, PerkType.ReviveBeast)
+            _builder
+                .Create(FeatType.ReviveBeast3, PerkType.ReviveBeast)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ReviveBeast)
                 .Name("Revive Beast III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
+                .HasRecastDelay(RecastGroup.ReviveBeast, 90f)
                 .UsesAnimation(Animation.LoopingGetMid)
+                .UsesImmediateAuthoredAnimation()
                 .HasActivationDelay(4f)
                 .RequirementStamina(18)
                 .IsCastedAbility()
@@ -129,8 +148,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     DB.Set(dbBeast);
 
-                    var hpPercentage = 30 + GetAbilityScore(activator, AbilityType.Social) * 2;
+                    var hpPercentage = Math.Min(100, 45 + GetAbilityScore(activator, AbilityType.Social));
+                    var previousBeast = GetAssociate(AssociateType.Henchman, activator);
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
+                    if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
+                        Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });

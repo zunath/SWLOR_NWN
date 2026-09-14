@@ -1,40 +1,56 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class PropertyExitDialog: DialogBase
+    public class PropertyExitDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
 
             return builder.Build();
         }
 
-        private void ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
+        private bool ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
         {
-            var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
-                ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
-                : Area.GetAreaByResref(propertyLocation.AreaResref);
-            
+            uint returningArea;
+            if (string.IsNullOrWhiteSpace(propertyLocation.AreaResref))
+            {
+                if (!Property.TryResolveEnterableInstance(player, propertyLocation.InstancePropertyId, out var instance))
+                    return false;
+
+                returningArea = instance.Area;
+            }
+            else
+            {
+                returningArea = Area.GetAreaByResref(propertyLocation.AreaResref);
+            }
+
+            if (!GetIsObjectValid(returningArea))
+            {
+                SendMessageToPC(player, "The destination is not available. Please try again shortly.");
+                return false;
+            }
+
             var location = Location(
                 returningArea,
                 Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z),
                 propertyLocation.Orientation);
 
             AssignCommand(player, () => ActionJumpToLocation(location));
+            return true;
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
             var area = GetArea(player);
             var propertyId = Property.GetPropertyId(area);
             var property = DB.Get<WorldProperty>(propertyId);
@@ -51,13 +67,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse(ColorToken.Red("Emergency Exit"), () =>
                 {
                     var propertyLocation = property.Positions[PropertyLocationType.DockPosition];
-                    ReturnToLastDockedPosition(player, propertyLocation);
-
-                    Space.PerformEmergencyExit(area);
+                    if (ReturnToLastDockedPosition(player, propertyLocation))
+                    {
+                        Space.PerformEmergencyExit(area);
+                    }
                 });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.
-            else if (property != null && 
+            else if (property != null &&
                      property.Positions.ContainsKey(PropertyLocationType.DockPosition))
             {
                 page.AddResponse("Exit", () =>

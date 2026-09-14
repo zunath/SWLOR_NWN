@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.GuiService
+namespace SWLOR.Game.Server.Service.GuiService
 {
     public delegate GuiPlayerWindow CreatePlayerWindowDelegate();
 }

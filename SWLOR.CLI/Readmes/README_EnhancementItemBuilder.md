@@ -1,17 +1,17 @@
 # EnhancementItemBuilder
 
 ## Overview
-The EnhancementItemBuilder generates JSON files for enhancement items used in the SWLOR game's crafting and enhancement system. It processes CSV data to create structured item definitions with various enhancement properties.
+The EnhancementItemBuilder generates JSON files for enhancement items used in the SWLOR game's crafting and enhancement system. It processes TSV data to create structured item definitions with various enhancement properties.
 
 ## Command
 ```bash
-SWLOR.CLI.exe -e
+RunCLI.cmd -e
 # or
-SWLOR.CLI.exe --enhancement
+RunCLI.cmd --enhancement
 ```
 
 ## Functionality
-The EnhancementItemBuilder processes enhancement data from `./InputFiles/enhancement_list.csv` and generates:
+The EnhancementItemBuilder processes enhancement data from `./InputFiles/enhancement_list.tsv` and generates:
 
 ### 1. Enhancement Categories
 Supports the following enhancement categories:
@@ -27,13 +27,14 @@ Supports various enhancement subtypes including:
 - **Control Enhancements**: Smithery, Engineering, Fabrication, Agriculture
 - **Craftsmanship Enhancements**: Smithery, Engineering, Fabrication, Agriculture
 - **Defense Enhancements**: Physical, Force, Poison, Fire, Ice, Electrical
-- **Combat Enhancements**: Evasion, Accuracy, Damage types
+- **Combat Enhancements**: Evasion, Accuracy, Combat Readiness, Attack, Force Attack, untyped DMG, and optional weapon damage type properties
 - **Resource Enhancements**: HP, STM, FP bonuses and regeneration
-- **Special Enhancements**: Duration, XP bonus, Structure bonus
+- **Food Combat Enhancements**: Food Bonus - Combat Readiness
+- **Special Enhancements**: Duration, XP bonus, Structure bonus, Module bonus
 - **Starship Enhancements**: Shield, Capacitor, Damage types, Defense types
 
 ## Input File Format
-The tool expects a CSV file with the following columns:
+The tool expects a TSV file with the following columns:
 - Column 0: Category
 - Column 1: Name
 - Column 2: ResRef
@@ -41,6 +42,7 @@ The tool expects a CSV file with the following columns:
 - Column 5: Progress penalty
 - Column 6: Property name
 - Column 7: Bonus amount
+- Column 8: Optional weapon damage type for `DMG` enhancements (`Physical`, `Force`, `Fire`, `Poison`, `Electrical`, or `Ice`)
 
 ## Output Structure
 ```
@@ -60,6 +62,7 @@ The tool expects a CSV file with the following columns:
 - **Item Property ID**: Category-based property identifier
 - **Subtype ID**: Specific enhancement type identifier
 - **Bonus Amount**: Numerical value of the enhancement
+- **Weapon Damage Type**: Optional separate property for non-physical weapon DMG enhancements
 - **Price**: Calculated based on tier (Base Price × Tier)
 
 ### Tier Calculation
@@ -73,10 +76,10 @@ The tool expects a CSV file with the following columns:
 The tool maps enhancement names to specific subtype IDs:
 - Control and Craftsmanship enhancements: 14-15, 39-44
 - Defense enhancements: 1-7
-- Combat enhancements: 18-27
-- Resource enhancements: 8-10, 29-38
+- Combat enhancements: 18-27, 83-84
+- Resource and food enhancements: 8-10, 29-38
 - Starship enhancements: 46-58
-- Special enhancements: 28, 33-35, 45, 83-84
+- Special enhancements: 28, 45
 
 ## Usage
 This tool is used during development to:
@@ -89,5 +92,6 @@ This tool is used during development to:
 - Uses random icon selection from a predefined array for visual variety
 - Automatically calculates prices based on enhancement tier
 - Handles multiple enhancement categories and types
+- Combat Readiness increases activated ability damage and healing; it does not reduce cooldowns or recast timers
 - Generates JSON files compatible with the NWN module system
-- Clears the output directory before generating new files 
+- Clears the output directory before generating new files

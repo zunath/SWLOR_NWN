@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("Return to Lu Shang for the Clothespole Rod.")
-                
+
                 .AddItemReward("clothespole", 1);
 
             _builder.Create("fish_rod_2", "The Fastwater Rod")

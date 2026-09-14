@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
@@ -35,66 +35,89 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
             return string.Empty;
         }
 
+        private bool IsValidProvokeTarget(uint activator, uint target)
+        {
+            return GetIsObjectValid(target) &&
+                   GetIsReactionTypeHostile(target, activator) &&
+                   !GetIsPC(target) &&
+                   !BeastMastery.IsPlayerBeast(target) &&
+                   !Droid.IsDroid(target);
+        }
+
         private void Impact(uint activator, uint target, int enmity)
         {
-            if (!LineOfSightObject(activator, target))
+            if (!IsValidProvokeTarget(activator, target) ||
+                !LineOfSightObject(activator, target))
+            {
                 return;
+            }
 
             Enmity.ModifyEnmity(activator, target, enmity);
+            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 
         private void Provoke()
         {
-            _builder.Create(FeatType.Provoke1, PerkType.Provoke)
-                .Name("Provoke")
+            _builder
+                .Create(FeatType.Provoke1, PerkType.Provoke)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Provoke)
+                .Name("Provoke I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Provoke, 10f)
+                .HasRecastDelay(RecastGroup.Provoke, 6f)
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.FireForgetTaunt, 3f)
                 .IsCastedAbility()
                 .HasMaxRange(15f)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .HasCustomValidation((_, target, _, _) => Validation(target))
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
-                    Impact(activator, target, 700 + enmityBonus);
+                    var enmity = Stat.ScaleEffect(700, GetAbilityScore(activator, AbilityType.Vitality));
+                    Impact(activator, target, enmity);
                 });
         }
 
         private void Provoke2()
         {
-            _builder.Create(FeatType.Provoke2, PerkType.Provoke)
+            _builder
+                .Create(FeatType.Provoke2, PerkType.Provoke)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_Provoke)
                 .Name("Provoke II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Provoke2, 20f)
+                .HasRecastDelay(RecastGroup.Provoke2, 12f)
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.FireForgetTaunt, 3f)
                 .IsCastedAbility()
                 .HasMaxRange(15f)
+                .IsAreaAbility()
+                .IsHostileAbility()
                 .HasCustomValidation((_, target, _, _) => Validation(target))
-                .HasImpactAction((activator, _, _, location) =>
+                .HasTargetingSphere(
+                    Spell.Provoke2,
+                    8f,
+                    AbilityTargetingFlags.HarmsEnemies)
+                .HasImpactAction((activator, target, _, targetLocation) =>
                 {
-                    var nth = 1;
-                    var nearest = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
-
-                    while (GetIsObjectValid(nearest))
+                    var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+                    foreach (var hostile in AbilityTargeting.GetHostileTargetsNearLocation(
+                                 activator,
+                                 impactLocation,
+                                 8f,
+                                 0,
+                                 target,
+                                 creature => IsValidProvokeTarget(activator, creature) &&
+                                             LineOfSightObject(activator, creature)))
                     {
-                        if (GetDistanceBetweenLocations(GetLocation(nearest), location) > 8f)
-                            break;
-
-                        if (!GetIsPC(nearest) && 
-                            !BeastMastery.IsPlayerBeast(nearest) && 
-                            !Droid.IsDroid(nearest))
-                        {
-                            var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
-                            Impact(activator, nearest, 400 + enmityBonus);
-                        }
-
-                        nth++;
-                        nearest = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
+                        var enmity = Stat.ScaleEffect(400, GetAbilityScore(activator, AbilityType.Vitality));
+                        Impact(activator, hostile, enmity);
                     }
-
                 });
         }
     }

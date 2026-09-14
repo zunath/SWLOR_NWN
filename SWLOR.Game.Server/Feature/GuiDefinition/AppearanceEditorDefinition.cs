@@ -1021,6 +1021,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
+
+                    row.AddButton()
+                        .SetId("ae_head_increase")
+                        .SetText("Increase Head")
+                        .SetHeight(32f)
+                        .SetWidth(128f)
+                        .BindOnClicked(model => model.OnIncreaseHeadScale());
+
+                    row.AddButton()
+                        .SetId("ae_head_decrease")
+                        .SetText("Decrease Head")
+                        .SetHeight(32f)
+                        .SetWidth(128f)
+                        .BindOnClicked(model => model.OnDecreaseHeadScale());
+
+                    row.AddSpacer();
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddSpacer();
                     row.AddButton()
                         .SetId("ae_settings_save")
                         .SetText("Save")

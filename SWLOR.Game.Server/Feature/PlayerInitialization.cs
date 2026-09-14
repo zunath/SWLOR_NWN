@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.LogService;
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
-            if (dbPlayer.Version == 0 &&
+            if (dbPlayer.Version == 0 && !dbPlayer.CharacterInitializationPending &&
                 (GetHitDice(player) > 1 || GetXP(player) > 0 ||
                  GetLocalInt(player, Migration.PlayerFileVersionVariable) > 0))
             {
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Already been initialized. Don't do it again.
-            if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
+            if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1)) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
                 if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                     PlayerName.RefreshNameOverridesForPlayer(player);
@@ -49,24 +50,38 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            ClearInventory(player);
-            AutoLevelPlayer(player);
-            InitializeSavingThrows(player);
-            InitializeSkills(player);
-            RemoveNWNSpells(player);
-            ResetFeatsToBaseline(player);
-            InitializeHotBar(player);
-            AdjustStats(player, dbPlayer);
-            AdjustAlignment(player);
-            InitializeLanguages(player, dbPlayer);
-            AssignRacialAppearance(player, dbPlayer);
-            GiveStartingItems(player);
-            GiveStartingRebuildToken(dbPlayer);
-            AssignCharacterType(player, dbPlayer);
-            RegisterDefaultRespawnPoint(dbPlayer);
-            Stat.ApplyCreatureMovementRate(player);
-
-            DB.Set(dbPlayer);
+            try
+            {
+                dbPlayer = Migration.RunPlayerInitialization(dbPlayer, initializing =>
+                {
+                    var grantStartingToken = initializing.Version == 0;
+                    ClearInventory(player);
+                    AutoLevelPlayer(player);
+                    InitializeSavingThrows(player);
+                    InitializeSkills(player);
+                    RemoveNWNSpells(player);
+                    ResetFeatsToBaseline(player);
+                    InitializeHotBar(player);
+                    AdjustStats(player, initializing);
+                    AdjustAlignment(player);
+                    InitializeLanguages(player, initializing);
+                    AssignRacialAppearance(player, initializing);
+                    GiveStartingItems(player);
+                    if (grantStartingToken)
+                        GiveStartingRebuildToken(initializing);
+                    AssignCharacterType(player, initializing);
+                    RegisterDefaultRespawnPoint(initializing);
+                    Stat.ApplyCreatureMovementRate(player);
+                }, updated => DB.Set(updated),
+                    () => GetLocalInt(player, Migration.PlayerFileVersionVariable),
+                    version => Migration.SavePlayerFileCheckpoint(player, version));
+            }
+            catch (Exception exception)
+            {
+                Log.Write(LogGroup.Migration, $"Character initialization failed for {GetName(player)} [{playerId}]: {exception}", true);
+                BootPC(player, "Your character setup could not be saved. Please reconnect or contact a server administrator.");
+                return;
+            }
 
             if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                 PlayerName.RefreshNameOverridesForPlayer(player);
@@ -139,20 +154,23 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to wipe an inventory for.</param>
         private static void ClearInventory(uint player)
         {
+            using var disposal = new MigrationItemDisposal();
+            var items = new HashSet<uint>();
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
                 var item = GetItemInSlot((InventorySlot)slot, player);
                 if (!GetIsObjectValid(item)) continue;
-
-                DestroyObject(item);
+                items.Add(item);
             }
 
             var inventory = GetFirstItemInInventory(player);
             while (GetIsObjectValid(inventory))
             {
-                DestroyObject(inventory);
+                items.Add(inventory);
                 inventory = GetNextItemInInventory(player);
             }
+            foreach (var item in items)
+                disposal.Remove(item);
 
             TakeGoldFromCreature(GetGold(player), player, true);
         }
@@ -345,10 +363,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var raceAppearance = Race.GetDefaultAppearance(GetRacialType(player), GetGender(player));
 
-            DelayCommand(0.1f, () =>
-            {
-                Race.SetDefaultRaceAppearance(player);
-            });
+            Race.SetDefaultRaceAppearance(player);
             dbPlayer.OriginalAppearanceType = raceAppearance.AppearanceType;
         }
 
@@ -359,20 +374,28 @@ namespace SWLOR.Game.Server.Feature
         private static void GiveStartingItems(uint player)
         {
             var race = GetRacialType(player);
-            var item = CreateItemOnObject("survival_knife", player);
+            uint CreateStarterItem(string resref)
+            {
+                var created = CreateItemOnObject(resref, player);
+                if (!GetIsObjectValid(created) || GetItemPossessor(created) != player)
+                    throw new InvalidOperationException($"The starting item {resref} could not be created.");
+                return created;
+            }
+            var item = CreateStarterItem("survival_knife");
             SetName(item, "Survival Knife");
             SetItemCursedFlag(item, true);
 
-            item = CreateItemOnObject("fresh_bread", player);
+            item = CreateStarterItem("fresh_bread");
             SetItemCursedFlag(item, true);
 
-            var clothes = race == RacialType.Droid ? "dlarproto" : "travelers_clothes";
-            item = CreateItemOnObject(clothes, player);
-            AssignCommand(player, () =>
-            {
-                ClearAllActions();
-                ActionEquipItem(item, InventorySlot.Chest);
-            });
+            var clothes = race == RacialType.Droid ? "dlarproto" :
+                GetGender(player) == Gender.Female ? "nw_femtatcivoutf" : "nw_maletatcivout";
+            item = CreateStarterItem(clothes);
+            if (race != RacialType.Droid)
+                SetName(item, "Traveler's Clothes");
+            CreaturePlugin.RunEquip(player, item, InventorySlot.Chest);
+            if (GetItemInSlot(InventorySlot.Chest, player) != item)
+                throw new InvalidOperationException("The starting outfit could not be equipped.");
 
             GiveGoldToCreature(player, 200);
         }

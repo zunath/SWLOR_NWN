@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Service
         /// Saves the completed live migration before advancing its database checkpoint.
         /// The ordinary export command queues a later save and cannot establish this ordering.
         /// </summary>
-        private static void SavePlayerFileCheckpoint(uint player, int version)
+        internal static void SavePlayerFileCheckpoint(uint player, int version)
         {
             var previousVersion = GetLocalInt(player, PlayerFileVersionVariable);
             SetLocalInt(player, PlayerFileVersionVariable, version);
@@ -235,6 +235,29 @@ namespace SWLOR.Game.Server.Service
                     SetLocalInt(player, PlayerFileVersionVariable, previousVersion);
                 throw;
             }
+        }
+
+        /// <summary>Retains initialization intent until both the starter character and its record are saved.</summary>
+        internal static Player RunPlayerInitialization(Player original, Action<Player> initialize,
+            Action<Player> savePlayer, Func<int> loadFileVersion, Action<int> saveFileVersion)
+        {
+            Player Copy(Player value) => JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(value));
+            var pending = Copy(original);
+            if (!pending.CharacterInitializationPending || pending.Version <= 0 || loadFileVersion() < pending.Version)
+            {
+                pending.CharacterInitializationPending = true;
+                savePlayer(pending);
+                // Initialization mutates many fields; don't expose partial results through the shared DB cache.
+                pending = Copy(pending);
+                initialize(pending);
+                savePlayer(pending);
+                saveFileVersion(pending.Version);
+            }
+
+            var completed = Copy(pending);
+            completed.CharacterInitializationPending = false;
+            savePlayer(completed);
+            return completed;
         }
 
         private static void LoadServerMigrations()

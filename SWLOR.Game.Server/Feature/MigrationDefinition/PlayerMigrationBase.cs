@@ -34,9 +34,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                 if (!GetIsObjectValid(item))
                     continue;
-                CreaturePlugin.RunUnequip(player, item);
-                if (GetItemInSlot(slot, player) == item)
-                    throw new InvalidOperationException($"Unable to unequip inventory slot {slot} during player migration.");
+                PlayerEquipmentStorage.Unequip(player, item, slot);
             }
 
             // Finish before the runner checkpoints this character; delayed work

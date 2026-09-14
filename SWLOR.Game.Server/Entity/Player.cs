@@ -106,6 +106,7 @@ namespace SWLOR.Game.Server.Entity
 
         [Indexed]
         public int Version { get; set; }
+        public bool CharacterInitializationPending { get; set; }
         [Indexed]
         public string Name { get; set; }
         public int MaxHP { get; set; }

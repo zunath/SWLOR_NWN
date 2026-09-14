@@ -177,9 +177,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 WipeDescription(item);
                 WipeVariables(item);
 
-                CreaturePlugin.RunUnequip(player, item);
-                if (GetItemInSlot(slot, player) == item)
-                    throw new InvalidOperationException($"Unable to unequip inventory slot {slot} during player migration.");
+                PlayerEquipmentStorage.Unequip(player, item, slot);
             }
         }
 

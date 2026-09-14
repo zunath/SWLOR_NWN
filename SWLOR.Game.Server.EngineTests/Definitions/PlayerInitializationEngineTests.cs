@@ -11,6 +11,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class PlayerInitializationEngineTests
     {
+        [EngineTest("Unfinished retired-class characters initialize with the current standard class", Category = "PlayerInitialization")]
+        public static async Task RetiredStarterClass(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                CreaturePlugin.SetClassByPosition(owner, 0, (ClassType)55);
+                typeof(Feature.PlayerInitialization).GetMethod("AutoLevelPlayer", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new object[] { owner });
+                ctx.AssertEqual(ClassType.Standard, GetClassByPosition(1, owner), "Retired starter class becomes the current standard class");
+                ctx.AssertEqual(40, GetHitDice(owner), "Initialization reaches the current native level");
+            });
+        }
+
         [EngineTest("Legacy resource reset is stable after failed character exports", Category = "PlayerInitialization")]
         public static async Task RetryLegacyResources(EngineTestContext ctx)
         {

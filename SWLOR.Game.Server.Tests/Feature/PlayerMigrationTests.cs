@@ -13,6 +13,21 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerMigrationTests
 {
+    [TestCase(0, false, 1, 0, 0, false)]
+    [TestCase(0, false, 5, 10000, 0, true)]
+    [TestCase(0, false, 1, 1, 0, true)]
+    [TestCase(0, false, 1, 0, 15, true)]
+    [TestCase(0, true, 40, 800000, 0, false)]
+    [TestCase(-1, false, 5, 10000, 0, false)]
+    [TestCase(15, false, 40, 800000, 15, false)]
+    public void ExistingCharacterProgressCannotBeReplacedByNewCharacterInitialization(
+        int version, bool pending, int level, int experience, int fileVersion, bool requiresRecord)
+    {
+        var player = new Player("audit-player") { Version = version, CharacterInitializationPending = pending };
+        var guard = typeof(Server.Feature.PlayerInitialization).GetMethod("RequiresExistingPlayerRecord", BindingFlags.Static | BindingFlags.NonPublic)!;
+        guard.Invoke(null, new object[] { player, level, experience, fileVersion }).Should().Be(requiresRecord);
+    }
+
     [Test]
     public void BonusTokenAndPlayerVersionAreSavedTogetherAfterRefreshingLiveChanges()
     {

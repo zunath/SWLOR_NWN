@@ -61,7 +61,12 @@ namespace SWLOR.Game.Server.Native
             try
             {
                 var original = (delegate* unmanaged<void*, void*, void*, int, int, int, int, int>)_loadHook->m_trampoline;
-                var loaded = original(creature, resource, structure, saveGame, associate, preserveIds, copyObject);
+                using var inventory = SavedPlayerInventory.BeginLoad(CResGFF.FromPointer(resource), CResStruct.FromPointer(structure));
+                using var normalized = SavedPlayerClassLayout.Normalize(CResGFF.FromPointer(resource), CResStruct.FromPointer(structure));
+                var loaded = original(creature,
+                    normalized == null ? resource : (void*)normalized.File.Pointer,
+                    normalized == null ? structure : (void*)normalized.Root.Pointer,
+                    saveGame, associate, preserveIds, copyObject);
                 if (loaded == 0)
                     return 0;
                 var found = 0;

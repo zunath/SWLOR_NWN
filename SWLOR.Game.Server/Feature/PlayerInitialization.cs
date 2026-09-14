@@ -29,9 +29,8 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
-            if (dbPlayer.Version == 0 && !dbPlayer.CharacterInitializationPending &&
-                (GetHitDice(player) > 1 || GetXP(player) > 0 ||
-                 GetLocalInt(player, Migration.PlayerFileVersionVariable) > 0))
+            if (RequiresExistingPlayerRecord(dbPlayer, GetHitDice(player), GetXP(player),
+                    GetLocalInt(player, Migration.PlayerFileVersionVariable)))
             {
                 Log.Write(LogGroup.Migration,
                     $"Refusing new-character initialization for existing character {GetName(player)} [{playerId}]: its initialized player record is missing.", true);
@@ -89,8 +88,18 @@ namespace SWLOR.Game.Server.Feature
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
 
+        internal static bool RequiresExistingPlayerRecord(Player player, int nativeLevel, int experience, int fileVersion)
+        {
+            return player.Version == 0 && !player.CharacterInitializationPending &&
+                   (nativeLevel > 1 || experience > 0 || fileVersion > 0);
+        }
+
         private static void AutoLevelPlayer(uint player)
         {
+            // Unfinished characters can still carry a retired character-creation class.
+            var @class = GetClassByPosition(1, player);
+            if (@class != ClassType.Standard && @class != ClassType.ForceSensitive)
+                CreaturePlugin.SetClassByPosition(player, 0, ClassType.Standard);
             EnsureNativeLevels(player);
         }
 

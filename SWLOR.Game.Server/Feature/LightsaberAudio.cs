@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Feature
             foreach (var id in removed) creature.RemoveEffectById(id);
             var timer = server.GetActiveTimer(player);
             creature.UpdateEffectList(timer.GetWorldTimeCalendarDay(), timer.GetWorldTimeTimeOfDay());
-            Log.WriteStructured(LogGroup.Migration,
-                "Removed {RemovedEffectCount} stale lightsaber hum effects from character {PlayerId}.",
+            Log.WriteStructured(LogGroup.Server,
+                "Removed {RemovedEffectCount} lightsaber hum effects from character {PlayerId}.",
                 removed.Count, GetObjectUUID(player));
             return true;
         }

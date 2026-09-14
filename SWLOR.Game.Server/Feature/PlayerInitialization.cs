@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature
                 if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                     PlayerName.RefreshNameOverridesForPlayer(player);
 
-                InitializeSavingThrows(player);
+                InitializeNativeCombatStats(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
                 return;
             }
@@ -52,24 +52,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 dbPlayer = Migration.RunPlayerInitialization(dbPlayer, initializing =>
                 {
-                    var grantStartingToken = initializing.Version == 0;
-                    ClearInventory(player);
-                    AutoLevelPlayer(player);
-                    InitializeSavingThrows(player);
-                    InitializeSkills(player);
-                    RemoveNWNSpells(player);
-                    ResetFeatsToBaseline(player);
-                    InitializeHotBar(player);
-                    AdjustStats(player, initializing);
-                    AdjustAlignment(player);
-                    InitializeLanguages(player, initializing);
-                    AssignRacialAppearance(player, initializing);
-                    GiveStartingItems(player);
-                    if (grantStartingToken)
-                        GiveStartingRebuildToken(initializing);
-                    AssignCharacterType(player, initializing);
-                    RegisterDefaultRespawnPoint(initializing);
-                    Stat.ApplyCreatureMovementRate(player);
+                    InitializeNewCharacter(player, initializing);
                 }, updated => DB.Set(updated),
                     () => GetLocalInt(player, Migration.PlayerFileVersionVariable),
                     version => Migration.SavePlayerFileCheckpoint(player, version));
@@ -92,6 +75,38 @@ namespace SWLOR.Game.Server.Feature
             // Saved level-one characters can look identical to newly created ones.
             // Only the engine's accepted creation request may authorize initialization.
             return player.Version == 0 && !player.CharacterInitializationPending;
+        }
+
+        internal static void InitializeNewCharacter(uint player, Player initializing)
+        {
+            var grantStartingToken = initializing.Version == 0;
+            ClearInventory(player);
+            AutoLevelPlayer(player);
+            InitializeSkills(player);
+            RemoveNWNSpells(player);
+            ResetFeatsToBaseline(player);
+            // Saving-throw setters account for feats. Remove creation feats before
+            // calculating the neutral baseline so their bonuses are not subtracted twice.
+            InitializeNativeCombatStats(player);
+            InitializeHotBar(player);
+            AdjustStats(player, initializing);
+            AdjustAlignment(player);
+            InitializeLanguages(player, initializing);
+            AssignRacialAppearance(player, initializing);
+            GiveStartingItems(player);
+            if (grantStartingToken)
+                GiveStartingRebuildToken(initializing);
+            AssignCharacterType(player, initializing);
+            RegisterDefaultRespawnPoint(initializing);
+            Stat.ApplyCreatureMovementRate(player);
+        }
+
+        public static void InitializeNativeCombatStats(uint player)
+        {
+            // Native PC loading recalculates BAB from class levels instead of
+            // retaining the override established during initialization or rebuilding.
+            CreaturePlugin.SetBaseAttackBonus(player, 1);
+            InitializeSavingThrows(player);
         }
 
         private static void AutoLevelPlayer(uint player)

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -80,6 +82,9 @@ namespace SWLOR.Game.Server.Feature
             foreach (var id in removed) creature.RemoveEffectById(id);
             var timer = server.GetActiveTimer(player);
             creature.UpdateEffectList(timer.GetWorldTimeCalendarDay(), timer.GetWorldTimeTimeOfDay());
+            Log.WriteStructured(LogGroup.Migration,
+                "Removed {RemovedEffectCount} stale lightsaber hum effects from character {PlayerId}.",
+                removed.Count, GetObjectUUID(player));
             return true;
         }
     }

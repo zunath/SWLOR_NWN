@@ -11,30 +11,61 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static partial class MigrationEngineTests
     {
+        [EngineTest("Hum cleanup preserves a remaining equipped saber", Category = "PlayerItemMigration")]
+        public static async Task RemainingSaberRetainsHum(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var saber = await ctx.EquipItemAsync(owner, "valcl4", InventorySlot.RightHand);
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                ctx.AssertEqual(BaseItem.Lightsaber, GetBaseItemType(saber), "Fixture holds a lightsaber");
+                for (var index = 0; index < 2; index++)
+                    ApplyEffectToObject(DurationType.Permanent,
+                        TagEffect(EffectVisualEffect(SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.LightsaberHum), "LIGHTSABER_HUM"), owner);
+            });
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                var remove = typeof(Feature.LightsaberAudio).GetMethod("RemoveHum", BindingFlags.Static | BindingFlags.NonPublic);
+                remove.Invoke(null, new object[] { owner });
+                ctx.AssertEqual(1, CountSaberHum(owner), "The remaining equipped saber keeps one hum");
+                Invoke("PlayerEquipmentStorage", "Unequip", owner, saber, InventorySlot.RightHand);
+                remove.Invoke(null, new object[] { owner });
+                ctx.AssertEqual(0, CountSaberHum(owner), "Removing the last saber clears every hum before saving");
+            });
+        }
+
+        private static int CountSaberHum(uint obj)
+        {
+            var creature = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(obj).AsNWSCreature();
+            var count = 0;
+            foreach (var effect in creature.m_appliedEffects)
+                if (effect.m_sCustomTag.ToString() == "LIGHTSABER_HUM") count++;
+            return count;
+        }
+
         [EngineTest("Stopped lightsaber hum is absent from the character checkpoint", Category = "PlayerItemMigration")]
         public static async Task UnequippedSaberAudioIsSavedImmediately(EngineTestContext ctx)
         {
             var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
                 ApplyEffectToObject(DurationType.Permanent,
-                    TagEffect(EffectVisualEffect(SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.LightsaberHum), "LIGHTSABER_HUM"), owner));
+                    TagEffect(EffectVisualEffect(SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.LightsaberHum), "LIGHTSABER_HUM"), owner);
+                ApplyEffectToObject(DurationType.Permanent,
+                    TagEffect(EffectVisualEffect(SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.LightsaberHum), "LIGHTSABER_HUM"), owner);
+            });
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                bool HasHum(uint obj)
-                {
-                    var creature = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(obj).AsNWSCreature();
-                    foreach (var effect in creature.m_appliedEffects)
-                        if (effect.m_sCustomTag.ToString() == "LIGHTSABER_HUM") return true;
-                    return false;
-                }
-                ctx.Assert(HasHum(owner), "The fixture starts with looping saber audio");
+                ctx.Assert(CountSaberHum(owner) >= 2, "The fixture starts with duplicate looping saber audio");
                 typeof(Feature.LightsaberAudio).GetMethod("RemoveHum", BindingFlags.Static | BindingFlags.NonPublic)
                     .Invoke(null, new object[] { owner });
-                ctx.Assert(!HasHum(owner), "Stopping saber audio removes its effect immediately");
+                ctx.AssertEqual(0, CountSaberHum(owner), "Stopping saber audio removes every stale effect immediately");
                 var restored = Deserialize(ctx, ObjectPlugin.Serialize(owner));
-                ctx.Assert(!HasHum(restored), "A same-script save and reload cannot restore unequipped saber audio");
+                ctx.AssertEqual(0, CountSaberHum(restored), "A same-script save and reload cannot restore unequipped saber audio");
             });
         }
 

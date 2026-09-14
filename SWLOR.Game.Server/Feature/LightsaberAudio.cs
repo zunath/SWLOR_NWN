@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -55,19 +56,28 @@ namespace SWLOR.Game.Server.Feature
             var creature = server.GetGameObject(player)?.AsNWSCreature();
             if (creature == null) return false;
 
+            // One hum belongs to each equipped saber. Clear all stale duplicates when
+            // unequipping, without silencing a second saber that is still being held.
+            var retained = 0;
+            foreach (var slot in new[] { InventorySlot.RightHand, InventorySlot.LeftHand })
+            {
+                var type = GetBaseItemType(GetItemInSlot(slot, player));
+                if (type == BaseItem.Lightsaber || type == BaseItem.Saberstaff) retained++;
+            }
+            var removed = new List<ulong>();
             foreach (var effect in creature.m_appliedEffects)
             {
-                if (effect.m_sCustomTag.ToString() == "LIGHTSABER_HUM")
-                {
-                    // The script removal queues a later update, allowing an intervening
-                    // character export to retain the hum after the saber is unequipped.
-                    creature.RemoveEffectById(effect.m_nID);
-                    var timer = server.GetActiveTimer(player);
-                    creature.UpdateEffectList(timer.GetWorldTimeCalendarDay(), timer.GetWorldTimeTimeOfDay());
-                    return true;
-                }
+                if (effect.m_sCustomTag.ToString() != "LIGHTSABER_HUM") continue;
+                if (retained > 0) retained--;
+                else removed.Add(effect.m_nID);
             }
-            return false;
+            if (removed.Count == 0) return false;
+
+            // Script removal queues a later update; finish all removals before export.
+            foreach (var id in removed) creature.RemoveEffectById(id);
+            var timer = server.GetActiveTimer(player);
+            creature.UpdateEffectList(timer.GetWorldTimeCalendarDay(), timer.GetWorldTimeTimeOfDay());
+            return true;
         }
     }
 }

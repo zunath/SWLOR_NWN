@@ -92,7 +92,7 @@ def collect():
                 add(obtainable, m)
 
     for r in ("beast_dna", "beast_egg", "blueprint", "survival_knife",
-              "fresh_bread", "dlarproto", "travelers_clothes"):
+              "fresh_bread", "dlarproto", "traveler_m", "traveler_f"):
         add(obtainable, r)
 
     return equipped, obtainable

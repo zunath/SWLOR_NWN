@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _8_UpgradeWeapons : PlayerMigrationBase
     {
+        private const string DamageUpgradeVariable = "WEAPON_DAMAGE_UPGRADED";
         public override int Version => 8;
         public override void Migrate(uint player)
         {
@@ -76,12 +78,23 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 Update(item);
             }
 
-            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            UpdateInventory(player);
+        }
+
+        private void UpdateInventory(uint container)
+        {
+            for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
+            {
                 Update(item);
+                if (GetHasInventory(item))
+                    UpdateInventory(item);
+            }
         }
 
         private void Update (uint item)
         {
+            if (!GetIsObjectValid(item) || GetLocalInt(item, DamageUpgradeVariable) != 0)
+                return;
             var baseItem = GetBaseItemType(item);
             if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
@@ -100,18 +113,22 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             var wpnDmg = newDmg - oldDmg;
             if (wpnDmg <= 0) { return; }
 
+            var oldProperties = new List<ItemProperty>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.DMG &&
                     GetItemPropertySubType(ip) == (int)CombatDamageType.Physical)
                 {
                     wpnDmg += GetItemPropertyCostTableValue(ip);
-                    RemoveItemProperty(item, ip);
+                    oldProperties.Add(ip);
                 }
             }
+            foreach (var property in oldProperties)
+                MigrationObject.RemoveProperty(item, property);
 
             var newDmgProperty = ItemPropertyCustom(ItemPropertyType.DMG, -1, wpnDmg);
             BiowareXP2.IPSafeAddItemProperty(item, newDmgProperty, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+            SetLocalInt(item, DamageUpgradeVariable, 1);
         }
     }
 }

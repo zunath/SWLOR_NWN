@@ -438,11 +438,11 @@ public class PlayerNameRecognitionTests
         var initializationMethod = ExtractMethod(initializationSource, "public static void InitializePlayer()");
         initializationMethod.Should().Contain("if (PlayerDescriptor.EnsureUnknownDisplayName(player))");
         initializationMethod.Should().Contain("PlayerName.RefreshNameOverridesForPlayer(player);");
-        var versionGateIndex = initializationMethod.IndexOf("if (dbPlayer.Version >= 1 || dbPlayer.Version == -1)", StringComparison.Ordinal);
+        var versionGateIndex = initializationMethod.IndexOf("if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1))", StringComparison.Ordinal);
+        versionGateIndex.Should().BeGreaterThanOrEqualTo(0);
         var firstDescriptorEnsureIndex = initializationMethod.IndexOf("if (PlayerDescriptor.EnsureUnknownDisplayName(player))", StringComparison.Ordinal);
         var firstRefreshIndex = initializationMethod.IndexOf("PlayerName.RefreshNameOverridesForPlayer(player);", firstDescriptorEnsureIndex, StringComparison.Ordinal);
         var firstReturnIndex = initializationMethod.IndexOf("return;", versionGateIndex, StringComparison.Ordinal);
-        versionGateIndex.Should().BeGreaterThanOrEqualTo(0);
         firstDescriptorEnsureIndex.Should().BeGreaterThan(versionGateIndex);
         firstDescriptorEnsureIndex.Should().BeLessThan(firstReturnIndex);
         firstRefreshIndex.Should().BeLessThan(firstReturnIndex);

@@ -60,6 +60,17 @@ namespace SWLOR.Toolset.Tests.Items
             index.ItemsWithSources.Should().BeGreaterThan(1000);
         }
 
+        [TestCase("traveler_m", true)]
+        [TestCase("traveler_f", true)]
+        [TestCase("travelers_clothes", false)]
+        public void StarterOutfitSourceVerdictMatchesCurrentCharacterCreation(string resRef, bool obtainable)
+        {
+            var section = new ItemSourceSectionViewModel(resRef, SharedIndex.Value.SourcesFor);
+
+            section.IsLoaded.Should().BeTrue();
+            section.IsObtainable.Should().Be(obtainable);
+        }
+
         [Test]
         public void StoreSoldItemNamesItsOwningStore()
         {

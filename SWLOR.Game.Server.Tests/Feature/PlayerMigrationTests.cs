@@ -13,6 +13,52 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerMigrationTests
 {
+    [TestCase(0, false, true)]
+    [TestCase(0, true, false)]
+    [TestCase(-1, false, false)]
+    [TestCase(15, false, false)]
+    public void MissingRecordsRequireValidatedCreationEvenWithoutCharacterProgress(
+        int version, bool pending, bool requiresRecord)
+    {
+        var player = new Player("audit-player") { Version = version, CharacterInitializationPending = pending };
+        var guard = typeof(Server.Feature.PlayerInitialization).GetMethod("RequiresExistingPlayerRecord", BindingFlags.Static | BindingFlags.NonPublic)!;
+        guard.Invoke(null, new object[] { player }).Should().Be(requiresRecord);
+    }
+
+    [TestCase(0u, false, true)]
+    [TestCase(110633u, false, false)]
+    [TestCase(0u, true, false)]
+    public void OnlyAcceptedNewCharacterCreationRecordsDurableInitializationIntent(uint result, bool exists, bool expectedSave)
+    {
+        Player? saved = exists ? new Player("creation-test") { Version = 15 } : null;
+        var original = saved;
+        var saves = 0;
+        var fileSaved = false;
+        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        void Run() => record.Invoke(null, new object[] { result, "creation-test", (Func<Player?>)(() => saved),
+            (Action)(() => fileSaved = true),
+            (Action<Player>)(player => { fileSaved.Should().BeTrue(); saved = player; saves++; }) });
+        Run();
+        Run();
+        saves.Should().Be(expectedSave ? 1 : 0, "validation must not reset an existing record on repeated calls");
+        if (expectedSave)
+        {
+            saved!.CharacterInitializationPending.Should().BeTrue();
+            saved.Version.Should().Be(0);
+        }
+        else saved.Should().BeSameAs(original);
+    }
+
+    [Test]
+    public void FailedCreationIdentitySaveCannotAuthorizeDestructiveInitialization()
+    {
+        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        Action run = () => record.Invoke(null, new object[] { 0u, "creation-test", (Func<Player?>)(() => null),
+            (Action)(() => throw new InvalidOperationException("Injected identity export failure")),
+            (Action<Player>)(_ => Assert.Fail("No initialization intent may be saved after an export failure")) });
+        run.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>();
+    }
+
     [Test]
     public void BonusTokenAndPlayerVersionAreSavedTogetherAfterRefreshingLiveChanges()
     {
@@ -212,9 +258,134 @@ public class PlayerMigrationTests
         return new TestMigration(migration.Version, migrate, migration.MigratePlayerData);
     }
 
-    private static void Apply(IPlayerMigration migration, Func<Player> load, Action<Player> save) =>
+    private static void Apply(IPlayerMigration migration, Func<Player> load, Action<Player> save)
+    {
+        var fileVersion = 0;
+        Player Load()
+        {
+            var player = load();
+            fileVersion = player.Version;
+            return player;
+        }
+        ApplyWithFile(migration, Load, save, () => fileVersion, _ => { });
+    }
+
+    private static void ApplyWithFile(IPlayerMigration migration, Func<Player> load, Action<Player> save,
+        Func<int> loadFileVersion, Action<int> saveFileVersion) =>
         typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { migration, 0u, load, save });
+            .Invoke(null, new object[] { migration, 0u, load, save, loadFileVersion, saveFileVersion });
+
+    /// <summary>
+    /// Replays file changes after an old BIC is restored without granting a second database reward.
+    /// </summary>
+    [Test]
+    public void RestoredOlderCharacterFileIsMigratedEvenWhenDatabaseIsCurrent()
+    {
+        var saved = PlayerJson(15);
+        var fileVersion = 14;
+        var liveRuns = 0;
+        ApplyWithFile(TokenMigration(() => liveRuns++), () => saved.ToObject<Player>()!,
+            _ => Assert.Fail("The completed database reward must not run again"),
+            () => fileVersion, version => fileVersion = version);
+        liveRuns.Should().Be(1);
+        fileVersion.Should().Be(15);
+        saved.Should().BeEquivalentTo(PlayerJson(15));
+    }
+
+    /// <summary>
+    /// A saved file is authoritative for native changes when the database checkpoint write must be retried.
+    /// </summary>
+    [Test]
+    public void DatabaseSaveRetryDoesNotRepeatASuccessfullySavedLiveMigration()
+    {
+        var saved = PlayerJson(14);
+        var fileVersion = 14;
+        var liveRuns = 0;
+        var migration = TokenMigration(() => liveRuns++);
+        Action first = () => ApplyWithFile(migration, () => saved.ToObject<Player>()!,
+            _ => throw new InvalidOperationException("Database unavailable"),
+            () => fileVersion, version => fileVersion = version);
+        first.Should().Throw<TargetInvocationException>();
+        fileVersion.Should().Be(15);
+        saved["Version"]!.Value<int>().Should().Be(14);
+
+        ApplyWithFile(migration, () => saved.ToObject<Player>()!, player => saved = JObject.FromObject(player),
+            () => fileVersion, version => fileVersion = version);
+        liveRuns.Should().Be(1);
+        saved["Version"]!.Value<int>().Should().Be(15);
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(4);
+    }
+
+    /// <summary>
+    /// A character save failure must prevent recording migration completion or its reward in the database.
+    /// </summary>
+    [Test]
+    public void FailedCharacterSaveDoesNotAdvanceTheDatabaseOrGrantTokens()
+    {
+        var saved = PlayerJson(14);
+        Action run = () => ApplyWithFile(TokenMigration(() => { }), () => saved.ToObject<Player>()!,
+            _ => Assert.Fail("Character saving must succeed first"),
+            () => 14, _ => throw new InvalidOperationException("Character file write failed"));
+        run.Should().Throw<TargetInvocationException>();
+        saved.Should().BeEquivalentTo(PlayerJson(14));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void NewCharacterRetriesRestoreStarterStateWithoutDuplicatingRewards(bool failFinalDatabaseWrite)
+    {
+        var saved = JObject.FromObject(new Player("new-character"));
+        var fileVersion = 0;
+        var starterStateWritten = false;
+        var initializeRuns = 0;
+        var fail = true;
+        void Initialize(Player player)
+        {
+            initializeRuns++;
+            if (player.Version == 0)
+                player.Currencies[CurrencyType.RebuildToken] = 1;
+            player.Version = 15;
+        }
+        void Save(Player player)
+        {
+            if (fail && failFinalDatabaseWrite && !player.CharacterInitializationPending)
+                throw new InvalidOperationException("Final record write failed");
+            saved = JObject.FromObject(player);
+        }
+        void SaveFile(int version)
+        {
+            if (fail && !failFinalDatabaseWrite)
+                throw new InvalidOperationException("First character export failed");
+            starterStateWritten = true;
+            fileVersion = version;
+        }
+        void Run() => typeof(Migration).GetMethod("RunPlayerInitialization", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { saved.ToObject<Player>()!, (Action<Player>)Initialize,
+                (Action<Player>)Save, (Func<int>)(() => fileVersion), (Action<int>)SaveFile });
+
+        ((Action)Run).Should().Throw<TargetInvocationException>();
+        saved["CharacterInitializationPending"]!.Value<bool>().Should().BeTrue();
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(1);
+        fail = false;
+        Run();
+        starterStateWritten.Should().BeTrue();
+        fileVersion.Should().Be(15);
+        initializeRuns.Should().Be(failFinalDatabaseWrite ? 1 : 2);
+        saved["CharacterInitializationPending"]!.Value<bool>().Should().BeFalse();
+        saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(1);
+    }
+
+    [Test]
+    public void NewCharacterIntentMustBeDurableBeforeChangingTheCharacter()
+    {
+        var initialized = false;
+        Action run = () => typeof(Migration).GetMethod("RunPlayerInitialization", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { new Player("new-character"), (Action<Player>)(_ => initialized = true),
+                (Action<Player>)(_ => throw new InvalidOperationException("Database unavailable")),
+                (Func<int>)(() => 0), (Action<int>)(_ => Assert.Fail("File save must not be reached")) });
+        run.Should().Throw<TargetInvocationException>();
+        initialized.Should().BeFalse();
+    }
 
     private sealed class TestMigration(int version, Action migrate, Action<Player>? updateRecord = null) : IPlayerMigration
     {

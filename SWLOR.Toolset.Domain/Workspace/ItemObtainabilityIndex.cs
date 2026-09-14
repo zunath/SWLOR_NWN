@@ -418,7 +418,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private static readonly string[] FixedGrantedResRefs =
         {
             "beast_dna", "beast_egg", "blueprint", "survival_knife",
-            "fresh_bread", "dlarproto", "travelers_clothes",
+            "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
             "ls_custom", "ss_custom",
         };
 

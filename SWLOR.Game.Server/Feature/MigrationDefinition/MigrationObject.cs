@@ -78,19 +78,30 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         public static void RemoveProperty(uint item, ItemProperty property)
         {
-            // NWScript marks the backing effect for removal. Flush the item's effect
-            // list now so subsequent migration steps and serialization see it gone.
+            // The script command queues removal until a later engine update. A
+            // subsequent migration can replace the same property before that
+            // event runs, causing the replacement to be removed instead.
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var nativeItem = server.GetGameObject(item)?.AsNWSItem()
                 ?? throw new InvalidOperationException("A migration item was lost before property removal.");
             var id = ItemPropertyPlugin.UnpackIP(property).Id;
-            RemoveItemProperty(item, property);
+            var propertyId = ulong.Parse(id);
+            // Saved properties and backing effects have different IDs. The
+            // source ID is the native link between them, including after load.
+            var effectIds = new List<ulong>();
+            foreach (var effect in nativeItem.m_appliedEffects)
+                if (effect.m_nItemPropertySourceId == propertyId)
+                    effectIds.Add(effect.m_nID);
+            foreach (var effectId in effectIds)
+                nativeItem.RemoveEffectById(effectId);
             var timer = server.GetActiveTimer(item);
             nativeItem.UpdateEffectList(timer.GetWorldTimeCalendarDay(), timer.GetWorldTimeTimeOfDay());
+            foreach (var effect in nativeItem.m_appliedEffects)
+                if (effect.m_nItemPropertySourceId == propertyId)
+                    throw new InvalidOperationException($"Could not remove the backing effect for migration item property {id}.");
 
             // Deserialized permanent properties also live in the item's saved
             // property lists. Remove any entry left behind by effect cleanup.
-            var propertyId = ulong.Parse(id);
             var wearer = server.GetGameObject(nativeItem.m_oidPossessor)?.AsNWSCreature();
             void RemoveEquippedEffect(CNWItemProperty savedProperty)
             {

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.LogService;
@@ -28,35 +29,40 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
+            if (RequiresExistingPlayerRecord(dbPlayer))
+            {
+                Log.Write(LogGroup.Migration,
+                    $"Refusing character initialization for {GetName(player)} [{playerId}]: no initialized record or validated creation intent exists.", true);
+                BootPC(player, "Your character record could not be loaded. Please contact a server administrator.");
+                return;
+            }
+
             // Already been initialized. Don't do it again.
-            if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
+            if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1)) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
                 if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                     PlayerName.RefreshNameOverridesForPlayer(player);
 
-                InitializeSavingThrows(player);
+                InitializeNativeCombatStats(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
                 return;
             }
 
-            ClearInventory(player);
-            AutoLevelPlayer(player);
-            InitializeSavingThrows(player);
-            InitializeSkills(player);
-            RemoveNWNSpells(player);
-            ResetFeatsToBaseline(player);
-            InitializeHotBar(player);
-            AdjustStats(player, dbPlayer);
-            AdjustAlignment(player);
-            InitializeLanguages(player, dbPlayer);
-            AssignRacialAppearance(player, dbPlayer);
-            GiveStartingItems(player);
-            GiveStartingRebuildToken(dbPlayer);
-            AssignCharacterType(player, dbPlayer);
-            RegisterDefaultRespawnPoint(dbPlayer);
-            Stat.ApplyCreatureMovementRate(player);
-
-            DB.Set(dbPlayer);
+            try
+            {
+                dbPlayer = Migration.RunPlayerInitialization(dbPlayer, initializing =>
+                {
+                    InitializeNewCharacter(player, initializing);
+                }, updated => DB.Set(updated),
+                    () => GetLocalInt(player, Migration.PlayerFileVersionVariable),
+                    version => Migration.SavePlayerFileCheckpoint(player, version));
+            }
+            catch (Exception exception)
+            {
+                Log.Write(LogGroup.Migration, $"Character initialization failed for {GetName(player)} [{playerId}]: {exception}", true);
+                BootPC(player, "Your character setup could not be saved. Please reconnect or contact a server administrator.");
+                return;
+            }
 
             if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                 PlayerName.RefreshNameOverridesForPlayer(player);
@@ -64,8 +70,64 @@ namespace SWLOR.Game.Server.Feature
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
 
+        internal static bool RequiresExistingPlayerRecord(Player player)
+        {
+            // Saved level-one characters can look identical to newly created ones.
+            // Only the engine's accepted creation request may authorize initialization.
+            return player.Version == 0 && !player.CharacterInitializationPending;
+        }
+
+        internal static void InitializeNewCharacter(uint player, Player initializing)
+        {
+            var grantStartingToken = initializing.Version == 0;
+            ClearInventory(player);
+            AutoLevelPlayer(player);
+            InitializeSkills(player);
+            RemoveNWNSpells(player);
+            ResetFeatsToBaseline(player);
+            // Saving-throw setters account for feats. Remove creation feats before
+            // calculating the neutral baseline so their bonuses are not subtracted twice.
+            InitializeNativeCombatStats(player);
+            InitializeHotBar(player);
+            AdjustStats(player, initializing);
+            AdjustAlignment(player);
+            InitializeLanguages(player, initializing);
+            AssignRacialAppearance(player, initializing);
+            GiveStartingItems(player);
+            if (grantStartingToken)
+                GiveStartingRebuildToken(initializing);
+            AssignCharacterType(player, initializing);
+            RegisterDefaultRespawnPoint(initializing);
+            Stat.ApplyCreatureMovementRate(player);
+        }
+
+        public static void InitializeNativeCombatStats(uint player)
+        {
+            // Native PC loading recalculates BAB from class levels instead of
+            // retaining the override established during initialization or rebuilding.
+            CreaturePlugin.SetBaseAttackBonus(player, 1);
+            InitializeSavingThrows(player);
+        }
+
         private static void AutoLevelPlayer(uint player)
         {
+            // Unfinished characters can still carry a retired character-creation class.
+            var @class = GetClassByPosition(1, player);
+            if (@class != ClassType.Standard && @class != ClassType.ForceSensitive)
+                CreaturePlugin.SetClassByPosition(player, 0, ClassType.Standard);
+            EnsureNativeLevels(player);
+        }
+
+        internal static bool EnsureNativeLevels(uint player)
+        {
+            if (GetHitDice(player) >= 40)
+                return false;
+
+            var @class = GetClassByPosition(1, player);
+            if (!int.TryParse(Get2DAString("classes", "Package", (int)@class), out var package) ||
+                package < 0 || package >= (int)Package.Invalid)
+                throw new InvalidOperationException($"No leveling package is available for class {@class}.");
+
             // Capture original stats before we level up the player.
             var str = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             var con = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
@@ -74,21 +136,29 @@ namespace SWLOR.Game.Server.Feature
             var wis = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             var cha = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
 
-            GiveXPToCreature(player, 800000);
-            var @class = GetClassByPosition(1, player);
-
-            for (var level = 1; level <= 40; level++)
+            try
             {
-                LevelUpHenchman(player, @class);
+                SetXP(player, Math.Max(GetXP(player), 800000));
+                while (GetHitDice(player) < 40)
+                {
+                    var previousLevel = GetHitDice(player);
+                    // Saved characters can retain a package for a retired class.
+                    LevelUpHenchman(player, @class, false, (Package)package);
+                    if (GetHitDice(player) <= previousLevel)
+                        throw new InvalidOperationException($"Unable to advance native character level {previousLevel} using class {@class}.");
+                }
             }
-
-            // Set stats back to how they were on entry.
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, str);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, con);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, dex);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Agility, @int);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, wis);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, cha);
+            finally
+            {
+                // Native level-up ability increases are not SWLOR progression.
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, str);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, con);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, dex);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Agility, @int);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, wis);
+                CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, cha);
+            }
+            return true;
         }
 
         /// <summary>
@@ -108,20 +178,23 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to wipe an inventory for.</param>
         private static void ClearInventory(uint player)
         {
+            using var disposal = new MigrationItemDisposal();
+            var items = new HashSet<uint>();
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
                 var item = GetItemInSlot((InventorySlot)slot, player);
                 if (!GetIsObjectValid(item)) continue;
-
-                DestroyObject(item);
+                items.Add(item);
             }
 
             var inventory = GetFirstItemInInventory(player);
             while (GetIsObjectValid(inventory))
             {
-                DestroyObject(inventory);
+                items.Add(inventory);
                 inventory = GetNextItemInInventory(player);
             }
+            foreach (var item in items)
+                disposal.Remove(item);
 
             TakeGoldFromCreature(GetGold(player), player, true);
         }
@@ -195,9 +268,10 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Version = Migration.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP);
-            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM, player);
+            // A failed first export can retry with an already initialized record.
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP - dbPlayer.MaxHP);
+            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP - dbPlayer.MaxFP, player);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM - dbPlayer.MaxStamina, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
@@ -314,10 +388,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var raceAppearance = Race.GetDefaultAppearance(GetRacialType(player), GetGender(player));
 
-            DelayCommand(0.1f, () =>
-            {
-                Race.SetDefaultRaceAppearance(player);
-            });
+            Race.SetDefaultRaceAppearance(player);
             dbPlayer.OriginalAppearanceType = raceAppearance.AppearanceType;
         }
 
@@ -328,20 +399,28 @@ namespace SWLOR.Game.Server.Feature
         private static void GiveStartingItems(uint player)
         {
             var race = GetRacialType(player);
-            var item = CreateItemOnObject("survival_knife", player);
+            uint CreateStarterItem(string resref)
+            {
+                var created = CreateItemOnObject(resref, player);
+                if (!GetIsObjectValid(created) || GetItemPossessor(created) != player)
+                    throw new InvalidOperationException($"The starting item {resref} could not be created.");
+                return created;
+            }
+            var item = CreateStarterItem("survival_knife");
             SetName(item, "Survival Knife");
             SetItemCursedFlag(item, true);
 
-            item = CreateItemOnObject("fresh_bread", player);
+            item = CreateStarterItem("fresh_bread");
             SetItemCursedFlag(item, true);
 
-            var clothes = race == RacialType.Droid ? "dlarproto" : "travelers_clothes";
-            item = CreateItemOnObject(clothes, player);
-            AssignCommand(player, () =>
-            {
-                ClearAllActions();
-                ActionEquipItem(item, InventorySlot.Chest);
-            });
+            var clothes = race == RacialType.Droid ? "dlarproto" :
+                GetGender(player) == Gender.Female ? "traveler_f" : "traveler_m";
+            item = CreateStarterItem(clothes);
+            if (race != RacialType.Droid)
+                SetName(item, "Traveler's Clothes");
+            CreaturePlugin.RunEquip(player, item, InventorySlot.Chest);
+            if (GetItemInSlot(InventorySlot.Chest, player) != item)
+                throw new InvalidOperationException("The starting outfit could not be equipped.");
 
             GiveGoldToCreature(player, 200);
         }

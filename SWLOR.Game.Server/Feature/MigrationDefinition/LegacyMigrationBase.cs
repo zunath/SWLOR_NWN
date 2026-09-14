@@ -1,5 +1,7 @@
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWNX;
+using System.Collections.Generic;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
@@ -12,10 +14,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         protected void WipeItemProperties(uint item)
         {
+            var properties = new List<ItemProperty>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-            {
-                RemoveItemProperty(item, ip);
-            }
+                properties.Add(ip);
+            foreach (var property in properties)
+                MigrationObject.RemoveProperty(item, property);
         }
 
         protected void WipeDescription(uint item)

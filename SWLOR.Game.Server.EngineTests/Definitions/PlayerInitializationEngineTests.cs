@@ -11,6 +11,56 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class PlayerInitializationEngineTests
     {
+        [EngineTest("Legacy resource reset is stable after failed character exports", Category = "PlayerInitialization")]
+        public static async Task RetryLegacyResources(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                var playerId = GetObjectUUID(owner);
+                var fileVersion = -1;
+                var initialNativeHP = 0;
+                var migration = new Feature.MigrationDefinition.PlayerMigration._1_LegacyPlayerMigration();
+                var apply = typeof(Migration).GetMethod("ApplyPlayerMigration", BindingFlags.Static | BindingFlags.NonPublic);
+                typeof(Feature.PlayerInitialization).GetMethod("ClearInventory", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new object[] { owner });
+                DB.Set(new Player(playerId) { Version = -1 });
+                try
+                {
+                    for (var attempt = 0; attempt < 4; attempt++)
+                    {
+                        var failExport = attempt < 3;
+                        var failed = false;
+                        try
+                        {
+                            apply.Invoke(null, new object[] { migration, owner,
+                                (Func<Player>)(() => DB.Get<Player>(playerId)),
+                                (Action<Player>)(player => DB.Set(player)),
+                                (Func<int>)(() => fileVersion),
+                                (Action<int>)(version =>
+                                {
+                                    if (failExport) throw new InvalidOperationException("Injected legacy export failure");
+                                    fileVersion = version;
+                                }) });
+                        }
+                        catch (TargetInvocationException exception) when (exception.InnerException is InvalidOperationException)
+                        { failed = true; }
+                        var saved = DB.Get<Player>(playerId);
+                        ctx.AssertEqual(failExport, failed, "Only the injected export failure is expected");
+                        ctx.AssertEqual(70, saved.MaxHP, "Legacy HP reset does not accumulate across failures");
+                        ctx.AssertEqual(10, saved.MaxFP, "Legacy FP reset does not accumulate across failures");
+                        ctx.AssertEqual(10, saved.MaxStamina, "Legacy stamina reset does not accumulate across failures");
+                        ctx.AssertEqual(failExport ? -1 : 1, saved.Version, "Database completion requires the saved file");
+                        if (attempt == 0) initialNativeHP = GetMaxHitPoints(owner);
+                        ctx.AssertEqual(initialNativeHP, GetMaxHitPoints(owner), "Native legacy HP does not grow on retry");
+                    }
+                    ctx.AssertEqual(1, fileVersion, "Successful retry checkpoints the legacy migration");
+                }
+                finally { DB.Delete<Player>(playerId); }
+            });
+        }
+
         [EngineTest("Failed starter exports do not increase resource budgets on retry", Category = "PlayerInitialization")]
         public static async Task RetryStarterResources(EngineTestContext ctx)
         {

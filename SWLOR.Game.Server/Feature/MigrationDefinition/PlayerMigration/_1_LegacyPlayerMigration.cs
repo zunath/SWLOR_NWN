@@ -72,9 +72,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         private void ResetStats(uint player, Player dbPlayer)
         {
             dbPlayer.BAB = 1;
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, 70);
-            Stat.AdjustPlayerMaxFP(dbPlayer, 10, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, 10, player);
+            // Reconnecting after a failed export can repeat this reset with its record already saved.
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, 70 - dbPlayer.MaxHP);
+            Stat.AdjustPlayerMaxFP(dbPlayer, 10 - dbPlayer.MaxFP, player);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, 10 - dbPlayer.MaxStamina, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);

@@ -244,9 +244,10 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Version = Migration.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP);
-            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM, player);
+            // A failed first export can retry with an already initialized record.
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP - dbPlayer.MaxHP);
+            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP - dbPlayer.MaxFP, player);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM - dbPlayer.MaxStamina, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);

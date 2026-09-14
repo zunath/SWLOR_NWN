@@ -11,6 +11,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static partial class MigrationEngineTests
     {
+        [EngineTest("Stopped lightsaber hum is absent from the character checkpoint", Category = "PlayerItemMigration")]
+        public static async Task UnequippedSaberAudioIsSavedImmediately(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                ApplyEffectToObject(DurationType.Permanent,
+                    TagEffect(EffectVisualEffect(SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.LightsaberHum), "LIGHTSABER_HUM"), owner));
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                bool HasHum(uint obj)
+                {
+                    var creature = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(obj).AsNWSCreature();
+                    foreach (var effect in creature.m_appliedEffects)
+                        if (effect.m_sCustomTag.ToString() == "LIGHTSABER_HUM") return true;
+                    return false;
+                }
+                ctx.Assert(HasHum(owner), "The fixture starts with looping saber audio");
+                typeof(Feature.LightsaberAudio).GetMethod("RemoveHum", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new object[] { owner });
+                ctx.Assert(!HasHum(owner), "Stopping saber audio removes its effect immediately");
+                var restored = Deserialize(ctx, ObjectPlugin.Serialize(owner));
+                ctx.Assert(!HasHum(restored), "A same-script save and reload cannot restore unequipped saber audio");
+            });
+        }
+
         [EngineTest("Full inventory retains unequipped gear in a recovery bag", Category = "PlayerItemMigration")]
         public static Task CrowdedInventoryRecoversEquipment(EngineTestContext ctx) => VerifyCrowdedInventory(ctx, false);
 

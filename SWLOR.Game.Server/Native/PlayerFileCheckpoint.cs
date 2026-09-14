@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Native
             }
             catch (Exception exception)
             {
-                Console.Error.WriteLine($"Character checkpoint serialization failed: {exception}");
+                Log.WriteError(exception, "Character checkpoint serialization failed");
                 return 0;
             }
         }
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Native
             }
             catch (Exception exception)
             {
-                Console.Error.WriteLine($"Character checkpoint deserialization failed: {exception}");
+                Log.WriteError(exception, "Character checkpoint deserialization failed");
                 return 0;
             }
         }

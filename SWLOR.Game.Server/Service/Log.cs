@@ -114,5 +114,12 @@ namespace SWLOR.Game.Server.Service
 
             logger.Information(messageTemplate, propertyValues);
         }
+
+        /// <summary>Writes an exception through the configured structured error sink.</summary>
+        public static void WriteError(Exception exception, string messageTemplate, params object[] propertyValues)
+        {
+            if (_loggers.TryGetValue(LogGroup.Error, out var logger))
+                logger.Error(exception, messageTemplate, propertyValues);
+        }
     }
 }

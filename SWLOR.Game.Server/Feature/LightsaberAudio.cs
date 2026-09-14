@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -44,16 +45,29 @@ namespace SWLOR.Game.Server.Feature
                 type != BaseItem.Saberstaff)
                 return;
 
-            for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
+            if (RemoveHum(player))
+                AssignCommand(player, () => PlaySound("saberoff"));
+        }
+
+        internal static bool RemoveHum(uint player)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var creature = server.GetGameObject(player)?.AsNWSCreature();
+            if (creature == null) return false;
+
+            foreach (var effect in creature.m_appliedEffects)
             {
-                if (GetEffectTag(effect) == "LIGHTSABER_HUM")
+                if (effect.m_sCustomTag.ToString() == "LIGHTSABER_HUM")
                 {
-                    RemoveEffect(player, effect);
-                    AssignCommand(player, () => PlaySound("saberoff"));
-                    return;
+                    // The script removal queues a later update, allowing an intervening
+                    // character export to retain the hum after the saber is unequipped.
+                    creature.RemoveEffectById(effect.m_nID);
+                    var timer = server.GetActiveTimer(player);
+                    creature.UpdateEffectList(timer.GetWorldTimeCalendarDay(), timer.GetWorldTimeTimeOfDay());
+                    return true;
                 }
             }
-
+            return false;
         }
     }
 }

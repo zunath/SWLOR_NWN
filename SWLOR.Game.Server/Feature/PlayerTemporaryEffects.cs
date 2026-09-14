@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature
 
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
+            ApplyHeadScale(player);
             RemoveStaleActivityImmobility(player);
             ReapplySpeed(player);
         }
@@ -32,6 +33,16 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerId);
 
             SetObjectVisualTransform(player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+        }
+
+        private static void ApplyHeadScale(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
+
+            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, headScale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
         }
 
         private static void RemoveStaleActivityImmobility(uint player)

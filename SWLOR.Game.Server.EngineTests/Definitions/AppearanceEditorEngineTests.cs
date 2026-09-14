@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition;
@@ -23,6 +25,85 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class AppearanceEditorEngineTests
     {
         private sealed record ArmorSnapshot(uint Item, int[] Models, int[] Colors, int[] Markers, int[] Projections);
+
+        [EngineTest("Head scaling validates input and saves independently of body height", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task HeadScalePersistenceAndCancellation(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var playerId = GetObjectUUID(civilian);
+                var native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp
+                    .GetGameObject(civilian).AsNWSCreature();
+                var wasPlayer = native.m_bPlayerCharacter;
+                global::NWN.Native.API.CNWSPlayer client = null;
+                DB.Set(new Player(playerId) { AppearanceScale = 0.92f, HeadAppearanceScale = 1.08f });
+                try
+                {
+                    SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 0.92f);
+                    SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1.08f,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+                    var command = new CharacterChatCommand().BuildChatCommands()["headscale"];
+                    foreach (var invalid in new[] { "NaN", "Infinity", "-Infinity", "0.5", "2", "invalid" })
+                        ctx.Assert(!string.IsNullOrEmpty(command.ValidateArguments(civilian, invalid)),
+                            "Reject head scale: " + invalid);
+                    ctx.AssertEqual(string.Empty, command.ValidateArguments(civilian, "1.04"), "Valid head scale");
+                    command.DoAction(civilian, civilian, GetLocation(civilian), "1.04");
+                    AssertScale(ctx, civilian, 0.92f, 1.04f, "Chat adjustment");
+                    ctx.AssertEqual(1.04f, DB.Get<Player>(playerId).HeadAppearanceScale, "Chat persists head scale");
+
+                    var editor = BindWithoutClient(civilian);
+                    editor.OnIncreaseHeadScale()();
+                    AssertScale(ctx, civilian, 0.92f, 1.05f, "Head preview");
+                    editor.OnClickSaveSettings()();
+                    ctx.AssertEqual(0.92f, DB.Get<Player>(playerId).AppearanceScale, "Save retains body height");
+                    ctx.Assert(Math.Abs(DB.Get<Player>(playerId).HeadAppearanceScale - 1.05f) < 0.0001f,
+                        "Save persists head preview");
+
+                    // The close handler is PC-only. Mark only this disposable fixture as a
+                    // player and attach a synthetic client during its synchronous call.
+                    editor.OnDecreaseHeadScale()();
+                    SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1.1f);
+                    native.m_bPlayerCharacter = 1;
+                    client = new global::NWN.Native.API.CNWSPlayer(0x7fff0000u);
+                    client.SetGameObject(global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp
+                        .GetGameObject(civilian).AsNWSObject());
+                    client.m_oidPCObject = civilian;
+                    global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Add(client);
+                    ctx.Assert(GetIsPC(civilian), "Fixture exercises the PC cancellation path");
+                    editor.OnCloseWindow()();
+                    AssertScale(ctx, civilian, 0.92f, 1.05f, "Cancel restores both saved scales");
+
+                    SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1f);
+                    SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1f,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+                    foreach (var method in new[] { "ApplyHeight", "ApplyHeadScale" })
+                        typeof(PlayerTemporaryEffects).GetMethod(method, BindingFlags.NonPublic | BindingFlags.Static)
+                            .Invoke(null, new object[] { civilian });
+                    AssertScale(ctx, civilian, 0.92f, 1.05f, "Login restores both saved scales");
+                }
+                finally
+                {
+                    if (client != null)
+                    {
+                        global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Remove(client);
+                        client.m_oidPCObject = OBJECT_INVALID;
+                        client.Dispose();
+                    }
+                    native.m_bPlayerCharacter = wasPlayer;
+                    DB.Delete<Player>(playerId);
+                }
+            });
+        }
+
+        private static void AssertScale(EngineTestContext ctx, uint target, float body, float head, string stage)
+        {
+            ctx.Assert(Math.Abs(GetObjectVisualTransform(target, ObjectVisualTransform.Scale) - body) < 0.0001f,
+                stage + " retains the expected body scale");
+            ctx.Assert(Math.Abs(GetObjectVisualTransform(target, ObjectVisualTransform.Scale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead) - head) < 0.0001f,
+                stage + " retains the expected head scale");
+        }
 
         [EngineTest("Appearance editor ignores black picker hydration until a user gesture", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task PickerHydrationPreservesSkin(EngineTestContext ctx)

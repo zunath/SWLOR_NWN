@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Entity
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
             WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
             AppearanceScale = 1.0f;
+            HeadAppearanceScale = 1.0f;
             Control = new Dictionary<SkillType, int>();
             Craftsmanship = new Dictionary<SkillType, int>();
             CPBonus = new Dictionary<SkillType, int>();
@@ -209,6 +210,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
         public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }
+        public float HeadAppearanceScale { get; set; }
     }
 
     public class MapPin

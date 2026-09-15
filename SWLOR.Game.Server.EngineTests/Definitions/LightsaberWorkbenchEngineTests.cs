@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -15,6 +16,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task SelectionDoesNotConsumeInputs(EngineTestContext ctx)
         {
             var owner = ctx.SpawnCreature("civilian");
+            var recipient = ctx.SpawnCreature("civilian");
+            uint selectedKit = OBJECT_INVALID;
+            LightsaberWorkbenchViewModel selectedModel = null;
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
@@ -37,11 +41,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Track(restored);
                 ctx.AssertEqual(Item.GetInventoryItemCount(owner), Item.GetInventoryItemCount(restored), "A character snapshot retains every selected input");
                 Call(model, "SelectEnhancement", 0, kit);
-                var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
-                ctx.Assert(ObjectPlugin.AcquireItem(storage, kit), "Fixture moves the selected kit out of the inventory");
-                ctx.Track(kit);
-                ctx.Assert(!(bool)Call(model, "ValidateSelectedInputs"), "Traded or moved inputs cannot be used");
+                selectedKit = kit;
+                selectedModel = model;
+                ActionGiveItem(kit, recipient);
             });
+            await ctx.WaitUntilAsync(() => GetItemPossessor(selectedKit) == recipient, 3f, "the selected kit to transfer to another creature");
+            ctx.Assert(!(bool)Call(selectedModel, "ValidateSelectedInputs"), "Traded or moved inputs cannot be used");
         }
 
         [EngineTest("Workbench failed output transfer preserves inputs and successful retry consumes them once", Category = "LightsaberWorkbench")]
@@ -59,8 +64,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Set(player);
                 try
                 {
-                    var kit = CreateKit(owner);
-                    var token = CreateItemOnObject("wpn_sub_token", owner);
+                    // Stackable carriers with the real kit properties exercise one-unit consumption
+                    // alongside the production non-stackable inputs used by the selection test.
+                    var kit = CreateStackableKit(owner);
+                    var token = CreateItemOnObject("nw_it_medkit001", owner);
+                    SetTag(token, LightsaberWorkbench.WeaponSubmissionTokenTag);
                     usedKit = kit;
                     usedToken = token;
                     SetItemStackSize(kit, 3);
@@ -116,6 +124,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static uint CreateKit(uint owner)
         {
             return CreateItemOnObject("wen_acc1", owner);
+        }
+
+        private static uint CreateStackableKit(uint owner)
+        {
+            var template = CreateKit(owner);
+            var kit = CreateItemOnObject("nw_it_medkit001", owner);
+            for (var property = GetFirstItemProperty(template); GetIsItemPropertyValid(property); property = GetNextItemProperty(template))
+                AddItemProperty(DurationType.Permanent, property, kit);
+            DestroyObject(template);
+            return kit;
         }
 
         private static LightsaberWorkbenchViewModel Bind(uint owner)

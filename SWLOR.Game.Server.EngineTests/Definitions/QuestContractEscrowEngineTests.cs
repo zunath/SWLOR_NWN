@@ -121,7 +121,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     try
                     {
                         typeof(QuestContractBoard).GetMethod("RecoverSettlements", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
-                        ctx.AssertEqual(77, DB.Get<QuestContractDelivery>(interrupted.Id + "-reward").Credits, "Boot recovery creates the missing payment");
+                        var recovered = DB.Get<QuestContractDelivery>(interrupted.Id + "-reward");
+                        ctx.Assert(recovered != null, "Boot recovery creates the missing payment");
+                        ctx.AssertEqual(77, recovered.Credits, "Boot recovery preserves the missing credits");
                         ctx.AssertEqual(1, DB.Get<QuestContractDelivery>(interrupted.Id + "-reward").Items.Count, "Boot recovery preserves the missing reward item");
                     }
                     finally { Cleanup(interrupted); }
@@ -131,8 +133,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         [EngineTest("Completed player quests recover settlement while settled history is skipped", Category = "QuestContractEscrow")]
-        public static void CompletedQuestRecovery(EngineTestContext ctx)
+        public static async Task CompletedQuestRecovery(EngineTestContext ctx)
         {
+            await ctx.WaitFrameAsync();
             var player = new Player(Guid.NewGuid().ToString());
             var contract = new QuestContract { AuthorPlayerId = Guid.NewGuid().ToString(), Status = QuestContractStatus.Published, CompletionsRemaining = 1, RewardCredits = 42 };
             var historical = new QuestContract { Status = QuestContractStatus.Fulfilled, CompletedByPlayerId = player.Id, RewardCredits = 99 };

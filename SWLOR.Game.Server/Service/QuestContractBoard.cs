@@ -610,7 +610,7 @@ namespace SWLOR.Game.Server.Service
         private static void RecoverSettlements()
         {
             var query = new DBQuery<QuestContract>()
-                .AddFieldSearch(nameof(QuestContract.SettlementPending), 1);
+                .AddFieldSearch(nameof(QuestContract.SettlementPending), "[1 1]", false);
             var count = (int)DB.SearchCount(query);
             if (count > 0)
             {
@@ -619,7 +619,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             foreach (var delivery in ReadDeliveries(new DBQuery<QuestContractDelivery>()
-                .AddFieldSearch(nameof(QuestContractDelivery.HeldSubmissionIndex), 1)))
+                .AddFieldSearch(nameof(QuestContractDelivery.HeldSubmissionIndex), "[1 1]", false)))
             {
                 var contract = DB.Get<QuestContract>(delivery.SourceContractId);
                 var player = DB.Get<Player>(delivery.PlayerId);

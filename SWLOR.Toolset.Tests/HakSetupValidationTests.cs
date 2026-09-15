@@ -31,6 +31,18 @@ public class HakSetupValidationTests
     }
 
     [Test]
+    public void StartupGateFindsRepositoryEvenWhenTheSubmoduleDirectoryIsAbsent()
+    {
+        var settings = SWLOR.Toolset.Settings.ToolsetSettings.Load(Path.Combine(_root, "settings.json"));
+        settings.ModuleRoot = Path.Combine(_root, "Module");
+        var gate = typeof(App).GetMethod("ValidateStartupHakSetup",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+        var action = () => gate.Invoke(null, new object[] { settings });
+        action.Should().Throw<System.Reflection.TargetInvocationException>()
+            .WithInnerException<InvalidOperationException>().WithMessage("*" + _root + "*git submodule update*");
+    }
+
+    [Test]
     public void CompleteSourceContentPassesWithoutInstalledHaks()
     {
         WriteRequiredSources();

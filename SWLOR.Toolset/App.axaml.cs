@@ -95,6 +95,7 @@ namespace SWLOR.Toolset
             {
                 result = await Task.Run(() =>
                 {
+                    ValidateStartupHakSetup(settings);
                     var services = new ServiceCollection();
                     ConfigureServices(services, settings);
                     return services.BuildServiceProvider();
@@ -411,7 +412,6 @@ namespace SWLOR.Toolset
             var swlorHaksRoot = Path.Combine(repoRoot, "SWLOR_Haks");
 
             var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
-            HakSetupValidation.Validate(repoRoot, moduleHakLayers);
 
             var hasTwoDa = Directory.Exists(sw2DaDirectory);
             var hasTlk = File.Exists(swTlkJsonPath);
@@ -609,6 +609,14 @@ namespace SWLOR.Toolset
         /// </summary>
         private static string? ResolveRepoRoot(ToolsetSettings settings) =>
             FindRepoRoot(settings.ModuleRoot) ?? FindRepoRoot(AppContext.BaseDirectory);
+
+        private static void ValidateStartupHakSetup(ToolsetSettings settings)
+        {
+            var repoRoot = ResolveRepoRoot(settings);
+            if (repoRoot != null)
+                HakSetupValidation.Validate(repoRoot,
+                    ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load()));
+        }
 
         /// <summary>
         /// Queues a log line naming the NWN:EE install that was found, or listing where it looked when

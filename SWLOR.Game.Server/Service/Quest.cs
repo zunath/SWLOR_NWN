@@ -309,6 +309,7 @@ namespace SWLOR.Game.Server.Service
 
             var collector = CreateObject(ObjectType.Placeable, "qst_item_collect", GetLocation(player));
             SetLocalObject(collector, "QUEST_OWNER", questSource);
+            SetLocalObject(collector, "QUEST_PLAYER", player);
             SetLocalString(collector, "QUEST_ID", questId);
 
             AssignCommand(collector, () => SetFacingPoint(GetPosition(player)));
@@ -473,13 +474,14 @@ namespace SWLOR.Game.Server.Service
 
             var container = OBJECT_SELF;
             var owner = GetLocalObject(container, "QUEST_OWNER");
+            var questPlayer = GetLocalObject(container, "QUEST_PLAYER");
             var player = GetLastDisturbed();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var item = GetInventoryDisturbItem();
             var resref = GetResRef(item);
             var questId = GetLocalString(container, "QUEST_ID");
-            if (player != owner || dbPlayer == null || !dbPlayer.Quests.TryGetValue(questId, out var quest))
+            if (player != questPlayer || dbPlayer == null || !dbPlayer.Quests.TryGetValue(questId, out var quest))
             {
                 Item.ReturnItem(player, item);
                 SendMessageToPC(player, "This quest collector is no longer available to you.");

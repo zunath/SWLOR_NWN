@@ -37,12 +37,7 @@ namespace SWLOR.Game.Server.Service.QuestContractService
                 return;
             }
 
-            contract.CompletedByPlayerId = GetObjectUUID(player);
-            contract.CompletionsRemaining = 0;
-            contract.Status = QuestContractStatus.Fulfilled;
-            DB.Set(contract);
-            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
-            QuestContractBoard.SettleCompletedContract(contract);
+            QuestContractBoard.CompleteContract(contract, GetObjectUUID(player));
             QuestContractBoard.ClaimDeliveries(player);
 
             // Refresh the completing player's contract board (if open) so the fulfilled contract

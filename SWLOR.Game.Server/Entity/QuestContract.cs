@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Entity
         public List<QuestContractItem> RewardItems { get; set; }
         public int CompletionsRemaining { get; set; }
         public string CompletedByPlayerId { get; set; } = string.Empty;
+        [Indexed]
+        public int SettlementPending { get; set; }
         public DateTime DatePublished { get; set; }
         public DateTime DateExpires { get; set; }
         public string TakedownPlayerId { get; set; }

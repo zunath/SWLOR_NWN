@@ -31,10 +31,11 @@ public class HakSetupValidationTests
                          "git -C SWLOR_Haks sparse-checkout disable*restart*");
     }
 
-    [Test]
-    [TestCase(false)]
-    [TestCase(true)]
-    public void UnreadableLooseLayerStillShowsRecoveryInstructions(bool accessDenied)
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public void UnreadableLooseLayerStillShowsRecoveryInstructions(bool accessDenied, bool validResourceFirst)
     {
         WriteRequiredSources();
         Write("SWLOR_Haks/tiles/example.set", "[GENERAL]");
@@ -43,7 +44,7 @@ public class HakSetupValidationTests
             if (Path.GetFileName(directory) == "tiles")
             {
                 // Enumeration is deferred: failures may happen after iteration has begun.
-                yield return Path.Combine(directory, "README.md");
+                yield return Path.Combine(directory, validResourceFirst ? "example.set" : "README.md");
                 if (accessDenied)
                     throw new UnauthorizedAccessException("access denied");
                 throw new IOException("network share unavailable");

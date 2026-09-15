@@ -86,13 +86,25 @@ public static class HakSetupValidation
     {
         try
         {
-            return Directory.Exists(directory) && enumerateFiles(directory)
-            .Any(path => (requiredExtension == null
-                             // BMU music is shipped beside the game's indexed Aurora resources.
-                             ? ResourceIdentity.TypeFromExtension(Path.GetExtension(path)) != ResourceTypes.Invalid ||
-                               Path.GetExtension(path).Equals(".bmu", StringComparison.OrdinalIgnoreCase)
-                             : Path.GetExtension(path).Equals(requiredExtension, StringComparison.OrdinalIgnoreCase)) &&
-                         HasNonemptyFile(path));
+            if (!Directory.Exists(directory))
+                return false;
+
+            var foundResource = false;
+            foreach (var path in enumerateFiles(directory))
+            {
+                // Scan the whole directory even after finding content: a late enumeration failure
+                // would also prevent HakDirectoryCatalog from loading this layer.
+                if (foundResource)
+                    continue;
+                var extension = Path.GetExtension(path);
+                var qualifies = requiredExtension == null
+                    // BMU music is shipped beside the game's indexed Aurora resources.
+                    ? ResourceIdentity.TypeFromExtension(extension) != ResourceTypes.Invalid ||
+                      extension.Equals(".bmu", StringComparison.OrdinalIgnoreCase)
+                    : extension.Equals(requiredExtension, StringComparison.OrdinalIgnoreCase);
+                foundResource = qualifies && HasNonemptyFile(path);
+            }
+            return foundResource;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

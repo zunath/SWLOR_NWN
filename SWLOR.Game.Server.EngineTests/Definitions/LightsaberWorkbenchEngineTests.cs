@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -64,15 +63,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Set(player);
                 try
                 {
-                    // Stackable carriers with the real kit properties exercise one-unit consumption
-                    // alongside the production non-stackable inputs used by the selection test.
-                    var kit = CreateStackableKit(owner);
-                    var token = CreateItemOnObject("nw_it_medkit001", owner);
-                    SetTag(token, LightsaberWorkbench.WeaponSubmissionTokenTag);
+                    // Both production base item types cap stacks at one. Check that the real
+                    // inputs survive failure and are destroyed only after successful construction.
+                    var kit = CreateKit(owner);
+                    var token = CreateItemOnObject("wpn_sub_token", owner);
                     usedKit = kit;
                     usedToken = token;
-                    SetItemStackSize(kit, 3);
-                    SetItemStackSize(token, 3);
                     var model = Bind(owner);
                     ctx.Assert((bool)Call(model, "SelectEnhancement", 0, kit), "Construction selects a valid enhancement");
                     Set(model, "_submissionItem", token);
@@ -92,8 +88,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(1, Currency.GetCurrency(owner, CurrencyType.KyberToken), "A failed transfer keeps currency");
                         ctx.AssertEqual(owner, GetItemPossessor(kit), "A failed transfer keeps the enhancement");
                         ctx.AssertEqual(owner, GetItemPossessor(token), "A failed transfer keeps the submission token");
-                        ctx.AssertEqual(3, GetItemStackSize(kit), "Failed transfer preserves the entire enhancement stack");
-                        ctx.AssertEqual(3, GetItemStackSize(token), "Failed transfer preserves the entire token stack");
+                        ctx.AssertEqual(1, GetItemStackSize(kit), "Failed transfer preserves the entire enhancement stack");
+                        ctx.AssertEqual(1, GetItemStackSize(token), "Failed transfer preserves the entire token stack");
                     }
                     finally
                     {
@@ -113,8 +109,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 finally { DB.Delete<Player>(playerId); }
             });
             await ctx.WaitFrameAsync();
-            ctx.AssertEqual(2, GetItemStackSize(usedKit), "Successful construction consumes exactly one enhancement");
-            ctx.AssertEqual(2, GetItemStackSize(usedToken), "Successful construction consumes exactly one submission token");
+            ctx.Assert(!GetIsObjectValid(usedKit), "Successful construction consumes exactly one enhancement");
+            ctx.Assert(!GetIsObjectValid(usedToken), "Successful construction consumes exactly one submission token");
             var sabers = 0;
             for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
                 if (GetResRef(item) == LightsaberWorkbench.LightsaberResref) sabers++;
@@ -124,16 +120,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static uint CreateKit(uint owner)
         {
             return CreateItemOnObject("wen_acc1", owner);
-        }
-
-        private static uint CreateStackableKit(uint owner)
-        {
-            var template = CreateKit(owner);
-            var kit = CreateItemOnObject("nw_it_medkit001", owner);
-            for (var property = GetFirstItemProperty(template); GetIsItemPropertyValid(property); property = GetNextItemProperty(template))
-                AddItemProperty(DurationType.Permanent, property, kit);
-            DestroyObject(template);
-            return kit;
         }
 
         private static LightsaberWorkbenchViewModel Bind(uint owner)

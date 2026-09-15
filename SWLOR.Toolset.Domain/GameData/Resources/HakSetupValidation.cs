@@ -6,6 +6,11 @@ namespace SWLOR.Toolset.Domain.GameData.Resources;
 public static class HakSetupValidation
 {
     public static void Validate(string repositoryRoot, IReadOnlyList<ResourceIndex.HakLayer>? packedLayers = null)
+        => Validate(repositoryRoot, packedLayers,
+            directory => Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly));
+
+    internal static void Validate(string repositoryRoot, IReadOnlyList<ResourceIndex.HakLayer>? packedLayers,
+        Func<string, IEnumerable<string>> enumerateFiles)
     {
         var root = Path.Combine(repositoryRoot, "SWLOR_Haks");
         var missing = new List<string>();
@@ -13,9 +18,9 @@ public static class HakSetupValidation
         // These source assets also back repository editors and service registration, even when
         // the renderer uses the module's installed archives.
         var tlk = Path.Combine(root, "sw_tlk", "sw_tlk.tlk.json");
-        if (!File.Exists(tlk) || new FileInfo(tlk).Length == 0)
+        if (!HasNonemptyFile(tlk))
             missing.Add("sw_tlk/sw_tlk.tlk.json");
-        if (!HasResources(Path.Combine(root, "sw_2da"), ".2da"))
+        if (!HasResources(Path.Combine(root, "sw_2da"), enumerateFiles, ".2da"))
             missing.Add("sw_2da (missing or empty)");
 
         if (packedLayers == null)
@@ -23,7 +28,7 @@ public static class HakSetupValidation
             foreach (var layer in ResourceIndex.ReadHakLayers(
                          Path.Combine(repositoryRoot, "Build", "hakbuilder.json"), root))
             {
-                if (!HasResources(layer.DirectoryPath) &&
+                if (!HasResources(layer.DirectoryPath, enumerateFiles) &&
                     !layer.Name.Equals("sw_2da", StringComparison.OrdinalIgnoreCase))
                     missing.Add($"{layer.Name} (missing or empty)");
             }
@@ -46,6 +51,8 @@ public static class HakSetupValidation
             $"Missing, empty, or unreadable content: {preview}\n\n" +
             $"Open a terminal in:\n{repositoryRoot}\n\n" +
             "Run:\ngit submodule update --init --recursive -- SWLOR_Haks\n\n" +
+            "If the HAK checkout is sparse, restore the omitted content:\n" +
+            "git -C SWLOR_Haks sparse-checkout disable\n\n" +
             "Wait for the checkout to finish, then restart the toolset. " +
             "If you use installed HAKs, also check the HAK directory configured in nwn.ini.");
     }
@@ -62,12 +69,34 @@ public static class HakSetupValidation
         }
     }
 
-    private static bool HasResources(string directory, string? requiredExtension = null) =>
-        Directory.Exists(directory) && Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly)
+    private static bool HasNonemptyFile(string path)
+    {
+        try
+        {
+            return File.Exists(path) && new FileInfo(path).Length > 0;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
+    private static bool HasResources(string directory, Func<string, IEnumerable<string>> enumerateFiles,
+        string? requiredExtension = null)
+    {
+        try
+        {
+            return Directory.Exists(directory) && enumerateFiles(directory)
             .Any(path => (requiredExtension == null
                              // BMU music is shipped beside the game's indexed Aurora resources.
                              ? ResourceIdentity.TypeFromExtension(Path.GetExtension(path)) != ResourceTypes.Invalid ||
                                Path.GetExtension(path).Equals(".bmu", StringComparison.OrdinalIgnoreCase)
                              : Path.GetExtension(path).Equals(requiredExtension, StringComparison.OrdinalIgnoreCase)) &&
-                         new FileInfo(path).Length > 0);
+                         HasNonemptyFile(path));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
 }

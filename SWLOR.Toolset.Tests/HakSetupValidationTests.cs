@@ -27,7 +27,34 @@ public class HakSetupValidationTests
         var action = () => HakSetupValidation.Validate(_root);
         action.Should().Throw<InvalidOperationException>()
             .WithMessage("*sw_tlk/sw_tlk.tlk.json*sw_2da*tiles*" + _root +
-                         "*git submodule update --init --recursive -- SWLOR_Haks*restart*");
+                         "*git submodule update --init --recursive -- SWLOR_Haks*" +
+                         "git -C SWLOR_Haks sparse-checkout disable*restart*");
+    }
+
+    [Test]
+    [TestCase(false)]
+    [TestCase(true)]
+    public void UnreadableLooseLayerStillShowsRecoveryInstructions(bool accessDenied)
+    {
+        WriteRequiredSources();
+        Write("SWLOR_Haks/tiles/example.set", "[GENERAL]");
+        IEnumerable<string> Enumerate(string directory)
+        {
+            if (Path.GetFileName(directory) == "tiles")
+            {
+                // Enumeration is deferred: failures may happen after iteration has begun.
+                yield return Path.Combine(directory, "README.md");
+                if (accessDenied)
+                    throw new UnauthorizedAccessException("access denied");
+                throw new IOException("network share unavailable");
+            }
+            foreach (var file in Directory.EnumerateFiles(directory))
+                yield return file;
+        }
+
+        var action = () => HakSetupValidation.Validate(_root, null, Enumerate);
+        action.Should().Throw<InvalidOperationException>()
+            .WithMessage("*tiles*git submodule update*git -C SWLOR_Haks sparse-checkout disable*");
     }
 
     [Test]

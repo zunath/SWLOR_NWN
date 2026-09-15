@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Service.QuestContractService
 
             quest.Prerequisites.Add(new QuestContractPrerequisite(contract.Id));
             quest.Rewards.Add(new QuestContractReward(contract.Id));
+            quest.OnAbandonActions.Add(player => QuestContractBoard.ReleaseSubmissions(contract.Id, GetObjectUUID(player)));
 
             var state = new QuestStateDetail
             {
@@ -76,21 +77,12 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         }
 
         /// <summary>
-        /// Reroutes a turned-in objective item to the contract author's pending delivery instead of letting
-        /// it be destroyed. Partial turn-ins across multiple sessions accumulate into the same delivery.
-        /// If the contract was completed or taken down between this player accepting it and turning items
-        /// in (e.g. another player finished it first), the item is routed back to the submitting player as
-        /// a delivery so nothing is lost to the race.
+        /// Holds objective items for this player's attempt. Only a completed attempt delivers them to
+        /// the author; abandoned or unsuccessful attempts return their submissions to the player.
         /// </summary>
         private static void HandleCollectedItem(string contractId, uint player, uint item)
         {
             var contract = DB.Get<QuestContract>(contractId);
-            if (contract == null)
-            {
-                Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] turned in item '{GetName(item)}' for contract '{contractId}' but the contract no longer exists. The item was consumed without being delivered.");
-                return;
-            }
-
             var contractItem = new QuestContractItem
             {
                 Data = ObjectPlugin.Serialize(item),
@@ -100,19 +92,19 @@ namespace SWLOR.Game.Server.Service.QuestContractService
                 IconResref = Item.GetIconResref(item)
             };
 
-            if (contract.Status != QuestContractStatus.Published || contract.CompletionsRemaining <= 0)
+            if (contract == null || contract.Status != QuestContractStatus.Published || contract.CompletionsRemaining <= 0)
             {
                 var playerId = GetObjectUUID(player);
-                var refund = QuestContractBoard.GetOrCreatePendingDelivery(playerId, contract.Id, contract.Title);
+                var refund = QuestContractBoard.GetOrCreatePendingDelivery(playerId, contractId, contract?.Title ?? "Unavailable contract");
                 refund.Items.Add(contractItem);
                 DB.Set(refund);
 
-                SendMessageToPC(player, $"The contract '{contract.Title}' is no longer active. Your items have been placed in a delivery - claim them at any contract board.");
-                Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{playerId}] turned in item '{contractItem.Name}' for inactive contract '{contract.Id}' ('{contract.Title}'). The item was routed back to them as a delivery.");
+                SendMessageToPC(player, "This contract is no longer active. Your items have been placed in a delivery - claim them at any contract board.");
+                Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{playerId}] turned in item '{contractItem.Name}' for inactive contract '{contractId}'. The item was routed back to them as a delivery.");
                 return;
             }
 
-            var delivery = QuestContractBoard.GetOrCreatePendingDelivery(contract.AuthorPlayerId, contract.Id, contract.Title);
+            var delivery = QuestContractBoard.GetOrCreateSubmission(GetObjectUUID(player), contract);
             delivery.Items.Add(contractItem);
             DB.Set(delivery);
         }

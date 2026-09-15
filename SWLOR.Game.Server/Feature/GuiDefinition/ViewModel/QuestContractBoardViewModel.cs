@@ -300,10 +300,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdateClaimDeliveriesEnabled()
         {
             var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<QuestContractDelivery>()
-                .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false);
-
-            IsClaimDeliveriesEnabled = DB.SearchCount(query) > 0;
+            IsClaimDeliveriesEnabled = QuestContractBoard.HasPendingDeliveries(playerId);
         }
 
         private void LoadDetail()

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -44,6 +45,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public static void RegisterContracts()
         {
+            RecoverSettlements();
             var registeredCount = 0;
             var now = DateTime.UtcNow;
 
@@ -86,9 +88,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false);
-            var count = DB.SearchCount(query);
-
-            if (count > 0)
+            if (ReadDeliveries(query).Any(IsClaimable))
             {
                 SendMessageToPC(player, ColorToken.Green(DeliveriesWaitingMessage));
             }
@@ -338,6 +338,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(contract);
+            ReleaseSubmissions(contract.Id);
             Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
             VoidActiveContractQuests(contract, isAuthor ? "cancelled by its author" : "taken down");
 
@@ -399,89 +400,86 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Gives the player all credits and items from every pending <see cref="QuestContractDelivery"/>
         /// addressed to them. Items are delivered one at a time; a delivery's credits are only paid out
-        /// and the delivery deleted once all of its items have been successfully acquired.
+        /// once all of its items have been successfully acquired. Reward payments retain an empty
+        /// receipt so settlement recovery cannot recreate a payment that was already claimed.
         /// </summary>
         public static void ClaimDeliveries(uint player)
+        {
+            ClaimDeliveries(player, () =>
+            {
+                var client = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
+                if (client == null || client.SaveServerCharacter() == 0)
+                    throw new InvalidOperationException("The contract claim character checkpoint could not be saved.");
+            });
+        }
+
+        private static void ClaimDeliveries(uint player, Action saveCharacter)
         {
             var playerId = GetObjectUUID(player);
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false);
-            var count = (int)DB.SearchCount(query);
-
-            if (count <= 0)
+            var deliveries = ReadDeliveries(query).Where(IsClaimable).ToList();
+            if (deliveries.Count == 0)
             {
                 SendMessageToPC(player, "You have no pending contract deliveries.");
                 return;
             }
 
-            var deliveries = DB.Search(query.AddPaging(count, 0)).ToList();
             var totalCredits = 0;
             var totalItems = 0;
-
             foreach (var delivery in deliveries)
             {
-                if (delivery.Items.Count > 0)
+                var checkpointName = "CONTRACT_CLAIM_" + delivery.Id;
+                try
                 {
-                    var remainingItems = new List<QuestContractItem>();
-
-                    foreach (var deliveryItem in delivery.Items)
-                    {
-                        var deserialized = ObjectPlugin.Deserialize(deliveryItem.Data);
-
-                        if (!GetIsObjectValid(deserialized) || !ObjectPlugin.AcquireItem(player, deserialized))
+                    var remaining = QuestContractClaim.Claim(delivery,
+                        () => JsonConvert.DeserializeObject<QuestContractClaim>(GetLocalString(player, checkpointName)),
+                        checkpoint => SetLocalString(player, checkpointName, JsonConvert.SerializeObject(checkpoint)),
+                        itemData =>
                         {
-                            // The serialized blob stays on the delivery for a retry; destroy the failed
-                            // copy so a later claim can't duplicate the item.
-                            if (GetIsObjectValid(deserialized))
-                                DestroyObject(deserialized);
+                            var item = ObjectPlugin.Deserialize(itemData.Data);
+                            if (GetIsObjectValid(item) && ObjectPlugin.AcquireItem(player, item))
+                                return true;
+                            if (GetIsObjectValid(item)) DestroyObject(item);
+                            return false;
+                        },
+                        credits => GiveGoldToCreature(player, credits), saveCharacter, DB.Set);
 
-                            remainingItems.Add(deliveryItem);
-                            continue;
-                        }
-
-                        totalItems++;
-                    }
-
-                    if (remainingItems.Count > 0)
+                    totalItems += delivery.Items.Count - remaining.Items.Count;
+                    totalCredits += delivery.Credits - remaining.Credits;
+                    if (!IsClaimable(remaining))
                     {
-                        delivery.Items = remainingItems;
-                        DB.Set(delivery);
-                        continue;
+                        if (!remaining.IsRewardPayment) DB.Delete<QuestContractDelivery>(remaining.Id);
+                        DeleteLocalString(player, checkpointName);
                     }
                 }
-
-                if (delivery.Credits > 0)
+                catch (Exception ex)
                 {
-                    GiveGoldToCreature(player, delivery.Credits);
-                    totalCredits += delivery.Credits;
+                    Log.Write(LogGroup.QuestContract, $"Contract claim '{delivery.Id}' for '{playerId}' remains pending: {ex}");
+                    SendMessageToPC(player, "Your contract claim could not be saved. Its recovery checkpoint has been retained; please try again later.");
+                    return;
                 }
-
-                DB.Delete<QuestContractDelivery>(delivery.Id);
             }
 
             if (totalCredits > 0 || totalItems > 0)
-            {
                 SendMessageToPC(player, $"You claimed {totalCredits} credits and {totalItems} item(s) from your quest contract deliveries.");
-            }
             else
-            {
                 SendMessageToPC(player, "Some of your deliveries could not be claimed. Please try again.");
-            }
 
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{playerId}] claimed quest contract deliveries: {totalCredits} credits, {totalItems} items.");
         }
 
         /// <summary>
         /// Retrieves the pending delivery for a player sourced from a specific contract, creating one if
-        /// it doesn't exist yet. Used so partial item turn-ins and escrow refunds accumulate into a single
-        /// delivery per contract instead of creating one delivery per turn-in.
+        /// it doesn't exist yet. Refunds accumulate separately from held objective submissions and
+        /// retained reward-payment receipts.
         /// </summary>
         public static QuestContractDelivery GetOrCreatePendingDelivery(string playerId, string contractId, string contractTitle)
         {
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contractId, false);
-            var existing = DB.Search(query).FirstOrDefault();
+            var existing = ReadDeliveries(query).FirstOrDefault(delivery => !delivery.HeldForCompletion && !delivery.IsRewardPayment);
 
             if (existing != null)
                 return existing;
@@ -497,6 +495,144 @@ namespace SWLOR.Game.Server.Service
             NotifyDeliveryRecipientIfOnline(playerId);
 
             return delivery;
+        }
+
+        public static bool IsClaimable(QuestContractDelivery delivery)
+        {
+            return !delivery.HeldForCompletion && (delivery.Credits > 0 || delivery.Items.Count > 0);
+        }
+
+        public static bool HasPendingDeliveries(string playerId)
+        {
+            return ReadDeliveries(new DBQuery<QuestContractDelivery>()
+                .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false)).Any(IsClaimable);
+        }
+
+        private static List<QuestContractDelivery> ReadDeliveries(DBQuery<QuestContractDelivery> query)
+        {
+            var count = (int)DB.SearchCount(query);
+            return count == 0 ? new List<QuestContractDelivery>() : DB.Search(query.AddPaging(count, 0)).ToList();
+        }
+
+        public static QuestContractDelivery GetOrCreateSubmission(string playerId, QuestContract contract)
+        {
+            var query = new DBQuery<QuestContractDelivery>()
+                .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contract.Id, false);
+            return ReadDeliveries(query).FirstOrDefault(delivery => delivery.HeldForCompletion)
+                ?? new QuestContractDelivery
+                {
+                    PlayerId = playerId,
+                    SourceContractId = contract.Id,
+                    SourceContractTitle = contract.Title,
+                    HeldForCompletion = true
+                };
+        }
+
+        /// <summary>
+        /// Changes ownership of the existing escrow record in place. A terminal contract releases the
+        /// winner's submissions to the author and returns everyone else's. Abandoning releases only
+        /// that player's attempt, which cannot be reused by a later acceptance.
+        /// </summary>
+        public static void ReleaseSubmissions(string contractId, string abandoningPlayerId = null)
+        {
+            var contract = DB.Get<QuestContract>(contractId);
+            var query = new DBQuery<QuestContractDelivery>()
+                .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contractId, false);
+            foreach (var delivery in ReadDeliveries(query))
+            {
+                if (!TryReleaseSubmission(delivery, contract, abandoningPlayerId))
+                    continue;
+
+                DB.Set(delivery);
+                NotifyDeliveryRecipientIfOnline(delivery.PlayerId);
+            }
+        }
+
+        public static bool TryReleaseSubmission(QuestContractDelivery delivery, QuestContract contract, string abandoningPlayerId = null)
+        {
+            if (!delivery.HeldForCompletion)
+                return false;
+            if (abandoningPlayerId != null && delivery.PlayerId != abandoningPlayerId)
+                return false;
+            if (abandoningPlayerId == null && contract?.Status == QuestContractStatus.Published)
+                return false;
+
+            if (contract?.Status == QuestContractStatus.Fulfilled && delivery.PlayerId == contract.CompletedByPlayerId)
+                delivery.PlayerId = contract.AuthorPlayerId;
+            delivery.HeldForCompletion = false;
+            return true;
+        }
+
+        public static void CompleteContract(QuestContract contract, string playerId)
+        {
+            if (contract.Status != QuestContractStatus.Published || contract.CompletionsRemaining <= 0)
+                return;
+            contract.CompletedByPlayerId = playerId;
+            contract.CompletionsRemaining = 0;
+            contract.Status = QuestContractStatus.Fulfilled;
+            contract.SettlementPending = 1;
+            DB.Set(contract);
+            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            SettleCompletedContract(contract);
+        }
+
+        public static void SettleCompletedContract(QuestContract contract)
+        {
+            if (contract.Status != QuestContractStatus.Fulfilled || contract.SettlementPending == 0 ||
+                string.IsNullOrWhiteSpace(contract.CompletedByPlayerId))
+                return;
+
+            // Published contracts have one completion. Persist the winner before materializing its
+            // payment. This deterministic, retained receipt makes restart recovery idempotent.
+            var receiptId = contract.Id + "-reward";
+            if (DB.Get<QuestContractDelivery>(receiptId) == null)
+            {
+                DB.Set(new QuestContractDelivery
+                {
+                    Id = receiptId,
+                    PlayerId = contract.CompletedByPlayerId,
+                    SourceContractId = contract.Id,
+                    SourceContractTitle = contract.Title,
+                    IsRewardPayment = true,
+                    Credits = contract.RewardCredits,
+                    Items = contract.RewardItems.ToList()
+                });
+                NotifyDeliveryRecipientIfOnline(contract.CompletedByPlayerId);
+            }
+
+            ReleaseSubmissions(contract.Id);
+            contract.RewardItems.Clear();
+            contract.SettlementPending = 0;
+            DB.Set(contract);
+        }
+
+        private static void RecoverSettlements()
+        {
+            var query = new DBQuery<QuestContract>()
+                .AddFieldSearch(nameof(QuestContract.SettlementPending), "[1 1]", false);
+            var count = (int)DB.SearchCount(query);
+            if (count > 0)
+            {
+                foreach (var contract in DB.Search(query.AddPaging(count, 0)))
+                    SettleCompletedContract(contract);
+            }
+
+            foreach (var delivery in ReadDeliveries(new DBQuery<QuestContractDelivery>()
+                .AddFieldSearch(nameof(QuestContractDelivery.HeldSubmissionIndex), "[1 1]", false)))
+            {
+                var contract = DB.Get<QuestContract>(delivery.SourceContractId);
+                var player = DB.Get<Player>(delivery.PlayerId);
+                var questId = QuestContractFactory.BuildQuestId(delivery.SourceContractId);
+                var quest = player?.Quests.GetValueOrDefault(questId);
+                if (contract?.Status == QuestContractStatus.Published && quest?.DateLastCompleted != null)
+                {
+                    CompleteContract(contract, delivery.PlayerId);
+                    continue;
+                }
+                if (TryReleaseSubmission(delivery, contract, quest == null ? delivery.PlayerId : null))
+                    DB.Set(delivery);
+            }
         }
 
         /// <summary>
@@ -617,6 +753,7 @@ namespace SWLOR.Game.Server.Service
             RefundEscrowToAuthor(contract);
             contract.Status = QuestContractStatus.Expired;
             DB.Set(contract);
+            ReleaseSubmissions(contract.Id);
             Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
             VoidActiveContractQuests(contract, "expired");
 

@@ -25,14 +25,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _topIndex;
         private int _bottomIndex;
 
-        private readonly string[] _enhancementSerialized = new string[EnhancementSlotCount];
+        // Selection never removes an item from the inventory. UUIDs prevent a destroyed item's
+        // recycled object handle from silently selecting a different input.
+        private readonly uint[] _enhancementItems = { OBJECT_INVALID, OBJECT_INVALID };
+        private readonly string[] _enhancementIds = new string[EnhancementSlotCount];
         private readonly List<ItemProperty>[] _enhancementProperties =
         {
             new List<ItemProperty>(),
             new List<ItemProperty>()
         };
 
-        private string _submissionSerialized;
+        private uint _submissionItem = OBJECT_INVALID;
+        private string _submissionId;
         private bool _isConstructing;
 
         public bool IsLightsaberSelected
@@ -151,7 +155,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             for (var slot = 0; slot < EnhancementSlotCount; slot++)
             {
-                _enhancementSerialized[slot] = string.Empty;
+                _enhancementItems[slot] = OBJECT_INVALID;
+                _enhancementIds[slot] = string.Empty;
                 _enhancementProperties[slot].Clear();
             }
 
@@ -160,7 +165,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Enhancement2Tooltip = "Select Enhancement #2";
             Enhancement2Resref = BlankTexture;
 
-            _submissionSerialized = string.Empty;
+            _submissionItem = OBJECT_INVALID;
+            _submissionId = string.Empty;
             SubmissionTooltip = "Select Weapon Submission Token";
             SubmissionResref = BlankTexture;
 
@@ -340,20 +346,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_isConstructing)
                 return;
 
-            if (string.IsNullOrWhiteSpace(_enhancementSerialized[slot]))
+            if (_enhancementItems[slot] == OBJECT_INVALID)
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
-                        if (!IsValidEnhancement(item))
+                        if (_isConstructing || !SelectEnhancement(slot, item))
                             return;
-
-                        CollectEnhancementProperties(item, _enhancementProperties[slot]);
-                        _enhancementSerialized[slot] = ObjectPlugin.Serialize(item);
                         setTooltip(GetName(item));
                         setResref(Item.GetIconResref(item));
 
-                        DestroyObject(item);
                     });
             }
             else
@@ -367,14 +369,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        private bool SelectEnhancement(int slot, uint item)
+        {
+            if (!IsValidEnhancement(item))
+                return false;
+            if (_enhancementItems.Contains(item) || item == _submissionItem)
+            {
+                FloatingTextStringOnCreature("That item is already selected. Choose a separate enhancement.", Player, false);
+                return false;
+            }
+
+            _enhancementItems[slot] = item;
+            _enhancementIds[slot] = GetObjectUUID(item);
+            return true;
+        }
+
         private void ReturnEnhancement(int slot)
         {
-            if (string.IsNullOrWhiteSpace(_enhancementSerialized[slot]))
-                return;
-
-            var item = ObjectPlugin.Deserialize(_enhancementSerialized[slot]);
-            ObjectPlugin.AcquireItem(Player, item);
-            _enhancementSerialized[slot] = string.Empty;
+            _enhancementItems[slot] = OBJECT_INVALID;
+            _enhancementIds[slot] = string.Empty;
             _enhancementProperties[slot].Clear();
         }
 
@@ -393,11 +406,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_isConstructing)
                 return;
 
-            if (string.IsNullOrWhiteSpace(_submissionSerialized))
+            if (_submissionItem == OBJECT_INVALID)
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a Weapon Submission Token within your inventory.",
                     item =>
                     {
+                        if (_isConstructing)
+                            return;
                         if (GetItemPossessor(item) != Player)
                         {
                             FloatingTextStringOnCreature("Item must be in your inventory.", Player, false);
@@ -410,11 +425,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
-                        _submissionSerialized = ObjectPlugin.Serialize(item);
+                        if (_enhancementItems.Contains(item))
+                            return;
+                        _submissionItem = item;
+                        _submissionId = GetObjectUUID(item);
                         SubmissionTooltip = GetName(item);
                         SubmissionResref = Item.GetIconResref(item);
 
-                        DestroyObject(item);
                     });
             }
             else
@@ -430,12 +447,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ReturnSubmissionToken()
         {
-            if (string.IsNullOrWhiteSpace(_submissionSerialized))
-                return;
+            _submissionItem = OBJECT_INVALID;
+            _submissionId = string.Empty;
+        }
 
-            var item = ObjectPlugin.Deserialize(_submissionSerialized);
-            ObjectPlugin.AcquireItem(Player, item);
-            _submissionSerialized = string.Empty;
+        private bool IsSelectedInputAvailable(uint item, string id)
+        {
+            return GetIsObjectValid(item) && GetItemPossessor(item) == Player && GetObjectUUID(item) == id;
+        }
+
+        private bool ValidateSelectedInputs()
+        {
+            for (var slot = 0; slot < EnhancementSlotCount; slot++)
+            {
+                _enhancementProperties[slot].Clear();
+                var input = _enhancementItems[slot];
+                if (input == OBJECT_INVALID)
+                    continue;
+                if (!IsSelectedInputAvailable(input, _enhancementIds[slot]) || !IsValidEnhancement(input))
+                    return false;
+                CollectEnhancementProperties(input, _enhancementProperties[slot]);
+            }
+
+            return _submissionItem == OBJECT_INVALID ||
+                (IsSelectedInputAvailable(_submissionItem, _submissionId) &&
+                 GetTag(_submissionItem) == LightsaberWorkbench.WeaponSubmissionTokenTag);
         }
 
         public Action OnClickConstruct() => () =>
@@ -452,19 +488,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var weaponName = _weaponType == BaseItem.Saberstaff ? "saberstaff" : "lightsaber";
-            var consumed = string.IsNullOrWhiteSpace(_submissionSerialized)
+            var consumed = _submissionItem == OBJECT_INVALID
                 ? "The Kyber Token and socketed enhancements will be consumed."
                 : "The Kyber Token, socketed enhancements, and Weapon Submission Token will be consumed.";
             ShowModal($"Construct this {weaponName}? {consumed}", () =>
             {
                 _isConstructing = true;
-                ConstructSaber();
-                _isConstructing = false;
+                try { ConstructSaber(); }
+                finally { _isConstructing = false; }
             });
         };
 
         private void ConstructSaber()
         {
+            if (!ValidateSelectedInputs())
+            {
+                StatusText = "A selected input is no longer available. Reselect your inputs and try again.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
             if (Currency.GetCurrency(Player, CurrencyType.KyberToken) < 1)
             {
                 StatusText = "You need a Kyber Token to construct this weapon.";
@@ -529,9 +572,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DestroyObject(item);
             item = finishedItem;
 
-            if (!GetIsObjectValid(item))
+            if (!GetIsObjectValid(item) || GetItemPossessor(item) != Player)
             {
-                StatusText = "Something went wrong constructing that weapon. Your Kyber Token was not consumed.";
+                if (GetIsObjectValid(item))
+                    DestroyObject(item);
+                StatusText = "Your inventory cannot receive the weapon. Your inputs and Kyber Token were not consumed.";
                 StatusColor = GuiColor.Red;
                 return;
             }
@@ -543,21 +588,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Craft.ApplyCraftedItemProperty(item, property);
             }
 
-            for (var slot = 0; slot < EnhancementSlotCount; slot++)
-            {
-                _enhancementSerialized[slot] = string.Empty;
-                _enhancementProperties[slot].Clear();
-            }
-
             // Transfer the Weapon Submission Token's crafted stats onto the saber. The
             // saber's damage profile is owned by its tier - it is built at tier 1 and
             // advanced by the saber upgrade kits - so DMG, weapon damage type, and
             // attack delay are skipped, as is the token blueprint's own skill
             // requirement scaffolding and its anti-equip Use Limitation: Perk lock
             // (the token is meant to be unusable on its own, not the finished saber).
-            if (!string.IsNullOrWhiteSpace(_submissionSerialized))
+            if (_submissionItem != OBJECT_INVALID)
             {
-                var submissionToken = ObjectPlugin.Deserialize(_submissionSerialized);
+                var submissionToken = _submissionItem;
                 if (GetIsObjectValid(submissionToken))
                 {
                     for (var ip = GetFirstItemProperty(submissionToken); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(submissionToken))
@@ -573,10 +612,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Craft.ApplyCraftedItemProperty(item, ip);
                     }
 
-                    DestroyObject(submissionToken);
+                    Item.ReduceItemStack(submissionToken, 1);
                 }
 
-                _submissionSerialized = string.Empty;
+                _submissionItem = OBJECT_INVALID;
+                _submissionId = string.Empty;
+            }
+
+            for (var slot = 0; slot < EnhancementSlotCount; slot++)
+            {
+                if (_enhancementItems[slot] != OBJECT_INVALID)
+                    Item.ReduceItemStack(_enhancementItems[slot], 1);
+                ReturnEnhancement(slot);
             }
 
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);

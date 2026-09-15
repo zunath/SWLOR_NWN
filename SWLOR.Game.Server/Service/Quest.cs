@@ -479,7 +479,12 @@ namespace SWLOR.Game.Server.Service
             var item = GetInventoryDisturbItem();
             var resref = GetResRef(item);
             var questId = GetLocalString(container, "QUEST_ID");
-            var quest = dbPlayer.Quests[questId];
+            if (player != owner || dbPlayer == null || !dbPlayer.Quests.TryGetValue(questId, out var quest))
+            {
+                Item.ReturnItem(player, item);
+                SendMessageToPC(player, "This quest collector is no longer available to you.");
+                return;
+            }
 
             // Item not required, or all items have been turned in.
             if (!quest.ItemProgresses.ContainsKey(resref) ||

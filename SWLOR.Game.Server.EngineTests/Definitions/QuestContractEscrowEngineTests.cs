@@ -1,0 +1,140 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.NWN.API.NWNX;
+
+namespace SWLOR.Game.Server.EngineTests.Definitions
+{
+    public static class QuestContractEscrowEngineTests
+    {
+        [EngineTest("Contract partial submissions stay held across sessions and refund on abandonment", Category = "QuestContractEscrow")]
+        public static async Task PartialSubmissionsAndAbandonment(EngineTestContext ctx)
+        {
+            var worker = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var contract = new QuestContract { AuthorPlayerId = Guid.NewGuid().ToString(), Status = QuestContractStatus.Published, CompletionsRemaining = 1 };
+            await ctx.ExecuteInCreatureContextAsync(worker, () =>
+            {
+                DB.Set(contract);
+                try
+                {
+                    var item = CreateItemOnObject("nw_it_medkit001", worker, 3);
+                    ctx.Track(item);
+                    var quest = QuestContractFactory.BuildQuest(contract);
+                    quest.CollectedItemHandler(worker, item);
+                    ctx.Assert(!QuestContractBoard.HasPendingDeliveries(contract.AuthorPlayerId), "Author cannot claim partial turn-ins");
+                    ctx.Assert(!QuestContractBoard.HasPendingDeliveries(GetObjectUUID(worker)), "Worker cannot reclaim and also retain active progress");
+                    var held = Deliveries(contract.Id).Single();
+                    ctx.Assert(held.HeldForCompletion && held.Items.Count == 1, "The submission is persisted in its own held record");
+                    quest.CollectedItemHandler(worker, item);
+                    ctx.AssertEqual(2, Deliveries(contract.Id).Single().Items.Count, "Later turn-ins accumulate in the same attempt");
+                    quest.OnAbandonActions.Single()(worker);
+                    ctx.Assert(QuestContractBoard.HasPendingDeliveries(GetObjectUUID(worker)), "Abandonment refunds the worker");
+                    ctx.Assert(!QuestContractBoard.HasPendingDeliveries(contract.AuthorPlayerId), "Abandonment never pays the author");
+                    quest.CollectedItemHandler(worker, item);
+                    var attempts = Deliveries(contract.Id);
+                    ctx.AssertEqual(2, attempts.Count, "Reacceptance creates fresh escrow separate from the old refund");
+                    ctx.AssertEqual(1, attempts.Count(delivery => delivery.HeldForCompletion), "Only the new attempt stays held");
+                }
+                finally { Cleanup(contract); }
+            });
+        }
+
+        [EngineTest("Contract reward failure retains items and credits and settlement retry cannot pay twice", Category = "QuestContractEscrow")]
+        public static async Task RewardFailureAndSettlementRecovery(EngineTestContext ctx)
+        {
+            var worker = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var contract = new QuestContract { AuthorPlayerId = Guid.NewGuid().ToString(), Status = QuestContractStatus.Published, CompletionsRemaining = 1, RewardCredits = 125 };
+            await ctx.ExecuteInCreatureContextAsync(worker, () =>
+            {
+                var playerId = GetObjectUUID(worker);
+                var item = CreateItemOnObject("nw_it_medkit001", worker);
+                ctx.Track(item);
+                contract.RewardItems.Add(new QuestContractItem { Data = ObjectPlugin.Serialize(item), Name = "Fixture reward" });
+                DB.Set(contract);
+                var gold = GetGold(worker);
+                try
+                {
+                    var held = QuestContractBoard.GetOrCreateSubmission(playerId, contract);
+                    held.Items.Add(new QuestContractItem { Data = ObjectPlugin.Serialize(item) });
+                    DB.Set(held);
+                    var other = QuestContractBoard.GetOrCreateSubmission(Guid.NewGuid().ToString(), contract);
+                    other.Items.Add(new QuestContractItem { Data = ObjectPlugin.Serialize(item) });
+                    DB.Set(other);
+                    var repository = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(worker).AsNWSCreature().m_pcItemRepository;
+                    var width = repository.m_nWidth;
+                    var height = repository.m_nHeight;
+                    var boundary = repository.m_nBoundary;
+                    var scalable = repository.m_bScalable;
+                    try
+                    {
+                        repository.m_nWidth = 0;
+                        repository.m_nHeight = 0;
+                        repository.m_nBoundary = 0;
+                        repository.m_bScalable = 0;
+                        new QuestContractReward(contract.Id).GiveReward(worker);
+                        var receipt = DB.Get<QuestContractDelivery>(contract.Id + "-reward");
+                        ctx.AssertEqual(1, receipt.Items.Count, "Failed acquisition retains the serialized reward");
+                        ctx.AssertEqual(125, receipt.Credits, "Credits stay pending with the failed item");
+                        ctx.AssertEqual(gold, GetGold(worker), "A failed claim does not pay credits");
+                        QuestContractBoard.ClaimDeliveries(worker);
+                        ctx.AssertEqual(1, DB.Get<QuestContractDelivery>(receipt.Id).Items.Count, "Repeated failure retains exactly one reward");
+                    }
+                    finally
+                    {
+                        repository.m_nWidth = width;
+                        repository.m_nHeight = height;
+                        repository.m_nBoundary = boundary;
+                        repository.m_bScalable = scalable;
+                    }
+
+                    var settled = DB.Get<QuestContract>(contract.Id);
+                    ctx.AssertEqual(QuestContractStatus.Fulfilled, settled.Status, "Winner is durably recorded");
+                    ctx.AssertEqual(contract.AuthorPlayerId, DB.Get<QuestContractDelivery>(held.Id).PlayerId, "Author receives the winner's items");
+                    ctx.AssertEqual(other.PlayerId, DB.Get<QuestContractDelivery>(other.Id).PlayerId, "Losing worker keeps their submissions");
+                    ctx.Assert(!DB.Get<QuestContractDelivery>(other.Id).HeldForCompletion, "Losing worker's refund is claimable");
+                    QuestContractBoard.ClaimDeliveries(worker);
+                    ctx.AssertEqual(gold + 125, GetGold(worker), "Retry pays the reward once space is available");
+                    ctx.Assert(!QuestContractBoard.HasPendingDeliveries(playerId), "Empty receipt is not shown as a pending delivery");
+                    QuestContractBoard.SettleCompletedContract(settled);
+                    QuestContractBoard.ClaimDeliveries(worker);
+                    ctx.AssertEqual(gold + 125, GetGold(worker), "Restart settlement cannot recreate an already claimed payment");
+
+                    // Simulate a stop after the winner was saved but before its payment was created.
+                    var interrupted = new QuestContract
+                    {
+                        Status = QuestContractStatus.Fulfilled, CompletedByPlayerId = playerId,
+                        AuthorPlayerId = contract.AuthorPlayerId, RewardCredits = 77,
+                        RewardItems = new List<QuestContractItem>(contract.RewardItems)
+                    };
+                    DB.Set(interrupted);
+                    try
+                    {
+                        typeof(QuestContractBoard).GetMethod("RecoverSettlements", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+                        ctx.AssertEqual(77, DB.Get<QuestContractDelivery>(interrupted.Id + "-reward").Credits, "Boot recovery creates the missing payment");
+                    }
+                    finally { Cleanup(interrupted); }
+                }
+                finally { Cleanup(contract); }
+            });
+        }
+
+        private static List<QuestContractDelivery> Deliveries(string contractId)
+        {
+            var query = new DBQuery<QuestContractDelivery>().AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contractId, false);
+            return DB.Search(query.AddPaging(100, 0)).ToList();
+        }
+
+        private static void Cleanup(QuestContract contract)
+        {
+            foreach (var delivery in Deliveries(contract.Id)) DB.Delete<QuestContractDelivery>(delivery.Id);
+            DB.Delete<QuestContract>(contract.Id);
+        }
+    }
+}

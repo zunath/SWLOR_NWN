@@ -20,5 +20,9 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public string SourceContractId { get; set; }
         public string SourceContractTitle { get; set; }
+        // Objective submissions remain owned by their submitter until that attempt wins.
+        public bool HeldForCompletion { get; set; }
+        // Keep an empty receipt after claiming so interrupted settlement cannot pay twice.
+        public bool IsRewardPayment { get; set; }
     }
 }

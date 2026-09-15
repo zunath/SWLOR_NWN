@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service.QuestContractService
 {
@@ -20,9 +18,8 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         public string MenuName => "Contract Reward";
 
         /// <summary>
-        /// Pays out the escrowed credits and reward items for a single completion, then decrements the
-        /// contract's remaining completion count. When completions reach zero the contract is fulfilled
-        /// and its runtime quest is unregistered so it can no longer be accepted.
+        /// Records the winner of a single-completion contract, settles its escrow into a recoverable
+        /// delivery, and attempts collection. Failed item transfers remain available at the board.
         /// </summary>
         public void GiveReward(uint player)
         {
@@ -40,36 +37,20 @@ namespace SWLOR.Game.Server.Service.QuestContractService
                 return;
             }
 
-            if (contract.RewardCredits > 0)
-                GiveGoldToCreature(player, contract.RewardCredits);
-
-            if (contract.RewardItems.Count > 0)
-            {
-                foreach (var rewardItem in contract.RewardItems)
-                {
-                    var item = ObjectPlugin.Deserialize(rewardItem.Data);
-                    ObjectPlugin.AcquireItem(player, item);
-                }
-
-                contract.RewardItems = new List<QuestContractItem>();
-            }
-
-            contract.CompletionsRemaining--;
-
-            if (contract.CompletionsRemaining <= 0)
-            {
-                contract.Status = QuestContractStatus.Fulfilled;
-                Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
-            }
-
+            contract.CompletedByPlayerId = GetObjectUUID(player);
+            contract.CompletionsRemaining = 0;
+            contract.Status = QuestContractStatus.Fulfilled;
             DB.Set(contract);
+            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            QuestContractBoard.SettleCompletedContract(contract);
+            QuestContractBoard.ClaimDeliveries(player);
 
             // Refresh the completing player's contract board (if open) so the fulfilled contract
             // disappears from the Browse list immediately.
             Gui.PublishRefreshEvent(player, new QuestContractPublishedRefreshEvent());
 
-            SendMessageToPC(player, $"You received {contract.RewardCredits} credits for completing the contract '{contract.Title}'.");
-            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] completed contract '{contract.Id}' ('{contract.Title}') and received {contract.RewardCredits} credits.");
+            SendMessageToPC(player, $"Your reward for '{contract.Title}' is ready. Any items or credits you could not receive remain claimable at any Contract Board.");
+            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] completed contract '{contract.Id}' ('{contract.Title}'); {contract.RewardCredits} credits and its reward items were assigned to their delivery.");
         }
     }
 }

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Entity
         public int RewardCredits { get; set; }
         public List<QuestContractItem> RewardItems { get; set; }
         public int CompletionsRemaining { get; set; }
+        public string CompletedByPlayerId { get; set; } = string.Empty;
         public DateTime DatePublished { get; set; }
         public DateTime DateExpires { get; set; }
         public string TakedownPlayerId { get; set; }

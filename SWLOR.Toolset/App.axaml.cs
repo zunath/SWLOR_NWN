@@ -410,6 +410,9 @@ namespace SWLOR.Toolset
             var hakBuilderConfigPath = Path.Combine(repoRoot, "Build", "hakbuilder.json");
             var swlorHaksRoot = Path.Combine(repoRoot, "SWLOR_Haks");
 
+            var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
+            HakSetupValidation.Validate(repoRoot, moduleHakLayers);
+
             var hasTwoDa = Directory.Exists(sw2DaDirectory);
             var hasTlk = File.Exists(swTlkJsonPath);
 
@@ -458,7 +461,6 @@ namespace SWLOR.Toolset
                 Func<KeyBifCatalog?>? loadBaseLayer = nwnInstallPath == null
                     ? null
                     : () => KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
-                var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
                 services.AddSingleton(moduleHakLayers == null
                     ? ResourceIndex.FromHakBuilderConfigDeferred(
                         hakBuilderConfigPath,
@@ -640,8 +642,9 @@ namespace SWLOR.Toolset
                 while (current != null)
                 {
                     var hakBuilderConfig = Path.Combine(current.FullName, "Build", "hakbuilder.json");
-                    var haksDirectory = Path.Combine(current.FullName, "SWLOR_Haks");
-                    if (File.Exists(hakBuilderConfig) && Directory.Exists(haksDirectory))
+                    // An absent submodule must still identify the repository so validation can
+                    // explain how to restore it instead of silently skipping game-data services.
+                    if (File.Exists(hakBuilderConfig))
                         return current.FullName;
 
                     current = current.Parent;

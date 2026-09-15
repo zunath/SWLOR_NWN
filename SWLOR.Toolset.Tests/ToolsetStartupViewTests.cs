@@ -37,6 +37,9 @@ namespace SWLOR.Toolset.Tests
             window.FindControl<Border>("StartupPanel")!.IsVisible.Should().BeTrue();
             window.FindControl<ProgressBar>("StartupProgress")!.IsIndeterminate.Should().BeFalse();
             window.FindControl<TextBlock>("StartupStatus")!.Text.Should().Be("Could not load game data.");
+            window.FindControl<TextBlock>("StartupTitle")!.Text.Should().Be("Toolset setup needs attention");
+            window.FindControl<SelectableTextBlock>("StartupStatus").Should().NotBeNull(
+                "builders need to copy the asset setup command and repository path");
         }
     }
 }

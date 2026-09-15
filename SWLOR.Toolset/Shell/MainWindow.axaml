@@ -134,14 +134,14 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Spacing="12">
-          <TextBlock Text="Loading toolset data..."
+          <TextBlock x:Name="StartupTitle" Text="Loading toolset data..."
                      HorizontalAlignment="Center"
                      FontSize="18"
                      FontWeight="SemiBold" />
           <ProgressBar x:Name="StartupProgress"
                        Height="4"
                        IsIndeterminate="True" />
-          <TextBlock x:Name="StartupStatus"
+          <SelectableTextBlock x:Name="StartupStatus"
                      Text="Opening the workspace. Game resources will continue loading in the background."
                      TextAlignment="Center"
                      TextWrapping="Wrap"

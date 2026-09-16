@@ -2,8 +2,11 @@
 
 The source TGAs' extension metadata incorrectly suppressed their stored alpha.
 The baseline records the pixel data, without applying that extension override.
+Per-mip alpha hashes come from re-encoding those original pixels with the
+recorded ImageMagick contract (tools/GenerateWorldTextureMipBaseline.py).
 Requires Pillow and initialized HAK sources; no Git history is needed to test.
 """
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -29,6 +32,7 @@ class WorldTextureAlphaTests(unittest.TestCase):
                 self.assertEqual(struct.unpack_from("<II", data, 12), (height, width))
                 levels = max(width, height).bit_length()
                 self.assertEqual(struct.unpack_from("<I", data, 28)[0], levels)
+                self.assertEqual(len(expected["mip_alpha_sha256"]), levels)
                 self.assertFalse(path.with_suffix(".tga").exists())
                 with Image.open(path) as image:
                     histogram = image.getchannel("A").histogram()
@@ -48,6 +52,10 @@ class WorldTextureAlphaTests(unittest.TestCase):
                     with Image.open(io.BytesIO(header + data[cursor:cursor + size])) as mip:
                         mip.load()
                         self.assertEqual(mip.size, (w, h))
+                        self.assertEqual(
+                            hashlib.sha256(mip.getchannel("A").tobytes()).hexdigest(),
+                            expected["mip_alpha_sha256"][level],
+                            f"Mip {level} alpha differs from the source-derived DXT5 baseline")
                     cursor += size
                 self.assertEqual(cursor, len(data), "Truncated or unexpected mip data")
 

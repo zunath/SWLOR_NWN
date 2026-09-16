@@ -7,7 +7,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro03.dds",
@@ -15,7 +27,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro04.dds",
@@ -23,7 +47,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro05.dds",
@@ -31,7 +67,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro06.dds",
@@ -39,7 +87,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro07.dds",
@@ -47,7 +107,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro08.dds",
@@ -55,7 +127,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro09.dds",
@@ -63,7 +147,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_cr_creature/c_drdastro10.dds",
@@ -71,7 +167,19 @@
       "height": 512,
       "transparent_fraction": 0.0,
       "opaque_fraction": 0.1083984375,
-      "alpha_mean": 229.08013153076172
+      "alpha_mean": 229.08013153076172,
+      "mip_alpha_sha256": [
+        "2326e3930fb578afd34e65e7031db494513bf95aa11c035896743bf581e837c5",
+        "760336a6769683a2f7f3ec698ae3ef8ad784d9e675a22e2e703593525f0e1a66",
+        "df9e047fd75182e32b14b11ce4b69df509b021055caccf005d8f5dfeccdd828a",
+        "af1592f58c254328e73d99ae571efc620c004e7e40667187cb1861ac42db78d9",
+        "20a5d7e1a90c445d3ad5240c79fb2fe1a3fb4afc048e6e77f9b5a22bfb725c97",
+        "be4f3f7f6f44c63d350f831dc5f64bfbc1e4247a3d0a69b8cb05aa9ed2973a2e",
+        "9c3812757036ac070f032719c52c81b80b779e6088af34400f8d9dc87ae8967a",
+        "b3378cc36ccac24447b3c37f4da99379cea70cafafc13ffc26fae482b335d3b7",
+        "56885b97e3c6fdde40f5f7277cb194b26ba7af79b87589c4e9c7549cba3193c6",
+        "0a3aaee7ccfb1a64f6d7bcd46657c27cb1f4569ae9e7c03445bd6c6fd013109b"
+      ]
     },
     {
       "texture": "sw_plc/nboo_flw_cr_clmn.dds",
@@ -79,7 +187,18 @@
       "height": 256,
       "transparent_fraction": 0.5947723388671875,
       "opaque_fraction": 7.62939453125e-05,
-      "alpha_mean": 91.52359008789062
+      "alpha_mean": 91.52359008789062,
+      "mip_alpha_sha256": [
+        "122979c805dab8c32069b9a5adccda5bb52dda651ad8e90897696dde8e71750b",
+        "e3b7f4ed6d90eb6340a6724e8b30b0bf23cb764941088837cd0f3e6f3e5f621e",
+        "5f125ee7fb818223189912e762baccd4464e4170fc906d2fc36f628b94671066",
+        "bb2e76af96eb49ce98f10aae141736712f1a686690abddc2657c52e42e1d567a",
+        "5f1b2212ef15e7d0c30c6c1e97508d325c3615692f1b31af31a24e9c0b99b1cb",
+        "a9c434f589ed65df4387a3ed39e412191979698b3d3677d1efd4e32409a13c7f",
+        "bfea0407c36e845bacc6240e78a624d873986d7ac573c9448aa5178ad1f97aa0",
+        "1a55dcbbcda3602b54a25fcbbbe9040350ecdb6e136f43b592495c6462ae41ee",
+        "1b16b1df538ba12dc3f97edbb85caa7050d46c148134290feba80f8236c83db9"
+      ]
     },
     {
       "texture": "sw_plc/nboo_flw_cr_gate.dds",
@@ -87,7 +206,18 @@
       "height": 256,
       "transparent_fraction": 0.24444580078125,
       "opaque_fraction": 0.6506500244140625,
-      "alpha_mean": 181.71815490722656
+      "alpha_mean": 181.71815490722656,
+      "mip_alpha_sha256": [
+        "06d4c6a21e2368382735f37d70b9b65d955d707d3e9933c310b1f583952f07a1",
+        "952d80a6b0573769788543ddc290c8bdfd449ec497da6ce16c3ed9f216ed3d7b",
+        "a7c66ef981ab2a8c395c049ba19e1ea940ffe469d63422c5a78b71dfec4e47b0",
+        "1f41d26268b2e94e9331600fa314467090476f1f27634cb47b0b8d24d93cd7c2",
+        "4e5f28ee337931c7ea6ec0a922a2b677d24e4c9861623d0b6af953b0ad1a27c5",
+        "0b2b0d2f3943d9f679929214fdcfe7b405763d56f0ab5daf6ea0fb4f2315c4ea",
+        "ad5bb8d4b15328d0148f487d3507214e5523fc4fb1075261a7b89b9e1de2dd5d",
+        "79040a5a38e83a98b67c5300c517f15d6eb6d9b03d26688723a87b2f1d661a03",
+        "04d6c0c946716aac894fc1653383543a91faab601302cf011607c82f06304651"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_alpha1.dds",
@@ -95,7 +225,18 @@
       "height": 256,
       "transparent_fraction": 0.6484375,
       "opaque_fraction": 0.20794677734375,
-      "alpha_mean": 75.52821350097656
+      "alpha_mean": 75.52821350097656,
+      "mip_alpha_sha256": [
+        "92dccfd5c55bcf9e7414f867dab5b0fba962136b0328b8f1a695c2e594907bd7",
+        "f7295cbf4889c5180e9e5896aed917f8786fc474ce3e23db115663769dbc5aa8",
+        "e4a25dbf36820a457367e0201cc3cabc1624aca7dede91d9acf0777b915ea857",
+        "f887eea4c02049df43de90cf7dad101963519f2d124c31bfb86e8f2c3a59c9d0",
+        "b1b75168bde8f47d036ed8d61a8f91e8e3a451bb24d948b3521b1b7b99220573",
+        "3bd114aeb18d920ca9b161dc5fd27d78fb423a5031c0600a6e5bf762f875ee4e",
+        "77f4610bac659f4345ebca32615fe8f8de8ec412545325726b0f0d13654ae107",
+        "9155935ba342fed13100e6e268fe4ea28d9c613967b56cdcb5647503387b1763",
+        "72dfcfb0c470ac255cde83fb8fe38de8a128188e03ea5ba5b2a93adbea1062fa"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_cypress.dds",
@@ -103,7 +244,18 @@
       "height": 256,
       "transparent_fraction": 0.266326904296875,
       "opaque_fraction": 0.6607208251953125,
-      "alpha_mean": 176.4788818359375
+      "alpha_mean": 176.4788818359375,
+      "mip_alpha_sha256": [
+        "4e0017d32bcc42b2494e5465a79b2d07c1b2ab2266fd261e65c52aa2003b2c45",
+        "3421956b8bbed369f6ae62ee793788a9847ea47b6d4c899fe68f74da74dabdf1",
+        "9481e71d1f51991874a591d489fd415eb011ea9cc96e3c32aa5b70c09c724ff4",
+        "b3e245b7a1f5c9a52a0867e433cc9cff84778caf25db97754626122a28ecb3d0",
+        "703b3c95bf5389a92a8d8e53d22535c16469a1833b015b713630a24d12d9c8da",
+        "d0ac6fe8b59f701a877a57a727fae77bd5b1b97d178eb875f0278744b7530ecf",
+        "5b33d95d18e7a5464dead94e88383da3233195ac1011b389b642a0c90da91a95",
+        "21112399b5fc8d75e86b024cc9cdcbb4a6f9ded931922405a00ebc2d52e9ff0d",
+        "2dbf9365a0b09d85bbd6176d8b2332aa5ae97bef652712473bc69165e74b22ed"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_leavesf.dds",
@@ -111,7 +263,17 @@
       "height": 128,
       "transparent_fraction": 0.2935791015625,
       "opaque_fraction": 0.46234130859375,
-      "alpha_mean": 150.26483154296875
+      "alpha_mean": 150.26483154296875,
+      "mip_alpha_sha256": [
+        "f8ae5056bab0a788e8fd37094a4b67cb3df7f41de324993c9240bf8e078d060b",
+        "7d972720b0151f882da6b95f19af077bb801cb905f87b35b471a437429399448",
+        "c3dd38ccacdfb99fc516618136aec5b43ca7fbe39271b354e89749911b8ee948",
+        "d124c435ddd8636cea20e97cbe66207e9174f7cd2a0f07d71389863cd8cdb483",
+        "7657594aa98d914516c3ab102d32c7e273a836bb3c1df90fc9f737066f873f23",
+        "569cd1d64190b38604d45f724f6f7f3a6b7730a3d7a4eb8e4a1147c0b9089796",
+        "9813156ed729783638908775eba31552fc4e7004e91ae96f8eb126bd94031d11",
+        "9defb0a9e163278be0e05aa01b312ec78cfa3726869503385e76e3a4b7950648"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_leavess.dds",
@@ -119,7 +281,17 @@
       "height": 128,
       "transparent_fraction": 0.2935791015625,
       "opaque_fraction": 0.46234130859375,
-      "alpha_mean": 150.26483154296875
+      "alpha_mean": 150.26483154296875,
+      "mip_alpha_sha256": [
+        "f8ae5056bab0a788e8fd37094a4b67cb3df7f41de324993c9240bf8e078d060b",
+        "7d972720b0151f882da6b95f19af077bb801cb905f87b35b471a437429399448",
+        "c3dd38ccacdfb99fc516618136aec5b43ca7fbe39271b354e89749911b8ee948",
+        "d124c435ddd8636cea20e97cbe66207e9174f7cd2a0f07d71389863cd8cdb483",
+        "7657594aa98d914516c3ab102d32c7e273a836bb3c1df90fc9f737066f873f23",
+        "569cd1d64190b38604d45f724f6f7f3a6b7730a3d7a4eb8e4a1147c0b9089796",
+        "9813156ed729783638908775eba31552fc4e7004e91ae96f8eb126bd94031d11",
+        "9defb0a9e163278be0e05aa01b312ec78cfa3726869503385e76e3a4b7950648"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_leavesw.dds",
@@ -127,7 +299,17 @@
       "height": 128,
       "transparent_fraction": 0.2935791015625,
       "opaque_fraction": 0.46234130859375,
-      "alpha_mean": 150.26483154296875
+      "alpha_mean": 150.26483154296875,
+      "mip_alpha_sha256": [
+        "f8ae5056bab0a788e8fd37094a4b67cb3df7f41de324993c9240bf8e078d060b",
+        "7d972720b0151f882da6b95f19af077bb801cb905f87b35b471a437429399448",
+        "c3dd38ccacdfb99fc516618136aec5b43ca7fbe39271b354e89749911b8ee948",
+        "d124c435ddd8636cea20e97cbe66207e9174f7cd2a0f07d71389863cd8cdb483",
+        "7657594aa98d914516c3ab102d32c7e273a836bb3c1df90fc9f737066f873f23",
+        "569cd1d64190b38604d45f724f6f7f3a6b7730a3d7a4eb8e4a1147c0b9089796",
+        "9813156ed729783638908775eba31552fc4e7004e91ae96f8eb126bd94031d11",
+        "9defb0a9e163278be0e05aa01b312ec78cfa3726869503385e76e3a4b7950648"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_spruces.dds",
@@ -135,7 +317,18 @@
       "height": 256,
       "transparent_fraction": 0.4751129150390625,
       "opaque_fraction": 0.475372314453125,
-      "alpha_mean": 126.44355773925781
+      "alpha_mean": 126.44355773925781,
+      "mip_alpha_sha256": [
+        "d6ab7af054f5ac2d8769586d1d19c0ac28f91cd55040c3e8e39e61f3764f15bc",
+        "4a7ee73e65f250e39fe9a353b578d2e5af5dde8c930a8b58111cd23cc2d83fe7",
+        "506e7a817e46535b919a4492814c2341ec955dfb4f4e985365c0eac014d5d0e8",
+        "952fcaae2d85c4cbe1700b6e4b3b0f89c0e80ee6abb6841962a98ddcc402b53d",
+        "1182a2a72eb5d933101199a84d4765c4c909b530a6f89d8c28e5f2eeb88b916a",
+        "1d199f718dbe6b676f6998bf0eb97f3200b32529e2151d038157ce39e5479ffa",
+        "20b6732c2e79fc3dca70d0034446682222ba7c813f394e6062711dab55386756",
+        "12fde347fd38c85f54a3f5d22db807cbcdb52f15c5fcde574ea028f3596c90c2",
+        "591b7cc95037822dec5a4d593a2e2e8b19c07ddd2570e5699003d17f14c440a6"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_sprucew.dds",
@@ -143,7 +336,18 @@
       "height": 256,
       "transparent_fraction": 0.4751129150390625,
       "opaque_fraction": 0.475372314453125,
-      "alpha_mean": 126.44355773925781
+      "alpha_mean": 126.44355773925781,
+      "mip_alpha_sha256": [
+        "d6ab7af054f5ac2d8769586d1d19c0ac28f91cd55040c3e8e39e61f3764f15bc",
+        "4a7ee73e65f250e39fe9a353b578d2e5af5dde8c930a8b58111cd23cc2d83fe7",
+        "506e7a817e46535b919a4492814c2341ec955dfb4f4e985365c0eac014d5d0e8",
+        "952fcaae2d85c4cbe1700b6e4b3b0f89c0e80ee6abb6841962a98ddcc402b53d",
+        "1182a2a72eb5d933101199a84d4765c4c909b530a6f89d8c28e5f2eeb88b916a",
+        "1d199f718dbe6b676f6998bf0eb97f3200b32529e2151d038157ce39e5479ffa",
+        "20b6732c2e79fc3dca70d0034446682222ba7c813f394e6062711dab55386756",
+        "12fde347fd38c85f54a3f5d22db807cbcdb52f15c5fcde574ea028f3596c90c2",
+        "591b7cc95037822dec5a4d593a2e2e8b19c07ddd2570e5699003d17f14c440a6"
+      ]
     },
     {
       "texture": "sw_plc_cep/tentflap1.dds",
@@ -151,7 +355,17 @@
       "height": 128,
       "transparent_fraction": 0.00982666015625,
       "opaque_fraction": 0.99017333984375,
-      "alpha_mean": 252.49420166015625
+      "alpha_mean": 252.49420166015625,
+      "mip_alpha_sha256": [
+        "6e24ef57cf7b9729484ded40fac6ecaf81601864b0f5eee8f74f8d17bb98adb8",
+        "333192ace0fb4e3a0a8637344bca37d8e017fd4681cb3e75ce339a24b6b3609e",
+        "f76f475b337281aa235f843472c6aaa20269b930b28cde7c3695351b2ab84452",
+        "81e8d63fd81a4c1626c9ea9f4618f158f93325a9db42c1d24530628151ffeda2",
+        "e74381177eef5778cbe6df49456610a1b49752e5f8903a739464797b28eb0443",
+        "06e278e704359b5266d243d24527f8b7ce06e7546f32558a3dc55e78893c1ec8",
+        "6cb751207ee59b4189ab1b86498a1216c7b4a672daad65a4506db08f0417e02b",
+        "3e151409ace91cb3394fecd59e92b5dc42c0aad29993a1858f2f70a0866a539b"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_beacha1snd.dds",
@@ -159,7 +373,19 @@
       "height": 512,
       "transparent_fraction": 0.4608726501464844,
       "opaque_fraction": 0.2896881103515625,
-      "alpha_mean": 109.75651931762695
+      "alpha_mean": 109.75651931762695,
+      "mip_alpha_sha256": [
+        "66553f0a0d54e6996b1571a63aa505aa615eeabfcaaeaf0ca2e4fb350e382791",
+        "a1fb99b43e49df0d3cd88d538694a3b12b79b62b73c695a3958395e5c43416ae",
+        "8784bf59f8f5019dae1810119d05fd0408c4d975cb5bad9f329f6c026e80bf19",
+        "e9ac78a5a38737178e4d85f0f8102815d520d59461492315c66514d243f45cf3",
+        "e821ebc661b36d4fe93ba7e47c69a8a4db754a3fb3ae9c2986a293ce37c0df56",
+        "3217e10cffac6b2ae7ef70bd0fcaa68c33c5189f27d8f258671f2cce9b704b6c",
+        "b52b6fbe5afb11dccd63b044cf9d49d491d1b95f0f1c5c974c220b07ee1a0afb",
+        "c85d37e5ec0ee2e0601cd39262320200d5be15c29dd366d708759febd367df1d",
+        "c36ee628162c9a56ff04f43a744f19d18d4416053e5f30a266224ee946be4162",
+        "18f5384d58bcb1bba0bcd9e6a6781d1a6ac2cc280c330ecbab6cb7931b721552"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_bush03.dds",
@@ -167,7 +393,19 @@
       "height": 512,
       "transparent_fraction": 0.898223876953125,
       "opaque_fraction": 0.045162200927734375,
-      "alpha_mean": 18.81600570678711
+      "alpha_mean": 18.81600570678711,
+      "mip_alpha_sha256": [
+        "ff880502a13adc3f4addc4aca66a5e512a163492e4ea8d8a89792882186c5331",
+        "0ca5d1af886510867f8bdd0e81e7796206c9b93bbd58d222aa3362ac2baef873",
+        "e14cf763846dd1d1470d7d3060287e4812de39eba5016f23b61a9168ece7b9ac",
+        "96f9e041126e3f7c470f34c234fbcfdc391924ee5c422af0964d7b9407f37806",
+        "535270344abbf53cf9d7ef5f18b3796e1475dca3c610ee52c2e61e7e28163339",
+        "9626a011867aaed197b73545137e45efa05d744ff4bfc53022f899328e169ba6",
+        "63134a5076dd58f9c3fd14101058c8c731d6442711923ec96377b8d9bcafa8f8",
+        "c3a13fc1dcc1e819d2061a8b7d2c0689a030ea7660c346131b0e4261649ed707",
+        "7582050ba1fa0b4e04d8e7ee45bfcf80f9d8de39941baf78f366c1bfe8f97001",
+        "83891d7fe85c33e52c8b4e5814c92fb6a3b9467299200538a6babaa8b452d879"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_cbblwroada.dds",
@@ -175,7 +413,19 @@
       "height": 512,
       "transparent_fraction": 0.0035858154296875,
       "opaque_fraction": 0.4341583251953125,
-      "alpha_mean": 169.32121658325195
+      "alpha_mean": 169.32121658325195,
+      "mip_alpha_sha256": [
+        "566d5f2b6d15aa8734d9abcdef0d9bfbced44279d86f61c7fdad24b90e128a19",
+        "dcf36d2df20f4afc836665d428bbbbcfa0ea91c12584bfd140ea8ba19567aff6",
+        "0430869143df9e512113feccd8e46fad8e7fb3e812a5f8796ac2881fd64c624c",
+        "8d72ee241b1e173aa3c0d2272926ad6433bece8ca515b7bfde0b8d8f4bb48913",
+        "707557ae74a468854a2cc9aafb8f3a2c5967fd1c3b84d43a998164f653ea661e",
+        "538fb6c59d88353abba0800e69600c19b71befa8391385ebafcc005f2a995d03",
+        "8a10a0b5e642f4c7f8da1eed98440ccd8b67abffbd1df8be3be9c7dc9bdd482f",
+        "bfe08f229744e1b126e44f5ae56fe4697c38a521bd7db743891209ed8e1c5c04",
+        "d6ae9560cf037a8e27120e672c30f86d72bc914ee6543cf856c766adfdd60ca2",
+        "26e5bfe4b0686167e3e4e0aac40cbae03515171d375f91ea563c9c044e9c5cc7"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_dirt04.dds",
@@ -183,7 +433,19 @@
       "height": 512,
       "transparent_fraction": 0.2981376647949219,
       "opaque_fraction": 0.014019012451171875,
-      "alpha_mean": 77.66390228271484
+      "alpha_mean": 77.66390228271484,
+      "mip_alpha_sha256": [
+        "86a5d44e20c6a417ea655c5e66a2172c96397cd2f1d26893e8518f69413f4288",
+        "705f9d3b3648f8bf2b96d5194b6beab3d0b66fed8b5c8c711cd9e0713394f7e0",
+        "d294432f104549cd1a0dfdd6e2eb63fbb0f36502a39c6a872f78ad51609515ee",
+        "c3fdc90d1f0e0b0c5f02c280cd83198436ea63332c3da36506b5c11ddd175d68",
+        "a160fae9e3c2f72e6b7a1034166561c0be59a10fd0841fd25b51255f9818b3ee",
+        "c544fdb09a68a61d85fdf207ed2dcc4d8d07f97c35758eb567c8fda9864fe951",
+        "34af04805cc8040bb028f3a8f73326170d88fc397a984d15ffbe221745837330",
+        "a7e6fda6ff7b0ed9a1d3e4dbd8c1ca3017378d807082e45fc81ed73430d3deca",
+        "ff1f67104b108c61a220618296c129c33b1c480b086fa733244f75214bb173e3",
+        "245843abef9e72e7efac30138a994bf6301e7e1d7d7042a33d42e863d2638811"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_dirt05.dds",
@@ -191,7 +453,19 @@
       "height": 512,
       "transparent_fraction": 0.2598075866699219,
       "opaque_fraction": 0.2906341552734375,
-      "alpha_mean": 137.09015274047852
+      "alpha_mean": 137.09015274047852,
+      "mip_alpha_sha256": [
+        "cd7b9b4a124fcf8dd4ad70536a0d32922f88aa844b872f42e15ab53f06c7b051",
+        "78be08aaa1696e6b20a67bca2160092a83b92176d2ed1faaf982b74eb84c7222",
+        "ff3017f142e35f3d02e45e5470ff41ff6427ce30fc837d24e85565dba275d815",
+        "41fcc3a059520bfb4548e32bda06c6466bf45e2a733b7de92a2dee719848025c",
+        "a3ad7cb3d64aceb6ba691abddbe8dc7cf8a7ab06eb8e0c3510a9863d81b09f77",
+        "396dde6951d8c5efcdcc630a8d3497887a633f55fee65714536747c9471f62d9",
+        "2e81ce56e38ac84d454727eb23aaa51707e8d2bf4b5156cad9ebfe27b89c4279",
+        "b79b4f344b362d68086c242ab940a5d54e95eb929b16c143a33e777aee28d644",
+        "383459b2f659df1f8d3c05bf0010a862ebb1f1ba734465816c39f8c56b96ee46",
+        "8a8950f7623663222542c9469c73be3c4c81bbdf019e2c577590a61f2ce9a157"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_fern01.dds",
@@ -199,7 +473,19 @@
       "height": 512,
       "transparent_fraction": 0.8459053039550781,
       "opaque_fraction": 0.14599227905273438,
-      "alpha_mean": 38.18042755126953
+      "alpha_mean": 38.18042755126953,
+      "mip_alpha_sha256": [
+        "519c935d5f9d86953f27a5c450986ea159f5d3f152abb4e42cb823bb78274722",
+        "a6a8d99324368613632855b4f4bcf262cf6d4902cdca079abed4c52e532b74a0",
+        "d8a9e40805963ed6d8e91081c976144207e4450a9e9f69fe94b21a0a3ec9dc37",
+        "4f7aa358a015f1bfca41aa48482031ce6a6fc3de36f374ef212cea3d63703601",
+        "51ed2cd4d6645f928c8d5f65c228b428dc7ed3aad2b62189730df6e3f69a1f34",
+        "f957d01c76b979f141e5c58ab077a7f21fd3655550047f3c53fbed37ff5c9511",
+        "e9162574e62fa7d2c36175ef941eb566cf728caccf335c9dc761a2443d43632c",
+        "acb607cbcdc0f9863078cdcba3313a204bd458714f15a2887407974f37080c31",
+        "5303d96b54a3865d5d9e94322a76187a516f7a798fec4fc1f30e855453e4fe8f",
+        "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_flowers10.dds",
@@ -207,7 +493,17 @@
       "height": 128,
       "transparent_fraction": 0.5250244140625,
       "opaque_fraction": 0.27398681640625,
-      "alpha_mean": 99.93304443359375
+      "alpha_mean": 99.93304443359375,
+      "mip_alpha_sha256": [
+        "cbffe790acc4f80d7c53423075298ba3529fdf3e8692e694ae3924365c13c13e",
+        "369f1f685931b8002837b6bbf66104abf6b683957f39d258e901e279021cd75c",
+        "d4d9e21a282737c84aea4f0c02a1f05c9d69634dc5bda95e92a96ba8c7aabd1b",
+        "bda55f4cca78253826141445c309120b5b011b994b0b640b290bdce904cbcfe0",
+        "9e267807ad7034f77ad5ed8b8153dd176c88c7d8b328dd68b7b47b03846a39d1",
+        "38d53abad612c71922796f2b78a1bfbcaca058db333d9ec16f52297e38bed5cc",
+        "b87652c433e3e7bea52554b3b42f014849f943a26d590115559ee2dd91b85bf7",
+        "189f40034be7a199f1fa9891668ee3ab6049f82d38c68be70f596eab2e1857b7"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_flowers11.dds",
@@ -215,7 +511,17 @@
       "height": 128,
       "transparent_fraction": 0.5748291015625,
       "opaque_fraction": 0.27203369140625,
-      "alpha_mean": 90.361328125
+      "alpha_mean": 90.361328125,
+      "mip_alpha_sha256": [
+        "1c443b4179461586113554726eba80b82920eb6844bd2ca3c82a3b108f31abe6",
+        "45241ab1a57ee681b0f7dfb35a378139a4234fa632bb93eccdea47431f0f626c",
+        "a26829d8a6d2fa8fe925de077123970c7f5852da7e23ebd9baa6850502793d53",
+        "9faf329f6ae94f76eb402385115a2bec087db0e72ecd56ebd3aac5e08712154b",
+        "5c993ea96ebfc4f86b8ae8171baa1a002eb1a66048cec31d23012d3f90e00fc1",
+        "2ee4c00296bfeb8dfa48b7e26c2df167ad0bec2e5e01e10eedee984728904116",
+        "3efe8cd7d434f4491cdeea59274cc9aa823786562d36cf01a2042ccef8b50974",
+        "245843abef9e72e7efac30138a994bf6301e7e1d7d7042a33d42e863d2638811"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_flowers6.dds",
@@ -223,7 +529,17 @@
       "height": 128,
       "transparent_fraction": 0.66119384765625,
       "opaque_fraction": 0.08416748046875,
-      "alpha_mean": 58.80438232421875
+      "alpha_mean": 58.80438232421875,
+      "mip_alpha_sha256": [
+        "ba2349c4dc9620d185d296a5f0d21d522ae3e6c224c110ec91a480d374bd82a6",
+        "2a9d67672c69494912c4a3c35c907f1773b5db4091e41a0e0ac490596dd8e804",
+        "731f11a0d803b2f7da0e37e5be7cd9bda0e08ce6d819503093fd4c920c673824",
+        "176e4aa479fe5b8952c872e64881b8b63af4aa3e51d7de1023ed8ddb057172f8",
+        "ad763ddec6aea56f499c2787c9f0a1fb751b1d413697d6c203d76f230cc8d5f9",
+        "e1c260d10bafe1d3941da480fc707dd6e2a782bc0750b4a29e2f7d317fede7ab",
+        "1ff612f43829c1bdc73cf45801e6e00fa5e16134a1f4636f549ab4bc00bc0b8f",
+        "380918b946a526640a40df5dced6516794f3d97bbd9e6bb553d037c4439f31c3"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_flowers9.dds",
@@ -231,7 +547,17 @@
       "height": 128,
       "transparent_fraction": 0.68695068359375,
       "opaque_fraction": 0.1845703125,
-      "alpha_mean": 65.14227294921875
+      "alpha_mean": 65.14227294921875,
+      "mip_alpha_sha256": [
+        "538196bd5899ebe488efe11569e79a593fd95c52080075a02aa749bd5e14294e",
+        "7a50a21ed3e728dc4e2f802c8d31223a9f1963b251dfd43b5be765d0a63c9010",
+        "9be528f963504f6c38b9a99a9878c9c425acb0061f2eae7ce21f70d0807d0403",
+        "726a1ef5be521daeb3529ccf9c2579835f5fd08a92b41900be5ba0b5cf270e3a",
+        "19382f2f3d71f8bfa67090722c32e453941bd8cdb63b082876de04504539aa4f",
+        "eba33551ea4280189292e8676500acabad46660294028f489919b1bfcf22412f",
+        "31dd1abcde2ded79c961b69adc9ad0029c7bafad82ae67e9c258a3f8d4ff4047",
+        "559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_ivy01.dds",
@@ -239,7 +565,18 @@
       "height": 256,
       "transparent_fraction": 0.561859130859375,
       "opaque_fraction": 0.438140869140625,
-      "alpha_mean": 111.72592163085938
+      "alpha_mean": 111.72592163085938,
+      "mip_alpha_sha256": [
+        "f186fc663298485dff155a682bde847d4d65a078dc1db55b6225cc1e910de2c1",
+        "8288c666d28b6a6794ff39ec775c0973f0d399c6fa7c0de3858a5f7914af6cbe",
+        "d2c117f1334f22282ac27ef2f817fbfff988fd686383bed57f5a7df0c809f37d",
+        "42e765097d92481fc19801da9f373c0dec0c3d50fbd3cd1299f0254127ca470f",
+        "d3241b1592b9ba18d9be1639cf4c110ac8b96ca30e41219304e68596f5effd58",
+        "1654d21dae02e483e1c14f6d01321877b7b8ef80075275fb4752d8441aa6491e",
+        "9fe673ea54747f809bb8a5f8242cb3df074ee8ddd28ccc5a2ece76762206730a",
+        "7109b4a20597d3464d188e86cc15fb2070c4fe065d243fd3487a9ad35878a591",
+        "7ace431cb61584cb9b8dc7ec08cf38ac0a2d649660be86d349fb43108b542fa4"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_ivy02.dds",
@@ -247,7 +584,18 @@
       "height": 256,
       "transparent_fraction": 0.8383026123046875,
       "opaque_fraction": 0.1616973876953125,
-      "alpha_mean": 41.23283386230469
+      "alpha_mean": 41.23283386230469,
+      "mip_alpha_sha256": [
+        "8216502e723240a00bdcb792d1bcaf2b62ec24cb9dfbf1f8a3b85d4237b59abd",
+        "2cbc415ef576a8454f530274387ff1c64e10f8d118d5858c319241dbbf21d913",
+        "d6e37a39815342787f7d232b80fc51b2a925dc052509f65992f0648e16d11182",
+        "d0a1088ffcea46c3732eb3544b80b1364c9e926d2837bc369900a7677c3497c2",
+        "89675a5fbde45b9b611d3e675d5766d5933bae1b523e745c92e7228278c728d3",
+        "02c358ee1d301e90b4f45a4cc985cfd9a0bd966882cfc0048109bb45b4f2bbc7",
+        "ec093818ffd1dd03cd7fd334b8b5c3dfc49af4b1969af00c5f890861b0c7122f",
+        "65df511ed3e57d11377a4c8edf900759b146234b5f3639a75857838ae69f6df0",
+        "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_ivy03.dds",
@@ -255,7 +603,18 @@
       "height": 256,
       "transparent_fraction": 0.841552734375,
       "opaque_fraction": 0.158447265625,
-      "alpha_mean": 40.404052734375
+      "alpha_mean": 40.404052734375,
+      "mip_alpha_sha256": [
+        "c462a9bb85823fe1a5fabeafcb711853e71dd54a8232106d833909d9b70dd955",
+        "0799fed2190bb62882f39e2aad6a21865a3c13c84d6b14ad31ecead8f1eac7c9",
+        "285fb6be98fde621ad85cd74612f878172b6d893b43821f5b26a360817ae157c",
+        "c86b0ff164297a08038780d77d6ffc8f2d85d997f43b5801f411a8252ce445bd",
+        "143afc28a8874ea3df07826e570bff53dceac02d3dada6dd4f9f6012b94fc562",
+        "2cb987a35f3a8085939fb797e87208bc40fdea7f2e806a2bf6eaea559a3314a3",
+        "0fa640f68dd8fd88ab73e769557b59457ec3f774eaea555d5a760b53d7b72bb3",
+        "605ea2f949b95367b9b902cbafdd581bcdaf6a4a17c23319f4aacb7783274221",
+        "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_ivy04.dds",
@@ -263,7 +622,18 @@
       "height": 256,
       "transparent_fraction": 0.809539794921875,
       "opaque_fraction": 0.190460205078125,
-      "alpha_mean": 48.567352294921875
+      "alpha_mean": 48.567352294921875,
+      "mip_alpha_sha256": [
+        "5b609dd95c499e9f89e15dd2e9c4e37563b79328dc2fede43ae885147a7629df",
+        "3f1ca3136518c2df802f4be8dc476533272cc5b5ac84b881c81be4d1d789d7e9",
+        "762359de4ea2245c3e0023fec31c30a24a5c711cd14b99512769a4d279b7afae",
+        "b792f74a20eca927a5a9507f2d259f8229a10a011084d3bc645aef21c445d205",
+        "70cc2eb5d28d37027253c069ef38ad1ceaa00db412d0fa42308c0ee69125560c",
+        "ba2bb068e9373b950dd854b29f0779ceb9a4ddef8ad4da39f87750c023b40b78",
+        "3986e4adde47c3ee315b72e94297031a2baede41835e4b32747a919b1f768f8a",
+        "97fcec8e2118d7f26cd01366b36ee853b905319bcc139f34d951e583a90f9a72",
+        "dabd3aff769f07eb2965401eb029974ebba3407afd02b26ddb564ea5f8efae72"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_ivy05.dds",
@@ -271,7 +641,19 @@
       "height": 512,
       "transparent_fraction": 0.81854248046875,
       "opaque_fraction": 0.16409683227539062,
-      "alpha_mean": 45.25157928466797
+      "alpha_mean": 45.25157928466797,
+      "mip_alpha_sha256": [
+        "6ce916efc40023a800e1768439e3745d411572d7db0a48f4f65123d4c0caf2ca",
+        "32a4f22554e319430a1dad2be7c254ca3f87aca3f2a2b386acab77388df669b3",
+        "6da484f406c2c1997e45423247a02d446060bc4ec9fd5113b108703859b373fb",
+        "8cc51c9c680e09adcc664f27969d80b1704f63a5b241740625473883046b5444",
+        "3f7f9a845e46e30f54f66ece3d8099235dd32d28a9b54ffd8b0fb99bb05c0d59",
+        "843b22724d66add7d1ddc5d421d8fa6cf2db61de5238b8bd5530d875c0a94406",
+        "8a9738142a905662f38f7d940ef52cd1a398dc5ac4b929935b6ef60319cc8bea",
+        "0dcabde99ad165cddbc43c9f29058cea9356087aeb4daca95a55c6c86cde75a3",
+        "71a4bbfd265395990078d94c7f35bdabb6ae398b909145d7bd7bbb2128f24dde",
+        "951dcee3a7a4f3aac67ec76a2ce4469cc76df650f134bf2572bf60a65c982338"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_mtlcage01.dds",
@@ -279,7 +661,18 @@
       "height": 256,
       "transparent_fraction": 0.53887939453125,
       "opaque_fraction": 0.42724609375,
-      "alpha_mean": 114.161376953125
+      "alpha_mean": 114.161376953125,
+      "mip_alpha_sha256": [
+        "365eb45a9437ea303e23278bef4c7065f65b5108728711eda4589551e0ed18be",
+        "dbda7786eb90d51285d633cb840024a636e1ab745e588c4e5c29dcce2503771a",
+        "801fe002090d0d671316f018c28815867aeae65bd8e7b278c48b04c9e6ac55e5",
+        "b9fe90c0ea5f45fcdc8ddc0920eb0d42a11f02254d88b46496f441f5143ee0a8",
+        "97d8c30c5374da6bba4b980f1cfe75c3464931dfeadd5b191319437dde9cf448",
+        "2cde36048d123f9d09cef6959d70c4ed6e0d90b841bba58e985aca30d833af95",
+        "892f376185b42b21b3f61b059944bb489bca95a528942e1e82b7e5160c391e7c",
+        "c817a40781657c46b78d733b1e91e158e8148122adbb934e7a46255edd099250",
+        "acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_pinetree3.dds",
@@ -287,7 +680,18 @@
       "height": 256,
       "transparent_fraction": 0.4751129150390625,
       "opaque_fraction": 0.475372314453125,
-      "alpha_mean": 126.44355773925781
+      "alpha_mean": 126.44355773925781,
+      "mip_alpha_sha256": [
+        "d6ab7af054f5ac2d8769586d1d19c0ac28f91cd55040c3e8e39e61f3764f15bc",
+        "4a7ee73e65f250e39fe9a353b578d2e5af5dde8c930a8b58111cd23cc2d83fe7",
+        "506e7a817e46535b919a4492814c2341ec955dfb4f4e985365c0eac014d5d0e8",
+        "952fcaae2d85c4cbe1700b6e4b3b0f89c0e80ee6abb6841962a98ddcc402b53d",
+        "1182a2a72eb5d933101199a84d4765c4c909b530a6f89d8c28e5f2eeb88b916a",
+        "1d199f718dbe6b676f6998bf0eb97f3200b32529e2151d038157ce39e5479ffa",
+        "20b6732c2e79fc3dca70d0034446682222ba7c813f394e6062711dab55386756",
+        "12fde347fd38c85f54a3f5d22db807cbcdb52f15c5fcde574ea028f3596c90c2",
+        "591b7cc95037822dec5a4d593a2e2e8b19c07ddd2570e5699003d17f14c440a6"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_pt_dirt01.dds",
@@ -295,7 +699,19 @@
       "height": 512,
       "transparent_fraction": 0.4854774475097656,
       "opaque_fraction": 0.01090240478515625,
-      "alpha_mean": 111.12728118896484
+      "alpha_mean": 111.12728118896484,
+      "mip_alpha_sha256": [
+        "ce81f791e3630c45be66c1c6cf8a1655eccb8a07695e42f8c7b7e36a16e5fe42",
+        "714a0551eadd9b1c7dc9ff35e48013d31f9207357ac3f48c71d78ac9bbaeb042",
+        "4ba29205a6c59e080a41ac4c75e69510fd99c07b1d17acdff72438f84cc97a89",
+        "b34cceca566bd6b709cabce9a86e0a6c44710ed0ea16808f3c336b11e725bc87",
+        "886b3b0b8da3ad6097c713691089312df9410581806cf8e3a0db71fc8533b473",
+        "eba72809b3d70b989956e50f6c48a1aa3491d6e09b8209446218d6cba96b3c17",
+        "66663925774a04ac96819dba322e1abd2de76d86e01d5ea77ece92a7a2f97b16",
+        "585f317b76a3e3d8d5dab26998c93098658f39658815be584fd455d67ed03b24",
+        "c390ed0ef60798cdc42c95bda2695db36b3cb2c48e888cf57ab1da74c16c2897",
+        "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_pt_grass01.dds",
@@ -303,7 +719,19 @@
       "height": 512,
       "transparent_fraction": 0.4854774475097656,
       "opaque_fraction": 0.01090240478515625,
-      "alpha_mean": 111.12728118896484
+      "alpha_mean": 111.12728118896484,
+      "mip_alpha_sha256": [
+        "ce81f791e3630c45be66c1c6cf8a1655eccb8a07695e42f8c7b7e36a16e5fe42",
+        "714a0551eadd9b1c7dc9ff35e48013d31f9207357ac3f48c71d78ac9bbaeb042",
+        "4ba29205a6c59e080a41ac4c75e69510fd99c07b1d17acdff72438f84cc97a89",
+        "b34cceca566bd6b709cabce9a86e0a6c44710ed0ea16808f3c336b11e725bc87",
+        "886b3b0b8da3ad6097c713691089312df9410581806cf8e3a0db71fc8533b473",
+        "eba72809b3d70b989956e50f6c48a1aa3491d6e09b8209446218d6cba96b3c17",
+        "66663925774a04ac96819dba322e1abd2de76d86e01d5ea77ece92a7a2f97b16",
+        "585f317b76a3e3d8d5dab26998c93098658f39658815be584fd455d67ed03b24",
+        "c390ed0ef60798cdc42c95bda2695db36b3cb2c48e888cf57ab1da74c16c2897",
+        "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_pt_grass6.dds",
@@ -311,7 +739,19 @@
       "height": 512,
       "transparent_fraction": 0.4854774475097656,
       "opaque_fraction": 0.01090240478515625,
-      "alpha_mean": 111.12728118896484
+      "alpha_mean": 111.12728118896484,
+      "mip_alpha_sha256": [
+        "ce81f791e3630c45be66c1c6cf8a1655eccb8a07695e42f8c7b7e36a16e5fe42",
+        "714a0551eadd9b1c7dc9ff35e48013d31f9207357ac3f48c71d78ac9bbaeb042",
+        "4ba29205a6c59e080a41ac4c75e69510fd99c07b1d17acdff72438f84cc97a89",
+        "b34cceca566bd6b709cabce9a86e0a6c44710ed0ea16808f3c336b11e725bc87",
+        "886b3b0b8da3ad6097c713691089312df9410581806cf8e3a0db71fc8533b473",
+        "eba72809b3d70b989956e50f6c48a1aa3491d6e09b8209446218d6cba96b3c17",
+        "66663925774a04ac96819dba322e1abd2de76d86e01d5ea77ece92a7a2f97b16",
+        "585f317b76a3e3d8d5dab26998c93098658f39658815be584fd455d67ed03b24",
+        "c390ed0ef60798cdc42c95bda2695db36b3cb2c48e888cf57ab1da74c16c2897",
+        "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_pt_moss01.dds",
@@ -319,7 +759,19 @@
       "height": 512,
       "transparent_fraction": 0.4854774475097656,
       "opaque_fraction": 0.01090240478515625,
-      "alpha_mean": 111.12728118896484
+      "alpha_mean": 111.12728118896484,
+      "mip_alpha_sha256": [
+        "ce81f791e3630c45be66c1c6cf8a1655eccb8a07695e42f8c7b7e36a16e5fe42",
+        "714a0551eadd9b1c7dc9ff35e48013d31f9207357ac3f48c71d78ac9bbaeb042",
+        "4ba29205a6c59e080a41ac4c75e69510fd99c07b1d17acdff72438f84cc97a89",
+        "b34cceca566bd6b709cabce9a86e0a6c44710ed0ea16808f3c336b11e725bc87",
+        "886b3b0b8da3ad6097c713691089312df9410581806cf8e3a0db71fc8533b473",
+        "eba72809b3d70b989956e50f6c48a1aa3491d6e09b8209446218d6cba96b3c17",
+        "66663925774a04ac96819dba322e1abd2de76d86e01d5ea77ece92a7a2f97b16",
+        "585f317b76a3e3d8d5dab26998c93098658f39658815be584fd455d67ed03b24",
+        "c390ed0ef60798cdc42c95bda2695db36b3cb2c48e888cf57ab1da74c16c2897",
+        "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_snwpne4.dds",
@@ -327,7 +779,18 @@
       "height": 256,
       "transparent_fraction": 0.4751129150390625,
       "opaque_fraction": 0.475372314453125,
-      "alpha_mean": 126.44355773925781
+      "alpha_mean": 126.44355773925781,
+      "mip_alpha_sha256": [
+        "d6ab7af054f5ac2d8769586d1d19c0ac28f91cd55040c3e8e39e61f3764f15bc",
+        "4a7ee73e65f250e39fe9a353b578d2e5af5dde8c930a8b58111cd23cc2d83fe7",
+        "506e7a817e46535b919a4492814c2341ec955dfb4f4e985365c0eac014d5d0e8",
+        "952fcaae2d85c4cbe1700b6e4b3b0f89c0e80ee6abb6841962a98ddcc402b53d",
+        "1182a2a72eb5d933101199a84d4765c4c909b530a6f89d8c28e5f2eeb88b916a",
+        "1d199f718dbe6b676f6998bf0eb97f3200b32529e2151d038157ce39e5479ffa",
+        "20b6732c2e79fc3dca70d0034446682222ba7c813f394e6062711dab55386756",
+        "12fde347fd38c85f54a3f5d22db807cbcdb52f15c5fcde574ea028f3596c90c2",
+        "591b7cc95037822dec5a4d593a2e2e8b19c07ddd2570e5699003d17f14c440a6"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_stone10a.dds",
@@ -335,7 +798,18 @@
       "height": 256,
       "transparent_fraction": 0.2529296875,
       "opaque_fraction": 0.7470550537109375,
-      "alpha_mean": 190.4995880126953
+      "alpha_mean": 190.4995880126953,
+      "mip_alpha_sha256": [
+        "cfefefa642cdc3d0bde2a4101783b73fe3d713173046577424e3b68b19dc5e17",
+        "4fe857a535d8503a09d78a8d0a256c0cd63f5ec972328e52bcb852d442414007",
+        "8b0bba26c209a574e4b9675f7d1cc7d9845a304da591c393c8be7d99b099de9b",
+        "121b5eac48896d3ae810bd0aba7e3f637d377b97a1719a1211824d478a697e2e",
+        "b122243f4e04eb36ead72a454b18eb01755605baeed0b58c778a03f266a03192",
+        "89d2e11ae4c86afebae836d3010cad4386082cb8950f313572a2202ecdf87f9f",
+        "8667bf4d2139bef386795e4667c2e85c4e74e7a6ff572ac7da7f46811a3eebe3",
+        "c92460f27c82c7f86593ab4587aa9a4190865658da938dfbd836bd575c0a089f",
+        "4fb733bedb74fec8d65bedf056b935189a289e928b3302bec38a281814de523a"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_thicket2.dds",
@@ -343,7 +817,17 @@
       "height": 128,
       "transparent_fraction": 0.767578125,
       "opaque_fraction": 0.04150390625,
-      "alpha_mean": 41.17083740234375
+      "alpha_mean": 41.17083740234375,
+      "mip_alpha_sha256": [
+        "a7f31dddd4de6e85c7d86505cca0ce3e96177481aab88b8a6d1aff1ad8c03924",
+        "90d91c18a7db34369f2b5a5b3f745f9a0cac6b268e7779976b68738cb9e3fbb7",
+        "0137235cfc80d850d3e146251f174471c8c7ae46da6e72c0d23bba23245f181e",
+        "fc93af427249f954318786facf3e044cfede843e8afc6e6831bbc47facb068ee",
+        "57495ef7cf1af0193089814f168c81fb363964493f170df102a6956579ff7012",
+        "d7e7393d67df6af1b20047daa8db9a7a1438b77e0791c3d61e7c6438a6d20c9f",
+        "a039ad208b4c3afa2da7a734c0db983954dd39edaa7e6fcec14a26d536147cce",
+        "a318c24216defe206feeb73ef5be00033fa9c4a74d0b967f6532a26ca5906d3b"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_wntpitxa.dds",
@@ -351,7 +835,19 @@
       "height": 512,
       "transparent_fraction": 0.4854774475097656,
       "opaque_fraction": 0.01090240478515625,
-      "alpha_mean": 111.12728118896484
+      "alpha_mean": 111.12728118896484,
+      "mip_alpha_sha256": [
+        "ce81f791e3630c45be66c1c6cf8a1655eccb8a07695e42f8c7b7e36a16e5fe42",
+        "714a0551eadd9b1c7dc9ff35e48013d31f9207357ac3f48c71d78ac9bbaeb042",
+        "4ba29205a6c59e080a41ac4c75e69510fd99c07b1d17acdff72438f84cc97a89",
+        "b34cceca566bd6b709cabce9a86e0a6c44710ed0ea16808f3c336b11e725bc87",
+        "886b3b0b8da3ad6097c713691089312df9410581806cf8e3a0db71fc8533b473",
+        "eba72809b3d70b989956e50f6c48a1aa3491d6e09b8209446218d6cba96b3c17",
+        "66663925774a04ac96819dba322e1abd2de76d86e01d5ea77ece92a7a2f97b16",
+        "585f317b76a3e3d8d5dab26998c93098658f39658815be584fd455d67ed03b24",
+        "c390ed0ef60798cdc42c95bda2695db36b3cb2c48e888cf57ab1da74c16c2897",
+        "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf01_wwillow1.dds",
@@ -359,7 +855,18 @@
       "height": 256,
       "transparent_fraction": 0.5801849365234375,
       "opaque_fraction": 0.3990478515625,
-      "alpha_mean": 105.71682739257812
+      "alpha_mean": 105.71682739257812,
+      "mip_alpha_sha256": [
+        "63f0cb52f65d43005f64fc30ed5618952f47cb96a2ed0e41f63bb2d637679694",
+        "cf52c5a899e0d25f12fe8dd643ef76ebb08aa44b8202c340a0490dd8241f6355",
+        "dc9c16a2c3af9722ef2a69e6dc0575efb8511d6965886b489e4218aa808ff2ba",
+        "eaea71820c5d7cdf27d6a42900829b73565a27c9c44f8d5fe23d172021f62149",
+        "04177de8774083d32e2d8d3de321f95fe5314bdc99de8be329d7da5b046d7556",
+        "9d261fda1788abd6330337c585bb23f005c53b70966f8bce63358eb313cdc2d5",
+        "ff0cb88e1c0f5ac02a4c84253a5d465a4320d6a5ad2f93d1c1e96f2d70ba6987",
+        "5524976cb04fccf71f32a6c285f1d580bbc88d04c53946ad6e91e38e5a288ef3",
+        "3f79bb7b435b05321651daefd374cdc681dc06faa65e374e38337b88ca046dea"
+      ]
     },
     {
       "texture": "sw_t_season/wsf02_bush03.dds",
@@ -367,7 +874,19 @@
       "height": 512,
       "transparent_fraction": 0.898223876953125,
       "opaque_fraction": 0.045162200927734375,
-      "alpha_mean": 18.81600570678711
+      "alpha_mean": 18.81600570678711,
+      "mip_alpha_sha256": [
+        "ff880502a13adc3f4addc4aca66a5e512a163492e4ea8d8a89792882186c5331",
+        "0ca5d1af886510867f8bdd0e81e7796206c9b93bbd58d222aa3362ac2baef873",
+        "e14cf763846dd1d1470d7d3060287e4812de39eba5016f23b61a9168ece7b9ac",
+        "96f9e041126e3f7c470f34c234fbcfdc391924ee5c422af0964d7b9407f37806",
+        "535270344abbf53cf9d7ef5f18b3796e1475dca3c610ee52c2e61e7e28163339",
+        "9626a011867aaed197b73545137e45efa05d744ff4bfc53022f899328e169ba6",
+        "63134a5076dd58f9c3fd14101058c8c731d6442711923ec96377b8d9bcafa8f8",
+        "c3a13fc1dcc1e819d2061a8b7d2c0689a030ea7660c346131b0e4261649ed707",
+        "7582050ba1fa0b4e04d8e7ee45bfcf80f9d8de39941baf78f366c1bfe8f97001",
+        "83891d7fe85c33e52c8b4e5814c92fb6a3b9467299200538a6babaa8b452d879"
+      ]
     },
     {
       "texture": "sw_t_season/wsf02_dirt04.dds",
@@ -375,7 +894,19 @@
       "height": 512,
       "transparent_fraction": 0.2981376647949219,
       "opaque_fraction": 0.014019012451171875,
-      "alpha_mean": 77.66390228271484
+      "alpha_mean": 77.66390228271484,
+      "mip_alpha_sha256": [
+        "86a5d44e20c6a417ea655c5e66a2172c96397cd2f1d26893e8518f69413f4288",
+        "705f9d3b3648f8bf2b96d5194b6beab3d0b66fed8b5c8c711cd9e0713394f7e0",
+        "d294432f104549cd1a0dfdd6e2eb63fbb0f36502a39c6a872f78ad51609515ee",
+        "c3fdc90d1f0e0b0c5f02c280cd83198436ea63332c3da36506b5c11ddd175d68",
+        "a160fae9e3c2f72e6b7a1034166561c0be59a10fd0841fd25b51255f9818b3ee",
+        "c544fdb09a68a61d85fdf207ed2dcc4d8d07f97c35758eb567c8fda9864fe951",
+        "34af04805cc8040bb028f3a8f73326170d88fc397a984d15ffbe221745837330",
+        "a7e6fda6ff7b0ed9a1d3e4dbd8c1ca3017378d807082e45fc81ed73430d3deca",
+        "ff1f67104b108c61a220618296c129c33b1c480b086fa733244f75214bb173e3",
+        "245843abef9e72e7efac30138a994bf6301e7e1d7d7042a33d42e863d2638811"
+      ]
     },
     {
       "texture": "sw_t_season/wsf02_dirt05.dds",
@@ -383,7 +914,19 @@
       "height": 512,
       "transparent_fraction": 0.2598075866699219,
       "opaque_fraction": 0.2906341552734375,
-      "alpha_mean": 137.09015274047852
+      "alpha_mean": 137.09015274047852,
+      "mip_alpha_sha256": [
+        "cd7b9b4a124fcf8dd4ad70536a0d32922f88aa844b872f42e15ab53f06c7b051",
+        "78be08aaa1696e6b20a67bca2160092a83b92176d2ed1faaf982b74eb84c7222",
+        "ff3017f142e35f3d02e45e5470ff41ff6427ce30fc837d24e85565dba275d815",
+        "41fcc3a059520bfb4548e32bda06c6466bf45e2a733b7de92a2dee719848025c",
+        "a3ad7cb3d64aceb6ba691abddbe8dc7cf8a7ab06eb8e0c3510a9863d81b09f77",
+        "396dde6951d8c5efcdcc630a8d3497887a633f55fee65714536747c9471f62d9",
+        "2e81ce56e38ac84d454727eb23aaa51707e8d2bf4b5156cad9ebfe27b89c4279",
+        "b79b4f344b362d68086c242ab940a5d54e95eb929b16c143a33e777aee28d644",
+        "383459b2f659df1f8d3c05bf0010a862ebb1f1ba734465816c39f8c56b96ee46",
+        "8a8950f7623663222542c9469c73be3c4c81bbdf019e2c577590a61f2ce9a157"
+      ]
     },
     {
       "texture": "sw_t_season/wsf02_fern01.dds",
@@ -391,7 +934,19 @@
       "height": 512,
       "transparent_fraction": 0.8459053039550781,
       "opaque_fraction": 0.14599227905273438,
-      "alpha_mean": 38.18042755126953
+      "alpha_mean": 38.18042755126953,
+      "mip_alpha_sha256": [
+        "519c935d5f9d86953f27a5c450986ea159f5d3f152abb4e42cb823bb78274722",
+        "a6a8d99324368613632855b4f4bcf262cf6d4902cdca079abed4c52e532b74a0",
+        "d8a9e40805963ed6d8e91081c976144207e4450a9e9f69fe94b21a0a3ec9dc37",
+        "4f7aa358a015f1bfca41aa48482031ce6a6fc3de36f374ef212cea3d63703601",
+        "51ed2cd4d6645f928c8d5f65c228b428dc7ed3aad2b62189730df6e3f69a1f34",
+        "f957d01c76b979f141e5c58ab077a7f21fd3655550047f3c53fbed37ff5c9511",
+        "e9162574e62fa7d2c36175ef941eb566cf728caccf335c9dc761a2443d43632c",
+        "acb607cbcdc0f9863078cdcba3313a204bd458714f15a2887407974f37080c31",
+        "5303d96b54a3865d5d9e94322a76187a516f7a798fec4fc1f30e855453e4fe8f",
+        "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf02_ivy01.dds",
@@ -399,7 +954,18 @@
       "height": 256,
       "transparent_fraction": 0.561859130859375,
       "opaque_fraction": 0.438140869140625,
-      "alpha_mean": 111.72592163085938
+      "alpha_mean": 111.72592163085938,
+      "mip_alpha_sha256": [
+        "f186fc663298485dff155a682bde847d4d65a078dc1db55b6225cc1e910de2c1",
+        "8288c666d28b6a6794ff39ec775c0973f0d399c6fa7c0de3858a5f7914af6cbe",
+        "d2c117f1334f22282ac27ef2f817fbfff988fd686383bed57f5a7df0c809f37d",
+        "42e765097d92481fc19801da9f373c0dec0c3d50fbd3cd1299f0254127ca470f",
+        "d3241b1592b9ba18d9be1639cf4c110ac8b96ca30e41219304e68596f5effd58",
+        "1654d21dae02e483e1c14f6d01321877b7b8ef80075275fb4752d8441aa6491e",
+        "9fe673ea54747f809bb8a5f8242cb3df074ee8ddd28ccc5a2ece76762206730a",
+        "7109b4a20597d3464d188e86cc15fb2070c4fe065d243fd3487a9ad35878a591",
+        "7ace431cb61584cb9b8dc7ec08cf38ac0a2d649660be86d349fb43108b542fa4"
+      ]
     },
     {
       "texture": "sw_t_season/wsf02_pt_grass01.dds",
@@ -407,7 +973,19 @@
       "height": 512,
       "transparent_fraction": 0.4854774475097656,
       "opaque_fraction": 0.01090240478515625,
-      "alpha_mean": 111.12728118896484
+      "alpha_mean": 111.12728118896484,
+      "mip_alpha_sha256": [
+        "ce81f791e3630c45be66c1c6cf8a1655eccb8a07695e42f8c7b7e36a16e5fe42",
+        "714a0551eadd9b1c7dc9ff35e48013d31f9207357ac3f48c71d78ac9bbaeb042",
+        "4ba29205a6c59e080a41ac4c75e69510fd99c07b1d17acdff72438f84cc97a89",
+        "b34cceca566bd6b709cabce9a86e0a6c44710ed0ea16808f3c336b11e725bc87",
+        "886b3b0b8da3ad6097c713691089312df9410581806cf8e3a0db71fc8533b473",
+        "eba72809b3d70b989956e50f6c48a1aa3491d6e09b8209446218d6cba96b3c17",
+        "66663925774a04ac96819dba322e1abd2de76d86e01d5ea77ece92a7a2f97b16",
+        "585f317b76a3e3d8d5dab26998c93098658f39658815be584fd455d67ed03b24",
+        "c390ed0ef60798cdc42c95bda2695db36b3cb2c48e888cf57ab1da74c16c2897",
+        "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf02_pt_moss01.dds",
@@ -415,7 +993,19 @@
       "height": 512,
       "transparent_fraction": 0.4854774475097656,
       "opaque_fraction": 0.01090240478515625,
-      "alpha_mean": 111.12728118896484
+      "alpha_mean": 111.12728118896484,
+      "mip_alpha_sha256": [
+        "ce81f791e3630c45be66c1c6cf8a1655eccb8a07695e42f8c7b7e36a16e5fe42",
+        "714a0551eadd9b1c7dc9ff35e48013d31f9207357ac3f48c71d78ac9bbaeb042",
+        "4ba29205a6c59e080a41ac4c75e69510fd99c07b1d17acdff72438f84cc97a89",
+        "b34cceca566bd6b709cabce9a86e0a6c44710ed0ea16808f3c336b11e725bc87",
+        "886b3b0b8da3ad6097c713691089312df9410581806cf8e3a0db71fc8533b473",
+        "eba72809b3d70b989956e50f6c48a1aa3491d6e09b8209446218d6cba96b3c17",
+        "66663925774a04ac96819dba322e1abd2de76d86e01d5ea77ece92a7a2f97b16",
+        "585f317b76a3e3d8d5dab26998c93098658f39658815be584fd455d67ed03b24",
+        "c390ed0ef60798cdc42c95bda2695db36b3cb2c48e888cf57ab1da74c16c2897",
+        "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1"
+      ]
     },
     {
       "texture": "sw_t_season/wsf03_dirt05.dds",
@@ -423,7 +1013,19 @@
       "height": 512,
       "transparent_fraction": 0.2598075866699219,
       "opaque_fraction": 0.2906341552734375,
-      "alpha_mean": 137.09015274047852
+      "alpha_mean": 137.09015274047852,
+      "mip_alpha_sha256": [
+        "cd7b9b4a124fcf8dd4ad70536a0d32922f88aa844b872f42e15ab53f06c7b051",
+        "78be08aaa1696e6b20a67bca2160092a83b92176d2ed1faaf982b74eb84c7222",
+        "ff3017f142e35f3d02e45e5470ff41ff6427ce30fc837d24e85565dba275d815",
+        "41fcc3a059520bfb4548e32bda06c6466bf45e2a733b7de92a2dee719848025c",
+        "a3ad7cb3d64aceb6ba691abddbe8dc7cf8a7ab06eb8e0c3510a9863d81b09f77",
+        "396dde6951d8c5efcdcc630a8d3497887a633f55fee65714536747c9471f62d9",
+        "2e81ce56e38ac84d454727eb23aaa51707e8d2bf4b5156cad9ebfe27b89c4279",
+        "b79b4f344b362d68086c242ab940a5d54e95eb929b16c143a33e777aee28d644",
+        "383459b2f659df1f8d3c05bf0010a862ebb1f1ba734465816c39f8c56b96ee46",
+        "8a8950f7623663222542c9469c73be3c4c81bbdf019e2c577590a61f2ce9a157"
+      ]
     },
     {
       "texture": "sw_t_season/wsf10_cliffsdea1.dds",
@@ -431,7 +1033,19 @@
       "height": 512,
       "transparent_fraction": 0.4717521667480469,
       "opaque_fraction": 0.000453948974609375,
-      "alpha_mean": 71.81852340698242
+      "alpha_mean": 71.81852340698242,
+      "mip_alpha_sha256": [
+        "f0037af074a2e9ec07f392deee22ed0deddf783950276c8bcf1c1550cc93d728",
+        "4113b33e2b2622ab31601a830a7cba48132f514b026357a448782dc74f455a14",
+        "cc537eb7221fe203cd6049966ae5dd3f49b54c151bd8a078c4b197aad480d207",
+        "76850dee5ebb77ec5e82da92746e919cb23585a1b60212309a18e716f7f3509b",
+        "768ee2c493ba25599e6fb0812121098388ae501cefcc6eb5f34f9beba5d566e2",
+        "5b2b6752a960a389abb803c8924698dd9ddbe20949820307002ad4bcebfb1234",
+        "ba5336b63ab2081367118d33a340f7386fc3c5b350a700a92f2004523ae5953d",
+        "c62b2fc0919859ab2da8febfd992826d7060d2cba81cf6b5853ff0ada1692dcd",
+        "1a6cdd9c40883f1e2fcd666a7981cd7ad139e16d3802363ae805ea70ff84b1fd",
+        "a25513c7e0f6eaa80a3337ee18081b9e2ed09e00af8531c8f7bb2542764027e7"
+      ]
     },
     {
       "texture": "sw_t_season/wsf10_cliffsdea2.dds",
@@ -439,7 +1053,19 @@
       "height": 512,
       "transparent_fraction": 0.5145988464355469,
       "opaque_fraction": 0.000438690185546875,
-      "alpha_mean": 63.86323928833008
+      "alpha_mean": 63.86323928833008,
+      "mip_alpha_sha256": [
+        "5ff4d8b9d14da258918cc883a1341177b1cbda787bfcc7a2e4062a53fd3dfe1f",
+        "51b12e959a168f285b879661ea92329765c148a6958e0fea09178f8766170ae0",
+        "34eeac4a9b1d3522f5ea5c8aee08314d6a1c7fc699a181562a9f35ae0088da5a",
+        "9b8d18a762c2e1006e6642b5179b4c8e63100e01bfd5a468ebca34d817e0f5fc",
+        "08cb17b6ba3b72a8130539f72efd00bb1dddb7a2c72efe327e4a7064380a0f34",
+        "34d9649231554763a266db1564075d5c6d89cd3d3caa35057dd69b2a20487ca8",
+        "cbd633ddd15685909244443d24c276bdc00f588d4d01092fb2a23f76a0918e90",
+        "83d769579c0f524089a9dcc879bb186d6a5a4c44f905f3a38885fba17fe280e0",
+        "6659f4d32392b62200833de093c433e44dce927905997a57ec89d5e5f7e78914",
+        "72dfcfb0c470ac255cde83fb8fe38de8a128188e03ea5ba5b2a93adbea1062fa"
+      ]
     },
     {
       "texture": "sw_t_season/wsf10_cliffsxtra.dds",
@@ -447,7 +1073,19 @@
       "height": 512,
       "transparent_fraction": 0.2598075866699219,
       "opaque_fraction": 0.2906341552734375,
-      "alpha_mean": 137.09015274047852
+      "alpha_mean": 137.09015274047852,
+      "mip_alpha_sha256": [
+        "cd7b9b4a124fcf8dd4ad70536a0d32922f88aa844b872f42e15ab53f06c7b051",
+        "78be08aaa1696e6b20a67bca2160092a83b92176d2ed1faaf982b74eb84c7222",
+        "ff3017f142e35f3d02e45e5470ff41ff6427ce30fc837d24e85565dba275d815",
+        "41fcc3a059520bfb4548e32bda06c6466bf45e2a733b7de92a2dee719848025c",
+        "a3ad7cb3d64aceb6ba691abddbe8dc7cf8a7ab06eb8e0c3510a9863d81b09f77",
+        "396dde6951d8c5efcdcc630a8d3497887a633f55fee65714536747c9471f62d9",
+        "2e81ce56e38ac84d454727eb23aaa51707e8d2bf4b5156cad9ebfe27b89c4279",
+        "b79b4f344b362d68086c242ab940a5d54e95eb929b16c143a33e777aee28d644",
+        "383459b2f659df1f8d3c05bf0010a862ebb1f1ba734465816c39f8c56b96ee46",
+        "8a8950f7623663222542c9469c73be3c4c81bbdf019e2c577590a61f2ce9a157"
+      ]
     },
     {
       "texture": "sw_t_season/wtf_1_leaves.dds",
@@ -455,7 +1093,17 @@
       "height": 128,
       "transparent_fraction": 0.2935791015625,
       "opaque_fraction": 0.46234130859375,
-      "alpha_mean": 150.26483154296875
+      "alpha_mean": 150.26483154296875,
+      "mip_alpha_sha256": [
+        "f8ae5056bab0a788e8fd37094a4b67cb3df7f41de324993c9240bf8e078d060b",
+        "7d972720b0151f882da6b95f19af077bb801cb905f87b35b471a437429399448",
+        "c3dd38ccacdfb99fc516618136aec5b43ca7fbe39271b354e89749911b8ee948",
+        "d124c435ddd8636cea20e97cbe66207e9174f7cd2a0f07d71389863cd8cdb483",
+        "7657594aa98d914516c3ab102d32c7e273a836bb3c1df90fc9f737066f873f23",
+        "569cd1d64190b38604d45f724f6f7f3a6b7730a3d7a4eb8e4a1147c0b9089796",
+        "9813156ed729783638908775eba31552fc4e7004e91ae96f8eb126bd94031d11",
+        "9defb0a9e163278be0e05aa01b312ec78cfa3726869503385e76e3a4b7950648"
+      ]
     },
     {
       "texture": "sw_t_season/wtf_2_leaves.dds",
@@ -463,7 +1111,17 @@
       "height": 128,
       "transparent_fraction": 0.2935791015625,
       "opaque_fraction": 0.46234130859375,
-      "alpha_mean": 150.26483154296875
+      "alpha_mean": 150.26483154296875,
+      "mip_alpha_sha256": [
+        "f8ae5056bab0a788e8fd37094a4b67cb3df7f41de324993c9240bf8e078d060b",
+        "7d972720b0151f882da6b95f19af077bb801cb905f87b35b471a437429399448",
+        "c3dd38ccacdfb99fc516618136aec5b43ca7fbe39271b354e89749911b8ee948",
+        "d124c435ddd8636cea20e97cbe66207e9174f7cd2a0f07d71389863cd8cdb483",
+        "7657594aa98d914516c3ab102d32c7e273a836bb3c1df90fc9f737066f873f23",
+        "569cd1d64190b38604d45f724f6f7f3a6b7730a3d7a4eb8e4a1147c0b9089796",
+        "9813156ed729783638908775eba31552fc4e7004e91ae96f8eb126bd94031d11",
+        "9defb0a9e163278be0e05aa01b312ec78cfa3726869503385e76e3a4b7950648"
+      ]
     },
     {
       "texture": "sw_t_season/wtf_3a_leaves.dds",
@@ -471,7 +1129,17 @@
       "height": 128,
       "transparent_fraction": 0.2935791015625,
       "opaque_fraction": 0.46234130859375,
-      "alpha_mean": 150.26483154296875
+      "alpha_mean": 150.26483154296875,
+      "mip_alpha_sha256": [
+        "f8ae5056bab0a788e8fd37094a4b67cb3df7f41de324993c9240bf8e078d060b",
+        "7d972720b0151f882da6b95f19af077bb801cb905f87b35b471a437429399448",
+        "c3dd38ccacdfb99fc516618136aec5b43ca7fbe39271b354e89749911b8ee948",
+        "d124c435ddd8636cea20e97cbe66207e9174f7cd2a0f07d71389863cd8cdb483",
+        "7657594aa98d914516c3ab102d32c7e273a836bb3c1df90fc9f737066f873f23",
+        "569cd1d64190b38604d45f724f6f7f3a6b7730a3d7a4eb8e4a1147c0b9089796",
+        "9813156ed729783638908775eba31552fc4e7004e91ae96f8eb126bd94031d11",
+        "9defb0a9e163278be0e05aa01b312ec78cfa3726869503385e76e3a4b7950648"
+      ]
     },
     {
       "texture": "sw_plc/plc_wrm_willow.dds",
@@ -479,7 +1147,23 @@
       "height": 256,
       "transparent_fraction": 0.5801849365234375,
       "opaque_fraction": 0.3990478515625,
-      "alpha_mean": 105.71682739257812
+      "alpha_mean": 105.71682739257812,
+      "mip_alpha_sha256": [
+        "63f0cb52f65d43005f64fc30ed5618952f47cb96a2ed0e41f63bb2d637679694",
+        "cf52c5a899e0d25f12fe8dd643ef76ebb08aa44b8202c340a0490dd8241f6355",
+        "dc9c16a2c3af9722ef2a69e6dc0575efb8511d6965886b489e4218aa808ff2ba",
+        "eaea71820c5d7cdf27d6a42900829b73565a27c9c44f8d5fe23d172021f62149",
+        "04177de8774083d32e2d8d3de321f95fe5314bdc99de8be329d7da5b046d7556",
+        "9d261fda1788abd6330337c585bb23f005c53b70966f8bce63358eb313cdc2d5",
+        "ff0cb88e1c0f5ac02a4c84253a5d465a4320d6a5ad2f93d1c1e96f2d70ba6987",
+        "5524976cb04fccf71f32a6c285f1d580bbc88d04c53946ad6e91e38e5a288ef3",
+        "3f79bb7b435b05321651daefd374cdc681dc06faa65e374e38337b88ca046dea"
+      ]
     }
-  ]
+  ],
+  "mip_generation": {
+    "encoder": "Version: ImageMagick 7.1.2-22 Q16-HDRI x64 ccf56fb:20260512 https://imagemagick.org",
+    "contract": "Original TGA pixel alpha (ignore erroneous extension alpha type); flip vertically; ImageMagick DDS DXT5 with default full mip chain.",
+    "comparison": "SHA-256 of decoded alpha bytes at each mip level, starting at level 0."
+  }
 }

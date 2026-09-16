@@ -141,8 +141,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var (type, skill) in skills)
             {
                 // Exclude any skills which are restricted by character type.
-                if (skill.CharacterTypeRestriction != CharacterType.Invalid &&
-                    skill.CharacterTypeRestriction != dbPlayer.CharacterType)
+                if (!skill.IsAvailableToCharacterType(dbPlayer.CharacterType))
                 {
                     continue;
                 }

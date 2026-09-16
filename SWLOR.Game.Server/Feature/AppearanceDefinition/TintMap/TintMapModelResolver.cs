@@ -198,15 +198,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             foreach (var (part, partName) in BodyPartNames)
             {
-                var usesItemColors = part != CreaturePart.Head && hasArmor;
-                var armorPart = usesItemColors
+                // Heads keep their creature model but borrow the armor's global material dyes.
+                // Skin, hair and tattoos still resolve through CreaturePaletteSource.
+                var usesArmorModel = part != CreaturePart.Head && hasArmor;
+                var armorPart = usesArmorModel
                     ? (AppearanceArmor)(int)part
                     : AppearanceArmor.Invalid;
                 var creaturePartId = GetCreatureBodyPart(part, creature);
-                var armorPartId = usesItemColors
+                var armorPartId = usesArmorModel
                     ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)armorPart)
                     : 0;
-                var partId = ResolvePartId(creaturePartId, armorPartId, usesItemColors);
+                var partId = ResolvePartId(creaturePartId, armorPartId, usesArmorModel);
                 if (partId <= 0)
                     continue;
 
@@ -215,9 +217,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     selections,
                     seenSelections,
                     model,
-                    usesItemColors ? armor : creature,
+                    hasArmor ? armor : creature,
                     creature,
-                    usesItemColors,
+                    hasArmor,
                     armorPart);
             }
 

@@ -674,6 +674,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedDetails = detail.Name + "\n\n";
 
             selectedDetails += $"[{categoryDetail.Name}]\n";
+            var isActive = detail.HotBarActionModes.Count > 0 ||
+                           detail.PerkLevels.Values.SelectMany(level => level.GrantedFeats)
+                               .Any(Ability.IsFeatRegistered);
+            selectedDetails += $"Type: {(isActive ? "Active" : "Passive")}\n";
 
             var forceAffinityText = BuildForceAffinityPerkDetailText(detail);
             if (!string.IsNullOrWhiteSpace(forceAffinityText))

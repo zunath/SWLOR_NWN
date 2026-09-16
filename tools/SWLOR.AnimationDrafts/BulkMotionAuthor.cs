@@ -10,7 +10,7 @@ namespace SWLOR.AnimationDrafts;
 
 internal sealed record ActiveMotion(string Id, string InternalName, string Category, string Type, string Description,
     string Reference = "", string? SourceAnimation = null, string? Profile = null, float? Duration = null,
-    string[]? Feats = null, string? DisplayName = null, bool RequiresTwoHandedWeapon = false);
+    string[]? Feats = null, string? DisplayName = null, string? EquipmentRequirement = null);
 internal sealed record MotionProfile(string Name, string Source, float Duration, bool Procedural = false, int Repeats = 1);
 
 /// <summary>Deterministic, source-backed drafts. A motion family is shared deliberately by related abilities;
@@ -26,10 +26,25 @@ internal static class BulkMotionAuthor
         var words = (motion.Id + " " + motion.Description).ToLowerInvariant();
         bool Has(string word) => words.Contains(word, StringComparison.Ordinal);
         var category = motion.Category;
+        var gripPrefix = motion.EquipmentRequirement switch
+        {
+            "OneHanded" or "WeaponAndShield" or "Pistol" => "1h",
+            "TwoHanded" => "2h",
+            "Polearm" => "pl",
+            "DualWield" => "2w",
+            "Unarmed" => "nw",
+            _ => null
+        };
+        var readySource = motion.EquipmentRequirement switch
+        {
+            "Rifle" => "xbowrdy",
+            "Throwing" => "throwr",
+            _ => (gripPrefix ?? "nw") + "readyr"
+        };
         if (motion.SourceAnimation != null) return new(motion.Profile ?? "Native adaptation", motion.SourceAnimation, motion.Duration ?? 1.2f,
             motion.Profile?.Contains("recoil", StringComparison.OrdinalIgnoreCase) == true || motion.Profile == "Force leap");
         if (motion.Type.Contains("Stance", StringComparison.OrdinalIgnoreCase))
-            return new("Guard activation", category is "Spear" or "Staff" or "Saberstaff" ? "plreadyr" : category == "Heavy Vibroblade" ? "2hreadyr" : "1hreadyr", 1f);
+            return new("Guard activation", readySource, 1f);
         if (category is "Pistol" or "Rifle" && (Has("reload") || Has("overclock") || Has("calibrat") || Has("aim") && !Has("damage")))
             return new("Weapon preparation", "getmid", 1.1f);
         if (category == "Pistol") return new("Pistol aim and recoil", "1hreadyr", .95f, true, Has("barrage") || Has("rapid") ? 3 : 1);
@@ -53,8 +68,9 @@ internal static class BulkMotionAuthor
             return new("Directed invocation", "castpoint", 1.1f);
         }
         if (motion.Type.Contains("Stance", StringComparison.OrdinalIgnoreCase) || Has("stance"))
-            return new("Guard activation", category is "Spear" or "Staff" or "Saberstaff" ? "plreadyr" : category == "Heavy Vibroblade" ? "2hreadyr" : "1hreadyr", 1f);
-        var prefix = category switch { "Heavy Vibroblade" => "2h", "Spear" or "Staff" or "Saberstaff" => "pl", "Twin Blade" => "2w", "Katar" => "nw", _ => "1h" };
+            return new("Guard activation", readySource, 1f);
+        if (motion.EquipmentRequirement == "Unrestricted") return new("General gesture", "castpoint", 1.1f);
+        var prefix = gripPrefix ?? throw new InvalidDataException($"{motion.Id}: a weapon motion requires an explicit equipment grip.");
         var attack = Has("thrust") || Has("pierc") || Has("stab") || Has("impal") ? "stab" :
             Has("cleave") || Has("overhead") || Has("crush") || Has("rend") ? "slasho" :
             Has("sweep") || Has("spin") || Has("cyclone") ? "slashl" : "slashr";
@@ -339,7 +355,10 @@ internal static class BulkMotionAuthor
             foreach (var feat in feats)
                 if (!Enum.IsDefined(typeof(SWLOR.NWN.API.NWScript.Enum.FeatType), feat))
                     throw new InvalidDataException("Unknown feat: " + feat);
-            var equipment = entry.RequiresTwoHandedWeapon ? ", RequiresTwoHandedWeapon: true" : "";
+            if (!Enum.TryParse<SWLOR.Game.Server.Service.AnimationService.AnimationEquipmentRequirement>(entry.EquipmentRequirement, out var requirement) ||
+                !Enum.IsDefined(requirement))
+                throw new InvalidDataException($"{entry.Id}: declare a valid EquipmentRequirement before generating the catalog.");
+            var equipment = $", EquipmentRequirement: AnimationEquipmentRequirement.{requirement}";
             lines.Add($"        new({Q(entry.Id)}, {Q(entry.DisplayName ?? entry.Id)}, {Q(entry.Category)}, AuthoredAnimation.{entry.Id}, new FeatType[] {{ {string.Join(", ", feats.Select(f => "FeatType." + f))} }}{equipment}),");
         }
         lines.AddRange(["    };", "}"]);

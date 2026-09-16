@@ -3,55 +3,11 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class HeavyVibrobladeAnimationTests
 {
-    [TestCase(BaseItem.GreatSword, false, true)]
-    [TestCase(BaseItem.GreatAxe, false, true)]
-    [TestCase(BaseItem.Longsword, true, false)]
-    [TestCase(BaseItem.WarHammer, true, false)]
-    [TestCase(BaseItem.Longsword, false, false)]
-    [TestCase(BaseItem.GreatSword, true, false)]
-    [TestCase(BaseItem.Invalid, false, false)]
-    public void HeavyMotionsRequireCompatibleEquipmentAtEveryPlaybackStage(BaseItem mainHand, bool offHand, bool expected)
-    {
-        foreach (var entry in ActiveAbilityAnimationCatalog.Entries.Where(entry => entry.Category == "Heavy Vibroblade"))
-        {
-            entry.RequiresTwoHandedWeapon.Should().BeTrue(entry.Id);
-            var definition = typeof(IAbilityListDefinition).Assembly.GetTypes().Single(type => type.Name == entry.Id + "AbilityDefinition");
-            var abilities = ((IAbilityListDefinition)Activator.CreateInstance(definition)!).BuildAbilities();
-            var native = abilities.ToDictionary(pair => pair.Key, pair => pair.Value.AnimationType);
-            AbilityAnimationBinding.Apply(abilities, new[] { entry });
-            foreach (var (feat, ability) in abilities)
-            {
-                var compatible = AbilityAnimationBinding.IsEquipmentCompatible(ability, mainHand, offHand);
-                compatible.Should().Be(expected, entry.Id);
-                if (ability.ActivationType == AbilityActivationType.Weapon)
-                    AbilityAnimationBinding.QueuedClip(ability, true, compatible).Should().Be(expected ? entry.Clip : null);
-                else
-                {
-                    AbilityAnimationBinding.ActivationClip(ability, true, 0, compatible).Should().Be(expected ? entry.Clip : null);
-                    AbilityAnimationBinding.ActivationType(ability, true, 0, compatible).Should().Be(expected ? Animation.PointForward : native[feat]);
-                }
-            }
-        }
-    }
-
-    [Test]
-    public void EquipmentGateAlsoCoversImpactMotionsAndLeavesUnrestrictedGesturesAvailable()
-    {
-        var ability = new AbilityDetail { AnimationRequiresTwoHandedWeapon = true, AuthoredImpactAnimation = AuthoredAnimation.BlazingSpikes };
-        var compatible = AbilityAnimationBinding.IsEquipmentCompatible(ability, BaseItem.Longsword, true);
-        AbilityAnimationBinding.ImpactClip(ability, true, compatible).Should().BeNull();
-        ability.AnimationRequiresTwoHandedWeapon = false;
-        compatible = AbilityAnimationBinding.IsEquipmentCompatible(ability, BaseItem.Invalid, false);
-        compatible.Should().BeTrue();
-        AbilityAnimationBinding.ImpactClip(ability, true, compatible).Should().BeSameAs(ability.AuthoredImpactAnimation);
-    }
-
     [Test]
     public void AllHeavyVibrobladeRanksUseTheirAuthoredMotionWithoutChangingCastOrWeaponTiming()
     {

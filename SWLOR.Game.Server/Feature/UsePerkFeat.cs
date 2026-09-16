@@ -524,11 +524,10 @@ namespace SWLOR.Game.Server.Feature
                         return;
                     }
 
+                    // Native fallback (or an omitted incompatible gesture) must release any previous authored pose.
+                    NamedAnimation.ReleaseForNativePlayback(activator);
                     if (AbilityAnimationBinding.ActivationType(ability, activator, animationLength) == Animation.Invalid)
                         return;
-
-                    // Native fallback must not inherit the previous named clip's custom1 phases.
-                    NamedAnimation.ReleaseForNativePlayback(activator);
 
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;

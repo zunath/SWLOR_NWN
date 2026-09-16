@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service.AnimationService;
 
@@ -21,8 +20,10 @@ public static class AbilityAnimationBinding
         !equipmentCompatible || ability.HasGeneratedAnimationBinding && !isPlayer ? null : ability.QueuedAttackAnimation;
 
     public static Animation ActivationType(AbilityDetail ability, bool isPlayer, float? animationWindow = null, bool equipmentCompatible = true) =>
-        ability.HasGeneratedAnimationBinding && ActivationClip(ability, isPlayer, animationWindow, equipmentCompatible) == null
-            ? ability.NativeAnimationType : ability.AnimationType;
+        !equipmentCompatible && !ability.HasGeneratedAnimationBinding && ability.AuthoredAnimation != null
+            ? Animation.Invalid
+            : ability.HasGeneratedAnimationBinding && ActivationClip(ability, isPlayer, animationWindow, equipmentCompatible) == null
+                ? ability.NativeAnimationType : ability.AnimationType;
 
     // Gameplay callers resolve equipment before installing a gesture or queued swing replacement.
     public static AnimationClip ActivationClip(AbilityDetail ability, uint creature, float? animationWindow = null) =>
@@ -37,17 +38,8 @@ public static class AbilityAnimationBinding
     public static Animation ActivationType(AbilityDetail ability, uint creature, float? animationWindow = null) =>
         ActivationType(ability, GetIsPC(creature), animationWindow, IsEquipmentCompatible(ability, creature));
 
-    private static bool IsEquipmentCompatible(AbilityDetail ability, uint creature)
-    {
-        if (ability?.AnimationRequiresTwoHandedWeapon != true) return true;
-        var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
-        return IsEquipmentCompatible(ability, GetIsObjectValid(weapon) ? GetBaseItemType(weapon) : BaseItem.Invalid,
-            GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, creature)));
-    }
-
-    public static bool IsEquipmentCompatible(AbilityDetail ability, BaseItem mainHand, bool hasOffHand) =>
-        ability?.AnimationRequiresTwoHandedWeapon != true ||
-        !hasOffHand && Item.TwoHandedMeleeItemTypes.Contains(mainHand);
+    private static bool IsEquipmentCompatible(AbilityDetail ability, uint creature) =>
+        AbilityAnimationEquipment.IsCompatible(ability?.AnimationEquipmentRequirement ?? AnimationEquipmentRequirement.Unrestricted, creature);
 
     public static void Apply(IReadOnlyDictionary<FeatType, AbilityDetail> abilities,
         IEnumerable<AbilityAnimationEntry> entries)
@@ -62,7 +54,7 @@ public static class AbilityAnimationBinding
             if (ability.IsMimicryTrait)
                 throw new InvalidOperationException($"Animation {entry.Id} references passive trait {feat}.");
             ability.PreviewAnimation = entry.Clip;
-            ability.AnimationRequiresTwoHandedWeapon = entry.RequiresTwoHandedWeapon;
+            ability.AnimationEquipmentRequirement = entry.EquipmentRequirement;
             if (ability.UsesImmediateAuthoredAnimation || ability.UsesAuthoredImpactAnimation)
             {
                 if (ability.UsesImmediateAuthoredAnimation && ability.UsesAuthoredImpactAnimation ||

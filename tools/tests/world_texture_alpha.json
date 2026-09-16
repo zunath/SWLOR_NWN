@@ -1,0 +1,485 @@
+{
+  "source_revision": "6b32b27e36^",
+  "textures": [
+    {
+      "texture": "sw_cr_creature/c_drdastro02.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro03.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro04.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro05.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro06.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro07.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro08.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro09.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_cr_creature/c_drdastro10.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0,
+      "opaque_fraction": 0.1083984375,
+      "alpha_mean": 229.08013153076172
+    },
+    {
+      "texture": "sw_plc/nboo_flw_cr_clmn.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.5947723388671875,
+      "opaque_fraction": 7.62939453125e-05,
+      "alpha_mean": 91.52359008789062
+    },
+    {
+      "texture": "sw_plc/nboo_flw_cr_gate.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.24444580078125,
+      "opaque_fraction": 0.6506500244140625,
+      "alpha_mean": 181.71815490722656
+    },
+    {
+      "texture": "sw_plc/plc_wrm_alpha1.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.6484375,
+      "opaque_fraction": 0.20794677734375,
+      "alpha_mean": 75.52821350097656
+    },
+    {
+      "texture": "sw_plc/plc_wrm_cypress.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.266326904296875,
+      "opaque_fraction": 0.6607208251953125,
+      "alpha_mean": 176.4788818359375
+    },
+    {
+      "texture": "sw_plc/plc_wrm_leavesf.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.2935791015625,
+      "opaque_fraction": 0.46234130859375,
+      "alpha_mean": 150.26483154296875
+    },
+    {
+      "texture": "sw_plc/plc_wrm_leavess.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.2935791015625,
+      "opaque_fraction": 0.46234130859375,
+      "alpha_mean": 150.26483154296875
+    },
+    {
+      "texture": "sw_plc/plc_wrm_leavesw.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.2935791015625,
+      "opaque_fraction": 0.46234130859375,
+      "alpha_mean": 150.26483154296875
+    },
+    {
+      "texture": "sw_plc/plc_wrm_spruces.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.4751129150390625,
+      "opaque_fraction": 0.475372314453125,
+      "alpha_mean": 126.44355773925781
+    },
+    {
+      "texture": "sw_plc/plc_wrm_sprucew.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.4751129150390625,
+      "opaque_fraction": 0.475372314453125,
+      "alpha_mean": 126.44355773925781
+    },
+    {
+      "texture": "sw_plc_cep/tentflap1.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.00982666015625,
+      "opaque_fraction": 0.99017333984375,
+      "alpha_mean": 252.49420166015625
+    },
+    {
+      "texture": "sw_t_season/wsf01_beacha1snd.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4608726501464844,
+      "opaque_fraction": 0.2896881103515625,
+      "alpha_mean": 109.75651931762695
+    },
+    {
+      "texture": "sw_t_season/wsf01_bush03.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.898223876953125,
+      "opaque_fraction": 0.045162200927734375,
+      "alpha_mean": 18.81600570678711
+    },
+    {
+      "texture": "sw_t_season/wsf01_cbblwroada.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.0035858154296875,
+      "opaque_fraction": 0.4341583251953125,
+      "alpha_mean": 169.32121658325195
+    },
+    {
+      "texture": "sw_t_season/wsf01_dirt04.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.2981376647949219,
+      "opaque_fraction": 0.014019012451171875,
+      "alpha_mean": 77.66390228271484
+    },
+    {
+      "texture": "sw_t_season/wsf01_dirt05.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.2598075866699219,
+      "opaque_fraction": 0.2906341552734375,
+      "alpha_mean": 137.09015274047852
+    },
+    {
+      "texture": "sw_t_season/wsf01_fern01.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.8459053039550781,
+      "opaque_fraction": 0.14599227905273438,
+      "alpha_mean": 38.18042755126953
+    },
+    {
+      "texture": "sw_t_season/wsf01_flowers10.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.5250244140625,
+      "opaque_fraction": 0.27398681640625,
+      "alpha_mean": 99.93304443359375
+    },
+    {
+      "texture": "sw_t_season/wsf01_flowers11.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.5748291015625,
+      "opaque_fraction": 0.27203369140625,
+      "alpha_mean": 90.361328125
+    },
+    {
+      "texture": "sw_t_season/wsf01_flowers6.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.66119384765625,
+      "opaque_fraction": 0.08416748046875,
+      "alpha_mean": 58.80438232421875
+    },
+    {
+      "texture": "sw_t_season/wsf01_flowers9.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.68695068359375,
+      "opaque_fraction": 0.1845703125,
+      "alpha_mean": 65.14227294921875
+    },
+    {
+      "texture": "sw_t_season/wsf01_ivy01.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.561859130859375,
+      "opaque_fraction": 0.438140869140625,
+      "alpha_mean": 111.72592163085938
+    },
+    {
+      "texture": "sw_t_season/wsf01_ivy02.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.8383026123046875,
+      "opaque_fraction": 0.1616973876953125,
+      "alpha_mean": 41.23283386230469
+    },
+    {
+      "texture": "sw_t_season/wsf01_ivy03.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.841552734375,
+      "opaque_fraction": 0.158447265625,
+      "alpha_mean": 40.404052734375
+    },
+    {
+      "texture": "sw_t_season/wsf01_ivy04.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.809539794921875,
+      "opaque_fraction": 0.190460205078125,
+      "alpha_mean": 48.567352294921875
+    },
+    {
+      "texture": "sw_t_season/wsf01_ivy05.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.81854248046875,
+      "opaque_fraction": 0.16409683227539062,
+      "alpha_mean": 45.25157928466797
+    },
+    {
+      "texture": "sw_t_season/wsf01_mtlcage01.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.53887939453125,
+      "opaque_fraction": 0.42724609375,
+      "alpha_mean": 114.161376953125
+    },
+    {
+      "texture": "sw_t_season/wsf01_pinetree3.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.4751129150390625,
+      "opaque_fraction": 0.475372314453125,
+      "alpha_mean": 126.44355773925781
+    },
+    {
+      "texture": "sw_t_season/wsf01_pt_dirt01.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4854774475097656,
+      "opaque_fraction": 0.01090240478515625,
+      "alpha_mean": 111.12728118896484
+    },
+    {
+      "texture": "sw_t_season/wsf01_pt_grass01.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4854774475097656,
+      "opaque_fraction": 0.01090240478515625,
+      "alpha_mean": 111.12728118896484
+    },
+    {
+      "texture": "sw_t_season/wsf01_pt_grass6.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4854774475097656,
+      "opaque_fraction": 0.01090240478515625,
+      "alpha_mean": 111.12728118896484
+    },
+    {
+      "texture": "sw_t_season/wsf01_pt_moss01.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4854774475097656,
+      "opaque_fraction": 0.01090240478515625,
+      "alpha_mean": 111.12728118896484
+    },
+    {
+      "texture": "sw_t_season/wsf01_snwpne4.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.4751129150390625,
+      "opaque_fraction": 0.475372314453125,
+      "alpha_mean": 126.44355773925781
+    },
+    {
+      "texture": "sw_t_season/wsf01_stone10a.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.2529296875,
+      "opaque_fraction": 0.7470550537109375,
+      "alpha_mean": 190.4995880126953
+    },
+    {
+      "texture": "sw_t_season/wsf01_thicket2.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.767578125,
+      "opaque_fraction": 0.04150390625,
+      "alpha_mean": 41.17083740234375
+    },
+    {
+      "texture": "sw_t_season/wsf01_wntpitxa.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4854774475097656,
+      "opaque_fraction": 0.01090240478515625,
+      "alpha_mean": 111.12728118896484
+    },
+    {
+      "texture": "sw_t_season/wsf01_wwillow1.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.5801849365234375,
+      "opaque_fraction": 0.3990478515625,
+      "alpha_mean": 105.71682739257812
+    },
+    {
+      "texture": "sw_t_season/wsf02_bush03.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.898223876953125,
+      "opaque_fraction": 0.045162200927734375,
+      "alpha_mean": 18.81600570678711
+    },
+    {
+      "texture": "sw_t_season/wsf02_dirt04.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.2981376647949219,
+      "opaque_fraction": 0.014019012451171875,
+      "alpha_mean": 77.66390228271484
+    },
+    {
+      "texture": "sw_t_season/wsf02_dirt05.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.2598075866699219,
+      "opaque_fraction": 0.2906341552734375,
+      "alpha_mean": 137.09015274047852
+    },
+    {
+      "texture": "sw_t_season/wsf02_fern01.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.8459053039550781,
+      "opaque_fraction": 0.14599227905273438,
+      "alpha_mean": 38.18042755126953
+    },
+    {
+      "texture": "sw_t_season/wsf02_ivy01.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.561859130859375,
+      "opaque_fraction": 0.438140869140625,
+      "alpha_mean": 111.72592163085938
+    },
+    {
+      "texture": "sw_t_season/wsf02_pt_grass01.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4854774475097656,
+      "opaque_fraction": 0.01090240478515625,
+      "alpha_mean": 111.12728118896484
+    },
+    {
+      "texture": "sw_t_season/wsf02_pt_moss01.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4854774475097656,
+      "opaque_fraction": 0.01090240478515625,
+      "alpha_mean": 111.12728118896484
+    },
+    {
+      "texture": "sw_t_season/wsf03_dirt05.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.2598075866699219,
+      "opaque_fraction": 0.2906341552734375,
+      "alpha_mean": 137.09015274047852
+    },
+    {
+      "texture": "sw_t_season/wsf10_cliffsdea1.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.4717521667480469,
+      "opaque_fraction": 0.000453948974609375,
+      "alpha_mean": 71.81852340698242
+    },
+    {
+      "texture": "sw_t_season/wsf10_cliffsdea2.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.5145988464355469,
+      "opaque_fraction": 0.000438690185546875,
+      "alpha_mean": 63.86323928833008
+    },
+    {
+      "texture": "sw_t_season/wsf10_cliffsxtra.dds",
+      "width": 512,
+      "height": 512,
+      "transparent_fraction": 0.2598075866699219,
+      "opaque_fraction": 0.2906341552734375,
+      "alpha_mean": 137.09015274047852
+    },
+    {
+      "texture": "sw_t_season/wtf_1_leaves.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.2935791015625,
+      "opaque_fraction": 0.46234130859375,
+      "alpha_mean": 150.26483154296875
+    },
+    {
+      "texture": "sw_t_season/wtf_2_leaves.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.2935791015625,
+      "opaque_fraction": 0.46234130859375,
+      "alpha_mean": 150.26483154296875
+    },
+    {
+      "texture": "sw_t_season/wtf_3a_leaves.dds",
+      "width": 128,
+      "height": 128,
+      "transparent_fraction": 0.2935791015625,
+      "opaque_fraction": 0.46234130859375,
+      "alpha_mean": 150.26483154296875
+    },
+    {
+      "texture": "sw_plc/plc_wrm_willow.dds",
+      "width": 256,
+      "height": 256,
+      "transparent_fraction": 0.5801849365234375,
+      "opaque_fraction": 0.3990478515625,
+      "alpha_mean": 105.71682739257812
+    }
+  ]
+}

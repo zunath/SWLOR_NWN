@@ -19,9 +19,22 @@ services:
         ports:
             - "8081:8081"
 
+    server-home-init:
+        image: zunath/nwn-dotnet:8193.37.17-2
+        user: "0:0"
+        network_mode: none
+        restart: "no"
+        entrypoint: ["/bin/bash", "/prepare-server-home.sh"]
+        volumes:
+            - ./:/nwn/home
+            - ./prepare-server-home.sh:/prepare-server-home.sh:ro
+
     swlor-server:
         hostname: nwnx-server
         stop_signal: SIGINT
+        depends_on:
+            server-home-init:
+                condition: service_completed_successfully
         build:
           context: .
           dockerfile: Dockerfile

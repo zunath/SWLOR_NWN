@@ -31,7 +31,11 @@ The main deployment configuration is defined in `Docker/docker-compose.yml`. Thi
 - **InfluxDB**: Time-series database for metrics storage
 - **Grafana**: Monitoring and visualization dashboard
 
-The configuration includes proper networking, volume mounts, and environment variable setup.
+The configuration includes networking, volume mounts, and environment variable setup.
+
+Before the game server starts, the one-shot `server-home-init` service runs `prepare-server-home.sh` as root with networking disabled. It gives UID/GID `1000:1000` ownership and write access to the mounted home directory, runtime data directories, and existing runtime configuration files. Docker bind mounts hide the ownership established in the image, so this preparation is required even for a freshly built image. The helper does not recursively modify HAKs, modules, TLK, binaries, Redis, or monitoring data. The game server remains non-root and starts only after preparation succeeds.
+
+Rebuilding deploys both the Compose file and preparation script into `debugserver`. Recreate the stack through the Runner or `docker compose up`; merely restarting an old server container does not run its new initialization dependency. The engine-test launcher already performs its own ownership preparation and restoration.
 
 ### 2. Environment Configuration
 

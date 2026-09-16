@@ -458914,7 +458914,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_V_Forest_to_Wildlands"
+          "value": "WP_V_EastFork_To_Wildlands"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -458963,7 +458963,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "V_Wildlands_to_Forest"
+          "value": "V_Wildlands_To_EastFork"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -460308,7 +460308,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "WP_V_Wildlands_to_Forest"
+          "value": "WP_V_Wildlands_To_EastFork"
         },
         "TemplateResRef": {
           "type": "resref",

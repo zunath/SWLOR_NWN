@@ -30,6 +30,12 @@ Six player-facing equipment stats are documented on the Bible `Character Stats` 
 
 Perk-only adjustments such as flat Stealth rating, stealthed movement speed, stealth drain reduction, Back Attack damage/critical rate, trap capacity, trap arming speed, trap detection range, coating charges, and disguise capacity/cooldown are also represented by `StatType` values. Shared stealth, movement, damage, poison, trap, and disguise systems consume those stats; they do not special-case perk ownership.
 
+## Starting progression
+
+- Stealth I and Poisoncraft I are available at Espionage rank 0. Infiltration awards XP for sneaking through a hostile NPC's aggro range and leaving undetected after moving at least 4m; detection awards 15% of the normal XP. Standing in stealth does not award XP, and each NPC awards infiltration XP only once per player.
+- Poisoncraft I provides an alternative starting path: craft Venom Coating I at an Espionage Workbench using 3 Kath Hound Blood and 2 Viscaran Rosemary (`kath_blood` and `herb_v`). Its recipe level is 3, so the shared three-rank crafting allowance permits crafting at skill rank 0. It awards crafting XP through rank 7, allowing progression to rank 8.
+- Trapcraft I opens at rank 5; Slicing I opens tier 1 lockboxes and terminals at rank 8. The starter coating is not a permanent XP source: from rank 8 onward, use newly unlocked activities or continue infiltration against appropriately leveled enemies.
+
 ## Stealth and detection
 
 - Baseline stealth uses NWN's built-in Stealth action, requires Stealth I-IV, and can only be entered out of combat. No separate Stealth ability is granted. Ghost Protocol is the sole in-combat entry window.

@@ -16,7 +16,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .RequirementPerk(PerkType.Poisoncraft, 1, "Poisoncraft")
                 .Category(RecipeCategoryType.Poison)
                 .Resref("poison_vial_1")
-                .Level(6)
+                // Crafting unlocks three ranks below recipe level. This starter recipe
+                // must work at rank 0 and award XP through rank 7 to reach Slicing I.
+                .Level(3)
                 .Quantity(5)
                 .Component("kath_blood", 3)
                 .Component("herb_v", 2);

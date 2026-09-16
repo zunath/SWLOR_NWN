@@ -210,6 +210,31 @@ public class PerksWindowTests
         GetRequiredSkillLevelSortOrder(detail, 3).Should().Be(10);
     }
 
+    [TestCase(3, 2, 2)] // Legacy Force Leap rank.
+    [TestCase(4, 3, 3)] // Legacy Force Push rank.
+    [TestCase(0, 3, 0)]
+    [TestCase(1, 3, 1)]
+    [TestCase(3, 3, 3)]
+    public void DisplayRank_UsesCurrentRankLimit(int savedRank, int maximumRank, int expectedRank)
+    {
+        var detail = BuildPerkDetail(Enumerable.Range(1, maximumRank)
+            .Select(rank => (rank, rank * 10)).ToArray());
+
+        var displayRank = (int)typeof(PerksViewModel)
+            .GetMethod("GetDisplayPerkRank", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { detail, savedRank })!;
+
+        displayRank.Should().Be(expectedRank);
+        if (savedRank > maximumRank)
+        {
+            detail.PerkLevels.Should().ContainKey(displayRank,
+                "legacy ranks must still resolve a current-rank description");
+            detail.PerkLevels.Should().NotContainKey(displayRank + 1,
+                "legacy ranks are fully upgraded under the current definition");
+            GetRequiredSkillLevelSortOrder(detail, savedRank).Should().Be(maximumRank * 10);
+        }
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

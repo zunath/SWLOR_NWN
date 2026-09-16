@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -891,6 +892,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             SetCreatureAppearanceType(player, appearance);
+            // Reapply material colors after the client rebuilds the character model.
+            TintMapService.QueueRefresh(player);
         }
 
         /// <summary>

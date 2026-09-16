@@ -365,6 +365,39 @@ public class EquipmentRestrictionsTests
             .Be((int)BaseItem.LegacyPistol);
     }
 
+    [Test]
+    public void ModulePistols_UseCanonicalBaseItemsBeforeNativeEquipmentInitialization()
+    {
+        var root = FindRepositoryRoot();
+        var mismatches = new List<string>();
+
+        // Spawned creatures and embedded equipment do not pass through player login migration.
+        // Their unlimited-ammo properties must initialize against the bullet-compatible carrier.
+        foreach (var folder in new[] { "uti", "utc", "git", "utm" })
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", folder), "*.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            foreach (var item in EnumerateJsonObjects(document.RootElement))
+            {
+                if (!item.TryGetProperty("BaseItem", out var baseItemField))
+                    continue;
+
+                var baseItem = (BaseItem)baseItemField.GetProperty("value").GetInt32();
+                if (baseItem is not (BaseItem.Pistol or BaseItem.Sling or BaseItem.LegacyPistol))
+                    continue;
+
+                var resref = item.TryGetProperty("TemplateResRef", out var template)
+                    ? template.GetProperty("value").GetString() ?? ""
+                    : "";
+                var expected = PistolBaseItemCompatibility.GetCanonicalBaseItem(baseItem, resref);
+                if (baseItem != expected)
+                    mismatches.Add($"{Path.GetRelativePath(root.FullName, path)}: {resref} ({baseItem} -> {expected})");
+            }
+        }
+
+        mismatches.Should().BeEmpty("pistols must match their ammunition before NPC spawn/equip, not depend on player migration");
+    }
+
     private static Dictionary<int, Dictionary<string, string>> Read2daRows(string path)
     {
         var lines = File.ReadAllLines(path)

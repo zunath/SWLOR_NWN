@@ -2236,7 +2236,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // Damage and projectile effects are already dispatched by the ability. Use the
                 // named one-shot carrier here, including grenades, without queuing another action.
-                NamedAnimation.Play(activator, authoredImpact);
+                NamedAnimation.Play(activator, authoredImpact, equipmentRequirement: trackedAbility.AnimationEquipmentRequirement);
                 return;
             }
 

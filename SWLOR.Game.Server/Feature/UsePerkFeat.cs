@@ -518,9 +518,9 @@ namespace SWLOR.Game.Server.Feature
                     if (authoredClip != null)
                     {
                         if (ability.UsesImmediateAuthoredAnimation)
-                            NamedAnimation.Play(activator, authoredClip);
+                            NamedAnimation.Play(activator, authoredClip, equipmentRequirement: ability.AnimationEquipmentRequirement);
                         else
-                            NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength));
+                            NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength), ability.AnimationEquipmentRequirement);
                         return;
                     }
 

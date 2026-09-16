@@ -21,6 +21,7 @@ public sealed class DeployBuildTests
         foreach (var path in new[] { "Build", "SWLOR.Game.Server/Docker", "Module", "assets", "custom Debug output" })
             Directory.CreateDirectory(Path.Combine(_root, path));
         File.WriteAllText(Path.Combine(_root, "SWLOR.Game.Server/Docker/swlor.env"), "TEST=true\n");
+        File.WriteAllText(Path.Combine(_root, "SWLOR.Game.Server/Docker/docker-compose.yml"), "compose fixture");
         File.WriteAllText(Path.Combine(_root, "Module/Star Wars LOR v2.mod"), "module fixture");
         File.WriteAllText(Path.Combine(_root, "test.tlk"), "tlk fixture");
         File.WriteAllText(Path.Combine(_root, "assets/test.mdl"), "first model");
@@ -56,6 +57,48 @@ public sealed class DeployBuildTests
         second.ExitCode.Should().Be(0, second.Output);
         SHA256.HashData(File.ReadAllBytes(hak)).Should().NotEqual(firstHash);
         File.ReadAllText(deployed).Should().Be("newer Debug build");
+    }
+
+    [Test]
+    public async Task MissingModuleStillDeploysBinariesDockerAndHaks()
+    {
+        File.Delete(Path.Combine(_root, "Module/Star Wars LOR v2.mod"));
+        Directory.CreateDirectory(Path.Combine(_root, "debugserver/modules"));
+        File.WriteAllText(Path.Combine(_root, "debugserver/modules/Star Wars LOR v2.mod"), "existing module");
+
+        var result = await Deploy();
+
+        result.ExitCode.Should().Be(0, result.Output);
+        result.Output.Should().Contain("Skipping module deployment");
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll"))
+            .Should().Be("current Debug build SWLOR.Game.Server.dll");
+        File.ReadAllText(Path.Combine(_root, "debugserver/docker-compose.yml")).Should().Be("compose fixture");
+        File.Exists(Path.Combine(_root, "debugserver/hak/test.hak")).Should().BeTrue();
+        File.ReadAllText(Path.Combine(_root, "debugserver/modules/Star Wars LOR v2.mod")).Should().Be("existing module");
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task MissingHakInputsStillDeploysBinariesAndModuleWithoutDeletingAssets(bool missingTlk)
+    {
+        if (missingTlk)
+            File.Delete(Path.Combine(_root, "test.tlk"));
+        else
+            Directory.Move(Path.Combine(_root, "assets"), Path.Combine(_root, "unavailable assets"));
+        Directory.CreateDirectory(Path.Combine(_root, "debugserver/hak"));
+        Directory.CreateDirectory(Path.Combine(_root, "debugserver/tlk"));
+        File.WriteAllText(Path.Combine(_root, "debugserver/hak/test.hak"), "existing hak");
+        File.WriteAllText(Path.Combine(_root, "debugserver/tlk/test.tlk"), "existing tlk");
+
+        var result = await Deploy();
+
+        result.ExitCode.Should().Be(0, result.Output);
+        result.Output.Should().Contain("Skipping HAK/TLK deployment");
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll"))
+            .Should().Be("current Debug build SWLOR.Game.Server.dll");
+        File.ReadAllText(Path.Combine(_root, "debugserver/modules/Star Wars LOR v2.mod")).Should().Be("module fixture");
+        File.ReadAllText(Path.Combine(_root, "debugserver/hak/test.hak")).Should().Be("existing hak");
+        File.ReadAllText(Path.Combine(_root, "debugserver/tlk/test.tlk")).Should().Be("existing tlk");
     }
 
     [Test]

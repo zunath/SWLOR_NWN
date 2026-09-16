@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SWLOR.CLI
 {
@@ -67,12 +68,32 @@ namespace SWLOR.CLI
 
         private void BuildHaks()
         {
-            _hakBuilder.Process();
+            var config = _hakBuilder.GetConfig();
+            var missingInputs = config.HakList
+                .Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name))
+                .Select(hak => hak.Path)
+                .Where(path => !Directory.Exists(path))
+                .ToList();
+            if (!File.Exists(config.TlkPath))
+                missingInputs.Add(config.TlkPath);
+
+            if (missingInputs.Count > 0)
+            {
+                Console.WriteLine($"warning : Skipping HAK/TLK deployment: missing inputs: {string.Join(", ", missingInputs)}. Initialize the SWLOR_Haks submodule and build its TLK. Existing deployed assets are preserved; server binaries were updated.");
+                return;
+            }
+
+            _hakBuilder.Process(config);
         }
 
         private void BuildModule()
         {
             var modulePath = "../Module/Star Wars LOR v2.mod";
+            if (!File.Exists(modulePath))
+            {
+                Console.WriteLine("warning : Skipping module deployment: Module/Star Wars LOR v2.mod is missing. Run PackModule.cmd from the Module directory, then rebuild. Any existing deployed module is preserved; server binaries were updated.");
+                return;
+            }
             File.Copy(modulePath, ModulesPath + "/Star Wars LOR v2.mod", true);
         }
 

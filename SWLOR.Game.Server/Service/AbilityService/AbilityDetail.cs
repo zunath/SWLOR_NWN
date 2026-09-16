@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool UsesAuthoredImpactAnimation { get; set; }
         public float ImmediateNativeImpactAnimationDuration { get; set; }
         public bool HasGeneratedAnimationBinding { get; set; }
+        public bool AnimationRequiresTwoHandedWeapon { get; set; }
         public Animation NativeAnimationType { get; set; }
         /// <summary>Impact actions own movement/animation ordering; catalog clips are preview-only.</summary>
         public bool PreservesNativeAnimationChoreography { get; set; }

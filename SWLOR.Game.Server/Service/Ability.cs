@@ -2231,7 +2231,7 @@ namespace SWLOR.Game.Server.Service
             if (animation == Animation.Invalid)
                 return;
 
-            var authoredImpact = AnimationService.AbilityAnimationBinding.ImpactClip(trackedAbility, GetIsPC(activator));
+            var authoredImpact = AnimationService.AbilityAnimationBinding.ImpactClip(trackedAbility, activator);
             if (authoredImpact != null)
             {
                 // Damage and projectile effects are already dispatched by the ability. Use the

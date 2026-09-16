@@ -10,7 +10,7 @@ namespace SWLOR.AnimationDrafts;
 
 internal sealed record ActiveMotion(string Id, string InternalName, string Category, string Type, string Description,
     string Reference = "", string? SourceAnimation = null, string? Profile = null, float? Duration = null,
-    string[]? Feats = null, string? DisplayName = null);
+    string[]? Feats = null, string? DisplayName = null, bool RequiresTwoHandedWeapon = false);
 internal sealed record MotionProfile(string Name, string Source, float Duration, bool Procedural = false, int Repeats = 1);
 
 /// <summary>Deterministic, source-backed drafts. A motion family is shared deliberately by related abilities;
@@ -339,7 +339,8 @@ internal static class BulkMotionAuthor
             foreach (var feat in feats)
                 if (!Enum.IsDefined(typeof(SWLOR.NWN.API.NWScript.Enum.FeatType), feat))
                     throw new InvalidDataException("Unknown feat: " + feat);
-            lines.Add($"        new({Q(entry.Id)}, {Q(entry.DisplayName ?? entry.Id)}, {Q(entry.Category)}, AuthoredAnimation.{entry.Id}, new FeatType[] {{ {string.Join(", ", feats.Select(f => "FeatType." + f))} }}),");
+            var equipment = entry.RequiresTwoHandedWeapon ? ", RequiresTwoHandedWeapon: true" : "";
+            lines.Add($"        new({Q(entry.Id)}, {Q(entry.DisplayName ?? entry.Id)}, {Q(entry.Category)}, AuthoredAnimation.{entry.Id}, new FeatType[] {{ {string.Join(", ", feats.Select(f => "FeatType." + f))} }}{equipment}),");
         }
         lines.AddRange(["    };", "}"]);
         return string.Join("\n", lines) + "\n";

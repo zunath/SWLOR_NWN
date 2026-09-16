@@ -275,6 +275,8 @@ cloth simulation from these static panels. Both native phenotype 0/22 models and
 generated RGB body roots are covered; the elf variants were already rigid.
 `SWLOR_Haks/tools/MakeRobePanelsRigid.py --robe 236 --game-data "<NWN data>" --apply`
 recompiles and validates the affected models before installing any output. It
+reports and skips ASCII targets, whose inverse bindings cannot be preserved by
+the compiled-model audit, while continuing with compiled targets for the robe. It
 refreshes owned resource hashes and drops affected cached build proofs. Run
 `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRigidRobePanels.py"`
 to check all native and RGB variants. In-game confirmation is still required for

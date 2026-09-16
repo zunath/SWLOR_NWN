@@ -83,10 +83,10 @@ public class ReworkedAbilityAnimationTests
         directory.Should().NotBeNull();
         var root = directory!.FullName;
         var activation = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server/Feature/UsePerkFeat.cs"));
-        activation.Should().MatchRegex(@"if \(ability\.UsesImmediateAuthoredAnimation\)\s*NamedAnimation\.Play\(activator, authoredClip\);\s*else\s*NamedAnimation\.Queue");
+        activation.Should().MatchRegex(@"if \(ability\.UsesImmediateAuthoredAnimation\)\s*NamedAnimation\.Play\(activator, authoredClip, equipmentRequirement: ability\.AnimationEquipmentRequirement\);\s*else\s*NamedAnimation\.Queue");
         var impact = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server/Service/Ability.cs"));
         var authoredBranch = impact[impact.IndexOf("if (authoredImpact != null)")..impact.IndexOf("if (trackedAbility?.ImmediateNativeImpactAnimationDuration")];
-        authoredBranch.Should().Contain("NamedAnimation.Play(activator, authoredImpact)");
+        authoredBranch.Should().Contain("NamedAnimation.Play(activator, authoredImpact, equipmentRequirement: trackedAbility.AnimationEquipmentRequirement)");
         authoredBranch.Should().NotContain("ActionPlayAnimation");
         authoredBranch.Should().NotContain("PistolAnimationRemap");
         authoredBranch.Should().NotContain("throwr");

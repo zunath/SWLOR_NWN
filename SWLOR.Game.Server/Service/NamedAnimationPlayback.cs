@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -32,6 +33,37 @@ public sealed class NamedAnimationPlayback
     private const string EndingPrefix = "ending:";
     private readonly INamedAnimationRuntime _runtime;
     private readonly Action<uint, Func<bool>> _releasePose;
+    private readonly Dictionary<uint, EquipmentRequest> _equipmentRequests = new();
+    private readonly Dictionary<uint, string> _restrictedPlaybackTokens = new();
+
+    /// <summary>Ownership of a restricted request, including time spent waiting in the native queue.</summary>
+    public sealed class EquipmentRequest
+    {
+        internal string PlaybackToken;
+    }
+
+    /// <summary>Reserves a restricted request so equipment changes can invalidate it before playback begins.</summary>
+    public EquipmentRequest ReserveEquipmentPlayback(uint creature)
+    {
+        var request = new EquipmentRequest();
+        _equipmentRequests[creature] = request;
+        return request;
+    }
+
+    /// <summary>Checks pending ownership without relying on the creature's current native animation.</summary>
+    public bool CanStartEquipmentPlayback(uint creature, EquipmentRequest request) => request == null ||
+        _equipmentRequests.TryGetValue(creature, out var current) && ReferenceEquals(current, request);
+
+    /// <summary>Invalidates pending requests and immediately releases an owned restricted pose without cancelling gameplay actions.</summary>
+    public bool InvalidateEquipmentPlayback(uint creature)
+    {
+        _equipmentRequests.Remove(creature);
+        if (!_restrictedPlaybackTokens.Remove(creature, out var activeToken) || !_runtime.IsValid(creature)) return false;
+        var token = _runtime.GetToken(creature);
+        if (token != activeToken && token != EndingPrefix + activeToken) return false;
+        ReleaseForNativePlayback(creature);
+        return true;
+    }
 
     public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint, Func<bool>> releasePose = null)
     {
@@ -40,11 +72,23 @@ public sealed class NamedAnimationPlayback
     }
 
     public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false,
-        bool suppressRifleHold = false)
+        bool suppressRifleHold = false, EquipmentRequest equipmentRequest = null)
     {
         ArgumentNullException.ThrowIfNull(clip);
-        return BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration,
+        if (!CanStartEquipmentPlayback(creature, equipmentRequest)) return null;
+        if (equipmentRequest == null)
+        {
+            _equipmentRequests.Remove(creature);
+            _restrictedPlaybackTokens.Remove(creature);
+        }
+        var token = BeginMapped(creature, clip.StartName, clip.Name, clip.EndName, duration, completeAtDuration,
             rifleCarry: suppressRifleHold ? NoHoldName : "", rifleClip: suppressRifleHold ? clip.Name : "");
+        if (equipmentRequest != null)
+        {
+            equipmentRequest.PlaybackToken = token;
+            _restrictedPlaybackTokens[creature] = token;
+        }
+        return token;
     }
 
     private string BeginMapped(uint creature, string start, string loop, string end, float duration, bool completeAtDuration,
@@ -83,6 +127,8 @@ public sealed class NamedAnimationPlayback
     /// <summary>Reserves one-shot native preview ownership without installing authored mappings.</summary>
     public string BeginNative(uint creature)
     {
+        _equipmentRequests.Remove(creature);
+        _restrictedPlaybackTokens.Remove(creature);
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         ReleaseForNativePlayback(creature);
         var token = Guid.NewGuid().ToString("N");
@@ -127,6 +173,12 @@ public sealed class NamedAnimationPlayback
     private void Restore(uint creature, string endingToken)
     {
         if (!OwnsExit(creature, endingToken)) return;
+        if (_restrictedPlaybackTokens.TryGetValue(creature, out var activeToken) &&
+            (activeToken == endingToken || EndingPrefix + activeToken == endingToken))
+            _restrictedPlaybackTokens.Remove(creature);
+        if (_equipmentRequests.TryGetValue(creature, out var request) &&
+            (request.PlaybackToken == endingToken || EndingPrefix + request.PlaybackToken == endingToken))
+            _equipmentRequests.Remove(creature);
         _runtime.Replace(creature, StartSource, "");
         _runtime.Replace(creature, LoopSource, "");
         _runtime.Replace(creature, EndSource, "");
@@ -150,7 +202,11 @@ public sealed class NamedAnimationPlayback
 
     /// <summary>Death must clear ownership immediately, without playing a recovery on resurrection.</summary>
     public void ClearOnDeath(uint creature)
-        => ReleaseForNativePlayback(creature);
+    {
+        _equipmentRequests.Remove(creature);
+        _restrictedPlaybackTokens.Remove(creature);
+        ReleaseForNativePlayback(creature);
+    }
 
     /// <summary>Hands control to another animation without issuing an idle/recovery action.</summary>
     public void ReleaseForNativePlayback(uint creature)

@@ -1,6 +1,7 @@
 [
   {
     "Id": "CallBeast",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Call Beast",
     "DisplayName": "Call Beast",
     "InternalName": "sw_callbeast",
@@ -22,6 +23,7 @@
   },
   {
     "Id": "GuardingBond",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Guarding Bond",
     "DisplayName": "Guarding Bond",
     "InternalName": "sw_guardbond",
@@ -41,6 +43,7 @@
   },
   {
     "Id": "PredatoryBond",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Predatory Bond",
     "DisplayName": "Predatory Bond",
     "InternalName": "sw_predbond",
@@ -60,6 +63,7 @@
   },
   {
     "Id": "ReviveBeast",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Revive Beast",
     "DisplayName": "Revive Beast",
     "InternalName": "sw_revi_beas",
@@ -81,6 +85,7 @@
   },
   {
     "Id": "Reward",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Reward",
     "DisplayName": "Reward",
     "InternalName": "sw_reward",
@@ -102,6 +107,7 @@
   },
   {
     "Id": "SoothePet",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Soothe Pet",
     "DisplayName": "Soothe Pet",
     "InternalName": "sw_soothepet",
@@ -121,6 +127,7 @@
   },
   {
     "Id": "Tame",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Tame",
     "DisplayName": "Tame",
     "InternalName": "sw_tame",
@@ -142,6 +149,7 @@
   },
   {
     "Id": "AdhesiveGrenade",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Adhesive Grenade",
     "DisplayName": "Adhesive Grenade",
     "InternalName": "sw_adhe_gren",
@@ -162,6 +170,7 @@
   },
   {
     "Id": "ArcProjector",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Arc Projector",
     "DisplayName": "Arc Projector",
     "InternalName": "sw_arc_proje",
@@ -183,6 +192,7 @@
   },
   {
     "Id": "BlasterBeacon",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Blaster Beacon",
     "DisplayName": "Blaster Beacon",
     "InternalName": "sw_blas_beac",
@@ -206,6 +216,7 @@
   },
   {
     "Id": "ClusterGrenade",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Cluster Grenade",
     "DisplayName": "Cluster Grenade",
     "InternalName": "sw_clus_gren",
@@ -225,6 +236,7 @@
   },
   {
     "Id": "ConcussionGrenade",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Concussion Grenade",
     "DisplayName": "Concussion Grenade",
     "InternalName": "sw_conc_gren",
@@ -245,6 +257,7 @@
   },
   {
     "Id": "CryoSprayer",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Cryo Sprayer",
     "DisplayName": "Cryo Sprayer",
     "InternalName": "sw_cryo_spra",
@@ -264,6 +277,7 @@
   },
   {
     "Id": "DeflectorShield",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Deflector Shield",
     "DisplayName": "Deflector Shield",
     "InternalName": "sw_defl_shie",
@@ -285,6 +299,7 @@
   },
   {
     "Id": "DisruptionPulse",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Disruption Pulse",
     "DisplayName": "Disruption Pulse",
     "InternalName": "sw_disr_puls",
@@ -304,6 +319,7 @@
   },
   {
     "Id": "EmergencyBunker",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Emergency Bunker",
     "DisplayName": "Emergency Bunker",
     "InternalName": "sw_emer_bunk",
@@ -325,6 +341,7 @@
   },
   {
     "Id": "Flamethrower",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Flamethrower",
     "DisplayName": "Flamethrower",
     "InternalName": "sw_flamethrw",
@@ -346,6 +363,7 @@
   },
   {
     "Id": "FlashGrenade",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Flash Grenade",
     "DisplayName": "Flash Grenade",
     "InternalName": "sw_flashgren",
@@ -365,6 +383,7 @@
   },
   {
     "Id": "FragGrenade",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Frag Grenade",
     "DisplayName": "Frag Grenade",
     "InternalName": "sw_fraggren",
@@ -386,6 +405,7 @@
   },
   {
     "Id": "GroupDeflector",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Group Deflector",
     "DisplayName": "Group Deflector",
     "InternalName": "sw_grou_defl",
@@ -405,6 +425,7 @@
   },
   {
     "Id": "IncendiaryField",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Incendiary Field",
     "DisplayName": "Incendiary Field",
     "InternalName": "sw_ince_fiel",
@@ -426,6 +447,7 @@
   },
   {
     "Id": "IonGrenade",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Ion Grenade",
     "DisplayName": "Ion Grenade",
     "InternalName": "sw_iongren",
@@ -446,6 +468,7 @@
   },
   {
     "Id": "IonLance",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Ion Lance",
     "DisplayName": "Ion Lance",
     "InternalName": "sw_ionlance",
@@ -467,6 +490,7 @@
   },
   {
     "Id": "KillzoneBeacon",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Killzone Beacon",
     "DisplayName": "Killzone Beacon",
     "InternalName": "sw_kill_beac",
@@ -488,6 +512,7 @@
   },
   {
     "Id": "OverloadBarrage",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Overload Barrage",
     "DisplayName": "Overload Barrage",
     "InternalName": "sw_over_barr",
@@ -507,6 +532,7 @@
   },
   {
     "Id": "PowerCell",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Power Cell",
     "DisplayName": "Power Cell",
     "InternalName": "sw_powercell",
@@ -528,6 +554,7 @@
   },
   {
     "Id": "RailDart",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Rail Dart",
     "DisplayName": "Rail Dart",
     "InternalName": "sw_raildart",
@@ -549,6 +576,7 @@
   },
   {
     "Id": "RemoteCharge",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Remote Charge",
     "DisplayName": "Remote Charge",
     "InternalName": "sw_remo_char",
@@ -571,6 +599,7 @@
   },
   {
     "Id": "ShockBeacon",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Shock Beacon",
     "DisplayName": "Shock Beacon",
     "InternalName": "sw_shoc_beac",
@@ -593,6 +622,7 @@
   },
   {
     "Id": "SignalJammer",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Signal Jammer",
     "DisplayName": "Signal Jammer",
     "InternalName": "sw_sign_jamm",
@@ -614,6 +644,7 @@
   },
   {
     "Id": "SonicBurst",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Sonic Burst",
     "DisplayName": "Sonic Burst",
     "InternalName": "sw_soni_burs",
@@ -635,6 +666,7 @@
   },
   {
     "Id": "ThermalDetonator",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Thermal Detonator",
     "DisplayName": "Thermal Detonator",
     "InternalName": "sw_ther_deto",
@@ -654,6 +686,7 @@
   },
   {
     "Id": "WeaponJam",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Weapon Jam",
     "DisplayName": "Weapon Jam",
     "InternalName": "sw_weaponjam",
@@ -673,6 +706,7 @@
   },
   {
     "Id": "WristRocket",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Wrist Rocket",
     "DisplayName": "Wrist Rocket",
     "InternalName": "sw_wris_rock",
@@ -694,6 +728,7 @@
   },
   {
     "Id": "GhostProtocol",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Ghost Protocol",
     "DisplayName": "Ghost Protocol",
     "InternalName": "sw_ghos_prot",
@@ -713,6 +748,7 @@
   },
   {
     "Id": "RazorTrap",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Razor Trap",
     "DisplayName": "Razor Trap",
     "InternalName": "sw_razortrap",
@@ -735,6 +771,7 @@
   },
   {
     "Id": "ShadowStep",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Shadow Step",
     "DisplayName": "Shadow Step",
     "InternalName": "sw_shad_step",
@@ -757,6 +794,7 @@
   },
   {
     "Id": "ShockTrap",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Shock Trap",
     "DisplayName": "Shock Trap",
     "InternalName": "sw_shocktrap",
@@ -778,6 +816,7 @@
   },
   {
     "Id": "TacticalEscape",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Tactical Escape",
     "DisplayName": "Tactical Escape",
     "InternalName": "sw_tact_esca",
@@ -800,6 +839,7 @@
   },
   {
     "Id": "AdrenalStim",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Adrenal Stim",
     "DisplayName": "Adrenal Stim",
     "InternalName": "sw_adrenstim",
@@ -821,6 +861,7 @@
   },
   {
     "Id": "Antitoxin",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Antitoxin",
     "DisplayName": "Antitoxin",
     "InternalName": "sw_antitox",
@@ -840,6 +881,7 @@
   },
   {
     "Id": "EmergencyCocktail",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Emergency Cocktail",
     "DisplayName": "Emergency Cocktail",
     "InternalName": "sw_emer_cock",
@@ -859,6 +901,7 @@
   },
   {
     "Id": "EmergencyTriage",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Emergency Triage",
     "DisplayName": "Emergency Triage",
     "InternalName": "sw_emer_tria",
@@ -878,6 +921,7 @@
   },
   {
     "Id": "FocusStim",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Focus Stim",
     "DisplayName": "Focus Stim",
     "InternalName": "sw_focusstim",
@@ -898,6 +942,7 @@
   },
   {
     "Id": "Infusion",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Infusion",
     "DisplayName": "Infusion",
     "InternalName": "sw_infusion",
@@ -918,6 +963,7 @@
   },
   {
     "Id": "KoltoMist",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Kolto Mist",
     "DisplayName": "Kolto Mist",
     "InternalName": "sw_koltomist",
@@ -938,6 +984,7 @@
   },
   {
     "Id": "MedKit",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Med Kit",
     "DisplayName": "Med Kit",
     "InternalName": "sw_medkit",
@@ -960,6 +1007,7 @@
   },
   {
     "Id": "PainSuppressant",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Pain Suppressant",
     "DisplayName": "Pain Suppressant",
     "InternalName": "sw_painsuppr",
@@ -980,6 +1028,7 @@
   },
   {
     "Id": "Resuscitation",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Resuscitation",
     "DisplayName": "Resuscitation",
     "InternalName": "sw_resusc",
@@ -1000,6 +1049,7 @@
   },
   {
     "Id": "Shielding",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Shielding",
     "DisplayName": "Shielding",
     "InternalName": "sw_shield",
@@ -1021,6 +1071,7 @@
   },
   {
     "Id": "TreatmentKit",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Treatment Kit",
     "DisplayName": "Treatment Kit",
     "InternalName": "sw_treatkit",
@@ -1042,6 +1093,7 @@
   },
   {
     "Id": "Benevolence",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Benevolence",
     "DisplayName": "Benevolence",
     "InternalName": "sw_benevol",
@@ -1065,6 +1117,7 @@
   },
   {
     "Id": "CreepingTerror",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Creeping Terror",
     "DisplayName": "Creeping Terror",
     "InternalName": "sw_cree_terr",
@@ -1086,6 +1139,7 @@
   },
   {
     "Id": "EclipseOfResolve",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Eclipse of Resolve",
     "DisplayName": "Eclipse of Resolve",
     "InternalName": "sw_eclp_resl",
@@ -1105,6 +1159,7 @@
   },
   {
     "Id": "ForceBurst",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Burst",
     "DisplayName": "Force Burst",
     "InternalName": "sw_forc_burs",
@@ -1124,6 +1179,7 @@
   },
   {
     "Id": "ForceChoke",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Choke",
     "DisplayName": "Force Choke",
     "InternalName": "sw_forc_chok",
@@ -1146,6 +1202,7 @@
   },
   {
     "Id": "ForceDrain",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Drain",
     "DisplayName": "Force Drain",
     "InternalName": "sw_forc_drai",
@@ -1167,6 +1224,7 @@
   },
   {
     "Id": "ForceIntercept",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Intercept",
     "DisplayName": "Force Intercept",
     "InternalName": "sw_forc_inte",
@@ -1188,6 +1246,7 @@
   },
   {
     "Id": "ForceJudgment",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Judgment",
     "DisplayName": "Force Judgment",
     "InternalName": "sw_forc_judg",
@@ -1209,6 +1268,7 @@
   },
   {
     "Id": "ForceLeap",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Leap",
     "DisplayName": "Force Leap",
     "InternalName": "sw_forceleap",
@@ -1231,6 +1291,7 @@
   },
   {
     "Id": "ForceLightning",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Lightning",
     "DisplayName": "Force Lightning",
     "InternalName": "sw_forc_ligh",
@@ -1252,6 +1313,7 @@
   },
   {
     "Id": "ForcePush",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Push",
     "DisplayName": "Force Push",
     "InternalName": "sw_forcepush",
@@ -1273,6 +1335,7 @@
   },
   {
     "Id": "ForceSanctuary",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Sanctuary",
     "DisplayName": "Force Sanctuary",
     "InternalName": "sw_forc_sanc",
@@ -1294,6 +1357,7 @@
   },
   {
     "Id": "ForceSpark",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Force Spark",
     "DisplayName": "Force Spark",
     "InternalName": "sw_forc_spar",
@@ -1314,6 +1378,7 @@
   },
   {
     "Id": "FuryStance",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Fury Stance",
     "DisplayName": "Fury Stance",
     "InternalName": "sw_furystn",
@@ -1334,6 +1399,7 @@
   },
   {
     "Id": "GuardianWard",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Guardian Ward",
     "DisplayName": "Guardian Ward",
     "InternalName": "sw_guardward",
@@ -1358,6 +1424,7 @@
   },
   {
     "Id": "HungerOfTheDark",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Hunger of the Dark",
     "DisplayName": "Hunger of the Dark",
     "InternalName": "sw_hung_dark",
@@ -1377,6 +1444,7 @@
   },
   {
     "Id": "LastStandOfTheLight",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Last Stand of the Light",
     "DisplayName": "Last Stand of the Light",
     "InternalName": "sw_lightlast",
@@ -1398,6 +1466,7 @@
   },
   {
     "Id": "MindTrick",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Mind Trick",
     "DisplayName": "Mind Trick",
     "InternalName": "sw_mindtrick",
@@ -1418,6 +1487,7 @@
   },
   {
     "Id": "NightmareField",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Nightmare Field",
     "DisplayName": "Nightmare Field",
     "InternalName": "sw_nigh_fiel",
@@ -1437,6 +1507,7 @@
   },
   {
     "Id": "PurifyingWave",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Purifying Wave",
     "DisplayName": "Purifying Wave",
     "InternalName": "sw_puri_wave",
@@ -1456,6 +1527,7 @@
   },
   {
     "Id": "RadiantLance",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Radiant Lance",
     "DisplayName": "Radiant Lance",
     "InternalName": "sw_radi_lanc",
@@ -1477,6 +1549,7 @@
   },
   {
     "Id": "Renewal",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Renewal",
     "DisplayName": "Renewal",
     "InternalName": "sw_renewal",
@@ -1498,6 +1571,7 @@
   },
   {
     "Id": "ThrowLightsaber",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Throw Lightsaber",
     "DisplayName": "Throw Lightsaber",
     "InternalName": "sw_thro_sabe",
@@ -1521,6 +1595,7 @@
   },
   {
     "Id": "ThrowRock",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Throw Rock",
     "DisplayName": "Throw Rock",
     "InternalName": "sw_throwrock",
@@ -1544,6 +1619,7 @@
   },
   {
     "Id": "WeakenResolve",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Weaken Resolve",
     "DisplayName": "Weaken Resolve",
     "InternalName": "sw_weak_resl",
@@ -1564,6 +1640,7 @@
   },
   {
     "Id": "Provoke",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Provoke",
     "DisplayName": "Provoke",
     "InternalName": "sw_provoke",
@@ -1584,6 +1661,7 @@
   },
   {
     "Id": "AbsoluteDefense",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Absolute Defense",
     "DisplayName": "Absolute Defense",
     "InternalName": "sw_abs_defen",
@@ -1605,6 +1683,7 @@
   },
   {
     "Id": "BastionStance",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Bastion Stance",
     "DisplayName": "Bastion Stance",
     "InternalName": "sw_baststn",
@@ -1624,6 +1703,7 @@
   },
   {
     "Id": "BlazingSpikes",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Blazing Spikes",
     "DisplayName": "Blazing Spikes",
     "InternalName": "sw_blaz_spik",
@@ -1643,6 +1723,7 @@
   },
   {
     "Id": "Earthshatter",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Earthshatter",
     "DisplayName": "Earthshatter",
     "InternalName": "sw_earthshtr",
@@ -1663,6 +1744,7 @@
   },
   {
     "Id": "Flash",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Flash",
     "DisplayName": "Flash",
     "InternalName": "sw_flash",
@@ -1684,6 +1766,7 @@
   },
   {
     "Id": "FortressStrike",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Fortress Strike",
     "DisplayName": "Fortress Strike",
     "InternalName": "sw_fort_stri",
@@ -1705,6 +1788,7 @@
   },
   {
     "Id": "Rampart",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Rampart",
     "DisplayName": "Rampart",
     "InternalName": "sw_rampart",
@@ -1726,6 +1810,7 @@
   },
   {
     "Id": "SacrificialBlade",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Sacrificial Blade",
     "DisplayName": "Sacrificial Blade",
     "InternalName": "sw_sacr_blad",
@@ -1745,6 +1830,7 @@
   },
   {
     "Id": "SoulBurst",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Soul Burst",
     "DisplayName": "Soul Burst",
     "InternalName": "sw_soulburst",
@@ -1764,6 +1850,7 @@
   },
   {
     "Id": "SoulDevourer",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Soul Devourer",
     "DisplayName": "Soul Devourer",
     "InternalName": "sw_soul_devo",
@@ -1783,6 +1870,7 @@
   },
   {
     "Id": "SoulStorm",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Soul Storm",
     "DisplayName": "Soul Storm",
     "InternalName": "sw_soulstorm",
@@ -1802,6 +1890,7 @@
   },
   {
     "Id": "SoulStrike",
+    "EquipmentRequirement": "TwoHanded",
     "Name": "Soul Strike",
     "DisplayName": "Soul Strike",
     "InternalName": "sw_soul_stri",
@@ -1823,6 +1912,7 @@
   },
   {
     "Id": "AdamantineGuard",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Adamantine Guard",
     "DisplayName": "Adamantine Guard",
     "InternalName": "sw_adamguard",
@@ -1844,6 +1934,7 @@
   },
   {
     "Id": "GuardCounter",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Guard Counter",
     "DisplayName": "Guard Counter",
     "InternalName": "sw_guar_coun",
@@ -1865,6 +1956,7 @@
   },
   {
     "Id": "HookingStrike",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Hooking Strike",
     "DisplayName": "Hooking Strike",
     "InternalName": "sw_hook_stri",
@@ -1887,6 +1979,7 @@
   },
   {
     "Id": "InterruptingSweep",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Interrupting Sweep",
     "DisplayName": "Interrupting Sweep",
     "InternalName": "sw_intr_swee",
@@ -1907,6 +2000,7 @@
   },
   {
     "Id": "IronWallStance",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Iron Wall Stance",
     "DisplayName": "Iron Wall Stance",
     "InternalName": "sw_ironwall",
@@ -1926,6 +2020,7 @@
   },
   {
     "Id": "JointLock",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Joint Lock",
     "DisplayName": "Joint Lock",
     "InternalName": "sw_jointlock",
@@ -1947,6 +2042,7 @@
   },
   {
     "Id": "ScrapheapLockdown",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Scrapheap Lockdown",
     "DisplayName": "Scrapheap Lockdown",
     "InternalName": "sw_scra_lock",
@@ -1966,6 +2062,7 @@
   },
   {
     "Id": "ScrapperStance",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Scrapper Stance",
     "DisplayName": "Scrapper Stance",
     "InternalName": "sw_scrapstn",
@@ -1985,6 +2082,7 @@
   },
   {
     "Id": "TwinGuardStance",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Steel Shoulder",
     "DisplayName": "Steel Shoulder",
     "InternalName": "sw_steelshld",
@@ -2004,6 +2102,7 @@
   },
   {
     "Id": "TwinIntercept",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Tag In",
     "DisplayName": "Tag In",
     "InternalName": "sw_tagin",
@@ -2023,6 +2122,7 @@
   },
   {
     "Id": "WhirlingGuard",
+    "EquipmentRequirement": "Unarmed",
     "Name": "Whirling Guard",
     "DisplayName": "Whirling Guard",
     "InternalName": "sw_whir_guar",
@@ -2044,6 +2144,7 @@
   },
   {
     "Id": "BreakMorale",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Break Morale",
     "DisplayName": "Break Morale",
     "InternalName": "sw_brea_mora",
@@ -2064,6 +2165,7 @@
   },
   {
     "Id": "ChargeOrder",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Charge Order",
     "DisplayName": "Charge Order",
     "InternalName": "sw_char_orde",
@@ -2084,6 +2186,7 @@
   },
   {
     "Id": "CleanseOrder",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Cleanse Order",
     "DisplayName": "Cleanse Order",
     "InternalName": "sw_clea_orde",
@@ -2104,6 +2207,7 @@
   },
   {
     "Id": "CoordinatedFocus",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Coordinated Focus",
     "DisplayName": "Coordinated Focus",
     "InternalName": "sw_coor_focu",
@@ -2125,6 +2229,7 @@
   },
   {
     "Id": "DecisiveCommand",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Decisive Command",
     "DisplayName": "Decisive Command",
     "InternalName": "sw_decis_cmd",
@@ -2144,6 +2249,7 @@
   },
   {
     "Id": "FieldRecovery",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Field Recovery",
     "DisplayName": "Field Recovery",
     "InternalName": "sw_fiel_reco",
@@ -2164,6 +2270,7 @@
   },
   {
     "Id": "HoldTheLine",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Hold the Line",
     "DisplayName": "Hold the Line",
     "InternalName": "sw_holdline",
@@ -2183,6 +2290,7 @@
   },
   {
     "Id": "PressTheAttack",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Press the Attack",
     "DisplayName": "Press the Attack",
     "InternalName": "sw_pres_atta",
@@ -2204,6 +2312,7 @@
   },
   {
     "Id": "RallyingStandard",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Rallying Standard",
     "DisplayName": "Rallying Standard",
     "InternalName": "sw_rall_stan",
@@ -2224,6 +2333,7 @@
   },
   {
     "Id": "RousingShout",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Rousing Shout",
     "DisplayName": "Rousing Shout",
     "InternalName": "sw_rous_shou",
@@ -2245,6 +2355,7 @@
   },
   {
     "Id": "SteadyFormation",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Steady Formation",
     "DisplayName": "Steady Formation",
     "InternalName": "sw_stea_form",
@@ -2265,6 +2376,7 @@
   },
   {
     "Id": "WatchfulPresence",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Watchful Presence",
     "DisplayName": "Watchful Presence",
     "InternalName": "sw_watc_pres",
@@ -2286,6 +2398,7 @@
   },
   {
     "Id": "AegisEternal",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Aegis Eternal",
     "DisplayName": "Aegis Eternal",
     "InternalName": "sw_aegi_eter",
@@ -2305,6 +2418,7 @@
   },
   {
     "Id": "Epicenter",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Epicenter",
     "DisplayName": "Epicenter",
     "InternalName": "sw_epicenter",
@@ -2324,6 +2438,7 @@
   },
   {
     "Id": "SaberForceLink",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Force Link",
     "DisplayName": "Force Link",
     "InternalName": "sw_forcelink",
@@ -2345,6 +2460,7 @@
   },
   {
     "Id": "ForceSheath",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Force Sheath",
     "DisplayName": "Force Sheath",
     "InternalName": "sw_forc_shea",
@@ -2367,6 +2483,7 @@
   },
   {
     "Id": "GuardiansChallenge",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Guardian's Challenge",
     "DisplayName": "Guardian's Challenge",
     "InternalName": "sw_guar_chal",
@@ -2387,6 +2504,7 @@
   },
   {
     "Id": "ImbuementStance",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Imbuement Stance",
     "DisplayName": "Imbuement Stance",
     "InternalName": "sw_imbuestn",
@@ -2406,6 +2524,7 @@
   },
   {
     "Id": "ImmovableStance",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Immovable Stance",
     "DisplayName": "Immovable Stance",
     "InternalName": "sw_immovstn",
@@ -2425,6 +2544,7 @@
   },
   {
     "Id": "Reprisal",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Reprisal",
     "DisplayName": "Reprisal",
     "InternalName": "sw_reprisal",
@@ -2445,6 +2565,7 @@
   },
   {
     "Id": "SaberWard",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Saber Ward",
     "DisplayName": "Saber Ward",
     "InternalName": "sw_saberward",
@@ -2469,6 +2590,7 @@
   },
   {
     "Id": "ShatteringStrike",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Shattering Strike",
     "DisplayName": "Shattering Strike",
     "InternalName": "sw_shat_stri",
@@ -2489,6 +2611,7 @@
   },
   {
     "Id": "SunderingSweep",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Sundering Sweep",
     "DisplayName": "Sundering Sweep",
     "InternalName": "sw_sund_swee",
@@ -2510,6 +2633,7 @@
   },
   {
     "Id": "ApexCollapseTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Apex Collapse",
     "DisplayName": "Apex Collapse",
     "InternalName": "sw_apex_coll",
@@ -2529,6 +2653,7 @@
   },
   {
     "Id": "ArcPulseTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Arc Pulse",
     "DisplayName": "Arc Pulse",
     "InternalName": "sw_arcpulse",
@@ -2548,6 +2673,7 @@
   },
   {
     "Id": "BarbedVolleyTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Barbed Volley",
     "DisplayName": "Barbed Volley",
     "InternalName": "sw_barb_voll",
@@ -2567,6 +2693,7 @@
   },
   {
     "Id": "BloodFrenzyFlurryTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Blood Frenzy Flurry",
     "DisplayName": "Blood Frenzy Flurry",
     "InternalName": "sw_bloodflry",
@@ -2586,6 +2713,7 @@
   },
   {
     "Id": "BraceBreakerTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Brace Breaker",
     "DisplayName": "Brace Breaker",
     "InternalName": "sw_brac_brea",
@@ -2605,6 +2733,7 @@
   },
   {
     "Id": "BrutalBashTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Brutal Bash",
     "DisplayName": "Brutal Bash",
     "InternalName": "sw_brut_bash",
@@ -2624,6 +2753,7 @@
   },
   {
     "Id": "CapacitorSurgeTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Capacitor Surge",
     "DisplayName": "Capacitor Surge",
     "InternalName": "sw_capa_surg",
@@ -2643,6 +2773,7 @@
   },
   {
     "Id": "ConcussiveChallengeTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Concussive Challenge",
     "DisplayName": "Concussive Challenge",
     "InternalName": "sw_conc_chal",
@@ -2662,6 +2793,7 @@
   },
   {
     "Id": "CrossfireDrillTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Crossfire Drill",
     "DisplayName": "Crossfire Drill",
     "InternalName": "sw_cros_dril",
@@ -2681,6 +2813,7 @@
   },
   {
     "Id": "CryoBileTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Cryo Bile",
     "DisplayName": "Cryo Bile",
     "InternalName": "sw_cryobile",
@@ -2700,6 +2833,7 @@
   },
   {
     "Id": "DarkShockTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Dark Shock",
     "DisplayName": "Dark Shock",
     "InternalName": "sw_darkshock",
@@ -2719,6 +2853,7 @@
   },
   {
     "Id": "DisorientingScreechTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Disorienting Screech",
     "DisplayName": "Disorienting Screech",
     "InternalName": "sw_diso_scre",
@@ -2738,6 +2873,7 @@
   },
   {
     "Id": "DreadWaveTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Dread Wave",
     "DisplayName": "Dread Wave",
     "InternalName": "sw_dreadwave",
@@ -2757,6 +2893,7 @@
   },
   {
     "Id": "FinalEclipseTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Final Eclipse",
     "DisplayName": "Final Eclipse",
     "InternalName": "sw_fina_eclp",
@@ -2776,6 +2913,7 @@
   },
   {
     "Id": "FinalLineTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Final Line",
     "DisplayName": "Final Line",
     "InternalName": "sw_finalline",
@@ -2795,6 +2933,7 @@
   },
   {
     "Id": "FinalMandateTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Final Mandate",
     "DisplayName": "Final Mandate",
     "InternalName": "sw_fina_mand",
@@ -2814,6 +2953,7 @@
   },
   {
     "Id": "FinalSuppressionTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Final Suppression",
     "DisplayName": "Final Suppression",
     "InternalName": "sw_fina_supp",
@@ -2833,6 +2973,7 @@
   },
   {
     "Id": "FinishingDriveTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Finishing Drive",
     "DisplayName": "Finishing Drive",
     "InternalName": "sw_fini_driv",
@@ -2852,6 +2993,7 @@
   },
   {
     "Id": "FrostSpitTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Frost Spit",
     "DisplayName": "Frost Spit",
     "InternalName": "sw_frostspit",
@@ -2871,6 +3013,7 @@
   },
   {
     "Id": "GoringChargeTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Goring Charge",
     "DisplayName": "Goring Charge",
     "InternalName": "sw_gori_char",
@@ -2890,6 +3033,7 @@
   },
   {
     "Id": "GrenadeBurstTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Grenade Burst",
     "DisplayName": "Grenade Burst",
     "InternalName": "sw_grenburst",
@@ -2909,6 +3053,7 @@
   },
   {
     "Id": "HoldfastSlamTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Holdfast Slam",
     "DisplayName": "Holdfast Slam",
     "InternalName": "sw_hold_slam",
@@ -2930,6 +3075,7 @@
   },
   {
     "Id": "InfernoBlastTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Inferno Blast",
     "DisplayName": "Inferno Blast",
     "InternalName": "sw_infe_blas",
@@ -2949,6 +3095,7 @@
   },
   {
     "Id": "InnerCircleBindTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Inner Circle Bind",
     "DisplayName": "Inner Circle Bind",
     "InternalName": "sw_inr_bind",
@@ -2968,6 +3115,7 @@
   },
   {
     "Id": "InnerCirclePounceTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Inner Circle Pounce",
     "DisplayName": "Inner Circle Pounce",
     "InternalName": "sw_inr_pounc",
@@ -2987,6 +3135,7 @@
   },
   {
     "Id": "InnerCircleSurgeTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Inner Circle Surge",
     "DisplayName": "Inner Circle Surge",
     "InternalName": "sw_inr_surge",
@@ -3006,6 +3155,7 @@
   },
   {
     "Id": "InnerCircleVolleyTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Inner Circle Volley",
     "DisplayName": "Inner Circle Volley",
     "InternalName": "sw_inr_volly",
@@ -3025,6 +3175,7 @@
   },
   {
     "Id": "InnerRingFlurryTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Inner Ring Flurry",
     "DisplayName": "Inner Ring Flurry",
     "InternalName": "sw_inr_flury",
@@ -3044,6 +3195,7 @@
   },
   {
     "Id": "InnerVoidTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Inner Void",
     "DisplayName": "Inner Void",
     "InternalName": "sw_inrvoid",
@@ -3063,6 +3215,7 @@
   },
   {
     "Id": "IonBurstTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Ion Burst",
     "DisplayName": "Ion Burst",
     "InternalName": "sw_ionburst",
@@ -3082,6 +3235,7 @@
   },
   {
     "Id": "LastBastionTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Last Bastion",
     "DisplayName": "Last Bastion",
     "InternalName": "sw_lastbast",
@@ -3101,6 +3255,7 @@
   },
   {
     "Id": "LockstepCrushTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Lockstep Crush",
     "DisplayName": "Lockstep Crush",
     "InternalName": "sw_lockcrush",
@@ -3120,6 +3275,7 @@
   },
   {
     "Id": "MercilessAngleTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Merciless Angle",
     "DisplayName": "Merciless Angle",
     "InternalName": "sw_merc_angl",
@@ -3139,6 +3295,7 @@
   },
   {
     "Id": "NullShockTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Null Shock",
     "DisplayName": "Null Shock",
     "InternalName": "sw_nullshock",
@@ -3158,6 +3315,7 @@
   },
   {
     "Id": "OverclockedAnalyzer",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Overclocked Analyzer",
     "DisplayName": "Overclocked Analyzer",
     "InternalName": "sw_overanlyz",
@@ -3179,6 +3337,7 @@
   },
   {
     "Id": "PackHarrierTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Pack Harrier",
     "DisplayName": "Pack Harrier",
     "InternalName": "sw_pack_harr",
@@ -3198,6 +3357,7 @@
   },
   {
     "Id": "PermafrostRuptureTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Permafrost Rupture",
     "DisplayName": "Permafrost Rupture",
     "InternalName": "sw_perm_rupt",
@@ -3217,6 +3377,7 @@
   },
   {
     "Id": "PiercingQuillsTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Piercing Quills",
     "DisplayName": "Piercing Quills",
     "InternalName": "sw_pier_quil",
@@ -3236,6 +3397,7 @@
   },
   {
     "Id": "PouncingStrikeTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Pouncing Strike",
     "DisplayName": "Pouncing Strike",
     "InternalName": "sw_poun_stri",
@@ -3255,6 +3417,7 @@
   },
   {
     "Id": "PressureLockTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Pressure Lock",
     "DisplayName": "Pressure Lock",
     "InternalName": "sw_pres_lock",
@@ -3274,6 +3437,7 @@
   },
   {
     "Id": "RakingClawsTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Raking Claws",
     "DisplayName": "Raking Claws",
     "InternalName": "sw_raki_claw",
@@ -3293,6 +3457,7 @@
   },
   {
     "Id": "RallyBreakerTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Rally Breaker",
     "DisplayName": "Rally Breaker",
     "InternalName": "sw_rall_brea",
@@ -3312,6 +3477,7 @@
   },
   {
     "Id": "RupturingQuakeTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Rupturing Quake",
     "DisplayName": "Rupturing Quake",
     "InternalName": "sw_ruptquake",
@@ -3331,6 +3497,7 @@
   },
   {
     "Id": "SavageRoarTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Savage Roar",
     "DisplayName": "Savage Roar",
     "InternalName": "sw_sava_roar",
@@ -3350,6 +3517,7 @@
   },
   {
     "Id": "ScorchingBreathTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Scorching Breath",
     "DisplayName": "Scorching Breath",
     "InternalName": "sw_scor_brea",
@@ -3369,6 +3537,7 @@
   },
   {
     "Id": "SeismicSlamTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Seismic Slam",
     "DisplayName": "Seismic Slam",
     "InternalName": "sw_seis_slam",
@@ -3390,6 +3559,7 @@
   },
   {
     "Id": "ShrapnelBurstTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Shrapnel Burst",
     "DisplayName": "Shrapnel Burst",
     "InternalName": "sw_shra_burs",
@@ -3409,6 +3579,7 @@
   },
   {
     "Id": "SignalSnareTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Signal Snare",
     "DisplayName": "Signal Snare",
     "InternalName": "sw_sign_snar",
@@ -3428,6 +3599,7 @@
   },
   {
     "Id": "SnapRushTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Snap Rush",
     "DisplayName": "Snap Rush",
     "InternalName": "sw_snaprush",
@@ -3447,6 +3619,7 @@
   },
   {
     "Id": "SonicShriekTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Sonic Shriek",
     "DisplayName": "Sonic Shriek",
     "InternalName": "sw_soni_shri",
@@ -3466,6 +3639,7 @@
   },
   {
     "Id": "StaticBurstTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Static Burst",
     "DisplayName": "Static Burst",
     "InternalName": "sw_stat_burs",
@@ -3485,6 +3659,7 @@
   },
   {
     "Id": "StaticWebTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Static Web",
     "DisplayName": "Static Web",
     "InternalName": "sw_staticweb",
@@ -3504,6 +3679,7 @@
   },
   {
     "Id": "StimCanisterTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Stim Canister",
     "DisplayName": "Stim Canister",
     "InternalName": "sw_stim_cani",
@@ -3523,6 +3699,7 @@
   },
   {
     "Id": "SuppressingShotTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Suppressing Shot",
     "DisplayName": "Suppressing Shot",
     "InternalName": "sw_mim_suppr",
@@ -3542,6 +3719,7 @@
   },
   {
     "Id": "SustainBurnTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Sustain Burn",
     "DisplayName": "Sustain Burn",
     "InternalName": "sw_sust_burn",
@@ -3561,6 +3739,7 @@
   },
   {
     "Id": "TailSweepTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Tail Sweep",
     "DisplayName": "Tail Sweep",
     "InternalName": "sw_tailsweep",
@@ -3580,6 +3759,7 @@
   },
   {
     "Id": "TerrifyingBellowTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Terrifying Bellow",
     "DisplayName": "Terrifying Bellow",
     "InternalName": "sw_terr_bell",
@@ -3599,6 +3779,7 @@
   },
   {
     "Id": "ToxicCloudTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Toxic Cloud",
     "DisplayName": "Toxic Cloud",
     "InternalName": "sw_toxi_clou",
@@ -3618,6 +3799,7 @@
   },
   {
     "Id": "ToxicSpitTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Toxic Spit",
     "DisplayName": "Toxic Spit",
     "InternalName": "sw_toxicspit",
@@ -3637,6 +3819,7 @@
   },
   {
     "Id": "VenomSprayTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Venom Spray",
     "DisplayName": "Venom Spray",
     "InternalName": "sw_veno_spra",
@@ -3656,6 +3839,7 @@
   },
   {
     "Id": "WardenClampTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Clamp",
     "DisplayName": "Warden Clamp",
     "InternalName": "sw_ward_clam",
@@ -3675,6 +3859,7 @@
   },
   {
     "Id": "WardenMarkTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Mark",
     "DisplayName": "Warden Mark",
     "InternalName": "sw_ward_mark",
@@ -3694,6 +3879,7 @@
   },
   {
     "Id": "WardenMaulTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Maul",
     "DisplayName": "Warden Maul",
     "InternalName": "sw_ward_maul",
@@ -3715,6 +3901,7 @@
   },
   {
     "Id": "WardenOrderTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Order",
     "DisplayName": "Warden Order",
     "InternalName": "sw_ward_orde",
@@ -3734,6 +3921,7 @@
   },
   {
     "Id": "WardenRendTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Rend",
     "DisplayName": "Warden Rend",
     "InternalName": "sw_ward_rend",
@@ -3753,6 +3941,7 @@
   },
   {
     "Id": "WardenSweepTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Sweep",
     "DisplayName": "Warden Sweep",
     "InternalName": "sw_ward_swee",
@@ -3772,6 +3961,7 @@
   },
   {
     "Id": "WardenWallTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Wall",
     "DisplayName": "Warden Wall",
     "InternalName": "sw_ward_wall",
@@ -3791,6 +3981,7 @@
   },
   {
     "Id": "WillFractureTechnique",
+    "EquipmentRequirement": "Unrestricted",
     "Name": "Will Fracture",
     "DisplayName": "Will Fracture",
     "InternalName": "sw_will_frac",
@@ -3810,6 +4001,7 @@
   },
   {
     "Id": "DeadMansHand",
+    "EquipmentRequirement": "Pistol",
     "Name": "Dead Man's Hand",
     "DisplayName": "Dead Man's Hand",
     "InternalName": "sw_deadhand",
@@ -3829,6 +4021,7 @@
   },
   {
     "Id": "DisarmingShot",
+    "EquipmentRequirement": "Pistol",
     "Name": "Disarming Shot",
     "DisplayName": "Disarming Shot",
     "InternalName": "sw_disa_shot",
@@ -3851,6 +4044,7 @@
   },
   {
     "Id": "DoubleShot",
+    "EquipmentRequirement": "Pistol",
     "Name": "Double Shot",
     "DisplayName": "Double Shot",
     "InternalName": "sw_doub_shot",
@@ -3872,6 +4066,7 @@
   },
   {
     "Id": "FanTheHammer",
+    "EquipmentRequirement": "Pistol",
     "Name": "Fan the Hammer",
     "DisplayName": "Fan the Hammer",
     "InternalName": "sw_fanhammer",
@@ -3892,6 +4087,7 @@
   },
   {
     "Id": "GamblerStance",
+    "EquipmentRequirement": "Pistol",
     "Name": "Gambler Stance",
     "DisplayName": "Gambler Stance",
     "InternalName": "sw_gambl_stn",
@@ -3911,6 +4107,7 @@
   },
   {
     "Id": "InterruptingShot",
+    "EquipmentRequirement": "Pistol",
     "Name": "Interrupting Shot",
     "DisplayName": "Interrupting Shot",
     "InternalName": "sw_intr_shot",
@@ -3932,6 +4129,7 @@
   },
   {
     "Id": "LastWord",
+    "EquipmentRequirement": "Pistol",
     "Name": "Last Word",
     "DisplayName": "Last Word",
     "InternalName": "sw_lastword",
@@ -3951,6 +4149,7 @@
   },
   {
     "Id": "PointBlankBurst",
+    "EquipmentRequirement": "Pistol",
     "Name": "Point Blank Burst",
     "DisplayName": "Point Blank Burst",
     "InternalName": "sw_ptblkbst",
@@ -3971,6 +4170,7 @@
   },
   {
     "Id": "QuickDraw",
+    "EquipmentRequirement": "Pistol",
     "Name": "Quick Draw",
     "DisplayName": "Quick Draw",
     "InternalName": "sw_quickdraw",
@@ -3993,6 +4193,7 @@
   },
   {
     "Id": "SkirmisherStance",
+    "EquipmentRequirement": "Pistol",
     "Name": "Skirmisher Stance",
     "DisplayName": "Skirmisher Stance",
     "InternalName": "sw_skirmstn",
@@ -4012,6 +4213,7 @@
   },
   {
     "Id": "AimedShot",
+    "EquipmentRequirement": "Rifle",
     "Name": "Aimed Shot",
     "DisplayName": "Aimed Shot",
     "InternalName": "sw_aimedshot",
@@ -4034,6 +4236,7 @@
   },
   {
     "Id": "CripplingShot",
+    "EquipmentRequirement": "Rifle",
     "Name": "Crippling Shot",
     "DisplayName": "Crippling Shot",
     "InternalName": "sw_criplshot",
@@ -4055,6 +4258,7 @@
   },
   {
     "Id": "Headshot",
+    "EquipmentRequirement": "Rifle",
     "Name": "Headshot",
     "DisplayName": "Headshot",
     "InternalName": "sw_headshot",
@@ -4075,6 +4279,7 @@
   },
   {
     "Id": "KillBox",
+    "EquipmentRequirement": "Rifle",
     "Name": "Kill Box",
     "DisplayName": "Kill Box",
     "InternalName": "sw_killbox",
@@ -4094,6 +4299,7 @@
   },
   {
     "Id": "OneShot",
+    "EquipmentRequirement": "Rifle",
     "Name": "One Shot",
     "DisplayName": "One Shot",
     "InternalName": "sw_oneshot",
@@ -4113,6 +4319,7 @@
   },
   {
     "Id": "PiercingRound",
+    "EquipmentRequirement": "Rifle",
     "Name": "Piercing Round",
     "DisplayName": "Piercing Round",
     "InternalName": "sw_pier_roun",
@@ -4134,6 +4341,7 @@
   },
   {
     "Id": "SniperStance",
+    "EquipmentRequirement": "Rifle",
     "Name": "Sniper Stance",
     "DisplayName": "Sniper Stance",
     "InternalName": "sw_sniperstn",
@@ -4153,6 +4361,7 @@
   },
   {
     "Id": "SuppressingShot",
+    "EquipmentRequirement": "Rifle",
     "Name": "Suppressing Shot",
     "DisplayName": "Suppressing Shot",
     "InternalName": "sw_supprshot",
@@ -4175,6 +4384,7 @@
   },
   {
     "Id": "SuppressionStance",
+    "EquipmentRequirement": "Rifle",
     "Name": "Suppression Stance",
     "DisplayName": "Suppression Stance",
     "InternalName": "sw_supprstn",
@@ -4194,6 +4404,7 @@
   },
   {
     "Id": "SuppressiveLine",
+    "EquipmentRequirement": "Rifle",
     "Name": "Suppressive Line",
     "DisplayName": "Suppressive Line",
     "InternalName": "sw_supprline",
@@ -4214,6 +4425,7 @@
   },
   {
     "Id": "CircleSlash",
+    "EquipmentRequirement": "Polearm",
     "Name": "Circle Slash",
     "DisplayName": "Circle Slash",
     "InternalName": "sw_circslash",
@@ -4235,6 +4447,7 @@
   },
   {
     "Id": "ConduitStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Conduit Stance",
     "DisplayName": "Conduit Stance",
     "InternalName": "sw_condstn",
@@ -4254,6 +4467,7 @@
   },
   {
     "Id": "DoubleStrike",
+    "EquipmentRequirement": "Polearm",
     "Name": "Double Strike",
     "DisplayName": "Double Strike",
     "InternalName": "sw_doub_stri",
@@ -4276,6 +4490,7 @@
   },
   {
     "Id": "FocusedArc",
+    "EquipmentRequirement": "Polearm",
     "Name": "Focused Arc",
     "DisplayName": "Focused Arc",
     "InternalName": "sw_focus_arc",
@@ -4298,6 +4513,7 @@
   },
   {
     "Id": "GuardedChannel",
+    "EquipmentRequirement": "Polearm",
     "Name": "Guarded Channel",
     "DisplayName": "Guarded Channel",
     "InternalName": "sw_guar_chan",
@@ -4319,6 +4535,7 @@
   },
   {
     "Id": "InfiniteConduit",
+    "EquipmentRequirement": "Polearm",
     "Name": "Infinite Conduit",
     "DisplayName": "Infinite Conduit",
     "InternalName": "sw_infcond",
@@ -4338,6 +4555,7 @@
   },
   {
     "Id": "MaelstromArc",
+    "EquipmentRequirement": "Polearm",
     "Name": "Maelstrom Arc",
     "DisplayName": "Maelstrom Arc",
     "InternalName": "sw_maelarc",
@@ -4358,6 +4576,7 @@
   },
   {
     "Id": "SaberCyclone",
+    "EquipmentRequirement": "Polearm",
     "Name": "Saber Cyclone",
     "DisplayName": "Saber Cyclone",
     "InternalName": "sw_sabe_cycl",
@@ -4377,6 +4596,7 @@
   },
   {
     "Id": "SeverFocus",
+    "EquipmentRequirement": "Polearm",
     "Name": "Sever Focus",
     "DisplayName": "Sever Focus",
     "InternalName": "sw_seve_focu",
@@ -4397,6 +4617,7 @@
   },
   {
     "Id": "TempestStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Tempest Stance",
     "DisplayName": "Tempest Stance",
     "InternalName": "sw_tempe_stn",
@@ -4416,6 +4637,7 @@
   },
   {
     "Id": "CripplingDefense",
+    "EquipmentRequirement": "Polearm",
     "Name": "Crippling Defense",
     "DisplayName": "Crippling Defense",
     "InternalName": "sw_crip_defe",
@@ -4435,6 +4657,7 @@
   },
   {
     "Id": "DisablingStrike",
+    "EquipmentRequirement": "Polearm",
     "Name": "Disabling Strike",
     "DisplayName": "Disabling Strike",
     "InternalName": "sw_disa_stri",
@@ -4457,6 +4680,7 @@
   },
   {
     "Id": "DisruptionField",
+    "EquipmentRequirement": "Polearm",
     "Name": "Disruption Field",
     "DisplayName": "Disruption Field",
     "InternalName": "sw_disr_fiel",
@@ -4477,6 +4701,7 @@
   },
   {
     "Id": "Forcebane",
+    "EquipmentRequirement": "Polearm",
     "Name": "Forcebane",
     "DisplayName": "Forcebane",
     "InternalName": "sw_forcebane",
@@ -4496,6 +4721,7 @@
   },
   {
     "Id": "HamperingBarrage",
+    "EquipmentRequirement": "Polearm",
     "Name": "Hampering Barrage",
     "DisplayName": "Hampering Barrage",
     "InternalName": "sw_hamp_barr",
@@ -4516,6 +4742,7 @@
   },
   {
     "Id": "InterruptionStrike",
+    "EquipmentRequirement": "Polearm",
     "Name": "Interruption Strike",
     "DisplayName": "Interruption Strike",
     "InternalName": "sw_intr_stri",
@@ -4537,6 +4764,7 @@
   },
   {
     "Id": "PerceptiveStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Perceptive Stance",
     "DisplayName": "Perceptive Stance",
     "InternalName": "sw_perce_stn",
@@ -4556,6 +4784,7 @@
   },
   {
     "Id": "SweepingFlank",
+    "EquipmentRequirement": "Polearm",
     "Name": "Sweeping Flank",
     "DisplayName": "Sweeping Flank",
     "InternalName": "sw_swee_flan",
@@ -4577,6 +4806,7 @@
   },
   {
     "Id": "VigorStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Vigor Stance",
     "DisplayName": "Vigor Stance",
     "InternalName": "sw_vigorstn",
@@ -4596,6 +4826,7 @@
   },
   {
     "Id": "VigorThrust",
+    "EquipmentRequirement": "Polearm",
     "Name": "Vigor Thrust",
     "DisplayName": "Vigor Thrust",
     "InternalName": "sw_vigo_thru",
@@ -4618,6 +4849,7 @@
   },
   {
     "Id": "CrusherStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Crusher Stance",
     "DisplayName": "Crusher Stance",
     "InternalName": "sw_crush_stn",
@@ -4637,6 +4869,7 @@
   },
   {
     "Id": "GroundQuake",
+    "EquipmentRequirement": "Polearm",
     "Name": "Ground Quake",
     "DisplayName": "Ground Quake",
     "InternalName": "sw_grou_quak",
@@ -4657,6 +4890,7 @@
   },
   {
     "Id": "LegSweep",
+    "EquipmentRequirement": "Polearm",
     "Name": "Leg Sweep",
     "DisplayName": "Leg Sweep",
     "InternalName": "sw_legsweep",
@@ -4678,6 +4912,7 @@
   },
   {
     "Id": "LineBreaker",
+    "EquipmentRequirement": "Polearm",
     "Name": "Line Breaker",
     "DisplayName": "Line Breaker",
     "InternalName": "sw_line_brea",
@@ -4700,6 +4935,7 @@
   },
   {
     "Id": "RibBreaker",
+    "EquipmentRequirement": "Polearm",
     "Name": "Rib Breaker",
     "DisplayName": "Rib Breaker",
     "InternalName": "sw_rib_break",
@@ -4721,6 +4957,7 @@
   },
   {
     "Id": "SentinelStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Sentinel Stance",
     "DisplayName": "Sentinel Stance",
     "InternalName": "sw_senti_stn",
@@ -4740,6 +4977,7 @@
   },
   {
     "Id": "ShelterCircle",
+    "EquipmentRequirement": "Polearm",
     "Name": "Shelter Circle",
     "DisplayName": "Shelter Circle",
     "InternalName": "sw_shel_circ",
@@ -4759,6 +4997,7 @@
   },
   {
     "Id": "Slam",
+    "EquipmentRequirement": "Polearm",
     "Name": "Slam",
     "DisplayName": "Slam",
     "InternalName": "sw_slam",
@@ -4781,6 +5020,7 @@
   },
   {
     "Id": "SweepingGuard",
+    "EquipmentRequirement": "Polearm",
     "Name": "Sweeping Guard",
     "DisplayName": "Sweeping Guard",
     "InternalName": "sw_swee_guar",
@@ -4800,6 +5040,7 @@
   },
   {
     "Id": "UnmovingCenter",
+    "EquipmentRequirement": "Polearm",
     "Name": "Unmoving Center",
     "DisplayName": "Unmoving Center",
     "InternalName": "sw_unmo_cent",
@@ -4819,6 +5060,7 @@
   },
   {
     "Id": "Worldbreaker",
+    "EquipmentRequirement": "Polearm",
     "Name": "Worldbreaker",
     "DisplayName": "Worldbreaker",
     "InternalName": "sw_worldbrk",
@@ -4838,6 +5080,7 @@
   },
   {
     "Id": "ConcussiveToss",
+    "EquipmentRequirement": "Throwing",
     "Name": "Concussive Toss",
     "DisplayName": "Concussive Toss",
     "InternalName": "sw_conc_toss",
@@ -4858,6 +5101,7 @@
   },
   {
     "Id": "ExplosiveToss",
+    "EquipmentRequirement": "Throwing",
     "Name": "Explosive Toss",
     "DisplayName": "Explosive Toss",
     "InternalName": "sw_expl_toss",
@@ -4880,6 +5124,7 @@
   },
   {
     "Id": "FlashToss",
+    "EquipmentRequirement": "Throwing",
     "Name": "Flash Toss",
     "DisplayName": "Flash Toss",
     "InternalName": "sw_flashtoss",
@@ -4901,6 +5146,7 @@
   },
   {
     "Id": "FlurryStance",
+    "EquipmentRequirement": "Throwing",
     "Name": "Flurry Stance",
     "DisplayName": "Flurry Stance",
     "InternalName": "sw_flrystn",
@@ -4920,6 +5166,7 @@
   },
   {
     "Id": "OrdnanceStance",
+    "EquipmentRequirement": "Throwing",
     "Name": "Ordnance Stance",
     "DisplayName": "Ordnance Stance",
     "InternalName": "sw_ordna_stn",
@@ -4939,6 +5186,7 @@
   },
   {
     "Id": "PerfectFlurry",
+    "EquipmentRequirement": "Throwing",
     "Name": "Perfect Flurry",
     "DisplayName": "Perfect Flurry",
     "InternalName": "sw_perf_flry",
@@ -4958,6 +5206,7 @@
   },
   {
     "Id": "PiercingToss",
+    "EquipmentRequirement": "Throwing",
     "Name": "Piercing Toss",
     "DisplayName": "Piercing Toss",
     "InternalName": "sw_pier_toss",
@@ -4980,6 +5229,7 @@
   },
   {
     "Id": "PinningToss",
+    "EquipmentRequirement": "Throwing",
     "Name": "Pinning Toss",
     "DisplayName": "Pinning Toss",
     "InternalName": "sw_pinn_toss",
@@ -5001,6 +5251,7 @@
   },
   {
     "Id": "RainOfSteel",
+    "EquipmentRequirement": "Throwing",
     "Name": "Rain of Steel",
     "DisplayName": "Rain of Steel",
     "InternalName": "sw_rainsteel",
@@ -5020,6 +5271,7 @@
   },
   {
     "Id": "SeveringToss",
+    "EquipmentRequirement": "Throwing",
     "Name": "Severing Toss",
     "DisplayName": "Severing Toss",
     "InternalName": "sw_seve_toss",
@@ -5040,6 +5292,7 @@
   },
   {
     "Id": "BladeVortex",
+    "EquipmentRequirement": "Polearm",
     "Name": "Blade Vortex",
     "DisplayName": "Blade Vortex",
     "InternalName": "sw_blad_vort",
@@ -5060,6 +5313,7 @@
   },
   {
     "Id": "CrossCut",
+    "EquipmentRequirement": "Polearm",
     "Name": "Cross Cut",
     "DisplayName": "Cross Cut",
     "InternalName": "sw_crosscut",
@@ -5082,6 +5336,7 @@
   },
   {
     "Id": "CycloneStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Cyclone Stance",
     "DisplayName": "Cyclone Stance",
     "InternalName": "sw_cyclo_stn",
@@ -5101,6 +5356,7 @@
   },
   {
     "Id": "LaceratingTwinCut",
+    "EquipmentRequirement": "Polearm",
     "Name": "Lacerating Twin Cut",
     "DisplayName": "Lacerating Twin Cut",
     "InternalName": "sw_lacer_cut",
@@ -5123,6 +5379,7 @@
   },
   {
     "Id": "LaceratorStance",
+    "EquipmentRequirement": "Polearm",
     "Name": "Lacerator Stance",
     "DisplayName": "Lacerator Stance",
     "InternalName": "sw_lacrstn",
@@ -5142,6 +5399,7 @@
   },
   {
     "Id": "RedBloom",
+    "EquipmentRequirement": "Polearm",
     "Name": "Red Bloom",
     "DisplayName": "Red Bloom",
     "InternalName": "sw_redbloom",
@@ -5161,6 +5419,7 @@
   },
   {
     "Id": "SerratedArc",
+    "EquipmentRequirement": "Polearm",
     "Name": "Serrated Arc",
     "DisplayName": "Serrated Arc",
     "InternalName": "sw_serra_arc",
@@ -5182,6 +5441,7 @@
   },
   {
     "Id": "SpinningWhirl",
+    "EquipmentRequirement": "Polearm",
     "Name": "Spinning Whirl",
     "DisplayName": "Spinning Whirl",
     "InternalName": "sw_spin_whir",
@@ -5203,6 +5463,7 @@
   },
   {
     "Id": "TempestBloom",
+    "EquipmentRequirement": "Polearm",
     "Name": "Tempest Bloom",
     "DisplayName": "Tempest Bloom",
     "InternalName": "sw_temp_bloo",
@@ -5222,6 +5483,7 @@
   },
   {
     "Id": "TwinRupture",
+    "EquipmentRequirement": "Polearm",
     "Name": "Twin Rupture",
     "DisplayName": "Twin Rupture",
     "InternalName": "sw_twin_rupt",
@@ -5242,6 +5504,7 @@
   },
   {
     "Id": "BerserkerStance",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Berserker Stance",
     "DisplayName": "Berserker Stance",
     "InternalName": "sw_berse_stn",
@@ -5261,6 +5524,7 @@
   },
   {
     "Id": "CoveringStrike",
+    "EquipmentRequirement": "WeaponAndShield",
     "Name": "Covering Strike",
     "DisplayName": "Covering Strike",
     "InternalName": "sw_coverings",
@@ -5282,6 +5546,7 @@
   },
   {
     "Id": "DefensiveStance",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Defensive Stance",
     "DisplayName": "Defensive Stance",
     "InternalName": "sw_defstn",
@@ -5301,6 +5566,7 @@
   },
   {
     "Id": "Invincible",
+    "EquipmentRequirement": "WeaponAndShield",
     "Name": "Invincible",
     "DisplayName": "Invincible",
     "InternalName": "sw_invincibl",
@@ -5320,6 +5586,7 @@
   },
   {
     "Id": "RendingStrike",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Rending Strike",
     "DisplayName": "Rending Strike",
     "InternalName": "sw_rendingst",
@@ -5340,6 +5607,7 @@
   },
   {
     "Id": "RiotBlade",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Riot Blade",
     "DisplayName": "Riot Blade",
     "InternalName": "sw_riotblade",
@@ -5362,6 +5630,7 @@
   },
   {
     "Id": "SavageCleave",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Savage Cleave",
     "DisplayName": "Savage Cleave",
     "InternalName": "sw_savagecle",
@@ -5383,6 +5652,7 @@
   },
   {
     "Id": "ShieldBash",
+    "EquipmentRequirement": "WeaponAndShield",
     "Name": "Shield Bash",
     "DisplayName": "Shield Bash",
     "InternalName": "sw_shieldbas",
@@ -5405,6 +5675,7 @@
   },
   {
     "Id": "ShieldWall",
+    "EquipmentRequirement": "WeaponAndShield",
     "Name": "Shield Wall",
     "DisplayName": "Shield Wall",
     "InternalName": "sw_shieldwal",
@@ -5425,6 +5696,7 @@
   },
   {
     "Id": "AssassinsStance",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Assassin's Stance",
     "DisplayName": "Assassin's Stance",
     "InternalName": "sw_assnstn",
@@ -5444,6 +5716,7 @@
   },
   {
     "Id": "Backstab",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Backstab",
     "DisplayName": "Backstab",
     "InternalName": "sw_backstab",
@@ -5464,6 +5737,7 @@
   },
   {
     "Id": "CripplingSlice",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Crippling Slice",
     "DisplayName": "Crippling Slice",
     "InternalName": "sw_crip_slic",
@@ -5485,6 +5759,7 @@
   },
   {
     "Id": "EscapeArtist",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Escape Artist",
     "DisplayName": "Escape Artist",
     "InternalName": "sw_esca_arti",
@@ -5504,6 +5779,7 @@
   },
   {
     "Id": "PathogenStrike",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Pathogen Strike",
     "DisplayName": "Pathogen Strike",
     "InternalName": "sw_path_stri",
@@ -5526,6 +5802,7 @@
   },
   {
     "Id": "ShadowflowStance",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Shadowflow Stance",
     "DisplayName": "Shadowflow Stance",
     "InternalName": "sw_shadf_stn",
@@ -5545,6 +5822,7 @@
   },
   {
     "Id": "VeiledStrike",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Veiled Strike",
     "DisplayName": "Veiled Strike",
     "InternalName": "sw_veil_stri",
@@ -5567,6 +5845,7 @@
   },
   {
     "Id": "ViralCascade",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Viral Cascade",
     "DisplayName": "Viral Cascade",
     "InternalName": "sw_vira_casc",
@@ -5586,6 +5865,7 @@
   },
   {
     "Id": "VirulentBlade",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Virulent Blade",
     "DisplayName": "Virulent Blade",
     "InternalName": "sw_viru_blad",
@@ -5607,6 +5887,7 @@
   },
   {
     "Id": "VolatileCompound",
+    "EquipmentRequirement": "OneHanded",
     "Name": "Volatile Compound",
     "DisplayName": "Volatile Compound",
     "InternalName": "sw_vola_comp",

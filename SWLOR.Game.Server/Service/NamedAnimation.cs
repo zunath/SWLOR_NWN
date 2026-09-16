@@ -1,4 +1,5 @@
 using System;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -15,31 +16,42 @@ public static class NamedAnimation
     /// Queues a clip without clearing existing actions. Native mappings are restored at
     /// completion or by a module-owned timeout if the queue is interrupted.
     /// </summary>
-    public static void Queue(uint creature, AnimationClip clip, float? durationSeconds = null)
+    public static void Queue(uint creature, AnimationClip clip, float? durationSeconds = null,
+        AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted)
     {
         var duration = Validate(clip, durationSeconds);
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         var rifle = UsesRifleGrip(creature);
         var speed = rifle ? RiflePlaybackSpeed(clip, duration) : 1f;
+        var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
         AssignCommand(creature, () =>
         {
-            ActionDoCommand(() => token = Playback.Begin(creature, clip, duration, suppressRifleHold: rifle));
+            if (!Playback.CanStartEquipmentPlayback(creature, request)) return;
+            ActionDoCommand(() =>
+            {
+                // A queued request may begin well after selection. Invalidated requests leave the carrier native.
+                if (Playback.CanStartEquipmentPlayback(creature, request) && AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature))
+                    token = Playback.Begin(creature, clip, duration, suppressRifleHold: rifle, equipmentRequest: request);
+            });
             ActionPlayAnimation(rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed, duration);
             ActionDoCommand(() => Playback.Complete(creature, token));
         });
     }
 
     /// <summary>Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.</summary>
-    public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null)
+    public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
+        AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted)
     {
         var duration = Validate(clip, durationSeconds);
+        if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
         var rifle = UsesRifleGrip(creature);
         var speed = rifle ? RiflePlaybackSpeed(clip, duration) : 1f;
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
-        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, suppressRifleHold: rifle);
+        var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
+        var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, suppressRifleHold: rifle, equipmentRequest: request);
         return PlayMapped(creature, token, duration,
             rifle ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
     }
@@ -90,6 +102,16 @@ public static class NamedAnimation
     }
 
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
+
+    /// <summary>Stops restricted poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
+    [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+    [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
+    public static void OnEquipmentChanging()
+    {
+        var creature = OBJECT_SELF;
+        if (Playback.InvalidateEquipmentPlayback(creature))
+            PlayNativePreview(creature, Animation.LoopingPause);
+    }
 
     public static void ReleaseForNativePlayback(uint creature) => Playback.ReleaseForNativePlayback(creature);
 

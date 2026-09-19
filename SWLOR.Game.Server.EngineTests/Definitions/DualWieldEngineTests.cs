@@ -31,6 +31,72 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static readonly List<(uint Weapon, CombatDamageType Type, DateTime Time)> _hits = new();
         private static readonly List<uint> _itemHits = new();
 
+        [EngineTest("Dual wield commanded animation sequence delivers main then off before the next cycle", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static Task CommandedAnimationSequence(EngineTestContext ctx) => AssertCommandedAnimationSequence(ctx, 23);
+
+        [EngineTest("Dual wield fastest commanded animation sequence retains both visible hands", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static Task FastCommandedAnimationSequence(EngineTestContext ctx) => AssertCommandedAnimationSequence(ctx, 0);
+
+        private static async Task AssertCommandedAnimationSequence(EngineTestContext ctx, int delay)
+        {
+            var (attacker, target, main, off) = await CreatePair(ctx);
+            try
+            {
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                _observedAttacker = attacker;
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    if (delay > 0)
+                    {
+                        AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay), main);
+                        AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay), off);
+                    }
+                });
+                _hits.Clear();
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                var packets = new List<(ushort Animation, byte Hand, ushort Duration, long Time)>();
+                var started = Environment.TickCount64;
+                var previous = "";
+                AssignCommand(attacker, () => ActionAttack(target));
+                while (Environment.TickCount64 - started < 5000)
+                {
+                    var action = native.m_lQueuedActions.IsEmpty() != 0 ? uint.MaxValue : native.m_lQueuedActions.GetHead().m_nActionId;
+                    var state = $"pose={native.m_nAnimation} queuedAction={action} attack={native.m_pcCombatRound.m_nCurrentAttack} paused={native.m_pcCombatRound.m_bRoundPaused}";
+                    var nativeChanged = state != previous;
+                    if (nativeChanged) { ctx.Log($"{Environment.TickCount64 - started}ms {state}"); previous = state; }
+                    // Include native pose changes, not just our forced updates: the engine
+                    // returning to ready must not cancel/restart the current visible hand.
+                    if (WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe) || nativeChanged && packets.Count > 0)
+                    {
+                        var packet = ReadAnimationPacket(native);
+                        if ((packet.Updates & 4) != 0)
+                            packets.Add((packet.Animation, packet.Weapon, packet.Duration, Environment.TickCount64));
+                        ctx.Log($"{Environment.TickCount64 - started}ms packet pose={packet.Animation} hand={packet.Weapon} length={packet.Duration}");
+                    }
+                    if (packets.Count >= 4) break;
+                    await ctx.WaitFrameAsync();
+                }
+                var swings = packets.Where(p => p.Animation == 9).ToArray();
+                ctx.AssertEqual(2, swings.Length, "A real attack action delivers both visible hands in the first cycle");
+                ctx.AssertEqual((byte)1, swings[0].Hand, "Main hand plays first");
+                ctx.AssertEqual((byte)2, swings[1].Hand, "Off hand follows");
+                var expectedLength = (ushort)(delay > 0 ? 1000 : 775);
+                ctx.AssertEqual(expectedLength, swings[0].Duration, "Main hand uses the clip length, shortened only at the fastest cadence");
+                ctx.AssertEqual(expectedLength, swings[1].Duration, "Off hand gets the same complete animation slot");
+                ctx.Assert(packets.Select(p => p.Animation).SequenceEqual(new ushort[] { 9, 1, 9, 1 }),
+                    "Each hand has a distinct attack-to-ready transition on the wire");
+                ctx.Assert(swings[1].Time - swings[0].Time >= swings[0].Duration + WeaponAttackAnimation.TransitionDuration,
+                    "The first swing and its transition finish before the second begins");
+                ctx.Assert(packets[^1].Time - swings[1].Time >= swings[1].Duration, "The off-hand animation finishes before returning to ready");
+                ctx.AssertEqual(2, _hits.Count, "Presentation does not add gameplay attacks");
+            }
+            finally
+            {
+                AssignCommand(attacker, () => ClearAllActions());
+                ResetObservation();
+            }
+        }
+
         [EngineTest("Dual wield explicit swing variants preserve equipment and queued ability mappings", Category = "DualWield", TimeoutSeconds = 60f)]
         public static async Task ExplicitSwingVariants(EngineTestContext ctx)
         {
@@ -64,18 +130,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var first = ResolveCycle(attacker, target, 2);
                 native.SetAnimation(9);
                 WeaponAttackAnimation.Capture(native, first, 5900);
-                ctx.AssertEqual((ushort)1750, ReadAnimationPacket(native).Duration, "The opening hand has a full animation duration");
+                ctx.AssertEqual((ushort)1000, ReadAnimationPacket(native).Duration, "The opening hand has a full animation duration");
             });
             // Deliberately miss the nominal frame boundary. A late observer still receives
             // a complete off-hand animation, never a shortened catch-up burst.
-            var deadline = DateTime.UtcNow.AddMilliseconds(1950);
+            var deadline = DateTime.UtcNow.AddMilliseconds(1200);
             await ctx.WaitUntilAsync(() => DateTime.UtcNow >= deadline, 4f, "the full main-hand animation");
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                ctx.AssertEqual((ushort)1, ReadAnimationPacket(native).Animation, "Late updates still send the ready transition first");
+            });
+            await ctx.DelaySecondsAsync(0.15f);
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
                 var packet = ReadAnimationPacket(native);
                 ctx.AssertEqual((byte)2, packet.Weapon, "Off hand follows the completed main hand");
-                ctx.AssertEqual((ushort)1750, packet.Duration, "Late updates never accelerate the off hand");
+                ctx.AssertEqual((ushort)1000, packet.Duration, "Late updates never accelerate the off hand");
             });
         }
 

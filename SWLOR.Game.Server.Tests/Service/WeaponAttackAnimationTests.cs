@@ -15,9 +15,9 @@ public class WeaponAttackAnimationTests
     public void OrdinaryCadenceShowsBothHandsAtFullSpeedRegardlessOfHasteRollCount(int count)
     {
         var rolls = Rolls(count);
-        var visual = WeaponAttackAnimation.SelectVisualRolls(rolls, 5900, 0);
+        var visual = WeaponAttackAnimation.SelectVisualRolls(rolls);
         visual.Select(roll => roll.Weapon).Should().Equal(1, 2);
-        WeaponAttackAnimation.SwingDuration.Should().Be(1750);
+        WeaponAttackAnimation.CalculateSwingDuration(5900, visual.Length).Should().Be(1000);
         visual.Should().OnlyContain(roll => rolls.Contains(roll));
         rolls.Length.Should().Be(count, "all actual damage rolls remain intact");
     }
@@ -25,17 +25,29 @@ public class WeaponAttackAnimationTests
     [TestCase(1750)]
     [TestCase(2500)]
     [TestCase(3500)]
-    public void FastCadenceAlternatesFullLengthHandsInsteadOfCompressingThem(int delay)
+    public void FastCadenceStillShowsBothHandsInsideEveryCycle(int delay)
     {
         var rolls = Rolls(6);
-        var previous = (byte)2;
-        for (var cycle = 0; cycle < 8; cycle++)
-        {
-            var visual = WeaponAttackAnimation.SelectVisualRolls(rolls, delay, previous);
-            visual.Should().ContainSingle();
-            visual[0].Weapon.Should().NotBe(previous);
-            previous = visual[0].Weapon;
-        }
+        var visual = WeaponAttackAnimation.SelectVisualRolls(rolls);
+        visual.Select(roll => roll.Weapon).Should().Equal(1, 2);
+        var duration = WeaponAttackAnimation.CalculateSwingDuration(delay, visual.Length);
+        duration.Should().BeInRange(775, 1000);
+        (visual.Length * (duration + WeaponAttackAnimation.TransitionDuration)).Should().BeLessThanOrEqualTo(delay);
+    }
+
+    [TestCase(775)]
+    [TestCase(1000)]
+    public void EachSwingFinishesThenSendsReadyBeforeTheNextSwing(int duration)
+    {
+        WeaponAttackAnimation.AdvanceStage(0, duration - 1, duration, 2).Should().Be(0);
+        WeaponAttackAnimation.AdvanceStage(0, duration, duration, 2).Should().Be(1);
+        WeaponAttackAnimation.AdvanceStage(1, 99, duration, 2).Should().Be(1);
+        WeaponAttackAnimation.AdvanceStage(1, 100, duration, 2).Should().Be(2);
+        WeaponAttackAnimation.AdvanceStage(2, duration - 1, duration, 2).Should().Be(2);
+        WeaponAttackAnimation.AdvanceStage(2, duration, duration, 2).Should().Be(3);
+        WeaponAttackAnimation.AdvanceStage(3, 10000, duration, 2).Should().Be(3);
+        // Late observers must still receive every intervening stage.
+        WeaponAttackAnimation.AdvanceStage(0, 10000, duration, 2).Should().Be(1);
     }
 
     [Test]

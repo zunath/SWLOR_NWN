@@ -51,12 +51,14 @@ separate left-hand weapon keep their existing scheduling paths.
 ## Animation playback
 
 `WeaponAttackAnimation` captures the completed melee batch and presents consecutive native
-attack animations. Each visible swing receives a full 1,750 ms. Ordinary dual-wield delays
-allow a main-hand swing followed by an off-hand swing. If haste leaves room for only one
-full animation, presentation alternates hands between cycles. Extra haste rolls still
-resolve normally; they do not squeeze additional animations into that same window.
-The next visual hand waits for the observer's preceding animation duration. Late client
-updates receive a full-length animation rather than an accelerated catch-up burst.
+attack animations. The installed `a_ba` sword clips are 1,000 ms long; the 1,750 ms
+gameplay cycle floor is not an individual clip length. Every dual-wield cycle presents
+main hand, a 100 ms ready transition, off hand, then ready again. Both hands are always
+included. Extra haste rolls share their hand's presentation without dropping the other hand.
+At the fastest 1,750 ms cadence, each hand gets 775 ms plus its 100 ms transition; ordinary
+weapon delays retain the clips' natural 1,000 ms duration. The next hand waits for the
+observer's preceding swing and ready transition. Late updates never skip a transition or
+compress its next swing to catch up.
 
 This is presentation only: rolls, damage, queued-ability reservations, on-hit processing and
 charge consumption retain their existing timing. Combat-log entries can therefore still
@@ -72,6 +74,13 @@ left slash, right slash or stab without repeating the preceding cycle's selectio
 Off-hand slashes remain distinct. Custom ability clips are preserved, and equipment remaps
 such as katar-to-unarmed retain their destination family. Variant availability still depends
 on the creature's model and combat animation set.
+
+NWN returns the native actor to ready after its damage phase, before the second visual hand.
+That is not an interruption while the same attack action and target remain active. The
+playback survives this engine transition, and duplicate native animation updates are
+suppressed so they cannot restart or cut short a swing already playing on the client.
+Each hand receives an explicit attack-to-ready transition rather than two consecutive
+updates with the same attack pose.
 
 The serializer projection restores all touched fields in `finally`, including on failure;
 the real combat cursor and attack budgets never change. Playback stops applying when the
@@ -97,8 +106,12 @@ It also reads real serialized animation packets and verifies restoration of nati
 data, including interrupted playback and simulated serialization failure. It checks explicit
 variant projection/restoration, late-observer animation durations, legacy item repair and
 matching noncritical damage for identical equipped basic vibroblades.
+Commanded-animation tests follow the full attack action across engine updates at ordinary
+and fastest cadence. They require main/ready/off/ready packets, completed swing durations,
+and exactly the original two damage rolls. The ordinary-cadence test reproduced the
+previous regression: the native ready pose canceled playback before the off hand was sent.
 `CombatAttackDelayTests` covers shared-cycle cadence and individual-roll charge limits.
-`WeaponAttackAnimationTests` covers visual capacity, hand alternation and variant selection.
+`WeaponAttackAnimationTests` covers both-hand retention, stage timing and variant selection.
 
 The server tests do not render a client. Check paired hit feedback and animation appearance
 in a connected client, including high haste and switching between one and two weapons.

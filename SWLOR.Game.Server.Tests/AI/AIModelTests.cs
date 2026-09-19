@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
+using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
@@ -203,6 +205,108 @@ public class AIModelTests
         CreatureToEnemies()[target] = new List<uint> { self };
 
         score(CreateContext(self: self)).Should().Be(AIScoreBand.Defensive + 4);
+    }
+
+    [TestCase(8, 57, false)]
+    [TestCase(8, 58, true)]
+    [TestCase(10, 59, false)]
+    [TestCase(10, 60, true)]
+    [TestCase(25, 74, false)]
+    [TestCase(25, 75, true)]
+    [TestCase(40, 89, false)]
+    [TestCase(40, 90, true)]
+    [TestCase(40, 100, true)]
+    [TestCase(8, 1, false)]
+    [TestCase(8, 50, false)]
+    public void AIScore_RequiresHalfHealthRemainingAfterHitPointCosts(int costPercent, int healthPercent, bool allowed)
+    {
+        var ability = new AbilityDetail
+        {
+            IsHostileAbility = true,
+            AbilityLevel = 1,
+            AIHitPointCostPercent = _ => costPercent
+        };
+        var context = CreateContext(selfHealthPercent: healthPercent);
+
+        AIScore.Ability(ability)(context).Should().Be(allowed ? AIScoreBand.SingleTargetDamage + 1 : 0);
+
+        ability.AIScore = AIScore.Fixed(123);
+        AIScore.Ability(ability)(context).Should().Be(allowed ? 123 : 0,
+            "custom scores must also respect the declared HP cost");
+    }
+
+    [TestCase(8, 8, 0, 8)]
+    [TestCase(8, 8, 50, 8)]
+    [TestCase(40, 10, -5, 40)]
+    [TestCase(40, 10, 0, 40)]
+    [TestCase(40, 10, 15, 25)]
+    [TestCase(40, 10, 30, 10)]
+    [TestCase(40, 10, 50, 10)]
+    public void HitPointCost_SharedByAIAndImpact_RespectsMightAndTheMinimum(
+        int basePercent, int minimumPercent, int might, int expected)
+    {
+        HitPointCostRules.Percent(basePercent, minimumPercent, might).Should().Be(expected);
+    }
+
+    private sealed class HitPointCostRules : HeavyVibrobladeActiveAbilityDefinitionBase
+    {
+        public static int Percent(int basePercent, int minimumPercent, int might)
+            => CalculateHitPointCostPercent(basePercent, minimumPercent, might);
+    }
+
+    [TestCase(101, 61, false)]
+    [TestCase(101, 62, true)]
+    [TestCase(5, 3, false)]
+    [TestCase(5, 4, true)]
+    [TestCase(1, 1, false)]
+    [TestCase(0, 0, false)]
+    public void AIScore_UsesRoundedHitPointCostsAtTheHealthReserveBoundary(int maximumHP, int currentHP, bool allowed)
+    {
+        var context = CreateContext();
+        typeof(AIContext).GetField("_selfHitPoints", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(context, currentHP);
+        typeof(AIContext).GetField("_selfMaxHitPoints", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(context, maximumHP);
+        AIScore.WithHitPointCostReserve(_ => 10, AIScore.Fixed(123))(context)
+            .Should().Be(allowed ? 123 : 0);
+    }
+
+    [Test]
+    public void SteelShoulderAIScore_WaitsUntilTheGuardLinkEnds()
+    {
+        const uint self = 100;
+        const uint target = 200;
+        var ability = new SteelShoulderAbilityDefinition().BuildAbilities()[FeatType.TwinGuardStance1];
+        ability.AIScore.Should().NotBeNull();
+        var score = AIScore.Ability(ability);
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        creatureEffects.TryGetValue(self, out var previousEffects);
+        var tracker = new CreatureStatusEffect();
+        creatureEffects[self] = tracker;
+        try
+        {
+            score(CreateContext(self: self)).Should().Be(0, "the guard link is established during combat");
+            EnemyEnmityTables()[self] = new Dictionary<uint, int> { [target] = 1 };
+            CreatureToEnemies()[target] = new List<uint> { self };
+            var context = CreateContext(self: self);
+            tracker.Add(new AlphaRhythm1BeastStatusEffect());
+            score(context).Should().BeGreaterThan(0);
+
+            var guarding = new GuardingStatusEffect();
+            guarding.ApplyEffect(self, self, 1);
+            tracker.Add(guarding);
+            score(context).Should().Be(0, "a persistent link does not need refreshing when the recast ends");
+            guarding.ReconcileElapsedTime(DateTime.UtcNow.AddSeconds(2));
+            score(context).Should().BeGreaterThan(0, "a link pending removal no longer blocks a new guard");
+            tracker.Remove(guarding);
+            score(context).Should().BeGreaterThan(0, "a broken guard link can be re-established");
+        }
+        finally
+        {
+            if (previousEffects == null) creatureEffects.Remove(self);
+            else creatureEffects[self] = previousEffects;
+        }
     }
 
     [TestCase(FeatType.SuppressionStance1, FeatType.SuppressionStance1)]
@@ -1268,6 +1372,10 @@ public class AIModelTests
         typeof(AIContext)
             .GetField("_selfHealthPercent", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetValue(context, selfHealthPercent);
+        typeof(AIContext).GetField("_selfHitPoints", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(context, selfHealthPercent);
+        typeof(AIContext).GetField("_selfMaxHitPoints", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(context, 100);
 
         return context;
     }

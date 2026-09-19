@@ -3614,7 +3614,8 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 *authored_animation_builder_lines(skill, row, hostile == "true"),
                 f"                    .Name(\"{escape_csharp(row['PerkName'])}\")",
                 f"                    .Level({level})",
-                *(["                    .HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))"]
+                *(["                    .HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))",
+                   f"                    .HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>({level}))"]
                   if base == "Steel Shoulder" else []),
                 f"                    .HasRecastDelay(RecastGroup.{recast}, {recast_seconds:.1f}f),",
                 f"                SkillType.{skill},",

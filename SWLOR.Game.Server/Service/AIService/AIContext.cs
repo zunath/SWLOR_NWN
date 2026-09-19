@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service.AIService
         private uint _currentEnmityTarget;
         private bool _currentEnmityTargetLoaded;
         private int? _selfHealthPercent;
+        private int? _selfHitPoints;
+        private int? _selfMaxHitPoints;
 
         public uint Self { get; }
         public AITriggerType Trigger { get; }
@@ -56,6 +58,8 @@ namespace SWLOR.Game.Server.Service.AIService
         public uint Master => GetMaster(Self);
 
         public int SelfHealthPercent => _selfHealthPercent ??= GetHealthPercent(Self);
+        public int SelfHitPoints => _selfHitPoints ??= GetCurrentHitPoints(Self);
+        public int SelfMaxHitPoints => _selfMaxHitPoints ??= GetMaxHitPoints(Self);
 
         public int TargetHealthPercent => GetIsObjectValid(EvaluatedTarget)
             ? GetHealthPercent(EvaluatedTarget)

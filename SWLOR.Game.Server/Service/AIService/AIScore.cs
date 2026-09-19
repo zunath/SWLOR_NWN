@@ -6,6 +6,26 @@ namespace SWLOR.Game.Server.Service.AIService
 {
     public static class AIScore
     {
+        public const int MinimumHealthAfterHitPointCostPercent = 50;
+
+        public static AIScoreCalculation WithHitPointCostReserve(Func<uint, int> costPercent, AIScoreCalculation score)
+        {
+            return context =>
+            {
+                var currentHP = context.SelfHitPoints;
+                var maximumHP = context.SelfMaxHitPoints;
+                if (maximumHP <= 0 || currentHP <= 1 ||
+                    (long)currentHP * 100 <= (long)maximumHP * MinimumHealthAfterHitPointCostPercent)
+                    return 0;
+
+                // Match the upward rounding used when the ability spends HP.
+                var cost = GameMath.PercentOf(maximumHP, Math.Max(0, costPercent(context.Self)));
+                return (long)(currentHP - cost) * 100 >= (long)maximumHP * MinimumHealthAfterHitPointCostPercent
+                    ? score(context)
+                    : 0;
+            };
+        }
+
         public static AIScoreCalculation Fixed(int score)
         {
             return _ => score;
@@ -74,6 +94,14 @@ namespace SWLOR.Game.Server.Service.AIService
         }
 
         public static AIScoreCalculation Ability(AbilityDetail ability)
+        {
+            var score = ability.AIScore ?? DefaultAbility(ability);
+            return ability.AIHitPointCostPercent == null
+                ? score
+                : WithHitPointCostReserve(ability.AIHitPointCostPercent, score);
+        }
+
+        private static AIScoreCalculation DefaultAbility(AbilityDetail ability)
         {
             if (ability.IsHostileAbility && ability.IsAreaAbility)
             {

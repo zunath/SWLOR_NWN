@@ -116,6 +116,40 @@ public class AIProfileValidationTests
 
         ability.AITargetSelector.Should().NotBeNull();
         action.TargetSelector.Should().BeSameAs(ability.AITargetSelector);
+        ability.AIScore.Should().NotBeNull();
+        action.Score.Should().BeSameAs(ability.AIScore);
+    }
+
+    [TestCase(FeatType.SacrificialBlade1)]
+    [TestCase(FeatType.SoulBurst1)]
+    [TestCase(FeatType.SoulStorm1)]
+    public void DroidProfile_HitPointSpendingAbilitiesApplyHealthReservesToCustomScores(FeatType feat)
+    {
+        Ability.CacheData();
+        var ability = Ability.GetAbilityDetail(feat);
+        ability.AIHitPointCostPercent.Should().NotBeNull();
+        // Isolate profile composition from the NWN engine's live Might and hostile-cluster reads.
+        // The production cost calculation and score boundaries are exercised in AIModelTests.
+        ability.AIHitPointCostPercent = _ => 10;
+        ability.AIScore = AIScore.Fixed(123);
+        try
+        {
+            var profile = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion];
+            var action = profile.Actions.Single(action => action.Feat == feat);
+            var context = new AIContext(100, AITriggerType.CombatRound, 200, profile, new AIState(), []);
+            var health = typeof(AIContext).GetField("_selfHitPoints",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+            typeof(AIContext).GetField("_selfMaxHitPoints",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.SetValue(context, 100);
+            health.SetValue(context, 59);
+            action.Score(context).Should().Be(0);
+            health.SetValue(context, 60);
+            action.Score(context).Should().Be(123);
+        }
+        finally
+        {
+            Ability.CacheData();
+        }
     }
 
     [Test]

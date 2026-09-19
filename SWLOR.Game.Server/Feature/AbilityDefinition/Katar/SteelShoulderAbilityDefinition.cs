@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Name("Steel Shoulder")
                     .Level(1)
                     .HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))
+                    .HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>(1))
                     .HasRecastDelay(RecastGroup.TwinGuardStance, 18.0f),
                 SkillType.Katar,
                 8,

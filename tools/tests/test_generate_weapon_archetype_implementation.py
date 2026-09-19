@@ -31,6 +31,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             gambler_stance = (abilities / "Pistol/GamblerStanceAbilityDefinition.cs").read_text()
             self.assertIn("using SWLOR.Game.Server.Service.AIService;", steel_shoulder)
             self.assertIn(".HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))", steel_shoulder)
+            self.assertIn(".HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>(1))", steel_shoulder)
             self.assertNotIn(".HasAITarget", gambler_stance)
 
     def test_regeneration_preserves_weapon_instruction_costs_and_force_exclusions(self):

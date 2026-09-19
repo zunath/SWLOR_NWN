@@ -205,20 +205,28 @@ public class AIModelTests
         score(CreateContext(self: self)).Should().Be(AIScoreBand.Defensive + 4);
     }
 
-    [TestCase(FeatType.SuppressionStance1)]
-    [TestCase(FeatType.BerserkerStance1)]
-    [TestCase(FeatType.BastionStance1)]
-    public void WeaponStanceAIScore_DoesNotToggleOffAnActiveStance(FeatType feat)
+    [TestCase(FeatType.SuppressionStance1, FeatType.SuppressionStance1)]
+    [TestCase(FeatType.BerserkerStance1, FeatType.BerserkerStance1)]
+    [TestCase(FeatType.BastionStance1, FeatType.BastionStance1)]
+    [TestCase(FeatType.SkirmisherStance1, FeatType.GamblerStance1)]
+    [TestCase(FeatType.GamblerStance1, FeatType.SkirmisherStance1)]
+    [TestCase(FeatType.SuppressionStance1, FeatType.BastionStance1)]
+    [TestCase(FeatType.BlazingSpikes1, FeatType.GamblerStance1)]
+    public void WeaponStanceAIScore_PreservesAnyActiveStanceWithoutBlockingOtherBuffs(FeatType feat, FeatType activeStance)
     {
         const uint self = 100;
         const uint target = 200;
+        StatusEffect.CacheData();
         Ability.CacheData();
         var ability = Ability.GetAbilityDetail(feat);
         var score = ability.AIScore ?? AIScore.Ability(ability);
+        var buff = Ability.GetAbilityDetail(FeatType.Invincible1);
+        var buffScore = buff.AIScore ?? AIScore.Ability(buff);
         var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
             .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
         var tracker = new CreatureStatusEffect();
-        var effectType = ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
+        var effectType = Ability.GetAbilityDetail(activeStance)
+            .StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
         var effect = (IStatusEffect)Activator.CreateInstance(effectType)!;
         creatureEffects.TryGetValue(self, out var previousEffects);
         creatureEffects[self] = tracker;
@@ -230,8 +238,13 @@ public class AIModelTests
             score(context).Should().BeGreaterThan(0);
             tracker.Add(new AlphaRhythm1BeastStatusEffect());
             score(context).Should().BeGreaterThan(0, "unrelated buffs must not block the stance");
+            effect.ApplyEffect(self, self, 1);
             tracker.Add(effect);
-            score(context).Should().Be(0, "recasting a toggle would remove the active stance");
+            score(context).Should().Be(0, "casting any stance would remove the active stance");
+            buffScore(context).Should().BeGreaterThan(0, "an active stance must not block ordinary self-buffs");
+            effect.ReconcileElapsedTime(DateTime.UtcNow.AddSeconds(effect.Frequency * 2));
+            effect.IsFlaggedForRemoval.Should().BeTrue();
+            score(context).Should().BeGreaterThan(0, "a stance pending removal no longer occupies the stance slot");
             tracker.Remove(effect);
             score(context).Should().BeGreaterThan(0, "an expired stance may be reapplied");
         }

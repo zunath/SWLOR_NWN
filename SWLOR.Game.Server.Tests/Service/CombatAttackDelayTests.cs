@@ -20,6 +20,122 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatAttackDelayTests
 {
+    [TestCase(true, false, 5)]
+    [TestCase(false, true, 6)]
+    [TestCase(true, true, 5)]
+    public void TemporaryNoDelayAtMinimumDelay_GrantsTheMatchingHandAnExtraRoll(bool main, bool off, int expected)
+    {
+        const uint attacker = 0x7F000025;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            var delay = Combat.MinimumAttackDelayMilliseconds;
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 0, 0, 2,
+                temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected,
+                "an off-hand proc cannot be spent on the odd extra main-hand roll");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [Test]
+    public void TemporaryOffHandNoDelay_IsNotCappedByAnExpiringHasteEffect()
+    {
+        const uint attacker = 0x7F000026;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            var delay = Combat.MinimumAttackDelayMilliseconds;
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 1, 0, 2,
+                limitedReductionBudget: new LimitedAttackTimingBudget(1, false, true),
+                temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, false, true)).Should().Be(6);
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2).Should().Be(4,
+                "expiring haste must not restore fractional progress already spent by the temporary bonus");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public void MixedDualWieldHaste_CountsOnlyTheMatchingHandAndKeepsItsDebt(bool main, bool off)
+    {
+        const uint attacker = 0x7F000023;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2,
+                new LimitedAttackTimingBudget(4, main, off)).Should().Be(2);
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2,
+                new LimitedAttackTimingBudget(3, main, off)).Should().Be(4,
+                "the first pair spent only one charge, so fractional accelerated progress remains available");
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 1, 0, 2,
+                new LimitedAttackTimingBudget(1, main, off)).Should().Be(main ? 2 : 3);
+            Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2)
+                .Should().Be(2, "acceleration ends when the matching hand spends its last charge");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(true, false, 3)]
+    [TestCase(false, true, 4)]
+    [TestCase(true, true, 3)]
+    public void ScopedNoDelay_GrantsAnExtraRollToTheMatchingHand(bool main, bool off, int expected)
+    {
+        const uint attacker = 0x7F000024;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2,
+                limitedNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(3500, 2)]
+    [TestCase(1750, 2)]
+    [TestCase(875, 4)]
+    public void DualWieldCycles_ScheduleBothHandsOnTheSharedTimer(int delay, int expected)
+    {
+        const uint attacker = 0x7F000020;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2)
+                .Should().Be(expected);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(1, 2)]
+    [TestCase(2, 2)]
+    [TestCase(3, 3)]
+    [TestCase(4, 4)]
+    public void DualWieldLimitedHaste_CapsActualWeaponRolls(int charges, int expected)
+    {
+        const uint attacker = 0x7F000021;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 750, 1750, false, 1750, charges, 0, 2)
+                .Should().Be(expected, "baseline hands remain available but haste cannot double its charged rolls");
+            var next = Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2);
+            next.Should().Be(2, "expired acceleration must not leak into the next cycle");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [Test]
+    public void DualWieldFinalNoDelayCharge_GrantsOneExtraRollInsteadOfAnExtraPair()
+    {
+        const uint attacker = 0x7F000022;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2)
+                .Should().Be(3);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
     [Test]
     public void CalculateAttackDelayMilliseconds_UsesSingleWeaponDelay()
     {

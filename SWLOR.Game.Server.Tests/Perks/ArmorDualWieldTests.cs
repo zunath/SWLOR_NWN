@@ -32,8 +32,8 @@ public class ArmorDualWieldTests
 
         var equipmentPredicates = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "PerkService" / "EquipmentPredicates.cs").FullName);
         equipmentPredicates.Should().Contain("public static bool HasDualWield(uint creature)");
-        equipmentPredicates.Should().Contain("InventorySlot.RightHand, Item.WeaponBaseItemTypes");
-        equipmentPredicates.Should().Contain("InventorySlot.LeftHand, Item.WeaponBaseItemTypes");
+        equipmentPredicates.Should().Contain("Item.IsAttackWeaponType(GetBaseItemType(mainHand))");
+        equipmentPredicates.Should().Contain("Item.IsAttackWeaponType(GetBaseItemType(offHand))");
     }
 
     private static void AssertDualWieldLevel(PerkLevel level, int price, int armorRank, string description)

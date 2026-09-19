@@ -57,16 +57,10 @@ public class WeaponDeflectionTests
     {
         var source = ReadSource("SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
 
-        source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
+        source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
         source.Should().Contain("weaponSkillType == SkillType.Invalid");
         source.Should().Contain("Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
         source.Should().NotContain("!GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||");
-        source.Should().Contain("ResetDeflectionAttemptedDefenders(attacker)");
-        source.Should().Contain("GetLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable)");
-        source.Should().Contain("attemptedDefenders.Contains(defenderToken, StringComparison.Ordinal)");
-        source.Should().Contain("SetLocalString(");
-        source.Should().Contain("DeleteLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable)");
-        source.Should().NotContain("DeflectionAttemptedVariablePrefix");
         source.Should().Contain("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);");
         source.Should().Contain("Stat.GetRangedDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.GetMeleeDeflectionChanceNative(defender)");
@@ -201,7 +195,7 @@ public class WeaponDeflectionTests
         sheet.Should().Contain("AddStat(\"Ranged Deflection\"");
         sheet.Should().Contain("Shield Deflection replaces weapon deflection");
         guide.Should().Contain("Deflection does not work against activated combat abilities or Force powers");
-        guide.Should().Contain("only one deflection attempt can occur in an incoming combat round");
+        guide.Should().Contain("Each incoming weapon auto-attack gets its own deflection attempt");
     }
 
     [Test]

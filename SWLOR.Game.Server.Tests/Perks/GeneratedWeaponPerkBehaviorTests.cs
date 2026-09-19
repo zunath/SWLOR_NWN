@@ -544,8 +544,8 @@ public class GeneratedWeaponPerkBehaviorTests
         var nativeSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
-        nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
-        nativeSource.Should().Contain("GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0)");
+        nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
+        nativeSource.Should().Contain("GetCurrentAttackWeapon(pCombatRound.GetWeaponAttackType())");
         var placeableBranchIndex = nativeSource.IndexOf(
             "if (targetObject.m_nObjectType != (int)ObjectType.Creature)",
             StringComparison.Ordinal);
@@ -558,7 +558,7 @@ public class GeneratedWeaponPerkBehaviorTests
             placeableBranchIndex,
             StringComparison.Ordinal);
         var placeableBranch = nativeSource[placeableBranchIndex..placeableReturnIndex];
-        placeableBranch.Should().Contain("!UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)",
+        placeableBranch.Should().Contain("UsePerkFeat.ReserveQueuedWeaponAbilityAttack(",
             "queued placeable hits are finalized by Ability.EndAbilityImpact and must not spend two charges");
         placeableNotificationIndex.Should().BeGreaterThan(placeableBranchIndex);
         placeableNotificationIndex.Should().BeLessThan(placeableReturnIndex,

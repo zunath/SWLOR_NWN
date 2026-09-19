@@ -816,7 +816,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private void ResetAbilityRecastTimers()
         {
-            _builder.Create("resetcooldown", "resetcooldowns", "resetperkcooldowns")
+            _builder.Create("resetcooldown", "resetcooldowns")
                 .Description("Resets a player's ability, disguise, introduction, and perk refund cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()

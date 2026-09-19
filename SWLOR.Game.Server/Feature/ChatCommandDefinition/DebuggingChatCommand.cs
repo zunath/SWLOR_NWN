@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             //MoveDoor();
             EnmityDebugger();
             NuiGallery();
-            IntroductionsWindow();
             AnimationTester();
             GetObjectId();
             ResetBeast();
@@ -101,15 +100,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugNuiGallery);
                 });
-        }
-
-        private void IntroductionsWindow()
-        {
-            _builder.Create("introductionsdebug")
-                .Description("Opens the introductions window for layout checks.")
-                .Permissions(AuthorizationLevel.Admin)
-                .AvailableToAllOnTestEnvironment()
-                .Action((user, target, location, args) => Gui.TogglePlayerWindow(user, GuiWindowType.Introductions));
         }
 
         private void AnimationTester()

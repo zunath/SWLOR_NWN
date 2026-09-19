@@ -101,7 +101,6 @@ public class DMChatCommandTests
         var commands = new DMChatCommand().BuildChatCommands();
 
         commands.Should().ContainKey("resetcooldowns");
-        commands["resetperkcooldowns"].Should().BeSameAs(commands["resetcooldowns"]);
         commands["resetcooldown"].Should().BeSameAs(commands["resetcooldowns"]);
         commands["resetcooldowns"].Description.Should().Contain("perk refund");
         commands["resetcooldowns"].Description.Should().Contain("introduction");

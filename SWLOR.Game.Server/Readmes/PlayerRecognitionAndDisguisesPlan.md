@@ -161,7 +161,7 @@ Step 1 does not include:
 - Both new names and replacements require acceptance. Replacing an existing private label additionally confirms the old and proposed names. Ignoring or dismissing an offer never changes recognition.
 - Acceptance rechecks the presented identity, the recipient's displayed private label, and existing name validation/uniqueness rules. Stale approvals cannot overwrite a subsequently edited label or name a different disguise.
 - Offers expire after 10 minutes and are removed on disconnect; they can only be accepted while the speaker presents the same identity. Each recipient keeps up to 50 pending offers. A speaker can introduce themselves once per 5 minutes, and repeating an identical pending offer produces no additional notice.
-- The command uses a persisted `RecastGroup.Introduction` timer, so reconnecting or switching disguises does not bypass the limit. `/resetperkcooldowns`, `/resetcooldown`, and `/resetcooldowns` clear it through the normal reset-all path. The separate `/resetperkcooldown` command retains its perk-refund-only behavior.
+- The command uses a persisted `RecastGroup.Introduction` timer, so reconnecting or switching disguises does not bypass the limit. `/resetcooldown` and `/resetcooldowns` clear it through the normal reset-all path. The separate `/resetperkcooldown` command retains its perk-refund-only behavior.
 - Accepted introductions use the existing known-name persistence and identity audit log. No character migration is required.
 
 ## Step 2: Disguise System

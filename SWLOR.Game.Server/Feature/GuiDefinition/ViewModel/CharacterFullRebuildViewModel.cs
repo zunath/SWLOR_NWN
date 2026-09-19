@@ -117,10 +117,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 var normalizedValue = NormalizeCharacterType(value);
-                var changed = CharacterType != normalizedValue;
                 Set(normalizedValue);
                 SelectedCharacterTypeName = GetCharacterTypeName(normalizedValue);
-                if (changed && _skillsLoaded)
+                // Client binding updates store CharacterType before invoking this setter.
+                // Compare against the type used to build the list, not the bound value.
+                if (_skillsLoaded && _loadedSkillCharacterType != SelectedSkillCharacterType)
                 {
                     LoadSkills();
                     RecalculateAvailableSkillPoints();
@@ -149,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int MaxAbilityIncreases = 15;
 
         private int _remainingAbilityPoints;
+        private int _totalSkillPoints;
         private int _remainingSkillPoints;
         private int _might;
         private int _perception;
@@ -208,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<SkillType> _skills = new();
         private readonly List<int> _skillDistributionPoints = new();
         private bool _skillsLoaded;
+        private Enumeration.CharacterType _loadedSkillCharacterType;
 
         private Enumeration.CharacterType SelectedSkillCharacterType => CharacterType == 1
             ? Enumeration.CharacterType.ForceSensitive
@@ -278,6 +281,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            _totalSkillPoints = dbPlayer.TotalSPAcquired;
 
             _might = 0;
             _perception = 0;
@@ -349,6 +353,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SkillNames = skills;
             SkillTooltips = tooltips;
+            _loadedSkillCharacterType = SelectedSkillCharacterType;
             _skillsLoaded = true;
         }
 
@@ -360,10 +365,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RecalculateAvailableSkillPoints()
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            _remainingSkillPoints = dbPlayer.TotalSPAcquired - _skillDistributionPoints.Sum();
+            _remainingSkillPoints = _totalSkillPoints - _skillDistributionPoints.Sum();
             RemainingSkillPoints = $"Skills - {_remainingSkillPoints} Points Remaining";
         }
 

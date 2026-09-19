@@ -65,17 +65,26 @@ public static class AnimationMdl
             var positions = keys.All(k => k.Pose[joint].Position == keys[0].Pose[joint].Position) ? keys[..1] : keys;
             var orientations = keys.All(k => k.Pose[joint].Orientation == keys[0].Pose[joint].Orientation) ? keys[..1] : keys;
             var scales = keys.All(k => k.Pose[joint].Scale == keys[0].Pose[joint].Scale) ? keys[..1] : keys;
-            text.AppendLine($"    positionkey {positions.Length}");
-            foreach (var key in positions)
-                text.AppendLine($"      {F(key.Time)} {V(key.Pose[joint].Position)}");
+            // Inherited controllers replace the wearer's own bind values. Even a single
+            // constant key can change bone length on another race/phenotype and remain
+            // latched when native idle only animates rotation. Omit unchanged bind channels.
+            if (positions.Any(key => Vector3.Distance(key.Pose[joint].Position, bone.Rest.Position) > .000001f))
+            {
+                text.AppendLine($"    positionkey {positions.Length}");
+                foreach (var key in positions)
+                    text.AppendLine($"      {F(key.Time)} {V(key.Pose[joint].Position)}");
+            }
             text.AppendLine($"    orientationkey {orientations.Length}");
             foreach (var key in orientations)
             {
                 // Axis-angle is in radians in Aurora, not Euler angles or degrees.
                 text.AppendLine($"      {F(key.Time)} {AxisAngle(key.Pose[joint].Orientation)}");
             }
-            text.AppendLine($"    scalekey {scales.Length}");
-            foreach (var key in scales) text.AppendLine($"      {F(key.Time)} {F(key.Pose[joint].Scale)}");
+            if (scales.Any(key => Math.Abs(key.Pose[joint].Scale - bone.Rest.Scale) > .000001f))
+            {
+                text.AppendLine($"    scalekey {scales.Length}");
+                foreach (var key in scales) text.AppendLine($"      {F(key.Time)} {F(key.Pose[joint].Scale)}");
+            }
             text.AppendLine("  endnode");
         }
         text.AppendLine($"doneanim {name} {model}");

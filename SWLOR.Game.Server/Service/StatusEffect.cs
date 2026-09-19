@@ -2103,8 +2103,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Marks the start of a synchronous native swing. Limited attack-timing effects granted
-        /// while its already-scheduled rolls resolve are deferred until the outermost swing ends.
+        /// Marks the start of a native attack cycle. Limited attack-timing effects granted
+        /// while its already-scheduled rolls resolve are deferred until the outermost cycle ends.
+        /// Dual-wield cycles retain this scope across the gap between hands.
         /// </summary>
         public static void BeginNativeAttackSwing(uint attacker)
         {
@@ -2113,8 +2114,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Ends a synchronous native swing and applies limited attack-timing effects that were
-        /// granted by its precomputed rolls.
+        /// Ends (or cancels) a native attack cycle and applies limited attack-timing effects
+        /// granted while its precomputed rolls resolved.
         /// </summary>
         public static void EndNativeAttackSwing(uint attacker)
         {

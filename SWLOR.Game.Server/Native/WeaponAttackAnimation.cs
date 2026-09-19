@@ -111,7 +111,7 @@ public static unsafe class WeaponAttackAnimation
         return ordered.ToArray();
     }
 
-    public static void Capture(CNWSCreature creature, int firstAttack, int cycleDuration)
+    public static void Capture(CNWSCreature creature, int firstAttack, int cycleDuration, bool pendingOffHand = false)
     {
         var round = creature.m_pcCombatRound;
         var count = round.m_nCurrentAttack - firstAttack;
@@ -123,6 +123,7 @@ public static unsafe class WeaponAttackAnimation
         var rolls = Enumerable.Range(firstAttack, count).Select(i => Roll.Read(round.GetAttack(i))).ToArray();
         _playbacks.TryGetValue(creature.m_idSelf, out var previous);
         var visualRolls = SelectVisualRolls(rolls);
+        if (pendingOffHand) visualRolls = new[] { visualRolls[0], null };
         var swingLength = CalculateSwingDuration(cycleDuration, visualRolls.Length);
         var playback = new Playback
         {
@@ -137,6 +138,21 @@ public static unsafe class WeaponAttackAnimation
         };
         if (previous != null) playback.RemappedObservers.UnionWith(previous.RemappedObservers);
         _playbacks[creature.m_idSelf] = playback;
+    }
+
+    public static void Cancel(uint creature)
+    {
+        if (_playbacks.TryGetValue(creature, out var playback)) playback.Cancelled = true;
+    }
+
+    public static void CompleteOffHand(CNWSCreature creature, int firstAttack)
+    {
+        if (!_playbacks.TryGetValue(creature.m_idSelf, out var playback) || playback.Cancelled) return;
+        var round = creature.m_pcCombatRound;
+        if (round.m_nCurrentAttack <= firstAttack) { playback.Cancelled = true; return; }
+        playback.Rolls[1] = Roll.Read(round.GetAttack(firstAttack));
+        playback.EndAttack = round.m_nCurrentAttack;
+        playback.Group = round.GetAttack(round.m_nCurrentAttack - 1).m_nAttackGroup;
     }
 
     public static bool IsPlaying(CNWSObject obj) =>
@@ -162,7 +178,7 @@ public static unsafe class WeaponAttackAnimation
         return true;
     }
 
-    private static bool HasQueuedAttack(CNWSObject obj, uint target)
+    public static bool HasQueuedAttack(CNWSObject obj, uint target)
     {
         // m_nCurrentAction is 0xffff between AI executions, including during an
         // ongoing attack. The queue head retains the action while networking runs.
@@ -176,7 +192,9 @@ public static unsafe class WeaponAttackAnimation
         var now = Environment.TickCount64;
         if (!playback.SentStages.TryGetValue(playerId, out var sent))
             return now - playback.Started < playback.Duration ? 0 : playback.Rolls.Length * 2 - 1;
-        return AdvanceStage(sent, now - playback.SentAt[playerId], playback.SwingLength, playback.Rolls.Length);
+        var next = AdvanceStage(sent, now - playback.SentAt[playerId], playback.SwingLength, playback.Rolls.Length);
+        // A second swing is only publishable once that hand has actually resolved.
+        return next == 2 && playback.Rolls[1] == null ? sent : next;
     }
 
     [NWNEventHandler(ScriptName.OnModuleLoad)]

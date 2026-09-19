@@ -4,6 +4,8 @@ Two equipped melee weapons share one attack-delay gate. Each ordinary cycle reso
 main-hand roll and an off-hand roll. Each roll uses its own weapon's accuracy, damage type,
 damage amount, skill, critical roll, and on-hit effects. The existing combined weapon delay
 and off-hand delay reduction still determine the cycle interval.
+Main-hand rolls resolve first. Off-hand rolls resolve after the main-hand animation and
+its ready transition, so native damage and hit effects follow the two separate swings.
 
 Weapon ACC and enhancement properties contribute once to the weapon carrying them. Their
 native equipped attack-bonus effects must not also enter the creature-wide accuracy sum.
@@ -42,6 +44,10 @@ damage profile when applying the ability.
 `ResolveAttack(target, count, animationTime)` can resolve both hands in one call. NWN
 chooses off-hand rolls once `CurrentAttack` reaches `OnHandAttacks + AdditionalAttacks +
 BonusEffectAttacks`. `WeaponAttackCycle` sets these boundaries before resolving the batch.
+Commanded dual-wield cycles call `ResolveAttack` separately for each hand, keeping that
+same prepared budget and starting the shared delay timer only once. Haste rolls remain
+grouped by hand. Limited timing effects granted during the cycle are released after the
+off hand finishes or is cancelled, so they cannot be spent by an already-budgeted roll.
 Keep the attack data alive until the native damage/animation phase finishes; do not call
 `RecomputeRound` or clear attacks between the two hands.
 
@@ -50,7 +56,7 @@ separate left-hand weapon keep their existing scheduling paths.
 
 ## Animation playback
 
-`WeaponAttackAnimation` captures the completed melee batch and presents consecutive native
+`WeaponAttackAnimation` captures each resolved hand and presents consecutive native
 attack animations. The installed `a_ba` sword clips are 1,000 ms long; the 1,750 ms
 gameplay cycle floor is not an individual clip length. Every dual-wield cycle presents
 main hand, a 100 ms ready transition, off hand, then ready again. Both hands are always
@@ -60,9 +66,13 @@ weapon delays retain the clips' natural 1,000 ms duration. The next hand waits f
 observer's preceding swing and ready transition. Late updates never skip a transition or
 compress its next swing to catch up.
 
-This is presentation only: rolls, damage, queued-ability reservations, on-hit processing and
-charge consumption retain their existing timing. Combat-log entries can therefore still
-arrive together. No delayed damage callbacks or additional attack actions are introduced.
+The off-hand callback runs after the first swing plus its transition, using the same
+duration as playback (1,100 ms normally; 875 ms at the fastest cadence). It resolves the
+real native attack, including its roll, feedback, damage and on-hit processing, then
+publishes the second animation without restarting the first. It does not create another
+attack action or restart the cycle timer. Client serialization never applies damage.
+The callback revalidates the action, target, equipped weapons, combat cursor, range and
+line of attack. Cancellation, death, or invalidated combat state discards the pending hand.
 
 In engine 8193.37.17, `ComputeUpdateRequired` does not flag a new attack burst when the
 animation, speed and target are unchanged. Its companion serializer only includes matching
@@ -108,7 +118,11 @@ variant projection/restoration, late-observer animation durations, legacy item r
 matching noncritical damage for identical equipped basic vibroblades.
 Commanded-animation tests follow the full attack action across engine updates at ordinary
 and fastest cadence. They require main/ready/off/ready packets, completed swing durations,
-and exactly the original two damage rolls. The ordinary-cadence test reproduced the
+exactly the original two damage rolls, and separate native HP reductions for each hand.
+Interruption tests cover stopping, removing the weapon, either combatant dying, leaving
+melee reach, switching targets, and paralysis before the off hand. A commanded queued-ability
+test verifies one ability consumption and a separate ordinary off-hand hit.
+The ordinary-cadence test reproduced the
 previous regression: the native ready pose canceled playback before the off hand was sent.
 `CombatAttackDelayTests` covers shared-cycle cadence and individual-roll charge limits.
 `WeaponAttackAnimationTests` covers both-hand retention, stage timing and variant selection.

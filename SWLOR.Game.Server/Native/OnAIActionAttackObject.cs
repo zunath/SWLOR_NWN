@@ -684,17 +684,25 @@ namespace SWLOR.Game.Server.Native
                                                     }
                                                 }
 
-                                                StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
-                                                try
+                                                if (isDualWieldCycle && nAttacks >= 2)
                                                 {
-                                                    var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
-                                                    pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
-                                                    WeaponAttackAnimation.Capture(pCreature, firstAttack,
+                                                    WeaponAttackCycle.ResolveDualWield(pCreature, oidTarget, nAttacks,
                                                         Combat.CalculateAttackSwingDelay(effectiveAttackDelay));
                                                 }
-                                                finally
+                                                else
                                                 {
-                                                    StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
+                                                    StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
+                                                    try
+                                                    {
+                                                        var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
+                                                        pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                        WeaponAttackAnimation.Capture(pCreature, firstAttack,
+                                                            Combat.CalculateAttackSwingDelay(effectiveAttackDelay));
+                                                    }
+                                                    finally
+                                                    {
+                                                        StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
+                                                    }
                                                 }
                                                 bTargetActive = true;
 

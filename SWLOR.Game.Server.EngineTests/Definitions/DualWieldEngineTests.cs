@@ -55,11 +55,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 _hits.Clear();
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
                 var packets = new List<(ushort Animation, byte Hand, ushort Duration, long Time)>();
+                var damageTimes = new List<long>();
+                var previousHp = GetCurrentHitPoints(target);
                 var started = Environment.TickCount64;
                 var previous = "";
                 AssignCommand(attacker, () => ActionAttack(target));
                 while (Environment.TickCount64 - started < 5000)
                 {
+                    var hp = GetCurrentHitPoints(target);
+                    if (hp < previousHp) damageTimes.Add(Environment.TickCount64);
+                    previousHp = hp;
                     var action = native.m_lQueuedActions.IsEmpty() != 0 ? uint.MaxValue : native.m_lQueuedActions.GetHead().m_nActionId;
                     var state = $"pose={native.m_nAnimation} queuedAction={action} attack={native.m_pcCombatRound.m_nCurrentAttack} paused={native.m_pcCombatRound.m_bRoundPaused}";
                     var nativeChanged = state != previous;
@@ -89,10 +94,99 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "The first swing and its transition finish before the second begins");
                 ctx.Assert(packets[^1].Time - swings[1].Time >= swings[1].Duration, "The off-hand animation finishes before returning to ready");
                 ctx.AssertEqual(2, _hits.Count, "Presentation does not add gameplay attacks");
+                ctx.Assert((_hits[1].Time - _hits[0].Time).TotalMilliseconds >= expectedLength + WeaponAttackAnimation.TransitionDuration - 50,
+                    "Off-hand hit calculation and on-hit effects wait for the second swing");
+                ctx.AssertEqual(2, damageTimes.Count, "Target HP falls separately for each hand");
+                ctx.Assert(damageTimes[1] - damageTimes[0] >= expectedLength + WeaponAttackAnimation.TransitionDuration - 100,
+                    "Actual native damage is staggered with the swings, not only its feedback");
             }
             finally
             {
                 AssignCommand(attacker, () => ClearAllActions());
+                ResetObservation();
+            }
+        }
+
+        [EngineTest("Dual wield interrupted sequence cancels the pending off hand", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task InterruptedOffHand(EngineTestContext ctx)
+        {
+            foreach (var interruption in new[] { "stop", "weapon", "target death", "attacker death", "range", "target change", "paralysis" })
+            {
+                var (attacker, target, main, off) = await CreatePair(ctx);
+                try
+                {
+                    _observedAttacker = attacker;
+                    _hits.Clear();
+                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    AssignCommand(attacker, () => ActionAttack(target));
+                    await ctx.WaitUntilAsync(() => _hits.Count > 0, 5f, "the main-hand roll");
+                    ctx.AssertEqual(1, _hits.Count, "The off hand has not resolved with the main hand");
+                    await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                    {
+                        switch (interruption)
+                        {
+                            case "stop": ClearAllActions(); break;
+                            case "weapon": DestroyObject(off); break;
+                            case "target death": ApplyEffectToObject(DurationType.Instant, EffectDeath(), target); break;
+                            case "attacker death": ApplyEffectToObject(DurationType.Instant, EffectDeath(), attacker); break;
+                            case "target change":
+                                ClearAllActions();
+                                ActionAttack(ctx.SpawnCreature("nw_rat001", 1f));
+                                break;
+                            case "paralysis": ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), attacker, 5f); break;
+                            case "range":
+                                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSCreature();
+                                var position = native.m_vPosition;
+                                native.m_vPosition = new Vector(position.x + 30, position.y, position.z);
+                                break;
+                        }
+                    });
+                    await ctx.DelaySecondsAsync(1.3f);
+                    ctx.AssertEqual(0, _hits.Count(hit => hit.Weapon == off), $"No delayed off-hand hit after {interruption}");
+                    ctx.Log($"Pending off hand cancelled after {interruption}");
+                }
+                finally
+                {
+                    if (GetIsObjectValid(attacker)) AssignCommand(attacker, () => ClearAllActions());
+                    WeaponAttackCycle.CancelPendingHand(attacker);
+                    ResetObservation();
+                }
+            }
+        }
+
+        [EngineTest("Dual wield staggered hits consume a queued ability once and retain the other hand", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task StaggeredQueuedAbility(EngineTestContext ctx)
+        {
+            var (attacker, target, main, off) = await CreatePair(ctx);
+            try
+            {
+                _observedAttacker = attacker;
+                _hits.Clear();
+                _itemHits.Clear();
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                ctx.ApplyStandardOnHitProperty(main);
+                ctx.ApplyStandardOnHitProperty(off);
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    foreach (var weapon in new[] { main, off })
+                        AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 23), weapon);
+                    ctx.SetNPCResources(attacker, 100, 100);
+                    ctx.SetNPCPerkLevel(attacker, PerkType.PathogenStrike, 1);
+                    CreaturePlugin.AddFeat(attacker, FeatType.PathogenStrike1);
+                    ctx.Assert(UsePerkFeat.TryUseAbility(attacker, target, FeatType.PathogenStrike1, GetLocation(target)), "Pathogen Strike queues");
+                    ActionAttack(target);
+                });
+                await ctx.WaitUntilAsync(() => _itemHits.Contains(off), 5f, "the delayed off-hand item hit");
+                ctx.Assert(!UsePerkFeat.HasQueuedWeaponAbility(attacker), "The main-hand item hit consumed the queued ability");
+                ctx.AssertEqual(1, _itemHits.Count(weapon => weapon == main), "The main hand delivers one item hit");
+                ctx.AssertEqual(1, _itemHits.Count(weapon => weapon == off), "The off hand delivers one later item hit");
+                ctx.AssertEqual(1, _hits.Count(hit => hit.Weapon == off && hit.Type == CombatDamageType.Poison),
+                    "The delayed off hand retains its ordinary poison damage");
+            }
+            finally
+            {
+                AssignCommand(attacker, () => ClearAllActions());
+                WeaponAttackCycle.CancelPendingHand(attacker);
                 ResetObservation();
             }
         }
@@ -620,7 +714,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(off, second.Weapon, "Each cycle includes the off hand");
                     ctx.AssertEqual(CombatDamageType.Ice, first.Type, "Main-hand damage retains its type");
                     ctx.AssertEqual(CombatDamageType.Poison, second.Type, "Off-hand damage retains its type");
-                    ctx.Assert((second.Time - first.Time).TotalMilliseconds < 500, "Both hands share one delay gate");
+                    ctx.Assert((second.Time - first.Time).TotalMilliseconds >= 825 &&
+                               (second.Time - first.Time).TotalMilliseconds < 1300,
+                        "The off-hand hit follows the completed main-hand swing inside the same delay cycle");
                     if (cycle > 0)
                         ctx.Assert((first.Time - _hits[(cycle - 1) * 2].Time).TotalMilliseconds >= Combat.BaseAttackDelayMilliseconds,
                             "Paired attacks respect the animation floor between cycles");
@@ -657,7 +753,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 await ctx.WaitUntilAsync(() => _hits.Count >= 10, 15f, "the proc's six-roll batch followed by four ordinary rolls");
                 var firstBatch = _hits.Take(6).ToList();
-                ctx.Assert((firstBatch.Last().Time - firstBatch.First().Time).TotalMilliseconds < 500, "Proc batch resolves in one animation");
+                ctx.Assert((firstBatch.Last().Time - firstBatch.First().Time).TotalMilliseconds >= 825 &&
+                           (firstBatch.Last().Time - firstBatch.First().Time).TotalMilliseconds < 1300,
+                    "Proc rolls resolve with their own hand's animation within one timed cycle");
                 ctx.AssertEqual(3, firstBatch.Count(hit => hit.Weapon == main), "Proc batch main-hand rolls");
                 ctx.AssertEqual(3, firstBatch.Count(hit => hit.Weapon == off && hit.Type == CombatDamageType.Poison), "Proc grants the extra off-hand roll");
                 var nextBatch = _hits.Skip(6).Take(4).ToList();

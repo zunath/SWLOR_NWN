@@ -35,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("DATHTARN_QUILL_RARES").IsRare()
                 .AddItem("quillstalkerda", 1, 1, true).AddItem("quillstalkerdb", 1, 1, true).AddItem("bp_quillstalker", 1, 1, true);
             _builder.Create("DATHTARN_RHYDEL_RARES").IsRare()
-                .AddItem("rhydelalphada", 1, 1, true).AddItem("rhydelalphadb", 1, 1, true).AddItem("bp_rhydelalpha", 1, 1, true);
+                .AddItem("rhydelalphada", 1, 1, true).AddItem("rhydelalphadb", 1, 1, true).AddItem("bp_rhydelalpha", 1, 1, true)
+                .AddItem("recipe_dr_psn2", 1, 1, true);
             _builder.Create("DATHTARN_APEX_COMP").AddItem("tarnapexmawcm", 1, 1);
             _builder.Create("DATHTARN_QUILL_COMP").AddItem("quillstalkercm", 1, 1);
             _builder.Create("DATHTARN_RHYDEL_COMP").AddItem("rhydelalphacm", 1, 1);
@@ -44,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void DathomirGrottoRareElites()
         {
             _builder.Create("DATHGROTTO_ALPHA_RARES").IsRare()
-                .AddItem("bone_guard", 1, 1, true).AddItem("thornhide", 1, 1, true).AddItem("bp_fanggaunt", 1, 1, true);
+                .AddItem("bone_guard", 1, 1, true).AddItem("thornhide", 1, 1, true).AddItem("bp_fanggaunt", 1, 1, true)
+                .AddItem("recipe_dr_tra2", 1, 1, true);
             _builder.Create("DATHGROTTO_SPINE_RARES").IsRare()
                 .AddItem("quill_bracer", 1, 1, true).AddItem("beasthide", 1, 1, true).AddItem("bp_ridgeplate", 1, 1, true);
             _builder.Create("DATHGROTTO_STALKER_RARES").IsRare()

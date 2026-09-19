@@ -57,8 +57,8 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(treatmentKit[FeatType.TreatmentKit3], "Treatment Kit III", 3, RecastGroup.TreatmentKit, 12f, 1f, 5, null, 0, false, true);
 
         var koltoMist = new KoltoMistAbilityDefinition().BuildAbilities();
-        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 18f, 1.5f, 6, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
-        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 18f, 1.5f, 7, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
+        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 30f, 1.5f, 6, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
+        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 30f, 1.5f, 7, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
 
         var resuscitation = new ResuscitationAbilityDefinition().BuildAbilities();
         AssertAbility(resuscitation[FeatType.Resuscitation1], "Resuscitation I", 1, RecastGroup.Resuscitation, 60f, 4f, 10, "med_supplies", 1, false, true);
@@ -238,7 +238,7 @@ public class FirstAidCombatUpgradeTests
         }
 
         var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
-        emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);");
+        emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 1);");
 
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
         cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, \"EMERGENCY_COCKTAIL\", 12, duration)");
@@ -427,20 +427,20 @@ public class FirstAidCombatUpgradeTests
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
-            (FeatType.MedKit1, "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.MedKit1, "Restores 8% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
             (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
-            (FeatType.MedKit2, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
-            (FeatType.Infusion1, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
+            (FeatType.MedKit2, "Restores 14% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.Infusion1, "Grants a single target regeneration, healing 2% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
             (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
-            (FeatType.MedKit3, "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.MedKit3, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds."),
             (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
-            (FeatType.Infusion2, "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
-            (FeatType.MedKit4, "Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.Infusion2, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
+            (FeatType.MedKit4, "Restores 24% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),

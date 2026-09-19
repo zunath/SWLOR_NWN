@@ -232,13 +232,13 @@ public class ForceLightConsularTests
         var root = FindSourceRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "RenewalAbilityDefinition.cs").FullName);
 
-        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", 20f);");
-        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", 40f);");
-        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", 60f);");
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", 10f);");
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", 20f);");
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", 30f);");
         source.Should().Contain("totalPercent * Ability.GetActiveForceAffinityMagnitudeMultiplier(activator)");
         source.Should().Contain("new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10)");
         source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, affinityAdjustedTotalPercent, 10\),\s*30f\)");
-        new RegenerativeHealingStatusEffect("Renewal", 60f, 10).Frequency.Should().Be(3f);
+        new RegenerativeHealingStatusEffect("Renewal", 30f, 10).Frequency.Should().Be(3f);
     }
 
     [Test]

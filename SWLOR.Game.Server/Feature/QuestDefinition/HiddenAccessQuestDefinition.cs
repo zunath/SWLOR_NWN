@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -20,23 +18,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("sith_basement", "Viscara Sith Basement")
 
                 .AddState()
-                .SetStateJournalText("Talk to SithBasementGiver again to complete quest.")
+                .SetStateJournalText("Speak to your contact again to receive the Viscara Lake Basement Key.")
 
-                .AddKeyItemReward(KeyItemType.SithBasementKey)
-
-                .OnAcceptAction((player, sourceObject) =>
-                {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Hidden);
-                })
-                .OnAbandonAction(player =>
-                {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Hidden);
-                })
-
-                .OnCompleteAction((player, sourceObject) =>
-                {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Visible);
-                });
+                .AddKeyItemReward(KeyItemType.SithBasementKey);
         }
     }
 }

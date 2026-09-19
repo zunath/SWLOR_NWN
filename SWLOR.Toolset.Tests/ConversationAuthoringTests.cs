@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         private static DlgDocument DantHerbs() =>
-            DlgDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json"));
+            DlgDocument.Load(LegacyConversationFixtures.PathFor("dantherbs"));
 
         /// <summary>A brand-new dialog, exactly as Module Contents' "New Dialog…" creates it.</summary>
         private static DlgDocument NewConversation() =>
@@ -305,8 +305,7 @@ namespace SWLOR.Toolset.Tests
         public void EveryConversationInTheModuleCanBeAnalyzedWithoutThrowing()
         {
             var failures = new List<string>();
-            foreach (var path in Directory.EnumerateFiles(
-                         Path.Combine(CorpusLocator.ModuleDirectory, "dlg"), "*.json"))
+            foreach (var path in LegacyConversationFixtures.AllPaths())
             {
                 try
                 {

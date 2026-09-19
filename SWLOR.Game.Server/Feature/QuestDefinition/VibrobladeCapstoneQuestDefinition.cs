@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Enter the Veles Militia Annex on Viscara and defeat six Invincible adepts on the drill floor. Secure the Invincible Veles Drill Ledger.")
+                    "Captain Tov Renn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara and defeat six Invincible adepts on the drill floor. Secure the Invincible Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleVelesDrillLedger)
 

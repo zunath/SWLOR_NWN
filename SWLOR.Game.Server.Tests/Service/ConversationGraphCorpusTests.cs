@@ -21,8 +21,8 @@ public sealed class ConversationGraphCorpusTests
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        resources.Should().HaveCount(345,
-            "every authored non-shell DLG except the approved native DMFI conversation must be embedded");
+        resources.Should().HaveCount(340,
+            "all active authored graphs must be embedded; retired quest dialogues and native DMFI are excluded");
         resources.Should().NotContain(resource =>
             resource.EndsWith(".dmfi_universal.conversation.json", StringComparison.OrdinalIgnoreCase));
         foreach (var resource in resources)

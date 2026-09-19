@@ -118,6 +118,9 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var (questId, playerQuest) in dbPlayer.Quests)
                 {
+                    if (playerQuest.DateLastCompleted != null)
+                        continue;
+
                     var quest = GetQuestByIdOrDefault(questId);
 
                     if (quest == null)
@@ -128,6 +131,8 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     var state = quest.States[playerQuest.CurrentState];
+                    if (state.ReconcileProgress(playerQuest))
+                        DB.Set(dbPlayer);
 
                     PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                     {
@@ -294,8 +299,15 @@ namespace SWLOR.Game.Server.Service
             }
 
             var quest = dbPlayer.Quests[questId];
+            if (quest.DateLastCompleted != null)
+            {
+                SendMessageToPC(player, "You have already completed this quest.");
+                return false;
+            }
             var questDetail = GetQuestById(questId);
             var questState = questDetail.States[quest.CurrentState];
+            if (questState.ReconcileProgress(quest))
+                DB.Set(dbPlayer);
 
             // Ensure there's at least one "Collect Item" objective on this quest state.
             var hasCollectItemObjective = questState.GetObjectives().OfType<CollectItemObjective>().Any();

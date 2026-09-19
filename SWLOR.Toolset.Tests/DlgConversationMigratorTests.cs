@@ -10,6 +10,90 @@ namespace SWLOR.Toolset.Tests;
 
 public sealed class DlgConversationMigratorTests
 {
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Convert_RejectsActionsWithoutADispatcherInsteadOfSilentlyDroppingThem(bool includeObsoleteMarker)
+    {
+        var document = Load("cq_thermdet");
+        var reply = document.Replies.Single(node => node.Actions.Any(action =>
+            action.SnippetKey == "action-accept-quest" &&
+            action.Arguments.SequenceEqual(new[] { "thermal_detonator_foundation" })));
+        if (includeObsoleteMarker)
+            reply.AddAction("once-action-accept-quest", "legacy:marker");
+        reply.Script = string.Empty;
+
+        var result = DlgConversationMigrator.Convert("cq_thermdet", document);
+
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Should().Contain(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
+            issue.Message.Contains("no action dispatcher", StringComparison.Ordinal));
+    }
+
+    [TestCase(DlgNodeKind.Entry)]
+    [TestCase(DlgNodeKind.Reply)]
+    public void Convert_DiscardsOrphanedOnceMarkersWithoutRequiringADispatcher(DlgNodeKind kind)
+    {
+        var document = Load("star_attend_lau");
+        var node = kind == DlgNodeKind.Entry ? document.Entries[0] : document.Replies[0];
+        node.AddAction("once-action-teleport", "legacy:marker");
+        node.Script = string.Empty;
+
+        var result = DlgConversationMigrator.Convert("star_attend_lau", document);
+
+        result.CanRunInNui.Should().BeTrue();
+        result.Issues.Should().NotContain(issue => issue.Message.Contains("no action dispatcher", StringComparison.Ordinal));
+        var actions = kind == DlgNodeKind.Entry
+            ? result.Graph.Nodes["entry-00000"].OnEnterActions
+            : result.Graph.Choices["reply-00000"].Actions;
+        actions.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Convert_RejectsConditionsWithoutADispatcherInsteadOfRemovingQuestGates()
+    {
+        var document = Load("cq_thermdet");
+        document.Openings.First(link => link.Conditions.Count > 0).Active = string.Empty;
+
+        var result = DlgConversationMigrator.Convert("cq_thermdet", document);
+
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Should().Contain(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
+            issue.Message.Contains("no condition dispatcher", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void LegacyImports_PreserveEveryExecutableSnippetAction()
+    {
+        foreach (var path in LegacyConversationFixtures.AllPaths())
+        {
+            var id = Path.GetFileName(path)[..^".dlg.json".Length];
+            if (id == "dmfi_universal")
+                continue;
+
+            var document = DlgDocument.Load(path);
+            var result = DlgConversationMigrator.Convert(id, document);
+            result.CanRunInNui.Should().BeTrue(id);
+            var graph = result.Graph;
+
+            foreach (var node in document.Entries.Concat(document.Replies))
+            {
+                var expected = node.Actions.Where(action => !action.IsOncePerPlayerMarker).ToArray();
+                if (expected.Length == 0)
+                    continue;
+
+                DlgDocument.IsActionDispatcher(node.Script).Should().BeTrue($"{id} node {node.Index} must execute its authored actions");
+                var actual = node.Kind == DlgNodeKind.Entry
+                    ? graph.Nodes[$"entry-{node.Index:D5}"].OnEnterActions
+                    : graph.Choices[$"reply-{node.Index:D5}"].Actions;
+                actual.Select(action => (action.Key, Arguments: string.Join("\n", action.Arguments)))
+                    .Should().Equal(expected.Select(action =>
+                        (action.SnippetKey, Arguments: string.Join("\n", action.Arguments))), $"{id} node {node.Index}");
+            }
+        }
+    }
+
     [Test]
     public void Convert_PreservesSharedReplyIdentityAndOrderedRouteConditions()
     {
@@ -230,45 +314,9 @@ public sealed class DlgConversationMigratorTests
             .Should().NotContain(item => item.Key.StartsWith("once-", StringComparison.Ordinal));
     }
 
-    [Test]
-    public void GeneratedCorpus_ExactlyMatchesEverySafeAuthoredDialogAndEveryGraphValidates()
-    {
-        var conversationDirectory = Path.Combine(
-            CorpusLocator.RepositoryRoot,
-            "SWLOR.Game.Server",
-            "ConversationData");
-        var generatedIds = Directory.EnumerateFiles(conversationDirectory, "*.conversation.json")
-            .Select(path => Path.GetFileName(path)[..^".conversation.json".Length])
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var expectedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var path in Directory.EnumerateFiles(
-                     Path.Combine(CorpusLocator.ModuleDirectory, "dlg"),
-                     "*.dlg.json"))
-        {
-            var id = Path.GetFileName(path)[..^".dlg.json".Length];
-            if (IsGeneratedShell(id))
-                continue;
-
-            var result = DlgConversationMigrator.Convert(id, DlgDocument.Load(path));
-            if (result.CanRunInNui)
-                expectedIds.Add(id);
-        }
-
-        generatedIds.Should().BeEquivalentTo(expectedIds);
-
-        foreach (var id in generatedIds)
-        {
-            var path = Path.Combine(conversationDirectory, id + ".conversation.json");
-            var graph = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(path));
-            graph.Should().NotBeNull();
-            ConversationGraphValidator.Validate(graph!).Should().BeEmpty(id);
-        }
-    }
-
     private static DlgDocument Load(string id)
     {
-        return DlgDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json"));
+        return DlgDocument.Load(LegacyConversationFixtures.PathFor(id));
     }
 
     private static IEnumerable<ConversationAction> AllActions(ConversationGraph graph)
@@ -291,9 +339,4 @@ public sealed class DlgConversationMigratorTests
                 .SelectMany(link => link.Conditions));
     }
 
-    private static bool IsGeneratedShell(string id)
-    {
-        return id.StartsWith("dialog", StringComparison.OrdinalIgnoreCase) &&
-               int.TryParse(id["dialog".Length..], out _);
-    }
 }

@@ -147,7 +147,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You reek of something foul... is that the beast's entrails?",
+          "Text": "Slay the alchemized frog in the tomb and bring me one Frog Guts from its remains. I need to examine the corruption myself.",
           "Style": 0,
           "Color": null
         }
@@ -156,7 +156,16 @@
       "Choices": [
         {
           "ChoiceId": "reply-00004",
-          "Conditions": []
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "alchemized_frog",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
         },
         {
           "ChoiceId": "reply-00003",

@@ -21,6 +21,12 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Do not start background jobs, watchers, dev servers, publish tasks, or long-lived helper processes unless the user explicitly asks for them or they are strictly required for the current task. Prefer foreground commands with bounded timeouts. If a long-lived process is necessary, record what was started, track its PID when available, stop it before handing off, and report the cleanup. Do not use `Start-Process`, shell backgrounding, persistent REPL helpers, or detached commands to continue work after the turn unless the user has explicitly approved that behavior.
 
+## Conversations
+
+- Authored gameplay dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit these graphs directly; never create duplicate DLG sources or regenerate existing graphs from legacy files.
+- `Module/dlg/dmfi_universal.dlg.json` is the sole native module exception because DMFI wands call it through NWN. Legacy-format test fixtures are frozen import/editor samples, not gameplay sources.
+- Preserve NPC `Conversation` IDs and route graph interactions through `dialog_start`. The module resref identifies a SWLOR graph without requiring a DLG resource. Follow `SWLOR.Game.Server/Readmes/Conversations.md`.
+
 ## Chat Commands
 
 - Player-facing chat commands must use `.Permissions(AuthorizationLevel.All)`, not `AuthorizationLevel.Player` alone, unless the command is deliberately meant to exclude DMs/Admins. `AuthorizationLevel.Player`-only silently fails for DM-possessed or DM-authorization accounts with the same generic "Invalid chat command" message used for unregistered commands, which makes it look like the command was never wired up instead of a permissions gap.

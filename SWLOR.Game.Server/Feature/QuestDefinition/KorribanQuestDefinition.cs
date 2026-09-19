@@ -89,14 +89,23 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create("alchemized_frog", "Curse of the Alchemized One")
                 .PrerequisiteQuest("prove_dominance")
+                .OnAdvanceAction((player, sourceObject, state) =>
+                {
+                    // Kill credit advances each eligible party member separately.
+                    if (state == 2)
+                        CreateItemOnObject("frogguts", player, 1);
+                })
 
                 .AddState()
-                .SetStateJournalText("Warrior Camila has sensed dark alchemical energy emanating from the ancient tombs. She tasks you with investigating the disturbance.")
+                .SetStateJournalText("Sith Warrior Camila in the Sith Academy has asked you to slay the alchemized frog in the ancient tombs and recover its Frog Guts.")
                 .AddKillObjective(NPCGroupType.Korriban_AlchemizedFrog, 1)
-                .AddState()
 
                 .AddState()
-                .SetStateJournalText("The creature is slain. Return to Dral'kor Keth and report your findings.")
+                .SetStateJournalText("The alchemized frog is slain. You recovered its Frog Guts. Bring them to Sith Warrior Camila in the Sith Academy.")
+                .AddCollectItemObjective("frogguts", 1)
+
+                .AddState()
+                .SetStateJournalText("You have delivered the Frog Guts. Speak with Sith Warrior Camila in the Sith Academy to receive your reward.")
                 .AddXPReward(10000)
                 .AddGoldReward(6000);
 

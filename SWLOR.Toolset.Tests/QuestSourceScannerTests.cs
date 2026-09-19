@@ -179,17 +179,6 @@ namespace SWLOR.Toolset.Tests
             dangling.Should().BeEmpty();
         }
 
-        /// <summary>
-        /// The one conversation naming a quest the game does not declare. <c>suppress_rogues</c>
-        /// appears nowhere in the game code, and <c>trooperquest</c> is itself among the
-        /// conversations no blueprint or placed instance references — so this is dead content
-        /// pointing at a quest that was never implemented, not a blind spot in the scan.
-        /// </summary>
-        private static readonly string[] KnownMissingQuests =
-        {
-            "trooperquest.dlg.json: suppress_rogues"
-        };
-
         [Test]
         public void EveryQuestReferencedByAConversationIsOneTheGameDeclares()
         {
@@ -203,7 +192,7 @@ namespace SWLOR.Toolset.Tests
                     unknown.Add($"{file}: {questId}");
             }
 
-            unknown.Should().BeEquivalentTo(KnownMissingQuests);
+            unknown.Should().BeEmpty();
         }
 
         [Test]
@@ -287,26 +276,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        private static IEnumerable<(string File, string Key, string[] Arguments)> DialogSnippetUsages()
-        {
-            var directory = Path.Combine(CorpusLocator.ModuleDirectory, "dlg");
-            foreach (var path in Directory.EnumerateFiles(directory, "*.json"))
-            {
-                var document = Domain.Documents.DlgDocument.Load(path);
-                var file = Path.GetFileName(path);
-
-                foreach (var link in document.AllLinks())
-                {
-                    foreach (var condition in link.Conditions)
-                        yield return (file, condition.Key, condition.Arguments);
-                }
-
-                foreach (var node in document.Entries.Concat(document.Replies))
-                {
-                    foreach (var action in node.Actions)
-                        yield return (file, action.Key, action.Arguments);
-                }
-            }
-        }
+        private static IEnumerable<(string File, string Key, string[] Arguments)> DialogSnippetUsages() =>
+            ConversationCorpus.SnippetUsages();
     }
 }

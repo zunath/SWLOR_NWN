@@ -14,6 +14,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 - Nonempty serialized records that cannot be loaded or saved now fail the migration instead of silently being marked complete. Login migration failures disconnect the affected player for staff repair.
 - `MigrationObject` applies item-property removals synchronously through the engine handler and verifies removal before subsequent migration steps or serialization. Replacements cannot retain both legacy and new properties. Nested item copies and removals resolve the actual bag with `GetItemPossessor(item, true)`.
 - Current behavior:
+  - Moves active legacy `alchemized_frog` state-2 records without a `frogguts` counter to state 3 before login reconciliation. Their completed boss kill remains credited and they can claim the reward from Camila without farming a new drop. Completed quests and records with an initialized proof counter are unchanged; retries do not grant items or rewards.
   - Uses the combat-upgrade skill-cap model: 400 total skill ranks, with Armor contributing normally to the cap and SP progression.
   - Refunds removed or materially changed combat perks during `MigratePlayerData`, before obsolete keys are discarded. Numeric and named aliases count as one investment; legacy blueprint refunds use their original purchase prices.
   - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.

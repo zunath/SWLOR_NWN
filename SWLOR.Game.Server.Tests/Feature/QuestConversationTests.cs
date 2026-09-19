@@ -184,6 +184,27 @@ public sealed partial class QuestConversationTests
         audited.Should().BeGreaterThanOrEqualTo(3);
     }
 
+    [Test]
+    public void LegacyFrogProgress_RemainsReadyForTurnInAfterLoginReconciliation()
+    {
+        var migration = new SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._22_CombatSystemReplacement();
+        var raw = JObject.Parse("""
+            {"Quests":{"alchemized_frog":{"CurrentState":2,"TimesCompleted":0,"ItemProgresses":{}}}}
+            """);
+        var player = (SWLOR.Game.Server.Entity.Player)migration.GetType()
+            .GetMethod("MigratePlayerData", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(migration, new object[] { raw, 0 })!;
+        var saved = player.Quests["alchemized_frog"];
+        var definition = BuildQuests()["alchemized_frog"];
+
+        saved.CurrentState.Should().Be(3);
+        definition.States[saved.CurrentState].GetObjectives().Should().BeEmpty();
+        definition.States[saved.CurrentState].ReconcileProgress(saved).Should().BeFalse(
+            "login reconciliation must not recreate the proof requirement");
+        saved.ItemProgresses.Should().BeEmpty();
+        saved.DateLastCompleted.Should().BeNull("Camila must still pay out the quest reward");
+    }
+
     private static (QuestDetail Quest, List<(string Resref, uint Player, int Quantity)> Grants)
         BuildQuestWithItemRecorder(string questId)
     {

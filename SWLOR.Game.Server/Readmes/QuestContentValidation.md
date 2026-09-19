@@ -19,6 +19,8 @@ The quest audit loads every concrete `IQuestListDefinition` and the embedded aut
 
 Missing acceptance and turn-in actions were restored across the capstone conversations. Frog Guts, Arkanian Dragon Trophy, and stolen cargo now reach every credited quester. Sith training can resume after a conversation interruption, and the Republic oath is available through Nahulu's placed conversation.
 
+Pending server migration 22 moves legacy active frog quests already at state 2 without a proof counter directly to the reward turn-in state. It preserves their kill credit without awarding items or rewards, leaves current/completed records alone, and is safe to retry. The legacy importer also rejects the retired First Rites `next_state_1` script rather than creating a broken quest action.
+
 Agriculture tasks now request the craftable `peeled_crayfish` and `sliced_cod` outputs. Active quest counters reconcile against their current objectives on login and before a collection hand-in, preserving progress for unchanged objectives. Completed records remain available for prerequisites but are not restored as active journal entries or eligible for another payout.
 
 First Rites, Collect Dantooine Starwort Herbs, and Neutralize the Rooftop Sniper were deliberately retired. Their offers and unused quest assets were removed, including the First Rites entrance, NPC, and crystal interaction hooks. Nahulu's unused duplicate graph was merged into his assigned conversation. An unrelated placeholder object-visibility hook was removed from the Viscara Sith Basement quest.

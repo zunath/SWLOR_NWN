@@ -479,6 +479,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 dbPlayer.OriginalAppearanceType = AppearanceType.Invalid;
 
             EnsureDefinedPlayerSkills(dbPlayer);
+            RepairAlchemizedFrogProgress(dbPlayer);
             CombatReadinessMigration.ResetCombatReadiness(dbPlayer);
             dbPlayer.RebuildComplete = false;
 
@@ -493,6 +494,25 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 dbPlayer.UnallocatedSP += refundAmount;
 
             return dbPlayer;
+        }
+
+        private static void RepairAlchemizedFrogProgress(Player player)
+        {
+            if (player.Quests == null ||
+                !player.Quests.TryGetValue("alchemized_frog", out var quest) ||
+                quest == null ||
+                quest.CurrentState != 2 ||
+                quest.TimesCompleted > 0 ||
+                quest.DateLastCompleted != null ||
+                quest.ItemProgresses?.ContainsKey("frogguts") == true)
+                return;
+
+            // Legacy state 2 records already earned kill credit but had no collection objective.
+            // Preserve that credit by moving them to the reward turn-in before login can add a
+            // new proof counter. The state change makes retries safe without granting items or rewards.
+            quest.CurrentState = 3;
+            quest.ItemProgresses?.Clear();
+            quest.KillProgresses?.Clear();
         }
 
         private static void EnsureUnknownDisplayName(Player dbPlayer)

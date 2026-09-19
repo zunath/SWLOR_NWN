@@ -123,7 +123,6 @@ public static class DlgConversationMigrator
             ["nw_coop_1000cred"] = [new OperationMapping("action-take-player-credits", "1000")],
             ["nw_coop_100credi"] = [new OperationMapping("action-take-player-credits", "100")],
             ["nw_coop_10credit"] = [new OperationMapping("action-take-player-credits", "10")],
-            ["next_state_1"] = [new OperationMapping("action-advance-quest", "first_rites")],
             ["open_train_store"] = [new OperationMapping("action-open-training-store")],
             ["buy_stat_rebuild"] = [new OperationMapping("action-open-stat-rebuild")],
             ["buy_rebuild"] = [new OperationMapping("action-purchase-full-rebuild")],

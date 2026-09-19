@@ -73,4 +73,23 @@ public sealed class ConversationImporterTests
         import.Should().Throw<InvalidDataException>().WithMessage("*DMFI*");
         File.Exists(destination).Should().BeFalse();
     }
+
+    [TestCase(DlgNodeKind.Entry)]
+    [TestCase(DlgNodeKind.Reply)]
+    public void Import_RejectsRetiredFirstRitesScriptWithoutCreatingAFile(DlgNodeKind kind)
+    {
+        var source = Path.Combine(_directory, "jhoren_firstrite.dlg.json");
+        var document = DlgDocument.Load(LegacyConversationFixtures.PathFor("dantherbs"));
+        var node = kind == DlgNodeKind.Entry ? document.Entries[0] : document.Replies[0];
+        node.Script = "next_state_1";
+        File.WriteAllBytes(source, document.ToBytes());
+        var original = File.ReadAllBytes(source);
+        var destination = Path.Combine(_directory, "jhoren_firstrite.conversation.json");
+
+        var import = () => ConversationImporter.Import(source, destination);
+
+        import.Should().Throw<InvalidDataException>().WithMessage("*next_state_1*");
+        File.Exists(destination).Should().BeFalse();
+        File.ReadAllBytes(source).Should().Equal(original);
+    }
 }

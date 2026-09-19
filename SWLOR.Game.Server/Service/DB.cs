@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Service
         public static IEnumerable<T> Search<T>(DBQuery<T> query)
             where T: EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
+            var result = SearchIndex(query);
 
             foreach (var doc in result.Documents)
             {
@@ -389,7 +389,7 @@ namespace SWLOR.Game.Server.Service
         public static IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
             where T: EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
+            var result = SearchIndex(query);
 
             foreach (var doc in result.Documents)
             {
@@ -409,9 +409,18 @@ namespace SWLOR.Game.Server.Service
         public static long SearchCount<T>(DBQuery<T> query)
             where T: EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery(true));
+            var result = SearchIndex(query, true);
 
             return result.TotalResults;
+        }
+
+        private static SearchResult SearchIndex<T>(DBQuery<T> query, bool countsOnly = false)
+            where T: EntityBase
+        {
+            var client = _searchClientsByType[typeof(T)];
+            var searchQuery = query.BuildQuery(countsOnly);
+            // Retry the read itself, never the caller's settlement/refund workflow or its writes.
+            return DBSearchRetry.Execute(() => client.Search(searchQuery), typeof(T).Name);
         }
     }
 }

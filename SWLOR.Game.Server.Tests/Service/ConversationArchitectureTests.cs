@@ -121,7 +121,7 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void EveryAuthoredDialog_IsMigratedOrUsesTheApprovedDmfiNativePath()
+    public void OnlyDmfiRemainsNativeAndNoGraphHasADuplicateDlgSource()
     {
         var root = FindRepositoryRoot().FullName;
         var graphDirectory = Path.Combine(root, "SWLOR.Game.Server", "ConversationData");
@@ -130,19 +130,14 @@ public class ConversationArchitectureTests
         var graphIds = Directory.EnumerateFiles(graphDirectory, "*.conversation.json")
             .Select(path => Path.GetFileName(path)[..^".conversation.json".Length])
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var exceptionIds = JArray.Parse(File.ReadAllText(
-                Path.Combine(graphDirectory, "legacy-exceptions.json")))
-            .Select(item => item.Value<string>("ConversationId"))
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
         var authoredIds = Directory.EnumerateFiles(dialogDirectory, "*.dlg.json")
             .Select(path => Path.GetFileName(path)[..^".dlg.json".Length])
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        exceptionIds.Should().BeEquivalentTo(new[] { "dmfi_universal" },
+        authoredIds.Should().BeEquivalentTo(new[] { "dmfi_universal" },
             "DMFI intentionally keeps its native wand-driven conversation path");
-        graphIds.Union(exceptionIds).Should().BeEquivalentTo(authoredIds,
-            "every authored conversation must have either a NUI graph or the approved DMFI native path");
+        graphIds.Should().NotBeEmpty("SWLOR graphs are the authored gameplay conversations");
+        graphIds.Intersect(authoredIds).Should().BeEmpty("each conversation must have one source of truth");
     }
 
     [Test]

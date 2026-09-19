@@ -21,6 +21,29 @@ namespace SWLOR.Toolset.Tests;
 /// </summary>
 public sealed class ConversationEditorOpeningTests
 {
+    [TestCase("star_attend_lau")]
+    [TestCase("galateaallerti")]
+    public void ShuttleAttendants_ReferPlayersToFlightTerminalsWithoutTeleporting(string id)
+    {
+        File.Exists(Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json")).Should().BeFalse();
+        var graph = Newtonsoft.Json.JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(
+            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json")))!;
+
+        graph.Nodes.Values.SelectMany(node => node.Text).Should()
+            .Contain(block => block.Text.Contains("flights terminal", StringComparison.Ordinal));
+        graph.Nodes.Values.SelectMany(node => node.OnEnterActions)
+            .Concat(graph.Choices.Values.SelectMany(choice => choice.Actions)).Should().BeEmpty();
+        graph.Choices.Values.Should().OnlyContain(choice => choice.EndsConversation);
+        graph.OnStartActions.Should().BeEmpty();
+        foreach (var closeActions in new[] { graph.OnEndActions, graph.OnAbortActions })
+            closeActions.Should().ContainSingle().Which.Should().BeEquivalentTo(new
+            {
+                Key = "system.execute-owner-script",
+                Arguments = new[] { "nw_walk_wp" }
+            });
+    }
+
+
     [Test]
     public void EveryAuthoredConversationHasAnExplicitOpeningRoute()
     {
@@ -31,6 +54,9 @@ public sealed class ConversationEditorOpeningTests
         var dialogDirectory = Path.Combine(CorpusLocator.ModuleDirectory, "dlg");
         var ids = Directory.EnumerateFiles(dialogDirectory, "*.dlg.json")
             .Select(path => Path.GetFileName(path)[..^".dlg.json".Length])
+            .Concat(Directory.EnumerateFiles(graphDirectory, "*.conversation.json")
+                .Select(path => Path.GetFileName(path)[..^".conversation.json".Length]))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
             .Where(id => !IsGeneratedShell(id))
             .OrderBy(id => id, StringComparer.Ordinal)
             .ToArray();

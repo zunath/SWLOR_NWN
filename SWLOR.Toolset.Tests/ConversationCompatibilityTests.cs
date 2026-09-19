@@ -13,7 +13,7 @@ namespace SWLOR.Toolset.Tests
     public class ConversationCompatibilityTests
     {
         private static IEnumerable<string> AuthoredConversations() =>
-            Directory.EnumerateFiles(Path.Combine(CorpusLocator.ModuleDirectory, "dlg"), "*.json")
+            LegacyConversationFixtures.AllPaths()
                 .Where(path => !UnreferencedConversationRule.IsGeneratedShell(ResRefOf(path)))
                 .OrderBy(path => path, StringComparer.Ordinal);
 
@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Tests
             Path.GetFileName(path).Replace(".dlg.json", string.Empty, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Preview cannot simulate 9 of 346 hand-authored conversations, about 3%. Every one decides
+        /// These legacy samples require native scripts for visibility. Each decides
         /// what to SHOW with its own NWScript rather than with snippets: the DMFI DM menus and a
         /// handful of imported dialogs. The editor could not predict a single branch of them, so
         /// the shell opens the editable legacy surface with a preview-fidelity notice.
@@ -40,7 +40,7 @@ namespace SWLOR.Toolset.Tests
         };
 
         [Test]
-        public void PlayItOpensTheOverwhelmingMajorityOfAuthoredConversations()
+        public void LegacyPreviewReportsUnsupportedImportedScripts()
         {
             var refused = new SortedSet<string>(StringComparer.Ordinal);
             var total = 0;
@@ -53,13 +53,13 @@ namespace SWLOR.Toolset.Tests
             }
 
             refused.Should().BeEquivalentTo(KnownUnsupported);
-            total.Should().Be(346, "the hand-authored conversations, generated shells excluded");
+            total.Should().Be(26, "the frozen import examples plus the native DMFI conversation");
         }
 
         [Test]
         public void APreviewLimitationNamesTheScriptItCannotEvaluate()
         {
-            var path = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dmfi_universal.dlg.json");
+            var path = LegacyConversationFixtures.PathFor("dmfi_universal");
             var support = ConversationCompatibility.Check(DlgDocument.Load(path));
 
             support.IsSupported.Should().BeFalse();
@@ -71,7 +71,7 @@ namespace SWLOR.Toolset.Tests
         public void AConversationThatCannotStartReportsThatReason()
         {
             var document = DlgDocument.Load(
-                Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json"));
+                LegacyConversationFixtures.PathFor("dantherbs"));
 
             foreach (var opening in document.Openings.ToList())
                 document.RemoveLink(opening);
@@ -86,7 +86,7 @@ namespace SWLOR.Toolset.Tests
         public void AnOrdinaryQuestGiverIsSupported()
         {
             var document = DlgDocument.Load(
-                Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json"));
+                LegacyConversationFixtures.PathFor("dantherbs"));
 
             ConversationCompatibility.Check(document).IsSupported.Should().BeTrue();
         }

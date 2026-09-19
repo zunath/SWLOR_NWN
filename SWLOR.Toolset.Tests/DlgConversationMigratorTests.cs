@@ -49,36 +49,6 @@ public sealed class DlgConversationMigratorTests
         actions.Should().BeEmpty();
     }
 
-    [TestCase("star_attend_lau")]
-    [TestCase("galateaallerti")]
-    public void ShuttleAttendants_ReferPlayersToFlightTerminalsWithoutTeleporting(string id)
-    {
-        var document = Load(id);
-        document.Entries.Concat(document.Replies).SelectMany(node => node.Actions).Should().BeEmpty();
-        document.Entries.Concat(document.Replies).Should().OnlyContain(node => string.IsNullOrWhiteSpace(node.Script));
-
-        var result = DlgConversationMigrator.Convert(id, document);
-        result.CanRunInNui.Should().BeTrue();
-        var published = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(
-            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json")))!;
-
-        foreach (var graph in new[] { result.Graph, published })
-        {
-            graph.Nodes.Values.SelectMany(node => node.Text).Should()
-                .Contain(block => block.Text.Contains("flights terminal", StringComparison.Ordinal));
-            graph.Nodes.Values.SelectMany(node => node.OnEnterActions)
-                .Concat(graph.Choices.Values.SelectMany(choice => choice.Actions)).Should().BeEmpty();
-            graph.Choices.Values.Should().OnlyContain(choice => choice.EndsConversation);
-            graph.OnStartActions.Should().BeEmpty();
-            foreach (var closeActions in new[] { graph.OnEndActions, graph.OnAbortActions })
-                closeActions.Should().ContainSingle().Which.Should().BeEquivalentTo(new
-                {
-                    Key = "system.execute-owner-script",
-                    Arguments = new[] { "nw_walk_wp" }
-                });
-        }
-    }
-
     [Test]
     public void Convert_RejectsConditionsWithoutADispatcherInsteadOfRemovingQuestGates()
     {
@@ -94,18 +64,18 @@ public sealed class DlgConversationMigratorTests
     }
 
     [Test]
-    public void AuthoredCorpus_PreservesEverySnippetActionInThePublishedGraphs()
+    public void LegacyImports_PreserveEveryExecutableSnippetAction()
     {
-        foreach (var path in Directory.EnumerateFiles(
-                     Path.Combine(CorpusLocator.ModuleDirectory, "dlg"), "*.dlg.json"))
+        foreach (var path in LegacyConversationFixtures.AllPaths())
         {
             var id = Path.GetFileName(path)[..^".dlg.json".Length];
             if (id == "dmfi_universal")
                 continue;
 
             var document = DlgDocument.Load(path);
-            var graph = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json")))!;
+            var result = DlgConversationMigrator.Convert(id, document);
+            result.CanRunInNui.Should().BeTrue(id);
+            var graph = result.Graph;
 
             foreach (var node in document.Entries.Concat(document.Replies))
             {
@@ -344,45 +314,9 @@ public sealed class DlgConversationMigratorTests
             .Should().NotContain(item => item.Key.StartsWith("once-", StringComparison.Ordinal));
     }
 
-    [Test]
-    public void GeneratedCorpus_ExactlyMatchesEverySafeAuthoredDialogAndEveryGraphValidates()
-    {
-        var conversationDirectory = Path.Combine(
-            CorpusLocator.RepositoryRoot,
-            "SWLOR.Game.Server",
-            "ConversationData");
-        var generatedIds = Directory.EnumerateFiles(conversationDirectory, "*.conversation.json")
-            .Select(path => Path.GetFileName(path)[..^".conversation.json".Length])
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var expectedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var path in Directory.EnumerateFiles(
-                     Path.Combine(CorpusLocator.ModuleDirectory, "dlg"),
-                     "*.dlg.json"))
-        {
-            var id = Path.GetFileName(path)[..^".dlg.json".Length];
-            if (IsGeneratedShell(id))
-                continue;
-
-            var result = DlgConversationMigrator.Convert(id, DlgDocument.Load(path));
-            if (result.CanRunInNui)
-                expectedIds.Add(id);
-        }
-
-        generatedIds.Should().BeEquivalentTo(expectedIds);
-
-        foreach (var id in generatedIds)
-        {
-            var path = Path.Combine(conversationDirectory, id + ".conversation.json");
-            var graph = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(path));
-            graph.Should().NotBeNull();
-            ConversationGraphValidator.Validate(graph!).Should().BeEmpty(id);
-        }
-    }
-
     private static DlgDocument Load(string id)
     {
-        return DlgDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json"));
+        return DlgDocument.Load(LegacyConversationFixtures.PathFor(id));
     }
 
     private static IEnumerable<ConversationAction> AllActions(ConversationGraph graph)
@@ -405,9 +339,4 @@ public sealed class DlgConversationMigratorTests
                 .SelectMany(link => link.Conditions));
     }
 
-    private static bool IsGeneratedShell(string id)
-    {
-        return id.StartsWith("dialog", StringComparison.OrdinalIgnoreCase) &&
-               int.TryParse(id["dialog".Length..], out _);
-    }
 }

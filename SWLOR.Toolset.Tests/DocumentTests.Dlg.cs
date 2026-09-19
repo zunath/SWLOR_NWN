@@ -6,16 +6,16 @@ namespace SWLOR.Toolset.Tests
 {
     /// <summary>
     /// Verifies DlgDocument reads real conversations correctly, against
-    /// Module/dlg/dantherbs.dlg.json — a quest giver with two quests, a guarded opening chain and a
+    /// the frozen dantherbs DLG fixture — a quest giver with two quests, a guarded opening chain and a
     /// link-back, which is the shape most authored conversations in the module take.
     /// </summary>
     public class DlgDocumentReadTests
     {
         private static string DantHerbsPath =>
-            Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json");
+            LegacyConversationFixtures.PathFor("dantherbs");
 
         private static string BartenderPath =>
-            Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "bartender.dlg.json");
+            LegacyConversationFixtures.PathFor("bartender");
 
         [Test]
         public void DantHerbs_NodeCounts_MatchCorpus()

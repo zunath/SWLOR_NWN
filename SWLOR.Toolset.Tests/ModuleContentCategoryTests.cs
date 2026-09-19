@@ -34,6 +34,8 @@ namespace SWLOR.Toolset.Tests
                     "*" + suffix)
                 .Select(path => Path.GetFileName(path)[..^suffix.Length])
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            if (type == ResourceType.Dlg)
+                resources.UnionWith(new ModuleWorkspace(CorpusLocator.ModuleDirectory).EnumerateConversationGraphResRefs());
             var section = _catalog.Section(type);
             var memberships = section.AllFolders()
                 .SelectMany(folder => folder.Members.Select(member => (Member: member, Folder: folder)))

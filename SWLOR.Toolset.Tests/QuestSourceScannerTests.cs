@@ -276,26 +276,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        private static IEnumerable<(string File, string Key, string[] Arguments)> DialogSnippetUsages()
-        {
-            var directory = Path.Combine(CorpusLocator.ModuleDirectory, "dlg");
-            foreach (var path in Directory.EnumerateFiles(directory, "*.json"))
-            {
-                var document = Domain.Documents.DlgDocument.Load(path);
-                var file = Path.GetFileName(path);
-
-                foreach (var link in document.AllLinks())
-                {
-                    foreach (var condition in link.Conditions)
-                        yield return (file, condition.Key, condition.Arguments);
-                }
-
-                foreach (var node in document.Entries.Concat(document.Replies))
-                {
-                    foreach (var action in node.Actions)
-                        yield return (file, action.Key, action.Arguments);
-                }
-            }
-        }
+        private static IEnumerable<(string File, string Key, string[] Arguments)> DialogSnippetUsages() =>
+            ConversationCorpus.SnippetUsages();
     }
 }

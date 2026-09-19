@@ -130,7 +130,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         selectedChoice.AnimationLoops);
                 }
 
-                var result = _session.SelectChoice(index);
+                var session = _session;
+                var result = session.SelectChoice(index);
+                // A response can transition areas or replace the conversation synchronously.
+                if (!ReferenceEquals(_session, session))
+                    return;
+
                 if (result == ConversationSelectionResult.InvalidChoice)
                     return;
 
@@ -150,9 +155,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public override Action OnWindowClosed() => () =>
         {
-            _session?.End(ConversationEndReason.Aborted);
+            var session = _session;
             _session = null;
-            _isClosing = false;
+            _isClosing = true;
+            session?.End(ConversationEndReason.Aborted);
         };
 
         private void RefreshConversation(bool playPresentation = true)
@@ -346,8 +352,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             _isClosing = true;
-            if (GetIsObjectValid(_controllerPlayer) && Gui.IsWindowOpen(_controllerPlayer, GuiWindowType.Conversation))
-                Gui.TogglePlayerWindow(_controllerPlayer, GuiWindowType.Conversation);
+            Conversation.End(_controllerPlayer, Player);
         }
 
         private static string NormalizeNuiText(string text)

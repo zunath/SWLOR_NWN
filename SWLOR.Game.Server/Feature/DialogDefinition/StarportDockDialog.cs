@@ -238,6 +238,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     DB.Set(dbProperty);
 
+                    Close();
                     Space.WarpPlayerInsideShip(player);
                 });
             }

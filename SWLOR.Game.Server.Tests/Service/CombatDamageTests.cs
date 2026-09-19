@@ -552,7 +552,7 @@ public class CombatDamageTests
         usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
         usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator)");
-        usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType)");
+        usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType, int? attackIndex = null)");
         usePerkFeatSource.Should().Contain("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)");
         usePerkFeatSource.Should().Contain("var abilityId = GetLocalString(activator, ActiveAbilityIdName);");
         usePerkFeatSource.Should().Contain("if (string.IsNullOrWhiteSpace(abilityId))");
@@ -584,10 +584,10 @@ public class CombatDamageTests
         preparedAutoAttackCleanupBody.Should().Contain("StatType.CurrentAutoAttackDamageBonus");
         preparedAutoAttackCleanupBody.Should().Contain("ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);");
         preparedAutoAttackCleanupBody.Should().Contain("StatType.NextAutoAttackDamageBonus");
-        damageRollSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType)");
+        damageRollSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
         damageRollSource.Should().Contain("Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);");
         var queuedAbilitySuppressionIndex = damageRollSource.IndexOf(
-            "UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType)",
+            "UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack)",
             StringComparison.Ordinal);
         var queuedAbilityCleanupIndex = damageRollSource.IndexOf(
             "Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);",
@@ -614,12 +614,12 @@ public class CombatDamageTests
         abilitySource.Should().MatchRegex(@"if \(shouldResolveHit\)\s*SendCombatImpactResultMessage");
         attackRollSource.Should().Contain("private static string BuildAttackFeedbackMessage");
         attackRollSource.Should().Contain("IsSuccessfulAttackResult(attackResultType)");
-        attackRollSource.Should().Contain("UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility)");
+        attackRollSource.Should().Contain("UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)");
         attackRollSource.Should().Contain("Combat.BuildAbilityCombatLogMessage(");
         attackRollSource.Should().Contain("queuedAbility.Name");
         attackRollSource.Should().Contain("Combat.BuildCombatLogMessageNative(");
         var queuedWeaponHitBranchIndex = attackRollSource.IndexOf(
-            "if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))",
+            "if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))",
             StringComparison.Ordinal);
         var nativeCriticalPreparationIndex = attackRollSource.IndexOf(
             "var criticalStat = attackerStats.GetDEXStat();",
@@ -1133,7 +1133,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
-        damageRollSource.Should().Contain("var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand);");
+        damageRollSource.Should().Contain("var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand != 0 ? 2 : 0);");
         damageRollSource.Should().NotContain("var weapon = pCombatRound.GetCurrentAttackWeapon();");
         damageRollSource.Should().Contain("var damageProfile = ExtractWeaponDamageProfile(weapon);");
         damageRollSource.Should().NotContain("ExtractAttackDamageProfile");

@@ -5,6 +5,9 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using NWNX.NET;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -426,13 +429,30 @@ namespace SWLOR.Game.Server.Native
                 // The equipped-weapon skill above is the safe pre-round fallback used for range
                 // and pathing. At resolution time, prefer the weapon for the actual main-hand or
                 // off-hand swing so skill-scoped limited effects consume the correct charge.
-                var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();
+                var isDualWieldCycle = !usesRangedWeapon && EquipmentPredicates.HasDualWield(pCreature.m_idSelf);
+                var currentWeaponAttackType = isDualWieldCycle
+                    ? WEAPON_ATTACK_TYPE_MAINHAND
+                    : pCombatRound.GetWeaponAttackType();
                 var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
-                    currentWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND ? 1 : 0);
+                    currentWeaponAttackType);
                 if (currentAttackWeapon != null)
                 {
                     attackSkillType = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
                         (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
+                }
+                var mainSkill = attackSkillType;
+                var offSkill = SkillType.Invalid;
+                if (isDualWieldCycle)
+                {
+                    var offWeapon = pCombatRound.GetCurrentAttackWeapon(WEAPON_ATTACK_TYPE_OFFHAND);
+                    if (offWeapon != null)
+                    {
+                        offSkill = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
+                            (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)offWeapon.m_nBaseItem);
+                        // Either hand's scoped timing effect can drive the shared gate. Actual
+                        // attack notifications still consume charges using each roll's own skill.
+                        attackSkillType = WeaponAttackTiming.GetTimingSkill(pCreature.m_idSelf);
+                    }
                 }
 
                 pCreature.m_vLastAttackPosition = new Vector();
@@ -621,18 +641,17 @@ namespace SWLOR.Game.Server.Native
                                             }
                                             else
                                             {
+                                                // Capture the proc's matching hands before consuming its stat source.
+                                                var temporaryNoDelayBudget = WeaponAttackTiming.GetTemporaryNoDelayBudget(
+                                                    pCreature.m_idSelf, attackSkillType, mainSkill, offSkill);
                                                 if (useDefaultMinimumDelay)
                                                 {
                                                     Combat.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
                                                 }
 
-                                                // Effective delays below the swing floor resolve extra attacks
-                                                // within this swing. Extra attacks only apply to main-hand and
-                                                // offhand weapon swings; natural creature weapon swings stay at
-                                                // one attack because their attack-count regions cannot be
-                                                // widened the same way. The matching attack-count region is
-                                                // widened so the extra rolls keep the swing's weapon typing,
-                                                // and the post-swing round recompute resets the counts.
+                                                // Haste batches timed cycles within the animation floor. A melee
+                                                // dual-wield cycle includes both hands; charge limits still count
+                                                // individual rolls. Natural weapons retain their native selection.
                                                 var nWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
                                                 if (nWeaponAttackType == WEAPON_ATTACK_TYPE_MAINHAND ||
                                                     nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
@@ -644,9 +663,18 @@ namespace SWLOR.Game.Server.Native
                                                         useDefaultMinimumDelay,
                                                         effectiveDelayWithoutLimitedReduction,
                                                         limitedDelayReductionRemainingAttacks,
-                                                        limitedNoDelayRemainingAttacks);
+                                                        limitedNoDelayRemainingAttacks,
+                                                        isDualWieldCycle ? 2 : 1,
+                                                        WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, false),
+                                                        WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, true),
+                                                        temporaryNoDelayBudget);
 
-                                                    if (nAttacks > 1)
+                                                    if (isDualWieldCycle)
+                                                    {
+                                                        nAttacks = WeaponAttackCycle.PrepareDualWieldAttacks(
+                                                            pCreature.m_pcCombatRound, nAttacks);
+                                                    }
+                                                    else if (nAttacks > 1)
                                                     {
                                                         if (nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
                                                         {

@@ -83,7 +83,9 @@ namespace SWLOR.Game.Server.Native
                 var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
                 var pCombatRound = attacker.m_pcCombatRound;
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
-                var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand);
+                // GetDamageRoll receives a boolean; GetCurrentAttackWeapon expects a weapon
+                // attack type (2 = off-hand, 0 = infer the current attack, including natural weapons).
+                var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand != 0 ? 2 : 0);
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
 
@@ -221,7 +223,7 @@ namespace SWLOR.Game.Server.Native
             totalDamage = 0;
 
             if (targetObject.m_nObjectType == (int)ObjectType.Creature &&
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType))
+                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack))
             {
                 Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;
@@ -296,7 +298,7 @@ namespace SWLOR.Game.Server.Native
                 return damageProfile;
 
             // Weapon abilities apply their own combat impact and suppress the auto-attack; do not convert/charge them.
-            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
                 return damageProfile;
 
             var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);

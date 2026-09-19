@@ -56,8 +56,6 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultMissedBy = 1;
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
-        private const int WeaponAttackTypeOffHand = 2;
-        private const string DeflectionAttemptedDefendersVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED";
 
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
 
@@ -117,16 +115,17 @@ namespace SWLOR.Game.Server.Native
                 var attackerStats = attacker.m_pStats;
 
                 var pCombatRound = attacker.m_pcCombatRound;
+                UsePerkFeat.BeginWeaponAttackRoll(attacker.m_idSelf);
 
                 Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
-                var isOffHandAttack = pCombatRound.GetWeaponAttackType() == WeaponAttackTypeOffHand;
-                var weapon = pCombatRound.GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0);
+                // This API accepts WeaponAttackType, not a boolean off-hand flag.
+                var weapon = pCombatRound.GetCurrentAttackWeapon(pCombatRound.GetWeaponAttackType());
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
-                var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility)
+                var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
                     ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
                     : weaponSkillType;
 
@@ -135,7 +134,12 @@ namespace SWLOR.Game.Server.Native
                     // Automatically hit non-creature targets.  Do not apply criticals.
                     Log.Write(LogGroup.Attack, "Placeable target.  Auto hit.");
                     pAttackData.m_nAttackResult = AttackResultAutomaticHit;
-                    if (!UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+                    if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, pCombatRound.m_nCurrentAttack))
+                    {
+                        UsePerkFeat.ReserveQueuedWeaponAbilityAttack(
+                            attacker.m_idSelf, pCombatRound.m_nCurrentAttack, weapon?.m_idSelf ?? OBJECT_INVALID);
+                    }
+                    else
                     {
                         StatusEffect.NotifyAttackAttemptStatusEffects(
                             attacker.m_idSelf,
@@ -147,14 +151,6 @@ namespace SWLOR.Game.Server.Native
 
                 // If we get to this point, we are fighting a creature.  Pull the target's stats.
                 var defender = CNWSCreature.FromPointer(pTarget);
-
-                // Start each attacker combat round with an empty defender set. Tracking every
-                // attempted defender in one round-local value preserves Cleave target switching
-                // without accumulating one persistent script variable per defender.
-                if (pCombatRound.m_bRoundStarted == 1 && pCombatRound.m_nCurrentAttack == 0)
-                {
-                    ResetDeflectionAttemptedDefenders(attacker);
-                }
 
                 var attackType = (uint)AttackType.Melee;
 
@@ -235,7 +231,7 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 var attackRoll = Random.D100(1);
                 var queuedWeaponAbilityLongRangeHitChanceAdjustment =
-                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)
+                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)
                         ? Combat.GetRangedAbilityLongRangeHitChanceAdjustment(
                             attacker.m_idSelf,
                             defender.m_idSelf,
@@ -245,9 +241,9 @@ namespace SWLOR.Game.Server.Native
                     Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
                     queuedWeaponAbilityLongRangeHitChanceAdjustment +
                     Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
-                    Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+                    (queuedAbility == null ? 0 : Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                         attacker.m_idSelf,
-                        abilitySkillType) +
+                        abilitySkillType)) +
                     Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
                         attacker.m_idSelf,
                         defender.m_idSelf,
@@ -265,7 +261,8 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
                 Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
 
-                // Check for deflection
+                // Each weapon roll gets its own deflection attempt, including later hands
+                // and accelerated attacks in the same native combat round.
                 var deflectionSource = CheckDeflection(
                     isHit,
                     attackType,
@@ -285,7 +282,7 @@ namespace SWLOR.Game.Server.Native
                 // Hit
                 if (isHit)
                 {
-                    if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+                    if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
                     {
                         Log.Write(LogGroup.Attack, $"Queued weapon ability hit - attack result 1");
                         pAttackData.m_nAttackResult = AttackResultRegularHit;
@@ -398,9 +395,11 @@ namespace SWLOR.Game.Server.Native
                 // or deflection never starts the queued ability, so notify it here instead.
                 var queuedWeaponAbilityWillResolve =
                     IsSuccessfulAttackResult(pAttackData.m_nAttackResult) &&
-                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType);
+                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack);
                 if (queuedWeaponAbilityWillResolve)
                 {
+                    UsePerkFeat.ReserveQueuedWeaponAbilityAttack(
+                        attacker.m_idSelf, pCombatRound.m_nCurrentAttack, weapon?.m_idSelf ?? OBJECT_INVALID);
                     Combat.StoreQueuedWeaponAbilityCriticalRateBonus(
                         attacker.m_idSelf,
                         abilitySkillType,
@@ -453,7 +452,7 @@ namespace SWLOR.Game.Server.Native
             DeflectionSource deflectionSource)
         {
             if (IsSuccessfulAttackResult(attackResultType) &&
-                UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility))
+                UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack))
             {
                 return Combat.BuildAbilityCombatLogMessage(
                     observer,
@@ -536,24 +535,15 @@ namespace SWLOR.Game.Server.Native
             CNWSCreature attacker,
             CNWSCreature defender)
         {
-            var attemptedDefenders = GetLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable) ?? string.Empty;
-            var defenderToken = $"|{defender.m_idSelf}|";
-
             if (!isHit ||
-                attemptedDefenders.Contains(defenderToken, StringComparison.Ordinal) ||
                 weaponSkillType == SkillType.Invalid ||
                 !Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf) ||
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
                 return DeflectionSource.None;
 
             var (source, deflectChance) = GetDeflectionChance(defender, attackType);
             if (deflectChance <= 0)
                 return DeflectionSource.None;
-
-            SetLocalString(
-                attacker.m_idSelf,
-                DeflectionAttemptedDefendersVariable,
-                $"{attemptedDefenders}{defenderToken}");
 
             var deflectRoll = Random.D100(1);
             var deflected = deflectRoll <= deflectChance;
@@ -569,11 +559,6 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
 
             return deflected ? source : DeflectionSource.None;
-        }
-
-        private static void ResetDeflectionAttemptedDefenders(CNWSCreature attacker)
-        {
-            DeleteLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable);
         }
 
         private static string BuildDeflectionFeedback(uint observer, CNWSCreature attacker, CNWSCreature defender, string deflectionName)

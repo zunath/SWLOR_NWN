@@ -12159,11 +12159,18 @@ namespace SWLOR.Game.Server.Service
             bool hasNoDelayBuff,
             int effectiveDelayWithoutLimitedReductionMilliseconds,
             int limitedReductionRemainingAttacks,
-            int limitedNoDelayRemainingAttacks = 0)
+            int limitedNoDelayRemainingAttacks = 0,
+            int attacksPerCycle = 1,
+            LimitedAttackTimingBudget? limitedReductionBudget = null,
+            LimitedAttackTimingBudget? limitedNoDelayBudget = null,
+            LimitedAttackTimingBudget temporaryNoDelayBudget = default)
         {
+            attacksPerCycle = Math.Clamp(attacksPerCycle, 1, 2);
+            var reductionBudget = limitedReductionBudget ?? new LimitedAttackTimingBudget(limitedReductionRemainingAttacks, true, true);
+            var noDelayBudget = limitedNoDelayBudget ?? new LimitedAttackTimingBudget(limitedNoDelayRemainingAttacks, true, true);
             var limitedSpeedRemainingAttacks = Math.Max(
-                limitedReductionRemainingAttacks,
-                limitedNoDelayRemainingAttacks);
+                reductionBudget.RemainingAttacks,
+                noDelayBudget.RemainingAttacks);
             _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
             var hasTrackedBaselineAttackDebt = _attackSwingDebtsWithoutLimitedReduction.TryGetValue(
                 attacker,
@@ -12175,17 +12182,29 @@ namespace SWLOR.Game.Server.Service
                 attackDebt = trackedBaselineAttackDebt;
             }
 
-            var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt);
+            // Debt tracks timed cycles, while charges and one-use bonuses count actual weapon
+            // rolls. A dual-wield cycle supplies two rolls but must not double a one-use bonus.
+            var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt) * attacksPerCycle;
+            var temporaryGuaranteedAttacks = 0;
 
             if (hasNoDelayBuff)
             {
-                var unbuffedAttacks = CalculateAttacksPerSwing(unbuffedDelayMilliseconds, attackDebt, out _);
-                var guaranteedAttacks = Math.Clamp(unbuffedAttacks + 1, 1, MaxAttacksPerSwing);
+                var unbuffedAttacks = CalculateAttacksPerSwing(unbuffedDelayMilliseconds, attackDebt, out _) * attacksPerCycle;
+                // A one-shot stat proc has no limited-status charges, but its promised bonus
+                // must still use a matching hand. It does not cap the rest of the timed batch.
+                if (temporaryNoDelayBudget.RemainingAttacks > 0)
+                    temporaryGuaranteedAttacks = Math.Min(MaxAttacksPerSwing * attacksPerCycle,
+                        temporaryNoDelayBudget.WithExtraMatchingRoll(unbuffedAttacks, attacksPerCycle));
+                var guaranteedAttacks = Math.Clamp(
+                    Math.Max(temporaryGuaranteedAttacks, noDelayBudget.RemainingAttacks > 0
+                        ? noDelayBudget.WithExtraMatchingRoll(unbuffedAttacks, attacksPerCycle)
+                        : unbuffedAttacks + 1),
+                    1, MaxAttacksPerSwing * attacksPerCycle);
                 if (guaranteedAttacks > attacks)
                 {
                     // The extra attack is granted outright rather than drawn from carried debt, so
                     // remove it from the debt the swing would otherwise bank for later swings.
-                    updatedAttackDebt = Math.Max(0f, updatedAttackDebt - (guaranteedAttacks - attacks));
+                    updatedAttackDebt = Math.Max(0f, updatedAttackDebt - (guaranteedAttacks - attacks) / (float)attacksPerCycle);
                     attacks = guaranteedAttacks;
                 }
             }
@@ -12198,18 +12217,24 @@ namespace SWLOR.Game.Server.Service
                 var baselineAttacks = CalculateAttacksPerSwing(
                     effectiveDelayWithoutLimitedReductionMilliseconds,
                     baselineAttackDebt,
-                    out var baselineUpdatedAttackDebt);
-                attacks = CapAttacksPerSwingForLimitedAttackEffect(
-                    attacks,
-                    baselineAttacks,
-                    limitedReductionRemainingAttacks,
-                    limitedNoDelayRemainingAttacks);
+                    out var baselineUpdatedAttackDebt) * attacksPerCycle;
+                // The temporary bonus also advances the baseline ledger. Otherwise an expiring
+                // haste effect would restore the fractional progress the one-shot already spent.
+                if (temporaryGuaranteedAttacks > baselineAttacks)
+                    baselineUpdatedAttackDebt = Math.Max(0f, baselineUpdatedAttackDebt -
+                        (temporaryGuaranteedAttacks - baselineAttacks) / (float)attacksPerCycle);
+                var rollLimit = Math.Max(baselineAttacks, reductionBudget.RollLimit(attacksPerCycle));
+                if (noDelayBudget.RemainingAttacks > 0)
+                    rollLimit = Math.Max(rollLimit, Math.Max(noDelayBudget.RollLimit(attacksPerCycle),
+                        noDelayBudget.WithExtraMatchingRoll(baselineAttacks, attacksPerCycle)));
+                rollLimit = Math.Max(rollLimit, temporaryGuaranteedAttacks);
+                attacks = Math.Min(attacks, rollLimit);
 
                 // Every matching roll in the swing consumes one charge, including rolls the
                 // baseline cadence would have scheduled. Once all remaining charges will be spent,
                 // discard fractional debt created by the expiring reduction while retaining debt
                 // earned without it.
-                if (attacks >= limitedSpeedRemainingAttacks)
+                if (reductionBudget.IsExhausted(attacks, attacksPerCycle) && noDelayBudget.IsExhausted(attacks, attacksPerCycle))
                 {
                     updatedAttackDebt = baselineUpdatedAttackDebt;
                     _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);

@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
-            var area = CreateArea(ShuttleInteriorResref, "shuttle_flight", $"Passenger Shuttle - {destinationName}");
+            var area = Area.CreateInstance(ShuttleInteriorResref, "shuttle_flight", $"Passenger Shuttle - {destinationName}");
             SetLocalString(area, ShuttleFlightIdVariable, flight.FlightId);
             flight.Area = area;
 

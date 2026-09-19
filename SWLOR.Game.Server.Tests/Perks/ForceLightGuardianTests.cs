@@ -115,7 +115,6 @@ public class ForceLightGuardianTests
         {
             "WeakenResolveAbilityDefinition.cs",
             "ForceJudgmentAbilityDefinition.cs",
-            "RadiantLanceAbilityDefinition.cs",
             "MindTrickAbilityDefinition.cs",
             "NightmareFieldAbilityDefinition.cs",
             "ForceInterceptAbilityDefinition.cs",
@@ -127,6 +126,9 @@ public class ForceLightGuardianTests
                 .Should().Contain("LightGuardianPowerSupport.ApplyCourageousResolve(activator)",
                     $"{file} implements a Sense power");
         }
+
+        File.ReadAllText((forceAbilityRoot / "RadiantLanceAbilityDefinition.cs").FullName)
+            .Should().NotContain("ApplyCourageousResolve(", "Radiant Lance is an Alter power");
 
         var support = File.ReadAllText((forceAbilityRoot / "LightGuardianPowerSupport.cs").FullName);
         support.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(");

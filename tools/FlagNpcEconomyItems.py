@@ -64,6 +64,7 @@ def collect():
                 add(obtainable, e.get("InventoryRes", {}).get("value"))
 
     patterns = [
+        r'new\s+DroidInstructionRecipe\(RecipeType\.\w+,\s*"([^"]+)"',
         r'\.AddItem\(\s*"([^"]+)"', r'\.Resref\(\s*"([^"]+)"', r'\.Component\(\s*"([^"]+)"',
         r'CreateItemOnObject\(\s*"([^"]+)"', r'CopyItemAndModify\(\s*"([^"]+)"',
         r'new\s+ItemReward\(\s*"([^"]+)"', r'\.RewardItem\(\s*"([^"]+)"',

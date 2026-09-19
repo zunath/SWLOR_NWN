@@ -87,6 +87,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public List<Type> SourceOwnedStatusEffectTypesRemovedOnPerkRefund { get; set; }
         public AITargetSelector AITargetSelector { get; set; }
         public AIScoreCalculation AIScore { get; set; }
+        /// <summary>Maximum-HP percentage spent on activation, used to preserve an AI health reserve.</summary>
+        public Func<uint, int> AIHitPointCostPercent { get; set; }
         public bool IsMimicryTechnique { get; set; }
         public FeatType MimicrySourceFeat { get; set; }
         public int MimicrySkillRequirement { get; set; }

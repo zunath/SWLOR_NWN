@@ -48,24 +48,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 7 to enemies in a 5m-radius area at the target location and inflicts Burn for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 15 to enemies in a 5m-radius area at the target location and inflicts Burn for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 24 to enemies in a 5m-radius area at the target location and inflicts Burn for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 32 to enemies in a 5m-radius area at the target location and inflicts Burn for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Throwing, 40);
@@ -129,18 +133,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlashToss1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12 and inflicts Blind for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlashToss2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24 and inflicts Blind for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlashToss3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36 and inflicts Blind for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 38);
@@ -167,12 +174,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16 to enemies within 5m of you and inflicts Dazed for 15 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 to enemies within 5m of you and inflicts Dazed for 15 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 32);
@@ -185,6 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OrdnanceStance1)
+                .DroidAISlots(1)
                 .Description("While active, thrown area abilities deal +10% damage, but single-target thrown damage is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 20);
@@ -227,6 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RainOfSteel1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 20 to enemies within 5m of you. For 45 seconds, thrown area abilities leave fragmentation zones that deal 8 physical DMG every 6 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Throwing, 50)
@@ -240,24 +251,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8 and inflicts Bleed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18 and inflicts Bleed for 36 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28 and inflicts Bleed for 45 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38 and inflicts Bleed for 60 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Throwing, 40);
@@ -316,18 +331,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12 and inflicts Hamstring for 30 seconds. Bleeding targets also suffer Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24 and inflicts Hamstring for 30 seconds. Bleeding targets also suffer Disoriented for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36 and inflicts Hamstring for 30 seconds. Bleeding targets also suffer Disoriented for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 38);
@@ -357,12 +375,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SeveringToss1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16. Bleeding targets suffer Hemorrhage for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SeveringToss2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30. Bleeding targets suffer Hemorrhage for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 32);
@@ -375,6 +395,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlurryStance1)
+                .DroidAISlots(1)
                 .Description("While active, thrown attacks against bleeding targets gain +10% Haste, but your Defense is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 20);
@@ -417,6 +438,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectFlurry1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30. Bleeding targets take +45 DMG and spread Bleed to enemies within 5m for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Throwing, 50)

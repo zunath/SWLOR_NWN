@@ -48,24 +48,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8. Inflicts Foggy Mind for 30 seconds, increasing ability costs.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18. Inflicts Foggy Mind for 30 seconds, increasing ability costs.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28. Inflicts Foggy Mind for 30 seconds, increasing ability costs.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38. Inflicts Foggy Mind for 30 seconds, increasing ability costs.")
                 .Price(5)
                 .RequirementSkill(SkillType.Spear, 40);
@@ -123,18 +127,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12. If the target is using an ability, also drains 4 FP and STM.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24. If the target is using an ability, also drains 7 FP and STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36. If the target is using an ability, also drains 10 FP and STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 38);
@@ -160,12 +167,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisruptionField1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16 to enemies within 5m of you and inflicts Force Disruption for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisruptionField2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 to enemies within 5m of you and inflicts Force Disruption for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 32);
@@ -178,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerceptiveStance1)
+                .DroidAISlots(1)
                 .Description("While active, hostile abilities you land drain 2 FP and 2 STM, but your Defense is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 20);
@@ -217,6 +227,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Forcebane1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Spear, 50)
@@ -230,24 +241,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8 and grants +6% Evasion for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18 and grants +8% Evasion for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28 and grants +10% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38 and grants +12% Evasion for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Spear, 40);
@@ -312,18 +327,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12 to enemies within 5m. If you are beside or behind a target, that target takes +10 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24 to enemies within 5m. If you are beside or behind a target, that target takes +16 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36 to enemies within 5m. If you are beside or behind a target, that target takes +24 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 38);
@@ -350,12 +368,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HamperingBarrage1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16 in a 5m x 5m cone and inflicts Hamstring for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HamperingBarrage2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 in a 5m x 5m cone and inflicts Hamstring for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 32);
@@ -368,6 +388,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorStance1)
+                .DroidAISlots(1)
                 .Description("While active, all outgoing damage is increased by 10%. Using any hostile combat ability costs 2 additional STM and grants +8% Evasion for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 20);
@@ -408,6 +429,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingDefense1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30. For 45 seconds, your high-STM abilities also inflict Exposed for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Spear, 50)

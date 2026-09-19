@@ -20,12 +20,13 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-            var area = OBJECT_SELF;
+            var area = OBJECT_SELF == GetModule() ? GetArea(player) : OBJECT_SELF;
             var areaResref = GetResRef(area);
 
-            if (string.IsNullOrWhiteSpace(areaResref)) return;
+            if (!IsPersistentMapArea(area, areaResref)) return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             var progression = PlayerPlugin.GetAreaExplorationState(player, area);
 
@@ -46,6 +47,9 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             var area = OBJECT_SELF;
+            var areaResref = GetResRef(area);
+            if (!IsPersistentMapArea(area, areaResref)) return;
+
             var mapKeyItemId = GetLocalInt(area, "MAP_KEY_ITEM_ID");
 
             // If the area has a map associated and the player has this key item,
@@ -64,8 +68,6 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            var areaResref = GetResRef(area);
-
             // Did we already load this area's progression since the last restart?
             var localVarName = $"AREA_PROGRESSION_LOADED_{areaResref}";
             if (GetLocalBool(player, localVarName)) return;
@@ -80,6 +82,15 @@ namespace SWLOR.Game.Server.Feature
 
             var progression = dbPlayer.MapProgressions[areaResref];
             PlayerPlugin.SetAreaExplorationState(player, area, progression);
+        }
+
+        private static bool IsPersistentMapArea(uint area, string areaResref)
+        {
+            // The persistent area cache excludes runtime instances and property templates.
+            // Generated instance resrefs are reused, so they must never key saved exploration.
+            return area != OBJECT_INVALID &&
+                   !string.IsNullOrWhiteSpace(areaResref) &&
+                   Area.GetAreaByResref(areaResref) == area;
         }
     }
 }

@@ -31,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ANCHRANGE_DEADEYE_RARES").IsRare()
                 .AddItem("dunedeadeyeda", 1, 1, true).AddItem("dunedeadeyedb", 1, 1, true).AddItem("bp_dunedeadeye", 1, 1, true);
             _builder.Create("ANCHRANGE_DEADHAND_RARES").IsRare()
-                .AddItem("deadhandzephda", 1, 1, true).AddItem("deadhandzephdb", 1, 1, true).AddItem("bp_deadhandzeph", 1, 1, true);
+                .AddItem("deadhandzephda", 1, 1, true).AddItem("deadhandzephdb", 1, 1, true).AddItem("bp_deadhandzeph", 1, 1, true)
+                .AddItem("recipe_dr_dis2", 1, 1, true);
             _builder.Create("ANCHRANGE_CANYON_COMP").AddItem("canyonbulwrkcm", 1, 1);
             _builder.Create("ANCHRANGE_DEADEYE_COMP").AddItem("dunedeadeyecm", 1, 1);
             _builder.Create("ANCHRANGE_DEADHAND_COMP").AddItem("deadhandzephcm", 1, 1);

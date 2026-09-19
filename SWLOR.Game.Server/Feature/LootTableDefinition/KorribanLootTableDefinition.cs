@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("KORCRYPT_HUNGER_RARES").IsRare()
                 .AddItem("markahungerda", 1, 1, true).AddItem("markahungerdb", 1, 1, true).AddItem("bp_markahunger", 1, 1, true);
             _builder.Create("KORCRYPT_ECLIPSE_RARES").IsRare()
-                .AddItem("eclipseshadeda", 1, 1, true).AddItem("eclipseshadedb", 1, 1, true).AddItem("bp_eclipseshade", 1, 1, true);
+                .AddItem("eclipseshadeda", 1, 1, true).AddItem("eclipseshadedb", 1, 1, true).AddItem("bp_eclipseshade", 1, 1, true)
+                .AddItem("recipe_dr_mnd2", 1, 1, true);
             _builder.Create("KORCRYPT_CRYPT_COMP").AddItem("cryptwardencm", 1, 1);
             _builder.Create("KORCRYPT_HUNGER_COMP").AddItem("markahungercm", 1, 1);
             _builder.Create("KORCRYPT_ECLIPSE_COMP").AddItem("eclipseshadecm", 1, 1);
@@ -42,9 +43,11 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void KorforgeRareElites()
         {
             _builder.Create("KORFORGE_FORGE_RARES").IsRare()
-                .AddItem("forgewrightda", 1, 1, true).AddItem("forgewrightdb", 1, 1, true).AddItem("bp_forgewright", 1, 1, true);
+                .AddItem("forgewrightda", 1, 1, true).AddItem("forgewrightdb", 1, 1, true).AddItem("bp_forgewright", 1, 1, true)
+                .AddItem("recipe_dr_fir2", 1, 1, true);
             _builder.Create("KORFORGE_FLAME_RARES").IsRare()
-                .AddItem("flameweaverda", 1, 1, true).AddItem("flameweaverdb", 1, 1, true).AddItem("bp_flameweaver", 1, 1, true);
+                .AddItem("flameweaverda", 1, 1, true).AddItem("flameweaverdb", 1, 1, true).AddItem("bp_flameweaver", 1, 1, true)
+                .AddItem("recipe_dr_fir1", 1, 1, true);
             _builder.Create("KORFORGE_BANE_RARES").IsRare()
                 .AddItem("banecallerda", 1, 1, true).AddItem("banecallerdb", 1, 1, true).AddItem("bp_banecaller", 1, 1, true);
             _builder.Create("KORFORGE_FORGE_COMP").AddItem("forgewrightcm", 1, 1);

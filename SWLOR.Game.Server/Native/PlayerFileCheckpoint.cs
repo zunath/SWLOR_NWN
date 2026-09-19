@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Native
         private static readonly byte[] FieldLabel = System.Text.Encoding.ASCII.GetBytes(FieldName + "\0");
         private static FunctionHook* _saveHook;
         private static FunctionHook* _loadHook;
+        private static FunctionHook* _readStatsHook;
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHooks()
@@ -22,11 +23,15 @@ namespace SWLOR.Game.Server.Native
                 return;
             delegate* unmanaged<void*, void*, void*, int, int, int, int, int> save = &Save;
             delegate* unmanaged<void*, void*, void*, int, int, int, int, int> load = &Load;
+            delegate* unmanaged<void*, void*, void*, void*, int, int, int, int, uint> readStats = &ReadStats;
             var program = NativeLibrary.GetMainProgramHandle();
             _saveHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(program,
                 "_ZN12CNWSCreature12SaveCreatureEP7CResGFFP10CResStructiiii"), (IntPtr)save, HookOrder.Early);
             _loadHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(program,
                 "_ZN12CNWSCreature12LoadCreatureEP7CResGFFP10CResStructiiii"), (IntPtr)load, HookOrder.Early);
+            _readStatsHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(program,
+                "_ZN17CNWSCreatureStats16ReadStatsFromGffEP7CResGFFP10CResStructP26CNWSCreatureAppearanceInfoiiii"),
+                (IntPtr)readStats, HookOrder.Early);
         }
 
         [UnmanagedCallersOnly]
@@ -69,22 +74,48 @@ namespace SWLOR.Game.Server.Native
                     saveGame, associate, preserveIds, copyObject);
                 if (loaded == 0)
                     return 0;
-                var found = 0;
-                int version;
-                fixed (byte* field = FieldLabel)
-                    version = CResGFF.FromPointer(resource)
-                        .ReadFieldINT(CResStruct.FromPointer(structure), field, &found, 0);
-                if (found != 0 && version > 0)
-                {
-                    using var name = new CExoString(Migration.PlayerFileVersionVariable);
-                    CNWSCreature.FromPointer(creature).m_ScriptVars.SetInt(name, version);
-                }
+                RestoreCheckpoint(CNWSCreature.FromPointer(creature), resource, structure);
                 return loaded;
             }
             catch (Exception exception)
             {
                 Log.WriteError(exception, "Character checkpoint deserialization failed");
                 return 0;
+            }
+        }
+
+        [UnmanagedCallersOnly]
+        private static uint ReadStats(void* stats, void* resource, void* structure, void* appearance,
+            int saveGame, int playerCharacter, int copyObject, int loadObjectId)
+        {
+            try
+            {
+                var original = (delegate* unmanaged<void*, void*, void*, void*, int, int, int, int, uint>)_readStatsHook->m_trampoline;
+                var result = original(stats, resource, structure, appearance, saveGame, playerCharacter, copyObject, loadObjectId);
+                // CNWSPlayer.LoadCreatureData bypasses LoadCreature and reads stats directly.
+                // Its return convention is zero on success, unlike LoadCreature.
+                if (result == 0 && playerCharacter != 0)
+                    RestoreCheckpoint(CNWSCreatureStats.FromPointer(stats).m_pBaseCreature, resource, structure);
+                return result;
+            }
+            catch (Exception exception)
+            {
+                Log.WriteError(exception, "Player login checkpoint deserialization failed");
+                return uint.MaxValue;
+            }
+        }
+
+        private static void RestoreCheckpoint(CNWSCreature creature, void* resource, void* structure)
+        {
+            var found = 0;
+            int version;
+            fixed (byte* field = FieldLabel)
+                version = CResGFF.FromPointer(resource)
+                    .ReadFieldINT(CResStruct.FromPointer(structure), field, &found, 0);
+            if (found != 0 && version > 0)
+            {
+                using var name = new CExoString(Migration.PlayerFileVersionVariable);
+                creature.m_ScriptVars.SetInt(name, version);
             }
         }
     }

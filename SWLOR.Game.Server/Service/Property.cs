@@ -1049,7 +1049,7 @@ namespace SWLOR.Game.Server.Service
                     if (!_propertyInstances.TryGetValue(job.PropertyId, out var instance) ||
                         !GetIsObjectValid(instance.Area))
                     {
-                        targetArea = CreateArea(layout.AreaInstanceResref);
+                        targetArea = Area.CreateInstance(layout.AreaInstanceResref);
                         if (!GetIsObjectValid(targetArea))
                             throw new InvalidOperationException($"Unable to create property area from resref '{layout.AreaInstanceResref}'.");
 
@@ -3224,7 +3224,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // If no interior layout is defined, the provided area will be used.
-                var targetArea = CreateArea(layout.AreaInstanceResref);
+                var targetArea = Area.CreateInstance(layout.AreaInstanceResref);
                 if (!GetIsObjectValid(targetArea))
                     throw new InvalidOperationException($"Unable to create property area from resref '{layout.AreaInstanceResref}'.");
 

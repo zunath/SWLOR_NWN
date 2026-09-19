@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -16,6 +17,10 @@ using DurationType = SWLOR.NWN.API.NWScript.Enum.DurationType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using Skill = SWLOR.Game.Server.Service.Skill;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -23,6 +28,155 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private static uint _observedAttacker = OBJECT_INVALID;
         private static readonly List<(uint Weapon, CombatDamageType Type, DateTime Time)> _hits = new();
+        private static readonly List<uint> _itemHits = new();
+
+        [NWNEventHandler(ScriptName.OnItemHit)]
+        public static void ObserveItemHit()
+        {
+            if (OBJECT_SELF == _observedAttacker)
+                _itemHits.Add(GetSpellCastItem());
+        }
+
+        [EngineTest("Dual wield mapped melee weapons retain both hands and isolated accuracy", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task MappedWeaponsParticipate(EngineTestContext ctx)
+        {
+            var (attacker, target, main, off) = await CreatePair(ctx);
+            try
+            {
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                _observedAttacker = attacker;
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    foreach (var type in new[] { BaseItem.Kama, BaseItem.Club, BaseItem.LightFlail,
+                                 BaseItem.LightHammer, BaseItem.MorningStar, BaseItem.WarHammer })
+                    {
+                        ItemPlugin.SetBaseItemType(main, type);
+                        ctx.Assert(EquipmentPredicates.HasDualWield(attacker), $"Equipped {type} participates in dual wield");
+                        AssertAccuracyCountsOnce(ctx, attacker, main, EquipmentSlot.RightHand);
+                    }
+                });
+                _hits.Clear();
+                AssignCommand(attacker, () => ActionAttack(target));
+                await ctx.WaitUntilAsync(() => _hits.Count >= 2, 10f, "a paired attack with the mapped warhammer");
+                ctx.AssertEqual(main, _hits[0].Weapon, "Mapped main hand attacks");
+                ctx.AssertEqual(off, _hits[1].Weapon, "Mapped main hand does not hide the off hand");
+            }
+            finally
+            {
+                AssignCommand(attacker, () => ClearAllActions());
+                ResetObservation();
+            }
+        }
+
+        [EngineTest("Dual wield accuracy filtering includes creature attack weapons", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task NaturalWeaponAccuracyCountsOnce(EngineTestContext ctx)
+        {
+            var attacker = ctx.SpawnCreature("kath_hound");
+            await ctx.WaitFrameAsync();
+            var weapon = GetItemInSlot(InventorySlot.CreatureRight, attacker);
+            ctx.Assert(GetIsObjectValid(weapon), "Creature blueprint provides an equipped natural weapon");
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
+                    if (GetItemPropertyType(ip) == ItemPropertyType.AccuracyBonus)
+                        RemoveItemProperty(weapon, ip);
+                ctx.AssertEqual(weapon, GetItemInSlot(InventorySlot.CreatureRight, attacker), "Natural weapon is equipped");
+                foreach (var type in Item.CreatureBaseItemTypes)
+                {
+                    ItemPlugin.SetBaseItemType(weapon, type);
+                    AssertAccuracyCountsOnce(ctx, attacker, weapon, EquipmentSlot.CreatureWeaponRight);
+                }
+            });
+        }
+
+        private static void AssertAccuracyCountsOnce(EngineTestContext ctx, uint attacker, uint weapon, EquipmentSlot slot)
+        {
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+            var nativeWeapon = native.m_pInventory.GetItemInSlot((uint)slot);
+            var baseline = Stat.GetAccuracyNative(native, nativeWeapon);
+            var scriptBaseline = Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
+                Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon)));
+            var accuracy = ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, 5);
+            AddItemProperty(DurationType.Permanent, accuracy, weapon);
+            ctx.AssertEqual(baseline + 5, Stat.GetAccuracyNative(native, nativeWeapon), $"{GetBaseItemType(weapon)} native ACC counts once");
+            ctx.AssertEqual(scriptBaseline + 5, Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
+                Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))), $"{GetBaseItemType(weapon)} script ACC counts once");
+            RemoveItemProperty(weapon, accuracy);
+        }
+
+        [EngineTest("Dual wield queued placeable batch spends each matching attack charge", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task QueuedPlaceableBatchConsumesCharges(EngineTestContext ctx)
+        {
+            var (attacker, _, _, _) = await CreatePair(ctx);
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                var target = CreateObject(ObjectType.Placeable, "mando_crate", ctx.GetArenaLocation(1f));
+                ctx.Track(target);
+                ctx.Assert(GetIsObjectValid(target), "Damageable placeable fixture exists");
+                SetPlotFlag(target, false);
+                ObjectPlugin.SetMaxHitPoints(target, 20000);
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(20000), target);
+                ctx.SetNPCResources(attacker, 100, 100);
+                ctx.SetNPCPerkLevel(attacker, PerkType.PathogenStrike, 1);
+                CreaturePlugin.AddFeat(attacker, FeatType.PathogenStrike1);
+                ctx.Assert(UsePerkFeat.TryUseAbility(attacker, target, FeatType.PathogenStrike1, GetLocation(target)), "Placeable ability queues");
+                StatusEffect.ApplyStatusEffect(attacker, attacker,
+                    new LimitedHasteStatusEffect(30, 10, SkillType.Vibroknife, EffectIconType.Haste, null), 60f);
+                var active = (LimitedHasteStatusEffect)StatusEffect.GetStatusEffect(attacker, typeof(LimitedHasteStatusEffect));
+                ResolveCycle(attacker, target, 6);
+                ctx.AssertEqual(5, active.RemainingAttacks, "Five ordinary rolls spend charges before the queued impact callback");
+            });
+            await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(attacker), 5f, "the queued placeable hit to consume");
+            var remaining = (LimitedHasteStatusEffect)StatusEffect.GetStatusEffect(attacker, typeof(LimitedHasteStatusEffect));
+            ctx.AssertEqual(4, remaining.RemainingAttacks, "The queued impact spends the sixth and final batch charge");
+            AssignCommand(attacker, () => ClearAllActions());
+        }
+
+        [EngineTest("Dual wield reservation accepts ammunition for queued ranged attacks", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task QueuedRangedAbilityAcceptsProjectile(EngineTestContext ctx)
+        {
+            var attacker = ctx.SpawnCreature("nw_bandit001", -2f);
+            var target = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            var launcher = await ctx.EquipItemAsync(attacker, "npc_eco_rifle", InventorySlot.RightHand);
+            // Unlimited-ammunition rifles may equip their own stack during equip processing.
+            var ammunition = GetItemInSlot(InventorySlot.Bolts, attacker);
+            if (!GetIsObjectValid(ammunition))
+                ammunition = await ctx.EquipItemAsync(attacker, "nw_wambo001", InventorySlot.Bolts);
+            ctx.ApplyStandardOnHitProperty(ammunition);
+            try
+            {
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                _observedAttacker = attacker;
+                _itemHits.Clear();
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    // Require the projectile to deliver the callback rather than letting the
+                    // launcher's own property accidentally mask a broken reservation check.
+                    for (var ip = GetFirstItemProperty(launcher); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(launcher))
+                        if (GetItemPropertyType(ip) == ItemPropertyType.OnHitCastSpell)
+                            RemoveItemProperty(launcher, ip);
+                    SetItemStackSize(ammunition, 50);
+                    ctx.SuppressNPCNaturalRegen(target);
+                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
+                    ctx.MakeHostile(target);
+                    ctx.SetNPCResources(attacker, 100, 100);
+                    ctx.SetNPCPerkLevel(attacker, PerkType.Headshot, 1);
+                    CreaturePlugin.AddFeat(attacker, FeatType.Headshot1);
+                    ctx.Assert(UsePerkFeat.TryUseAbility(attacker, target, FeatType.Headshot1, GetLocation(target)), "Headshot queues");
+                    ctx.Assert(UsePerkFeat.HasQueuedWeaponAbility(attacker), "Headshot is pending before attacking");
+                    ActionAttack(target);
+                });
+                await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(attacker), 15f, "Headshot to consume through its projectile");
+                ctx.Assert(_itemHits.Contains(ammunition), "Equipped ammunition delivered item_on_hit");
+            }
+            finally
+            {
+                AssignCommand(attacker, () => ClearAllActions());
+                ResetObservation();
+            }
+        }
 
         [NWNEventHandler(ScriptName.OnSWLORDamage)]
         public static void ObserveWeaponDamage()
@@ -190,19 +344,37 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Mixed dual wield uses off-hand haste and consumes only matching charges", Category = "DualWield", TimeoutSeconds = 60f)]
         public static async Task OffHandTimingEffectsParticipate(EngineTestContext ctx)
         {
-            var (attacker, target, _, _) = await CreatePair(ctx, "nw_wswls001");
+            var (attacker, target, main, _) = await CreatePair(ctx, "nw_wswls001");
             try
             {
                 Combat.SetAutoAttackHitResolutionOverride(false);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 30), main);
+                    var unbuffedDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker));
                     var effect = new LimitedHasteStatusEffect(40, 4, SkillType.Vibroblade, EffectIconType.Haste, null);
                     ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, effect, 60f), "Off-hand haste applies");
-                    ctx.AssertEqual(SkillType.Vibroblade, WeaponAttackCycle.SelectTimingSkill(attacker, SkillType.Vibroknife, SkillType.Vibroblade),
+                    ctx.AssertEqual(SkillType.Vibroblade, WeaponAttackTiming.GetTimingSkill(attacker),
                         "The off-hand's haste participates in the shared timer");
+                    var sheet = new CharacterSheetViewModel();
+                    typeof(CharacterSheetViewModel).GetField("_target", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(sheet, attacker);
+                    var delayInfo = ((string Value, string Tooltip))typeof(CharacterSheetViewModel)
+                        .GetMethod("GetAttackDelayInfo", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(sheet, null)!;
+                    var expectedDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker, 40)) / 1000f;
+                    ctx.Assert(expectedDelay < unbuffedDelay / 1000f, "The display fixture has measurably faster off-hand haste");
+                    ctx.AssertEqual($"{expectedDelay:0.##}s", delayInfo.Value, "Character sheet uses the off-hand timing effect");
                     var active = (LimitedHasteStatusEffect)StatusEffect.GetStatusEffect(attacker, typeof(LimitedHasteStatusEffect));
-                    ResolveCycle(attacker, target);
+                    var budget = WeaponAttackTiming.GetLimitedBudget(attacker, SkillType.Vibroblade, SkillType.Vibroknife, SkillType.Vibroblade, false);
+                    ctx.AssertEqual(false, budget.MainHand, "The timing charge excludes the knife");
+                    ctx.AssertEqual(true, budget.OffHand, "The timing charge includes the blade");
+                    var attacks = Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2, budget);
+                    ResolveCycle(attacker, target, attacks);
                     ctx.AssertEqual(3, active.RemainingAttacks, "The main-hand knife does not consume the blade's charge");
+                    budget = WeaponAttackTiming.GetLimitedBudget(attacker, SkillType.Vibroblade, SkillType.Vibroknife, SkillType.Vibroblade, false);
+                    attacks = Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2, budget);
+                    ctx.AssertEqual(4, attacks, "Fractional haste progress schedules two pairs with only two matching charges");
+                    ResolveCycle(attacker, target, attacks);
+                    ctx.AssertEqual(1, active.RemainingAttacks, "Both pairs consume only their blade charges");
                 });
             }
             finally { ResetObservation(); }
@@ -239,6 +411,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Combat.SetAutoAttackHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             _hits.Clear();
+            _itemHits.Clear();
         }
     }
 }

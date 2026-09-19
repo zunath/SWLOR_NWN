@@ -189,6 +189,7 @@ public class CharacterSheetCombatUpgradeTests
             "CharacterSheetViewModel.cs"));
 
         var attackDelay = ExtractMethod(viewModel, "private (string Value, string Tooltip) GetAttackDelayInfo()");
+        attackDelay.Should().Contain("WeaponAttackTiming.GetTimingSkill(_target)");
         attackDelay.Should().Contain("StatusEffect.TryGetLimitedAttackDelayReduction(");
         attackDelay.Should().Contain("limitedAttackDelayReductionPercent");
         attackDelay.Should().Contain("Combat.CalculateAttackDelay(");

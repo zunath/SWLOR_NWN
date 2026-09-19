@@ -12160,12 +12160,16 @@ namespace SWLOR.Game.Server.Service
             int effectiveDelayWithoutLimitedReductionMilliseconds,
             int limitedReductionRemainingAttacks,
             int limitedNoDelayRemainingAttacks = 0,
-            int attacksPerCycle = 1)
+            int attacksPerCycle = 1,
+            LimitedAttackTimingBudget? limitedReductionBudget = null,
+            LimitedAttackTimingBudget? limitedNoDelayBudget = null)
         {
             attacksPerCycle = Math.Clamp(attacksPerCycle, 1, 2);
+            var reductionBudget = limitedReductionBudget ?? new LimitedAttackTimingBudget(limitedReductionRemainingAttacks, true, true);
+            var noDelayBudget = limitedNoDelayBudget ?? new LimitedAttackTimingBudget(limitedNoDelayRemainingAttacks, true, true);
             var limitedSpeedRemainingAttacks = Math.Max(
-                limitedReductionRemainingAttacks,
-                limitedNoDelayRemainingAttacks);
+                reductionBudget.RemainingAttacks,
+                noDelayBudget.RemainingAttacks);
             _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
             var hasTrackedBaselineAttackDebt = _attackSwingDebtsWithoutLimitedReduction.TryGetValue(
                 attacker,
@@ -12184,7 +12188,11 @@ namespace SWLOR.Game.Server.Service
             if (hasNoDelayBuff)
             {
                 var unbuffedAttacks = CalculateAttacksPerSwing(unbuffedDelayMilliseconds, attackDebt, out _) * attacksPerCycle;
-                var guaranteedAttacks = Math.Clamp(unbuffedAttacks + 1, 1, MaxAttacksPerSwing * attacksPerCycle);
+                var guaranteedAttacks = Math.Clamp(
+                    noDelayBudget.RemainingAttacks > 0
+                        ? noDelayBudget.WithExtraMatchingRoll(unbuffedAttacks, attacksPerCycle)
+                        : unbuffedAttacks + 1,
+                    1, MaxAttacksPerSwing * attacksPerCycle);
                 if (guaranteedAttacks > attacks)
                 {
                     // The extra attack is granted outright rather than drawn from carried debt, so
@@ -12203,17 +12211,17 @@ namespace SWLOR.Game.Server.Service
                     effectiveDelayWithoutLimitedReductionMilliseconds,
                     baselineAttackDebt,
                     out var baselineUpdatedAttackDebt) * attacksPerCycle;
-                attacks = CapAttacksPerSwingForLimitedAttackEffect(
-                    attacks,
-                    baselineAttacks,
-                    limitedReductionRemainingAttacks,
-                    limitedNoDelayRemainingAttacks);
+                var rollLimit = Math.Max(baselineAttacks, reductionBudget.RollLimit(attacksPerCycle));
+                if (noDelayBudget.RemainingAttacks > 0)
+                    rollLimit = Math.Max(rollLimit, Math.Max(noDelayBudget.RollLimit(attacksPerCycle),
+                        noDelayBudget.WithExtraMatchingRoll(baselineAttacks, attacksPerCycle)));
+                attacks = Math.Min(attacks, rollLimit);
 
                 // Every matching roll in the swing consumes one charge, including rolls the
                 // baseline cadence would have scheduled. Once all remaining charges will be spent,
                 // discard fractional debt created by the expiring reduction while retaining debt
                 // earned without it.
-                if (attacks >= limitedSpeedRemainingAttacks)
+                if (reductionBudget.IsExhausted(attacks, attacksPerCycle) && noDelayBudget.IsExhausted(attacks, attacksPerCycle))
                 {
                     updatedAttackDebt = baselineUpdatedAttackDebt;
                     _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);

@@ -640,6 +640,12 @@ namespace SWLOR.Game.Server.Service
             return GetIsObjectValid(item) && baseItemTypes.Contains(GetBaseItemType(item));
         }
 
+        /// <summary>Includes every weapon profile read by combat, including natural weapons and unarmed gear.</summary>
+        public static bool IsAttackWeaponType(BaseItem baseItem)
+        {
+            return _meleeStatMappedBaseItems.Contains(baseItem) || _rangedStatMappedBaseItems.Contains(baseItem);
+        }
+
         public static bool IsBaseItemType(global::NWN.Native.API.CNWSItem item, IReadOnlyCollection<BaseItem> baseItemTypes)
         {
             return item != null && baseItemTypes.Contains((BaseItem)item.m_nBaseItem);

@@ -12,6 +12,9 @@ Ordinary accuracy buffs still apply to both hands.
 The server's animation floor remains 1,750 ms. Faster cadence batches cycles, up to three
 cycles/six weapon rolls per animation. Limited-attack charges count actual weapon rolls,
 including misses. A final limited no-delay charge can produce an odd extra main-hand roll.
+Skill-scoped effects count only the hands they apply to when limiting a batch or expiring
+its fractional progress. An off-hand no-delay effect must grant an extra off-hand roll.
+Combat and the character sheet use the same timing-skill selection for mixed weapons.
 Damage-triggered effects remain per hit and retain their own cooldowns; poison coatings
 retain their shared six-second application cooldown.
 
@@ -20,6 +23,9 @@ damage is replaced. Other rolls in the batch remain normal attacks even while th
 is still waiting to deliver the reserved weapon's on-hit script. The reservation is cleared
 on consumption, cancellation, or replacement of the queued ability. NWN can query damage
 twice for the same roll, so its replacement remains active until the next attack roll starts.
+Placeable hits reserve their first eligible roll too. Ranged reservations accept the
+launcher's captured ammunition stack as the originating hit and retain the launcher's
+damage profile when applying the ability.
 
 ## Native engine contract
 

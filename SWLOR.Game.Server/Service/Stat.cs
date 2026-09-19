@@ -1491,7 +1491,7 @@ namespace SWLOR.Game.Server.Service
             return durationType == 3 &&
                    GetIsObjectValid(creator) &&
                    GetObjectType(creator) == ObjectType.Item &&
-                   Item.WeaponBaseItemTypes.Contains(GetBaseItemType(creator));
+                   Item.IsAttackWeaponType(GetBaseItemType(creator));
         }
 
         private static int CalculateEffectEvasion(uint creature)

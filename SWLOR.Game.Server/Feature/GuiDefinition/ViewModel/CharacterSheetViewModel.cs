@@ -892,7 +892,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private (string Value, string Tooltip) GetAttackDelayInfo()
         {
-            var attackSkillType = Combat.GetEquippedWeaponSkillType(_target);
+            var attackSkillType = WeaponAttackTiming.GetTimingSkill(_target);
             StatusEffect.TryGetLimitedAttackDelayReduction(
                 _target,
                 attackSkillType,

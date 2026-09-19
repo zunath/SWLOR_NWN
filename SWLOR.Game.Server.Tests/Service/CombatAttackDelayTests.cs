@@ -20,6 +20,42 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatAttackDelayTests
 {
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public void MixedDualWieldHaste_CountsOnlyTheMatchingHandAndKeepsItsDebt(bool main, bool off)
+    {
+        const uint attacker = 0x7F000023;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2,
+                new LimitedAttackTimingBudget(4, main, off)).Should().Be(2);
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2,
+                new LimitedAttackTimingBudget(3, main, off)).Should().Be(4,
+                "the first pair spent only one charge, so fractional accelerated progress remains available");
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 1, 0, 2,
+                new LimitedAttackTimingBudget(1, main, off)).Should().Be(main ? 2 : 3);
+            Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2)
+                .Should().Be(2, "acceleration ends when the matching hand spends its last charge");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(true, false, 3)]
+    [TestCase(false, true, 4)]
+    [TestCase(true, true, 3)]
+    public void ScopedNoDelay_GrantsAnExtraRollToTheMatchingHand(bool main, bool off, int expected)
+    {
+        const uint attacker = 0x7F000024;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2,
+                limitedNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
     [TestCase(3500, 2)]
     [TestCase(1750, 2)]
     [TestCase(875, 4)]

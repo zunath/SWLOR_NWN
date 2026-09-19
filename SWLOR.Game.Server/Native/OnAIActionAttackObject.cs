@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service;
 using NWNX.NET;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -438,16 +440,18 @@ namespace SWLOR.Game.Server.Native
                     attackSkillType = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
                         (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
                 }
+                var mainSkill = attackSkillType;
+                var offSkill = SkillType.Invalid;
                 if (isDualWieldCycle)
                 {
                     var offWeapon = pCombatRound.GetCurrentAttackWeapon(WEAPON_ATTACK_TYPE_OFFHAND);
                     if (offWeapon != null)
                     {
-                        var offSkill = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
+                        offSkill = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
                             (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)offWeapon.m_nBaseItem);
                         // Either hand's scoped timing effect can drive the shared gate. Actual
                         // attack notifications still consume charges using each roll's own skill.
-                        attackSkillType = WeaponAttackCycle.SelectTimingSkill(pCreature.m_idSelf, attackSkillType, offSkill);
+                        attackSkillType = WeaponAttackTiming.GetTimingSkill(pCreature.m_idSelf);
                     }
                 }
 
@@ -657,7 +661,9 @@ namespace SWLOR.Game.Server.Native
                                                         effectiveDelayWithoutLimitedReduction,
                                                         limitedDelayReductionRemainingAttacks,
                                                         limitedNoDelayRemainingAttacks,
-                                                        isDualWieldCycle ? 2 : 1);
+                                                        isDualWieldCycle ? 2 : 1,
+                                                        WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, false),
+                                                        WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, true));
 
                                                     if (isDualWieldCycle)
                                                     {

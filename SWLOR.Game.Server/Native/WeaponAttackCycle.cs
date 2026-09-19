@@ -1,6 +1,5 @@
 using NWN.Native.API;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -11,23 +10,6 @@ namespace SWLOR.Game.Server.Native
     /// </summary>
     public static class WeaponAttackCycle
     {
-        public static SkillType SelectTimingSkill(uint attacker, SkillType mainSkill, SkillType offSkill)
-        {
-            if (mainSkill == offSkill)
-                return mainSkill;
-
-            var mainNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(attacker, mainSkill, out _) ||
-                              Combat.HasTemporaryNextAutoAttackNoDelay(attacker, mainSkill);
-            var offNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(attacker, offSkill, out _) ||
-                             Combat.HasTemporaryNextAutoAttackNoDelay(attacker, offSkill);
-            if (mainNoDelay != offNoDelay)
-                return offNoDelay ? offSkill : mainSkill;
-
-            StatusEffect.TryGetLimitedAttackDelayReduction(attacker, mainSkill, out var mainReduction, out _);
-            StatusEffect.TryGetLimitedAttackDelayReduction(attacker, offSkill, out var offReduction, out _);
-            return offReduction > mainReduction ? offSkill : mainSkill;
-        }
-
         public static int PrepareDualWieldAttacks(CNWSCombatRound round, int attacks)
         {
             attacks = Math.Clamp(attacks, 2, Combat.MaxAttacksPerSwing * 2);

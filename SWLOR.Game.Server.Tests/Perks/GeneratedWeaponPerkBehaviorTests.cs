@@ -558,7 +558,7 @@ public class GeneratedWeaponPerkBehaviorTests
             placeableBranchIndex,
             StringComparison.Ordinal);
         var placeableBranch = nativeSource[placeableBranchIndex..placeableReturnIndex];
-        placeableBranch.Should().Contain("!UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)",
+        placeableBranch.Should().Contain("UsePerkFeat.ReserveQueuedWeaponAbilityAttack(",
             "queued placeable hits are finalized by Ability.EndAbilityImpact and must not spend two charges");
         placeableNotificationIndex.Should().BeGreaterThan(placeableBranchIndex);
         placeableNotificationIndex.Should().BeLessThan(placeableReturnIndex,

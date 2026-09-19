@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature
         {
             public int AttackIndex { get; init; }
             public uint Weapon { get; init; }
+            public uint Projectile { get; init; } = OBJECT_INVALID;
             public bool IsCurrentAttack { get; set; } = true;
         }
         private static readonly Dictionary<uint, QueuedWeaponAttackReservation> _queuedWeaponAttacks = new();
@@ -982,8 +983,27 @@ namespace SWLOR.Game.Server.Feature
             _queuedWeaponAttacks.TryAdd(activator, new QueuedWeaponAttackReservation
             {
                 AttackIndex = attackIndex,
-                Weapon = weapon
+                Weapon = weapon,
+                Projectile = GetAttackProjectile(activator, weapon)
             });
+        }
+
+        private static uint GetAttackProjectile(uint activator, uint weapon)
+        {
+            if (!GetIsObjectValid(weapon))
+                return OBJECT_INVALID;
+
+            // The engine delivers ranged item_on_hit through ammunition. Capture the equipped
+            // stack now so the callback still matches when firing consumes its final round.
+            var ammoType = Get2DAString("baseitems", "AmmunitionType", (int)GetBaseItemType(weapon));
+            var slot = ammoType switch
+            {
+                "1" => InventorySlot.Arrows,
+                "2" => InventorySlot.Bolts,
+                "3" => InventorySlot.Bullets,
+                _ => InventorySlot.Invalid
+            };
+            return slot == InventorySlot.Invalid ? OBJECT_INVALID : GetItemInSlot(slot, activator);
         }
 
         public static void BeginWeaponAttackRoll(uint activator)
@@ -1254,8 +1274,16 @@ namespace SWLOR.Game.Server.Feature
             var targetLocation = GetLocation(target);
             var item = GetSpellCastItem();
 
-            if (_queuedWeaponAttacks.TryGetValue(activator, out var reservation) && reservation.Weapon != item)
-                return;
+            if (_queuedWeaponAttacks.TryGetValue(activator, out var reservation))
+            {
+                if (reservation.Weapon != item &&
+                    (reservation.Projectile == OBJECT_INVALID || reservation.Projectile != item))
+                    return;
+
+                // Ability damage and scaling come from the launcher, even when its projectile
+                // delivered the callback. Another hand's item cannot consume this reservation.
+                item = reservation.Weapon;
+            }
 
             // If this method was triggered by our own armor (from getting hit), return.
             if (GetBaseItemType(item) == BaseItem.Armor) return;

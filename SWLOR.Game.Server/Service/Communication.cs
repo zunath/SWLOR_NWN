@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
+        public const string SuppressChatAuditVariable = "SUPPRESS_CHAT_AUDIT";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
         private const string CommsOutOfRangeMessage = "Your Comms message could not reach one or more out-of-range receivers.";
         // Base-game dialog.tlk 66755 is the PlayerParty chat-input label, while 10303 is the

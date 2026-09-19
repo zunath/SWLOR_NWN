@@ -502,6 +502,7 @@ namespace SWLOR.Game.Server.Service
 
             var console = CreateObject(ObjectType.Placeable, TerminalTag, flight.EntranceLocation);
             SetName(console, "Shuttle Status Console");
+            SetLocalInt(console, Communication.SuppressChatAuditVariable, 1);
             SetPlotFlag(console, true);
             SetLocalString(console, "CONVERSATION", "ShuttleStatusDialog");
             SetLocalString(console, ShuttleFlightIdVariable, flight.FlightId);

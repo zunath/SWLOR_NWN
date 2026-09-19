@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Service
             VisualEffect triggerVisualEffect,
             VisualEffect markerVisualEffect)
         {
-            if (!TryReserveTrapSlot(owner, location, out var ownerTraps))
+            if (!TryPrepareTrapPlacement(owner, location, out var ownerTraps))
                 return false;
 
             // Trap strength is snapshotted now so later gear or stance swaps do not retune a
@@ -100,14 +100,18 @@ namespace SWLOR.Game.Server.Service
                 Location = location,
                 SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner)
             };
-            ownerTraps.Add(record);
-
             record.Marker = DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
                 location,
                 markerVisualEffect,
                 1.5f,
                 LifetimeSeconds);
+            if (!GetIsObjectValid(record.Marker))
+            {
+                SendMessageToPC(owner, "The trap could not be placed.");
+                return false;
+            }
 
+            RegisterTrap(record, ownerTraps);
             ScheduleArming(record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect);
 
             return true;
@@ -123,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             if (tier < 1 || tier > KitTrapDamageByTier.Length)
                 return false;
 
-            if (!TryReserveTrapSlot(owner, location, out var ownerTraps))
+            if (!TryPrepareTrapPlacement(owner, location, out var ownerTraps))
                 return false;
 
             var baseDamage = KitTrapDamageByTier[tier - 1];
@@ -144,7 +148,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            ownerTraps.Add(record);
+            RegisterTrap(record, ownerTraps);
             SetLocalString(record.Marker, ConcealedTrapMarkerVariable, record.Id.ToString());
             DestroyObject(record.Marker, LifetimeSeconds);
 
@@ -164,8 +168,8 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        // Shared spacing/capacity gate for both placement paths.
-        private static bool TryReserveTrapSlot(uint owner, Location location, out List<TrapRecord> ownerTraps)
+        // Validate spacing without evicting an existing trap before placement can succeed.
+        private static bool TryPrepareTrapPlacement(uint owner, Location location, out List<TrapRecord> ownerTraps)
         {
             foreach (var liveTrap in AllLiveTraps())
             {
@@ -185,15 +189,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             ownerTraps.RemoveAll(record => !record.IsLive);
-            while (ownerTraps.Count >= GetTrapCapacity(owner))
+            return true;
+        }
+
+        private static void RegisterTrap(TrapRecord record, List<TrapRecord> ownerTraps)
+        {
+            while (ownerTraps.Count >= GetTrapCapacity(record.Owner))
             {
                 var oldest = ownerTraps[0];
                 Deactivate(oldest);
                 ownerTraps.RemoveAt(0);
-                SendMessageToPC(owner, "Your oldest trap deactivates as you place a new one.");
+                SendMessageToPC(record.Owner, "Your oldest trap deactivates as you place a new one.");
             }
 
-            return true;
+            ownerTraps.Add(record);
         }
 
         // Trapcraft III/IV shorten the time before a placed trap goes live.

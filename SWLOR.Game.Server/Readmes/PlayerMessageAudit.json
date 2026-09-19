@@ -5272,56 +5272,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 143,
+    "Line": 110,
+    "Member": "TryPlaceTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(owner, \"The trap could not be placed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Traps.cs",
+    "Line": 147,
     "Member": "TryPlaceKitTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, \"The trap could not be placed. Your kit has not been consumed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 175,
-    "Member": "TryReserveTrapSlot",
+    "Line": 179,
+    "Member": "TryPrepareTrapPlacement",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, ColorToken.Red(\"Another trap is placed too close to that spot.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 193,
-    "Member": "TryReserveTrapSlot",
+    "Line": 202,
+    "Member": "RegisterTrap",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(owner, \"Your oldest trap deactivates as you place a new one.\")"
+    "Call": "SendMessageToPC(record.Owner, \"Your oldest trap deactivates as you place a new one.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 354,
+    "Line": 363,
     "Member": "RevealTo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\"You spot a concealed trap nearby.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 379,
+    "Line": 388,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You dismantle your own trap. The kit is not recovered.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 385,
+    "Line": 394,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You lack the Trapcraft expertise to disarm this trap.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 394,
+    "Line": 403,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You disarm the trap.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 398,
+    "Line": 407,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You set the trap off while trying to disarm it.\"))"

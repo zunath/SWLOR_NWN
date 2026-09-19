@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -29,6 +30,167 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static uint _observedAttacker = OBJECT_INVALID;
         private static readonly List<(uint Weapon, CombatDamageType Type, DateTime Time)> _hits = new();
         private static readonly List<uint> _itemHits = new();
+
+        [EngineTest("Dual wield fresh animation bursts bypass an unchanged native attack pose", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task FreshAnimationBursts(EngineTestContext ctx)
+        {
+            var (attacker, target, _, _) = await CreatePair(ctx);
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                var first = ResolveCycle(attacker, target, 2);
+                native.SetAnimation(9);
+                // The engine's complete update-difference pass requires a logged-in
+                // network client. Exercise our refresh predicate and the real packet
+                // writer here, without invoking unrelated native client/session checks.
+                WeaponAttackAnimation.Capture(native, first, 1750);
+                ctx.Assert(WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
+                    "An unchanged attack pose still gets a fresh burst for client variant selection");
+                var packet = ReadAnimationPacket(native);
+                ctx.AssertEqual((byte)1, packet.Count, "The real write hook serializes one visual swing");
+                ctx.AssertEqual((byte)1, packet.Weapon, "The first fresh burst shows the main hand");
+                ctx.Assert(!WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
+                    "A frame already sent is not restarted on every network tick");
+                ctx.Assert(WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffd),
+                    "Another observer still receives its own first frame");
+                WeaponAttackAnimation.Capture(native, first, 1750);
+                ctx.Assert(WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
+                    "The next cycle sends a fresh burst even with the same target and pose");
+                native.SetAnimation(1);
+                // SetAnimation may translate Ready to Pause for this NPC's ambient state.
+                ctx.Assert(native.m_nAnimation != 9, "The native action left its attack pose");
+                ctx.Assert(!WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
+                    "Interrupted playback does not request another attack update");
+                ctx.AssertEqual((ushort)native.m_nAnimation, ReadAnimationPacket(native).Animation,
+                    "An interrupted attack is not forced back into combat playback");
+            });
+        }
+
+        [EngineTest("Dual wield animation packets retain each hand and restore native combat data", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task AnimationPacketsPreserveCombat(EngineTestContext ctx)
+        {
+            var (attacker, target, _, _) = await CreatePair(ctx);
+            try
+            {
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                    foreach (var count in new[] { 2, 5, 6 })
+                    {
+                        var first = ResolveCycle(attacker, target, count);
+                        var round = native.m_pcCombatRound;
+                        var end = round.m_nCurrentAttack;
+                        var saved = Enumerable.Range(first, count).Select(i => WeaponAttackAnimation.Roll.Read(round.GetAttack(i))).ToArray();
+                        var animation = native.m_nAnimation;
+                        var onHand = round.m_nOnHandAttacks;
+                        var offHand = round.m_nOffHandAttacks;
+                        var ordered = WeaponAttackAnimation.OrderForPlayback(saved);
+                        foreach (var roll in ordered)
+                        {
+                            var duration = 1650 / count;
+                            WeaponAttackAnimation.WithProjectedAttack(native, roll, duration, () =>
+                            {
+                                var packet = ReadAnimationPacket(native);
+                                ctx.AssertEqual((ushort)9, packet.Animation, "Packet uses the native attack animation");
+                                ctx.AssertEqual((byte)1, packet.Count, "One animation per packet bypasses the native three-attack limit");
+                                ctx.AssertEqual(roll.Weapon, packet.Weapon, "Packet retains the intended hand even in a six-roll batch");
+                                ctx.AssertEqual((ushort)duration, packet.Duration, "Packet carries the exclusive animation slot");
+                            });
+                        }
+                        try
+                        {
+                            WeaponAttackAnimation.WithProjectedAttack(native, ordered[0], 825,
+                                () => throw new InvalidOperationException("test serialization failure"));
+                        }
+                        catch (InvalidOperationException ex) when (ex.Message == "test serialization failure") { }
+                        WeaponAttackAnimation.WithProjectedAttack(native, null, 0, () =>
+                            ctx.AssertEqual((ushort)1, ReadAnimationPacket(native).Animation, "Playback ends in the ready pose"));
+                        ctx.AssertEqual(end, round.m_nCurrentAttack, "Presentation never advances the combat cursor");
+                        ctx.AssertEqual(onHand, round.m_nOnHandAttacks, "Main-hand budget is intact");
+                        ctx.AssertEqual(offHand, round.m_nOffHandAttacks, "Off-hand budget is intact");
+                        ctx.AssertEqual(animation, native.m_nAnimation, "Native action animation is restored");
+                        for (var i = 0; i < count; i++)
+                        {
+                            var actual = WeaponAttackAnimation.Roll.Read(round.GetAttack(first + i));
+                            ctx.AssertEqual(saved[i] with { Damage = Array.Empty<short>() },
+                                actual with { Damage = Array.Empty<short>() }, "Every native attack field is restored");
+                            ctx.Assert(saved[i].Damage.SequenceEqual(actual.Damage), "Every damage component is restored");
+                        }
+                    }
+                });
+            }
+            finally { ResetObservation(); }
+        }
+
+        // Exercise the actual engine serializer, including the two-bit attack count.
+        // This client object is local to the test and never connects or sends a packet.
+        private static unsafe (ushort Animation, byte Count, byte Weapon, ushort Duration) ReadAnimationPacket(CNWSCreature native)
+        {
+            using var client = new CNWSPlayer(0xfffffffe);
+            client.m_oidNWSObject = native.m_idSelf;
+            using var last = new CLastUpdateObject();
+            using var packetMessage = new NativePacketMessage();
+            using var packetReader = new NativePacketMessage();
+            var message = packetMessage.Message;
+            var reader = packetReader.Message;
+            message.CreateWriteMessage(1024, 0xffffffff, 1);
+            message.WriteGameObjUpdate_UpdateObject(client, native, last, 4, 0);
+            byte* bytes = null;
+            uint size = 0;
+            message.GetWriteMessage(&bytes, &size);
+            if (size == 0) throw new InvalidOperationException("Engine produced no animation packet");
+            // GetWriteMessage includes the three-byte transport header; the engine
+            // removes it before handing incoming payloads to SetReadMessage.
+            reader.SetReadMessage(bytes + 3, size - 3, 0xffffffff, 1);
+            reader.ReadCHAR(8);
+            reader.ReadBYTE(8, 1);
+            reader.ReadOBJECTIDServer();
+            reader.ReadDWORD(32);
+            reader.ReadFLOAT(1f, 32);
+            var animation = reader.ReadWORD(16);
+            if (animation != 9) return (animation, 0, 0, 0);
+            var count = reader.ReadBYTE(2, 1);
+            reader.ReadOBJECTIDServer();
+            reader.ReadWORD(16); // Reaction.
+            reader.ReadWORD(16); // Reaction duration.
+            var duration = reader.ReadWORD(16);
+            reader.ReadBYTE(4, 1); // Hit outcome.
+            reader.ReadWORD(16); // Special attack type.
+            reader.ReadWORD(9); // Native damage feedback.
+            reader.ReadBOOL();
+            reader.ReadBOOL();
+            return (animation, count, reader.ReadBYTE(4, 1), duration);
+        }
+
+        private sealed unsafe class NativePacketMessage : IDisposable
+        {
+            private void* _memory;
+            public CNWSMessage Message { get; }
+
+            public NativePacketMessage()
+            {
+                // The pinned 8193.37.17 engine writes a derived-class flag at offset 0x68.
+                // NWNX_SWIG_DotNET's new_CNWSMessage allocates only 0x68 bytes. Allocate
+                // the engine's full 0x70-byte object here; this is a test-only fixture.
+                var construct = (delegate* unmanaged<void*, void>)NativeLibrary.GetExport(
+                    NativeLibrary.GetMainProgramHandle(), "_ZN11CNWSMessageC1Ev");
+                _memory = NativeMemory.AllocZeroed(0x70);
+                construct(_memory);
+                Message = CNWSMessage.FromPointer(_memory);
+            }
+
+            public void Dispose()
+            {
+                if (_memory == null) return;
+                var destruct = (delegate* unmanaged<void*, void>)NativeLibrary.GetExport(
+                    NativeLibrary.GetMainProgramHandle(), "_ZN11CNWSMessageD1Ev");
+                destruct(_memory);
+                NativeMemory.Free(_memory);
+                _memory = null;
+                Message.Dispose(); // Non-owning SWIG wrapper.
+            }
+        }
 
         [NWNEventHandler(ScriptName.OnItemHit)]
         public static void ObserveItemHit()

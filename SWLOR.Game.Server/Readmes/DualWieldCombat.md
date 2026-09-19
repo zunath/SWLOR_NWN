@@ -9,8 +9,8 @@ Weapon ACC and enhancement properties contribute once to the weapon carrying the
 native equipped attack-bonus effects must not also enter the creature-wide accuracy sum.
 Ordinary accuracy buffs still apply to both hands.
 
-The server's animation floor remains 1,750 ms. Faster cadence batches cycles, up to three
-cycles/six weapon rolls per animation. Limited-attack charges count actual weapon rolls,
+The server's attack-cycle floor remains 1,750 ms. Faster cadence batches cycles, up to three
+cycles/six weapon rolls per batch. Limited-attack charges count actual weapon rolls,
 including misses. A final limited no-delay charge can produce an odd extra main-hand roll.
 Skill-scoped effects count only the hands they apply to when limiting a batch or expiring
 its fractional progress. An off-hand no-delay effect must grant an extra off-hand roll.
@@ -48,11 +48,38 @@ Keep the attack data alive until the native damage/animation phase finishes; do 
 Single weapons, shields, ranged attacks, natural weapons, and double weapons without a
 separate left-hand weapon keep their existing scheduling paths.
 
+## Animation playback
+
+`WeaponAttackAnimation` captures the completed melee batch and presents its rolls as
+consecutive native attack animations, alternating main hand and off hand. The sequence fits
+inside the existing native animation duration, capped at 1,650 ms so it ends before the next
+1,750 ms cycle. Faster batches divide that same window among their rolls. Late client updates
+use the remaining time in a slot; they do not build an animation backlog.
+
+This is presentation only: rolls, damage, queued-ability reservations, on-hit processing and
+charge consumption retain their existing timing. Combat-log entries can therefore still
+arrive together. No delayed damage callbacks or additional attack actions are introduced.
+
+In engine 8193.37.17, `ComputeUpdateRequired` does not flag a new attack burst when the
+animation, speed and target are unchanged. Its companion serializer only includes matching
+attack-group entries among the last three attack slots. Two narrowly scoped hooks supply a
+fresh update for each visual swing and serialize one captured roll at a time. The client can
+select a fresh native swing variant instead of looping the original pose. Variant availability
+still depends on the creature's model and combat animation set.
+
+The serializer projection restores all touched fields in `finally`, including on failure;
+the real combat cursor and attack budgets never change. Playback stops applying when the
+native action, target, combat cursor or group no longer matches the captured batch. Ranged
+attacks keep their original visual path. Inactive playback records expire automatically.
+
 ## Verification
 
 `DualWieldEngineTests` exercises real commanded attacks, cold/poison weapon separation,
 six-roll native batches, weapon ACC isolation, missed-attack charges, and queued abilities.
+It also reads real serialized animation packets and verifies restoration of native combat
+data, including interrupted playback and simulated serialization failure.
 `CombatAttackDelayTests` covers shared-cycle cadence and individual-roll charge limits.
+`WeaponAttackAnimationTests` covers non-overlapping slots and alternating hand presentation.
 
 The server tests do not render a client. Check paired hit feedback and animation appearance
 in a connected client, including high haste and switching between one and two weapons.

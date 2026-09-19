@@ -528,13 +528,9 @@ namespace SWLOR.Game.Server.Native
 
                     if (timeSinceLastAttack < swingDelay)
                     {
-                        // The engine only re-sends the Attack animation (and its attack burst,
-                        // which drives the client's swing-variant randomization) when the
-                        // animation field changes. Because this hook keeps the attack action
-                        // alive across swings, the animation would otherwise stay at Attack
-                        // forever and clients would loop the first swing variant. Once the
-                        // swing's animation pause has elapsed, drop back to the combat-ready
-                        // loop so the next swing registers as a fresh Attack animation.
+                        // Return to the ready pose after the native damage phase. Client burst
+                        // refresh and consecutive melee playback are handled independently by
+                        // WeaponAttackAnimation, including cycles at the animation floor.
                         if (pCreature.m_pcCombatRound.m_bRoundPaused == 0 &&
                             pCreature.m_nAnimation == NWANIMBASE_ANIM_ATTACK)
                         {
@@ -690,7 +686,9 @@ namespace SWLOR.Game.Server.Native
                                                 StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
                                                 try
                                                 {
+                                                    var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
                                                     pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                    WeaponAttackAnimation.Capture(pCreature, firstAttack, nTimeAnimation);
                                                 }
                                                 finally
                                                 {

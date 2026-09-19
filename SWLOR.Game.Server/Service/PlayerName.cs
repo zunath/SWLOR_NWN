@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.Service
             return dbPlayer?.Settings?.ShowOwnDescriptor ?? true;
         }
 
-        private static bool TryGetKnownName(uint observer, uint target, out string knownName)
+        public static bool TryGetKnownName(uint observer, uint target, out string knownName)
         {
             var targetId = Disguise.GetIdentityKey(target);
             return TryGetKnownName(observer, targetId, out knownName);

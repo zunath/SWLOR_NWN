@@ -841,6 +841,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         [RecastGroup("Shock Trap", "Shock Trap", true)]
         ShockTrap = 520,
+
+        [RecastGroup("Introduction", "Introduction", false)]
+        Introduction = 521,
     }
 
     public class RecastGroupAttribute : Attribute

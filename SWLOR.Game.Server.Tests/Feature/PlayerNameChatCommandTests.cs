@@ -20,6 +20,12 @@ public class PlayerNameChatCommandTests
         commands["forgetname"].Authorization.Should().Be(AuthorizationLevel.All);
         commands["forgetname"].RequiresTarget.Should().BeTrue();
         commands["forgetname"].ValidTargetTypes.Should().Be(ObjectType.Creature);
+
+        commands["introduce"].Authorization.Should().Be(AuthorizationLevel.All);
+        commands["introduce"].RequiresTarget.Should().BeFalse();
+        commands.Should().NotContainKey("reveal");
+        commands["introductions"].Authorization.Should().Be(AuthorizationLevel.All);
+        commands["introductions"].RequiresTarget.Should().BeFalse();
     }
 
     [Test]

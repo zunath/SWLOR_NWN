@@ -101,7 +101,10 @@ public class DMChatCommandTests
         var commands = new DMChatCommand().BuildChatCommands();
 
         commands.Should().ContainKey("resetcooldowns");
+        commands["resetperkcooldowns"].Should().BeSameAs(commands["resetcooldowns"]);
+        commands["resetcooldown"].Should().BeSameAs(commands["resetcooldowns"]);
         commands["resetcooldowns"].Description.Should().Contain("perk refund");
+        commands["resetcooldowns"].Description.Should().Contain("introduction");
 
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -122,6 +125,7 @@ public class DMChatCommandTests
             "PerksViewModel.cs"));
 
         method.Should().Contain("dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;");
+        method.Should().Contain("dbPlayer.RecastTimes.Clear();");
         method.Should().Contain("Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());");
         perksViewModelSource.Should().Contain("IGuiRefreshable<PerkRefundCooldownResetRefreshEvent>");
         perksViewModelSource.Should().Contain("public void Refresh(PerkRefundCooldownResetRefreshEvent payload)");

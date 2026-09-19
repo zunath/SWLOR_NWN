@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -675,7 +676,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("dbPlayer.UnallocatedXP -= amount");
         disguiseSource.Should().Contain("new RPXPRefreshEvent()");
         disguiseSource.Should().Contain("new DisguiseChangedRefreshEvent()");
-        dmChatCommandSource.Should().Contain(".Description(\"Resets a player's ability, disguise, and perk refund cooldowns.\")");
+        new DMChatCommand().BuildChatCommands()["resetcooldowns"].Description.Should().Contain("disguise");
         dmChatCommandSource.Should().Contain("AbilityCooldownVisual.ClearAllRecastDelays(target);");
         dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target);");
 

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service.QuestService
     public class CollectItemObjective : IQuestObjective
     {
         public string Resref => _resref;
+        public int Quantity => _quantity;
         public CollectItemProducerRequirementType ProducerRequirement { get; }
         private readonly string _resref;
         private readonly int _quantity;
@@ -108,13 +109,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             if (quest == null) return false;
 
-            foreach (var progress in quest.ItemProgresses.Values)
-            {
-                if (progress > 0)
-                    return false;
-            }
-
-            return true;
+            return quest.ItemProgresses.TryGetValue(_resref, out var remaining) && remaining <= 0;
         }
 
         public string GetCurrentStateText(uint player, string questId)
@@ -188,13 +183,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             if (quest == null) return false;
 
-            foreach (var progress in quest.KillProgresses.Values)
-            {
-                if (progress > 0)
-                    return false;
-            }
-
-            return true;
+            return quest.KillProgresses.TryGetValue(Group, out var remaining) && remaining <= 0;
         }
 
         public string GetCurrentStateText(uint player, string questId)

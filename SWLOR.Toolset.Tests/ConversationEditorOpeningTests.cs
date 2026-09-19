@@ -67,11 +67,11 @@ public sealed class ConversationEditorOpeningTests
                 Path.Combine(dialogDirectory, id + ".dlg.json")))
             .ToArray();
 
-        routes.Should().HaveCount(346);
+        routes.Should().HaveCount(341);
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(345);
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(340);
         routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
             .Should().ContainSingle()
             .Which.Path.Should().EndWith("dmfi_universal.dlg.json",

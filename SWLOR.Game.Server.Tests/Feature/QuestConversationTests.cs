@@ -14,7 +14,7 @@ using SWLOR.Game.Server.Service.QuestService;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 [NonParallelizable]
-public sealed class QuestConversationTests
+public sealed partial class QuestConversationTests
 {
     private object _originalItemNames = null!;
     private static PropertyInfo ItemNameCache => typeof(Cache)
@@ -70,7 +70,13 @@ public sealed class QuestConversationTests
             quest.States.Keys.Order().Should().Equal(Enumerable.Range(1, quest.States.Count), id);
             quest.States.Should().NotBeEmpty(id);
             foreach (var state in quest.States.Values)
+            {
                 state.JournalText.Should().NotBeNullOrWhiteSpace(id);
+                state.GetObjectives().OfType<CollectItemObjective>().Select(objective => objective.Resref)
+                    .Should().OnlyHaveUniqueItems($"{id} uses one saved counter per item");
+                state.GetObjectives().OfType<KillTargetObjective>().Select(objective => objective.Group)
+                    .Should().OnlyHaveUniqueItems($"{id} uses one saved counter per enemy group");
+            }
             foreach (var prerequisite in quest.Prerequisites.OfType<RequiredQuestPrerequisite>())
                 quests.ContainsKey(prerequisite.QuestId).Should().BeTrue($"{id} requires {prerequisite.QuestId}");
         }
@@ -145,37 +151,41 @@ public sealed class QuestConversationTests
 
     [TestCase(1)]
     [TestCase(3)]
-    public void AlchemizedFrog_EachCreditedPlayerReceivesProofOnlyAfterTheKill(int playerCount)
+    public void EveryKillThenCollectQuest_GrantsEachCreditedPlayerTheirRequiredProof(int playerCount)
     {
-        var (quest, grants) = BuildFrogQuestWithItemRecorder();
         var players = Enumerable.Range(1, playerCount).Select(id => (uint)id).ToArray();
         const uint corpse = 100;
-
-        // Both kill-credit paths invoke these built quest callbacks for each advancing player.
-        foreach (var player in players)
+        var audited = 0;
+        foreach (var definition in BuildQuests().Values)
+        foreach (var (number, state) in definition.States.Where(pair => pair.Key > 1))
         {
+            var proof = state.GetObjectives().OfType<CollectItemObjective>().ToArray();
+            if (proof.Length == 0 || !definition.States[number - 1].GetObjectives().OfType<KillTargetObjective>().Any())
+                continue;
+            var (quest, grants) = BuildQuestWithItemRecorder(definition.QuestId);
+            foreach (var player in players)
             foreach (var action in quest.OnAdvanceActions)
-                action(player, corpse, 2);
-        }
+                action(player, corpse, number);
 
-        grants.Should().BeEquivalentTo(players.Select(player => ("frogguts", player, 1)),
-            "every credited player needs a separate item, rather than one item on the shared corpse");
+            grants.Should().BeEquivalentTo(players.SelectMany(player => proof.Select(item =>
+                    (item.Resref, player, item.Quantity))),
+                $"{quest.QuestId}: every credited player needs separate proof");
 
-        grants.Clear();
-        foreach (var player in players)
-        {
-            foreach (var action in quest.OnAcceptActions)
-                action(player, 200);
-            foreach (var action in quest.OnAdvanceActions)
-                action(player, 200, 3);
-            foreach (var action in quest.OnCompleteActions)
-                action(player, 200);
+            grants.Clear();
+            foreach (var player in players)
+            {
+                foreach (var action in quest.OnAcceptActions) action(player, 200);
+                foreach (var action in quest.OnAdvanceActions) action(player, 200, number + 1);
+                foreach (var action in quest.OnCompleteActions) action(player, 200);
+            }
+            grants.Should().BeEmpty($"{quest.QuestId}: acceptance, hand-in, and completion must not grant more proof");
+            audited++;
         }
-        grants.Should().BeEmpty("acceptance, hand-in, and completion must not grant more proof");
+        audited.Should().BeGreaterThanOrEqualTo(3);
     }
 
     private static (QuestDetail Quest, List<(string Resref, uint Player, int Quantity)> Grants)
-        BuildFrogQuestWithItemRecorder()
+        BuildQuestWithItemRecorder(string questId)
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
@@ -183,8 +193,12 @@ public sealed class QuestConversationTests
         directory.Should().NotBeNull();
 
         // Compile the real definition against the real builder, replacing only the native item call.
-        var definition = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server",
-            "Feature", "QuestDefinition", "KorribanQuestDefinition.cs"));
+        var definitionType = typeof(IQuestListDefinition).Assembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract && typeof(IQuestListDefinition).IsAssignableFrom(type))
+            .Single(type => ((IQuestListDefinition)Activator.CreateInstance(type)!).BuildQuests().ContainsKey(questId));
+        var definition = Directory.EnumerateFiles(Path.Combine(directory!.FullName, "SWLOR.Game.Server",
+                "Feature", "QuestDefinition"), "*.cs")
+            .Select(File.ReadAllText).Single(source => source.Contains($"class {definitionType.Name}"));
         var recorder = """
             public static class QuestItemRecorder
             {
@@ -194,6 +208,7 @@ public sealed class QuestConversationTests
                     Grants.Add((resref, player, quantity));
                     return 500;
                 }
+                public static void GiveKeyItem(uint player, SWLOR.Game.Server.Service.KeyItemService.KeyItemType type) { }
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
@@ -201,19 +216,18 @@ public sealed class QuestConversationTests
             .Append(typeof(QuestBuilder).Assembly.Location)
             .Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
-        var compilation = CSharpCompilation.Create("FrogQuestHarness_" + Guid.NewGuid().ToString("N"),
-            [CSharpSyntaxTree.ParseText("using static QuestItemRecorder;\n" + definition),
+        var compilation = CSharpCompilation.Create("QuestProofHarness_" + Guid.NewGuid().ToString("N"),
+            [CSharpSyntaxTree.ParseText("using static QuestItemRecorder;\nusing KeyItem = QuestItemRecorder;\n" + definition),
                 CSharpSyntaxTree.ParseText(recorder)], references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
         using var stream = new MemoryStream();
         var result = compilation.Emit(stream);
         result.Success.Should().BeTrue(string.Join(Environment.NewLine, result.Diagnostics));
         var assembly = Assembly.Load(stream.ToArray());
-        var quests = ((IQuestListDefinition)Activator.CreateInstance(assembly.GetType(
-            "SWLOR.Game.Server.Feature.QuestDefinition.KorribanQuestlineDefinition")!)!).BuildQuests();
+        var quests = ((IQuestListDefinition)Activator.CreateInstance(assembly.GetType(definitionType.FullName!)!)!).BuildQuests();
         var grants = (List<(string, uint, int)>)assembly.GetType("QuestItemRecorder")!
             .GetField("Grants")!.GetValue(null)!;
-        return (quests["alchemized_frog"], grants);
+        return (quests[questId], grants);
     }
 
     [Test]

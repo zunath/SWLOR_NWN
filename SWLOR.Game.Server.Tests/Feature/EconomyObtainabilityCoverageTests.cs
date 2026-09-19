@@ -86,7 +86,7 @@ public class EconomyObtainabilityCoverageTests
         return false;
     }
 
-    private static HashSet<string> ReadObtainableResrefs(string root)
+    internal static HashSet<string> ReadObtainableResrefs(string root)
     {
         var obtainable = new HashSet<string>();
         void Add(string r)

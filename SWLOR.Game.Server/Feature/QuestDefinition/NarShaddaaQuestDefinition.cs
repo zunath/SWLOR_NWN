@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         public Dictionary<string, QuestDetail> BuildQuests()
         {
             DataSmuggler();
-            RooftopSniper();
             SpaceDungeon_SlaverRaid();
             SpaceDungeon_PirateHideout();
 			GreatArkanianDragonHunt();
@@ -30,21 +29,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(4500)
                 .AddXPReward(5000)
                 .AddItemReward("recipe_boganoga", 1);
-		}
-
-        private void RooftopSniper()
-        {
-            _builder.Create("nar_rooftop_sniper", "Neutralize the Rooftop Sniper")
-                .AddState()
-                .SetStateJournalText("A sniper has been terrorizing travelers near the upper levels. Find and eliminate him.")
-                .AddKillObjective(NPCGroupType.NarShaddaa_Sniper, 1)
-
-                .AddState()
-                .SetStateJournalText("Report to the district marshal once the sniper is neutralized.")
-                .AddGoldReward(8000)
-                .AddXPReward(9500)
-                .AddItemReward("recipe_cartelck", 1);
-
 		}
 
         private void SpaceDungeon_SlaverRaid()
@@ -80,12 +64,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void GreatArkanianDragonHunt()
         {
             _builder.Create("nar_great_arkanian_dragon", "Hunt the Great Arkanian Dragon")
+                .OnAdvanceAction((player, sourceObject, state) =>
+                {
+                    if (state == 2)
+                        CreateItemOnObject("ark_dragon_troph", player, 1);
+                })
                 .AddState()
                 .SetStateJournalText("A bounty hunter has reported a rare Great Arkanian Dragon lurking in an abandoned space station. Hunt down the beast and kill it.")
                 .AddKillObjective(NPCGroupType.AbandonedStation_GreatArkanianDragon, 1)
 
                 .AddState()
-                .SetStateJournalText("Bring proof of the dragon's death back to the bounty hunter.")
+                .SetStateJournalText("You recovered an Arkanian Dragon Trophy from the slain beast. Bring it back to the GSI representative on Nar Shaddaa.")
                 .AddCollectItemObjective("ark_dragon_troph", 1)
 
                 .AddState()

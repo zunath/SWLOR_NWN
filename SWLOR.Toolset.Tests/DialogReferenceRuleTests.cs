@@ -57,10 +57,9 @@ namespace SWLOR.Toolset.Tests
         {
             var issues = new UnreferencedConversationRule().Validate(Context()).ToList();
 
-            // Every one is a hand-authored conversation: the generated shells are excluded by
-            // design, and if they were not this would be 287 findings instead of 32 and nobody
-            // would read any of them.
-            issues.Should().HaveCount(32);
+            // Authored graphs remain discoverable even without a referring object. Retired
+            // quests and Nahulu's merged oath conversation no longer contribute findings.
+            issues.Should().HaveCount(29);
             issues.Should().OnlyContain(issue => issue.Severity == ValidationSeverity.Warning);
             issues.Select(issue => issue.ResRef).Should().Contain("trooperquest");
             issues.Select(issue => issue.ResRef).Should().NotContain("dmfi_universal",

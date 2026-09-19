@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
@@ -18,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             CoxxionInitiation();
             WeaponsForKrystalle();
             FindCaptainNguth();
-            FirstRites();
             HelpTheTalyronFamily();
             KathHoundHunting();
             LocateTheMandalorianFacility();
@@ -35,7 +32,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             JoiningTheRepublic();
             MedicalEquipmentForShelby();
             SpiceOneSmallFavour();
-            DantooineHerbs();
 
             return _builder.Build();
         }
@@ -132,99 +128,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
-                });
-        }
-
-        //todo: review the first rites quest.
-
-        /// <summary>
-        /// When a force crystal is touched, run the progression logic for the First Rites quest.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnQuestForceCrystal)]
-        public static void FirstRitesForceCrystal()
-        {
-            const string InactiveQuestText = "The crystal glows quietly...";
-            var player = GetLastUsedBy();
-
-            // Not a player.
-            if (!GetIsPC(player) || GetIsDM(player))
-            {
-                SendMessageToPC(player, InactiveQuestText);
-                return;
-            }
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            // Player doesn't have this quest yet.
-            if (!dbPlayer.Quests.ContainsKey("first_rites"))
-            {
-                SendMessageToPC(player, InactiveQuestText);
-                return;
-            }
-
-            // Player is not on the appropriate state of the quest.
-            var playerQuestState = dbPlayer.Quests["first_rites"];
-            if (playerQuestState.CurrentState != 2)
-            {
-                SendMessageToPC(player, InactiveQuestText);
-                return;
-            }
-
-            var quest = Quest.GetQuestById("first_rites");
-            var crystal = OBJECT_SELF;
-            var type = GetLocalInt(crystal, "CRYSTAL_COLOR_TYPE");
-
-            string cluster;
-
-            switch (type)
-            {
-                case 1: cluster = "c_cluster_blue"; break; // Blue
-                case 2: cluster = "c_cluster_red"; break; // Red
-                case 3: cluster = "c_cluster_green"; break; // Green
-                case 4: cluster = "c_cluster_yellow"; break; // Yellow
-                default: throw new Exception("Invalid crystal color type.");
-            }
-
-            CreateItemOnObject(cluster, player);
-            quest.Advance(player, crystal);
-
-            ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
-
-            var waypoint = GetObjectByTag("FORCE_QUEST_LANDING");
-            var location = GetLocation(waypoint);
-
-            AssignCommand(player, () => ActionJumpToLocation(location));
-
-            // todo: unlock perk
-            FloatingTextStringOnCreature("You have unlocked the Lightsaber Blueprints perk.", player, false);
-        }
-
-        private void FirstRites()
-        {
-            _builder.Create("first_rites", "First Rites")
-
-                // Use object
-                .AddState()
-                .SetStateJournalText("Jhoren has requested you search the nearby cavern in Viscara Wildlands for a source of power and return it to him.")
-
-                // Use object
-                .AddState()
-                .SetStateJournalText("Select a crystal and begin on your path towards becoming one with the Force.")
-
-                .OnAcceptAction((player, sourceObject) =>
-                {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Visible);
-                })
-
-                .OnAbandonAction(player =>
-                {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
-                })
-
-                .OnAdvanceAction((player, sourceObject, state) =>
-                {
-                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 });
         }
 
@@ -535,7 +438,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You have completed the Lieutenant's test. Return to the Lieutenant to continue your path towards enlisting as a soldier of the Republic.")
 
                 .AddState()
-                .SetStateJournalText("Lieutenant Marbury Grant has instructed you to speak to Sergeant Nahulu, who awaits you are the parade square of Outpost Hope to reaffirm your oath of allegiance.")
+                .SetStateJournalText("Lieutenant Marbury Grant has instructed you to speak to Sergeant Nahulu, who awaits you at the parade square of Outpost Hope to reaffirm your oath of allegiance.")
 
                 .AddState()
                 .SetStateJournalText("You have reaffirmed your oath of allegiance to the Republic and the Senate. Return to the Lieutenant and conclude your enlistment as a soldier of the Republic.")
@@ -646,20 +549,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(37500)
                 .AddXPReward(25000)
                 .AddItemReward("recipe_fabswoop1", 1);
-        }
-        private void DantooineHerbs()
-        {
-            _builder.Create("dantooine_herbs", "Collect Dantooine Starwort Herbs")
-
-                .AddState()
-                .SetStateJournalText("Collect 20 Dantooine Starwort Herbs and bring them to Doc Joe in Veles Colony.")
-                .AddCollectItemObjective("dant_starwort", 20)
-
-                .AddState()
-                .SetStateJournalText("You have collected 20 Dantooine Starwort Herbs. Return to Doc Joe in Veles Colony for your reward.")
-
-                .AddGoldReward(7500)
-                .AddXPReward(4000);
         }
     }
 }

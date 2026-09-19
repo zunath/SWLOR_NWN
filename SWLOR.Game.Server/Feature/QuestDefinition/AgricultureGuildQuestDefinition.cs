@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_031", "blackened_newt", 1, 0);
             BuildItemTask(builder, "agr_tsk_032", "cooked_jellyfish", 1, 0);
             BuildItemTask(builder, "agr_tsk_033", "denzi_treat", 1, 0);
-            BuildItemTask(builder, "agr_tsk_034", "cooked_crayfish", 1, 0);
+            BuildItemTask(builder, "agr_tsk_034", "peeled_crayfish", 1, 0);
             BuildItemTask(builder, "agr_tsk_035", "peeled_lobster", 1, 0);
             BuildItemTask(builder, "agr_tsk_036", "cooked_bibikibo", 1, 0);
             BuildItemTask(builder, "agr_tsk_037", "sliced_sardine", 1, 0);
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_628", "tricolored_sushi", 1, 3);
             BuildItemTask(builder, "agr_tsk_629", "fish_n_chips", 1, 3);
             BuildItemTask(builder, "agr_tsk_630", "roast_pipira", 1, 3);
-            BuildItemTask(builder, "agr_tsk_631", "roast_cod", 1, 3);
+            BuildItemTask(builder, "agr_tsk_631", "sliced_cod", 1, 3);
             BuildItemTask(builder, "agr_tsk_632", "bonefish_broth", 1, 3);
             BuildItemTask(builder, "agr_tsk_633", "steamed_catfish", 1, 3);
             BuildItemTask(builder, "agr_tsk_634", "cooked_yayin", 1, 3);

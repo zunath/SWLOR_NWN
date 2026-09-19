@@ -20,7 +20,7 @@ REPAIRED_ROOFS = {
     "swc_blg_corhis03": 17.27, "swc_blg_corhis04": 22.68,
     "swc_bld_bk_cor01": 29.56, "swc_bld_bk_cor02": 17.79,
     "swc_bld_bk_cor03": 17.79, "swc_bldg_b_sky04": 155.99,
-    "swc_prison01": 36.13, "swc_fctry_item1": 7.7,
+    "swc_prison01": 51.459, "swc_fctry_item1": 7.7,
     "swc_hse_lrg_gen3": 7.64,
 }
 EXISTING_VOLUMES = {
@@ -314,6 +314,35 @@ class VelesBuildingWalkmeshAuditTests(unittest.TestCase):
                            ((35, 0, .2), (30, 0, .2))):
             with self.subTest(wall=start):
                 self.assertTrue(intersections(vertices, faces, start, end))
+
+    def test_prison_spires_block_entry_above_the_main_roof(self):
+        vertices, faces = self.meshes["swc_prison01"]
+        # Mesh1's two tall spires and their Mesh5 caps in swc_prison01.mdl.
+        # Sample the broad bases, tapered shafts, collars and narrow top caps.
+        spires = (
+            ((5.4714, -10.93675), (36.131, 37, 38, 41, 42.1, 45, 49.8, 50.5, 51.4, 51.458)),
+            ((2.187, -6.56), (36.131, 38, 39.5, 40, 46.8, 47.3, 47.41)),
+        )
+        for (x, y), heights in spires:
+            for z in heights:
+                for dx, dy in ((-3, 0), (3, 0), (0, -3), (0, 3)):
+                    with self.subTest(spire=(x, y), z=z, approach=(dx, dy)):
+                        self.assertEqual(len(intersections(vertices, faces,
+                                                          (x+dx, y+dy, z), (x, y, z))), 1)
+            # Each spire joins the main body with no buried cap inside the solid.
+            self.assertEqual(len(intersections(vertices, faces, (x, y, 35), (x, y, 52))), 1)
+
+    def test_prison_keeps_space_between_and_above_spires_clear(self):
+        vertices, faces = self.meshes["swc_prison01"]
+        for z in (36.14, 40, 48, 51.5):
+            with self.subTest(clear_roof=z):
+                self.assertFalse(intersections(vertices, faces, (-20, 0, z), (20, 0, z)))
+        # Raising the whole footprint, or extruding either spire's broad base to
+        # its full height, would add invisible walls at these clear model points.
+        for x, y, bottom, top in ((6.3, -10.94, 38, 52), (2.45, -6.56, 40, 52),
+                                  (2.187, -6.56, 47.43, 52), (5.4714, -10.93675, 51.46, 52)):
+            with self.subTest(clear_column=(x, y)):
+                self.assertFalse(intersections(vertices, faces, (x, y, bottom), (x, y, top)))
 
 
 if __name__ == "__main__":

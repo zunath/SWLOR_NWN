@@ -6,8 +6,12 @@ use `swc_blg_corhis02` and `swc_blg_corhis04`.
 
 Ten building models had flat PWKs. Their collision did not extend through the
 street's walking plane when the building was sunk into the terrain. Each now has
-a closed volume from a buried foundation at local Z -0.5 to its model's roof.
+a closed volume from a buried foundation at local Z -0.5 to its main roof.
 The full height covers placements beside Veles's elevated streets as well.
+The prison's two tall rooftop spires continue to local Z 47.4224 and 51.459.
+Their collision copies the tapered shafts and caps from native Mesh1/Mesh5 and
+joins them into the main roof without internal faces, leaving the space between
+the spires clear.
 Skyscraper 04 had no PWK; its new collision follows the native model's base outline,
 including both recessed entrances and the chamfered corners.
 
@@ -20,7 +24,7 @@ including both recessed entrances and the chamfered corners.
 | `swc_bld_bk_cor01` | 4 | Extrude existing footprint | 29.56 |
 | `swc_bld_bk_cor02` | 1 | Extrude existing footprint | 17.79 |
 | `swc_bld_bk_cor03` | 1 | Extrude existing footprint | 17.79 |
-| `swc_prison01` | 1 | Extrude existing footprint | 36.13 |
+| `swc_prison01` | 1 | Extrude footprint; add native upper spires | 36.13 main roof; 51.459 tallest spire |
 | `swc_fctry_item1` | 2 | Extrude four separate footprint solids | 7.70 |
 | `swc_hse_lrg_gen3` | 1 | Extrude existing footprint | 7.64 |
 | `swc_bldg_b_sky04` | 1 | Add missing PWK | 155.99 |
@@ -38,9 +42,11 @@ Door surrounds, signs, vehicles, kiosks, and other street furniture are outside
 the building-shell repair scope.
 
 Run `python -m unittest discover -s tools/tests -p test_building_walkmesh.py -v`.
-The 13 geometry checks cover the complete building/tower inventory, sealed
+The 15 geometry checks cover the complete building/tower inventory, sealed
 repaired meshes, the three reported approaches, preserved recesses, and collision
-against ground heights read from the area's rotated tiles and WOKs. Terrain above
+against ground heights read from the area's rotated tiles and WOKs. Prison spire
+checks exercise entry from four sides at multiple heights, sealed joins, tapered
+clearance, and open space between and above the spires. Terrain above
 a submerged model's roof remains unobstructed by that model.
 
 All eleven changed resources are in `SWLOR_Haks/sw_plc`. Rebuild and distribute

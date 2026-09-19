@@ -1,6 +1,8 @@
 using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -139,6 +141,79 @@ public sealed class QuestConversationTests
         incoming.Should().OnlyContain(link => link.Conditions.Any(condition =>
             condition.Key == "condition-on-quest-state" && !condition.IsNegated &&
             condition.Arguments.SequenceEqual(new[] { "alchemized_frog", "2" })));
+    }
+
+    [TestCase(1)]
+    [TestCase(3)]
+    public void AlchemizedFrog_EachCreditedPlayerReceivesProofOnlyAfterTheKill(int playerCount)
+    {
+        var (quest, grants) = BuildFrogQuestWithItemRecorder();
+        var players = Enumerable.Range(1, playerCount).Select(id => (uint)id).ToArray();
+        const uint corpse = 100;
+
+        // Both kill-credit paths invoke these built quest callbacks for each advancing player.
+        foreach (var player in players)
+        {
+            foreach (var action in quest.OnAdvanceActions)
+                action(player, corpse, 2);
+        }
+
+        grants.Should().BeEquivalentTo(players.Select(player => ("frogguts", player, 1)),
+            "every credited player needs a separate item, rather than one item on the shared corpse");
+
+        grants.Clear();
+        foreach (var player in players)
+        {
+            foreach (var action in quest.OnAcceptActions)
+                action(player, 200);
+            foreach (var action in quest.OnAdvanceActions)
+                action(player, 200, 3);
+            foreach (var action in quest.OnCompleteActions)
+                action(player, 200);
+        }
+        grants.Should().BeEmpty("acceptance, hand-in, and completion must not grant more proof");
+    }
+
+    private static (QuestDetail Quest, List<(string Resref, uint Player, int Quantity)> Grants)
+        BuildFrogQuestWithItemRecorder()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+
+        // Compile the real definition against the real builder, replacing only the native item call.
+        var definition = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server",
+            "Feature", "QuestDefinition", "KorribanQuestDefinition.cs"));
+        var recorder = """
+            public static class QuestItemRecorder
+            {
+                public static readonly System.Collections.Generic.List<(string, uint, int)> Grants = new();
+                public static uint CreateItemOnObject(string resref, uint player, int quantity = 1)
+                {
+                    Grants.Add((resref, player, quantity));
+                    return 500;
+                }
+            }
+            """;
+        var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
+            .Split(Path.PathSeparator)
+            .Append(typeof(QuestBuilder).Assembly.Location)
+            .Distinct()
+            .Select(path => MetadataReference.CreateFromFile(path));
+        var compilation = CSharpCompilation.Create("FrogQuestHarness_" + Guid.NewGuid().ToString("N"),
+            [CSharpSyntaxTree.ParseText("using static QuestItemRecorder;\n" + definition),
+                CSharpSyntaxTree.ParseText(recorder)], references,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        using var stream = new MemoryStream();
+        var result = compilation.Emit(stream);
+        result.Success.Should().BeTrue(string.Join(Environment.NewLine, result.Diagnostics));
+        var assembly = Assembly.Load(stream.ToArray());
+        var quests = ((IQuestListDefinition)Activator.CreateInstance(assembly.GetType(
+            "SWLOR.Game.Server.Feature.QuestDefinition.KorribanQuestlineDefinition")!)!).BuildQuests();
+        var grants = (List<(string, uint, int)>)assembly.GetType("QuestItemRecorder")!
+            .GetField("Grants")!.GetValue(null)!;
+        return (quests["alchemized_frog"], grants);
     }
 
     [Test]

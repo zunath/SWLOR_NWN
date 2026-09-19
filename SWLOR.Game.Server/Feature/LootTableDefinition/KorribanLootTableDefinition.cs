@@ -480,9 +480,6 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("chiro_shard", 1);
 
 
-            _builder.Create("FROG_BOSS_TROPHY")
-                .AddItem("frogguts", 1);
-
             _builder.Create("FROG_BOSS_RARES")
                 .IsRare()
                 .AddItem("fnote_2052", 2, 1, true)

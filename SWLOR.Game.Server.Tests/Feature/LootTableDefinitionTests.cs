@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Service.LootService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -40,24 +39,6 @@ public class LootTableDefinitionTests
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
-    }
-
-    [Test]
-    public void AlchemizedFrog_GuaranteesTheGutsRequiredForQuestHandIn()
-    {
-        var trophy = new KorribanLootTableDefinition().BuildLootTables()["FROG_BOSS_TROPHY"];
-        trophy.IsRare.Should().BeFalse();
-        var guts = trophy.Should().ContainSingle().Which;
-        guts.Resref.Should().Be("frogguts");
-        guts.Weight.Should().BeGreaterThan(0);
-        guts.MaxQuantity.Should().Be(1);
-
-        using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "Module", "utc", "frogboss.utc.json")));
-        var locals = blueprint.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray();
-        locals.Where(local => local.GetProperty("Name").GetProperty("value").GetString() == "LOOT_TABLE_6")
-            .Should().ContainSingle().Which.GetProperty("Value").GetProperty("value").GetString()
-            .Should().Be("FROG_BOSS_TROPHY,100,1");
     }
 
     private static IEnumerable<Type> GetLootTableDefinitionTypes()

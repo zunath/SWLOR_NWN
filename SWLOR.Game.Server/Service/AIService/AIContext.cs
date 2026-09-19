@@ -134,6 +134,9 @@ namespace SWLOR.Game.Server.Service.AIService
 
             foreach (var candidate in candidates)
             {
+                if (!includeSelf && candidate == Self)
+                    continue;
+
                 if (candidate != Self && maxRange > 0f && GetDistanceBetween(Self, candidate) > maxRange)
                     continue;
 

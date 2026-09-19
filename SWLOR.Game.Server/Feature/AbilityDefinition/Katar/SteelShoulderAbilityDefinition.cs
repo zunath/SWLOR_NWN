@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .UsesImmediateAuthoredAnimation()
                     .Name("Steel Shoulder")
                     .Level(1)
+                    .HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))
                     .HasRecastDelay(RecastGroup.TwinGuardStance, 18.0f),
                 SkillType.Katar,
                 8,

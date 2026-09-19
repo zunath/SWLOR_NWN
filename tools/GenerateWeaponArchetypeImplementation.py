@@ -3482,6 +3482,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             "using SWLOR.Game.Server.Feature.StatusEffectDefinition;",
             "using SWLOR.Game.Server.Service;",
             "using SWLOR.Game.Server.Service.AbilityService;",
+            *(["using SWLOR.Game.Server.Service.AIService;"] if base == "Steel Shoulder" else []),
             "using SWLOR.Game.Server.Service.PerkService;",
             "using SWLOR.Game.Server.Service.SkillService;",
             "using SWLOR.Game.Server.Service.StatusEffectService;",
@@ -3613,6 +3614,8 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 *authored_animation_builder_lines(skill, row, hostile == "true"),
                 f"                    .Name(\"{escape_csharp(row['PerkName'])}\")",
                 f"                    .Level({level})",
+                *(["                    .HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))"]
+                  if base == "Steel Shoulder" else []),
                 f"                    .HasRecastDelay(RecastGroup.{recast}, {recast_seconds:.1f}f),",
                 f"                SkillType.{skill},",
                 f"                {damage},",

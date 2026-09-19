@@ -107,6 +107,18 @@ public class AIProfileValidationTests
     }
 
     [Test]
+    public void DroidProfile_SteelShoulderUsesTheAbilityTargetSelector()
+    {
+        Ability.CacheData();
+        var ability = Ability.GetAbilityDetail(FeatType.TwinGuardStance1);
+        var profile = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion];
+        var action = profile.Actions.Single(action => action.Feat == FeatType.TwinGuardStance1);
+
+        ability.AITargetSelector.Should().NotBeNull();
+        action.TargetSelector.Should().BeSameAs(ability.AITargetSelector);
+    }
+
+    [Test]
     public void NPCAI_CacheProfilesLoadsAndValidatesDefaultProfiles()
     {
         Ability.CacheData();

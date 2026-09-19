@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Designation: KX-17. Function: structural failure analysis. Skeletal assessment: two hundred six load-bearing components, several below rated tolerance for the work ahead. Six organic operators are drilling demolition staff-technique at CZ-220 Breaker Yard without certification. Force applied exceeds rated tolerance of surrounding structure. That is the definition of Worldbreaker. Correct six of them. Return with the breaker yard work order they are falsifying."
+            "0": "Designation: KX-17. Function: structural failure analysis. Skeletal assessment: two hundred six load-bearing components, several below rated tolerance for the work ahead. Six organic operators are drilling demolition staff-technique at CZ-220 Breaker Yard without certification. Force applied exceeds rated tolerance of surrounding structure. That is the definition of Worldbreaker. Correct six of them. Return with the breaker yard work order they are falsifying. You will need the CZ-220 Breaker Yard Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Acknowledged. Bay seven, six operators, one work order. Proceed."
+            "0": "Acknowledged. Bay seven, six operators, one work order. Proceed. Here is your CZ-220 Breaker Yard Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Six operators remain uncorrected at CZ-220 Breaker Yard. Work order not yet recovered. Trial incomplete."
+            "0": "Six operators remain uncorrected at CZ-220 Breaker Yard. Work order not yet recovered. Trial incomplete. Use the CZ-220 Breaker Yard Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

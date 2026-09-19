@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stop. Lead foot. You plant it like a fence post, and Saber Storm never plants, it pours. Better. I'm Talan Rees. I ran the storm drills in the Jedi Enclave Trial Halls east of here on Dantooine, until my own students barred the doors on me. Six adepts hold the outer ring now, drilling the form with no restraint and no instructor. Put them down and bring me the Saber Storm Enclave Trial Slate they drill from. That slate is lesson one, and they have been reading it wrong."
+            "0": "Stop. Lead foot. You plant it like a fence post, and Saber Storm never plants, it pours. Better. I'm Talan Rees. I ran the storm drills in the Jedi Enclave Trial Halls east of here on Dantooine, until my own students barred the doors on me. Six adepts hold the outer ring now, drilling the form with no restraint and no instructor. Put them down and bring me the Saber Storm Enclave Trial Slate they drill from. That slate is lesson one, and they have been reading it wrong. You will need the Dantooine Jedi Enclave Trial Halls Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ha. Good answer. Watch the outer ring's floor, it's scored from years of drills and it will catch a dragging heel. Six adepts, then the slate, then me. And tuck that elbow. You were doing it again."
+            "0": "Ha. Good answer. Watch the outer ring's floor, it's scored from years of drills and it will catch a dragging heel. Six adepts, then the slate, then me. And tuck that elbow. You were doing it again. Here is your Dantooine Jedi Enclave Trial Halls Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Outer ring. Six adepts. The Enclave Trial Slate they drill from. The halls won't get quieter while you stretch."
+            "0": "Outer ring. Six adepts. The Enclave Trial Slate they drill from. The halls won't get quieter while you stretch. Use the Dantooine Jedi Enclave Trial Halls Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

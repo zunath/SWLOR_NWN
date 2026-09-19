@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Do you hear the conduits this morning? Under the ward -- there, that low note. Out of tune. There are practitioners in the Dantooine Medical Sublevel who took the conduit form from me and dammed it: they pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go down, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger they carried off when they sealed the stair. The ward cannot sort its sick without it, and I cannot reach them anymore."
+            "0": "Do you hear the conduits this morning? Under the ward -- there, that low note. Out of tune. There are practitioners in the Dantooine Medical Sublevel who took the conduit form from me and dammed it: they pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go down, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger they carried off when they sealed the stair. The ward cannot sort its sick without it, and I cannot reach them anymore. You will need the Dantooine Medical Sublevel Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Then go quietly and come back whole. The key I've given you opens the service door behind the recovery ward; past it, follow the pipes down. Six adepts, the ledger, and back to me. I'll keep a bed warm. I always do."
+            "0": "Then go quietly and come back whole. The key I've given you opens the service door behind the recovery ward; past it, follow the pipes down. Six adepts, the ledger, and back to me. I'll keep a bed warm. I always do. Here is your Dantooine Medical Sublevel Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The stair is still sealed behind you and the ledger is still below. Six adepts stand between the ward and its Infinite Conduit Triage Ward Ledger. Go gently. But go."
+            "0": "The stair is still sealed behind you and the ledger is still below. Six adepts stand between the ward and its Infinite Conduit Triage Ward Ledger. Go gently. But go. Use the Dantooine Medical Sublevel Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

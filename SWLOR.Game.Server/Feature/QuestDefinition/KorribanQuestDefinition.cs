@@ -91,12 +91,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteQuest("prove_dominance")
 
                 .AddState()
-                .SetStateJournalText("Warrior Camila has sensed dark alchemical energy emanating from the ancient tombs. She tasks you with investigating the disturbance.")
+                .SetStateJournalText("Sith Warrior Camila in the Sith Academy has asked you to slay the alchemized frog in the ancient tombs and recover its Frog Guts.")
                 .AddKillObjective(NPCGroupType.Korriban_AlchemizedFrog, 1)
-                .AddState()
 
                 .AddState()
-                .SetStateJournalText("The creature is slain. Return to Dral'kor Keth and report your findings.")
+                .SetStateJournalText("The alchemized frog is slain. Bring one Frog Guts from its remains to Sith Warrior Camila in the Sith Academy.")
+                .AddCollectItemObjective("frogguts", 1)
+
+                .AddState()
+                .SetStateJournalText("You have delivered the Frog Guts. Speak with Sith Warrior Camila in the Sith Academy to receive your reward.")
                 .AddXPReward(10000)
                 .AddGoldReward(6000);
 

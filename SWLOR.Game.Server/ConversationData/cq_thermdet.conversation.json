@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That marker you just walked past means live ordinance, and you strolled by it like it was a fence post. Second one today. First one's the reason Hutlar Qion Test Site is locked to everyone but me: there's a crew in there cooking oversized charges with no containment plan, and I am done finding their mistakes after the fact. Put down six of their adepts in the test site on Hutlar, and bring me back a Thermal Detonator Qion Test Log so I know exactly what they were building before it built itself into a crater.",
+          "Text": "That marker you just walked past means live ordnance, and you strolled by it like it was a fence post. Second one today. First one's the reason Hutlar Qion Test Site is locked to everyone but me: there's a crew in there cooking oversized charges with no containment plan, and I am done finding their mistakes after the fact. Put down six of their adepts in the test site on Hutlar, and bring me back a Thermal Detonator Qion Test Log so I know exactly what they were building before it built itself into a crater. You will need the Hutlar Qion Test Site Key to get inside. Agree to the job and I will give it to you.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. Don't touch anything marked, don't skip a step because it looks finished, and don't come back until you can hand me the log instead of an excuse.",
+          "Text": "Good. Don't touch anything marked, don't skip a step because it looks finished, and don't come back until you can hand me the log instead of an excuse. Here is your Hutlar Qion Test Site Key. Use it to enter the trial area; keep it for the work ahead.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hutlar Qion Test Site still owes me that Test Log. Six adepts down, log in hand, then we talk.",
+          "Text": "Hutlar Qion Test Site still owes me that Test Log. Six adepts down, log in hand, then we talk. Use the Hutlar Qion Test Site Key I gave you when you took the job. You can find it under Key Items.",
           "Style": 0,
           "Color": null
         }
@@ -1330,7 +1330,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "thermal_detonator_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00003",
@@ -1440,7 +1447,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "thermal_detonator_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00009",
@@ -1486,7 +1500,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "thermal_detonator_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00011",
@@ -1596,7 +1617,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "thermal_detonator_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00017",
@@ -1642,7 +1670,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "thermal_detonator_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00019",
@@ -1752,7 +1787,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "thermal_detonator_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00025",
@@ -1798,7 +1840,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "thermal_detonator_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00027",
@@ -1908,7 +1957,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "thermal_detonator_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00033",
@@ -1954,7 +2010,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "thermal_detonator_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00035",
@@ -2064,7 +2127,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "thermal_detonator_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00041",

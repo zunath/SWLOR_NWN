@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Eleven steps, and the fourth was loud. Sit anyway. There's a crew squatting in the Czerka Arms Test Range - the old proving lanes here on the Smuggler's Moon - burning rounds like breath is free. Their adepts call what they do my doctrine. It isn't. Six of them on the near lanes. Put them down and bring me the One Shot Czerka Test Docket they score themselves against. I want to see what they think counts as a hit."
+            "0": "Eleven steps, and the fourth was loud. Sit anyway. There's a crew squatting in the Czerka Arms Test Range - the old proving lanes here on the Smuggler's Moon - burning rounds like breath is free. Their adepts call what they do my doctrine. It isn't. Six of them on the near lanes. Put them down and bring me the One Shot Czerka Test Docket they score themselves against. I want to see what they think counts as a hit. You will need the Czerka Arms Test Range Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The key in your hand opens the range gate - Czerka stamped it, I kept it. Down the landing, near lanes first. Wind runs left to right past the third marker. You didn't ask. Now you know."
+            "0": "The key in your hand opens the range gate - Czerka stamped it, I kept it. Down the landing, near lanes first. Wind runs left to right past the third marker. You didn't ask. Now you know. Here is your Czerka Arms Test Range Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Six adepts. One docket. The near lanes. You're spending words I didn't buy - go spend rounds instead."
+            "0": "Six adepts. One docket. The near lanes. You're spending words I didn't buy - go spend rounds instead. Use the Czerka Arms Test Range Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

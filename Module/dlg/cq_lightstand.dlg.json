@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Softly. The crypts listen, and they remember every voice that begs. I keep vigil at this stair because students of the light went down to learn how to stand at the end, and something below taught them to kneel instead. Their adepts rehearse the corrupted rite in the Korriban Sith Crypt Depths right now. Put six of the adepts to rest and bring me the Last Stand of the Light Crypt Trial Tablet they chant from. I have to know how far the rot has spread."
+            "0": "Softly. The crypts listen, and they remember every voice that begs. I keep vigil at this stair because students of the light went down to learn how to stand at the end, and something below taught them to kneel instead. Their adepts rehearse the corrupted rite in the Korriban Sith Crypt Depths right now. Put six of the adepts to rest and bring me the Last Stand of the Light Crypt Trial Tablet they chant from. I have to know how far the rot has spread. You will need the Korriban Sith Crypt Depths Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Then take the key. It opens the sealed stair down into the Korriban Sith Crypt Depths. Step soft past the first tombs and do not answer anything that whispers your name. Six adepts, the tablet, and back up into the light. I will be listening for your footsteps."
+            "0": "Then take the key. It opens the sealed stair down into the Korriban Sith Crypt Depths. Step soft past the first tombs and do not answer anything that whispers your name. Six adepts, the tablet, and back up into the light. I will be listening for your footsteps. Here is your Korriban Sith Crypt Depths Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The adepts are still rehearsing below. Six of them, and the Crypt Trial Tablet they chant from. Do not linger down there longer than the work demands."
+            "0": "The adepts are still rehearsing below. Six of them, and the Crypt Trial Tablet they chant from. Do not linger down there longer than the work demands. Use the Korriban Sith Crypt Depths Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

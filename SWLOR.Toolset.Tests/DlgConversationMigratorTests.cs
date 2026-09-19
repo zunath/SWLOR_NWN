@@ -11,6 +11,68 @@ namespace SWLOR.Toolset.Tests;
 public sealed class DlgConversationMigratorTests
 {
     [Test]
+    public void Convert_RejectsActionsWithoutADispatcherInsteadOfSilentlyDroppingThem()
+    {
+        var document = Load("cq_thermdet");
+        var reply = document.Replies.Single(node => node.Actions.Any(action =>
+            action.SnippetKey == "action-accept-quest" &&
+            action.Arguments.SequenceEqual(new[] { "thermal_detonator_foundation" })));
+        reply.Script = string.Empty;
+
+        var result = DlgConversationMigrator.Convert("cq_thermdet", document);
+
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Should().Contain(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
+            issue.Message.Contains("no action dispatcher", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void Convert_RejectsConditionsWithoutADispatcherInsteadOfRemovingQuestGates()
+    {
+        var document = Load("cq_thermdet");
+        document.Openings.First(link => link.Conditions.Count > 0).Active = string.Empty;
+
+        var result = DlgConversationMigrator.Convert("cq_thermdet", document);
+
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Should().Contain(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
+            issue.Message.Contains("no condition dispatcher", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void AuthoredCorpus_PreservesEverySnippetActionInThePublishedGraphs()
+    {
+        foreach (var path in Directory.EnumerateFiles(
+                     Path.Combine(CorpusLocator.ModuleDirectory, "dlg"), "*.dlg.json"))
+        {
+            var id = Path.GetFileName(path)[..^".dlg.json".Length];
+            if (id == "dmfi_universal")
+                continue;
+
+            var document = DlgDocument.Load(path);
+            var graph = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json")))!;
+
+            foreach (var node in document.Entries.Concat(document.Replies))
+            {
+                var expected = node.Actions.Where(action => !action.IsOncePerPlayerMarker).ToArray();
+                if (expected.Length == 0)
+                    continue;
+
+                DlgDocument.IsActionDispatcher(node.Script).Should().BeTrue($"{id} node {node.Index} must execute its authored actions");
+                var actual = node.Kind == DlgNodeKind.Entry
+                    ? graph.Nodes[$"entry-{node.Index:D5}"].OnEnterActions
+                    : graph.Choices[$"reply-{node.Index:D5}"].Actions;
+                actual.Select(action => (action.Key, Arguments: string.Join("\n", action.Arguments)))
+                    .Should().Equal(expected.Select(action =>
+                        (action.SnippetKey, Arguments: string.Join("\n", action.Arguments))), $"{id} node {node.Index}");
+            }
+        }
+    }
+
+    [Test]
     public void Convert_PreservesSharedReplyIdentityAndOrderedRouteConditions()
     {
         var document = Load("avixtatham");

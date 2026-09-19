@@ -179,17 +179,6 @@ namespace SWLOR.Toolset.Tests
             dangling.Should().BeEmpty();
         }
 
-        /// <summary>
-        /// The one conversation naming a quest the game does not declare. <c>suppress_rogues</c>
-        /// appears nowhere in the game code, and <c>trooperquest</c> is itself among the
-        /// conversations no blueprint or placed instance references — so this is dead content
-        /// pointing at a quest that was never implemented, not a blind spot in the scan.
-        /// </summary>
-        private static readonly string[] KnownMissingQuests =
-        {
-            "trooperquest.dlg.json: suppress_rogues"
-        };
-
         [Test]
         public void EveryQuestReferencedByAConversationIsOneTheGameDeclares()
         {
@@ -203,7 +192,7 @@ namespace SWLOR.Toolset.Tests
                     unknown.Add($"{file}: {questId}");
             }
 
-            unknown.Should().BeEquivalentTo(KnownMissingQuests);
+            unknown.Should().BeEmpty();
         }
 
         [Test]

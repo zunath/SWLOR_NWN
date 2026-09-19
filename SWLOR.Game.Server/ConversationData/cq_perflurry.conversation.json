@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Count with me - one, two, three, four - because the Qion site can't count anymore. A test crew turned my old routine into a weapons trial, and their so-called adepts rehearse it on a frozen range like it's a firing table. So here's my wager: put six of them down, pull the Perfect Flurry Qion Test Log out of their rehearsal, and I'll teach you the act they're butchering. The site's out on Hutlar. Cold enough to make your fingers honest.",
+          "Text": "Count with me - one, two, three, four - because the Qion site can't count anymore. A test crew turned my old routine into a weapons trial, and their so-called adepts rehearse it on a frozen range like it's a firing table. So here's my wager: put six of them down, pull the Perfect Flurry Qion Test Log out of their rehearsal, and I'll teach you the act they're butchering. The site's out on Hutlar. Cold enough to make your fingers honest. You will need the Hutlar Qion Test Site Key to get inside. Agree to the job and I will give it to you.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Smart money. Here's the key to the site gate - don't ask how I have it, a lady keeps her props. The adepts drill on the open range past the first shelter. Mind your grip out there. Cold blades don't forgive a lazy hand.",
+          "Text": "Smart money. Here's the key to the site gate - don't ask how I have it, a lady keeps her props. The adepts drill on the open range past the first shelter. Mind your grip out there. Cold blades don't forgive a lazy hand. Here is your Hutlar Qion Test Site Key. Use it to enter the trial area; keep it for the work ahead.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Curtain's still up on Hutlar, and six adepts are still botching my choreography. The wager stands: six down, one test log. Counting is the whole discipline. Don't lose yours.",
+          "Text": "Curtain's still up on Hutlar, and six adepts are still botching my choreography. The wager stands: six down, one test log. Counting is the whole discipline. Don't lose yours. Use the Hutlar Qion Test Site Key I gave you when you took the job. You can find it under Key Items.",
           "Style": 0,
           "Color": null
         }
@@ -1330,7 +1330,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "perfect_flurry_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00003",
@@ -1440,7 +1447,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "perfect_flurry_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00009",
@@ -1486,7 +1500,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "perfect_flurry_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00011",
@@ -1596,7 +1617,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "perfect_flurry_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00017",
@@ -1642,7 +1670,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "perfect_flurry_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00019",
@@ -1752,7 +1787,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "perfect_flurry_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00025",
@@ -1798,7 +1840,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "perfect_flurry_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00027",
@@ -1908,7 +1957,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "perfect_flurry_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00033",
@@ -1954,7 +2010,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "perfect_flurry_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00035",
@@ -2064,7 +2127,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "perfect_flurry_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00041",

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came. Good. The sublevel under this facility was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something.",
+          "Text": "You came. Good. The sublevel under this facility was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something. You will need the Dantooine Medical Sublevel Key to get inside. Agree to the job and I will give it to you.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the sublevel key. It opens the sealed service door below this facility - the one they think I forgot. Start in the triage hall; the adepts will find you before you find them. And walk in like you belong to the ward. You do, now.",
+          "Text": "Then take the sublevel key. It opens the sealed service door below this facility - the one they think I forgot. Start in the triage hall; the adepts will find you before you find them. And walk in like you belong to the ward. You do, now. Here is your Dantooine Medical Sublevel Key. Use it to enter the trial area; keep it for the work ahead.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The triage hall is still theirs. Six adepts, and my ledger on the desk between them. Do not let the ward wait longer than it must.",
+          "Text": "The triage hall is still theirs. Six adepts, and my ledger on the desk between them. Do not let the ward wait longer than it must. Use the Dantooine Medical Sublevel Key I gave you when you took the job. You can find it under Key Items.",
           "Style": 0,
           "Color": null
         }
@@ -1330,7 +1330,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "hold_the_line_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00003",
@@ -1440,7 +1447,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "hold_the_line_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00009",
@@ -1486,7 +1500,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "hold_the_line_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00011",
@@ -1596,7 +1617,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "hold_the_line_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00017",
@@ -1642,7 +1670,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "hold_the_line_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00019",
@@ -1752,7 +1787,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "hold_the_line_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00025",
@@ -1798,7 +1840,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "hold_the_line_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00027",
@@ -1908,7 +1957,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "hold_the_line_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00033",
@@ -1954,7 +2010,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "hold_the_line_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00035",
@@ -2064,7 +2127,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "hold_the_line_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00041",

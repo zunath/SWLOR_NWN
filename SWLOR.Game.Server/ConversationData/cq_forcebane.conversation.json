@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Come to learn magic? Then keep walking, I don't sell it. I sell the answer to it. Somebody in the Korriban Forge Caverns is teaching my counters to the exact robed filth they were built against. Their adepts drill at the outer forges right now, getting comfortable. Rule one: reach ends ritual. Go remind them. Put down six of their adepts and bring me the Forcebane Forge Heat Ledger they keep by the crucibles. I want to know how big this rot is.",
+          "Text": "Come to learn magic? Then keep walking, I don't sell it. I sell the answer to it. Somebody in the Korriban Forge Caverns is teaching my counters to the exact robed filth they were built against. Their adepts drill at the outer forges right now, getting comfortable. Rule one: reach ends ritual. Go remind them. Put down six of their adepts and bring me the Forcebane Forge Heat Ledger they keep by the crucibles. I want to know how big this rot is. You will need the Korriban Forge Caverns Key to get inside. Agree to the job and I will give it to you.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's signed. Outer gate, six adepts, the Forcebane Forge Heat Ledger by the crucibles. Don't read it, don't sell it, bring it. And if a robe offers you a better arrangement down there, remember they're the reason this trade exists.",
+          "Text": "Then it's signed. Outer gate, six adepts, the Forcebane Forge Heat Ledger by the crucibles. Don't read it, don't sell it, bring it. And if a robe offers you a better arrangement down there, remember they're the reason this trade exists. Here is your Korriban Forge Caverns Key. Use it to enter the trial area; keep it for the work ahead.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger's still by the crucibles and six adepts are still breathing. Numbers don't improve while you stand in front of me.",
+          "Text": "The ledger's still by the crucibles and six adepts are still breathing. Numbers don't improve while you stand in front of me. Use the Korriban Forge Caverns Key I gave you when you took the job. You can find it under Key Items.",
           "Style": 0,
           "Color": null
         }
@@ -1330,7 +1330,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "forcebane_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00003",
@@ -1440,7 +1447,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "forcebane_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00009",
@@ -1486,7 +1500,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "forcebane_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00011",
@@ -1596,7 +1617,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "forcebane_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00017",
@@ -1642,7 +1670,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "forcebane_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00019",
@@ -1752,7 +1787,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "forcebane_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00025",
@@ -1798,7 +1840,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "forcebane_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00027",
@@ -1908,7 +1957,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "forcebane_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00033",
@@ -1954,7 +2010,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "forcebane_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00035",
@@ -2064,7 +2127,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "forcebane_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00041",

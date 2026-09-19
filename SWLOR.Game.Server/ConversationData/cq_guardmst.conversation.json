@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "'While I stand, none fall.' Do you know the line that follows? Few do, anymore. I am Miris Aven, sentinel of the Jedi Enclave Trial Halls here on Dantooine, and the students who should have learned that second line have barred the training wards and turned their guard inward. Six adepts of the guardian discipline hold the outer ward, protecting no one but themselves. End their watch and recover the Guardian Master Enclave Trial Slate they swore upon. An abandoned oath should not remain in the keeping of those who abandoned it.",
+          "Text": "'While I stand, none fall.' Do you know the line that follows? Few do, anymore. I am Miris Aven, sentinel of the Jedi Enclave Trial Halls here on Dantooine, and the students who should have learned that second line have barred the training wards and turned their guard inward. Six adepts of the guardian discipline hold the outer ward, protecting no one but themselves. End their watch and recover the Guardian Master Enclave Trial Slate they swore upon. An abandoned oath should not remain in the keeping of those who abandoned it. You will need the Dantooine Jedi Enclave Trial Halls Key to get inside. Agree to the job and I will give it to you.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "So sworn, then, and I will hold you to it as gently as I am able. Take the key, keep to the lamplit colonnade, and do not linger where the light has died. Six adepts. One slate. And come back whole. That is the part of every promise people forget to keep.",
+          "Text": "So sworn, then, and I will hold you to it as gently as I am able. Take the key, keep to the lamplit colonnade, and do not linger where the light has died. Six adepts. One slate. And come back whole. That is the part of every promise people forget to keep. Here is your Dantooine Jedi Enclave Trial Halls Key. Use it to enter the trial area; keep it for the work ahead.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer ward is still dark, and the Enclave Trial Slate still lies with the adepts who forsook it. A promise delayed is not yet a promise broken. See that it stays so.",
+          "Text": "The outer ward is still dark, and the Enclave Trial Slate still lies with the adepts who forsook it. A promise delayed is not yet a promise broken. See that it stays so. Use the Dantooine Jedi Enclave Trial Halls Key I gave you when you took the job. You can find it under Key Items.",
           "Style": 0,
           "Color": null
         }
@@ -1330,7 +1330,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "guardian_master_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00003",
@@ -1440,7 +1447,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "guardian_master_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00009",
@@ -1486,7 +1500,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "guardian_master_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00011",
@@ -1596,7 +1617,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "guardian_master_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00017",
@@ -1642,7 +1670,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "guardian_master_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00019",
@@ -1752,7 +1787,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "guardian_master_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00025",
@@ -1798,7 +1840,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "guardian_master_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00027",
@@ -1908,7 +1957,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "guardian_master_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00033",
@@ -1954,7 +2010,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "guardian_master_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00035",
@@ -2064,7 +2127,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "guardian_master_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00041",

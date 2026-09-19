@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That marker you just walked past means live ordinance, and you strolled by it like it was a fence post. Second one today. First one's the reason Hutlar Qion Test Site is locked to everyone but me: there's a crew in there cooking oversized charges with no containment plan, and I am done finding their mistakes after the fact. Put down six of their adepts in the test site on Hutlar, and bring me back a Thermal Detonator Qion Test Log so I know exactly what they were building before it built itself into a crater."
+            "0": "That marker you just walked past means live ordnance, and you strolled by it like it was a fence post. Second one today. First one's the reason Hutlar Qion Test Site is locked to everyone but me: there's a crew in there cooking oversized charges with no containment plan, and I am done finding their mistakes after the fact. Put down six of their adepts in the test site on Hutlar, and bring me back a Thermal Detonator Qion Test Log so I know exactly what they were building before it built itself into a crater. You will need the Hutlar Qion Test Site Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Don't touch anything marked, don't skip a step because it looks finished, and don't come back until you can hand me the log instead of an excuse."
+            "0": "Good. Don't touch anything marked, don't skip a step because it looks finished, and don't come back until you can hand me the log instead of an excuse. Here is your Hutlar Qion Test Site Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hutlar Qion Test Site still owes me that Test Log. Six adepts down, log in hand, then we talk."
+            "0": "Hutlar Qion Test Site still owes me that Test Log. Six adepts down, log in hand, then we talk. Use the Hutlar Qion Test Site Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

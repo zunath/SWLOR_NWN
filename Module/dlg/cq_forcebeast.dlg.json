@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "There. I see it now, faint, but real, a thread trying to grow between you and yours. The den's adepts sever threads like that on purpose, six of them, teaching young bonds to choke instead of hold. Go to the Grotto Apex Den on Dathomir. End the six. Bring me the Force-Bonded Beast Grotto Track Slate they keep; it once mapped where a proper rite could be spoken."
+            "0": "There. I see it now, faint, but real, a thread trying to grow between you and yours. The den's adepts sever threads like that on purpose, six of them, teaching young bonds to choke instead of hold. Go to the Grotto Apex Den on Dathomir. End the six. Bring me the Force-Bonded Beast Grotto Track Slate they keep; it once mapped where a proper rite could be spoken. You will need the Dathomir Grotto Apex Den Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Take the key; it is yours now, as much as the gate is. Go slow at the threshold, both of you. The den answers to patience before it answers to force."
+            "0": "Take the key; it is yours now, as much as the gate is. Go slow at the threshold, both of you. The den answers to patience before it answers to force. Here is your Dathomir Grotto Apex Den Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Six adepts still severing what should be tied. The slate waits with them."
+            "0": "Six adepts still severing what should be tied. The slate waits with them. Use the Dathomir Grotto Apex Den Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

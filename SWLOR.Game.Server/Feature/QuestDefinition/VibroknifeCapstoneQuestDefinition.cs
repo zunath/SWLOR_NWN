@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat six Vital Rupture adepts in the Veles Militia Annex on Viscara and secure the Vital Rupture Veles Drill Ledger.")
+                    "Mikka Varn gave you the Veles Militia Annex Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Defeat six Vital Rupture adepts in the Veles Militia Annex on Viscara and secure the Vital Rupture Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureVelesDrillLedger)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring down six Systemic Shutdown adepts in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Veles Drill Ledger.")
+                    "Dalen Orso gave you the Veles Militia Annex Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Bring down six Systemic Shutdown adepts in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownVelesDrillLedger)
 

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the sublevel under this facility running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their adepts hold the arms down. Put six of them down instead, and bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine.",
+          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the sublevel under this facility running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their adepts hold the arms down. Put six of them down instead, and bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine. You will need the Dantooine Medical Sublevel Key to get inside. Agree to the job and I will give it to you.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the key off that hook - the one with the red tag. It opens the sealed hatch down past the supply lifts, into the Dantooine Medical Sublevel. Six adepts, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here.",
+          "Text": "Take the key off that hook - the one with the red tag. It opens the sealed hatch down past the supply lifts, into the Dantooine Medical Sublevel. Six adepts, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here. Here is your Dantooine Medical Sublevel Key. Use it to enter the trial area; keep it for the work ahead.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger's still down there, and so are the six adepts writing in it. Every hour you spend up here, that book gains a page. Go.",
+          "Text": "The ledger's still down there, and so are the six adepts writing in it. Every hour you spend up here, that book gains a page. Go. Use the Dantooine Medical Sublevel Key I gave you when you took the job. You can find it under Key Items.",
           "Style": 0,
           "Color": null
         }
@@ -1330,7 +1330,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "emergency_cocktail_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00003",
@@ -1440,7 +1447,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "emergency_cocktail_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00009",
@@ -1486,7 +1500,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "emergency_cocktail_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00011",
@@ -1596,7 +1617,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "emergency_cocktail_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00017",
@@ -1642,7 +1670,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "emergency_cocktail_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00019",
@@ -1752,7 +1787,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "emergency_cocktail_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00025",
@@ -1798,7 +1840,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "emergency_cocktail_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00027",
@@ -1908,7 +1957,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "emergency_cocktail_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00033",
@@ -1954,7 +2010,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "emergency_cocktail_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00035",
@@ -2064,7 +2127,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "emergency_cocktail_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00041",

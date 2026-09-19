@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "A wreck crew is drilling katar guard-work in the CZ-220 Breaker Yard on CZ-220. Defeat six Adamantine Guard adepts and secure the Adamantine Guard Breaker Yard Work Order.")
+                    "Tressa Kade gave you the CZ-220 Breaker Yard Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. A wreck crew is drilling katar guard-work in the CZ-220 Breaker Yard on CZ-220. Defeat six Adamantine Guard adepts and secure the Adamantine Guard Breaker Yard Work Order.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardBreakerYardWorkOrder)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "A crew has sealed the lower level of the CZ-220 Breaker Yard on CZ-220 and is running unauthorized katar drills behind the containment doors. Defeat six Scrapheap Lockdown adepts and secure the Scrapheap Lockdown Breaker Yard Work Order.")
+                    "Borrik Sen gave you the CZ-220 Breaker Yard Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. A crew has sealed the lower level of the CZ-220 Breaker Yard on CZ-220 and is running unauthorized katar drills behind the containment doors. Defeat six Scrapheap Lockdown adepts and secure the Scrapheap Lockdown Breaker Yard Work Order.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownBreakerYardWorkOrder)
 

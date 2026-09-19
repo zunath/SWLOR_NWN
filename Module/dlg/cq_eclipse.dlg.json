@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You carried a doubt through that door. Do not deny it; denial is a second doubt, and I grade cumulatively. Good. Doubt is the raw material of this examination. Below us, in the Korriban Sith Crypt Depths, a cell of my former candidates rehearses the Eclipse of Resolve they failed to earn. Six adepts, drilling a doctrine they were never passed on. Cull all six and confiscate the Eclipse of Resolve Crypt Trial Tablet they teach from. That is your first paper. Submit it complete or not at all."
+            "0": "You carried a doubt through that door. Do not deny it; denial is a second doubt, and I grade cumulatively. Good. Doubt is the raw material of this examination. Below us, in the Korriban Sith Crypt Depths, a cell of my former candidates rehearses the Eclipse of Resolve they failed to earn. Six adepts, drilling a doctrine they were never passed on. Cull all six and confiscate the Eclipse of Resolve Crypt Trial Tablet they teach from. That is your first paper. Submit it complete or not at all. You will need the Korriban Sith Crypt Depths Key to get inside. Agree to the job and I will give it to you."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Accepted and logged. The stair key is yours; it opens the sealed descent into the Korriban Sith Crypt Depths. Six adepts, one tablet, no partial credit. And candidate, mind the crypt itself. Korriban enjoys grading people, and it marks harder than I do."
+            "0": "Accepted and logged. The stair key is yours; it opens the sealed descent into the Korriban Sith Crypt Depths. Six adepts, one tablet, no partial credit. And candidate, mind the crypt itself. Korriban enjoys grading people, and it marks harder than I do. Here is your Korriban Sith Crypt Depths Key. Use it to enter the trial area; keep it for the work ahead."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Your first paper remains unsubmitted. Six adepts still recite below, and their tablet still teaches error. I have seen candidates stall at this stage. I failed all of them."
+            "0": "Your first paper remains unsubmitted. Six adepts still recite below, and their tablet still teaches error. I have seen candidates stall at this stage. I failed all of them. Use the Korriban Sith Crypt Depths Key I gave you when you took the job. You can find it under Key Items."
           }
         }
       },
@@ -3091,7 +3091,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3408,7 +3408,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3550,7 +3550,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -3867,7 +3867,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4009,7 +4009,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4326,7 +4326,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4468,7 +4468,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4785,7 +4785,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -4927,7 +4927,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -5244,7 +5244,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

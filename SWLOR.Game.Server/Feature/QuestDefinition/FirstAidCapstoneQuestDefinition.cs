@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Use Kavi Dorn's key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Emergency Cocktail adepts and secure the Emergency Cocktail Triage Ward Ledger.")
+                    "Kavi Dorn gave you the Dantooine Medical Sublevel Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Use Kavi Dorn's key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Emergency Cocktail adepts and secure the Emergency Cocktail Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
 

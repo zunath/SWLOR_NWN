@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Six Thermal Detonator adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Qion Test Log.")
+                    "Ruk Halven gave you the Hutlar Qion Test Site Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Six Thermal Detonator adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorQionTestLog)
 
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Six Overload Barrage adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Qion Test Log.")
+                    "Miri Koss gave you the Hutlar Qion Test Site Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Six Overload Barrage adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageQionTestLog)
 
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Six Killzone Beacon adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Republic Bunker Docket.")
+                    "Aric Jorr gave you the Viscara Republic Engineering Bunker Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Six Killzone Beacon adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconRepublicBunkerDocket)
 
@@ -427,7 +427,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Six Emergency Bunker adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Republic Bunker Docket.")
+                    "Nella Voss gave you the Viscara Republic Engineering Bunker Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Six Emergency Bunker adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerRepublicBunkerDocket)
 

@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Six Unmoving Center adepts train at Anchorhead Canyon Range on Tatooine. Defeat six of them and recover the Unmoving Center Canyon Range Tally.")
+                    "Marda Voss gave you the Anchorhead Canyon Range Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Six Unmoving Center adepts train at Anchorhead Canyon Range on Tatooine. Defeat six of them and recover the Unmoving Center Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterCanyonRangeTally)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Six Worldbreaker adepts operate at CZ-220 Breaker Yard on CZ-220. Defeat six of them and recover the Worldbreaker Breaker Yard Work Order.")
+                    "Unit KX-17 gave you the CZ-220 Breaker Yard Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Six Worldbreaker adepts operate at CZ-220 Breaker Yard on CZ-220. Defeat six of them and recover the Worldbreaker Breaker Yard Work Order.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerBreakerYardWorkOrder)
 

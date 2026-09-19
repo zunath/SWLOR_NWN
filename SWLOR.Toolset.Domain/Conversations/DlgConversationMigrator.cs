@@ -336,9 +336,9 @@ public static class DlgConversationMigrator
         if (string.IsNullOrWhiteSpace(link.Active) && link.Conditions.Count > 0)
         {
             issues.Add(new ConversationMigrationIssue(
-                ConversationMigrationIssueSeverity.Warning,
+                ConversationMigrationIssueSeverity.RequiresLegacyException,
                 location,
-                "Has condition parameters but no condition dispatcher."));
+                "Has condition parameters but no condition dispatcher. Assign a dispatcher before converting so conditions are not lost."));
             return;
         }
 
@@ -385,9 +385,9 @@ public static class DlgConversationMigrator
         if (string.IsNullOrWhiteSpace(node.Script) && actions.Count > 0)
         {
             issues.Add(new ConversationMigrationIssue(
-                ConversationMigrationIssueSeverity.Warning,
+                ConversationMigrationIssueSeverity.RequiresLegacyException,
                 location,
-                "Has action parameters but no action dispatcher."));
+                "Has action parameters but no action dispatcher. Assign a dispatcher before converting so actions are not lost."));
             return;
         }
 

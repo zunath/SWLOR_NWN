@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
+        public const string SuppressChatAuditVariable = "SUPPRESS_CHAT_AUDIT";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
         private const string CommsOutOfRangeMessage = "Your Comms message could not reach one or more out-of-range receivers.";
         // Base-game dialog.tlk 66755 is the PlayerParty chat-input label, while 10303 is the
@@ -29,7 +30,6 @@ namespace SWLOR.Game.Server.Service
         private const int PartyChatMessagePrefixStrRef = 10303;
         private const string CommsChannelName = "Comms";
         private const string CommsMessagePrefix = "[Comms] ";
-        private const string WhisperMessagePrefix = "[Whisper] ";
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
         public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
@@ -382,11 +382,9 @@ namespace SWLOR.Game.Server.Service
 
                 // HoloCom holograms have a deliberately generic object name because the nearby
                 // observers may know their owner by different names. Render the owner's chat name
-                // into the direct relay message separately for each observer instead of exposing the
-                // hologram's shared object name or globally renaming it.
+                // in the message body for each observer while keeping the shared hologram name generic.
                 if (isHoloComRelay)
                 {
-                    finalMessage.Append(GetHoloComRelayChannelPrefix(channel));
                     finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));
                     finalMessage.Append(": ");
                 }
@@ -469,17 +467,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static string GetHoloComRelayChannelPrefix(ChatChannel channel)
-        {
-            if (channel == ChatChannel.PlayerWhisper)
-                return WhisperMessagePrefix;
-
-            if (channel == ChatChannel.PlayerParty)
-                return CommsMessagePrefix;
-
-            return string.Empty;
-        }
-
         private static void SendProcessedChatMessage(
             ChatChannel channel,
             uint receiver,
@@ -487,14 +474,13 @@ namespace SWLOR.Game.Server.Service
             uint identitySpeaker,
             string message)
         {
-            // Native Talk/Whisper packets cannot use the distant HoloCom owner as their sender, while
-            // using the area-local hologram would expose its generic shared object name. The caller has
-            // already rendered the owner's observer-specific chat name into the message, so deliver it
-            // directly without a native sender label. The hologram's ActionSpeakString still supplies
-            // the visible speaking animation that initiated this processed relay.
+            // Keep relayed speech in the chat log on its original channel. Talk/Whisper need the
+            // area-local hologram as their native sender, whose shared name is safely generic.
+            // The message body identifies its owner with the recipient's chat display name;
+            // the native packet supplies any Whisper/Comms prefix.
             if (transportSpeaker != identitySpeaker)
             {
-                ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, transportSpeaker, receiver);
+                ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver);
                 return;
             }
 

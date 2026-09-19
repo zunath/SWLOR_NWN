@@ -272,21 +272,41 @@ namespace SWLOR.Game.Server.Service
                 player = GetMaster(player);
             }
 
-            if (Gui.IsWindowOpen(player, GuiWindowType.Conversation))
-                Gui.TogglePlayerWindow(player, GuiWindowType.Conversation);
-
             if (uiTarget == OBJECT_INVALID)
                 uiTarget = player;
+
+            End(player, uiTarget);
 
             var tetherObject = GetIsObjectValid(owner) ? owner : OBJECT_INVALID;
             var payload = new ConversationPayload(player, session);
             Gui.TogglePlayerWindow(player, GuiWindowType.Conversation, payload, tetherObject, uiTarget);
         }
 
-        public static void End(uint player)
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void EndOnAreaExit()
         {
-            if (GetIsObjectValid(player) && Gui.IsWindowOpen(player, GuiWindowType.Conversation))
-                Gui.TogglePlayerWindow(player, GuiWindowType.Conversation);
+            End(GetExitingObject());
+        }
+
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void EndOnAreaEnter()
+        {
+            // Keep this independent of the other windows' geometry saves and close callbacks.
+            End(GetEnteringObject());
+        }
+
+        public static void End(uint player, uint uiTarget = OBJECT_INVALID)
+        {
+            if (!IsValidParticipant(player))
+                return;
+
+            if (uiTarget == OBJECT_INVALID)
+                uiTarget = player;
+
+            if (GetIsDMPossessed(player))
+                player = GetMaster(player);
+
+            Gui.ClosePlayerWindow(player, GuiWindowType.Conversation, uiTarget);
         }
 
         private static string ResolveObjectName(uint observer, uint target)

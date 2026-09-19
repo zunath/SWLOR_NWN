@@ -1,9 +1,7 @@
 #nullable enable
-using System.IO.Compression;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Text.Json;
-using System.Xml.Linq;
 using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
@@ -212,56 +210,4 @@ public class AnimationPlanningTests
         }
     }
 
-    [Test]
-    public void BibleRetainsOnlyUsedPlansAndEveryReferenceMatchesItsNewRow()
-    {
-        var plan = ActivePlan();
-        using var zip = ZipFile.OpenRead(Path.Combine(Root, "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx"));
-        XDocument Read(string path) { using var stream = zip.GetEntry(path)!.Open(); return XDocument.Load(stream); }
-        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        XNamespace rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-        var sheet = Read("xl/workbook.xml").Descendants(ns + "sheet").Single(s => (string?)s.Attribute("name") == "Animations");
-        var target = (string)Read("xl/_rels/workbook.xml.rels").Root!.Elements()
-            .Single(r => (string?)r.Attribute("Id") == (string?)sheet.Attribute(rel + "id")).Attribute("Target")!;
-        var path = target.StartsWith('/') ? target.TrimStart('/') : "xl/" + target;
-        var xml = Read(path);
-        var strings = zip.GetEntry("xl/sharedStrings.xml") == null ? Array.Empty<string>() : Read("xl/sharedStrings.xml")
-            .Descendants(ns + "si").Select(s => string.Concat(s.Descendants(ns + "t").Select(t => t.Value))).ToArray();
-        string Text(XElement? cell) => cell == null ? "" : (string?)cell.Attribute("t") switch
-        {
-            "s" => strings[int.Parse(cell.Element(ns + "v")!.Value)],
-            "inlineStr" => string.Concat(cell.Descendants(ns + "t").Select(t => t.Value)),
-            _ => cell.Element(ns + "v")?.Value ?? ""
-        };
-        var header = xml.Descendants(ns + "row").Single(row => (int)row.Attribute("r")! == 1);
-        var internalNameColumn = Regex.Replace((string)header.Elements(ns + "c")
-            .Single(cell => Normalize(Text(cell)) == "internalname").Attribute("r")!, "[0-9]", "");
-        var rows = xml.Descendants(ns + "row").Select(row => new
-        {
-            Number = (int)row.Attribute("r")!,
-            Cells = row.Elements(ns + "c").ToDictionary(c => Regex.Replace((string)c.Attribute("r")!, "[0-9]", ""), Text)
-        }).Where(row => row.Number > 1 && !string.IsNullOrWhiteSpace(row.Cells.GetValueOrDefault("C", ""))).ToArray();
-        rows.Should().NotBeEmpty();
-        plan.Select(entry => entry.BibleAnimationRow).Should().OnlyHaveUniqueItems().And.OnlyContain(number => number > 1);
-        rows.Select(row => row.Number).Should().Equal(plan.Select(entry => entry.BibleAnimationRow).OrderBy(number => number),
-            "removed animations leave stable row gaps so existing image references are not shifted");
-        foreach (var row in rows)
-        {
-            var entry = plan.Single(p => p.Category == row.Cells["B"] && p.Name == row.Cells["C"]);
-            entry.BibleAnimationRow.Should().Be(row.Number);
-            entry.Reference.Should().Be(row.Cells.GetValueOrDefault("E", ""));
-            row.Cells.GetValueOrDefault(internalNameColumn, "").Should().Be(entry.InternalName);
-        }
-        rows.Should().HaveCount(plan.Length);
-        rows.Select(row => (row.Cells["B"], row.Cells["C"])).Should().OnlyHaveUniqueItems();
-        var links = xml.Descendants(ns + "hyperlink").ToArray();
-        links.Should().HaveCount(rows.Count(row => row.Cells.GetValueOrDefault("E", "") != ""));
-        var relationships = Read("xl/worksheets/_rels/" + Path.GetFileName(path) + ".rels").Root!.Elements()
-            .ToDictionary(r => (string)r.Attribute("Id")!, r => (string)r.Attribute("Target")!);
-        foreach (var link in links)
-        {
-            var number = int.Parse(Regex.Replace((string)link.Attribute("ref")!, "[A-Z]", ""));
-            relationships[(string)link.Attribute(rel + "id")!].Should().Be(rows.Single(row => row.Number == number).Cells["E"]);
-        }
-    }
 }

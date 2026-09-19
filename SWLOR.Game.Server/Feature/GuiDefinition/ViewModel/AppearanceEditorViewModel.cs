@@ -181,6 +181,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.GreatSword] = new GreatSwordAppearanceDefinition();
             _weaponAppearances[BaseItem.Katar] = new KatarAppearanceDefinition();
             _weaponAppearances[BaseItem.LargeShield] = new LargeShieldAppearanceDefinition();
+            _weaponAppearances[BaseItem.Lightsaber] = new LightsaberAppearanceDefinition();
+            _weaponAppearances[BaseItem.Saberstaff] = new SaberstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Longsword] = new LongswordAppearanceDefinition();
             var pistolAppearance = new PistolAppearanceDefinition();
             _weaponAppearances[BaseItem.Pistol] = pistolAppearance;
@@ -796,12 +798,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsAppearanceSelected)
                 return true;
 
-            // The item must be valid, not cursed, not plot.
+            // The item must be valid and not cursed. Plot items are restricted below.
             var item = GetItem();
             if (!GetIsObjectValid(item))
                 return false;
 
-            if (GetItemCursedFlag(item) || GetPlotFlag(item))
+            if (GetItemCursedFlag(item))
+                return false;
+
+            // Lightsabers and saberstaffs still require all three parts to pass the allowlists below.
+            if (GetPlotFlag(item) &&
+                GetBaseItemType(item) != BaseItem.Lightsaber &&
+                GetBaseItemType(item) != BaseItem.Saberstaff)
                 return false;
 
             // Armors must have parts that are publicly available.

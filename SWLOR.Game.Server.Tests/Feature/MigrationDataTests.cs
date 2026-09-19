@@ -375,6 +375,111 @@ public class MigrationDataTests
 
     private static JObject PlayerJson() => JObject.Parse("""{"UnknownDisplayName":"A quiet traveler","RebuildComplete":true}""");
 
+    [Test]
+    public void LegacyFrogQuest_MovesToRewardTurnInWithoutRewardsAndSurvivesRetry()
+    {
+        var raw = PlayerJson();
+        raw["Quests"] = JObject.Parse("""
+            {"alchemized_frog":{"CurrentState":2,"TimesCompleted":0,"DateLastCompleted":null,
+              "ItemProgresses":{},"KillProgresses":{"Korriban_AlchemizedFrog":0}},
+             "other_quest":{"CurrentState":2,"ItemProgresses":{"other_proof":2}}}
+            """);
+        var otherQuest = raw["Quests"]!["other_quest"]!.ToObject<PlayerQuest>()!;
+
+        var player = MigratePlayer(raw, out _)!;
+
+        var frog = player.Quests["alchemized_frog"];
+        frog.CurrentState.Should().Be(3);
+        frog.ItemProgresses.Should().BeEmpty();
+        frog.KillProgresses.Should().BeEmpty();
+        frog.TimesCompleted.Should().Be(0, "the player must still claim the reward from Camila");
+        frog.DateLastCompleted.Should().BeNull();
+        player.Quests["other_quest"].Should().BeEquivalentTo(otherQuest);
+        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
+        retried.Quests.Should().BeEquivalentTo(player.Quests);
+    }
+
+    [TestCase(1, 0, false, null)]
+    [TestCase(2, 0, false, 1)]
+    [TestCase(2, 0, false, 0)]
+    [TestCase(2, 1, false, null)]
+    [TestCase(2, 0, true, null)]
+    [TestCase(3, 0, false, null)]
+    [TestCase(3, 1, true, null)]
+    public void FrogQuestRepair_PreservesOtherStagesCompletedQuestsAndInitializedProof(
+        int state, int completions, bool completedDate, int? remainingProof)
+    {
+        var quest = new PlayerQuest
+        {
+            CurrentState = state,
+            TimesCompleted = completions,
+            DateLastCompleted = completedDate ? new DateTime(2026, 1, 1) : null
+        };
+        if (remainingProof.HasValue) quest.ItemProgresses["frogguts"] = remainingProof.Value;
+        var raw = PlayerJson();
+        raw["Quests"] = new JObject { ["alchemized_frog"] = JObject.FromObject(quest) };
+
+        var player = MigratePlayer(raw, out _)!;
+
+        player.Quests["alchemized_frog"].Should().BeEquivalentTo(quest);
+    }
+
+    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph", 1)]
+    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph", 0)]
+    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph", null)]
+    [TestCase("smuggler_favor", "stolen_goods", 5)]
+    [TestCase("smuggler_favor", "stolen_goods", 2)]
+    [TestCase("smuggler_favor", "stolen_goods", 0)]
+    [TestCase("smuggler_favor", "stolen_goods", null)]
+    public void SharedBossProofQuest_MovesExistingCollectionProgressToTurnInAndSurvivesRetry(
+        string questId, string proof, int? remaining)
+    {
+        var quest = new PlayerQuest { CurrentState = 2 };
+        if (remaining.HasValue) quest.ItemProgresses[proof] = remaining.Value;
+        var raw = PlayerJson();
+        raw["Quests"] = new JObject
+        {
+            [questId] = JObject.FromObject(quest),
+            ["unrelated_quest"] = JObject.FromObject(quest)
+        };
+        var player = MigratePlayer(raw, out _)!;
+
+        var migrated = player.Quests[questId];
+        migrated.CurrentState.Should().Be(3);
+        migrated.ItemProgresses.Should().BeEmpty();
+        migrated.KillProgresses.Should().BeEmpty();
+        migrated.TimesCompleted.Should().Be(0, "the player must still claim the reward from the giver");
+        migrated.DateLastCompleted.Should().BeNull();
+        player.Quests["unrelated_quest"].Should().BeEquivalentTo(quest);
+
+        var retried = MigratePlayer(JObject.FromObject(player), out _)!;
+        retried.Quests.Should().BeEquivalentTo(player.Quests);
+    }
+
+    [TestCase("nar_great_arkanian_dragon", "ark_dragon_troph")]
+    [TestCase("smuggler_favor", "stolen_goods")]
+    public void SharedBossProofQuestRepair_PreservesEarlierLaterAndCompletedRecords(string questId, string proof)
+    {
+        var completedOn = new DateTime(2026, 1, 1);
+        foreach (var quest in new[]
+        {
+            new PlayerQuest { CurrentState = 1 },
+            new PlayerQuest { CurrentState = 3 },
+            new PlayerQuest { CurrentState = 2, TimesCompleted = 1 },
+            new PlayerQuest { CurrentState = 2, DateLastCompleted = completedOn },
+            new PlayerQuest { CurrentState = 3, TimesCompleted = 1, DateLastCompleted = completedOn }
+        })
+        {
+            quest.ItemProgresses[proof] = 1;
+            var raw = PlayerJson();
+            raw["Quests"] = new JObject { [questId] = JObject.FromObject(quest) };
+
+            var player = MigratePlayer(raw, out _)!;
+
+            player.Quests[questId].Should().BeEquivalentTo(quest);
+        }
+    }
+
     private static Player? MigratePlayer(JObject raw, out int refund)
     {
         var args = new object[] { raw, 0 };

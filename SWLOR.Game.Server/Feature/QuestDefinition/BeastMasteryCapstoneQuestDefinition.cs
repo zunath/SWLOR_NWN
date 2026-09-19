@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Nalka Rinn wants six Primal Overrun adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Primal Overrun Grotto Track Slate they carry.")
+                    "Nalka Rinn gave you the Dathomir Grotto Apex Den Key. Nalka Rinn wants six Primal Overrun adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Primal Overrun Grotto Track Slate they carry.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePrimalOverrunGrottoTrackSlate)
 
@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Voro Thane wants six Untouchable Instinct adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Untouchable Instinct Grotto Track Slate they carry.")
+                    "Voro Thane gave you the Dathomir Grotto Apex Den Key. Voro Thane wants six Untouchable Instinct adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Untouchable Instinct Grotto Track Slate they carry.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUntouchableInstinctGrottoTrackSlate)
 
@@ -340,7 +340,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Eshka Korr wants six Force-Bonded Beast adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Force-Bonded Beast Grotto Track Slate they carry.")
+                    "Eshka Korr gave you the Dathomir Grotto Apex Den Key. Eshka Korr wants six Force-Bonded Beast adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Force-Bonded Beast Grotto Track Slate they carry.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForceBondedBeastGrottoTrackSlate)
 
@@ -453,7 +453,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Talra Venn wants six Apex Bite adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Apex Bite Tarn Hunt Tally they carry.")
+                    "Talra Venn gave you the Dathomir Tarn Jungle Preserve Key. Talra Venn wants six Apex Bite adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Apex Bite Tarn Hunt Tally they carry.")
                 .AddKillObjective(NPCGroupType.Dathomir_ApexBite_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneApexBiteTarnHuntTally)
 
@@ -566,7 +566,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Oren Krast wants six Unbreakable Beast adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Unbreakable Beast Tarn Hunt Tally they carry.")
+                    "Oren Krast gave you the Dathomir Tarn Jungle Preserve Key. Oren Krast wants six Unbreakable Beast adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Unbreakable Beast Tarn Hunt Tally they carry.")
                 .AddKillObjective(NPCGroupType.Dathomir_UnbreakableBeast_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnbreakableBeastTarnHuntTally)
 
@@ -679,7 +679,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Mira Syth wants six Alpha Rhythm adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Alpha Rhythm Tarn Hunt Tally they carry.")
+                    "Mira Syth gave you the Dathomir Tarn Jungle Preserve Key. Mira Syth wants six Alpha Rhythm adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Alpha Rhythm Tarn Hunt Tally they carry.")
                 .AddKillObjective(NPCGroupType.Dathomir_AlphaRhythm_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAlphaRhythmTarnHuntTally)
 

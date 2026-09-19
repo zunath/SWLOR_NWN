@@ -238,7 +238,7 @@ namespace SWLOR.Toolset.Tests
             // DuplicateNode copies the line's localized text via LocString.CopyFrom; that copy
             // must flow through the edit scope like every other mutation so undo restores the
             // document byte-for-byte.
-            var path = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json");
+            var path = LegacyConversationFixtures.PathFor("dantherbs");
             var original = File.ReadAllBytes(path);
             var dialog = DlgDocument.Parse(original);
 

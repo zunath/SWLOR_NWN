@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             var dbPlayer = DB.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : null;
 
-            if (quest == null) return false;
+            if (quest == null || quest.DateLastCompleted != null) return false;
 
             // Is the player on the final state of this quest?
             if (quest.CurrentState != GetStates().Count()) return false;
@@ -280,6 +280,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             // Retrieve the first quest state for this quest.
             playerQuest.CurrentState = 1;
             playerQuest.DateLastCompleted = null;
+            playerQuest.ItemProgresses.Clear();
+            playerQuest.KillProgresses.Clear();
             dbPlayer.Quests[QuestId] = playerQuest;
             DB.Set(dbPlayer);
 
@@ -347,7 +349,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             // If this quest has already been completed, exit early.
             // This is used in case a module builder incorrectly configures a quest.
             // We don't want to risk giving duplicate rewards.
-            if (playerQuest.TimesCompleted > 0 && !IsRepeatable) return false;
+            if (playerQuest.DateLastCompleted != null ||
+                (playerQuest.TimesCompleted > 0 && !IsRepeatable)) return false;
 
             var currentState = GetState(playerQuest.CurrentState);
 
@@ -369,6 +372,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             {
                 // Progress player's quest status to the next state.
                 playerQuest.CurrentState++;
+                playerQuest.ItemProgresses.Clear();
+                playerQuest.KillProgresses.Clear();
                 var nextState = GetState(playerQuest.CurrentState);
 
                 // Update the player's journal

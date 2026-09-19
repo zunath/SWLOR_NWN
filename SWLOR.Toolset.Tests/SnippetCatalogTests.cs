@@ -234,7 +234,7 @@ namespace SWLOR.Toolset.Tests
         /// </summary>
         private static readonly string[] KnownSurplusArguments =
         {
-            "rorrska_buvvien.dlg.json: condition-has-quest with 2 argument(s)"
+            "rorrska_buvvien.conversation.json: condition-has-quest with 2 argument(s)"
         };
 
         [Test]
@@ -267,32 +267,8 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        private static IEnumerable<(string File, string Key, string[] Arguments)> ModuleSnippetUsages()
-        {
-            var directory = Path.Combine(CorpusLocator.ModuleDirectory, "dlg");
-            foreach (var path in Directory.EnumerateFiles(directory, "*.json"))
-            {
-                var document = DlgDocument.Load(path);
-                var file = Path.GetFileName(path);
-
-                foreach (var link in document.AllLinks())
-                {
-                    foreach (var condition in link.Conditions)
-                        yield return (file, condition.Key, condition.Arguments);
-                }
-
-                foreach (var node in document.Entries.Concat(document.Replies))
-                {
-                    foreach (var action in node.Actions)
-                    {
-                        if (action.IsOncePerPlayerMarker)
-                            continue;
-
-                        yield return (file, action.Key, action.Arguments);
-                    }
-                }
-            }
-        }
+        private static IEnumerable<(string File, string Key, string[] Arguments)> ModuleSnippetUsages() =>
+            ConversationCorpus.SnippetUsages();
 
         private static IReadOnlyList<string> Placeholders(string phrase)
         {

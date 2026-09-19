@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill six Forcebane adepts at the outer forges of the Korriban Forge Caverns on Korriban and secure the Forcebane Forge Heat Ledger.")
+                    "Maar Veth gave you the Korriban Forge Caverns Key. Kill six Forcebane adepts at the outer forges of the Korriban Forge Caverns on Korriban and secure the Forcebane Forge Heat Ledger.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill six Crippling Defense adepts in the sign-up rooms of the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Backroom Bout Ledger.")
+                    "Dax Rell gave you the Smuggler's Moon Fight Club Backrooms Key. Kill six Crippling Defense adepts in the sign-up rooms of the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Backroom Bout Ledger.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseBackroomBoutLedger)
 

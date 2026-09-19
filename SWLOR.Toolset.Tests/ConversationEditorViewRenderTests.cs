@@ -28,7 +28,7 @@ namespace SWLOR.Toolset.Tests
         [SetUp]
         public void CopyConversation()
         {
-            var source = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json");
+            var source = LegacyConversationFixtures.PathFor("dantherbs");
             _workingCopy = Path.Combine(Path.GetTempPath(), $"swlor-render-{Guid.NewGuid():N}.dlg.json");
             File.Copy(source, _workingCopy);
         }

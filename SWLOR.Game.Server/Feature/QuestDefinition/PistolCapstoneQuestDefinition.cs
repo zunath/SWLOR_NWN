@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat six Last Word adepts in the Anchorhead Canyon Range on Tatooine and claim the Last Word Canyon Range Tally.")
+                    "Jek Talin gave you the Anchorhead Canyon Range Key. Defeat six Last Word adepts in the Anchorhead Canyon Range on Tatooine and claim the Last Word Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordCanyonRangeTally)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat six Dead Man's Hand adepts in the Anchorhead Canyon Range on Tatooine and claim the Dead Man's Hand Canyon Range Tally.")
+                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. Defeat six Dead Man's Hand adepts in the Anchorhead Canyon Range on Tatooine and claim the Dead Man's Hand Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandCanyonRangeTally)
 

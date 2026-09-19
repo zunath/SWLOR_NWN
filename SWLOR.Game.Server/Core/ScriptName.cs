@@ -222,7 +222,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnOpenPropertyBank = "open_prop_bank";
 
         // Quest events
-        public const string OnQuestForceCrystal = "qst_force_crys";
         public const string OnQuestCollectOpen = "qst_collect_open";
         public const string OnQuestCollectClosed = "qst_collect_clsd";
         public const string OnQuestCollectDisturbed = "qst_collect_dist";

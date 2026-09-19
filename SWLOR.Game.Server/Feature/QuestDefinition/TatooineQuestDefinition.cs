@@ -67,13 +67,18 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private static void SmugglerFavor(QuestBuilder builder)
         {
             builder.Create("smuggler_favor", "A Smuggler's Favor")
+                .OnAdvanceAction((player, sourceObject, state) =>
+                {
+                    if (state == 2)
+                        CreateItemOnObject("stolen_goods", player, 5);
+                })
 
                 .AddState()
                 .SetStateJournalText("A shady smuggler has asked for your help. He lost a shipment to a local ancient sandworm and needs you to recover it. Find and eliminate the sandworm, then retrieve the stolen cargo.")
                 .AddKillObjective(NPCGroupType.Tatooine_AncientSandworm, 1)
 
                 .AddState()
-                .SetStateJournalText("You've dealt with the sandworm. Search the area and recover the stolen goods.")
+                .SetStateJournalText("You've slain the ancient sandworm and recovered five Stolen Goods. Bring the cargo back to the smuggler on Tatooine.")
                 .AddCollectItemObjective("stolen_goods", 5)
 
                 .AddState()

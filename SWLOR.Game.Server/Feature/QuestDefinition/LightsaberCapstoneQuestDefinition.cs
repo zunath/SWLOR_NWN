@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 6 Saber Storm adepts in the outer ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Enclave Trial Slate.")
+                    "Talan Rees gave you the Dantooine Jedi Enclave Trial Halls Key. Defeat 6 Saber Storm adepts in the outer ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 6 Guardian Master adepts in the outer ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Enclave Trial Slate.")
+                    "Miris Aven gave you the Dantooine Jedi Enclave Trial Halls Key. Defeat 6 Guardian Master adepts in the outer ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
 

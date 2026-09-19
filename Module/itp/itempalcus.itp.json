@@ -7455,17 +7455,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Jhoren's Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "jhorensarmor"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Landyn's Clothing"
                     },
                     "RESREF": {

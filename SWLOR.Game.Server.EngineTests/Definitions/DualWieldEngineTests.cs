@@ -370,15 +370,74 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        private static void ResolveCycle(uint attacker, uint target, int attacks = 2)
+        [EngineTest("Dual wield melee deflection checks every weapon roll", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static Task MeleeDeflectionChecksEveryRoll(EngineTestContext ctx) =>
+            AssertDeflectionChecksEveryRoll(ctx, false);
+
+        [EngineTest("Dual wield shield deflection checks every weapon roll", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static Task ShieldDeflectionChecksEveryRoll(EngineTestContext ctx) =>
+            AssertDeflectionChecksEveryRoll(ctx, true);
+
+        private static async Task AssertDeflectionChecksEveryRoll(EngineTestContext ctx, bool useShield)
+        {
+            var (attacker, _, _, _) = await CreatePair(ctx);
+            var defender = ctx.SpawnCreature("nw_bandit001", 1f);
+            await ctx.WaitFrameAsync();
+            await ctx.EquipItemAsync(defender, "nw_wswss001", InventorySlot.RightHand);
+            if (useShield)
+                await ctx.EquipItemAsync(defender, "qk_shield", InventorySlot.LeftHand);
+            try
+            {
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                _observedAttacker = attacker;
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    ctx.MakeHostile(defender);
+                    ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), defender, 60f);
+                    TemporaryStatModifier.Add(defender, StatType.MeleeDeflection, 100, 60f);
+                    TemporaryStatModifier.Add(defender, StatType.MeleeDeflectionChanceCap, 100, 60f);
+                    if (useShield)
+                        TemporaryStatModifier.Add(defender, StatType.ShieldDeflection, 100, 60f);
+                    var defenderNative = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(defender).AsNWSCreature();
+                    ctx.AssertEqual(useShield ? 0 : 100, Stat.GetMeleeDeflectionChanceNative(defenderNative),
+                        "Shield replaces melee deflection rather than stacking with it");
+                    ctx.AssertEqual(useShield ? Stat.MaximumShieldDeflectionChance : 0,
+                        Stat.GetShieldDeflectionChanceNative(defenderNative), "Expected shield deflection chance");
+
+                    var round = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature().m_pcCombatRound;
+                    foreach (var attacks in new[] { 2, 6 })
+                    {
+                        _hits.Clear();
+                        // This seed puts the first 32 D100 rolls below the shield's 75% cap.
+                        // Resolution is synchronous, so other creatures cannot consume the sequence.
+                        Service.Random.SetSeed(7197);
+                        var firstAttack = ResolveCycle(attacker, defender, attacks);
+                        for (var index = firstAttack; index < firstAttack + attacks; index++)
+                            ctx.AssertEqual(2, (int)round.GetAttack(index).m_nAttackResult,
+                                $"Roll {index - firstAttack + 1} of {attacks} is independently deflected");
+                        ctx.AssertEqual(0, _hits.Count, "Neither hand deals damage through a successful deflection");
+                    }
+                });
+            }
+            finally
+            {
+                Service.Random.ResetSeed();
+                AssignCommand(attacker, () => ClearAllActions());
+                ResetObservation();
+            }
+        }
+
+        private static int ResolveCycle(uint attacker, uint target, int attacks = 2)
         {
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
             var round = native.m_pcCombatRound;
             round.StartCombatRound(target);
+            var firstAttack = round.m_nCurrentAttack;
             var count = WeaponAttackCycle.PrepareDualWieldAttacks(round, attacks);
             StatusEffect.BeginNativeAttackSwing(attacker);
             try { native.ResolveAttack(target, count, Combat.BaseAttackDelayMilliseconds); }
             finally { StatusEffect.EndNativeAttackSwing(attacker); }
+            return firstAttack;
         }
 
         [EngineTest("Mixed dual wield uses off-hand haste and consumes only matching charges", Category = "DualWield", TimeoutSeconds = 60f)]

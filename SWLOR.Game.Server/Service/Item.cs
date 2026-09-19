@@ -92,6 +92,9 @@ namespace SWLOR.Game.Server.Service
             BaseItem.ThrowingAxe,
             BaseItem.Dart,
         };
+        // Available before module cache loading, unlike the ability mapping dictionaries.
+        private static readonly HashSet<BaseItem> _attackWeaponBaseItems =
+            new(_meleeStatMappedBaseItems.Concat(_rangedStatMappedBaseItems));
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
@@ -643,7 +646,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Includes every weapon profile read by combat, including natural weapons and unarmed gear.</summary>
         public static bool IsAttackWeaponType(BaseItem baseItem)
         {
-            return _meleeStatMappedBaseItems.Contains(baseItem) || _rangedStatMappedBaseItems.Contains(baseItem);
+            return _attackWeaponBaseItems.Contains(baseItem);
         }
 
         public static bool IsBaseItemType(global::NWN.Native.API.CNWSItem item, IReadOnlyCollection<BaseItem> baseItemTypes)

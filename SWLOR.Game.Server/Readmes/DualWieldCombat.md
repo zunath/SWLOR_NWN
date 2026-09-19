@@ -18,6 +18,9 @@ Temporary one-shot no-delay procs capture their matching hands before consumptio
 bonus uses a matching hand even at the minimum delay, without imposing a one-charge cap
 on the rest of the timed batch.
 Combat and the character sheet use the same timing-skill selection for mixed weapons.
+Each eligible weapon roll gets its own deflection attempt, including both hands and
+accelerated rolls in the same native combat round. Shield Deflection still replaces
+weapon deflection, and queued abilities still use their separate impact rules.
 Damage-triggered effects remain per hit and retain their own cooldowns; poison coatings
 retain their shared six-second application cooldown.
 

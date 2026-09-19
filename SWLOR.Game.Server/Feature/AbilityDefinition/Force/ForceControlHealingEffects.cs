@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             StatusEffect.RemoveFirstCleanseableStatusEffect(target, StatusEffectCleanseType.Purify, false);
-            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 10);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 6);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), target);
         }
 

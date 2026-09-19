@@ -130,22 +130,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void MedKit1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 10);
+            ApplyMedKit(activator, target, 8);
         }
 
         private static void MedKit2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 20);
+            ApplyMedKit(activator, target, 14);
         }
 
         private static void MedKit3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 28);
+            ApplyMedKit(activator, target, 20);
         }
 
         private static void MedKit4ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyMedKit(activator, target, 36);
+            ApplyMedKit(activator, target, 24);
         }
 
         private static void ApplyMedKit(uint activator, uint target, int percent)

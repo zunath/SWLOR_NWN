@@ -177,10 +177,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} failed to apply for player {GetName(player)} [{playerId}]. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
                     BootPC(player, "Your character update could not be completed. Please contact a server administrator.");
-                    break;
+                    return;
                 }
             }
 
+            // Completed migrations may have cleared native feats while preserving perk ownership.
+            // Also repair previously saved characters even when no migration is pending.
+            Perk.RestorePlayerFeats(player);
         }
 
         /// <summary>

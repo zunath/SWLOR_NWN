@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 10006
+    "value": 10014
   },
   "BodyBag": {
     "type": "byte",
@@ -501,7 +501,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",

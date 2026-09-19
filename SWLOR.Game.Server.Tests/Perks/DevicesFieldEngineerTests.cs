@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -205,6 +206,27 @@ public class DevicesFieldEngineerTests
         row["MODEL01"].Should().Be("vps_fogfire");
         row["MODEL02"].Should().Be("vps_fogfire");
         row["MODEL03"].Should().Be("vps_fogfire");
+    }
+
+    [TestCase(0f, 0f)]
+    [TestCase(1f, 0.02f)]
+    [TestCase(12f, 0.24f)]
+    [TestCase(14f, 0.28f)]
+    [TestCase(24f, 0.48f)]
+    public void BlasterBeaconImpactDelay_MatchesItsProjectileTravelMode(float distanceMeters, float expectedSeconds)
+    {
+        var root = FindRepositoryRoot();
+        var visualEffects = Read2da(root / "SWLOR_Haks" / "sw_2da" / "visualeffects.2da");
+        var projectile = visualEffects[(int)VisualEffect.Mirv_StarWars_Bolt2];
+        var progFx = Read2da(root / "SWLOR_Haks" / "sw_2da" / "progfx.2da");
+        var travel = progFx[int.Parse(projectile["ProgFX_Impact"])];
+        travel["Type"].Should().Be("10", "the beacon uses a MIRV projectile");
+        travel["Param5"].Should().Be("linear", "the delay must match the installed projectile's travel mode");
+
+        var calculateDelay = typeof(DeviceAbilityEffects)
+            .GetMethod("GetFieldEngineerProjectileTravelSeconds", BindingFlags.NonPublic | BindingFlags.Static)!
+            .CreateDelegate<Func<float, float>>();
+        calculateDelay(distanceMeters).Should().BeApproximately(expectedSeconds, 0.0001f);
     }
 
     [Test]

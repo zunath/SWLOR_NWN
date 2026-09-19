@@ -86,6 +86,15 @@ public class InstalledAnimationFidelityTests
             Compare(enter.Animation, enter.Owner.Name, 0, expected.Sample(0), "entry");
             var exit = installed.Resolve(entry.AnimationName + "_out");
             exit.Animation.Length.Should().BeApproximately(.2f, .0001f);
+            // These clips rotate the neck/head without changing their lengths. Native idle
+            // does not reset translation/scale, so even constant bind keys corrupt wearers
+            // with different proportions (including Skirmisher Stance on robe phenotypes).
+            foreach (var animation in new[] { main.Animation, enter.Animation, exit.Animation })
+            foreach (var node in Nodes(animation.GeometryRoot!).Where(node => node.Name is "neck_g" or "head_g"))
+            {
+                node.PositionValues.Should().BeEmpty($"{entry.Name}/{modelName}/{animation.Name} must retain the wearer's bone lengths");
+                node.ScaleValues.Should().BeEmpty($"{entry.Name}/{modelName}/{animation.Name} must retain the wearer's scale");
+            }
             Compare(exit.Animation, exit.Owner.Name, 0, expected.Sample(project.Duration), "exit start");
             var idle = project.Joints.Select(j =>
             {
@@ -116,4 +125,6 @@ public class InstalledAnimationFidelityTests
             }
         }
     }
+
+    private static IEnumerable<MdlNode> Nodes(MdlNode node) => new[] { node }.Concat(node.Children.SelectMany(Nodes));
 }

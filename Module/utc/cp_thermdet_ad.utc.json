@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 10010
+    "value": 2123
   },
   "BodyBag": {
     "type": "byte",
@@ -268,7 +268,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -627,7 +627,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",

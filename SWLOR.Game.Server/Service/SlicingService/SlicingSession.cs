@@ -769,7 +769,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var dbSkill = dbPlayer.Skills[SkillType.Espionage];
-            var xp = EspionageProgression.CalculateXP(PerkType.Slicing, tier, dbSkill.Rank);
+            var xp = Skill.CalculateEspionageXP(PerkType.Slicing, tier, dbSkill.Rank);
             Skill.GiveSkillXP(player, SkillType.Espionage, xp, false, false);
         }
     }

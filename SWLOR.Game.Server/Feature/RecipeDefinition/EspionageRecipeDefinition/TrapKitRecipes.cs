@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_1")
                 .Level(3)
-                .SkillUpToRank(EspionageProgression.GetPracticeRankLimit(PerkType.Trapcraft, 1))
+                .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 1))
                 .Quantity(5)
                 .Component("elec_ruined", 3)
                 .Component("ref_veldite", 2);
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_2")
                 .Level(18)
-                .SkillUpToRank(EspionageProgression.GetPracticeRankLimit(PerkType.Trapcraft, 2))
+                .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 2))
                 .Quantity(5)
                 .Component("elec_flawed", 3)
                 .Component("ref_scordspar", 2);
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_3")
                 .Level(30)
-                .SkillUpToRank(EspionageProgression.GetPracticeRankLimit(PerkType.Trapcraft, 3))
+                .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 3))
                 .Quantity(5)
                 .Component("elec_good", 3)
                 .Component("ref_plagionite", 2);
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_4")
                 .Level(45)
-                .SkillUpToRank(EspionageProgression.GetPracticeRankLimit(PerkType.Trapcraft, 4))
+                .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 4))
                 .Quantity(5)
                 .Component("elec_imperfect", 3)
                 .Component("ref_keromber", 2);
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_5")
                 .Level(50)
-                .SkillUpToRank(EspionageProgression.GetPracticeRankLimit(PerkType.Trapcraft, 5))
+                .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Trapcraft, 5))
                 .Quantity(5)
                 .Component("elec_high", 3)
                 .Component("ref_jasioclase", 2);

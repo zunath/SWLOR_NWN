@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
                 .Category(RecipeCategoryType.Poison)
                 .Resref(resref)
                 .Level(level)
-                .SkillUpToRank(EspionageProgression.GetPracticeRankLimit(PerkType.Poisoncraft, tier))
+                .SkillUpToRank(Skill.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, tier))
                 .Quantity(1)
                 .Component(creatureMaterial, 1)
                 .Component(herb, 2);

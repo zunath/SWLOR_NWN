@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var rank = DB.Get<Player>(GetObjectUUID(record.Owner)).Skills[SkillType.Espionage].Rank;
                     var xp = record.IsConcealed
-                        ? Math.Min(TrapTriggerXP, EspionageProgression.CalculateXP(PerkType.Trapcraft, record.Tier, rank))
+                        ? Math.Min(TrapTriggerXP, Skill.CalculateEspionageXP(PerkType.Trapcraft, record.Tier, rank))
                         : TrapTriggerXP;
                     Skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
                 }
@@ -412,7 +412,14 @@ namespace SWLOR.Game.Server.Service
             return Math.Clamp(chance, MinDisarmChance, MaxDisarmChance);
         }
 
-        private static bool CanUseTrapTier(uint player, int tier) => EspionageProgression.CanUseTrapTier(
+        public static bool CanUseTrapTier(int trapcraftRank, bool hasMasterSaboteur, int tier)
+        {
+            return tier is >= 1 and <= 4
+                ? trapcraftRank >= tier
+                : tier == 5 && hasMasterSaboteur;
+        }
+
+        private static bool CanUseTrapTier(uint player, int tier) => CanUseTrapTier(
             Perk.GetPerkLevel(player, PerkType.Trapcraft),
             Perk.GetPerkLevel(player, PerkType.MasterSaboteur) >= 1,
             tier);
@@ -421,7 +428,7 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(user);
             var dbPlayer = DB.Get<Player>(playerId);
-            var xp = EspionageProgression.CalculateXP(PerkType.Trapcraft, tier, dbPlayer.Skills[SkillType.Espionage].Rank);
+            var xp = Skill.CalculateEspionageXP(PerkType.Trapcraft, tier, dbPlayer.Skills[SkillType.Espionage].Rank);
             if (xp > 0)
             {
                 Skill.GiveSkillXP(user, SkillType.Espionage, xp, false, false);

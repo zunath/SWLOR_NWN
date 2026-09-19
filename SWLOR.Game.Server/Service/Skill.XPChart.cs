@@ -1,11 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static partial class Skill
     {
+        private const int MaximumEspionageRank = 50;
+        private static readonly int[] _poisoncraftRanks = { 0, 15, 28, 40, 48 };
+        private static readonly int[] _trapcraftRanks = { 0, 18, 30, 45, 50 };
+        private static readonly int[] _slicingRanks = { 0, 22, 30, 42, 48 };
+
         private static readonly Dictionary<int, int> _skillXPRequirements = new()
         {
             { 0, 550 },
@@ -191,6 +197,43 @@ namespace SWLOR.Game.Server.Service
             var remainderXP = requiredXP - totalXP;
             remainderXP = _skillXPRequirements[level] - remainderXP;
             return (level, remainderXP);
+        }
+
+        /// <summary>
+        /// Skill rank required to unlock a tier of an Espionage profession.
+        /// </summary>
+        public static int GetEspionageRequiredRank(PerkType profession, int tier)
+        {
+            var ranks = profession switch
+            {
+                PerkType.Poisoncraft => _poisoncraftRanks,
+                PerkType.Trapcraft => _trapcraftRanks,
+                PerkType.Slicing => _slicingRanks,
+                _ => throw new ArgumentOutOfRangeException(nameof(profession))
+            };
+
+            if (tier < 1 || tier > ranks.Length)
+                throw new ArgumentOutOfRangeException(nameof(tier));
+
+            return ranks[tier - 1];
+        }
+
+        /// <summary>
+        /// Exclusive training limit: the next tier's unlock, or the Espionage skill cap.
+        /// </summary>
+        public static int GetEspionagePracticeRankLimit(PerkType profession, int tier)
+        {
+            GetEspionageRequiredRank(profession, tier);
+            return tier == 5 ? MaximumEspionageRank : GetEspionageRequiredRank(profession, tier + 1);
+        }
+
+        public static int CalculateEspionageXP(PerkType profession, int tier, int skillRank)
+        {
+            var requiredRank = GetEspionageRequiredRank(profession, tier);
+            if (skillRank < requiredRank)
+                return 0;
+
+            return GetPracticeXP(requiredRank, skillRank, GetEspionagePracticeRankLimit(profession, tier));
         }
 
         /// <summary>

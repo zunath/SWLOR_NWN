@@ -118,26 +118,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Can slice tier 2 lockboxes and terminals.")
                 .Price(3)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Slicing, 2))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 2))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can slice tier 3 lockboxes and terminals. Grants +1 trace during slicing.")
                 .Price(3)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Slicing, 3))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 3))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can slice tier 4 lockboxes and terminals. Grants +2 trace during slicing.")
                 .Price(4)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Slicing, 4))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 4))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can slice tier 5 lockboxes and terminals. Grants +3 trace during slicing.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Slicing, 5));
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Slicing, 5));
         }
 
         private void TacticalEscape()
@@ -222,26 +222,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Can craft tier 2 weapon poisons.")
                 .Price(3)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Poisoncraft, 2))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Poisoncraft, 2))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can craft tier 3 weapon poisons.")
                 .Price(3)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Poisoncraft, 3))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Poisoncraft, 3))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can craft tier 4 weapon poisons.")
                 .Price(3)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Poisoncraft, 4))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Poisoncraft, 4))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can craft tier 5 weapon poisons.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Poisoncraft, 5));
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Poisoncraft, 5));
         }
 
         private void Trapcraft()
@@ -258,13 +258,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Can craft, place, detect, and disarm tier 2 traps.")
                 .Price(3)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Trapcraft, 2))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Trapcraft, 2))
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .Description("Can craft, place, detect, and disarm tier 3 traps. Traps arm 20% faster, reducing their arming time from 3 seconds to 2.4 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Trapcraft, 3))
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Trapcraft, 3))
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.TrapPlacementSpeedPercent, 20)
 
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.TrapPlacementSpeedPercent, 30)
-                .RequirementSkill(SkillType.Espionage, EspionageProgression.GetRequiredRank(PerkType.Trapcraft, 4));
+                .RequirementSkill(SkillType.Espionage, Skill.GetEspionageRequiredRank(PerkType.Trapcraft, 4));
         }
 
         private void VenomExpertise()

@@ -32,7 +32,7 @@ public class EspionageProgressionTests
         {
             var requirement = level.Requirements.OfType<PerkRequirementSkill>()
                 .Single(x => x.Type == SkillType.Espionage);
-            Assert.That(EspionageProgression.GetPracticeRankLimit(profession, tier - 1),
+            Assert.That(Skill.GetEspionagePracticeRankLimit(profession, tier - 1),
                 Is.EqualTo(requirement.RequiredRank));
         }
 
@@ -40,7 +40,7 @@ public class EspionageProgressionTests
         {
             var masterRank = BuildPerk(PerkType.MasterSaboteur).PerkLevels[1].Requirements
                 .OfType<PerkRequirementSkill>().Single().RequiredRank;
-            Assert.That(EspionageProgression.GetPracticeRankLimit(profession, 4), Is.EqualTo(masterRank));
+            Assert.That(Skill.GetEspionagePracticeRankLimit(profession, 4), Is.EqualTo(masterRank));
         }
     }
 
@@ -55,7 +55,7 @@ public class EspionageProgressionTests
         for (var rank = 0; rank < 50; rank++)
         {
             var available = recipes.Where((recipe, index) =>
-                EspionageProgression.GetRequiredRank(profession, index + 1) <= rank &&
+                Skill.GetEspionageRequiredRank(profession, index + 1) <= rank &&
                 Craft.GetRequiredSkillRankForRecipe(recipe) <= rank &&
                 Craft.GetBaseRecipeXP(recipe, rank) > 0).ToArray();
 
@@ -73,15 +73,15 @@ public class EspionageProgressionTests
     {
         for (var rank = 0; rank < 50; rank++)
         {
-            var xp = Enumerable.Range(1, 5).Select(tier => EspionageProgression.CalculateXP(profession, tier, rank)).ToArray();
+            var xp = Enumerable.Range(1, 5).Select(tier => Skill.CalculateEspionageXP(profession, tier, rank)).ToArray();
             Assert.That(xp.Count(value => value > 0), Is.EqualTo(1), $"{profession} rank {rank}");
         }
 
         for (var tier = 1; tier <= 5; tier++)
         {
-            Assert.That(EspionageProgression.CalculateXP(profession, tier, 50), Is.Zero);
-            Assert.That(EspionageProgression.CalculateXP(profession, tier,
-                EspionageProgression.GetPracticeRankLimit(profession, tier)), Is.Zero);
+            Assert.That(Skill.CalculateEspionageXP(profession, tier, 50), Is.Zero);
+            Assert.That(Skill.CalculateEspionageXP(profession, tier,
+                Skill.GetEspionagePracticeRankLimit(profession, tier)), Is.Zero);
         }
     }
 
@@ -95,7 +95,7 @@ public class EspionageProgressionTests
     [TestCase(4, true, 0, false)]
     public void TrapAccess_UsesTheSameTierRulesForPlacementDetectionAndDisarm(int trapcraft, bool master, int tier, bool allowed)
     {
-        Assert.That(EspionageProgression.CanUseTrapTier(trapcraft, master, tier), Is.EqualTo(allowed));
+        Assert.That(Traps.CanUseTrapTier(trapcraft, master, tier), Is.EqualTo(allowed));
     }
 
     private static PerkDetail BuildPerk(PerkType profession)

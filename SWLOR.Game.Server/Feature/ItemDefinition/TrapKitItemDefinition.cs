@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// </summary>
         private static bool HasRequiredTrapcraft(uint user, int tier)
         {
-            return EspionageProgression.CanUseTrapTier(
+            return Traps.CanUseTrapTier(
                 Perk.GetPerkLevel(user, PerkType.Trapcraft),
                 Perk.GetPerkLevel(user, PerkType.MasterSaboteur) >= 1,
                 tier);

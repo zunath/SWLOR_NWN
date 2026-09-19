@@ -298,13 +298,19 @@ public class LightsaberWorkbenchTests
             foreach (var hilt in LightsaberWorkbench.GetHilts(weaponType))
             {
                 hilt.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
-                if (hilt.PreviewResref.StartsWith("ui_"))
-                {
-                    File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga"))
-                        .Should().BeTrue($"preview texture {hilt.PreviewResref}.tga must exist in sw_ui");
-                }
+                (File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga")) ||
+                 File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "sw_weapon", $"{hilt.PreviewResref}.dds")))
+                    .Should().BeTrue($"preview texture {hilt.PreviewResref} must exist");
+                var hiltPrefix = weaponType == BaseItem.Saberstaff ? "wdblsbr" : "wswglsbr";
+                File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "sw_weapon", $"{hiltPrefix}_b_{hilt.PartValue:D3}.mdl"))
+                    .Should().BeTrue($"hilt model {hiltPrefix}_b_{hilt.PartValue:D3} must exist");
             }
         }
+
+        LightsaberWorkbench.GetHilts(BaseItem.Lightsaber).Select(h => h.PartValue)
+            .Should().Contain(new[] { 52, 53, 54, 102 }).And.NotContain(new[] { 151, 152, 153 });
+        LightsaberWorkbench.GetHilts(BaseItem.Saberstaff).Select(h => h.PartValue)
+            .Should().NotContain(new[] { 71, 72, 73 });
 
         var straightColors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false);
         var curvedColors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, true);

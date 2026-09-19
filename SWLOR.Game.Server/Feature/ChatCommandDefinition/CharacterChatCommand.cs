@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Follow();
             SetKnownName();
             ForgetKnownName();
+            Introductions();
             ChangeDescription();
             OrderCompanion();
             ResetWindows();
@@ -612,6 +613,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         name);
                     SendMessageToPC(user, ColorToken.Green($"Private label saved as '{name}'. Only you can see this label."));
                 });
+        }
+
+        private void Introductions()
+        {
+            _builder.Create("introduce")
+                .Description("Offers a name or alias to visible players within 20m. They choose whether to remember it.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) => PlayerIntroduction.ValidateIntroduction(user, string.Join(" ", args)))
+                .Action((user, target, location, args) => PlayerIntroduction.Introduce(user, string.Join(" ", args)));
+
+            _builder.Create("introductions")
+                .Description("Review nearby introductions. Remembering a name requires your approval.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => Gui.TogglePlayerWindow(user, GuiWindowType.Introductions));
         }
 
         private void ForgetKnownName()

@@ -350,6 +350,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             "Using /name <label> on another player saves a private label only your character can see. It does not rename the other character, and no other player sees the label you entered. The label can be a name your character was told, a nickname, or what your character believes that presented identity is called; it does not have to be the truth. Use /forgetname on the character to remove only your private label."),
                         new ArticleBlock("Your Public Description",
                             "An unrecognized player character appears as a gray public description. Use /name <description> on yourself to set the gray text shown to players who have not saved a label for your current identity. This does not change your real character name. Labels and public descriptions are limited to 64 characters and cannot include color codes."),
+                        new ArticleBlock("Introducing Yourself",
+                            "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. They receive a chat notice and can use /introductions to Remember or Dismiss it. Nothing is saved without their approval, and replacing an existing private label requires confirmation. Introductions belong to your current identity, expire after 10 minutes, and become unavailable if you disconnect or change identity. The command has a 5-minute cooldown that persists across reconnects. Repeating a pending name does not send another notice."),
                         new ArticleBlock("Example",
                             "A masked character uses the public description 'Tall Armored Human.' Mira saves the private label 'Red Coat,' so only Mira sees Red Coat. Jax has not saved a label, so Jax still sees Tall Armored Human in gray. Neither player renamed the masked character. If the mask is a disguise, labels saved for the character's normal identity remain separate."),
                         new ArticleBlock("Emotes and Languages",
@@ -357,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("OOC and Speech Restrictions",
                             "Text after // or (( is treated as out-of-character and is not translated through the language system. Dead characters cannot speak, and the Shout channel remains staff-only."),
                         new ArticleBlock("Useful Chat Commands",
-                            "Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, /save for a manual character save, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
+                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 5-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, /save for a manual character save, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
                     },
                     new[]
                     {
@@ -367,6 +369,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Can another player rename my character?", "No. They can only save a private label visible to their own character."),
                         new QuestionAnswer("Can two players see different names for the same character?", "Yes. Each character keeps their own private labels."),
                         new QuestionAnswer("Does /name reveal someone's real identity?", "No. It records what your character believes or calls the currently presented identity."),
+                        new QuestionAnswer("How do introductions work?", "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. It has a 5-minute cooldown that persists across reconnects. Recipients use /introductions to choose Remember or Dismiss. Replacing an existing private label requires confirmation; ignoring or dismissing the offer changes nothing. An introduction does not prove the name is true."),
                         new QuestionAnswer("How do I label another player?", "Type /name <label>, then click that player character. Use /forgetname and click them again to remove only your private label. Target yourself with /name to set your gray public description."),
                         new QuestionAnswer("How do I change languages?", "Use /language help, then /language <alias>. Wookiees remain in Shyriiwook."),
                         new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time."),

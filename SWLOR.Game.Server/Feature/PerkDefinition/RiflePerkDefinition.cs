@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ContainmentNetTrait)
-                .Description("Targets with 3 or more Suppression stacks have -10% Damage Dealt while those stacks remain.")
+                .Description("Targets deal 10% less damage while they have 3 or more of your Suppression stacks.")
                 .IncreasesStat(StatType.SuppressionStackDamageDealtRequiredStacks, 3)
                 .IncreasesStat(StatType.SuppressionStackDamageDealtPercentAdjustment, -10)
                 .Price(2)

@@ -15,7 +15,7 @@ else {
 }
 
 $descriptionUpdates = [ordered]@{
-    "Containment Net" = "Targets with 3 or more Suppression stacks have -10% Damage Dealt while those stacks remain."
+    "Containment Net" = "Targets deal 10% less damage while they have 3 or more of your Suppression stacks."
     "Kill Box" = "Target an enemy or location to deal weapon DMG + 20 to enemies within 8m and apply Kill Box for 45 seconds. While Kill Box remains, any player's ranged attacks against affected enemies add Suppression stacks lasting 30 seconds using the Kill Box caster's Suppressing Shot stack strength; each stack reduces Evasion by an additional 3%."
     "Scope Calibration" = "Ranged abilities gain +10% Accuracy and +8% Critical Rate against targets at least 10m away."
     "Headshot I" = "Queues your next auto-attack to deal weapon DMG + 16. If Headshot is used after 3 seconds without attacking, that attack gains +15% Critical Rate."

@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 float markerVisualEffectScale,
                 bool isAreaPulse,
                 bool appliesBeaconPulseBonuses,
-                bool showAreaIndicator)
+                bool showAreaIndicator,
+                VisualEffect projectileVisualEffect = VisualEffect.None)
             {
                 Activator = activator;
                 Location = location;
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 IsAreaPulse = isAreaPulse;
                 AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
                 ShowAreaIndicator = showAreaIndicator;
+                ProjectileVisualEffect = projectileVisualEffect;
                 MarkerObject = OBJECT_INVALID;
                 AreaIndicatorId = string.Empty;
                 ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator, () =>
@@ -88,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool IsAreaPulse { get; }
             public bool AppliesBeaconPulseBonuses { get; }
             public bool ShowAreaIndicator { get; }
+            public VisualEffect ProjectileVisualEffect { get; }
             public uint MarkerObject { get; set; }
             public string AreaIndicatorId { get; set; }
             public Action ApplyPulse { get; }
@@ -301,7 +304,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect areaVisualEffect = VisualEffect.None,
             VisualEffect markerVisualEffect = VisualEffect.None,
             float markerVisualEffectScale = 1f,
-            bool showAreaIndicator = true)
+            bool showAreaIndicator = true,
+            VisualEffect projectileVisualEffect = VisualEffect.None)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -319,7 +323,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 markerVisualEffectScale,
                 false,
                 true,
-                showAreaIndicator));
+                showAreaIndicator,
+                projectileVisualEffect));
         }
 
         public static void ScheduleAreaHostilePulses(
@@ -521,6 +526,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var target = GetNearestHostileCreature(emitter.Activator, emitter.Location, radius);
             if (!GetIsObjectValid(target))
                 return;
+
+            if (emitter.ProjectileVisualEffect != VisualEffect.None && GetIsObjectValid(emitter.MarkerObject))
+            {
+                // MIRV projectiles originate at the effect's creator; only the visual belongs to the marker.
+                AssignCommand(emitter.MarkerObject, () =>
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(emitter.ProjectileVisualEffect), target));
+            }
 
             if (emitter.AreaVisualEffect != VisualEffect.None)
                 ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(emitter.AreaVisualEffect), emitter.Location);

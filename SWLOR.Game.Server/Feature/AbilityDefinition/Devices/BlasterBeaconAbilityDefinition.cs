@@ -117,7 +117,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 CombatDamageType.Physical,
                 VisualEffect.Vfx_Imp_Flame_S,
                 markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White,
-                markerVisualEffectScale: 4.8f);
+                markerVisualEffectScale: 4.8f,
+                projectileVisualEffect: VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private static void BlasterBeacon2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -134,7 +135,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 CombatDamageType.Physical,
                 VisualEffect.Vfx_Imp_Flame_S,
                 markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White,
-                markerVisualEffectScale: 4.8f);
+                markerVisualEffectScale: 4.8f,
+                projectileVisualEffect: VisualEffect.Mirv_StarWars_Bolt2);
         }
 
         private static void BlasterBeacon3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -151,7 +153,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 CombatDamageType.Physical,
                 VisualEffect.Vfx_Imp_Flame_S,
                 markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White,
-                markerVisualEffectScale: 5.6f);
+                markerVisualEffectScale: 5.6f,
+                projectileVisualEffect: VisualEffect.Mirv_StarWars_Bolt2);
         }
 
     }

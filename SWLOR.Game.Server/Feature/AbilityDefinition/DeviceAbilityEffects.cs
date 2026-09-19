@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 float markerVisualEffectScale,
                 bool isAreaPulse,
                 bool appliesBeaconPulseBonuses,
-                bool showAreaIndicator)
+                bool showAreaIndicator,
+                VisualEffect projectileVisualEffect = VisualEffect.None)
             {
                 Activator = activator;
                 Location = location;
@@ -61,15 +62,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 IsAreaPulse = isAreaPulse;
                 AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
                 ShowAreaIndicator = showAreaIndicator;
+                ProjectileVisualEffect = projectileVisualEffect;
                 MarkerObject = OBJECT_INVALID;
                 AreaIndicatorId = string.Empty;
-                ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator, () =>
+                if (IsAreaPulse)
                 {
-                    if (IsAreaPulse)
-                        ApplyAreaHostilePulse(this);
-                    else
-                        ApplySingleHostilePulse(this);
-                }, baseDamage: baseDamage);
+                    ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
+                        () => ApplyAreaHostilePulse(this), baseDamage: baseDamage);
+                }
+                else
+                {
+                    ApplyTargetImpact = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
+                        target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
+                    ApplyPulse = () => ApplySingleHostilePulse(this);
+                }
             }
 
             public uint Activator { get; }
@@ -88,9 +94,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool IsAreaPulse { get; }
             public bool AppliesBeaconPulseBonuses { get; }
             public bool ShowAreaIndicator { get; }
+            public VisualEffect ProjectileVisualEffect { get; }
             public uint MarkerObject { get; set; }
             public string AreaIndicatorId { get; set; }
             public Action ApplyPulse { get; }
+            public Action<uint> ApplyTargetImpact { get; }
+            public int PendingProjectileImpacts { get; set; }
         }
 
         public static void ApplyPowerSurge(uint activator, uint target)
@@ -301,7 +310,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect areaVisualEffect = VisualEffect.None,
             VisualEffect markerVisualEffect = VisualEffect.None,
             float markerVisualEffectScale = 1f,
-            bool showAreaIndicator = true)
+            bool showAreaIndicator = true,
+            VisualEffect projectileVisualEffect = VisualEffect.None)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -319,7 +329,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 markerVisualEffectScale,
                 false,
                 true,
-                showAreaIndicator));
+                showAreaIndicator,
+                projectileVisualEffect));
         }
 
         public static void ScheduleAreaHostilePulses(
@@ -522,6 +533,72 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!GetIsObjectValid(target))
                 return;
 
+            if (emitter.ProjectileVisualEffect != VisualEffect.None && GetIsObjectValid(emitter.MarkerObject))
+            {
+                emitter.PendingProjectileImpacts++;
+                // MIRV projectiles originate at the effect's creator; only the visual belongs to the marker.
+                AssignCommand(emitter.MarkerObject, () =>
+                {
+                    if (!IsSingleHostilePulseTargetValid(emitter, target))
+                    {
+                        CompleteFieldEngineerProjectile(emitter);
+                        return;
+                    }
+
+                    var travelSeconds = GetFieldEngineerProjectileTravelSeconds(GetDistanceBetween(emitter.MarkerObject, target));
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(emitter.ProjectileVisualEffect), target);
+
+                    // The module owns the callback so caster/marker removal cannot cancel cleanup.
+                    AssignCommand(GetModule(), () => DelayCommand(travelSeconds, () =>
+                    {
+                        try
+                        {
+                            emitter.ApplyTargetImpact(target);
+                        }
+                        finally
+                        {
+                            CompleteFieldEngineerProjectile(emitter);
+                        }
+                    }));
+                });
+                return;
+            }
+
+            emitter.ApplyTargetImpact(target);
+        }
+
+        private static float GetFieldEngineerProjectileTravelSeconds(float distanceMeters)
+        {
+            // Beacon bolts use progfx.2da's linear MIRV travel mode: 50 metres per second.
+            return Math.Max(0f, distanceMeters) / 50f;
+        }
+
+        private static bool IsSingleHostilePulseTargetValid(FieldEngineerPulseEmitter emitter, uint target)
+        {
+            return IsFieldEngineerEmitterValid(emitter) &&
+                   GetIsObjectValid(target) &&
+                   !GetIsDead(target) &&
+                   GetCurrentHitPoints(target) > 0 &&
+                   GetArea(target) == GetAreaFromLocation(emitter.Location) &&
+                   GetIsReactionTypeHostile(target, emitter.Activator);
+        }
+
+        private static void CompleteFieldEngineerProjectile(FieldEngineerPulseEmitter emitter)
+        {
+            emitter.PendingProjectileImpacts--;
+            if (emitter.PendingProjectileImpacts == 0 &&
+                !IsFieldEngineerEmitterTracked(emitter) &&
+                GetIsObjectValid(emitter.MarkerObject))
+            {
+                DestroyObject(emitter.MarkerObject);
+            }
+        }
+
+        private static void ApplySingleHostilePulseImpact(FieldEngineerPulseEmitter emitter, uint target)
+        {
+            if (!IsSingleHostilePulseTargetValid(emitter, target))
+                return;
+
             if (emitter.AreaVisualEffect != VisualEffect.None)
                 ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(emitter.AreaVisualEffect), emitter.Location);
 
@@ -668,7 +745,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
                 Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
 
-            if (GetIsObjectValid(emitter.MarkerObject))
+            if (emitter.PendingProjectileImpacts == 0 && GetIsObjectValid(emitter.MarkerObject))
                 DestroyObject(emitter.MarkerObject);
 
             if (emitters.Count <= 0)

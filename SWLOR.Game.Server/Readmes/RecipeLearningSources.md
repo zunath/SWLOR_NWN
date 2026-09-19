@@ -2,9 +2,13 @@
 
 Training Sabers and Training Saberstaffs use the existing DM-issued books `recipe_trnsabers` and `recipe_trnsabstf`. Each book teaches its five original tiers plus Field, Veteran, Prime, and Ascendant. The Jedi character restriction remains in place.
 
+The existing stored-item and login item migrations also append missing tiers to previously issued books. Extra recipes added by DMs are preserved, and retrying the migration does not duplicate recipe IDs.
+
 The older DM-issued books for Keebada's Binggona, Basilisk War Droid, Aurek Strikefighter, Sith Fighter, and Arkanian Dragon Armor intentionally have no loot, merchant, or quest source.
 
 Droid resistance blueprints drop from the following existing named rare spawns. Each uses weight 1 and quantity 1 in that creature's rare loot table, matching the existing rare rewards. These sources are separate from the capstone quest bosses and wardens.
+
+Both item value fields (`Cost` and `AddCost`) follow the existing droid enhancement blueprint tiers: 10,000 for rank I and 30,000 for rank II.
 
 | Blueprint | Resref | Rare NPC | Loot table |
 |---|---|---|---|

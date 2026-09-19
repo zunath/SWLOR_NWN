@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here's a card, face-down. Yours the day you earn a look at it. Now the game. Somebody's dealing my hand down in that canyon: my old table, my marked deck, and six eager adepts learning to shoot like me and cheat like them. Fold all six and bring me the Dead Man's Hand Canyon Range Tally they keep count on. I like an honest pot. You will need the Anchorhead Canyon Range Key to get inside. Agree to the job and I will give it to you."
+            "0": "Here's a card, face-down. Yours the day you earn a look at it. Now the game. Somebody's dealing my hand down in that canyon: my old table, my marked deck, and six eager adepts learning to shoot like me and cheat like them. Fold all six and bring me the Dead Man's Hand Canyon Range Tally they keep count on. I like an honest pot."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "There's the spirit. Gate key's yours. Don't count the pot before the sixth card falls. Here is your Anchorhead Canyon Range Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "There's the spirit. Gate key's yours. Don't count the pot before the sixth card falls."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Six adepts, one tally, and the pot's still sitting in the canyon. Hands don't fold themselves, friend. Use the Anchorhead Canyon Range Key I gave you when you took the job. You can find it under Key Items."
+            "0": "Six adepts, one tally, and the pot's still sitting in the canyon. Hands don't fold themselves, friend."
           }
         }
       },

@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Edda Maln gave you the Dantooine Medical Sublevel Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Use the Dantooine Medical Sublevel Key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Hold the Line adepts in the triage hall and recover the Hold the Line Triage Ward Ledger.")
+                    "Edda Maln gave you the Dantooine Medical Sublevel Key. Use the Dantooine Medical Sublevel Key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Hold the Line adepts in the triage hall and recover the Hold the Line Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Varen Kell gave you the Viscara Republic Engineering Bunker Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Use the Viscara Republic Engineering Bunker Key to enter the Viscara Republic Engineering Bunker on Viscara. Defeat six Decisive Command adepts in the outer galleries and recover the Decisive Command Republic Bunker Docket.")
+                    "Varen Kell gave you the Viscara Republic Engineering Bunker Key. Use the Viscara Republic Engineering Bunker Key to enter the Viscara Republic Engineering Bunker on Viscara. Defeat six Decisive Command adepts in the outer galleries and recover the Decisive Command Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandRepublicBunkerDocket)
 

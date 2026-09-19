@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jora Sel gave you the Dantooine Jedi Enclave Trial Halls Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Defeat six Saber Cyclone adepts in the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Cyclone Enclave Trial Slate.")
+                    "Jora Sel gave you the Dantooine Jedi Enclave Trial Halls Key. Defeat six Saber Cyclone adepts in the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Cyclone Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Tessa Quell gave you the Dantooine Medical Sublevel Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Defeat six Infinite Conduit adepts in the Dantooine Medical Sublevel on Dantooine and secure the Infinite Conduit Triage Ward Ledger.")
+                    "Tessa Quell gave you the Dantooine Medical Sublevel Key. Defeat six Infinite Conduit adepts in the Dantooine Medical Sublevel on Dantooine and secure the Infinite Conduit Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
 

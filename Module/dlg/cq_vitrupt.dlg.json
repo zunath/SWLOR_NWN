@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Your grip rides high on the hilt - that's a throat angle, not mine. I want to see if it can be taught out of you. Adepts are drilling Vital Rupture wrong in the Veles Militia Annex on Viscara, six of them, sloppy work all of it. Kill them, bring me back their drill ledger, and we'll see what you have. You will need the Veles Militia Annex Key to get inside. Agree to the job and I will give it to you."
+            "0": "Your grip rides high on the hilt - that's a throat angle, not mine. I want to see if it can be taught out of you. Adepts are drilling Vital Rupture wrong in the Veles Militia Annex on Viscara, six of them, sloppy work all of it. Kill them, bring me back their drill ledger, and we'll see what you have."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Then go. The annex key is already on you; it opens the sealed gate. Cut clean, or don't cut at all. Here is your Veles Militia Annex Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Then go. The annex key is already on you; it opens the sealed gate. Cut clean, or don't cut at all."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The adepts are still standing in the Veles Militia Annex. Come back when six of them aren't. Use the Veles Militia Annex Key I gave you when you took the job. You can find it under Key Items."
+            "0": "The adepts are still standing in the Veles Militia Annex. Come back when six of them aren't."
           }
         }
       },

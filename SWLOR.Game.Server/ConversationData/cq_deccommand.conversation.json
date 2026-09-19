@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker here on Viscara was my last command. My old adjutant sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His junior officers hold the outer galleries; the garrison calls them adepts. Put six of them down and bring me the Republic Bunker Docket from the gallery duty desk. I intend to read exactly what my command has become. You will need the Viscara Republic Engineering Bunker Key to get inside. Agree to the job and I will give it to you.",
+          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker here on Viscara was my last command. My old adjutant sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His junior officers hold the outer galleries; the garrison calls them adepts. Put six of them down and bring me the Republic Bunker Docket from the gallery duty desk. I intend to read exactly what my command has become.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This key answers the bunker's outer door - command privilege they never thought to revoke. Go in through the outer galleries and do not stop to argue with anyone. You are not there to debate doctrine. You are there to take their paperwork and their confidence in the same hour. Here is your Viscara Republic Engineering Bunker Key. Use it to enter the trial area; keep it for the work ahead.",
+          "Text": "This key answers the bunker's outer door - command privilege they never thought to revoke. Go in through the outer galleries and do not stop to argue with anyone. You are not there to debate doctrine. You are there to take their paperwork and their confidence in the same hour.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer galleries are still held, and the docket is still on that desk. Reports before debriefs. Move. Use the Viscara Republic Engineering Bunker Key I gave you when you took the job. You can find it under Key Items.",
+          "Text": "The outer galleries are still held, and the docket is still on that desk. Reports before debriefs. Move.",
           "Style": 0,
           "Color": null
         }

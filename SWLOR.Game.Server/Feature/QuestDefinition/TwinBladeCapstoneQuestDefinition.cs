@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Iven Brask gave you the Smuggler's Moon Fight Club Backrooms Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Iven Brask wants the backroom fight bill under the Nar Shaddaa fight club shut down. Use his key on the sealed door behind the main pit, defeat six Tempest Bloom adepts in the Smuggler's Moon Fight Club Backrooms, and recover the Tempest Bloom Backroom Bout Ledger.")
+                    "Iven Brask gave you the Smuggler's Moon Fight Club Backrooms Key. Iven Brask wants the backroom fight bill under the Nar Shaddaa fight club shut down. Use his key on the sealed door behind the main pit, defeat six Tempest Bloom adepts in the Smuggler's Moon Fight Club Backrooms, and recover the Tempest Bloom Backroom Bout Ledger.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_TempestBloom_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneTempestBloomBackroomBoutLedger)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Nyra Tane gave you the Smuggler's Moon Fight Club Backrooms Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Nyra Tane wants the backroom school teaching her form shut down. Use her key on the sealed door behind the main pit of the Nar Shaddaa fight club, defeat six Red Bloom adepts in the Smuggler's Moon Fight Club Backrooms, and recover the Red Bloom Backroom Bout Ledger.")
+                    "Nyra Tane gave you the Smuggler's Moon Fight Club Backrooms Key. Nyra Tane wants the backroom school teaching her form shut down. Use her key on the sealed door behind the main pit of the Nar Shaddaa fight club, defeat six Red Bloom adepts in the Smuggler's Moon Fight Club Backrooms, and recover the Red Bloom Backroom Bout Ledger.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RedBloom_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRedBloomBackroomBoutLedger)
 

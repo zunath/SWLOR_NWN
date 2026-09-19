@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Walk with me -- I think better moving. You came for the cyclone, and you're about to say you're ready, so I'll finish the sentence: you're ready to start. The trial halls under this enclave are full of students spinning the form with no center, and their masters won't intervene. I will, through you. Go down into the Dantooine Jedi Enclave Trial Halls, defeat six of the adepts, and bring me the Saber Cyclone Enclave Trial Slate they drill from. Their bad orbit starts on that slate. You will need the Dantooine Jedi Enclave Trial Halls Key to get inside. Agree to the job and I will give it to you."
+            "0": "Walk with me -- I think better moving. You came for the cyclone, and you're about to say you're ready, so I'll finish the sentence: you're ready to start. The trial halls under this enclave are full of students spinning the form with no center, and their masters won't intervene. I will, through you. Go down into the Dantooine Jedi Enclave Trial Halls, defeat six of the adepts, and bring me the Saber Cyclone Enclave Trial Slate they drill from. Their bad orbit starts on that slate."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Then keep up. The key I've just put in your hand opens the sealed door on the enclave's lower ring. Six adepts, the slate, back to me before your sweat dries. And watch their turns while you break them -- even a wrong lesson teaches. Here is your Dantooine Jedi Enclave Trial Halls Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Then keep up. The key I've just put in your hand opens the sealed door on the enclave's lower ring. Six adepts, the slate, back to me before your sweat dries. And watch their turns while you break them -- even a wrong lesson teaches."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You still owe the lower halls six adepts, and I still want the Saber Cyclone Enclave Trial Slate they drill from. Walk with me later -- right now the only conversation you owe is down there. Use the Dantooine Jedi Enclave Trial Halls Key I gave you when you took the job. You can find it under Key Items."
+            "0": "You still owe the lower halls six adepts, and I still want the Saber Cyclone Enclave Trial Slate they drill from. Walk with me later -- right now the only conversation you owe is down there."
           }
         }
       },

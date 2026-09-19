@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Work order. Signed, dated, unfilled. She slaps the flimsi flat against your chest. \"A wreck crew set up shop in the CZ-220 Breaker Yard, this station's lower level, and they're drilling katar guard-work on my tonnage and my clock. Six adepts hold the outer floor. Put them down, pull the Adamantine Guard Breaker Yard Work Order they're cutting under, and get it on my desk. Take the job and I cut you a key for the door they welded off my grid.\" You will need the CZ-220 Breaker Yard Key to get inside. Agree to the job and I will give it to you."
+            "0": "Work order. Signed, dated, unfilled. She slaps the flimsi flat against your chest. \"A wreck crew set up shop in the CZ-220 Breaker Yard, this station's lower level, and they're drilling katar guard-work on my tonnage and my clock. Six adepts hold the outer floor. Put them down, pull the Adamantine Guard Breaker Yard Work Order they're cutting under, and get it on my desk. Take the job and I cut you a key for the door they welded off my grid.\""
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Key's cut. The door is the welded one off the main junkline - it reads the key, not your face, so don't bother smiling at it. Six adepts. One work order. My desk. The shift clock started when you nodded. Here is your CZ-220 Breaker Yard Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Key's cut. The door is the welded one off the main junkline - it reads the key, not your face, so don't bother smiling at it. Six adepts. One work order. My desk. The shift clock started when you nodded."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Order's still open. Six adepts in the Breaker Yard, one work order, my desk. The shift clock doesn't care how your day is going and neither do I. Use the CZ-220 Breaker Yard Key I gave you when you took the job. You can find it under Key Items."
+            "0": "Order's still open. Six adepts in the Breaker Yard, one work order, my desk. The shift clock doesn't care how your day is going and neither do I."
           }
         }
       },

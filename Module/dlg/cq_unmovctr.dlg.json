@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You're still moving. Even standing still, you're moving. Six adepts drill wrong at Anchorhead Canyon Range on Tatooine, mistaking fidgeting for stillness. Put six of them down and bring me their canyon range tally, so I know it was you and not the wind. You will need the Anchorhead Canyon Range Key to get inside. Agree to the job and I will give it to you."
+            "0": "You're still moving. Even standing still, you're moving. Six adepts drill wrong at Anchorhead Canyon Range on Tatooine, mistaking fidgeting for stillness. Put six of them down and bring me their canyon range tally, so I know it was you and not the wind."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Take the range key. Six adepts, one tally. Go. Here is your Anchorhead Canyon Range Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Take the range key. Six adepts, one tally. Go."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Six adepts. One tally. Anchorhead Canyon Range hasn't moved, and neither should you until it's done. Use the Anchorhead Canyon Range Key I gave you when you took the job. You can find it under Key Items."
+            "0": "Six adepts. One tally. Anchorhead Canyon Range hasn't moved, and neither should you until it's done."
           }
         }
       },

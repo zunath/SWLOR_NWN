@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jek Talin gave you the Anchorhead Canyon Range Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Defeat six Last Word adepts in the Anchorhead Canyon Range on Tatooine and claim the Last Word Canyon Range Tally.")
+                    "Jek Talin gave you the Anchorhead Canyon Range Key. Defeat six Last Word adepts in the Anchorhead Canyon Range on Tatooine and claim the Last Word Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordCanyonRangeTally)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Pavo Orrel gave you the Anchorhead Canyon Range Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Defeat six Dead Man's Hand adepts in the Anchorhead Canyon Range on Tatooine and claim the Dead Man's Hand Canyon Range Tally.")
+                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. Defeat six Dead Man's Hand adepts in the Anchorhead Canyon Range on Tatooine and claim the Dead Man's Hand Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandCanyonRangeTally)
 

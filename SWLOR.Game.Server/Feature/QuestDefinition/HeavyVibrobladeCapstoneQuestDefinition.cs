@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Valis Korr gave you the Korriban Forge Caverns Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Enter the Korriban Forge Caverns on Korriban and defeat 6 Absolute Defense adepts. Secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
+                    "Valis Korr gave you the Korriban Forge Caverns Key. Enter the Korriban Forge Caverns on Korriban and defeat 6 Absolute Defense adepts. Secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Senn Dralok gave you the Korriban Forge Caverns Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Enter the Korriban Forge Caverns on Korriban and defeat 6 Soul Ascension adepts. Secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
+                    "Senn Dralok gave you the Korriban Forge Caverns Key. Enter the Korriban Forge Caverns on Korriban and defeat 6 Soul Ascension adepts. Secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 

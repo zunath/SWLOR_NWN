@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nobody respects a shelter drill until the day the roof's actually coming down, and then everybody wants to know why I run them. Well, here's why: a crew sealed off part of my own sublevel in the Viscara Republic Engineering Bunker and re-rigged it without my sign-off. Six of their adepts are holding it. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed. You will need the Viscara Republic Engineering Bunker Key to get inside. Agree to the job and I will give it to you."
+            "0": "Nobody respects a shelter drill until the day the roof's actually coming down, and then everybody wants to know why I run them. Well, here's why: a crew sealed off part of my own sublevel in the Viscara Republic Engineering Bunker and re-rigged it without my sign-off. Six of their adepts are holding it. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Other work can wait a beat, but fine, go when you're ready. Just don't go in without knowing your exit, that's the first rule of any bunker I've ever built. Here is your Viscara Republic Engineering Bunker Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Take the bunker key. Other work can wait a beat, but fine, go when you're ready. Just don't go in without knowing your exit, that's the first rule of any bunker I've ever built."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That docket's still sitting in my own sublevel with six adepts standing on it. Go get it back. Use the Viscara Republic Engineering Bunker Key I gave you when you took the job. You can find it under Key Items."
+            "0": "That docket's still sitting in my own sublevel with six adepts standing on it. Go get it back."
           }
         }
       },

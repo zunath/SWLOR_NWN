@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What are you willing to bleed? Think before you answer. Behind the main pit there's a sealed door into the backrooms. Past it, people fight with my form and none of my rules. Six of their students are cutting their way toward dangerous. Stop all six. Their teachers keep a coded bout ledger -- the Backroom Bout Ledger. Bring it to me. The key I'm giving you fits the door. Nothing else about this will be given. You will need the Smuggler's Moon Fight Club Backrooms Key to get inside. Agree to the job and I will give it to you."
+            "0": "What are you willing to bleed? Think before you answer. Behind the main pit there's a sealed door into the backrooms. Past it, people fight with my form and none of my rules. Six of their students are cutting their way toward dangerous. Stop all six. Their teachers keep a coded bout ledger -- the Backroom Bout Ledger. Bring it to me. The key I'm giving you fits the door. Nothing else about this will be given."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good answer. Short. The door behind the main pit takes your key. Six students, then the ledger. It comes back readable -- don't bleed on the pages. Here is your Smuggler's Moon Fight Club Backrooms Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Good answer. Short. The door behind the main pit takes your key. Six students, then the ledger. It comes back readable -- don't bleed on the pages."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Six, and the ledger. Count them yourself. The backrooms won't count for you. Use the Smuggler's Moon Fight Club Backrooms Key I gave you when you took the job. You can find it under Key Items."
+            "0": "Six, and the ledger. Count them yourself. The backrooms won't count for you."
           }
         }
       },

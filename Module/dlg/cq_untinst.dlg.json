@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You stopped when I said stop. Good ear, or good luck. The den's adepts hunt in noise, six of them, driving beasts loud enough to hide their own footsteps. Go into the Grotto Apex Den on Dathomir. Put the six down. Bring back the Untouchable Instinct Grotto Track Slate they carry. It still smells like the den it was cut from. You will need the Dathomir Grotto Apex Den Key to get inside. Agree to the job and I will give it to you."
+            "0": "You stopped when I said stop. Good ear, or good luck. The den's adepts hunt in noise, six of them, driving beasts loud enough to hide their own footsteps. Go into the Grotto Apex Den on Dathomir. Put the six down. Bring back the Untouchable Instinct Grotto Track Slate they carry. It still smells like the den it was cut from."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Take the key. Old drain gate, west face of the den. Quiet hinge, if you're quiet opening it. Go. Here is your Dathomir Grotto Apex Den Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Take the key. Old drain gate, west face of the den. Quiet hinge, if you're quiet opening it. Go."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Six adepts. One slate. Still out there. Use the Dathomir Grotto Apex Den Key I gave you when you took the job. You can find it under Key Items."
+            "0": "Six adepts. One slate. Still out there."
           }
         }
       },

@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, got sealed with my trainees still drilling inside, and they've kept my program running without me. Six adepts hold the drill floor. Put them down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are. You will need the Veles Militia Annex Key to get inside. Agree to the job and I will give it to you."
+            "0": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, got sealed with my trainees still drilling inside, and they've kept my program running without me. Six adepts hold the drill floor. Put them down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Signed and logged. This key opens the side entry, west gate off the Veles post. Six adepts, one ledger, no detours. I grade what comes back, not what you meant to bring. Here is your Veles Militia Annex Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Signed and logged. This key opens the side entry, west gate off the Veles post. Six adepts, one ledger, no detours. I grade what comes back, not what you meant to bring."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "First rotation's still open on my ledger. Six adepts on the annex drill floor, and the drill ledger back in my hands. Everything else is noise. Use the Veles Militia Annex Key I gave you when you took the job. You can find it under Key Items."
+            "0": "First rotation's still open on my ledger. Six adepts on the annex drill floor, and the drill ledger back in my hands. Everything else is noise."
           }
         }
       },

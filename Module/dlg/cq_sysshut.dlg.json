@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What have you heard about me? Nothing worth repeating, I'd guess - that's the correct answer, and the only one I want spreading. There's shutdown work happening in the Veles Militia Annex on Viscara that nobody authorized. Six adepts, running it into the ground. Put them down quietly, and bring me their drill ledger. You will need the Veles Militia Annex Key to get inside. Agree to the job and I will give it to you."
+            "0": "What have you heard about me? Nothing worth repeating, I'd guess - that's the correct answer, and the only one I want spreading. There's shutdown work happening in the Veles Militia Annex on Viscara that nobody authorized. Six adepts, running it into the ground. Put them down quietly, and bring me their drill ledger."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Then you're in. The annex key already reads to you; it opens the gate, nothing else. What happens past it stays past it. Here is your Veles Militia Annex Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Then you're in. The annex key already reads to you; it opens the gate, nothing else. What happens past it stays past it."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The adepts are still making noise in the Veles Militia Annex. Quiet them, then come find me. Use the Veles Militia Annex Key I gave you when you took the job. You can find it under Key Items."
+            "0": "The adepts are still making noise in the Veles Militia Annex. Quiet them, then come find me."
           }
         }
       },

@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Your guard drops a finger's width every time you breathe out. That's a flaw in the grain, and flaws crack under load. The Forge Caverns below this rock can work it out of you. Smith-guards hold the galleries now, sworn to an oath I never approved, and their newest call themselves adepts. Cut down six adepts and bring me the Absolute Defense Forge Heat Ledger they keep by the crucibles. Do that, and I'll start hammering that flaw out of your guard. You will need the Korriban Forge Caverns Key to get inside. Agree to the job and I will give it to you."
+            "0": "Your guard drops a finger's width every time you breathe out. That's a flaw in the grain, and flaws crack under load. The Forge Caverns below this rock can work it out of you. Smith-guards hold the galleries now, sworn to an oath I never approved, and their newest call themselves adepts. Cut down six adepts and bring me the Absolute Defense Forge Heat Ledger they keep by the crucibles. Do that, and I'll start hammering that flaw out of your guard."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Then we begin at the fire. The key I've just given you opens the sealed gate down into the Korriban Forge Caverns. Work the galleries steady, no hurry and no hesitation, and come back with the ledger while the heat of it is still in your hands. Here is your Korriban Forge Caverns Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Then we begin at the fire. The key I've just given you opens the sealed gate down into the Korriban Forge Caverns. Work the galleries steady, no hurry and no hesitation, and come back with the ledger while the heat of it is still in your hands."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The galleries are still working, which means you're not finished. Six adepts, and the Absolute Defense Forge Heat Ledger from beside the crucibles. Steel doesn't temper by being talked about. Use the Korriban Forge Caverns Key I gave you when you took the job. You can find it under Key Items."
+            "0": "The galleries are still working, which means you're not finished. Six adepts, and the Absolute Defense Forge Heat Ledger from beside the crucibles. Steel doesn't temper by being talked about."
           }
         }
       },

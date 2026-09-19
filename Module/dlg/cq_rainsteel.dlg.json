@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Count something for me. Three crates of recovery-grade throwing arms, signed out of my cage, never signed back in. Short crates mean somebody inside the Czerka Arms Test Range is arming up on my stock. The paper trail that covers those blades is still on the range floor with their so-called adepts. Put six of them down, pull the Rain of Steel Czerka Test Docket off their trial, and bring it here so my ledger stops lying to me. You will need the Czerka Arms Test Range Key to get inside. Agree to the job and I will give it to you."
+            "0": "Count something for me. Three crates of recovery-grade throwing arms, signed out of my cage, never signed back in. Short crates mean somebody inside the Czerka Arms Test Range is arming up on my stock. The paper trail that covers those blades is still on the range floor with their so-called adepts. Put six of them down, pull the Rain of Steel Czerka Test Docket off their trial, and bring it here so my ledger stops lying to me."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Then here's your issue: one key to the range gate. Czerka stamped it, I keep the copies. The adepts drill past the first firing line, and half of what they're throwing was mine before it was theirs. Recover what you can. The docket comes back whole. Here is your Czerka Arms Test Range Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "Then here's your issue: one key to the range gate. Czerka stamped it, I keep the copies. The adepts drill past the first firing line, and half of what they're throwing was mine before it was theirs. Recover what you can. The docket comes back whole."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Docket's still inside the range, and six adepts were still standing between you and it at last count. My ledger doesn't close on promises. Use the Czerka Arms Test Range Key I gave you when you took the job. You can find it under Key Items."
+            "0": "Docket's still inside the range, and six adepts were still standing between you and it at last count. My ledger doesn't close on promises."
           }
         }
       },

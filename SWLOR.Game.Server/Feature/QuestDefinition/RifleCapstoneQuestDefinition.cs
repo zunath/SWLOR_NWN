@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Ressa Vale gave you the Czerka Arms Test Range Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Kill six Kill Box adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the Kill Box Czerka Test Docket.")
+                    "Ressa Vale gave you the Czerka Arms Test Range Key. Kill six Kill Box adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the Kill Box Czerka Test Docket.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxCzerkaTestDocket)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Orin Tal gave you the Czerka Arms Test Range Key when you accepted this quest. Use it to enter the trial area; it is listed under Key Items. Kill six One Shot adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the One Shot Czerka Test Docket.")
+                    "Orin Tal gave you the Czerka Arms Test Range Key. Kill six One Shot adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the One Shot Czerka Test Docket.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotCzerkaTestDocket)
 

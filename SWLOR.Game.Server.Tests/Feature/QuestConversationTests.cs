@@ -149,6 +149,10 @@ public sealed class QuestConversationTests
         foreach (var line in CapstoneQuestDefinitionTestData.Lines)
         {
             var graph = graphs[line.QuestGiver.DialogueResref];
+            graph.Nodes.Values.SelectMany(node => node.Text)
+                .Concat(graph.Choices.Values.Select(choice => choice.Text))
+                .Should().NotContain(text => text.Text.Contains("Key Items", StringComparison.OrdinalIgnoreCase),
+                    "NPC dialogue should describe the key handoff in-world without referring to a UI window");
             var active = new Dictionary<string, int>();
             var completed = new HashSet<string>();
             var accepted = new List<string>();
@@ -180,25 +184,21 @@ public sealed class QuestConversationTests
             var keyName = typeof(KeyItemType).GetField(line.AreaGroup.AccessKeyItem.ToString())!
                 .GetCustomAttribute<KeyItemAttribute>()!.Name;
             quests[line.GetQuestId(0)].States[1].JournalText.Should()
-                .Contain(keyName).And.Contain(line.QuestGiver.Name).And.Contain("Key Items");
+                .Contain(keyName).And.Contain(line.QuestGiver.Name).And.NotContain("Key Items");
 
             foreach (var questId in line.GetQuestIds())
             {
                 var session = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
                 session.Start().Should().BeTrue(questId);
-                if (questId == line.GetQuestId(0))
-                    string.Concat(session.CurrentText.Select(text => text.Text)).Should().Contain(keyName);
                 SelectQuestAction(session, "action-accept-quest", questId);
                 active.Should().ContainKey(questId);
                 if (questId == line.GetQuestId(0))
-                    string.Concat(session.CurrentText.Select(text => text.Text)).Should().Contain(keyName);
+                    string.Concat(session.CurrentText.Select(text => text.Text)).Should().ContainEquivalentOf("key");
 
                 var reminder = new ConversationSession(graph, new ConversationContext(1, 2), runtime);
                 reminder.Start().Should().BeTrue(questId);
                 reminder.VisibleChoices.Should().NotContain(choice => choice.Actions.Any(action =>
                     action.Key == "action-accept-quest" || action.Key == "action-advance-quest"));
-                if (questId == line.GetQuestId(0))
-                    string.Concat(reminder.CurrentText.Select(text => text.Text)).Should().Contain(keyName);
 
                 active[questId] = 2;
                 var turnIn = new ConversationSession(graph, new ConversationContext(1, 2), runtime);

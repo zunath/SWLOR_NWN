@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where were you when the lower yard went into lockdown? Don't answer - I already pulled the records. You were off-station, which makes you the only katar hand on CZ-220 I can't place inside the breach. That makes you useful. A crew sealed the CZ-220 Breaker Yard's lower level and they're running katar drills behind my own containment doors. Six adepts hold the outer bays under a work order my office never issued. Put all six down and bring me the Scrapheap Lockdown Breaker Yard Work Order. The flimsi is forged, and forgeries name their forgers. You will need the CZ-220 Breaker Yard Key to get inside. Agree to the job and I will give it to you."
+            "0": "Where were you when the lower yard went into lockdown? Don't answer - I already pulled the records. You were off-station, which makes you the only katar hand on CZ-220 I can't place inside the breach. That makes you useful. A crew sealed the CZ-220 Breaker Yard's lower level and they're running katar drills behind my own containment doors. Six adepts hold the outer bays under a work order my office never issued. Put all six down and bring me the Scrapheap Lockdown Breaker Yard Work Order. The flimsi is forged, and forgeries name their forgers."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "No codes. A key - physical, logged to you, and if it walks I know exactly who walked it. The way down is the containment door my own board insists doesn't exist anymore. Six adepts. One flimsi. Anything else you touch down there ends up in my report, so touch carefully. Here is your CZ-220 Breaker Yard Key. Use it to enter the trial area; keep it for the work ahead."
+            "0": "No codes. A key - physical, logged to you, and if it walks I know exactly who walked it. The way down is the containment door my own board insists doesn't exist anymore. Six adepts. One flimsi. Anything else you touch down there ends up in my report, so touch carefully."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The outer bays are still theirs and my evidence is still on the wrong side of a containment door. Six adepts. One work order. Report back. Use the CZ-220 Breaker Yard Key I gave you when you took the job. You can find it under Key Items."
+            "0": "The outer bays are still theirs and my evidence is still on the wrong side of a containment door. Six adepts. One work order. Report back."
           }
         }
       },

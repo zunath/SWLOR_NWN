@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Grid reference Viscara, Republic Engineering Bunker, designation contested. An engineering cell has repurposed bunker fire-control hardware for unsanctioned live testing, six adepts confirmed on site. Your objective: neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back. Briefing's already running; catch up. You will need the Viscara Republic Engineering Bunker Key to get inside. Agree to the job and I will give it to you.",
+          "Text": "Grid reference Viscara, Republic Engineering Bunker, designation contested. An engineering cell has repurposed bunker fire-control hardware for unsanctioned live testing, six adepts confirmed on site. Your objective: neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back. Briefing's already running; catch up.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirmed. Grid reference logged, six hostiles expected, docket is the extraction priority. Report on return. Here is your Viscara Republic Engineering Bunker Key. Use it to enter the trial area; keep it for the work ahead.",
+          "Text": "Confirmed. Bunker key issued. Grid reference logged, six hostiles expected, docket is the extraction priority. Report on return.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Report when both are in hand. Use the Viscara Republic Engineering Bunker Key I gave you when you took the job. You can find it under Key Items.",
+          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Report when both are in hand.",
           "Style": 0,
           "Color": null
         }

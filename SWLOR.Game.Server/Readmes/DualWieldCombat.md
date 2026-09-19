@@ -50,11 +50,13 @@ separate left-hand weapon keep their existing scheduling paths.
 
 ## Animation playback
 
-`WeaponAttackAnimation` captures the completed melee batch and presents its rolls as
-consecutive native attack animations, alternating main hand and off hand. The sequence fits
-inside the existing native animation duration, capped at 1,650 ms so it ends before the next
-1,750 ms cycle. Faster batches divide that same window among their rolls. Late client updates
-use the remaining time in a slot; they do not build an animation backlog.
+`WeaponAttackAnimation` captures the completed melee batch and presents consecutive native
+attack animations. Each visible swing receives a full 1,750 ms. Ordinary dual-wield delays
+allow a main-hand swing followed by an off-hand swing. If haste leaves room for only one
+full animation, presentation alternates hands between cycles. Extra haste rolls still
+resolve normally; they do not squeeze additional animations into that same window.
+The next visual hand waits for the observer's preceding animation duration. Late client
+updates receive a full-length animation rather than an accelerated catch-up burst.
 
 This is presentation only: rolls, damage, queued-ability reservations, on-hit processing and
 charge consumption retain their existing timing. Combat-log entries can therefore still
@@ -63,23 +65,40 @@ arrive together. No delayed damage callbacks or additional attack actions are in
 In engine 8193.37.17, `ComputeUpdateRequired` does not flag a new attack burst when the
 animation, speed and target are unchanged. Its companion serializer only includes matching
 attack-group entries among the last three attack slots. Two narrowly scoped hooks supply a
-fresh update for each visual swing and serialize one captured roll at a time. The client can
-select a fresh native swing variant instead of looping the original pose. Variant availability
-still depends on the creature's model and combat animation set.
+fresh update for each visual swing and serialize one captured roll at a time. A fresh burst
+alone does not randomize NWN's clip selection. The same packet now carries explicit
+animation replacements (update mask `0x1000000`, serialized before the attack), choosing
+left slash, right slash or stab without repeating the preceding cycle's selection.
+Off-hand slashes remain distinct. Custom ability clips are preserved, and equipment remaps
+such as katar-to-unarmed retain their destination family. Variant availability still depends
+on the creature's model and combat animation set.
 
 The serializer projection restores all touched fields in `finally`, including on failure;
 the real combat cursor and attack budgets never change. Playback stops applying when the
-native action, target, combat cursor or group no longer matches the captured batch. Ranged
+native action, target, combat cursor or group no longer matches the captured batch. Temporary
+clip mappings exist only during serialization and are never saved to the creature. Observers
+receive the actual equipment/ability mappings again at completion or interruption. Ranged
 attacks keep their original visual path. Inactive playback records expire automatically.
+
+## Legacy basic vibroblades
+
+The retired `longsword_b` template can survive in saved inventory without a DMG property,
+causing the generic damage fallback of 1. Its current equivalent, `b_longsword`, has DMG 5,
+Delay 230 and a rank-zero Vibroblade requirement. `BasicVibrobladeCompatibility` restores
+only missing properties on those two basic templates during login, acquisition and the
+existing stored-item migration. Existing damage, enhancements, identity, appearance and
+custom names remain intact. The default name is **Basic Vibroblade LS** in both cases.
 
 ## Verification
 
 `DualWieldEngineTests` exercises real commanded attacks, cold/poison weapon separation,
 six-roll native batches, weapon ACC isolation, missed-attack charges, and queued abilities.
 It also reads real serialized animation packets and verifies restoration of native combat
-data, including interrupted playback and simulated serialization failure.
+data, including interrupted playback and simulated serialization failure. It checks explicit
+variant projection/restoration, late-observer animation durations, legacy item repair and
+matching noncritical damage for identical equipped basic vibroblades.
 `CombatAttackDelayTests` covers shared-cycle cadence and individual-roll charge limits.
-`WeaponAttackAnimationTests` covers non-overlapping slots and alternating hand presentation.
+`WeaponAttackAnimationTests` covers visual capacity, hand alternation and variant selection.
 
 The server tests do not render a client. Check paired hit feedback and animation appearance
 in a connected client, including high haste and switching between one and two weapons.

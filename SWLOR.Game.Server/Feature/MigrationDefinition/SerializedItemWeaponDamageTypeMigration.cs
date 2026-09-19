@@ -198,6 +198,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 wasMigrated |= MigrateWeaponDamageAmountItem(item);
 
             wasMigrated |= MigrateWeaponDelayItem(item);
+            wasMigrated |= BasicVibrobladeCompatibility.Normalize(item);
             return wasMigrated;
         }
 

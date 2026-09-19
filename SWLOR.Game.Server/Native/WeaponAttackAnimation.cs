@@ -18,6 +18,8 @@ public static unsafe class WeaponAttackAnimation
     private const int Attack = 9;
     private const int Ready = 1;
     private const uint AnimationUpdate = 4;
+    private const uint AnimationReplacementUpdate = 0x1000000;
+    public const int SwingDuration = Combat.BaseAttackDelayMilliseconds;
     private static FunctionHook* _computeHook;
     private static FunctionHook* _writeHook;
     private static readonly Dictionary<uint, Playback> _playbacks = new();
@@ -30,8 +32,12 @@ public static unsafe class WeaponAttackAnimation
         public byte Group;
         public uint Target;
         public Roll[] Rolls;
+        public int Variant;
+        public bool Cancelled;
         // A client may not receive every server tick. Mark a frame only after writing it.
         public readonly Dictionary<uint, int> SentFrames = new();
+        public readonly Dictionary<uint, long> SentAt = new();
+        public readonly HashSet<uint> RemappedObservers = new();
     }
 
     public sealed record Roll(byte Group, ushort Length, uint Target, ushort ReactionLength,
@@ -59,20 +65,18 @@ public static unsafe class WeaponAttackAnimation
         }
     }
 
-    // Leave a short ready pose before the next cycle. The gameplay delay is not changed.
-    public static int PlaybackDuration(int nativeDuration) =>
-        Math.Clamp(nativeDuration, 1, Combat.BaseAttackDelayMilliseconds - 100);
+    public static int NextVariant(int previous, int randomChoice) =>
+        previous < 0 ? randomChoice % 3 : (previous + 1 + randomChoice % 2) % 3;
 
-    public static int FrameAt(long elapsed, int duration, int count) =>
-        (int)Math.Clamp(elapsed * count / duration, 0, count);
-
-    public static int RemainingFrameDuration(long elapsed, int duration, int count)
+    public static Roll[] SelectVisualRolls(IEnumerable<Roll> rolls, int cycleDuration, byte previousHand)
     {
-        var frame = FrameAt(elapsed, duration, count);
-        if (frame == count) return 0;
-        // Round the boundary up to match FrameAt. Late network ticks use the remaining
-        // time rather than extending this animation into the following hand's slot.
-        return (int)((frame + 1L) * duration + count - 1) / count - (int)Math.Max(0, elapsed);
+        var ordered = OrderForPlayback(rolls).DistinctBy(roll => roll.Weapon).ToArray();
+        // Haste still resolves every roll. Show only as many full-length swings as fit,
+        // alternating the visible hand between cycles when there is room for only one.
+        var capacity = Math.Max(1, (cycleDuration - 100) / SwingDuration);
+        if (capacity == 1 && ordered.Length > 1)
+            return new[] { ordered.FirstOrDefault(roll => roll.Weapon != previousHand) ?? ordered[0] };
+        return ordered.Take(capacity).ToArray();
     }
 
     public static Roll[] OrderForPlayback(IEnumerable<Roll> rolls)
@@ -99,32 +103,41 @@ public static unsafe class WeaponAttackAnimation
         return ordered.ToArray();
     }
 
-    public static void Capture(CNWSCreature creature, int firstAttack, int nativeDuration)
+    public static void Capture(CNWSCreature creature, int firstAttack, int cycleDuration)
     {
         var round = creature.m_pcCombatRound;
         var count = round.m_nCurrentAttack - firstAttack;
         if (creature.GetRangeWeaponEquipped() != 0 || count <= 0 || count > Combat.MaxAttacksPerSwing * 2)
         {
-            _playbacks.Remove(creature.m_idSelf);
+            if (_playbacks.TryGetValue(creature.m_idSelf, out var inactive)) inactive.Cancelled = true;
             return;
         }
         var rolls = Enumerable.Range(firstAttack, count).Select(i => Roll.Read(round.GetAttack(i))).ToArray();
-        _playbacks[creature.m_idSelf] = new Playback
+        _playbacks.TryGetValue(creature.m_idSelf, out var previous);
+        var visualRolls = SelectVisualRolls(rolls, cycleDuration, previous?.Rolls[^1].Weapon ?? 0);
+        var playback = new Playback
         {
             Started = Environment.TickCount64,
-            Duration = PlaybackDuration(nativeDuration),
+            Duration = visualRolls.Length * SwingDuration,
             EndAttack = round.m_nCurrentAttack,
             Group = rolls[^1].Group,
             Target = rolls[^1].Target,
-            Rolls = OrderForPlayback(rolls)
+            Rolls = visualRolls,
+            Variant = NextVariant(previous?.Variant ?? -1, System.Random.Shared.Next(previous == null ? 3 : 2))
         };
+        if (previous != null) playback.RemappedObservers.UnionWith(previous.RemappedObservers);
+        _playbacks[creature.m_idSelf] = playback;
     }
 
-    private static bool TryGetPlayback(CNWSObject obj, out Playback playback, out int frame, out int remaining)
+    public static bool IsPlaying(CNWSObject obj) =>
+        TryGetPlayback(obj, out var playback) &&
+        (Environment.TickCount64 - playback.Started < playback.Duration ||
+         playback.SentFrames.Any(sent => sent.Value < playback.Rolls.Length &&
+             Environment.TickCount64 - playback.SentAt[sent.Key] < SwingDuration));
+
+    private static bool TryGetPlayback(CNWSObject obj, out Playback playback)
     {
-        frame = 0;
-        remaining = 0;
-        if (!_playbacks.TryGetValue(obj.m_idSelf, out playback) || obj.m_nAnimation != Attack)
+        if (!_playbacks.TryGetValue(obj.m_idSelf, out playback) || playback.Cancelled || obj.m_nAnimation != Attack)
             return false;
         var creature = obj.AsNWSCreature();
         var round = creature?.m_pcCombatRound;
@@ -132,10 +145,16 @@ public static unsafe class WeaponAttackAnimation
             round.m_nCurrentAttack != playback.EndAttack ||
             round.GetAttack(playback.EndAttack - 1).m_nAttackGroup != playback.Group)
             return false;
-        var elapsed = Environment.TickCount64 - playback.Started;
-        frame = FrameAt(elapsed, playback.Duration, playback.Rolls.Length);
-        remaining = RemainingFrameDuration(elapsed, playback.Duration, playback.Rolls.Length);
         return true;
+    }
+
+    private static int ObserverFrame(Playback playback, uint playerId)
+    {
+        var now = Environment.TickCount64;
+        if (!playback.SentFrames.TryGetValue(playerId, out var sent))
+            return now - playback.Started < playback.Duration ? 0 : playback.Rolls.Length;
+        return now - playback.SentAt[playerId] >= SwingDuration
+            ? Math.Min(sent + 1, playback.Rolls.Length) : sent;
     }
 
     [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -160,16 +179,21 @@ public static unsafe class WeaponAttackAnimation
         var updates = original(message, player, obj, last, playerObject);
         try
         {
-            if (NeedsAnimationUpdate(CNWSObject.FromPointer(obj), CNWSPlayer.FromPointer(player).m_nPlayerID))
+            var nativeObject = CNWSObject.FromPointer(obj);
+            var playerId = CNWSPlayer.FromPointer(player).m_nPlayerID;
+            if (NeedsAnimationUpdate(nativeObject, playerId))
                 updates |= AnimationUpdate;
+            if (_playbacks.TryGetValue(nativeObject.m_idSelf, out var playback) &&
+                playback.RemappedObservers.Contains(playerId) && !TryGetPlayback(nativeObject, out _))
+                updates |= AnimationReplacementUpdate;
         }
         catch (Exception ex) { Log.WriteError(ex, "Could not refresh a weapon attack animation"); }
         return updates;
     }
 
     public static bool NeedsAnimationUpdate(CNWSObject obj, uint playerId) =>
-        TryGetPlayback(obj, out var playback, out var frame, out _) &&
-        (!playback.SentFrames.TryGetValue(playerId, out var sent) || sent != frame);
+        TryGetPlayback(obj, out var playback) &&
+        (!playback.SentFrames.TryGetValue(playerId, out var sent) || sent != ObserverFrame(playback, playerId));
 
     [UnmanagedCallersOnly]
     private static void WriteUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
@@ -178,12 +202,16 @@ public static unsafe class WeaponAttackAnimation
         // Keep exceptions inside managed code; the native call must run exactly once.
         Playback playback = null;
         var frame = 0;
-        var duration = 0;
+        var playerId = CNWSPlayer.FromPointer(player).m_nPlayerID;
+        var nativeObject = CNWSObject.FromPointer(obj);
         try
         {
-            if ((updates & AnimationUpdate) != 0 &&
-                !TryGetPlayback(CNWSObject.FromPointer(obj), out playback, out frame, out duration))
-                playback = null;
+            if ((updates & (AnimationUpdate | AnimationReplacementUpdate)) != 0 &&
+                TryGetPlayback(nativeObject, out var active))
+            {
+                playback = active;
+                frame = ObserverFrame(playback, playerId);
+            }
         }
         catch (Exception ex)
         {
@@ -192,7 +220,11 @@ public static unsafe class WeaponAttackAnimation
         }
         if (playback == null)
         {
+            if (_playbacks.TryGetValue(nativeObject.m_idSelf, out var previous) &&
+                previous.RemappedObservers.Contains(playerId) && !TryGetPlayback(nativeObject, out _))
+                updates |= AnimationReplacementUpdate;
             original(message, player, obj, last, updates, appearance);
+            if ((updates & AnimationReplacementUpdate) != 0) previous?.RemappedObservers.Remove(playerId);
             return;
         }
         var wrote = false;
@@ -200,17 +232,75 @@ public static unsafe class WeaponAttackAnimation
         {
             var creature = CNWSObject.FromPointer(obj).AsNWSCreature();
             var roll = frame < playback.Rolls.Length ? playback.Rolls[frame] : null;
-            WithProjectedAttack(creature, roll, duration, () =>
+            WithSwingVariant(creature, roll == null ? -1 : playback.Variant, () =>
             {
-                wrote = true;
-                original(message, player, obj, last, updates, appearance);
+                WithProjectedAttack(creature, roll, SwingDuration, () =>
+                {
+                    wrote = true;
+                    // Replacement names are serialized before the attack in this packet.
+                    original(message, player, obj, last, updates | AnimationReplacementUpdate, appearance);
+                });
             });
-            playback.SentFrames[CNWSPlayer.FromPointer(player).m_nPlayerID] = frame;
+            if (!playback.SentFrames.TryGetValue(playerId, out var sent) || sent != frame)
+                playback.SentAt[playerId] = Environment.TickCount64;
+            playback.SentFrames[playerId] = frame;
+            if (roll == null) playback.RemappedObservers.Remove(playerId);
+            else playback.RemappedObservers.Add(playerId);
         }
         catch (Exception ex)
         {
             Log.WriteError(ex, "Could not write a weapon attack animation");
             if (!wrote) original(message, player, obj, last, updates, appearance);
+        }
+    }
+
+    public static Dictionary<string, string> ReadAnimationReplacements(CNWSObject obj) =>
+        obj.m_lAnimationReplaceInfo.ToDictionary(
+            entry => ReadName(entry.m_sOldName), entry => ReadName(entry.m_sNewName));
+
+    private static string ReadName(NativeArray<byte> bytes) =>
+        System.Text.Encoding.ASCII.GetString(Enumerable.Range(0, 17)
+            .Select(i => bytes[i]).TakeWhile(value => value != 0).ToArray());
+
+    public static string VariantReplacement(string source, string existing, int variant)
+    {
+        var clip = string.IsNullOrEmpty(existing) ? source : existing;
+        var families = new[] { "1h", "2h", "2w", "pl", "nw" };
+        var suffixes = new[] { "slashl", "slashr", "stab", "closeh", "closel", "reach" };
+        // Keep custom ability clips and the distinct off-hand slash. Equipment mappings
+        // such as katar -> unarmed retain their destination animation family.
+        if (!families.Any(prefix => clip.StartsWith(prefix, StringComparison.Ordinal)) ||
+            !suffixes.Contains(clip[2..])) return existing;
+        return clip[..2] + new[] { "slashl", "slashr", "stab" }[variant];
+    }
+
+    public static void WithSwingVariant(CNWSObject obj, int variant, Action serialize)
+    {
+        if (variant < 0) { serialize(); return; }
+        var saved = ReadAnimationReplacements(obj);
+        var changes = new Dictionary<string, string>();
+        foreach (var prefix in new[] { "1h", "2h", "2w", "pl", "nw" })
+        foreach (var suffix in new[] { "slashl", "slashr", "stab", "closeh", "closel", "reach" })
+        {
+            var source = prefix + suffix;
+            saved.TryGetValue(source, out var existing);
+            var replacement = VariantReplacement(source, existing, variant);
+            if (replacement != existing) changes[source] = replacement;
+        }
+        void Replace(string source, string replacement)
+        {
+            using var oldName = new CExoString(source);
+            using var newName = new CExoString(replacement ?? "");
+            obj.SetAnimationReplace(oldName, newName);
+        }
+        try
+        {
+            foreach (var change in changes) Replace(change.Key, change.Value);
+            serialize();
+        }
+        finally
+        {
+            foreach (var change in changes) Replace(change.Key, saved.GetValueOrDefault(change.Key));
         }
     }
 

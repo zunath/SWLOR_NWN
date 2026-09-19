@@ -31,6 +31,116 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static readonly List<(uint Weapon, CombatDamageType Type, DateTime Time)> _hits = new();
         private static readonly List<uint> _itemHits = new();
 
+        [EngineTest("Dual wield explicit swing variants preserve equipment and queued ability mappings", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task ExplicitSwingVariants(EngineTestContext ctx)
+        {
+            var (attacker, target, _, _) = await CreatePair(ctx);
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                ReplaceObjectAnimation(attacker, "1hslashl", "nwslashl");
+                ReplaceObjectAnimation(attacker, "2hslashl", "ca_attack");
+                var saved = WeaponAttackAnimation.ReadAnimationReplacements(native);
+                foreach (var variant in Enumerable.Range(0, 3))
+                {
+                    var suffix = new[] { "slashl", "slashr", "stab" }[variant];
+                    try
+                    {
+                        WeaponAttackAnimation.WithSwingVariant(native, variant, () =>
+                        {
+                            var projected = WeaponAttackAnimation.ReadAnimationReplacements(native);
+                            ctx.AssertEqual("2w" + suffix, projected["2wslashl"], "The client's repeated main-hand clip is explicitly replaced");
+                            ctx.AssertEqual("nw" + suffix, projected["1hslashl"], "Katar keeps its unarmed family");
+                            ctx.AssertEqual("ca_attack", projected["2hslashl"], "Queued ability clip is preserved");
+                            ctx.Assert(!projected.ContainsKey("2wslasho"), "The off-hand clip remains distinct");
+                            throw new InvalidOperationException("test mapping failure");
+                        });
+                    }
+                    catch (InvalidOperationException ex) when (ex.Message == "test mapping failure") { }
+                    var restored = WeaponAttackAnimation.ReadAnimationReplacements(native);
+                    ctx.AssertEqual(saved.Count, restored.Count, "Temporary variant keys are removed even on failure");
+                    ctx.Assert(saved.All(pair => restored.GetValueOrDefault(pair.Key) == pair.Value), "All original mappings are restored");
+                }
+                var first = ResolveCycle(attacker, target, 2);
+                native.SetAnimation(9);
+                WeaponAttackAnimation.Capture(native, first, 5900);
+                ctx.AssertEqual((ushort)1750, ReadAnimationPacket(native).Duration, "The opening hand has a full animation duration");
+            });
+            // Deliberately miss the nominal frame boundary. A late observer still receives
+            // a complete off-hand animation, never a shortened catch-up burst.
+            var deadline = DateTime.UtcNow.AddMilliseconds(1950);
+            await ctx.WaitUntilAsync(() => DateTime.UtcNow >= deadline, 4f, "the full main-hand animation");
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                var packet = ReadAnimationPacket(native);
+                ctx.AssertEqual((byte)2, packet.Weapon, "Off hand follows the completed main hand");
+                ctx.AssertEqual((ushort)1750, packet.Duration, "Late updates never accelerate the off hand");
+            });
+        }
+
+        [EngineTest("Dual wield legacy basic vibroblade repair restores matching noncritical damage", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task BasicVibrobladeDamage(EngineTestContext ctx)
+        {
+            var attacker = ctx.SpawnCreature("nw_bandit001", -0.5f);
+            var target = ctx.SpawnCreature("nw_rat001", 1f);
+            await ctx.WaitFrameAsync();
+            var main = await ctx.EquipItemAsync(attacker, "b_longsword", InventorySlot.RightHand);
+            var off = await ctx.EquipItemAsync(attacker, "b_longsword", InventorySlot.LeftHand);
+            var nativeMain = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(main).AsNWSItem();
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                using var legacyResref = new CExoString("longsword_b");
+                nativeMain.m_sTemplate = legacyResref;
+                SetName(main, BasicVibrobladeCompatibility.DisplayName);
+                foreach (var property in Properties(main).Where(ip => GetItemPropertyType(ip) == ItemPropertyType.DMG ||
+                                                                      GetItemPropertyType(ip) == ItemPropertyType.RequiresSkill))
+                    RemoveItemProperty(main, property);
+                SetLocalString(main, "_TEST_PRESERVED", "kept");
+            });
+            await ctx.WaitUntilAsync(() => !Properties(main).Any(ip => GetItemPropertyType(ip) == ItemPropertyType.DMG), 3f, "legacy missing-DMG fixture");
+            await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+            {
+                ctx.AssertEqual("longsword_b", GetResRef(main), "Fixture uses the retired template from the saved character");
+                ctx.Assert(BasicVibrobladeCompatibility.NormalizeInventory(attacker), "Login/inventory repair finds the equipped legacy item");
+                ctx.Assert(!BasicVibrobladeCompatibility.NormalizeInventory(attacker), "Repair is idempotent");
+                foreach (var item in new[] { main, off })
+                {
+                    var dmg = Properties(item).Where(ip => GetItemPropertyType(ip) == ItemPropertyType.DMG).ToArray();
+                    ctx.AssertEqual(1, dmg.Length, "Exactly one DMG property survives repair");
+                    ctx.AssertEqual(5, GetItemPropertyCostTableValue(dmg[0]), "Both basic vibroblades use canonical DMG 5");
+                    ctx.AssertEqual(BasicVibrobladeCompatibility.DisplayName, GetName(item), "Basic vibroblade name is retained");
+                }
+                ctx.AssertEqual("kept", GetLocalString(main, "_TEST_PRESERVED"), "Existing item data is retained");
+                SetName(main, "My custom blade");
+                BasicVibrobladeCompatibility.Normalize(main);
+                ctx.AssertEqual("My custom blade", GetName(main), "Custom names are not replaced");
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
+                native.m_pcCombatRound.StartCombatRound(target);
+                WeaponAttackCycle.PrepareDualWieldAttacks(native.m_pcCombatRound, 2);
+                var damage = new[] { new List<int>(), new List<int>() };
+                for (var hand = 0; hand < 2; hand++)
+                for (var sample = 0; sample < 128; sample++)
+                {
+                    native.m_pcCombatRound.m_nCurrentAttack = (byte)hand;
+                    // Explicitly noncritical; bypass random attack outcomes to compare the
+                    // same real damage hook for each equipped weapon.
+                    damage[hand].Add(native.m_pStats.GetDamageRoll(defender, hand, 0, 0, 0, 0));
+                }
+                ctx.Assert(Math.Abs(damage[0].Average() - damage[1].Average()) < 2,
+                    $"Identical noncritical weapon profiles agree: main {damage[0].Min()}-{damage[0].Max()}, off {damage[1].Min()}-{damage[1].Max()}");
+            });
+        }
+
+        private static SWLOR.NWN.API.Engine.ItemProperty[] Properties(uint item)
+        {
+            var result = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                result.Add(property);
+            return result.ToArray();
+        }
+
         [EngineTest("Dual wield fresh animation bursts bypass an unchanged native attack pose", Category = "DualWield", TimeoutSeconds = 60f)]
         public static async Task FreshAnimationBursts(EngineTestContext ctx)
         {
@@ -43,17 +153,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // The engine's complete update-difference pass requires a logged-in
                 // network client. Exercise our refresh predicate and the real packet
                 // writer here, without invoking unrelated native client/session checks.
-                WeaponAttackAnimation.Capture(native, first, 1750);
+                WeaponAttackAnimation.Capture(native, first, 5900);
                 ctx.Assert(WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
-                    "An unchanged attack pose still gets a fresh burst for client variant selection");
+                    "An unchanged attack pose still gets a fresh burst");
                 var packet = ReadAnimationPacket(native);
                 ctx.AssertEqual((byte)1, packet.Count, "The real write hook serializes one visual swing");
                 ctx.AssertEqual((byte)1, packet.Weapon, "The first fresh burst shows the main hand");
+                ctx.Assert((packet.Updates & 0x1000000) != 0, "Swing replacements accompany the attack packet");
+                ctx.AssertEqual(0u, ReadAnimationPacket(native, 0).Updates,
+                    "Unrelated updates do not prematurely reset the current swing's replacements");
                 ctx.Assert(!WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
                     "A frame already sent is not restarted on every network tick");
                 ctx.Assert(WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffd),
                     "Another observer still receives its own first frame");
-                WeaponAttackAnimation.Capture(native, first, 1750);
+                WeaponAttackAnimation.Capture(native, first, 5900);
                 ctx.Assert(WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
                     "The next cycle sends a fresh burst even with the same target and pose");
                 native.SetAnimation(1);
@@ -61,8 +174,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(native.m_nAnimation != 9, "The native action left its attack pose");
                 ctx.Assert(!WeaponAttackAnimation.NeedsAnimationUpdate(native, 0xfffffffe),
                     "Interrupted playback does not request another attack update");
-                ctx.AssertEqual((ushort)native.m_nAnimation, ReadAnimationPacket(native).Animation,
+                var interrupted = ReadAnimationPacket(native);
+                ctx.AssertEqual((ushort)native.m_nAnimation, interrupted.Animation,
                     "An interrupted attack is not forced back into combat playback");
+                ctx.Assert((interrupted.Updates & 0x1000000) != 0, "Interruption restores the real replacement list on the client");
+                ctx.AssertEqual(4u, ReadAnimationPacket(native).Updates, "Restoration is sent only once");
             });
         }
 
@@ -88,7 +204,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var ordered = WeaponAttackAnimation.OrderForPlayback(saved);
                         foreach (var roll in ordered)
                         {
-                            var duration = 1650 / count;
+                            var duration = WeaponAttackAnimation.SwingDuration;
                             WeaponAttackAnimation.WithProjectedAttack(native, roll, duration, () =>
                             {
                                 var packet = ReadAnimationPacket(native);
@@ -100,7 +216,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         }
                         try
                         {
-                            WeaponAttackAnimation.WithProjectedAttack(native, ordered[0], 825,
+                            WeaponAttackAnimation.WithProjectedAttack(native, ordered[0], WeaponAttackAnimation.SwingDuration,
                                 () => throw new InvalidOperationException("test serialization failure"));
                         }
                         catch (InvalidOperationException ex) when (ex.Message == "test serialization failure") { }
@@ -125,7 +241,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         // Exercise the actual engine serializer, including the two-bit attack count.
         // This client object is local to the test and never connects or sends a packet.
-        private static unsafe (ushort Animation, byte Count, byte Weapon, ushort Duration) ReadAnimationPacket(CNWSCreature native)
+        private static unsafe (ushort Animation, byte Count, byte Weapon, ushort Duration, uint Updates) ReadAnimationPacket(CNWSCreature native, uint updates = 4)
         {
             using var client = new CNWSPlayer(0xfffffffe);
             client.m_oidNWSObject = native.m_idSelf;
@@ -135,7 +251,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var message = packetMessage.Message;
             var reader = packetReader.Message;
             message.CreateWriteMessage(1024, 0xffffffff, 1);
-            message.WriteGameObjUpdate_UpdateObject(client, native, last, 4, 0);
+            message.WriteGameObjUpdate_UpdateObject(client, native, last, updates, 0);
             byte* bytes = null;
             uint size = 0;
             message.GetWriteMessage(&bytes, &size);
@@ -146,10 +262,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             reader.ReadCHAR(8);
             reader.ReadBYTE(8, 1);
             reader.ReadOBJECTIDServer();
-            reader.ReadDWORD(32);
+            var actualUpdates = reader.ReadDWORD(32);
+            // The fake observer has no network version record. SatisfiesBuild is false,
+            // so NWN writes the replacement flag but omits its version-gated payload.
+            // ExplicitSwingVariants separately verifies the projected native clip list.
+            if ((actualUpdates & 4) == 0) return (0, 0, 0, 0, actualUpdates);
             reader.ReadFLOAT(1f, 32);
             var animation = reader.ReadWORD(16);
-            if (animation != 9) return (animation, 0, 0, 0);
+            if (animation != 9) return (animation, 0, 0, 0, actualUpdates);
             var count = reader.ReadBYTE(2, 1);
             reader.ReadOBJECTIDServer();
             reader.ReadWORD(16); // Reaction.
@@ -160,7 +280,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             reader.ReadWORD(9); // Native damage feedback.
             reader.ReadBOOL();
             reader.ReadBOOL();
-            return (animation, count, reader.ReadBYTE(4, 1), duration);
+            return (animation, count, reader.ReadBYTE(4, 1), duration, actualUpdates);
         }
 
         private sealed unsafe class NativePacketMessage : IDisposable

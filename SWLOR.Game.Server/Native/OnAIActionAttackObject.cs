@@ -532,7 +532,8 @@ namespace SWLOR.Game.Server.Native
                         // refresh and consecutive melee playback are handled independently by
                         // WeaponAttackAnimation, including cycles at the animation floor.
                         if (pCreature.m_pcCombatRound.m_bRoundPaused == 0 &&
-                            pCreature.m_nAnimation == NWANIMBASE_ANIM_ATTACK)
+                            pCreature.m_nAnimation == NWANIMBASE_ANIM_ATTACK &&
+                            !WeaponAttackAnimation.IsPlaying(pCreature))
                         {
                             pCreature.SetAnimation(NWANIMBASE_ANIM_READY);
                         }
@@ -688,7 +689,8 @@ namespace SWLOR.Game.Server.Native
                                                 {
                                                     var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
                                                     pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
-                                                    WeaponAttackAnimation.Capture(pCreature, firstAttack, nTimeAnimation);
+                                                    WeaponAttackAnimation.Capture(pCreature, firstAttack,
+                                                        Combat.CalculateAttackSwingDelay(effectiveAttackDelay));
                                                 }
                                                 finally
                                                 {

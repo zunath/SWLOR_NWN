@@ -2,66 +2,72 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Feature;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class WeaponAttackAnimationTests
 {
-    [TestCase(1)]
     [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
     [TestCase(5)]
     [TestCase(6)]
-    public void EverySwingHasAnExclusiveSlotWithinTheExistingCycle(int count)
+    public void OrdinaryCadenceShowsBothHandsAtFullSpeedRegardlessOfHasteRollCount(int count)
     {
-        var duration = WeaponAttackAnimation.PlaybackDuration(1750);
-        duration.Should().BeLessThan(Combat.BaseAttackDelayMilliseconds);
-        var seen = new System.Collections.Generic.HashSet<int>();
-        for (var elapsed = 0; elapsed < duration; elapsed++)
+        var rolls = Rolls(count);
+        var visual = WeaponAttackAnimation.SelectVisualRolls(rolls, 5900, 0);
+        visual.Select(roll => roll.Weapon).Should().Equal(1, 2);
+        WeaponAttackAnimation.SwingDuration.Should().Be(1750);
+        visual.Should().OnlyContain(roll => rolls.Contains(roll));
+        rolls.Length.Should().Be(count, "all actual damage rolls remain intact");
+    }
+
+    [TestCase(1750)]
+    [TestCase(2500)]
+    [TestCase(3500)]
+    public void FastCadenceAlternatesFullLengthHandsInsteadOfCompressingThem(int delay)
+    {
+        var rolls = Rolls(6);
+        var previous = (byte)2;
+        for (var cycle = 0; cycle < 8; cycle++)
         {
-            var frame = WeaponAttackAnimation.FrameAt(elapsed, duration, count);
-            seen.Add(frame);
-            var remaining = WeaponAttackAnimation.RemainingFrameDuration(elapsed, duration, count);
-            remaining.Should().BePositive();
-            WeaponAttackAnimation.FrameAt(elapsed + remaining - 1, duration, count).Should().Be(frame);
-            WeaponAttackAnimation.FrameAt(elapsed + remaining, duration, count).Should().Be(frame + 1);
+            var visual = WeaponAttackAnimation.SelectVisualRolls(rolls, delay, previous);
+            visual.Should().ContainSingle();
+            visual[0].Weapon.Should().NotBe(previous);
+            previous = visual[0].Weapon;
         }
-        seen.Should().BeEquivalentTo(Enumerable.Range(0, count));
-        WeaponAttackAnimation.FrameAt(duration, duration, count).Should().Be(count, "the cycle ends in a ready pose");
-        WeaponAttackAnimation.RemainingFrameDuration(duration, duration, count).Should().Be(0);
     }
 
     [Test]
-    public void OrdinaryPairGetsTwoConsecutiveAnimations()
+    public void AllThreeMainHandVariantsAreAvailableWithoutImmediateRepeats()
     {
-        WeaponAttackAnimation.RemainingFrameDuration(0, 1650, 2).Should().Be(825);
-        WeaponAttackAnimation.FrameAt(824, 1650, 2).Should().Be(0);
-        WeaponAttackAnimation.FrameAt(825, 1650, 2).Should().Be(1);
-        WeaponAttackAnimation.RemainingFrameDuration(900, 1650, 2).Should().Be(750);
+        for (var previous = 0; previous < 3; previous++)
+        {
+            var choices = Enumerable.Range(0, 2).Select(random => WeaponAttackAnimation.NextVariant(previous, random));
+            choices.Should().BeEquivalentTo(Enumerable.Range(0, 3).Where(value => value != previous));
+        }
     }
 
-    [TestCase(2, new byte[] { 1, 2 })]
-    [TestCase(5, new byte[] { 1, 2, 1, 2, 1 })]
-    [TestCase(6, new byte[] { 1, 2, 1, 2, 1, 2 })]
-    public void HastePresentationAlternatesHandsWithoutLosingOrChangingRolls(int count, byte[] expected)
+    [TestCase("2wslashl", null, 2, "2wstab")]
+    [TestCase("1hstab", null, 0, "1hslashl")]
+    [TestCase("1hslashl", "nwslashl", 1, "nwslashr")]
+    [TestCase("1hslashl", "ca_attack", 1, "ca_attack")]
+    [TestCase("2wslasho", null, 1, null)]
+    public void ExplicitVariantsPreserveEquipmentFamiliesAbilitiesAndOffhand(string source, string existing, int variant, string expected)
     {
-        var rolls = Enumerable.Range(0, count).Select(i => Roll((byte)(i < (count + 1) / 2 ? 1 : 2), (byte)i)).ToArray();
-        var ordered = WeaponAttackAnimation.OrderForPlayback(rolls);
-        ordered.Select(roll => roll.Weapon).Should().Equal(expected);
-        ordered.Should().BeEquivalentTo(rolls);
-        rolls.Select(roll => roll.Result).Should().Equal(Enumerable.Range(0, count).Select(i => (byte)i));
+        WeaponAttackAnimation.VariantReplacement(source, existing, variant).Should().Be(expected);
     }
 
-    [Test]
-    public void NaturalWeaponOrderAndShortNativeAnimationsArePreserved()
+    [TestCase("longsword_b", BaseItem.Longsword, true)]
+    [TestCase("b_longsword", BaseItem.Longsword, true)]
+    [TestCase("tit_longsword", BaseItem.Longsword, false)]
+    [TestCase("longsword_b", BaseItem.Dagger, false)]
+    public void LegacyRepairIsLimitedToTheTwoBasicVibrobladeTemplates(string resref, BaseItem baseItem, bool expected)
     {
-        var rolls = new[] { Roll(3, 1), Roll(4, 2), Roll(5, 3) };
-        WeaponAttackAnimation.OrderForPlayback(rolls).Should().Equal(rolls);
-        WeaponAttackAnimation.PlaybackDuration(1000).Should().Be(1000);
+        BasicVibrobladeCompatibility.IsBasicVibroblade(baseItem, resref).Should().Be(expected);
     }
 
-    private static WeaponAttackAnimation.Roll Roll(byte hand, byte result) =>
-        new(1, 1750, 123, 1750, 14, result, 0, 0, 0, hand, new short[32]);
+    private static WeaponAttackAnimation.Roll[] Rolls(int count) =>
+        Enumerable.Range(0, count).Select(i => new WeaponAttackAnimation.Roll(1, 1000, 123, 1000, 14,
+            (byte)i, 0, 0, 0, (byte)(i < (count + 1) / 2 ? 1 : 2), new short[32])).ToArray();
 }

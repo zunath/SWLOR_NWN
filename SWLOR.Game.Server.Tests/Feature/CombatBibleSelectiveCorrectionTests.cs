@@ -29,7 +29,7 @@ public class CombatBibleSelectiveCorrectionTests
             SetPerkDescription(workbook, "Lightsaber", "Force Sheath II", "single selection sentinel");
             SetPerkDescription(workbook, "Lightsaber", "Force Sheath III", "unselected sentinel");
             var characterStatsBefore = ReadSheetXml(workbook, "Character Stats");
-            var auditBefore = ReadSheetXml(workbook, "Combat Balance Findings");
+            var slicingBefore = ReadSheetXml(workbook, "Slicing");
 
             var result = await RunCorrection(workbook, new[] { "Force Sheath II" });
 
@@ -39,7 +39,7 @@ public class CombatBibleSelectiveCorrectionTests
             ReadPerkDescription(workbook, "Lightsaber", "Force Sheath III")
                 .Should().Be("unselected sentinel");
             ReadSheetXml(workbook, "Character Stats").Should().Be(characterStatsBefore);
-            ReadSheetXml(workbook, "Combat Balance Findings").Should().Be(auditBefore);
+            ReadSheetXml(workbook, "Slicing").Should().Be(slicingBefore);
         }
         finally
         {
@@ -57,7 +57,7 @@ public class CombatBibleSelectiveCorrectionTests
             SetPerkDescription(workbook, "Lightsaber", "Force Sheath III", "selected three sentinel");
             SetPerkDescription(workbook, "Lightsaber", "Force Sheath IV", "unselected four sentinel");
             var characterStatsBefore = ReadSheetXml(workbook, "Character Stats");
-            var auditBefore = ReadSheetXml(workbook, "Combat Balance Findings");
+            var slicingBefore = ReadSheetXml(workbook, "Slicing");
 
             var result = await RunCorrection(workbook, new[] { "Force Sheath II", "Force Sheath III" });
 
@@ -69,7 +69,7 @@ public class CombatBibleSelectiveCorrectionTests
             ReadPerkDescription(workbook, "Lightsaber", "Force Sheath IV")
                 .Should().Be("unselected four sentinel");
             ReadSheetXml(workbook, "Character Stats").Should().Be(characterStatsBefore);
-            ReadSheetXml(workbook, "Combat Balance Findings").Should().Be(auditBefore);
+            ReadSheetXml(workbook, "Slicing").Should().Be(slicingBefore);
         }
         finally
         {

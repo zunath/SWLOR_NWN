@@ -479,6 +479,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 dbPlayer.OriginalAppearanceType = AppearanceType.Invalid;
 
             EnsureDefinedPlayerSkills(dbPlayer);
+            RepairBossQuestProofProgress(dbPlayer);
             CombatReadinessMigration.ResetCombatReadiness(dbPlayer);
             dbPlayer.RebuildComplete = false;
 
@@ -493,6 +494,33 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 dbPlayer.UnallocatedSP += refundAmount;
 
             return dbPlayer;
+        }
+
+        private static void RepairBossQuestProofProgress(Player player)
+        {
+            if (player.Quests == null) return;
+
+            foreach (var questId in new[] { "alchemized_frog", "nar_great_arkanian_dragon", "smuggler_favor" })
+            {
+                if (!player.Quests.TryGetValue(questId, out var quest) ||
+                    quest == null ||
+                    quest.CurrentState != 2 ||
+                    quest.TimesCompleted > 0 ||
+                    quest.DateLastCompleted != null)
+                    continue;
+
+                // The frog's legacy state had no collection counter. Dragon and sandworm
+                // records already had counters, but their proof came from a shared corpse.
+                if (questId == "alchemized_frog" && quest.ItemProgresses?.ContainsKey("frogguts") == true)
+                    continue;
+
+                // These players already earned kill credit. Waive the legacy proof hand-in
+                // before login reconciliation; the giver still pays the reward normally.
+                // Advancing the saved state makes retries safe without creating items or rewards.
+                quest.CurrentState = 3;
+                quest.ItemProgresses?.Clear();
+                quest.KillProgresses?.Clear();
+            }
         }
 
         private static void EnsureUnknownDisplayName(Player dbPlayer)

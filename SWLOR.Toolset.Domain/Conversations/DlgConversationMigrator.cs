@@ -123,7 +123,6 @@ public static class DlgConversationMigrator
             ["nw_coop_1000cred"] = [new OperationMapping("action-take-player-credits", "1000")],
             ["nw_coop_100credi"] = [new OperationMapping("action-take-player-credits", "100")],
             ["nw_coop_10credit"] = [new OperationMapping("action-take-player-credits", "10")],
-            ["next_state_1"] = [new OperationMapping("action-advance-quest", "first_rites")],
             ["open_train_store"] = [new OperationMapping("action-open-training-store")],
             ["buy_stat_rebuild"] = [new OperationMapping("action-open-stat-rebuild")],
             ["buy_rebuild"] = [new OperationMapping("action-purchase-full-rebuild")],
@@ -336,9 +335,9 @@ public static class DlgConversationMigrator
         if (string.IsNullOrWhiteSpace(link.Active) && link.Conditions.Count > 0)
         {
             issues.Add(new ConversationMigrationIssue(
-                ConversationMigrationIssueSeverity.Warning,
+                ConversationMigrationIssueSeverity.RequiresLegacyException,
                 location,
-                "Has condition parameters but no condition dispatcher."));
+                "Has condition parameters but no condition dispatcher. Assign a dispatcher before converting so conditions are not lost."));
             return;
         }
 
@@ -381,17 +380,17 @@ public static class DlgConversationMigrator
             return;
         }
 
-        var actions = node.Actions;
-        if (string.IsNullOrWhiteSpace(node.Script) && actions.Count > 0)
+        var actions = node.Actions.Where(action => !action.IsOncePerPlayerMarker).ToArray();
+        if (string.IsNullOrWhiteSpace(node.Script) && actions.Length > 0)
         {
             issues.Add(new ConversationMigrationIssue(
-                ConversationMigrationIssueSeverity.Warning,
+                ConversationMigrationIssueSeverity.RequiresLegacyException,
                 location,
-                "Has action parameters but no action dispatcher."));
+                "Has action parameters but no action dispatcher. Assign a dispatcher before converting so actions are not lost."));
             return;
         }
 
-        foreach (var action in actions.Where(action => !action.IsOncePerPlayerMarker))
+        foreach (var action in actions)
         {
             destination.Add(new ConversationAction
             {

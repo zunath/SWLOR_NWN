@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 115
+  },
   "Appearance_Type": {
     "type": "word",
     "value": 10004
   },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 102
+  },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 63
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 109
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 101
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 102
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 75
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 241
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 2
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 234
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 42
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 109
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 101
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 75
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 241
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 2
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 234
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 53
   },
   "Cha": {
     "type": "byte",
@@ -31,6 +107,22 @@
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 12
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 13
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 12
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 12
   },
   "Comment": {
     "type": "cexostring",
@@ -275,7 +367,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -634,7 +726,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",

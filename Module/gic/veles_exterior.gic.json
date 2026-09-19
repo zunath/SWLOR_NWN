@@ -149,6 +149,27 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Volnatu Gigg: east side of the main market, facing the terminals. Restored from the original Veles exterior."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Adega Jorgan: east side of the main market, facing the terminals. Restored from the original Veles exterior."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flower Shop Hana: east side of the main market, facing the terminals. Restored from the original Veles exterior."
+        }
       }
     ]
   },
@@ -11455,6 +11476,27 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Volnatu Gigg: placed store used by the merchant conversation."
+        }
+      },
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Adega Jorgan: placed store used by the merchant conversation."
+        }
+      },
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flower Shop Hana: placed store used by the merchant conversation."
         }
       }
     ]

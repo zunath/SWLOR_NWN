@@ -208,10 +208,10 @@ public class CapstoneQuestDefinitionTests
             giver.Resref.Length.Should().BeLessThanOrEqualTo(16);
 
             var utcPath = Path.Combine(modulePath, "utc", $"{giver.Resref}.utc.json");
-            var dlgPath = Path.Combine(modulePath, "dlg", $"{giver.DialogueResref}.dlg.json");
+            var graphPath = Path.Combine(root.FullName, "SWLOR.Game.Server", "ConversationData", $"{giver.DialogueResref}.conversation.json");
 
             File.Exists(utcPath).Should().BeTrue($"{giver.Name} needs a quest giver UTC blueprint");
-            File.Exists(dlgPath).Should().BeTrue($"{giver.Name} needs a quest giver dialogue");
+            File.Exists(graphPath).Should().BeTrue($"{giver.Name} needs a quest giver dialogue");
             paletteResrefs.Should().Contain(giver.Resref, $"{giver.Name} must be placeable from the creature palette");
 
             using var utcJson = JsonDocument.Parse(File.ReadAllText(utcPath));
@@ -219,15 +219,15 @@ public class CapstoneQuestDefinitionTests
             GetTypedValue(utcJson.RootElement, "Tag").Should().Be(giver.Resref);
             GetTypedValue(utcJson.RootElement, "TemplateResRef").Should().Be(giver.Resref);
 
-            var dialogue = File.ReadAllText(dlgPath);
+            var dialogue = File.ReadAllText(graphPath);
             dialogue.Should().Contain("condition-can-accept-quest");
             dialogue.Should().NotContain("condition-any-skill");
 
             foreach (var questId in line.GetQuestIds())
             {
                 dialogue.Should().Contain(questId);
-                dialogue.Should().Contain("\"value\": \"action-accept-quest\"");
-                dialogue.Should().Contain("\"value\": \"action-advance-quest\"");
+                dialogue.Should().Contain("\"Key\": \"action-accept-quest\"");
+                dialogue.Should().Contain("\"Key\": \"action-advance-quest\"");
             }
         }
     }

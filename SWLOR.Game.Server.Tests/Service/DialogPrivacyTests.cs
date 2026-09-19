@@ -164,7 +164,9 @@ public class DialogPrivacyTests
         guildMasterSource.Should().NotContain("GetName(player)");
         guildMasterSource.Should().NotContain("Welcome to my guild, ");
 
-        foreach (var dialogFile in Directory.GetFiles(Path.Combine(FindRepositoryRoot().FullName, "Module", "dlg"), "*.dlg.json"))
+        foreach (var dialogFile in Directory.GetFiles(Path.Combine(FindRepositoryRoot().FullName, "Module", "dlg"), "*.dlg.json")
+                     .Concat(Directory.GetFiles(Path.Combine(FindRepositoryRoot().FullName,
+                         "SWLOR.Game.Server", "ConversationData"), "*.conversation.json")))
         {
             var source = File.ReadAllText(dialogFile);
             source.Should().NotContain("<FirstName>", $"{Path.GetFileName(dialogFile)} should not reveal player names in NPC dialogue");

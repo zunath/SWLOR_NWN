@@ -36,7 +36,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         private static DlgDocument DantHerbs() =>
-            DlgDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json"));
+            DlgDocument.Load(LegacyConversationFixtures.PathFor("dantherbs"));
 
         /// <summary>A conversation with no openings at all, for testing one guard shape in isolation.</summary>
         private static DlgDocument Blank()
@@ -339,7 +339,7 @@ namespace SWLOR.Toolset.Tests
             // primal_overrun_foundation carries a Beast Mastery rank-50 prerequisite; runtime
             // QuestDetail.CanAccept refuses below it, so the simulated accept must too.
             var document = DlgDocument.Load(
-                Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "cq_primover.dlg.json"));
+                LegacyConversationFixtures.PathFor("cq_primover"));
             var accept = document.Replies.Single(r => r.Text == "I'll clear the six and bring your slate.");
 
             var unqualified = Evaluator.ApplyActions(accept, new PretendPlayer());
@@ -403,7 +403,7 @@ namespace SWLOR.Toolset.Tests
             // not simulate. A walk that marked it Completed here would let condition-completed-quest
             // pass on "the_manda_leader" before the runtime ever would.
             var document = DlgDocument.Load(
-                Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "talgarmeyne.dlg.json"));
+                LegacyConversationFixtures.PathFor("talgarmeyne"));
             var advance = document.Replies.Single(r => r.Text == "Thank you. [Select reward]");
 
             var player = new PretendPlayer().WithQuest("the_manda_leader", QuestProgress.OnStep(2));
@@ -1011,11 +1011,10 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void TheWholeModuleIsSweptForOpeningsNoPlayerCanReach()
+        public void LegacyFixturesPreserveKnownUnreachableOpeningCases()
         {
             var found = new SortedSet<string>(StringComparer.Ordinal);
-            foreach (var path in Directory.EnumerateFiles(
-                         Path.Combine(CorpusLocator.ModuleDirectory, "dlg"), "*.json"))
+            foreach (var path in LegacyConversationFixtures.AllPaths())
             {
                 var document = DlgDocument.Load(path);
                 var model = new SituationModel(document, Evaluator, GameCode);
@@ -1038,7 +1037,7 @@ namespace SWLOR.Toolset.Tests
             // that only read string literals saw a chain with no links and concluded that the top
             // offer swallowed the rest.
             var document = DlgDocument.Load(
-                Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "cq_absdef.dlg.json"));
+                LegacyConversationFixtures.PathFor("cq_absdef"));
 
             var situations = new SituationModel(document, Evaluator, GameCode).Situations();
 

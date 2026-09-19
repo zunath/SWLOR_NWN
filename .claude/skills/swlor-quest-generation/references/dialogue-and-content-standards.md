@@ -89,7 +89,7 @@ Write or verify a distinct text beat for each state that applies:
 - For guild work, inspect the guild definition's reward table before changing amounts.
 - For chain quests, make rewards support progression without narrating system math.
 - For selectable rewards, make the dialogue explain why the player is choosing rather than receiving a fixed item.
-- For key item rewards, make the dialogue imply access, trust, permission, or evidence. Avoid giving permanent access items from repeatable quests unless that exact pattern already exists.
+- For key item rewards, make the dialogue imply access, trust, permission, or evidence. Acknowledge handing over a key in-world; never mention the Key Items window or inventory UI. The existing key acquisition notification provides receipt feedback. Avoid giving permanent access items from repeatable quests unless that exact pattern already exists.
 
 ## Journal Text
 

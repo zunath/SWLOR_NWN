@@ -889,7 +889,6 @@
             "dantkinrath",
             "dantlibjedi",
             "danttrainer",
-            "docjoe",
             "tat_civ1"
           ]
         },
@@ -942,7 +941,6 @@
             "nar_datasmg_q",
             "nar_pirate_q",
             "nar_slaver_q",
-            "nar_sniper_q",
             "veles_colonist1",
             "veles_colonist2"
           ]
@@ -1007,7 +1005,6 @@
             "rep_kashdialog",
             "rep_medicalbay",
             "rep_messhall001",
-            "rep_nahuludialog",
             "rep_offreception",
             "rep_offvellen1",
             "rep_recepdialog",
@@ -1095,7 +1092,6 @@
                 "defmachineconsol",
                 "duskhaven_thug",
                 "fnote_vendor",
-                "jhoren_veles",
                 "night_viscaccess",
                 "night_viscflower",
                 "rawsewagesys",
@@ -1181,7 +1177,6 @@
         {
           "name": "Force Vision",
           "members": [
-            "jhoren_firstrite"
           ]
         },
         {
@@ -1844,8 +1839,6 @@
                 "templeguard_f",
                 "templeguard_m",
                 "cq_lastword",
-                "jhoren",
-                "jhoren_rites",
                 "cq_sabcycl",
                 "cq_emcocktail",
                 "kieun_xorxca",
@@ -3408,7 +3401,6 @@
                 "lightsaber_zhar",
                 "jedimasterobes",
                 "item",
-                "jhorensarmor",
                 "ter_landyncl",
                 "ter_landynls",
                 "nw_maletatcivout",

@@ -237,6 +237,17 @@ namespace SWLOR.Game.Server.Service
         public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction, int baseDamage = 0)
         {
             ArgumentNullException.ThrowIfNull(impactAction);
+            var applyImpact = CaptureRepeatedAbilityImpact<Action>(activator, action => action(), baseDamage);
+            return () => applyImpact(impactAction);
+        }
+
+        /// <summary>
+        /// Captures one cast's recurring impact context while allowing each delayed impact
+        /// to retain its own target or payload. Bonuses are consumed only when an impact lands.
+        /// </summary>
+        public static Action<T> CaptureRepeatedAbilityImpact<T>(uint activator, Action<T> impactAction, int baseDamage = 0)
+        {
+            ArgumentNullException.ThrowIfNull(impactAction);
             // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
             // later pulses cannot consume bonuses earned after the field was created.
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
@@ -246,7 +257,7 @@ namespace SWLOR.Game.Server.Service
 
             var ability = originatingImpact.Ability;
             var sequence = originatingImpact.Sequence;
-            return () =>
+            return payload =>
             {
                 if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                     return;
@@ -258,7 +269,7 @@ namespace SWLOR.Game.Server.Service
                 var completed = false;
                 try
                 {
-                    impactAction();
+                    impactAction(payload);
                     var summary = EndAbilityImpact(activator);
                     originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;

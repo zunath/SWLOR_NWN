@@ -2800,34 +2800,6 @@
     "Call": "SendMessageToPC(player,\n                        \"Renna calibrates the prototype and copies its schematics for you. Invest in the Combat Analyzer perk to record techniques from enemies you defeat, then review, equip, and manage them with the /techniques window.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/QuestDefinition/ViscaraQuestDefinition.cs",
-    "Line": 152,
-    "Member": "FirstRitesForceCrystal",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, InactiveQuestText)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/QuestDefinition/ViscaraQuestDefinition.cs",
-    "Line": 162,
-    "Member": "FirstRitesForceCrystal",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, InactiveQuestText)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/QuestDefinition/ViscaraQuestDefinition.cs",
-    "Line": 170,
-    "Member": "FirstRitesForceCrystal",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, InactiveQuestText)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/QuestDefinition/ViscaraQuestDefinition.cs",
-    "Line": 200,
-    "Member": "FirstRitesForceCrystal",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"You have unlocked the Lightsaber Blueprints perk.\", player, false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/Resource.cs",
     "Line": 15,
     "Member": "OnUsed",
@@ -3445,35 +3417,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 561,
+    "Line": 572,
     "Member": "CanUseAbility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, reason)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 926,
+    "Line": 937,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 975,
+    "Line": 986,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 2603,
+    "Line": 2614,
     "Member": "SendCombatImpactResultMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 2622,
+    "Line": 2633,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
@@ -4635,98 +4607,105 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 155,
+    "Line": 160,
     "Member": "LoadPlayerQuests",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"One or more quests in your journal are no longer available (e.g. a cancelled or expired contract) and have been removed.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 292,
+    "Line": 297,
     "Member": "RequestItemsFromPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have not accepted this quest yet.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 306,
+    "Line": 304,
+    "Member": "RequestItemsFromPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You have already completed this quest.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Quest.cs",
+    "Line": 318,
     "Member": "RequestItemsFromPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"There are no items to turn in for this quest. This is likely a bug. Please let the staff know.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 426,
+    "Line": 438,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have not accepted this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 430,
+    "Line": 442,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please place the items you would like to turn in for this quest into the container. If you want to cancel this process, move away from the container.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 441,
+    "Line": 453,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 487,
+    "Line": 499,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest collector is no longer available to you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 496,
+    "Line": 508,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"That item is not required for this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 507,
+    "Line": 519,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest is no longer available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 522,
+    "Line": 534,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, rejection)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 566,
+    "Line": 578,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 632,
+    "Line": 644,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 638,
+    "Line": 650,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"QUEST_STATE variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 658,
+    "Line": 670,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, questMessage)"
@@ -4831,28 +4810,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 308,
+    "Line": 310,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' accepted. Refer to your journal for more information on this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 343,
+    "Line": 345,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have not accepted this quest yet.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 390,
+    "Line": 395,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Objective for quest '\" + Name + \"' complete! Check your journal for information on the next objective.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 538,
+    "Line": 543,
     "Member": "Complete",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' complete!\")"
@@ -4915,14 +4894,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
-    "Line": 100,
+    "Line": 101,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, statusMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",
-    "Line": 180,
+    "Line": 175,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, statusMessage)"

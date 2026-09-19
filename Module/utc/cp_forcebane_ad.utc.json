@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 78
+  },
   "Appearance_Type": {
     "type": "word",
     "value": 10009
   },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 242
+  },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 7
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 249
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 246
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 242
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 152
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 23
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 104
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 7
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 106
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 249
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 246
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 152
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 23
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 104
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 100
   },
   "Cha": {
     "type": "byte",
@@ -31,6 +107,22 @@
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 16
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 128
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 82
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 26
   },
   "Comment": {
     "type": "cexostring",
@@ -268,7 +360,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -627,7 +719,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",

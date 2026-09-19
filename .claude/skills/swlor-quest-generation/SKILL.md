@@ -11,7 +11,7 @@ Build quests in the real SWLOR artifacts, not in a side memo. Use the current re
 
 - Quest data: `SWLOR.Game.Server/Feature/QuestDefinition/*QuestDefinition.cs`
 - Quest service APIs: `SWLOR.Game.Server/Service/Quest.cs` and `Service/QuestService/*`
-- Legacy dialogue and snippet wiring: `Module/dlg/*.dlg.json`, `Feature/SnippetDefinition/QuestSnippetDefinition.cs`
+- Authored conversations: `SWLOR.Game.Server/ConversationData/*.conversation.json`; quest operations: `Feature/SnippetDefinition/QuestSnippetDefinition.cs`. Read `SWLOR.Game.Server/Readmes/Conversations.md` for authoring, routing, and validation.
 - NPC templates and placement: `Module/utc/*.utc.json`, `Module/git/<area>.git.json`
 - Enemy groups and spawn tables: `NPCGroupType.cs`, `Feature/SpawnDefinition/*SpawnDefinition.cs`, enemy `Module/utc/*.utc.json`
 
@@ -33,7 +33,7 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - If duplicate item use is justified, write the reason into the working notes, quest dialogue, journal context, or intake `duplicate_item_reason` field. If the reason is weak, pick a different item or objective.
    - Reuse existing templates, groups, items, and reward scale when they fit.
    - Keep quest IDs lower snake case and unique across all `QuestBuilder.Create(...)` calls.
-   - Read at least one nearby quest definition and one nearby `.dlg.json` conversation for the same planet, faction, or hub before writing new dialogue.
+   - Read at least one nearby quest definition and one nearby `.conversation.json` conversation for the same planet, faction, or hub before writing new dialogue.
 
 3. Implement the quest definition.
    - Add the quest to the appropriate planet/guild definition, or create a new `IQuestListDefinition` only when there is no appropriate owner.
@@ -57,10 +57,10 @@ When the concept is underspecified, grill the request one dependency at a time. 
 
 4. Write dialogue.
    - Read `references/dialogue-and-content-standards.md` before creating or rewriting quest dialogue, player replies, journal text, or prerequisite/completion text.
-   - Prefer legacy `.dlg.json` plus snippets for ordinary NPC quest offers and turn-ins.
-   - Use these snippet keys in `ActionParams`: `action-accept-quest`, `action-advance-quest`, `action-request-quest-items`.
-   - Use these snippet keys in `ConditionParams`: `condition-has-quest`, `condition-on-quest-state`, `condition-completed-quest`; prefix with `!` for negation when needed.
-   - Use a C# `DialogDefinition` only for dynamic runtime menus or logic-heavy conversations.
+   - Author ordinary NPC quest offers and turn-ins directly in `SWLOR.Game.Server/ConversationData/<id>.conversation.json`. These graphs are the sole source of truth. Do not create matching `Module/dlg` files or regenerate existing graphs from legacy DLGs. Only the native `dmfi_universal` conversation remains in `Module/dlg`.
+   - Use these operation `Key` values with string-array `Arguments` in choice `Actions`: `action-accept-quest`, `action-advance-quest`, `action-request-quest-items`.
+   - Put visibility gates in route `Conditions`, using `condition-can-accept-quest`, `condition-has-quest`, `condition-on-quest-state`, and `condition-completed-quest`. Set `IsNegated: true` for negation; do not prefix the graph operation key with `!`.
+   - Use a C# definition based on `ConversationMenuDefinitionBase` only for dynamic runtime menus or logic-heavy conversations.
    - Dialogue should cover: not eligible, offer, accept response, in-progress reminder, ready-to-turn-in, completion, repeat/completed state, and any prerequisite explanation.
    - Do not ship quest-giver dialogue as a purely functional accept/remind/turn-in kiosk unless the quest is intentionally trivial or the NPC role demands it. For major, chain, capstone, faction, or signature quests, give the conversation a deliberate flow with optional player branches that reveal motive, stakes, local lore, directions, target context, or tactical advice before acceptance.
    - Do not write every NPC in the same "greeting, request, acceptance, reminder, thanks" rhythm. Pick the structure from the NPC's job, mood, leverage, and relationship to the objective.
@@ -69,7 +69,7 @@ When the concept is underspecified, grill the request one dependency at a time. 
 
 5. Wire NPCs and placement.
    - For fixed quest givers, create or update `Module/utc/<npc>.utc.json` and add/update a placed creature in `Module/git/<area>.git.json` under `Creature List.value`.
-   - For legacy `.dlg` conversations, set the creature `Conversation` field to the dialogue resref.
+   - Set the creature `Conversation` field to the graph ID and `ScriptDialogue` to `dialog_start`, on both its blueprint and placed instances. For placeables or doors, use the appropriate `OnUsed` or `OnFailToOpen` event. The resref identifies the graph; no physical DLG is required.
    - For C# conversations, use the local `CONVERSATION` variable with the C# dialog class name only after confirming an existing object uses that path.
    - Set `TemplateResRef`, `Tag`, localized name fields, coordinates, and orientation deliberately. Do not duplicate an existing tag unless the existing area already does so intentionally.
 
@@ -85,10 +85,10 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - For unique on-demand quest encounter activators, prefer placed world instances configured with `OnUsed = quest_enc` and the required `QUEST_*` locals. Do not add one-off marker placeables to the placeable blueprint palette unless the user or area builder explicitly asks for a reusable palette blueprint. Tests should verify the placed area instance, not force a palette entry.
 
 7. Validate.
-   - Parse every touched Module JSON file with PowerShell `ConvertFrom-Json`.
+   - Parse every touched Module and conversation JSON file with PowerShell `ConvertFrom-Json`. Validate graphs with `ConversationGraphValidator` and check module interaction routing.
    - Search for missing or duplicate quest IDs, dialogue resrefs, NPC tags, item resrefs, and NPC groups.
    - Run the dialogue quality pass from `references/dialogue-and-content-standards.md`.
-   - Run `dotnet build SWLOR.Game.Server\SWLOR.Game.Server.csproj --no-restore`.
+   - Build the relevant test project once with `-p:RunPostBuildEvent=Never`, then run relevant quest/conversation tests with `dotnet test --no-build --filter ...`. Never trigger post-build deployment for verification.
    - If Module JSON changed and the handoff needs a packed module, run `Module\PackModule.cmd` from the `Module` directory.
 
 ## References

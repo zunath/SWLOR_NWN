@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 170
+  },
   "Appearance_Type": {
     "type": "word",
     "value": 10005
   },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 242
+  },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 106
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 68
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 242
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 113
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 222
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 235
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 103
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 234
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 68
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 113
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 222
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 235
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 249
   },
   "Cha": {
     "type": "byte",
@@ -31,6 +107,22 @@
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 4
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 52
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 50
   },
   "Comment": {
     "type": "cexostring",
@@ -142,7 +234,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "GoodEvil": {
     "type": "byte",
@@ -501,7 +593,7 @@
   },
   "Tail_New": {
     "type": "dword",
-    "value": 598
+    "value": 0
   },
   "TemplateList": {
     "type": "list",

@@ -15,7 +15,7 @@ namespace SWLOR.Toolset.Tests
     public class DlgEditingTests
     {
         private static string DantHerbsPath =>
-            Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json");
+            LegacyConversationFixtures.PathFor("dantherbs");
 
         private static DlgDocument LoadDantHerbs() =>
             DlgDocument.Parse(File.ReadAllBytes(DantHerbsPath));

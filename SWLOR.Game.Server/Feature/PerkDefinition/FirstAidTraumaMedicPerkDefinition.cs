@@ -32,27 +32,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Med Kit")
 
                 .AddPerkLevel()
-                .Description("Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
+                .Description("Restores 8% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(2)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.MedKit1)
 
                 .AddPerkLevel()
-                .Description("Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
+                .Description("Restores 14% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 25)
                 .DroidAISlots(2)
                 .GrantsFeat(FeatType.MedKit2)
 
                 .AddPerkLevel()
-                .Description("Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
+                .Description("Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 40)
                 .DroidAISlots(3)
                 .GrantsFeat(FeatType.MedKit3)
 
                 .AddPerkLevel()
-                .Description("Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
+                .Description("Restores 24% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 48)
                 .DroidAISlots(4)
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EmergencySealantTrait)
-                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores HP equal to 4% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
+                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores HP equal to 1% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
                 .IncreasesStat(StatType.TraumaMedicEmergencySealant, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12);
@@ -164,14 +164,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Infusion")
 
                 .AddPerkLevel()
-                .Description("Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies.")
+                .Description("Grants a single target regeneration, healing 2% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 28)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.Infusion1)
 
                 .AddPerkLevel()
-                .Description("Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies.")
+                .Description("Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 45)
                 .DroidAISlots(2)

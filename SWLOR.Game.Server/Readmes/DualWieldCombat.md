@@ -14,6 +14,9 @@ cycles/six weapon rolls per animation. Limited-attack charges count actual weapo
 including misses. A final limited no-delay charge can produce an odd extra main-hand roll.
 Skill-scoped effects count only the hands they apply to when limiting a batch or expiring
 its fractional progress. An off-hand no-delay effect must grant an extra off-hand roll.
+Temporary one-shot no-delay procs capture their matching hands before consumption. Their
+bonus uses a matching hand even at the minimum delay, without imposing a one-charge cap
+on the rest of the timed batch.
 Combat and the character sheet use the same timing-skill selection for mixed weapons.
 Damage-triggered effects remain per hit and retain their own cooldowns; poison coatings
 retain their shared six-second application cooldown.

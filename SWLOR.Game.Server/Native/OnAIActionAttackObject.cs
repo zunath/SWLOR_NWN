@@ -641,6 +641,9 @@ namespace SWLOR.Game.Server.Native
                                             }
                                             else
                                             {
+                                                // Capture the proc's matching hands before consuming its stat source.
+                                                var temporaryNoDelayBudget = WeaponAttackTiming.GetTemporaryNoDelayBudget(
+                                                    pCreature.m_idSelf, attackSkillType, mainSkill, offSkill);
                                                 if (useDefaultMinimumDelay)
                                                 {
                                                     Combat.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
@@ -663,7 +666,8 @@ namespace SWLOR.Game.Server.Native
                                                         limitedNoDelayRemainingAttacks,
                                                         isDualWieldCycle ? 2 : 1,
                                                         WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, false),
-                                                        WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, true));
+                                                        WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, true),
+                                                        temporaryNoDelayBudget);
 
                                                     if (isDualWieldCycle)
                                                     {

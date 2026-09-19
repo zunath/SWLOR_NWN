@@ -53,5 +53,16 @@ namespace SWLOR.Game.Server.Service.CombatService
             var attacksPerCycle = offSkill == SkillType.Invalid ? 1 : 2;
             return budgets.OrderBy(budget => budget.RollLimit(attacksPerCycle)).FirstOrDefault();
         }
+
+        public static LimitedAttackTimingBudget GetTemporaryNoDelayBudget(
+            uint attacker, SkillType timingSkill, SkillType mainSkill, SkillType offSkill)
+        {
+            if (!Combat.HasTemporaryNextAutoAttackNoDelay(attacker, timingSkill))
+                return default;
+
+            return new LimitedAttackTimingBudget(1,
+                Combat.HasTemporaryNextAutoAttackNoDelay(attacker, mainSkill),
+                offSkill != SkillType.Invalid && Combat.HasTemporaryNextAutoAttackNoDelay(attacker, offSkill));
+        }
     }
 }

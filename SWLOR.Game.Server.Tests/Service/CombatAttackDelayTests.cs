@@ -20,6 +20,40 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatAttackDelayTests
 {
+    [TestCase(true, false, 5)]
+    [TestCase(false, true, 6)]
+    [TestCase(true, true, 5)]
+    public void TemporaryNoDelayAtMinimumDelay_GrantsTheMatchingHandAnExtraRoll(bool main, bool off, int expected)
+    {
+        const uint attacker = 0x7F000025;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            var delay = Combat.MinimumAttackDelayMilliseconds;
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 0, 0, 2,
+                temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected,
+                "an off-hand proc cannot be spent on the odd extra main-hand roll");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [Test]
+    public void TemporaryOffHandNoDelay_IsNotCappedByAnExpiringHasteEffect()
+    {
+        const uint attacker = 0x7F000026;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            var delay = Combat.MinimumAttackDelayMilliseconds;
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 1, 0, 2,
+                limitedReductionBudget: new LimitedAttackTimingBudget(1, false, true),
+                temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, false, true)).Should().Be(6);
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2).Should().Be(4,
+                "expiring haste must not restore fractional progress already spent by the temporary bonus");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
     [TestCase(true, false)]
     [TestCase(false, true)]
     public void MixedDualWieldHaste_CountsOnlyTheMatchingHandAndKeepsItsDebt(bool main, bool off)

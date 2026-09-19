@@ -279,6 +279,46 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Dual wield temporary off-hand no-delay proc grants a matching bonus once", Category = "DualWield", TimeoutSeconds = 60f)]
+        public static async Task TemporaryOffHandNoDelayUsesTheOffHand(EngineTestContext ctx)
+        {
+            var (attacker, target, main, off) = await CreatePair(ctx, "nw_wswls001");
+            try
+            {
+                _hits.Clear();
+                _observedAttacker = attacker;
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    // 140 delay units produce the minimum effective delay without any proc.
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 14), main);
+                    ctx.AssertEqual(Combat.MinimumAttackDelayMilliseconds,
+                        Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker)),
+                        "Unbuffed attacks are already at the minimum effective delay");
+                    Combat.ClearAttackSwingDebt(attacker);
+                    Combat.GrantNextAutoAttackNoDelay(attacker, SkillType.Vibroblade, 30);
+                    ctx.Assert(!Combat.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroknife), "Proc excludes the main-hand skill");
+                    ctx.Assert(Combat.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroblade), "Proc is armed for the off-hand skill");
+                    ActionAttack(target);
+                });
+                await ctx.WaitUntilAsync(() => _hits.Count >= 10, 15f, "the proc's six-roll batch followed by four ordinary rolls");
+                var firstBatch = _hits.Take(6).ToList();
+                ctx.Assert((firstBatch.Last().Time - firstBatch.First().Time).TotalMilliseconds < 500, "Proc batch resolves in one animation");
+                ctx.AssertEqual(3, firstBatch.Count(hit => hit.Weapon == main), "Proc batch main-hand rolls");
+                ctx.AssertEqual(3, firstBatch.Count(hit => hit.Weapon == off && hit.Type == CombatDamageType.Poison), "Proc grants the extra off-hand roll");
+                var nextBatch = _hits.Skip(6).Take(4).ToList();
+                ctx.AssertEqual(2, nextBatch.Count(hit => hit.Weapon == off), "Next batch returns to ordinary off-hand cadence");
+                ctx.Assert((nextBatch.First().Time - firstBatch.First().Time).TotalMilliseconds >= Combat.BaseAttackDelayMilliseconds,
+                    "The proc retains the shared time gate");
+                ctx.Assert(!Combat.HasTemporaryNextAutoAttackNoDelay(attacker, SkillType.Vibroblade), "The one-shot proc was consumed");
+            }
+            finally
+            {
+                AssignCommand(attacker, () => ClearAllActions());
+                ResetObservation();
+            }
+        }
+
         [EngineTest("Dual wield misses consume one limited attack charge per hand", Category = "DualWield", TimeoutSeconds = 60f)]
         public static async Task MissesConsumeChargesForBothHands(EngineTestContext ctx)
         {

@@ -505,8 +505,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RadiantLance1,
                     Target = AbilityTargetKind.HostileCreature,
-                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
-                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -515,8 +513,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RadiantLance2,
                     Target = AbilityTargetKind.HostileCreature,
-                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
-                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -525,8 +521,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RadiantLance3,
                     Target = AbilityTargetKind.HostileCreature,
-                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
-                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,

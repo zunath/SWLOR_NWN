@@ -52,18 +52,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter1)
+                .DroidAISlots(1)
                 .Description("Queue your next auto attack to deal weapon DMG + 8. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 16 instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter2)
+                .DroidAISlots(2)
                 .Description("Queue your next auto attack to deal weapon DMG + 18. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 30 instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter3)
+                .DroidAISlots(3)
                 .Description("Queue your next auto attack to deal weapon DMG + 28. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 45 instead and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 38);
@@ -118,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinGuardStance1)
+                .DroidAISlots(1)
                 .Description("Target party ally becomes Guarded while you gain Guarding. While within 5 meters, the Guarded target gains Guard equal to 50% of your Guard. Only one ward or guard link may protect a target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 10);
@@ -145,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.WhirlingGuard1)
+                .DroidAISlots(1)
                 .Description("For 30 seconds, you gain +20 Guard. Whenever you guard a hit, deal 8 physical DMG to that attacker. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 20);
@@ -187,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinIntercept1)
+                .DroidAISlots(1)
                 .Description("Automatically targets your current Guarded ally if they are within 5 meters. Grants that target temporary HP equal to 15% of your maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 30);
@@ -229,6 +235,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronWallStance1)
+                .DroidAISlots(1)
                 .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Katar, 40);
@@ -257,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AdamantineGuard1)
+                .DroidAISlots(1)
                 .Description("For 45 seconds, gain +25 Guard. Guarded hits reduce damage by an additional 20% and generate 75% more enmity.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)
@@ -270,24 +278,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HookingStrike1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8 and inflicts Hamstring for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HookingStrike2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18 and inflicts Hamstring for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HookingStrike3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28 and inflicts Hamstring for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HookingStrike4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38 and inflicts Hamstring for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Katar, 40);
@@ -349,18 +361,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12. Inflicts Dazed for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24. Inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36. Inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 38);
@@ -388,12 +403,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingSweep1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16 to enemies within 5m and interrupts current hostile actions when possible.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingSweep2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 to enemies within 5m and interrupts current hostile actions when possible.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 32);
@@ -406,6 +423,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapperStance1)
+                .DroidAISlots(1)
                 .Description("While active, your control effects last +20% longer, but hostile ability cooldowns are increased by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 20);
@@ -446,6 +464,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Dazed and Hamstring for 30 seconds. Affects up to 5 enemies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)

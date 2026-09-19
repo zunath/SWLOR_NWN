@@ -49,24 +49,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8. Targets affected by control effects take +8 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18. Targets affected by control effects take +14 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28. Targets affected by control effects take +20 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38. Targets affected by control effects take +26 DMG.")
                 .Price(5)
                 .RequirementSkill(SkillType.Staff, 40);
@@ -124,18 +128,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12 and inflicts Dazed for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24 and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36 and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 38);
@@ -161,12 +168,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 6 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 6 seconds. Affects up to 5 enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
@@ -179,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrusherStance1)
+                .DroidAISlots(1)
                 .Description("While active, deal +15% damage to enemies affected by control effects, but your attack delay is increased by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 20);
@@ -221,6 +231,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 35 to enemies within 5m of you. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds. Affects up to 5 enemies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
@@ -234,24 +245,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8 in an 8m x 2.5m line and inflicts Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Staff, 40);
@@ -311,18 +326,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12 and inflicts Knockdown for 6 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24 and inflicts Knockdown for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36 and inflicts Knockdown for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 38);
@@ -353,6 +371,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingGuard1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16 to enemies within 5m and grants +20% Defense for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 18);
@@ -365,6 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelStance1)
+                .DroidAISlots(1)
                 .Description("While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 20);
@@ -392,6 +412,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShelterCircle1)
+                .DroidAISlots(1)
                 .Description("For 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
@@ -420,6 +441,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnmovingCenter1)
+                .DroidAISlots(1)
                 .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Melee Deflection, and generate +30% Enmity.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)

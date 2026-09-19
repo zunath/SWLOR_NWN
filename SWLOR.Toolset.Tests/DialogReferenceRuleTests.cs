@@ -57,11 +57,14 @@ namespace SWLOR.Toolset.Tests
         {
             var issues = new UnreferencedConversationRule().Validate(Context()).ToList();
 
-            // Every one is a hand-authored conversation: the generated shells are excluded by
-            // design, and if they were not this would be 287 findings instead of 32 and nobody
-            // would read any of them.
-            issues.Should().HaveCount(32);
+            // Authored graphs remain discoverable even without a referring object. Retired
+            // quests, Nahulu's merged oath, and the three restored Veles vendors no longer
+            // contribute findings.
+            issues.Should().HaveCount(26);
             issues.Should().OnlyContain(issue => issue.Severity == ValidationSeverity.Warning);
+            issues.Select(issue => issue.ResRef).Should().NotContain(new[]
+                { "night_viscflower", "veles_volnatu", "vendor_merchant" },
+                "the restored Veles vendors have placed NPCs using their authored conversations");
             issues.Select(issue => issue.ResRef).Should().Contain("trooperquest");
             issues.Select(issue => issue.ResRef).Should().NotContain("dmfi_universal",
                 "that conversation is started directly by an NSS script");

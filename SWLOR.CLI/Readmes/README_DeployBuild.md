@@ -25,7 +25,7 @@ Creates the debug server directory structure:
 ```
 
 ### 2. Binary Deployment
-- Copies all files from `../SWLOR.Game.Server/bin/Release/net10.0/` to `../debugserver/dotnet/`
+- Copies files from the initiating build's `TargetDir` to `../debugserver/dotnet/`; standalone deployment defaults to `../SWLOR.Game.Server/bin/Release/net10.0/`. Use `--server-output` to select another output directory.
 - Excludes the `swlor.env` file to preserve existing configuration
 - Maintains directory structure during copy operations
 
@@ -74,3 +74,4 @@ This tool is used during development to:
 - All operations are performed relative to the current working directory; use the repository `Build` directory
 - The debug server directory is created if it doesn't exist
 - Existing files in the debug server directory are overwritten 
+- Missing content assets do not suppress binary or Docker deployment. Missing configured HAK directories or TLK skip only HAK/TLK deployment, preserving deployed assets. A missing packed module skips only module deployment. Each skip emits a build warning; a fresh debugserver still requires those assets before it can run. Initialize `SWLOR_Haks` and run `PackModule.cmd` from `Module`, then rebuild to complete deployment.

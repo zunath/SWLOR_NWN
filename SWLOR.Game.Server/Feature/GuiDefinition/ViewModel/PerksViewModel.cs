@@ -527,7 +527,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (!rowStateCache.TryGetValue(type, out var state))
                 {
-                    var rank = GetCurrentPerkRank(dbPlayer, dbBeast, type);
+                    var rank = GetDisplayPerkRank(detail, GetCurrentPerkRank(dbPlayer, dbBeast, type));
                     var (status, color, iconResref, tooltip) = GetPerkRowStatus(detail, rank, unallocatedSP);
                     state = (rank, status, color, iconResref, tooltip);
                     rowStateCache[type] = state;
@@ -639,8 +639,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : 0;
         }
 
+        private static int GetDisplayPerkRank(PerkDetail detail, int savedRank)
+        {
+            // Characters awaiting a rebuild can retain ranks removed from the definition.
+            // Only normalize the UI; preserve their saved ranks for the rebuild.
+            return Math.Clamp(savedRank, 0, detail.PerkLevels.Count);
+        }
+
         private static int GetRequiredSkillLevelSortOrder(PerkDetail detail, int rank)
         {
+            rank = GetDisplayPerkRank(detail, rank);
             if (detail.PerkLevels.TryGetValue(rank + 1, out var nextUpgrade))
                 return GetRequiredSkillLevel(nextUpgrade);
 
@@ -666,6 +674,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedDetails = detail.Name + "\n\n";
 
             selectedDetails += $"[{categoryDetail.Name}]\n";
+            var isActive = detail.HotBarActionModes.Count > 0 ||
+                           detail.PerkLevels.Values.SelectMany(level => level.GrantedFeats)
+                               .Any(Ability.IsFeatRegistered);
+            selectedDetails += $"Type: {(isActive ? "Active" : "Passive")}\n";
 
             var forceAffinityText = BuildForceAffinityPerkDetailText(detail);
             if (!string.IsNullOrWhiteSpace(forceAffinityText))
@@ -866,6 +878,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 unallocatedSP = dbBeast.UnallocatedSP;
             }
 
+            rank = GetDisplayPerkRank(detail, rank);
             var currentUpgrade = detail.PerkLevels.ContainsKey(rank)
                 ? detail.PerkLevels[rank]
                 : null;

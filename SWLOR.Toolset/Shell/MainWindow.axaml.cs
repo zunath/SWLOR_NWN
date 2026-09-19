@@ -116,6 +116,7 @@ namespace SWLOR.Toolset.Shell
         public void ShowStartupError(string message)
         {
             StartupPanel.IsVisible = true;
+            StartupTitle.Text = "Toolset setup needs attention";
             StartupProgress.IsIndeterminate = false;
             StartupStatus.Text = message;
         }

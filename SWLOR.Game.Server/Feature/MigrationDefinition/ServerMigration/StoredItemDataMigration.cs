@@ -1143,6 +1143,43 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
         }
 
+        private static string ExpandTrainingRecipeBook(string resref, string recipeList)
+        {
+            var recipes = resref switch
+            {
+                "recipe_trnsabers" => new[]
+                {
+                    RecipeType.TrainingSaber1, RecipeType.TrainingSaber2, RecipeType.TrainingSaber3,
+                    RecipeType.TrainingSaber4, RecipeType.TrainingSaber5, RecipeType.FieldTrainingSaber,
+                    RecipeType.VeteranTrainingSaber, RecipeType.PrimeTrainingSaber, RecipeType.AscendantTrainingSaber
+                },
+                "recipe_trnsabstf" => new[]
+                {
+                    RecipeType.TrainingSaberstaff1, RecipeType.TrainingSaberstaff2, RecipeType.TrainingSaberstaff3,
+                    RecipeType.TrainingSaberstaff4, RecipeType.TrainingSaberstaff5, RecipeType.FieldTrainingSaberstaff,
+                    RecipeType.VeteranTrainingSaberstaff, RecipeType.PrimeTrainingSaberstaff, RecipeType.AscendantTrainingSaberstaff
+                },
+                _ => null
+            };
+            if (recipes == null)
+                return recipeList;
+
+            // Preserve any extra recipes a DM added to the saved book. Only append missing tiers.
+            var entries = (recipeList ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            var existingIds = entries.Where(entry => int.TryParse(entry, out _)).Select(int.Parse).ToHashSet();
+            var changed = false;
+            foreach (var recipe in recipes)
+            {
+                if (!existingIds.Add((int)recipe))
+                    continue;
+
+                entries.Add(((int)recipe).ToString());
+                changed = true;
+            }
+
+            return changed ? string.Join(",", entries) : recipeList;
+        }
+
         private static class DroidBoostStoredItemMigration
         {
             public const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
@@ -1436,11 +1473,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             private static bool MigrateRecipeLocalVariable(uint item)
             {
-                var recipeList = GetLocalString(item, "RECIPES");
+                var previousRecipeList = GetLocalString(item, "RECIPES");
+                var recipeList = ExpandTrainingRecipeBook(GetResRef(item), previousRecipeList);
                 if (string.IsNullOrWhiteSpace(recipeList))
                     return false;
 
-                var migrated = false;
+                var migrated = recipeList != previousRecipeList;
                 var newRecipeIds = new List<int>();
 
                 foreach (var recipeId in recipeList.Split(','))

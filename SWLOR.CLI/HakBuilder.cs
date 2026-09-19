@@ -98,7 +98,7 @@ namespace SWLOR.CLI
         /// Throws an exception if the file is missing.
         /// </summary>
         /// <returns>The hak builder config settings.</returns>
-        private HakBuilderConfig GetConfig()
+        internal HakBuilderConfig GetConfig()
         {
             if (!File.Exists(ConfigFilePath))
             {

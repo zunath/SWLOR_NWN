@@ -34987,7 +34987,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_desert_to_anchor"
+          "value": "WP_SouthDist_ToSouthEntrance"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -35190,7 +35190,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_anchor_desert_entreenord"
+          "value": "WP_RockyDesert_ToSouthEntrance"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -35393,7 +35393,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_anchor_rte_com01_entreenor"
+          "value": "WP_HillyDesert_ToNorthEntrance"
         },
         "LinkedToFlags": {
           "type": "byte",

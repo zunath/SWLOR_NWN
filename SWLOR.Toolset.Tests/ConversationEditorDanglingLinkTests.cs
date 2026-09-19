@@ -78,7 +78,7 @@ namespace SWLOR.Toolset.Tests
         private string CorruptedDantHerbs()
         {
             Directory.CreateDirectory(_root);
-            var source = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "dantherbs.dlg.json");
+            var source = LegacyConversationFixtures.PathFor("dantherbs");
 
             var entryIndex = DlgDocument.Load(source).Openings
                 .Single(opening => opening.Target.Text.StartsWith("Hold a moment."))

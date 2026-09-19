@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Enter the Czerka Arms Test Range on Smuggler's Moon and defeat 6 Rain of Steel adepts, then recover the Rain of Steel Czerka Test Docket from their trial.")
+                    "Varik Dane gave you the Czerka Arms Test Range Key. Enter the Czerka Arms Test Range on Smuggler's Moon and defeat 6 Rain of Steel adepts, then recover the Rain of Steel Czerka Test Docket from their trial.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelCzerkaTestDocket)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Enter the Hutlar Qion Test Site on Hutlar and defeat 6 Perfect Flurry adepts on the open range, then recover the Perfect Flurry Qion Test Log.")
+                    "Selka Vorn gave you the Hutlar Qion Test Site Key. Enter the Hutlar Qion Test Site on Hutlar and defeat 6 Perfect Flurry adepts on the open range, then recover the Perfect Flurry Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryQionTestLog)
 

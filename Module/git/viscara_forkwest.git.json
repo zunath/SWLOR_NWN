@@ -2481,7 +2481,7 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 11
+                "value": 61
               },
               "Charges": {
                 "type": "byte",
@@ -83538,7 +83538,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 121
+          "value": 181
         }
       },
       {

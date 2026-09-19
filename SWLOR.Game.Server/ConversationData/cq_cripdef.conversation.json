@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Signed. Freight corridor, the door that isn't there, six adepts, and the Crippling Defense Backroom Bout Ledger off their booking table. Don't wreck the ledger swinging. It's worth more than the six of them stacked.",
+          "Text": "Signed. Here's the backroom key. Freight corridor, the door that isn't there, six adepts, and the Crippling Defense Backroom Bout Ledger off their booking table. Don't wreck the ledger swinging. It's worth more than the six of them stacked.",
           "Style": 0,
           "Color": null
         }
@@ -1330,7 +1330,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "crippling_defense_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00003",
@@ -1440,7 +1447,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "crippling_defense_foundation"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00009",
@@ -1486,7 +1500,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "crippling_defense_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00011",
@@ -1596,7 +1617,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "crippling_defense_measure"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00017",
@@ -1642,7 +1670,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "crippling_defense_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00019",
@@ -1752,7 +1787,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "crippling_defense_breach"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00025",
@@ -1798,7 +1840,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "crippling_defense_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00027",
@@ -1908,7 +1957,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "crippling_defense_circle"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00033",
@@ -1954,7 +2010,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "crippling_defense_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00035",
@@ -2064,7 +2127,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "crippling_defense_mastery"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00041",

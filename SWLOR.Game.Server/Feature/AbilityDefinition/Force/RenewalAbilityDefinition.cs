@@ -102,17 +102,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Renewal1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal I", 20f);
+            ApplyRenewal(activator, target, "Renewal I", 10f);
         }
 
         private static void Renewal2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal II", 40f);
+            ApplyRenewal(activator, target, "Renewal II", 20f);
         }
 
         private static void Renewal3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal III", 60f);
+            ApplyRenewal(activator, target, "Renewal III", 30f);
         }
 
         private static void ApplyRenewal(uint activator, uint target, string name, float totalPercent)

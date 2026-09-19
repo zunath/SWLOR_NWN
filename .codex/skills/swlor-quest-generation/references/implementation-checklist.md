@@ -49,23 +49,23 @@ NPC group:
 
 Dialogue:
 
-- Legacy `.dlg.json` nodes use `ActionParams` and `ConditionParams` lists.
-- `ActionParams` values for quest actions:
+- Author only `SWLOR.Game.Server/ConversationData/<id>.conversation.json`. Read `SWLOR.Game.Server/Readmes/Conversations.md`; do not create a matching legacy DLG. The only native module dialogue is `dmfi_universal`.
+- Choice `Actions` contain `Key` and string-array `Arguments` for quest actions:
   - `action-accept-quest`: `quest_id`
   - `action-advance-quest`: `quest_id`
   - `action-request-quest-items`: `quest_id`
-- `ConditionParams` values for quest visibility:
+- Ordered entry/choice/next routes carry `Conditions` with `Key`, string-array `Arguments`, and `IsNegated` for quest visibility:
   - `condition-has-quest`: `quest_id`
   - `condition-on-quest-state`: `quest_id stateNumber [stateNumber...]`
   - `condition-completed-quest`: `quest_id [quest_id...]`
-  - Negate by prefixing the key with `!`, for example `!condition-has-quest`.
+  - Add `condition-can-accept-quest` on quest offers. Negate a condition with `IsNegated: true`; keep the `Key` unchanged.
 
 NPC placement:
 
 - UTC templates live in `Module/utc/<resref>.utc.json`.
 - Fixed placed creatures live in `Module/git/<area>.git.json` under `Creature List.value`.
 - Important fields: `FirstName`, `LastName`, `Conversation`, `Tag`, `TemplateResRef`, `VarTable`, `XPosition`, `YPosition`, `ZPosition`, `XOrientation`, `YOrientation`.
-- Legacy dialogue uses the `Conversation` resref.
+- Set `Conversation` to the SWLOR graph ID and `ScriptDialogue` to `dialog_start` on NPC blueprints and placed instances. A DLG resource is not needed. Placeables and doors use the corresponding `OnUsed` or `OnFailToOpen` route.
 - C# dialog classes should use a local `CONVERSATION` variable only when the target object is already wired for SWLOR's C# dialog opener.
 - If a capstone quest giver's target area does not exist yet, create its UTC, dialogue, and creature palette entry, then leave actual `Module/git` placement to the area builder.
 
@@ -131,7 +131,7 @@ Read `dialogue-and-content-standards.md` before writing quest text. Then verify:
 Run targeted JSON parsing for touched module files:
 
 ```powershell
-Get-Content 'Module\dlg\<dialog>.dlg.json' -Raw | ConvertFrom-Json > $null
+Get-Content 'SWLOR.Game.Server\ConversationData\<dialog>.conversation.json' -Raw | ConvertFrom-Json > $null
 Get-Content 'Module\utc\<npc>.utc.json' -Raw | ConvertFrom-Json > $null
 Get-Content 'Module\git\<area>.git.json' -Raw | ConvertFrom-Json > $null
 ```
@@ -140,7 +140,8 @@ Search for duplicates and missing references:
 
 ```powershell
 rg -n -U 'Create\s*\(\s*"<quest_id>"' SWLOR.Game.Server\Feature\QuestDefinition
-rg -n -U '"value"\s*:\s*"<dialog_resref>"' Module\dlg Module\utc Module\git
+rg -n -U '"value"\s*:\s*"<dialog_resref>"' Module\utc Module\git
+rg -n '<dialog_resref>' SWLOR.Game.Server\ConversationData
 rg -n -U '"value"\s*:\s*"<npc_or_item_resref>"' Module
 rg -n -U '"<npc_or_item_resref>"' SWLOR.Game.Server
 ```
@@ -148,7 +149,8 @@ rg -n -U '"<npc_or_item_resref>"' SWLOR.Game.Server
 Build:
 
 ```powershell
-dotnet build SWLOR.Game.Server\SWLOR.Game.Server.csproj --no-restore
+dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never
+dotnet test SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj --no-build --filter "FullyQualifiedName~QuestConversationTests|FullyQualifiedName~ConversationGraphCorpusTests|FullyQualifiedName~ConversationArchitectureTests"
 ```
 
 Pack the module only when the handoff requires a refreshed `.mod`:
@@ -167,7 +169,8 @@ Pop-Location
 - New `NPCGroupType` value added but enemy `VarTable` uses the wrong integer.
 - Reward item or collect item resref does not exist in `Module/uti`.
 - Quest giver UTC exists but no placed creature exists in the target area's `Creature List`.
-- Placed creature has a dialogue resref but the `.dlg.json` file does not exist.
+- Placed creature names a missing `.conversation.json` graph or its interaction event is not routed through `dialog_start`.
+- A migrated conversation has a duplicate DLG file or an existing graph is overwritten from a legacy import.
 - Repeatable quest accidentally grants a permanent key item on every completion.
 - Dialogue uses a static generated pattern across multiple NPCs.
 - Major quest dialogue is only a functional accept/remind/turn-in kiosk with no optional player questions or NPC-specific flow.

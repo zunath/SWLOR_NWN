@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Sith adepts rehearse a corrupted last-stand rite in the Korriban Sith Crypt Depths. Defeat 6 Last Stand of the Light adepts and recover the Last Stand of the Light Crypt Trial Tablet.")
+                    "Seris Nahl gave you the Korriban Sith Crypt Depths Key. Sith adepts rehearse a corrupted last-stand rite in the Korriban Sith Crypt Depths. Defeat 6 Last Stand of the Light adepts and recover the Last Stand of the Light Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_LastStandOfTheLight_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
 
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "A coven of Hunger of the Dark adepts feeds on stolen power in the Korriban Sith Crypt Depths. Defeat 6 of them and recover the Hunger of the Dark Crypt Trial Tablet.")
+                    "Neth Kyr gave you the Korriban Sith Crypt Depths Key. A coven of Hunger of the Dark adepts feeds on stolen power in the Korriban Sith Crypt Depths. Defeat 6 of them and recover the Hunger of the Dark Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_HungerOfTheDark_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkCryptTrialTablet)
 
@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "A failed cell of Eclipse of Resolve adepts drills a corrupted doctrine in the Korriban Sith Crypt Depths. Defeat 6 of them and recover the Eclipse of Resolve Crypt Trial Tablet.")
+                    "Acolyte Varn gave you the Korriban Sith Crypt Depths Key. A failed cell of Eclipse of Resolve adepts drills a corrupted doctrine in the Korriban Sith Crypt Depths. Defeat 6 of them and recover the Eclipse of Resolve Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_EclipseOfResolve_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveCryptTrialTablet)
 

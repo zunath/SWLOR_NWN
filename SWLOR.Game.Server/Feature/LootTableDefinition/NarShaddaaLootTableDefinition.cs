@@ -35,11 +35,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 		private void FightClubRareElites()
 		{
 			_builder.Create("FIGHTCLUB_IRONJAW_RARES").IsRare()
-				.AddItem("brawl_wraps", 1, 1, true).AddItem("scar_cuirass", 1, 1, true).AddItem("bp_pitcestus", 1, 1, true);
+				.AddItem("brawl_wraps", 1, 1, true).AddItem("scar_cuirass", 1, 1, true).AddItem("bp_pitcestus", 1, 1, true)
+				.AddItem("recipe_dr_tra1", 1, 1, true);
 			_builder.Create("FIGHTCLUB_QUICKDRAW_RARES").IsRare()
-				.AddItem("gunsling_rig", 1, 1, true).AddItem("padded_coat", 1, 1, true).AddItem("bp_duelvest", 1, 1, true);
+				.AddItem("gunsling_rig", 1, 1, true).AddItem("padded_coat", 1, 1, true).AddItem("bp_duelvest", 1, 1, true)
+				.AddItem("recipe_dr_mob1", 1, 1, true);
 			_builder.Create("FIGHTCLUB_HEXCALLER_RARES").IsRare()
-				.AddItem("hexweave", 1, 1, true).AddItem("ward_vest", 1, 1, true).AddItem("bp_charmcowl", 1, 1, true);
+				.AddItem("hexweave", 1, 1, true).AddItem("ward_vest", 1, 1, true).AddItem("bp_charmcowl", 1, 1, true)
+				.AddItem("recipe_dr_mnd1", 1, 1, true);
 			_builder.Create("FIGHTCLUB_IRONJAW_COMP").AddItem("arena_token", 1, 1);
 			_builder.Create("FIGHTCLUB_QUICKDRAW_COMP").AddItem("spent_charge", 1, 1);
 			_builder.Create("FIGHTCLUB_HEXCALLER_COMP").AddItem("hex_focus", 1, 1);
@@ -53,7 +56,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 				.IsRare()
 				.AddItem("bipod_rig", 1, 1, true)
 				.AddItem("barrel_shroud", 1, 1, true)
-				.AddItem("bp_precoptic", 1, 1, true);
+				.AddItem("bp_precoptic", 1, 1, true)
+				.AddItem("recipe_dr_elec1", 1, 1, true);
 			_builder.Create("CZERKA_BLASTBREAKER_RARES")
 				.IsRare()
 				.AddItem("deton_cestus", 1, 1, true)

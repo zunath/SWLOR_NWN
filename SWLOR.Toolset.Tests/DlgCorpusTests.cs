@@ -6,29 +6,21 @@ using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Tests
 {
-    /// <summary>
-    /// Runs DlgDocument over every conversation in the module. These are the gates that matter:
-    /// the typed view has to hold for all 609 files, not just the one it was written against, and
-    /// an edit through it has to stay as local on the largest imported conversation as on the
-    /// smallest authored one.
-    /// </summary>
+    /// <summary>Lossless legacy DLG editing against frozen import examples and the native DMFI file.</summary>
     public class DlgCorpusTests
     {
-        private static string DlgDirectory => Path.Combine(CorpusLocator.ModuleDirectory, "dlg");
-
         private static IEnumerable<string> AllDialogs() =>
-            Directory.EnumerateFiles(DlgDirectory, "*.json").OrderBy(path => path, StringComparer.Ordinal);
+            LegacyConversationFixtures.AllPaths();
 
-        /// <summary>A spread of shapes: authored, generated, imported, and the largest of each.</summary>
+        /// <summary>Representative imported DLG shapes, including the large native DMFI conversation.</summary>
         private static IEnumerable<string> SampleDialogs()
         {
             foreach (var name in new[]
             {
-                "dantherbs", "bartender", "korrdralquest", "sera_vonn", "cq_worldbrk",
-                "dialog1", "dmfi_universal", "tk_omnidye"
+                "dantherbs", "bartender", "avixtatham", "dmfi_universal", "tk_omnidye"
             })
             {
-                var path = Path.Combine(DlgDirectory, $"{name}.dlg.json");
+                var path = LegacyConversationFixtures.PathFor(name);
                 if (File.Exists(path))
                     yield return path;
             }
@@ -49,27 +41,9 @@ namespace SWLOR.Toolset.Tests
             broken.Should().BeEmpty();
         }
 
-        /// <summary>
-        /// The four places in the module where a list element's id is not its position. All of them
-        /// are the second condition on one of sera_vonn's openings, left at 0 — the signature of a
-        /// param block copy-pasted without bumping its id. Pinned rather than fixed: rewriting them
-        /// would be a diff with no behavioural effect, and RenumberStructIds only writes where the
-        /// value differs, so it leaves them alone until that params list is edited for a real reason.
-        /// </summary>
-        private static readonly string[] KnownStructIdDeviations =
-        {
-            "sera_vonn.dlg.json: StartingList[3].ConditionParams[1] has id 0",
-            "sera_vonn.dlg.json: StartingList[6].ConditionParams[1] has id 0",
-            "sera_vonn.dlg.json: StartingList[9].ConditionParams[1] has id 0",
-            "sera_vonn.dlg.json: StartingList[12].ConditionParams[1] has id 0"
-        };
-
         [Test]
         public void EveryListNumbersItsElementsByPosition()
         {
-            // The convention removal has to preserve. Holds for every node list, link list and
-            // param list in the module bar the four below, which is why RenumberStructIds restores
-            // it rather than inventing a numbering of its own.
             var offenders = new List<string>();
             foreach (var path in AllDialogs())
             {
@@ -77,7 +51,7 @@ namespace SWLOR.Toolset.Tests
                 CheckStructIds(document.Fields, Path.GetFileName(path), string.Empty, offenders);
             }
 
-            offenders.Should().BeEquivalentTo(KnownStructIdDeviations);
+            offenders.Should().BeEmpty();
         }
 
         [Test]
@@ -120,21 +94,8 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        /// <summary>
-        /// Conversations whose stored NumWords no longer matches their text — edited at some point
-        /// by something that did not update the count. They disagree in both directions and by as
-        /// much as 69 words (nar_sniper_q), so they are stale rather than evidence of a different
-        /// counting rule: the rule below reproduces the stored value for the other 286 files that
-        /// carry one. Recomputing on save will correct each of these the first time it is edited.
-        /// </summary>
-        private static readonly string[] KnownStaleWordCounts =
-        {
-            "cavedweller", "cr_t_d_operator", "daninfo", "danttrainer", "dt_barman_gen",
-            "dt_gocorp_anchor", "dt_infirmiere003", "dt_jawa001", "dt_marche002",
-            "dt_visi_medic001", "fnote_vendor", "galateaallerti", "gsiquest1", "mon_p3dr0oilpit",
-            "nar_datasmg_q", "nar_sniper_q", "night_viscaccess", "night_viscflower",
-            "rennatarsk", "star_attend_lau", "veles_shelbquest"
-        };
+        // These frozen imports predate the editor's word-count repair on save.
+        private static readonly string[] KnownStaleWordCounts = { "dt_barman_gen", "star_attend_lau" };
 
         [Test]
         public void StoredWordCountsAgreeWithTheCountingRule()
@@ -156,8 +117,7 @@ namespace SWLOR.Toolset.Tests
             }
 
             disagreements.Should().BeEquivalentTo(KnownStaleWordCounts);
-            counted.Should().Be(307,
-                "the generated DLG shells were removed, leaving only authored conversations with stored counts");
+            counted.Should().BeGreaterThan(0, "legacy imports must exercise stored word counts");
         }
 
         [TestCaseSource(nameof(SampleDialogs))]

@@ -130,23 +130,26 @@
       <Border x:Name="StartupPanel"
               Margin="4"
               Background="{DynamicResource ChromeBrush}">
-        <StackPanel Width="420"
-                    HorizontalAlignment="Center"
+        <ScrollViewer x:Name="StartupScroll" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="420" Margin="16"
+                    HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Spacing="12">
-          <TextBlock Text="Loading toolset data..."
+          <TextBlock x:Name="StartupTitle" Text="Loading toolset data..."
                      HorizontalAlignment="Center"
                      FontSize="18"
                      FontWeight="SemiBold" />
           <ProgressBar x:Name="StartupProgress"
                        Height="4"
                        IsIndeterminate="True" />
-          <TextBlock x:Name="StartupStatus"
+          <SelectableTextBlock x:Name="StartupStatus"
                      Text="Opening the workspace. Game resources will continue loading in the background."
                      TextAlignment="Center"
                      TextWrapping="Wrap"
                      Foreground="{DynamicResource InkSecondaryBrush}" />
         </StackPanel>
+        </ScrollViewer>
       </Border>
     </Grid>
     <!-- Status bar: monospace, because everything that lands here is a count, a path or a coordinate. -->

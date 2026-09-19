@@ -25,6 +25,8 @@ Docker: https://www.docker.com/products/docker-desktop/
   
 Visual Studio 2022: https://www.visualstudio.com/downloads/
 
+.NET 10 SDK: [Download .NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+
 Neverwinter Nights: https://store.steampowered.com/app/704450/Neverwinter_Nights_Enhanced_Edition/
 
 # Installation:

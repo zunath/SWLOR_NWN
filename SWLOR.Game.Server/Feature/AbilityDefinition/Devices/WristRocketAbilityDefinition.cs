@@ -96,6 +96,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(5);
         }
 
+        private static void ApplyRocketImpactEffects(uint activator, uint target)
+        {
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire),
+                GetLocation(target));
+            DeviceAbilityEffects.ApplyTacticalUplink(activator);
+        }
+
         private static void WristRocket1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             Ability.ApplyCombatImpact(
@@ -112,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
+                afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
@@ -133,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
+                afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
@@ -154,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
+                afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }

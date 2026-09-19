@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -11,6 +12,27 @@ namespace SWLOR.Game.Server.Service
     {
         private static Dictionary<string, uint> AreasByResref { get; } = new();
         private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
+
+        /// <summary>
+        /// Creates an area instance with the same event handlers as the startup areas.
+        /// CreateArea loads the original resource, which does not include runtime script overrides.
+        /// </summary>
+        public static uint CreateInstance(string sourceResref, string newTag = "", string newName = "")
+        {
+            var area = CreateArea(sourceResref, newTag, newName);
+            if (GetIsObjectValid(area))
+                RegisterEvents(area);
+
+            return area;
+        }
+
+        public static void RegisterEvents(uint area)
+        {
+            SetEventScript(area, EventScript.Area_OnEnter, ScriptName.OnAreaEnter);
+            SetEventScript(area, EventScript.Area_OnExit, ScriptName.OnAreaExit);
+            SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
+            SetEventScript(area, EventScript.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
+        }
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()

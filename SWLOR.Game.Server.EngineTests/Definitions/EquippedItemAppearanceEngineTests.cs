@@ -642,6 +642,52 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Head accessories inherit armor dyes without changing creature colors", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task HeadAccessoriesInheritArmorDyes(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var armor = GetItemInSlot(InventorySlot.Chest, creature);
+                var standardColor = typeof(TintMapService).GetMethod("GetStandardColor",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                foreach (var dye in new[] { 37, 82 })
+                {
+                    // Switching away and back must retain head 139 and reread the current outfit.
+                    SetCreatureBodyPart(SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.Head, 79, creature);
+                    TintMapService.ApplyCurrentColors(creature);
+                    SetCreatureBodyPart(SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.Head, 139, creature);
+                    for (var channel = 0; channel < 6; channel++)
+                        EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorColor, channel, dye + channel);
+                    EquippedItemAppearance.Refresh(creature, armor);
+
+                    var heads = TintMapModelResolver.GetCurrentSelections(creature)
+                        .Where(selection => selection.ModelResref.EndsWith("head139")).ToArray();
+                    ctx.Assert(heads.Length > 0, "Head 139 retains its creature model and tint materials");
+                    var dyeLayers = 0;
+                    foreach (var head in heads)
+                    {
+                        ctx.AssertEqual(AppearanceArmor.Invalid, head.ArmorPart,
+                            "Heads inherit global dyes, never a body-part override");
+                        foreach (var layer in head.Material.Layers)
+                        {
+                            var creatureLayer = TintMapVariable.IsCreatureColorLayer(layer);
+                            ctx.AssertEqual(creatureLayer ? creature : armor, head.GetPaletteSource(layer),
+                                "Head layer palette ownership: " + layer);
+                            if (creatureLayer)
+                                continue;
+
+                            dyeLayers++;
+                            var channel = System.Enum.Parse<AppearanceArmorColor>(layer.ToString());
+                            var actual = (int)standardColor.Invoke(null, new object[] { creature, head, layer });
+                            ctx.AssertEqual(dye + (int)channel, actual, "Head accessory dye: " + layer);
+                        }
+                    }
+                    ctx.Assert(dyeLayers > 0, "Head 139 exercises armor-colored accessory pixels");
+                }
+            });
+        }
+
         private static async Task<uint> SpawnCivilianAsync(EngineTestContext ctx, string blueprint = "civilian")
         {
             var creature = ctx.SpawnCreature(blueprint);

@@ -77,20 +77,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Restores 8% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
+                .Description("Restores 6% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Benevolence1)
 
                 .AddPerkLevel()
-                .Description("Restores 14% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
+                .Description("Restores 10% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Benevolence2)
 
                 .AddPerkLevel()
-                .Description("Restores 20% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
+                .Description("Restores 14% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -127,14 +127,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RadiantLance()
         {
-            _builder.Create(PerkCategoryType.ForceSense, PerkType.RadiantLance)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.RadiantLance)
                 .Name("Radiant Lance")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 16 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 8)
+                .RequirementSkill(SkillType.Force, 9)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance1)
 
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 44 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 48)
+                .RequirementSkill(SkillType.Force, 49)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance3);
         }
@@ -160,21 +160,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Applies regeneration to a single ally, restoring 2% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
+                .Description("Applies regeneration to a single ally, restoring 1% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Renewal1)
 
                 .AddPerkLevel()
-                .Description("Applies regeneration to a single ally, restoring 4% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
+                .Description("Applies regeneration to a single ally, restoring 2% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Renewal2)
 
                 .AddPerkLevel()
-                .Description("Applies regeneration to a single ally, restoring 6% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
+                .Description("Applies regeneration to a single ally, restoring 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceMendTrait)
-                .Description("Control powers that restore HP can remove one standard negative effect from the target and restore HP equal to 10% of maximum HP plus WIL scaling. This can trigger once every 24 seconds per target.")
+                .Description("Control powers that restore HP can remove one standard negative effect from the target and restore HP equal to 6% of maximum HP plus WIL scaling. This can trigger once every 24 seconds per target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

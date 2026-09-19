@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("ord_rig", 1, 1, true)
                 .AddItem("blast_harness", 1, 1, true)
-                .AddItem("bp_siegeoptic", 1, 1, true);
+                .AddItem("bp_siegeoptic", 1, 1, true)
+                .AddItem("recipe_dr_dis1", 1, 1, true);
 
             // Guaranteed encounter-specific salvage component that the recipes require.
             _builder.Create("CZ220_BULWARK_COMPONENT")

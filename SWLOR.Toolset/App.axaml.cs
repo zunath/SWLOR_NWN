@@ -95,6 +95,7 @@ namespace SWLOR.Toolset
             {
                 result = await Task.Run(() =>
                 {
+                    ValidateStartupHakSetup(settings);
                     var services = new ServiceCollection();
                     ConfigureServices(services, settings);
                     return services.BuildServiceProvider();
@@ -410,6 +411,8 @@ namespace SWLOR.Toolset
             var hakBuilderConfigPath = Path.Combine(repoRoot, "Build", "hakbuilder.json");
             var swlorHaksRoot = Path.Combine(repoRoot, "SWLOR_Haks");
 
+            var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
+
             var hasTwoDa = Directory.Exists(sw2DaDirectory);
             var hasTlk = File.Exists(swTlkJsonPath);
 
@@ -458,7 +461,6 @@ namespace SWLOR.Toolset
                 Func<KeyBifCatalog?>? loadBaseLayer = nwnInstallPath == null
                     ? null
                     : () => KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
-                var moduleHakLayers = ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load());
                 services.AddSingleton(moduleHakLayers == null
                     ? ResourceIndex.FromHakBuilderConfigDeferred(
                         hakBuilderConfigPath,
@@ -608,6 +610,14 @@ namespace SWLOR.Toolset
         private static string? ResolveRepoRoot(ToolsetSettings settings) =>
             FindRepoRoot(settings.ModuleRoot) ?? FindRepoRoot(AppContext.BaseDirectory);
 
+        private static void ValidateStartupHakSetup(ToolsetSettings settings)
+        {
+            var repoRoot = ResolveRepoRoot(settings);
+            if (repoRoot != null)
+                HakSetupValidation.Validate(repoRoot,
+                    ResolveStartupHakLayers(settings.ModuleRoot, NwnIniProfile.Load()));
+        }
+
         /// <summary>
         /// Queues a log line naming the NWN:EE install that was found, or listing where it looked when
         /// there was none. Deferred onto the log service rather than written here, because logging is a
@@ -640,8 +650,9 @@ namespace SWLOR.Toolset
                 while (current != null)
                 {
                     var hakBuilderConfig = Path.Combine(current.FullName, "Build", "hakbuilder.json");
-                    var haksDirectory = Path.Combine(current.FullName, "SWLOR_Haks");
-                    if (File.Exists(hakBuilderConfig) && Directory.Exists(haksDirectory))
+                    // An absent submodule must still identify the repository so validation can
+                    // explain how to restore it instead of silently skipping game-data services.
+                    if (File.Exists(hakBuilderConfig))
                         return current.FullName;
 
                     current = current.Parent;

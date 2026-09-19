@@ -57,3 +57,6 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+# This script is executed by bash from a Windows bind mount.
+SWLOR.Game.Server/Docker/prepare-server-home.sh text eol=lf

@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 45
+  },
   "Appearance_Type": {
     "type": "word",
     "value": 10000
   },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 242
+  },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 249
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 246
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 242
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 222
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 235
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 234
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 249
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 246
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 222
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 235
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 249
   },
   "Cha": {
     "type": "byte",
@@ -31,6 +107,22 @@
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 3
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 174
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",

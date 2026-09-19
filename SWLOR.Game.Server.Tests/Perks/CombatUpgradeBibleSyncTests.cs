@@ -1,8 +1,10 @@
 using System.Globalization;
+using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Microsoft.VisualBasic.FileIO;
 using FluentAssertions;
 using NUnit.Framework;
@@ -19,6 +21,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.Formats.Tlk;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -203,6 +206,26 @@ public class CombatUpgradeBibleSyncTests
     private static readonly HashSet<PerkCategoryType> DroidInstructionCategories = new()
     {
         PerkCategoryType.General,
+        PerkCategoryType.VibrobladeDefense,
+        PerkCategoryType.VibrobladeOffense,
+        PerkCategoryType.VibroknifeShadow,
+        PerkCategoryType.VibroknifeSaboteur,
+        PerkCategoryType.HeavyVibrobladeDefense,
+        PerkCategoryType.HeavyVibrobladeOffense,
+        PerkCategoryType.SpearDamage,
+        PerkCategoryType.SpearDisabler,
+        PerkCategoryType.TwinBladeCyclone,
+        PerkCategoryType.TwinBladeDuelist,
+        PerkCategoryType.KatarIronGuard,
+        PerkCategoryType.KatarVenomCurrent,
+        PerkCategoryType.StaffCrusher,
+        PerkCategoryType.StaffSentinel,
+        PerkCategoryType.PistolGunslinger,
+        PerkCategoryType.PistolSkirmisher,
+        PerkCategoryType.RifleMarksman,
+        PerkCategoryType.RiflePacification,
+        PerkCategoryType.ThrowingBombardier,
+        PerkCategoryType.ThrowingDeadeye,
         PerkCategoryType.DevicesAssaultGadgets,
         PerkCategoryType.DevicesFieldEngineer,
         PerkCategoryType.DevicesFieldSupport,
@@ -257,9 +280,9 @@ public class CombatUpgradeBibleSyncTests
             .ToDictionary(group => group.Key, group => group.Sum(row => ParseWholeNumber(row.Price)))
             .Should().BeEquivalentTo(new Dictionary<string, int>
             {
-                ["Alter"] = 98,
+                ["Alter"] = 109,
                 ["Control"] = 87,
-                ["Sense"] = 55
+                ["Sense"] = 44
             }, "the documented Force section totals must match the manifest");
 
         forceRows
@@ -1262,6 +1285,20 @@ public class CombatUpgradeBibleSyncTests
 
         foreach (var template in templates.OrderBy(x => x.Resref))
         {
+            var isObsolete = (bool)typeof(DroidInstructions).Assembly
+                .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration")!
+                .GetMethod("IsObsoleteResRef", BindingFlags.Public | BindingFlags.Static)!
+                .Invoke(null, new object[] { template.Resref })!;
+            isObsolete.Should().BeFalse(
+                $"current instruction {template.Resref} must survive the obsolete-item migration");
+            template.Resref.Length.Should().BeLessThanOrEqualTo(16);
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", template.Resref + ".uti.json")));
+            if (blueprint.RootElement.TryGetProperty("VarTable", out var variables))
+                variables.GetProperty("value").EnumerateArray().Should().NotContain(variable =>
+                    variable.GetProperty("Name").GetProperty("value").GetString() == "NO_ECONOMY" &&
+                    variable.GetProperty("Value").GetProperty("value").GetInt32() == 1,
+                    $"craftable instruction {template.Resref} belongs in player item searches");
+
             if (!recipeResrefs.Contains(template.Resref))
                 failures.Add($"Droid instruction UTI '{template.Resref}' exists without a current recipe definition.");
 
@@ -1348,6 +1385,127 @@ public class CombatUpgradeBibleSyncTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
+    [Test]
+    public void DroidInstructionPropertyTable_CoversOnlySupportedPerksWithMatchingBinaryLabels()
+    {
+        var root = FindRepositoryRoot();
+        var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "iprp_droidperk.2da")))
+            .Where(row => row.Value.GetValueOrDefault("Name", "****") != "****")
+            .ToDictionary(row => row.Key, row => row.Value);
+        var tlk = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
+        var binary = TlkReader.Read(Path.Combine(root.FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk"));
+        var perks = BuildPerksWithout2daLookup().ToDictionary(perk => perk.Type, perk => perk.Detail);
+        var expected = GetExpectedDroidInstructions(perks).Select(instruction => instruction.Perk).Distinct().ToArray();
+        rows.Keys.Should().BeEquivalentTo(expected.Select(perk => (int)perk));
+        foreach (var perk in expected)
+        {
+            var row = rows[(int)perk];
+            row["Label"].Should().Be(perk.ToString());
+            row["Cost"].Should().Be("0");
+            var id = int.Parse(row["Name"], CultureInfo.InvariantCulture) - 16777216;
+            tlk[id].Should().Be(perks[perk].Name, perk.ToString());
+            binary.GetString((uint)id).Should().Be(perks[perk].Name, perk.ToString());
+        }
+    }
+
+
+    [Test]
+    public void DroidInstructionBibleTables_MatchCurrentDefinitions()
+    {
+        var root = FindRepositoryRoot();
+        using var perkCache = new DroidPerkCacheScope();
+        var perks = BuildPerksWithout2daLookup().ToDictionary(x => x.Type, x => x.Detail);
+        var templates = ReadDroidInstructionTemplates(root);
+        var recipes = new DroidInstructionRecipes().BuildRecipes();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName, "design", "bible", "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var discs = ReadBibleWorksheetRows(archive, "Equipment - Droids")
+            .Where(row => row.GetValueOrDefault("T", "").StartsWith("id_", StringComparison.Ordinal))
+            .ToArray();
+        var recipeRows = ReadBibleWorksheetRows(archive, "Engineering Recipes")
+            .Where(row => row.GetValueOrDefault("E") == "DroidInstruction")
+            .ToArray();
+
+        discs.Select(row => row["T"]).Should().BeEquivalentTo(templates.Select(item => item.Resref),
+            "the Bible must list every current disc exactly once and remove retired discs");
+        recipeRows.Select(row => row["D"]).Should().BeEquivalentTo(recipes.Keys.Select(type => type.ToString()),
+            "every instruction recipe must be documented exactly once");
+
+        var discsByResref = discs.ToDictionary(row => row["T"]);
+        var recipesByType = recipeRows.ToDictionary(row => row["D"]);
+        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
+        foreach (var item in templates)
+        {
+            var row = discsByResref[item.Resref];
+            var detail = perks[item.Perk];
+            var level = detail.PerkLevels[item.Level];
+            var tier = Server.Service.Perk.GetPerkLevelTier(item.Perk, item.Level);
+            var skill = detail.PerkLevels.Values.SelectMany(rank => rank.Requirements)
+                .OfType<PerkRequirementSkill>().First().Type;
+            var name = item.Name["Instruction Disc: ".Length..];
+            row["S"].Should().Be(name, item.Resref);
+            decimal.Parse(row["U"], CultureInfo.InvariantCulture).Should().Be(tier, item.Resref);
+            row["V"].Should().Be(Regex.Replace(skill.ToString(), "([a-z])([A-Z])", "$1 $2"), item.Resref);
+            decimal.Parse(row["W"], CultureInfo.InvariantCulture).Should().Be(level.DroidAISlots, item.Resref);
+
+            if (skill is not (SkillType.Devices or SkillType.FirstAid or SkillType.Armor))
+            {
+                var perkRow = manifest.Single(entry => entry.Tab == row["V"] && entry.PerkName == name);
+                perkRow.Notes.Should().Contain($"Droid instruction AI slots: {level.DroidAISlots}.", name);
+                perkRow.Notes.Should().Contain($"Controller tier: {tier}.", name);
+            }
+        }
+
+        foreach (var (type, recipe) in recipes)
+        {
+            var row = recipesByType[type.ToString()];
+            row["A"].Should().Be("Engineering", type.ToString());
+            row["C"].Should().Be("Droid Equipment Blueprints", type.ToString());
+            row["J"].Should().Be(recipe.Resref, type.ToString());
+            row["G"].Should().Be(discsByResref[recipe.Resref]["S"], type.ToString());
+            decimal.Parse(row["F"], CultureInfo.InvariantCulture).Should().Be(recipe.Level / 10, type.ToString());
+            decimal.Parse(row["H"], CultureInfo.InvariantCulture).Should().Be(recipe.Level, type.ToString());
+            decimal.Parse(row["I"], CultureInfo.InvariantCulture).Should().Be(recipe.Quantity, type.ToString());
+            var componentColumns = new[] { ("M", "N"), ("O", "P"), ("Q", "R"), ("S", "T"),
+                ("U", "V"), ("W", "X"), ("Y", "Z"), ("AA", "AB") };
+            var components = componentColumns
+                .Where(columns => !string.IsNullOrWhiteSpace(row.GetValueOrDefault(columns.Item1)))
+                .ToDictionary(columns => row[columns.Item1],
+                    columns => decimal.Parse(row[columns.Item2], CultureInfo.InvariantCulture));
+            components.Should().BeEquivalentTo(recipe.Components.ToDictionary(x => x.Key, x => (decimal)x.Value),
+                type.ToString());
+        }
+    }
+
+    private static IReadOnlyCollection<Dictionary<string, string>> ReadBibleWorksheetRows(ZipArchive archive, string sheetName)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        XNamespace relationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+        XDocument ReadXml(string path)
+        {
+            using var stream = archive.GetEntry(path)!.Open();
+            return XDocument.Load(stream);
+        }
+
+        var sheet = ReadXml("xl/workbook.xml").Descendants(ns + "sheet")
+            .Single(element => (string)element.Attribute("name") == sheetName);
+        var relationshipId = (string)sheet.Attribute(relationshipNs + "id")!;
+        var target = (string)ReadXml("xl/_rels/workbook.xml.rels").Root!.Elements()
+            .Single(element => (string)element.Attribute("Id") == relationshipId).Attribute("Target")!;
+        var path = target.StartsWith('/') ? target.TrimStart('/') : "xl/" + target;
+        var sharedStrings = ReadXml("xl/sharedStrings.xml").Root!.Elements(ns + "si")
+            .Select(element => string.Concat(element.Descendants(ns + "t").Select(text => text.Value))).ToArray();
+        return ReadXml(path).Descendants(ns + "row")
+            .Select(row => row.Elements(ns + "c").ToDictionary(
+                cell => new string(((string)cell.Attribute("r")!).TakeWhile(char.IsLetter).ToArray()),
+                cell => (string)cell.Attribute("t") switch
+                {
+                    "s" => sharedStrings[int.Parse(cell.Element(ns + "v")!.Value, CultureInfo.InvariantCulture)],
+                    "inlineStr" => string.Concat(cell.Descendants(ns + "t").Select(text => text.Value)),
+                    _ => cell.Element(ns + "v")?.Value ?? string.Empty
+                }))
+            .ToArray();
+    }
 
     private static IReadOnlyCollection<ExpectedDroidInstruction> GetExpectedDroidInstructions(
         IReadOnlyDictionary<PerkType, PerkDetail> perks)

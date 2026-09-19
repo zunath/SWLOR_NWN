@@ -2,6 +2,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -13,6 +14,45 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_regeneration_preserves_steel_shoulder_ally_only_target_selection(self):
+        rows = [row for row in GENERATOR.read_manifest()
+                if row["PerkName"] in {"Steel Shoulder", "Gambler Stance"}]
+        _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
+        targeting = GENERATOR.read_spell_targeting()
+        status_types = GENERATOR.known_status_effect_types()
+        with tempfile.TemporaryDirectory() as folder:
+            output_root = Path(folder)
+            with (patch.object(GENERATOR, "ROOT", output_root),
+                  patch.object(GENERATOR, "read_spell_targeting", return_value=targeting),
+                  patch.object(GENERATOR, "known_status_effect_types", return_value=status_types)):
+                GENERATOR.generate_ability_definitions(rows, feats, {})
+            abilities = output_root / "SWLOR.Game.Server/Feature/AbilityDefinition"
+            steel_shoulder = (abilities / "Katar/SteelShoulderAbilityDefinition.cs").read_text()
+            gambler_stance = (abilities / "Pistol/GamblerStanceAbilityDefinition.cs").read_text()
+            self.assertIn("using SWLOR.Game.Server.Service.AIService;", steel_shoulder)
+            self.assertIn(".HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))", steel_shoulder)
+            self.assertIn(".HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>(1))", steel_shoulder)
+            self.assertNotIn(".HasAITarget", gambler_stance)
+
+    def test_regeneration_preserves_weapon_instruction_costs_and_force_exclusions(self):
+        rows = GENERATOR.read_manifest()
+        _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
+        with tempfile.TemporaryDirectory() as folder:
+            output_root = Path(folder)
+            output = output_root / "SWLOR.Game.Server/Feature/PerkDefinition"
+            output.mkdir(parents=True)
+            with patch.object(GENERATOR, "ROOT", output_root):
+                GENERATOR.generate_perk_definitions(rows, {}, feats)
+            for tab in {row["Tab"] for row in rows}:
+                source = (output / (GENERATOR.PERK_DEFINITION_BY_TAB[tab] + ".cs")).read_text()
+                expected = [GENERATOR.base_and_level(row["PerkName"])[1]
+                            for row in rows if row["Tab"] == tab
+                            and row["Type"] in GENERATOR.ACTIVE_TYPES
+                            and row["CharacterType"] != "Force"]
+                import re
+                actual = [int(rank) for rank in re.findall(r"\.DroidAISlots\((\d+)\)", source)]
+                self.assertCountEqual(expected, actual, tab)
+
     def test_scripted_ranged_impacts_keep_authored_motion_after_regeneration(self):
         for skill in ("Pistol", "Rifle", "Throwing"):
             with self.subTest(skill=skill):

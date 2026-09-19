@@ -117,8 +117,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 var normalizedValue = NormalizeCharacterType(value);
+                var changed = CharacterType != normalizedValue;
                 Set(normalizedValue);
                 SelectedCharacterTypeName = GetCharacterTypeName(normalizedValue);
+                if (changed && _skillsLoaded)
+                {
+                    LoadSkills();
+                    RecalculateAvailableSkillPoints();
+                }
             }
         }
 
@@ -201,6 +207,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private readonly List<SkillType> _skills = new();
         private readonly List<int> _skillDistributionPoints = new();
+        private bool _skillsLoaded;
+
+        private Enumeration.CharacterType SelectedSkillCharacterType => CharacterType == 1
+            ? Enumeration.CharacterType.ForceSensitive
+            : Enumeration.CharacterType.Standard;
 
         public GuiBindingList<string> SkillNames
         {
@@ -318,7 +329,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSkills()
         {
-            var availableSkills = Skill.GetActiveContributingSkills();
+            var availableSkills = Skill.GetActiveContributingSkills()
+                .Where(x => x.Value.IsAvailableToCharacterType(SelectedSkillCharacterType));
+            var previousPoints = _skills.Select((type, index) => (type, points: _skillDistributionPoints[index]))
+                .ToDictionary(x => x.type, x => x.points);
             var skills = new GuiBindingList<string>();
             var tooltips = new GuiBindingList<string>();
 
@@ -327,13 +341,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var (type, detail) in availableSkills)
             {
                 _skills.Add(type);
-                _skillDistributionPoints.Add(0);
-                skills.Add($"{detail.Name} [0]");
+                var points = previousPoints.GetValueOrDefault(type);
+                _skillDistributionPoints.Add(points);
+                skills.Add($"{detail.Name} [{points}]");
                 tooltips.Add(detail.Description);
             }
 
             SkillNames = skills;
             SkillTooltips = tooltips;
+            _skillsLoaded = true;
         }
 
         private void RecalculateAvailableAbilityPoints()
@@ -724,18 +740,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var forceIndex = _skills.IndexOf(SkillType.Force);
-                var devicesIndex = _skills.IndexOf(SkillType.Devices);
-
-                if (_skillDistributionPoints[forceIndex] > 0 && selectedClassType == ClassType.Standard)
+                if (_skills.Where((skill, index) => _skillDistributionPoints[index] > 0)
+                    .Any(skill => !Skill.GetSkillDetails(skill).IsAvailableToCharacterType(SelectedSkillCharacterType)))
                 {
-                    FloatingTextStringOnCreature("Standard characters cannot gain ranks in the Force skill.", Player, false);
-                    return;
-                }
-
-                if (_skillDistributionPoints[devicesIndex] > 0 && selectedClassType == ClassType.ForceSensitive)
-                {
-                    FloatingTextStringOnCreature("Force characters cannot gain ranks in the Devices skill.", Player, false);
+                    FloatingTextStringOnCreature("One or more selected skills are unavailable to this character type.", Player, false);
                     return;
                 }
 

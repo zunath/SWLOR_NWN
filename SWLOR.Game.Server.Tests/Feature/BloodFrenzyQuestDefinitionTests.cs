@@ -276,9 +276,9 @@ public class BloodFrenzyQuestDefinitionTests
         var root = FindRepositoryRoot();
         var dialogue = File.ReadAllText(Path.Combine(
             root.FullName,
-            "Module",
-            "dlg",
-            "sera_vonn.dlg.json"));
+            "SWLOR.Game.Server",
+            "ConversationData",
+            "sera_vonn.conversation.json"));
 
         dialogue.Should().NotContain("action-request-quest-items");
         dialogue.Should().Contain("action-advance-quest");
@@ -290,21 +290,20 @@ public class BloodFrenzyQuestDefinitionTests
         var root = FindRepositoryRoot();
         using var dialogue = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
-            "Module",
-            "dlg",
-            "sera_vonn.dlg.json")));
+            "SWLOR.Game.Server",
+            "ConversationData",
+            "sera_vonn.conversation.json")));
 
         var entries = dialogue.RootElement
-            .GetProperty("EntryList")
-            .GetProperty("value")
-            .EnumerateArray()
+            .GetProperty("Nodes")
+            .EnumerateObject()
+            .Select(property => property.Value)
             .ToArray();
         var replies = dialogue.RootElement
-            .GetProperty("ReplyList")
-            .GetProperty("value")
-            .EnumerateArray()
-            .ToArray();
-        var replyTexts = replies.Select(GetDialogueText).ToArray();
+            .GetProperty("Choices")
+            .EnumerateObject()
+            .ToDictionary(property => property.Name, property => property.Value);
+        var replyTexts = replies.Values.Select(GetDialogueText).ToArray();
         var entryTexts = entries.Select(GetDialogueText).ToArray();
 
         AssertEntryOffersReplies(entries, replies, "Blood Frenzy starts below Veles", new[]
@@ -393,7 +392,7 @@ public class BloodFrenzyQuestDefinitionTests
         var root = FindRepositoryRoot();
         var contentFiles = new[]
         {
-            Path.Combine(root.FullName, "Module", "dlg", "sera_vonn.dlg.json"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "ConversationData", "sera_vonn.conversation.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_butcher.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_duelist.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_kess.utc.json"),
@@ -659,18 +658,16 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static void AssertEntryOffersReplies(
         System.Text.Json.JsonElement[] entries,
-        System.Text.Json.JsonElement[] replies,
+        Dictionary<string, System.Text.Json.JsonElement> replies,
         string entryTextFragment,
         string[] expectedReplyTexts)
     {
         var entry = entries
             .Single(candidate => GetDialogueText(candidate).Contains(entryTextFragment));
         var actualReplyTexts = entry
-            .GetProperty("RepliesList")
-            .GetProperty("value")
+            .GetProperty("Choices")
             .EnumerateArray()
-            .Select(link => link.GetProperty("Index").GetProperty("value").GetInt32())
-            .Select(index => GetDialogueText(replies[index]))
+            .Select(link => GetDialogueText(replies[link.GetProperty("ChoiceId").GetString()!]))
             .ToArray();
 
         actualReplyTexts.Should().BeEquivalentTo(expectedReplyTexts);
@@ -704,11 +701,10 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static string GetDialogueText(System.Text.Json.JsonElement node)
     {
-        return node
-            .GetProperty("Text")
-            .GetProperty("value")
-            .GetProperty("0")
-            .GetString() ?? string.Empty;
+        var text = node.GetProperty("Text");
+        return text.ValueKind == System.Text.Json.JsonValueKind.Array
+            ? string.Concat(text.EnumerateArray().Select(block => block.GetProperty("Text").GetString()))
+            : text.GetProperty("Text").GetString() ?? string.Empty;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

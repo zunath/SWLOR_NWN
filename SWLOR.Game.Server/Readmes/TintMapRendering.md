@@ -265,6 +265,24 @@ includes an actual compiled rotated mesh, its skinned vertex positions, and a
 scan of the complete robe catalog; preserving old inverse-bind bytes alone is
 not sufficient to prove correct placement.
 
+Robe 236's torso coverings (`coat_top` / `coat_top2`) are ordinary rigid meshes.
+The legacy versions used dangly meshes despite having zero constraints on every
+vertex, sending an immobile panel through the cloth-physics renderer. A September
+16 report showed that panel displaced above the hood; skeleton and inverse-bind
+checks alone did not cover that renderer path. The correction keeps the authored
+vertices, materials, transforms, animation IDs and skin bindings, while removing
+cloth simulation from these static panels. Both native phenotype 0/22 models and
+generated RGB body roots are covered; the elf variants were already rigid.
+`SWLOR_Haks/tools/MakeRobePanelsRigid.py --robe 236 --game-data "<NWN data>" --apply`
+recompiles and validates the affected models before installing any output. It
+reports and skips ASCII targets, whose inverse bindings cannot be preserved by
+the compiled-model audit, while continuing with compiled targets for the robe. It
+refreshes owned resource hashes and drops affected cached build proofs. Run
+`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRigidRobePanels.py"`
+to check all native and RGB variants. In-game confirmation is still required for
+the reported displacement after deploying the updated `sw_pt_robe` and
+`sw_pt_root` HAKs.
+
 `animation_bridges` in `RobeRgbModels.json` preserves stable shared parent names.
 The manifest records generator/source/output hashes, pose coverage, and any
 missing animation-source fallback. Missing authored parents use the body's

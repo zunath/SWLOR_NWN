@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
-            var area = CreateArea(ShuttleInteriorResref, "shuttle_flight", $"Passenger Shuttle - {destinationName}");
+            var area = Area.CreateInstance(ShuttleInteriorResref, "shuttle_flight", $"Passenger Shuttle - {destinationName}");
             SetLocalString(area, ShuttleFlightIdVariable, flight.FlightId);
             flight.Area = area;
 
@@ -502,6 +502,7 @@ namespace SWLOR.Game.Server.Service
 
             var console = CreateObject(ObjectType.Placeable, TerminalTag, flight.EntranceLocation);
             SetName(console, "Shuttle Status Console");
+            SetLocalInt(console, Communication.SuppressChatAuditVariable, 1);
             SetPlotFlag(console, true);
             SetLocalString(console, "CONVERSATION", "ShuttleStatusDialog");
             SetLocalString(console, ShuttleFlightIdVariable, flight.FlightId);

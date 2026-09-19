@@ -39,6 +39,19 @@
       ]
     },
     {
+      "TargetNodeId": "entry-00024",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "sith_code_test",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
       "TargetNodeId": "entry-00011",
       "Conditions": [
         {
@@ -94,6 +107,19 @@
           "Key": "condition-completed-quest",
           "Arguments": [
             "meet_inquisitor"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00002",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "meet_inquisitor",
+            "2"
           ],
           "IsNegated": false
         }
@@ -798,14 +824,7 @@
           "Color": null
         }
       ],
-      "OnEnterActions": [
-        {
-          "Key": "action-advance-quest",
-          "Arguments": [
-            "sith_code_test"
-          ]
-        }
-      ],
+      "OnEnterActions": [],
       "Choices": [
         {
           "ChoiceId": "reply-00028",
@@ -1752,7 +1771,14 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [],
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "sith_code_test"
+          ]
+        }
+      ],
       "Next": [
         {
           "TargetNodeId": "entry-00024",
@@ -1761,7 +1787,7 @@
               "Key": "condition-on-quest-state",
               "Arguments": [
                 "sith_code_test",
-                "1"
+                "2"
               ],
               "IsNegated": false
             }

@@ -440,7 +440,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             Func<KeyBifCatalog?>? baseLayerFactory = null) =>
             new(baseLayerFactory, hakLayersInOrder);
 
-        private static IReadOnlyList<HakLayer> ReadHakLayers(
+        internal static IReadOnlyList<HakLayer> ReadHakLayers(
             string hakBuilderConfigPath,
             string? swlorHaksRoot)
         {

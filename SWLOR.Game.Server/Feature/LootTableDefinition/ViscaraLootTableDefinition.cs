@@ -968,7 +968,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("bpstructure0398", 1, 1, true)
                 .AddItem("bpstructure0399", 1, 1, true)
                 .AddItem("bpstructure0400", 1, 1, true)
-                .AddItem("bpvxmatrix", 1, 1, true);
+                .AddItem("bpvxmatrix", 1, 1, true)
+                .AddItem("recipe_dr_elec2", 1, 1, true);
 
             _builder.Create("VISCARA_VRIX7_CORE")
                 .AddItem("vx_core", 1);

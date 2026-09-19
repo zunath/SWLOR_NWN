@@ -476,6 +476,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder HasAIHitPointCostPercent(Func<uint, int> costPercent)
+        {
+            _activeAbility.AIHitPointCostPercent = costPercent;
+            return this;
+        }
+
         /// <summary>
         /// Indicates this ability requires a concrete target object.
         /// </summary>

@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Service
             var windowId = BuildWindowId(type);
 
             // If the window is closed, open it.
-            if (NuiFindWindow(player, windowId) == 0)
+            if (NuiFindWindow(uiTarget, windowId) == 0)
             {
                 //Console.WriteLine(JsonDump(template.Window));
 
@@ -393,11 +393,39 @@ namespace SWLOR.Game.Server.Service
             // Otherwise the window must already be open. Close it.
             else
             {
-                SaveWindowGeometry(playerId, type, playerWindow.ViewModel.Geometry);
-                NuiDestroy(player, playerWindow.WindowToken);
+                ClosePlayerWindow(player, type, uiTarget);
+            }
+        }
 
-                // Call OnWindowClosed to ensure proper cleanup (like returning items to player)
+        /// <summary>
+        /// Closes an open window and runs its cleanup without ever opening a closed window.
+        /// The client window is destroyed before callbacks or persistence can fail.
+        /// </summary>
+        public static void ClosePlayerWindow(uint player, GuiWindowType type, uint uiTarget = OBJECT_INVALID)
+        {
+            if (uiTarget == OBJECT_INVALID)
+                uiTarget = player;
+
+            var windowToken = NuiFindWindow(uiTarget, BuildWindowId(type));
+            if (windowToken == 0)
+                return;
+
+            NuiDestroy(uiTarget, windowToken);
+
+            var playerId = GetObjectUUID(player);
+            if (!_playerWindows.TryGetValue(playerId, out var windows) ||
+                !windows.TryGetValue(type, out var playerWindow))
+                return;
+
+            var geometry = playerWindow.ViewModel.Geometry;
+            playerWindow.WindowToken = 0;
+            try
+            {
                 playerWindow.ViewModel.OnWindowClosed()?.Invoke();
+            }
+            finally
+            {
+                SaveWindowGeometry(playerId, type, geometry);
             }
         }
 

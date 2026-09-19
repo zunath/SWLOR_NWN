@@ -100,17 +100,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Benevolence1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyBenevolence(activator, target, 8);
+            ApplyBenevolence(activator, target, 6);
         }
 
         private static void Benevolence2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyBenevolence(activator, target, 14);
+            ApplyBenevolence(activator, target, 10);
         }
 
         private static void Benevolence3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyBenevolence(activator, target, 20);
+            ApplyBenevolence(activator, target, 14);
         }
 
         private static void ApplyBenevolence(uint activator, uint target, int percent)

@@ -174,6 +174,20 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             return false;
         }
 
+        public bool HasAnyActiveEffect(StatusEffectSourceType sourceType)
+        {
+            if (!_effectsBySourceType.TryGetValue(sourceType, out var effects))
+                return false;
+
+            foreach (var effect in effects)
+            {
+                if (!effect.IsFlaggedForRemoval)
+                    return true;
+            }
+
+            return false;
+        }
+
         public HashSet<IStatusEffect> GetAllEffects()
         {
             return _allActiveEffects.ToHashSet();

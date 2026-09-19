@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         protected static void SacrificeHitPoints(uint activator, int basePercent, int minimumPercent)
         {
-            var percent = Math.Max(minimumPercent, basePercent - Math.Max(0, GetAbilityScore(activator, AbilityType.Might)));
+            var percent = GetHitPointCostPercent(activator, basePercent, minimumPercent);
             var amount = GameMath.PercentOf(GetMaxHitPoints(activator), percent);
             var currentHp = GetCurrentHitPoints(activator);
 
@@ -86,6 +86,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 Combat.ApplyLowHPDamageTakenEffects(activator, amount);
             });
             Combat.ApplyHitPointSpendAbilityEffects(activator);
+        }
+
+        protected static int GetHitPointCostPercent(uint activator, int basePercent, int minimumPercent)
+        {
+            return CalculateHitPointCostPercent(basePercent, minimumPercent,
+                GetAbilityScore(activator, AbilityType.Might));
+        }
+
+        protected static int CalculateHitPointCostPercent(int basePercent, int minimumPercent, int might)
+        {
+            return Math.Max(minimumPercent, basePercent - Math.Max(0, might));
         }
 
         protected static void ApplyStatusToNearbyParty(

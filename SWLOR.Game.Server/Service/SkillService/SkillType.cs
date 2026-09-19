@@ -510,6 +510,12 @@ namespace SWLOR.Game.Server.Service.SkillService
         public bool IsShownInResearchMenu { get; set; }
         public CharacterType CharacterTypeRestriction { get; set; }
 
+        public bool IsAvailableToCharacterType(CharacterType characterType)
+        {
+            return CharacterTypeRestriction == CharacterType.Invalid ||
+                   CharacterTypeRestriction == characterType;
+        }
+
         public CombatPointCategoryType CombatPointCategory { get; set; }
 
         public SkillAttribute(

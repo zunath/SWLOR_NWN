@@ -514,21 +514,20 @@ namespace SWLOR.Game.Server.Feature
                 {
                     // Queued generated clips must fit inside the existing cast window.
                     // Explicit immediate gestures play once without delaying resumed combat.
-                    var authoredClip = AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator), animationLength);
+                    var authoredClip = AbilityAnimationBinding.ActivationClip(ability, activator, animationLength);
                     if (authoredClip != null)
                     {
                         if (ability.UsesImmediateAuthoredAnimation)
-                            NamedAnimation.Play(activator, authoredClip);
+                            NamedAnimation.Play(activator, authoredClip, equipmentRequirement: ability.AnimationEquipmentRequirement);
                         else
-                            NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength));
+                            NamedAnimation.Queue(activator, authoredClip, Math.Max(authoredClip.Duration, animationLength), ability.AnimationEquipmentRequirement);
                         return;
                     }
 
-                    if (AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator), animationLength) == Animation.Invalid)
-                        return;
-
-                    // Native fallback must not inherit the previous named clip's custom1 phases.
+                    // Native fallback (or an omitted incompatible gesture) must release any previous authored pose.
                     NamedAnimation.ReleaseForNativePlayback(activator);
+                    if (AbilityAnimationBinding.ActivationType(ability, activator, animationLength) == Animation.Invalid)
+                        return;
 
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
                     var replacementAnimationName = ability.AnimationReplacementAnimationName;
@@ -540,7 +539,7 @@ namespace SWLOR.Game.Server.Feature
                         {
                             PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
                                 activator,
-                                AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator), animationLength),
+                                AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
                                 1.0f,
                                 animationLength,
                                 sourceAnimationName,
@@ -554,7 +553,7 @@ namespace SWLOR.Game.Server.Feature
                         activator,
                         () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
                             activator,
-                            AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator), animationLength),
+                            AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
                             1.0f,
                             animationLength));
                 }
@@ -593,7 +592,7 @@ namespace SWLOR.Game.Server.Feature
 
                 // Casted types play an animation of casting.
                 if (ability.ActivationType == AbilityActivationType.Casted &&
-                    AbilityAnimationBinding.ActivationType(ability, GetIsPC(activator)) != Animation.Invalid)
+                    AbilityAnimationBinding.ActivationType(ability, activator) != Animation.Invalid)
                 {
                     var animationLength = delay - 0.2f;
                     if (animationLength < 0f)
@@ -721,7 +720,7 @@ namespace SWLOR.Game.Server.Feature
                             ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null);
                     // NPCs must clear their combat state before reattacking. Queue that reset
                     // after the authored clip, so it cannot erase the animation at impact.
-                    if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null && !GetIsPC(activator))
+                    if (AbilityAnimationBinding.ActivationClip(ability, activator) != null && !GetIsPC(activator))
                         AssignCommand(activator, () => ActionDoCommand(() =>
                             ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)));
                     else
@@ -885,7 +884,7 @@ namespace SWLOR.Game.Server.Feature
             SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
             SuppressQueuedAbilityFeedback(activator);
 
-            QueuedAttackAnimation.Begin(activator, AbilityAnimationBinding.QueuedClip(ability, GetIsPC(activator)));
+            QueuedAttackAnimation.Begin(activator, AbilityAnimationBinding.QueuedClip(ability, activator));
 
             ApplyRequirementEffects(activator, ability);
 

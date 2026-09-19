@@ -86,7 +86,7 @@ public class EconomyObtainabilityCoverageTests
         return false;
     }
 
-    private static HashSet<string> ReadObtainableResrefs(string root)
+    internal static HashSet<string> ReadObtainableResrefs(string root)
     {
         var obtainable = new HashSet<string>();
         void Add(string r)
@@ -129,6 +129,7 @@ public class EconomyObtainabilityCoverageTests
         {
             @"\.AddItem\(\s*""([^""]+)""",
             @"\.Resref\(\s*""([^""]+)""",
+            @"new\s+DroidInstructionRecipe\(RecipeType\.\w+,\s*""([^""]+)""",
             @"\.Component\(\s*""([^""]+)""",
             @"CreateItemOnObject\(\s*""([^""]+)""",
             @"CopyItemAndModify\(\s*""([^""]+)""",

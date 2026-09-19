@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleAcquire)]
         public static void EnsureAcquiredItemActivation()
         {
-            EnsureItemActivation(GetModuleItemAcquired());
+            EnsureItemAndContentsActivations(GetModuleItemAcquired());
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -219,7 +219,22 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
-                EnsureItemActivation(item);
+                EnsureItemAndContentsActivations(item);
+        }
+
+        private static void EnsureItemAndContentsActivations(uint item)
+        {
+            if (!GetIsObjectValid(item))
+                return;
+
+            EnsureItemActivation(item);
+
+            // Bags need no activation of their own, but their contents still need repair.
+            if (!GetHasInventory(item))
+                return;
+
+            for (var child = GetFirstItemInInventory(item); GetIsObjectValid(child); child = GetNextItemInInventory(item))
+                EnsureItemAndContentsActivations(child);
         }
 
         private static void EnsureItemActivation(uint item)

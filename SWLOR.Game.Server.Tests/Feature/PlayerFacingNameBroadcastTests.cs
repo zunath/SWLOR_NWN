@@ -21,7 +21,6 @@ public class PlayerFacingNameBroadcastTests
         source.Should().Contain("private const int PartyChatMessagePrefixStrRef = 10303;");
         source.Should().Contain("private const string CommsChannelName = \"Comms\";");
         source.Should().Contain("private const string CommsMessagePrefix = \"[Comms] \";");
-        source.Should().Contain("private const string WhisperMessagePrefix = \"[Whisper] \";");
         var moduleEnterHandlerIndex = normalizedSource.IndexOf("[NWNEventHandler(ScriptName.OnModuleEnter)]", StringComparison.Ordinal);
         var applyChannelNameIndex = normalizedSource.IndexOf("public static void ApplyCommsChannelName()", StringComparison.Ordinal);
         var applyChannelNameOverrideIndex = normalizedSource.IndexOf(
@@ -422,7 +421,7 @@ public class PlayerFacingNameBroadcastTests
     }
 
     [Test]
-    public void HoloComDialogue_UsesTheAreaLocalHologramAsItsTransportSpeaker()
+    public void HoloComDialogue_PreservesChatChannelAndUsesTheAreaLocalHologramAsItsTransportSpeaker()
     {
         var root = FindRepositoryRoot();
         var communicationSource = File.ReadAllText(Path.Combine(
@@ -440,18 +439,10 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("uint identitySpeaker,");
         communicationSource.Should().Contain("if (isHoloComRelay)");
         communicationSource.Should().Contain(
-            "finalMessage.Append(GetHoloComRelayChannelPrefix(channel));");
-        communicationSource.Should().Contain(
             "finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));");
-        communicationSource.Should().Contain(
-            "private static string GetHoloComRelayChannelPrefix(ChatChannel channel)");
-        communicationSource.Should().Contain("if (channel == ChatChannel.PlayerWhisper)");
-        communicationSource.Should().Contain("return WhisperMessagePrefix;");
-        communicationSource.Should().Contain("if (channel == ChatChannel.PlayerParty)");
-        communicationSource.Should().Contain("return CommsMessagePrefix;");
-        communicationSource.Should().Contain("return string.Empty;");
+        communicationSource.Should().NotContain("GetHoloComRelayChannelPrefix");
         communicationSource.Should().Contain("if (transportSpeaker != identitySpeaker)");
-        communicationSource.Should().Contain(
+        communicationSource.Should().NotContain(
             "ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, transportSpeaker, receiver);");
         normalizedCommunicationSource.Should().Contain(
             "PlayerName.SendChatMessageWithChatNameOverride(\n" +
@@ -459,7 +450,7 @@ public class PlayerFacingNameBroadcastTests
             "                identitySpeaker,");
         communicationSource.Should().Contain(
             "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
-        communicationSource.Should().NotContain(
+        communicationSource.Should().Contain(
             "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
     }
 

@@ -111,6 +111,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>
+        /// Selects an allowed character type and refreshes skills using the last loaded type,
+        /// including client updates that have already replaced the bound selection.
+        /// </summary>
         public int CharacterType
         {
             get => Get<int>();
@@ -150,7 +154,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int MaxAbilityIncreases = 15;
 
         private int _remainingAbilityPoints;
-        private int _totalSkillPoints;
         private int _remainingSkillPoints;
         private int _might;
         private int _perception;
@@ -277,11 +280,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetCharacterType(GetClassByPosition(1, Player) == ClassType.ForceSensitive ? 1 : 0);
         }
 
+        /// <summary>
+        /// Resets attribute allocations and refreshes editing availability from the current player state.
+        /// </summary>
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            _totalSkillPoints = dbPlayer.TotalSPAcquired;
 
             _might = 0;
             _perception = 0;
@@ -331,6 +336,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CharacterType);
         }
 
+        /// <summary>
+        /// Rebuilds the selected type's skill list, retaining shared allocations and dropping unavailable skills.
+        /// </summary>
         private void LoadSkills()
         {
             var availableSkills = Skill.GetActiveContributingSkills()
@@ -363,10 +371,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RemainingAbilityPoints = $"Attributes - {_remainingAbilityPoints} Points Remaining";
         }
 
+        /// <summary>
+        /// Reads the player's current earned skill-point budget; XP can arrive while the window is open.
+        /// </summary>
+        protected virtual int GetCurrentSkillPointBudget()
+        {
+            var playerId = GetObjectUUID(Player);
+            return DB.Get<Player>(playerId).TotalSPAcquired;
+        }
+
+        /// <summary>
+        /// Refreshes the displayed balance against the live budget and the current allocations.
+        /// </summary>
         private void RecalculateAvailableSkillPoints()
         {
-            _remainingSkillPoints = _totalSkillPoints - _skillDistributionPoints.Sum();
+            _remainingSkillPoints = GetCurrentSkillPointBudget() - _skillDistributionPoints.Sum();
             RemainingSkillPoints = $"Skills - {_remainingSkillPoints} Points Remaining";
+        }
+
+        /// <summary>
+        /// Refreshes the skill budget before save validation so newly earned points must be distributed.
+        /// </summary>
+        private bool HasUnallocatedPoints()
+        {
+            RecalculateAvailableSkillPoints();
+            return _remainingAbilityPoints > 0 || _remainingSkillPoints > 0;
         }
 
         public Action OnClickResetEverything() => () =>
@@ -727,6 +756,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
 
+        /// <summary>
+        /// Requests confirmation, then validates the current budget and character restrictions before saving.
+        /// </summary>
         public Action OnClickSave() => () =>
         {
             ShowModal($"Are you sure you'd like to save these changes?", () =>
@@ -736,7 +768,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CharacterType = selectedCharacterType;
                 var selectedClassType = GetCharacterClassType(selectedCharacterType);
 
-                if (_remainingAbilityPoints > 0 || _remainingSkillPoints > 0)
+                if (HasUnallocatedPoints())
                 {
                     FloatingTextStringOnCreature(ColorToken.Red("Please distribute all ability points and skill points first. Resize the window if needed."), Player, false);
                     return;

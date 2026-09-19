@@ -17,6 +17,7 @@ public class CharacterRebuildSkillAvailabilityTests
     private Dictionary<SkillType, SkillAttribute> _cache;
     private Dictionary<SkillType, SkillAttribute> _original;
 
+    /// <summary>Populates the skill cache from production metadata without starting the NWN engine.</summary>
     [SetUp]
     public void SetUp()
     {
@@ -33,6 +34,7 @@ public class CharacterRebuildSkillAvailabilityTests
         }
     }
 
+    /// <summary>Restores the shared cache so this fixture cannot affect other tests.</summary>
     [TearDown]
     public void TearDown()
     {
@@ -41,6 +43,7 @@ public class CharacterRebuildSkillAvailabilityTests
             _cache.Add(entry.Key, entry.Value);
     }
 
+    /// <summary>Checks every initial skill row and tooltip against the selected character type.</summary>
     [TestCase(0, CharacterType.Standard)]
     [TestCase(1, CharacterType.ForceSensitive)]
     public void ListIncludesExactlyTheSkillsAllowedByMetadata(int selection, CharacterType characterType)
@@ -51,6 +54,7 @@ public class CharacterRebuildSkillAvailabilityTests
         model.RemainingSkillPoints.Should().Be("Skills - 400 Points Remaining");
     }
 
+    /// <summary>Pins the five exclusive skills and verifies that every other skill is shared.</summary>
     [Test]
     public void AllSkillRestrictionsMatchTheCharacterTypeRules()
     {
@@ -77,6 +81,7 @@ public class CharacterRebuildSkillAvailabilityTests
         }
     }
 
+    /// <summary>Exercises both selection paths and verifies shared allocations and refunds across a round trip.</summary>
     [TestCase(0, false)]
     [TestCase(1, false)]
     [TestCase(0, true)]
@@ -112,6 +117,7 @@ public class CharacterRebuildSkillAvailabilityTests
         model.RemainingSkillPoints.Should().Be($"Skills - {400 - sharedSkills.Count * 5} Points Remaining");
     }
 
+    /// <summary>Ensures duplicate selection events do not rebuild an already correct list.</summary>
     [TestCase(0)]
     [TestCase(1)]
     public void RepeatingTheSelectedTypeDoesNotReplaceTheSkillList(int selection)
@@ -123,6 +129,7 @@ public class CharacterRebuildSkillAvailabilityTests
         model.SkillNames.Should().BeSameAs(names);
     }
 
+    /// <summary>Checks that a client cannot bypass a race's Standard-only character restriction.</summary>
     [Test]
     public void StandardOnlyRaceCannotAcquireForceSkillsThroughClientSelection()
     {
@@ -136,6 +143,51 @@ public class CharacterRebuildSkillAvailabilityTests
         AssertAvailableSkills(model, CharacterType.Standard);
     }
 
+    /// <summary>Includes points earned after opening the window in recalculation and type-switch balances.</summary>
+    [TestCase(0, false)]
+    [TestCase(1, false)]
+    [TestCase(0, true)]
+    [TestCase(1, true)]
+    public void NewlyEarnedPointsAreIncludedInTheNextBalanceRefresh(int selection, bool switchType)
+    {
+        var model = CreateModel(selection);
+        model.TotalSPAcquired = 40;
+        Points(model)[Skills(model).IndexOf(SkillType.Armor)] = 40;
+        Recalculate(model);
+        model.RemainingSkillPoints.Should().Be("Skills - 0 Points Remaining");
+
+        model.TotalSPAcquired = 41;
+        if (switchType)
+            SelectType(model, 1 - selection, true);
+        else
+            Recalculate(model);
+
+        model.RemainingSkillPoints.Should().Be("Skills - 1 Points Remaining");
+        Points(model)[Skills(model).IndexOf(SkillType.Armor)].Should().Be(40);
+    }
+
+    /// <summary>Save validation must catch an XP award even when no allocation or type changed afterward.</summary>
+    [TestCase(0)]
+    [TestCase(1)]
+    public void SaveValidationRequiresNewlyEarnedPointsToBeDistributed(int selection)
+    {
+        var model = CreateModel(selection);
+        model.TotalSPAcquired = 40;
+        var armorIndex = Skills(model).IndexOf(SkillType.Armor);
+        Points(model)[armorIndex] = 40;
+        HasUnallocatedPoints(model).Should().BeFalse();
+
+        model.TotalSPAcquired = 41;
+
+        HasUnallocatedPoints(model).Should().BeTrue();
+        model.RemainingSkillPoints.Should().Be("Skills - 1 Points Remaining");
+
+        Points(model)[armorIndex] = 41;
+        HasUnallocatedPoints(model).Should().BeFalse();
+        model.RemainingSkillPoints.Should().Be("Skills - 0 Points Remaining");
+    }
+
+    /// <summary>Verifies the ordered skill identities, labels, allocations, and tooltips as one consistent list.</summary>
     private void AssertAvailableSkills(CharacterFullRebuildViewModel model, CharacterType characterType)
     {
         var expected = _cache.Where(x => x.Value.CharacterTypeRestriction == CharacterType.Invalid ||
@@ -145,21 +197,27 @@ public class CharacterRebuildSkillAvailabilityTests
         model.SkillTooltips.Should().Equal(expected.Select(x => x.Value.Description));
     }
 
-    private static CharacterFullRebuildViewModel CreateModel(int selection)
+    /// <summary>Initializes a rebuilder with production skill data and a mutable budget source.</summary>
+    private static TestRebuildViewModel CreateModel(int selection)
     {
-        var model = new CharacterFullRebuildViewModel();
+        var model = new TestRebuildViewModel();
         typeof(CharacterFullRebuildViewModel).GetProperty("CanSelectStandard", PrivateInstance)!.SetValue(model, true);
         typeof(CharacterFullRebuildViewModel).GetProperty("CanSelectForceSensitive", PrivateInstance)!.SetValue(model, true);
-        typeof(CharacterFullRebuildViewModel).GetField("_totalSkillPoints", PrivateInstance)!.SetValue(model, 400);
         model.CharacterType = selection;
         typeof(CharacterFullRebuildViewModel).GetMethod("LoadSkills", PrivateInstance)!.Invoke(model, null);
         Recalculate(model);
         return model;
     }
 
+    /// <summary>Runs the same balance refresh used by allocation buttons and character-type changes.</summary>
     private static void Recalculate(CharacterFullRebuildViewModel model) =>
         typeof(CharacterFullRebuildViewModel).GetMethod("RecalculateAvailableSkillPoints", PrivateInstance)!.Invoke(model, null);
 
+    /// <summary>Runs the budget validation used by the save confirmation callback.</summary>
+    private static bool HasUnallocatedPoints(CharacterFullRebuildViewModel model) =>
+        (bool)typeof(CharacterFullRebuildViewModel).GetMethod("HasUnallocatedPoints", PrivateInstance)!.Invoke(model, null)!;
+
+    /// <summary>Applies a direct selection or reproduces client cache writes and notification suppression.</summary>
     private static void SelectType(CharacterFullRebuildViewModel model, int selection, bool fromClient)
     {
         if (!fromClient)
@@ -189,9 +247,20 @@ public class CharacterRebuildSkillAvailabilityTests
         baseType.GetMethod("OnClientPropertyUpdated", PrivateInstance)!.Invoke(model, new object[] { nameof(model.CharacterType) });
     }
 
+    /// <summary>Reads the skill identities used to map client row indices to allocations.</summary>
     private static List<SkillType> Skills(CharacterFullRebuildViewModel model) =>
         (List<SkillType>)typeof(CharacterFullRebuildViewModel).GetField("_skills", PrivateInstance)!.GetValue(model)!;
 
+    /// <summary>Provides allocation access without calling native NUI button-event functions.</summary>
     private static List<int> Points(CharacterFullRebuildViewModel model) =>
         (List<int>)typeof(CharacterFullRebuildViewModel).GetField("_skillDistributionPoints", PrivateInstance)!.GetValue(model)!;
+
+    /// <summary>Replaces only the engine-backed budget lookup so tests can simulate an external XP award.</summary>
+    private sealed class TestRebuildViewModel : CharacterFullRebuildViewModel
+    {
+        public int TotalSPAcquired { get; set; } = 400;
+
+        /// <inheritdoc />
+        protected override int GetCurrentSkillPointBudget() => TotalSPAcquired;
+    }
 }

@@ -7,6 +7,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class IntroductionsDefinition : IGuiWindowDefinition
     {
+        private const float ContentPanelWidth = 560f;
+        private const float ContentWidth = ContentPanelWidth - 24f;
         private readonly GuiWindowBuilder<IntroductionsViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -31,8 +33,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 panel.SetScrollbars(NuiScrollbars.None);
                 panel.AddColumn(content =>
                 {
+                    // The panel's width does not size its scrollable children. Without
+                    // explicit widths, they collapse to the Refresh button's width.
                     content.AddRow(row => row.AddText()
                         .SetText("These names may be aliases. Remember saves a private label for you; Dismiss changes nothing. Introductions expire after 10 minutes.")
+                        .SetWidth(ContentWidth)
                         .SetHeight(58f)
                         .SetShowBorder(false)
                         .SetScrollbars(NuiScrollbars.Auto));
@@ -48,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             cell.SetWidth(100f);
                             cell.AddButton()
                                 .BindText(model => model.RememberLabels)
+                                .SetHeight(32f)
                                 .BindOnClicked(model => model.OnClickRemember());
                         });
                         template.AddCell(cell =>
@@ -56,24 +62,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             cell.SetWidth(80f);
                             cell.AddButton()
                                 .BindText(model => model.DismissLabels)
+                                .SetHeight(32f)
                                 .BindOnClicked(model => model.OnClickDismiss());
                         });
                     })
                         .BindRowCount(model => model.OfferDescriptions)
+                        .SetWidth(ContentWidth)
                         .SetRowHeight(100f)
                         .SetHeight(230f));
                     content.AddRow(row => row.AddText()
                         .BindText(model => model.StatusText)
+                        .SetWidth(ContentWidth)
                         .SetHeight(44f)
                         .SetShowBorder(false)
                         .SetScrollbars(NuiScrollbars.Auto));
-                    content.AddRow(row => row.AddButton()
-                        .SetText("Refresh")
-                        .SetHeight(32f)
-                        .SetWidth(100f)
-                        .BindOnClicked(model => model.OnClickRefresh()));
+                    content.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .SetText("Refresh")
+                            .SetHeight(32f)
+                            .SetWidth(100f)
+                            .BindOnClicked(model => model.OnClickRefresh());
+                        row.AddSpacer();
+                    });
                 });
-            }).SetWidth(560f)));
+            }).SetWidth(ContentPanelWidth)));
         }
     }
 }

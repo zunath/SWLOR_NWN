@@ -26,6 +26,7 @@ public class PlayerNameChatCommandTests
         commands.Should().NotContainKey("reveal");
         commands["introductions"].Authorization.Should().Be(AuthorizationLevel.All);
         commands["introductions"].RequiresTarget.Should().BeFalse();
+        commands["intro"].Should().BeSameAs(commands["introductions"]);
     }
 
     [Test]

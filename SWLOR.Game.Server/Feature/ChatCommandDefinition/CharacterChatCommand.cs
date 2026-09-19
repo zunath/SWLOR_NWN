@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Validate((user, args) => PlayerIntroduction.ValidateIntroduction(user, string.Join(" ", args)))
                 .Action((user, target, location, args) => PlayerIntroduction.Introduce(user, string.Join(" ", args)));
 
-            _builder.Create("introductions")
+            _builder.Create("introductions", "intro")
                 .Description("Review nearby introductions. Remembering a name requires your approval.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) => Gui.TogglePlayerWindow(user, GuiWindowType.Introductions));

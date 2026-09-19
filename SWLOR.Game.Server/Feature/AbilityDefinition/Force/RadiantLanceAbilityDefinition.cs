@@ -110,8 +110,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyRadiantLance(uint activator, uint target, Location targetLocation, int baseDamage)
         {
-            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
-
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,

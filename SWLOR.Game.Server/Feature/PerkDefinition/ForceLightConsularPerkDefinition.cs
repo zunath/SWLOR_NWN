@@ -127,14 +127,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RadiantLance()
         {
-            _builder.Create(PerkCategoryType.ForceSense, PerkType.RadiantLance)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.RadiantLance)
                 .Name("Radiant Lance")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 16 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 8)
+                .RequirementSkill(SkillType.Force, 9)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance1)
 
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 44 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 48)
+                .RequirementSkill(SkillType.Force, 49)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance3);
         }

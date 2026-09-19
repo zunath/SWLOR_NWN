@@ -257,9 +257,9 @@ public class CombatUpgradeBibleSyncTests
             .ToDictionary(group => group.Key, group => group.Sum(row => ParseWholeNumber(row.Price)))
             .Should().BeEquivalentTo(new Dictionary<string, int>
             {
-                ["Alter"] = 98,
+                ["Alter"] = 109,
                 ["Control"] = 87,
-                ["Sense"] = 55
+                ["Sense"] = 44
             }, "the documented Force section totals must match the manifest");
 
         forceRows

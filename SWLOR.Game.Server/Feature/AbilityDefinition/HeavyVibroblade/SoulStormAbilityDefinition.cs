@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
     public class SoulStormAbilityDefinition : HeavyVibrobladeActiveAbilityDefinitionBase, IAbilityListDefinition
     {
+        private const int BaseHitPointCostPercent = 40;
+        private const int MinimumHitPointCostPercent = 10;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,12 +30,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .UsesImmediateAuthoredAnimation()
                 .Name("Soul Storm")
                 .Level(1)
+                .HasAIHitPointCostPercent(activator => GetHitPointCostPercent(activator, BaseHitPointCostPercent, MinimumHitPointCostPercent))
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.SoulStorm, 90f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    SacrificeHitPoints(activator, 40, 10);
+                    SacrificeHitPoints(activator, BaseHitPointCostPercent, MinimumHitPointCostPercent);
                     ApplyStatusToNearbyParty(activator, typeof(SoulStormStatusEffect), 60f, true);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Mind), activator);
                 })

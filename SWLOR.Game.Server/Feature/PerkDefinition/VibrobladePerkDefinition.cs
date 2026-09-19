@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BerserkerStance1)
+                .DroidAISlots(1)
                 .Description("While active, grants +25% Attack, +15% Haste, -20% Defense, and -20% Force Defense.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 20);
@@ -72,18 +73,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike1)
+                .DroidAISlots(1)
                 .Description("Strike all enemies within 5m for weapon DMG + 15. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike2)
+                .DroidAISlots(2)
                 .Description("Strike all enemies within 5m for weapon DMG + 25. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike3)
+                .DroidAISlots(3)
                 .Description("Strike all enemies within 5m for weapon DMG + 30. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 38);
@@ -96,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DefensiveStance1)
+                .DroidAISlots(1)
                 .Description("While active, grants +30% Enmity generation, +20% Defense and +20% Force Defense, -20% Attack, and -20% Force Attack.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 20);
@@ -144,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Invincible1)
+                .DroidAISlots(1)
                 .Description("For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
@@ -199,12 +205,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RendingStrike1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 18. Inflicts Exposed which reduces Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RendingStrike2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 32. Inflicts Exposed which reduces Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 32);
@@ -217,24 +225,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade1)
+                .DroidAISlots(1)
                 .Description("On your next hit, deal weapon DMG + 10.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade2)
+                .DroidAISlots(2)
                 .Description("On your next hit, deal weapon DMG + 15.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade3)
+                .DroidAISlots(3)
                 .Description("On your next hit, deal weapon DMG + 20.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade4)
+                .DroidAISlots(4)
                 .Description("On your next hit, deal weapon DMG + 25.")
                 .Price(5)
                 .RequirementSkill(SkillType.Vibroblade, 40);
@@ -292,18 +304,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave1)
+                .DroidAISlots(1)
                 .Description("Deal weapon DMG + 10 in a 5m radius around you.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave2)
+                .DroidAISlots(2)
                 .Description("Deal weapon DMG + 15 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave3)
+                .DroidAISlots(3)
                 .Description("Deal weapon DMG + 20 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 38);
@@ -330,24 +345,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash1)
+                .DroidAISlots(1)
                 .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 4% of your Physical Defense.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash2)
+                .DroidAISlots(2)
                 .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 6% of your Physical Defense.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash3)
+                .DroidAISlots(3)
                 .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 8% of your Physical Defense.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash4)
+                .DroidAISlots(4)
                 .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 10% of your Physical Defense.")
                 .Price(5)
                 .RequirementSkill(SkillType.Vibroblade, 40);
@@ -374,12 +393,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldWall1)
+                .DroidAISlots(1)
                 .Description("Channel for up to 30 seconds. While channeling you and any allies within 5m gain 20% damage reduction.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldWall2)
+                .DroidAISlots(2)
                 .Description("Channel for up to 30 seconds. While channeling you and any allies within 5m gain 35% damage reduction.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 32);

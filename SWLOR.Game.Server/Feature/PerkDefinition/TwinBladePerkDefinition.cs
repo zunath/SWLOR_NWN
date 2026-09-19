@@ -48,24 +48,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut1)
+                .DroidAISlots(1)
                 .Description("Instantly attacks twice, each for weapon DMG + 6. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut2)
+                .DroidAISlots(2)
                 .Description("Instantly attacks twice, each for weapon DMG + 13. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut3)
+                .DroidAISlots(3)
                 .Description("Instantly attacks twice, each for weapon DMG + 20. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut4)
+                .DroidAISlots(4)
                 .Description("Instantly attacks twice, each for weapon DMG + 27. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinBlade, 40);
@@ -131,18 +135,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningWhirl1)
+                .DroidAISlots(1)
                 .Description("Attacks up to 3 enemies within 5m for weapon DMG + 10 each.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningWhirl2)
+                .DroidAISlots(2)
                 .Description("Attacks up to 3 enemies within 5m for weapon DMG + 20 each.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningWhirl3)
+                .DroidAISlots(3)
                 .Description("Attacks up to 3 enemies within 5m for weapon DMG + 30 each.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 38);
@@ -169,12 +176,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BladeVortex1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 18 to enemies within 5m. If this hits 3 or more enemies, restore 4 STM.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BladeVortex2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 to enemies within 5m. If this hits 3 or more enemies, restore 6 STM.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 32);
@@ -187,6 +196,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CycloneStance1)
+                .DroidAISlots(1)
                 .Description("While active, grants +15% Haste and +10% Attack, but reduces Defense by 20%.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 20);
@@ -228,6 +238,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestBloom1)
+                .DroidAISlots(1)
                 .Description("Deal weapon DMG + 25 to enemies within 5m. For 45 seconds, each hostile area ability that lands creates one immediate pulse for 8 physical DMG to enemies within 5m of its first struck target.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinBlade, 50)
@@ -241,24 +252,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LaceratingTwinCut1)
+                .DroidAISlots(1)
                 .Description("Strikes twice for weapon DMG + 5 each and inflicts Bleed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LaceratingTwinCut2)
+                .DroidAISlots(2)
                 .Description("Strikes twice for weapon DMG + 11 each and inflicts Bleed for 36 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LaceratingTwinCut3)
+                .DroidAISlots(3)
                 .Description("Strikes twice for weapon DMG + 17 each and inflicts Bleed for 45 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LaceratingTwinCut4)
+                .DroidAISlots(4)
                 .Description("Strikes twice for weapon DMG + 23 each and inflicts Bleed for 60 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinBlade, 40);
@@ -315,18 +330,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerratedArc1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 10 to enemies within 5m. Bleeding targets spread Bleed to one additional enemy within 5m.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerratedArc2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 20 to enemies within 5m. Bleeding targets spread Bleed to one additional enemy within 5m.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerratedArc3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 30 to enemies within 5m. Bleeding targets spread Bleed to one additional enemy within 5m.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 38);
@@ -355,12 +373,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinRupture1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 18. Bleeding targets suffer Hemorrhage for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinRupture2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 32. Bleeding targets suffer Hemorrhage for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 32);
@@ -373,6 +393,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LaceratorStance1)
+                .DroidAISlots(1)
                 .Description("While active, your attacks against bleeding targets deal +10% damage, but your Evasion is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 20);
@@ -415,6 +436,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RedBloom1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 20 to enemies within 5m. Bleeding enemies take +40 DMG and spread Hemorrhage for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinBlade, 50)

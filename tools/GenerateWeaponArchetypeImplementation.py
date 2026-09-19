@@ -3353,6 +3353,8 @@ def generate_perk_definitions(rows, perk_values, feat_values):
                 lines.append("                .AddPerkLevel()")
                 if row["Type"] in ACTIVE_TYPES:
                     lines.append(f"                .GrantsFeat(FeatType.{choose_active_feat(row, feat_values)})")
+                    if row["CharacterType"] != "Force":
+                        lines.append(f"                .DroidAISlots({level})")
                 elif index == 0:
                     trait_feat = choose_trait_feat(base, feat_values)
                     if trait_feat:
@@ -3480,6 +3482,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             "using SWLOR.Game.Server.Feature.StatusEffectDefinition;",
             "using SWLOR.Game.Server.Service;",
             "using SWLOR.Game.Server.Service.AbilityService;",
+            *(["using SWLOR.Game.Server.Service.AIService;"] if base == "Steel Shoulder" else []),
             "using SWLOR.Game.Server.Service.PerkService;",
             "using SWLOR.Game.Server.Service.SkillService;",
             "using SWLOR.Game.Server.Service.StatusEffectService;",
@@ -3611,6 +3614,9 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 *authored_animation_builder_lines(skill, row, hostile == "true"),
                 f"                    .Name(\"{escape_csharp(row['PerkName'])}\")",
                 f"                    .Level({level})",
+                *(["                    .HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))",
+                   f"                    .HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>({level}))"]
+                  if base == "Steel Shoulder" else []),
                 f"                    .HasRecastDelay(RecastGroup.{recast}, {recast_seconds:.1f}f),",
                 f"                SkillType.{skill},",
                 f"                {damage},",

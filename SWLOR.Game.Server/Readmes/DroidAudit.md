@@ -2,7 +2,38 @@
 
 ## Scope
 
-The review follows companion droids from crafting through assembly, instruction upload, activation, combat, equipment/inventory persistence, and migration. Player droid race/rebuild restrictions are covered by the existing character rebuild checks. The source corpus contains 180 CPUs, 330 other parts, 82 instruction discs, and 57 enhancement blueprints.
+The review follows companion droids from crafting through assembly, instruction upload, activation, combat, equipment/inventory persistence, and migration. Player droid race/rebuild restrictions are covered by the existing character rebuild checks. The source corpus contains 180 CPUs, 330 other parts, 293 instruction discs, and 57 enhancement blueprints.
+
+## Weapon instruction coverage
+
+The instruction review found that the 82 Devices, First Aid, and Provoke discs omitted every active weapon ability. The catalogue now also includes 211 ranks across 103 weapon abilities:
+
+| Weapon | Abilities | Discs |
+| --- | ---: | ---: |
+| Vibroblade | 9 | 21 |
+| Vibroknife | 10 | 22 |
+| Heavy Vibroblade | 12 | 17 |
+| Spear | 10 | 22 |
+| Twin Blade | 10 | 22 |
+| Katar | 11 | 19 |
+| Staff | 11 | 22 |
+| Pistol | 10 | 22 |
+| Rifle | 10 | 22 |
+| Throwing | 10 | 22 |
+
+This includes every active attack, stance, and active capstone in those weapon trees. Passive traits, Force-restricted Lightsaber/Saberstaff abilities, Leadership, and player-only systems remain excluded. The rifle suppression area ability is named **Suppressive Line** in the current definitions: ranks I and II cost one and two AI slots and require controller tiers II and IV, respectively. Suppressing Shot and Suppression Stance are also available.
+
+Each new rank follows the existing slot cost of one slot per rank. Its Engineering recipe uses the existing tier material/quantity pattern at level `10 * controller tier`. Existing recipe IDs, costs, tiers, and resource names are preserved. New discs have distinct resource names where historical discs are still retired by the obsolete-item migration. The weapon definition generator emits the same slot metadata so regeneration retains eligibility.
+
+The companion profile already registers every ability and selects granted feats using their existing targeting and activation requirements, including aimed lines and queued attacks. Default self-buff scoring checks the ability's declared effect types so it does not recast an active buff. Stance abilities also check the shared status-effect source metadata: any active stance suppresses other stance actions until it ends, preventing droids programmed with multiple stances from repeatedly replacing them. Ordinary self-buffs remain usable while a stance is active, and effects pending removal no longer block activation. This uses shared ability metadata rather than a list of droid-only exceptions.
+
+Steel Shoulder declares an ally-only AI target selector and scores as a defensive self-buff tied to its Guarding effect; regeneration preserves both. The shared ally selector excludes self even when the party list includes the droid, so a low-health droid does not prevent it from guarding another eligible party member. During combat the droid establishes a guard link, leaves it intact while Guarding remains active, and can establish another link after the old one ends.
+
+Sacrificial Blade, Soul Burst, and Soul Storm declare their HP costs as ability AI metadata. Default profile scoring requires at least 50% maximum HP to remain after the rounded cost, including when an ability supplies a custom score. Soul Burst and Soul Storm share their Might-reduced cost calculation with their impact logic, while Sacrificial Blade uses its fixed 8% cost. This leaves manual player use unchanged and keeps HP-spending instructions available when the droid can afford them.
+
+The item-property subtype table was also incomplete: `iprp_droidperk.2da` now labels all 143 supported abilities. Twelve missing rankless names reuse existing TLK gaps, and the binary TLK contains those strings without changing its table size. The custom item palette includes every disc. All 82 pre-existing discs had stale `NO_ECONOMY` flags despite being craftable; those flags are removed, and both obtainability scanners now recognize `DroidInstructionRecipe` entries.
+
+Validation: after updating to the current master branches, the initial focused droid, migration, AI, targeting, weapon, and economy run passed 175 tests. The latest PR follow-up passes 234 focused AI, droid instruction, weapon, stance, status-effect, and ability-builder tests, including competing stances, guard-link expiration, ally selection, and HP-cost safety with Might scaling and upward rounding. The weapon generator passes 26 tests. The build succeeds with eight existing nullable warnings in the NWN API and GuiWidget. Native in-game deployment and combat were not run as part of this review.
 
 ## Corrected defects
 
@@ -31,4 +62,4 @@ The review follows companion droids from crafting through assembly, instruction 
 
 `MigrationDroidEngineTests` exercises native serialized migration retries, learned/active instruction reconciliation, spawn budgets at every tier, and every droid enhancement recipe. `MigrationEngineTests` restores a retired CPU property through serialization because current constructors correctly reject retired table rows.
 
-Rebuild `sw_2da.hak` and repack the module with the server changes. The migration work remains in server version 22 and the existing login migration stages. A production database-copy staging run remains the release check for the real saved corpus; local tests use disposable records. Droids created on earlier experimental combat-upgrade builds with the ambiguous 12–15 resistance IDs need their original test data restored or recreated; those values cannot be distinguished reliably from pre-upgrade weapon groups.
+Rebuild `sw_2da.hak`, deploy the updated `sw_tlk.tlk`, and repack the module with the server changes. The weapon instruction expansion adds no player migration. The migration work remains in server version 22 and the existing login migration stages. A production database-copy staging run remains the release check for the real saved corpus; local tests use disposable records. Droids created on earlier experimental combat-upgrade builds with the ambiguous 12–15 resistance IDs need their original test data restored or recreated; those values cannot be distinguished reliably from pre-upgrade weapon groups.

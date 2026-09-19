@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
     public class SacrificialBladeAbilityDefinition : HeavyVibrobladeActiveAbilityDefinitionBase, IAbilityListDefinition
     {
+        private const int HitPointCostPercent = 8;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -28,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .UsesImmediateAuthoredAnimation()
                 .Name("Sacrificial Blade")
                 .Level(1)
+                .HasAIHitPointCostPercent(_ => HitPointCostPercent)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.SacrificialBlade, 45f)
@@ -43,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SacrificialBlade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            SacrificeHitPoints(activator, 8);
+            SacrificeHitPoints(activator, HitPointCostPercent);
             var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 25, 0, null, false);
             if (damage > 0)
             {

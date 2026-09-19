@@ -129,6 +129,7 @@ public class EconomyObtainabilityCoverageTests
         {
             @"\.AddItem\(\s*""([^""]+)""",
             @"\.Resref\(\s*""([^""]+)""",
+            @"new\s+DroidInstructionRecipe\(RecipeType\.\w+,\s*""([^""]+)""",
             @"\.Component\(\s*""([^""]+)""",
             @"CreateItemOnObject\(\s*""([^""]+)""",
             @"CopyItemAndModify\(\s*""([^""]+)""",

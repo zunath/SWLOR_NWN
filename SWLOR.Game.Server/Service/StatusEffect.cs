@@ -479,6 +479,11 @@ namespace SWLOR.Game.Server.Service
             return _creatureEffects.TryGetValue(creature, out var effects) && effects.HasAnyActiveEffect(effectTypes);
         }
 
+        public static bool HasAnyActiveEffect(uint creature, StatusEffectSourceType sourceType)
+        {
+            return _creatureEffects.TryGetValue(creature, out var effects) && effects.HasAnyActiveEffect(sourceType);
+        }
+
         public static void ApplyPermanentStatusEffect<T>(uint source, uint creature)
             where T: IStatusEffect
         {

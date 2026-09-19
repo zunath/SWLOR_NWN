@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
     public class SoulBurstAbilityDefinition : HeavyVibrobladeActiveAbilityDefinitionBase, IAbilityListDefinition
     {
+        private const int BaseHitPointCostPercent = 40;
+        private const int MinimumHitPointCostPercent = 10;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -28,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .UsesImmediateAuthoredAnimation()
                 .Name("Soul Burst")
                 .Level(1)
+                .HasAIHitPointCostPercent(activator => GetHitPointCostPercent(activator, BaseHitPointCostPercent, MinimumHitPointCostPercent))
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SoulBurst, 60f)
@@ -47,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulBurst1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            SacrificeHitPoints(activator, 40, 10);
+            SacrificeHitPoints(activator, BaseHitPointCostPercent, MinimumHitPointCostPercent);
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,

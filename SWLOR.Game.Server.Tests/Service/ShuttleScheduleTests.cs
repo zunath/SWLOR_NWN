@@ -169,8 +169,6 @@ public class ShuttleScheduleTests
     [Test]
     public void GetPeriodSecondsAndGetOffsetSeconds_AreWithinExpectedRangesForEveryRoute()
     {
-        var validPeriods = new[] { 240, 270, 300, 330, 360 };
-
         foreach (var (origin, destination) in OrderedPairs())
         {
             var period = ShuttleSchedule.GetPeriodSeconds(origin, destination);
@@ -179,7 +177,7 @@ public class ShuttleScheduleTests
             if (GalaxyMap.IsOrbitalHop(origin, destination))
                 period.Should().Be(60, $"{origin}->{destination}");
             else
-                validPeriods.Should().Contain(period, $"{origin}->{destination}");
+                period.Should().Be(120, $"{origin}->{destination}");
 
             offset.Should().BeInRange(0, period - 1, $"{origin}->{destination}");
         }

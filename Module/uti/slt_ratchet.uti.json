@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 10
+    "value": 50
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 10
+    "value": 50
   },
   "Cursed": {
     "type": "byte",
@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A consumable slicing tool. Makes the next clockwise rotation free. Works on security tier 1 or lower; one tool may be used per attempt."
+      "0": "A consumable slicing tool. Makes the next clockwise rotation free. Works on security tier 1 or lower; one tool may be used per attempt. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A consumable slicing tool. Makes the next clockwise rotation free. Works on security tier 1 or lower; one tool may be used per attempt."
+      "0": "A consumable slicing tool. Makes the next clockwise rotation free. Works on security tier 1 or lower; one tool may be used per attempt. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
     }
   },
   "Identified": {

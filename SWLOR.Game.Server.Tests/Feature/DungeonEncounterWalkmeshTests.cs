@@ -10,6 +10,21 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DungeonEncounterWalkmeshTests
 {
+    [Test]
+    public void VelesEspionageWorkbench_HasAWalkableApproachWithinInteractionRange()
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", "veles_shops.git.json")));
+        var bench = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Single(p => Text(p, "TemplateResRef") == "espionage_bench");
+        var position = new Vector3(Number(bench, "X"), Number(bench, "Y"), Number(bench, "Z"));
+        var triangles = ReadWalkableFloor(root, "veles_shops", "sw_t_modint2");
+        var bodyOffsets = new[] { Vector3.Zero, new Vector3(.4f, 0, 0), new Vector3(-.4f, 0, 0), new Vector3(0, .4f, 0), new Vector3(0, -.4f, 0) };
+        var approaches = new[] { new Vector3(1.5f, 0, 0), new Vector3(-1.5f, 0, 0), new Vector3(0, 1.5f, 0), new Vector3(0, -1.5f, 0) };
+        approaches.Any(approach => bodyOffsets.All(offset => triangles.Any(t => Covers(t, position + approach + offset))))
+            .Should().BeTrue("the workbench must have room for a player to approach on the native floor");
+    }
+
     [TestCase("pw_sc_smarena", "sw_t_office")]
     [TestCase("pw_sc_dantmedsub", "sw_t_garage")]
     public void RepairedEncounterPoints_StandOnNativeWalkableFloor(string area, string hakFolder)

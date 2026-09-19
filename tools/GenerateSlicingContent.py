@@ -383,17 +383,25 @@ def make_tools() -> None:
     template = load(UTI / "poison_vial_1.uti.json")
     for resref, name, tool_type, tier, effect in TOOLS:
         description = f"A consumable slicing tool. {effect} Works on security tier {tier} or lower; one tool may be used per attempt."
+        if tier == 1:
+            description += " Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
         item = configure_item(template, resref, name, description, "SLICING_TOOL")
         item["PropertiesList"]["value"] = []
         item["VarTable"] = {"type": "list", "value": [local_int("SLICING_TOOL_TYPE", tool_type), local_int("SLICING_TOOL_TIER", tier)]}
         item["StackSize"]["value"] = 1
+        if tier == 1:
+            item["Cost"]["value"] = item["AddCost"]["value"] = 50
         save(UTI / f"{resref}.uti.json", item)
 
     for resref, name, tier in FUSES:
         description = f"A crafted tier {tier} trace fuse. Prime it in the slicing interface to gain +1 trace on the first move."
+        if tier == 1:
+            description += " Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
         item = configure_item(template, resref, name, description, "SLICING_TOOL")
         item["PropertiesList"]["value"] = []
         item["VarTable"] = {"type": "list", "value": [local_int("SLICING_TOOL_TYPE", 11), local_int("SLICING_TOOL_TIER", tier)]}
+        if tier == 1:
+            item["Cost"]["value"] = item["AddCost"]["value"] = 50
         save(UTI / f"{resref}.uti.json", item)
 
 
@@ -414,6 +422,8 @@ def make_foods_and_concentrates() -> None:
         description = (
             f"A concentrated tier {tier} venom formula. One vial applies 10 charges and snapshots an additional "
             f"{tier * 10}% Poison Bonus potency when applied to a melee or thrown weapon."
+            " Right-click this item in your inventory and choose Activate Item and select a melee or thrown weapon in your own inventory."
+            " One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
         )
         item = configure_item(poison_template, resref, name, description)
         save(UTI / f"{resref}.uti.json", item)

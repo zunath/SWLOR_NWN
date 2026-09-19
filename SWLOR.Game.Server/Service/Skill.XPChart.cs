@@ -1,11 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static partial class Skill
     {
+        private const int MaximumEspionageRank = 50;
+        private static readonly int[] _poisoncraftRanks = { 0, 15, 28, 40, 48 };
+        private static readonly int[] _trapcraftRanks = { 0, 18, 30, 45, 50 };
+        private static readonly int[] _slicingRanks = { 0, 22, 30, 42, 48 };
+
         private static readonly Dictionary<int, int> _skillXPRequirements = new()
         {
             { 0, 550 },
@@ -194,12 +200,55 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the base XP amount by the delta of a player's skill rank versus the target's level.
-        /// If delta is above the highest delta, the highest delta will be used.
-        /// If delta is lower than the lowest delta, zero will be returned.
+        /// Skill rank required to unlock a tier of an Espionage profession.
         /// </summary>
-        /// <param name="delta">The delta to compare.</param>
-        /// <returns>The base XP amount based on the delta. Returns 0 if delta is below the lowest.</returns>
+        public static int GetEspionageRequiredRank(PerkType profession, int tier)
+        {
+            var ranks = profession switch
+            {
+                PerkType.Poisoncraft => _poisoncraftRanks,
+                PerkType.Trapcraft => _trapcraftRanks,
+                PerkType.Slicing => _slicingRanks,
+                _ => throw new ArgumentOutOfRangeException(nameof(profession))
+            };
+
+            if (tier < 1 || tier > ranks.Length)
+                throw new ArgumentOutOfRangeException(nameof(tier));
+
+            return ranks[tier - 1];
+        }
+
+        /// <summary>
+        /// Exclusive training limit: the next tier's unlock, or the Espionage skill cap.
+        /// </summary>
+        public static int GetEspionagePracticeRankLimit(PerkType profession, int tier)
+        {
+            GetEspionageRequiredRank(profession, tier);
+            return tier == 5 ? MaximumEspionageRank : GetEspionageRequiredRank(profession, tier + 1);
+        }
+
+        public static int CalculateEspionageXP(PerkType profession, int tier, int skillRank)
+        {
+            var requiredRank = GetEspionageRequiredRank(profession, tier);
+            if (skillRank < requiredRank)
+                return 0;
+
+            return GetPracticeXP(requiredRank, skillRank, GetEspionagePracticeRankLimit(profession, tier));
+        }
+
+        /// <summary>
+        /// Keeps a tiered activity useful until its next unlock, with a quarter of same-level XP as the floor.
+        /// </summary>
+        public static int GetPracticeXP(int activityLevel, int skillRank, int rankLimit)
+        {
+            // Preserve useful practice XP until the next tier becomes available. The limit is
+            // exclusive: a mastered activity must not train the remainder of the skill.
+            return skillRank >= rankLimit ? 0 : Math.Max(150, GetDeltaXP(activityLevel - skillRank));
+        }
+
+        /// <summary>
+        /// Retrieves XP for the target level minus the player's rank. Trivial activities return zero.
+        /// </summary>
         public static int GetDeltaXP(int delta)
         {
             if (delta > _highestDelta)

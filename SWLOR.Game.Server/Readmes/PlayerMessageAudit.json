@@ -1520,21 +1520,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1405,
+    "Line": 1404,
     "Member": "ProcessSuccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Enhancement applied successfully.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1409,
+    "Line": 1408,
     "Member": "ProcessSuccess",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"Enhancement failed to apply.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1505,
+    "Line": 1504,
     "Member": "ProcessBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
@@ -2640,14 +2640,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/TrapKitItemDefinition.cs",
-    "Line": 64,
+    "Line": 69,
     "Member": "CreateKit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You deploy a Tier {_tierLabels[tier]} trap. It will arm itself after a moment.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/VenomCoatingItemDefinition.cs",
-    "Line": 95,
+    "Line": 103,
     "Member": "CreateVial",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You coat {GetName(target)} in Tier {_tierLabels[tier]}{(concentrated ? \" concentrated\" : string.Empty)} venom. ({charges} charges)\")"
@@ -3893,28 +3893,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 952,
+    "Line": 962,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Perk 'Research I' is required to use research terminals.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 960,
+    "Line": 970,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 983,
+    "Line": 993,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job will complete in: {completionTime}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 987,
+    "Line": 997,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
@@ -4236,63 +4236,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 223,
+    "Line": 276,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(actionUser, \"You move and interrupt your action.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 255,
+    "Line": 308,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You do not meet the requirements to use this item.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 262,
+    "Line": 315,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You are busy.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 272,
+    "Line": 325,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"This item can be used in {timeToWait}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 282,
+    "Line": 335,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, validationMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 292,
+    "Line": 345,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, initializationMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 304,
+    "Line": 357,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your target is too far away.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 312,
+    "Line": 365,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"That location is too far away.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
-    "Line": 364,
+    "Line": 417,
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, validationMessage)"
@@ -5020,14 +5020,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SlicingService/SlicingSession.cs",
-    "Line": 594,
+    "Line": 593,
     "Member": "Complete",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(session.Player, $\"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SlicingService/SlicingSession.cs",
-    "Line": 611,
+    "Line": 610,
     "Member": "Fail",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(session.Player, destroyed\n                    ? \"The intrusion overloads the target. Its contents are destroyed.\"\n                    : $\"The attempt fails. The next failed attempt has a {nextChance}% destruction risk.\")"
@@ -5272,49 +5272,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 177,
-    "Member": "TryReserveTrapSlot",
+    "Line": 110,
+    "Member": "TryPlaceTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(owner, \"The trap could not be placed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Traps.cs",
+    "Line": 147,
+    "Member": "TryPlaceKitTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(owner, \"The trap could not be placed. Your kit has not been consumed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Traps.cs",
+    "Line": 179,
+    "Member": "TryPrepareTrapPlacement",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, ColorToken.Red(\"Another trap is placed too close to that spot.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 195,
-    "Member": "TryReserveTrapSlot",
+    "Line": 202,
+    "Member": "RegisterTrap",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(owner, \"Your oldest trap deactivates as you place a new one.\")"
+    "Call": "SendMessageToPC(record.Owner, \"Your oldest trap deactivates as you place a new one.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 352,
+    "Line": 363,
     "Member": "RevealTo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\"You spot a concealed trap nearby.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 377,
+    "Line": 388,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"You recover your own trap.\")"
+    "Call": "SendMessageToPC(user, \"You dismantle your own trap. The kit is not recovered.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 383,
+    "Line": 394,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You lack the Trapcraft expertise to disarm this trap.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 391,
+    "Line": 403,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You disarm the trap.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 395,
+    "Line": 407,
     "Member": "DisarmTrap",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You set the trap off while trying to disarm it.\"))"

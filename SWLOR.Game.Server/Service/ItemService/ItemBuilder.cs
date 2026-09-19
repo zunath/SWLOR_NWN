@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service.ItemService
 {
@@ -29,6 +30,18 @@ namespace SWLOR.Game.Server.Service.ItemService
                 _activeItems.Add(detail);
                 _items[tag] = detail;
             }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the activation property, including repair of older saved item instances.
+        /// The scripted action is responsible for consuming the item after successful use.
+        /// </summary>
+        public ItemBuilder ActivationSpell(CastSpell spell)
+        {
+            foreach (var item in _activeItems)
+                item.ActivationSpell = spell;
 
             return this;
         }

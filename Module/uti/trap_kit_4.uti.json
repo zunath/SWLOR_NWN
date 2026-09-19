@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "An advanced mechanical snare. Deploys a concealed trap at your feet that arms itself after a moment."
+      "0": "An advanced mechanical snare. Deploys a concealed trap at your feet that arms itself after a moment. Right-click this item in your inventory and choose Activate Item to deploy a tier 4 trap at your feet. Requires Trapcraft 4. One kit is consumed only after successful placement."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An advanced mechanical snare. Deploys a concealed trap at your feet that arms itself after a moment."
+      "0": "An advanced mechanical snare. Deploys a concealed trap at your feet that arms itself after a moment. Right-click this item in your inventory and choose Activate Item to deploy a tier 4 trap at your feet. Requires Trapcraft 4. One kit is consumed only after successful placement."
     }
   },
   "Identified": {
@@ -90,6 +90,37 @@
         "Subtype": {
           "type": "word",
           "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 335
         }
       }
     ]

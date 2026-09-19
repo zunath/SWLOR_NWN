@@ -101904,11 +101904,11 @@
         },
         "X": {
           "type": "float",
-          "value": 140.3370819091797
+          "value": 140.3945159912109
         },
         "Y": {
           "type": "float",
-          "value": 146.6684417724609
+          "value": 141.2586822509766
         },
         "Z": {
           "type": "float",
@@ -198709,7 +198709,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141592264175415
+          "value": -1.570796251296997
         },
         "BodyBag": {
           "type": "byte",
@@ -199036,11 +199036,11 @@
         },
         "X": {
           "type": "float",
-          "value": 156.7017364501953
+          "value": 140.3370819091797
         },
         "Y": {
           "type": "float",
-          "value": 148.1174621582031
+          "value": 146.6684417724609
         },
         "Z": {
           "type": "float",
@@ -401573,7 +401573,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Exit_Veles_Fabrication_Ka"
+          "value": "Exit_Veles_Engineering_Ka"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -401638,7 +401638,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Exit_Veles_Engineering_Ka"
+          "value": "Exit_Veles_Fabrication_Ka"
         },
         "TemplateResRef": {
           "type": "resref",

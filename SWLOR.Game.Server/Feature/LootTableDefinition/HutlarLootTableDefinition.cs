@@ -24,9 +24,11 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("HUTQION_FLURRY_RARES").IsRare()
                 .AddItem("flurrychampda", 1, 1, true).AddItem("flurrychampdb", 1, 1, true).AddItem("bp_flurrychamp", 1, 1, true);
             _builder.Create("HUTQION_THERMAL_RARES").IsRare()
-                .AddItem("thermlancerda", 1, 1, true).AddItem("thermlancerdb", 1, 1, true).AddItem("bp_thermlancer", 1, 1, true);
+                .AddItem("thermlancerda", 1, 1, true).AddItem("thermlancerdb", 1, 1, true).AddItem("bp_thermlancer", 1, 1, true)
+                .AddItem("recipe_dr_ice1", 1, 1, true);
             _builder.Create("HUTQION_BARRIER_RARES").IsRare()
-                .AddItem("barrieroverseda", 1, 1, true).AddItem("barrieroversedb", 1, 1, true).AddItem("bp_barrieroverse", 1, 1, true);
+                .AddItem("barrieroverseda", 1, 1, true).AddItem("barrieroversedb", 1, 1, true).AddItem("bp_barrieroverse", 1, 1, true)
+                .AddItem("recipe_dr_ice2", 1, 1, true);
             _builder.Create("HUTQION_FLURRY_COMP").AddItem("flurrychampcm", 1, 1);
             _builder.Create("HUTQION_THERMAL_COMP").AddItem("thermlancercm", 1, 1);
             _builder.Create("HUTQION_BARRIER_COMP").AddItem("barrieroversecm", 1, 1);

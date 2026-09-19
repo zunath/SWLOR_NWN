@@ -86,6 +86,9 @@ namespace SWLOR.Game.Server.Feature
             // We don't log server messages because there isn't a good way to filter them.
             if (channel == ChatChannel.ServerMessage) return;
 
+            // Automated announcements can remain visible without filling the chat audit log.
+            if (GetLocalInt(ChatPlugin.GetSender(), Communication.SuppressChatAuditVariable) != 0) return;
+
             if (channel == ChatChannel.DMTell ||
                 channel == ChatChannel.PlayerTell)
             {

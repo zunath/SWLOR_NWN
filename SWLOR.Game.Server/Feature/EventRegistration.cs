@@ -136,10 +136,7 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
-                SetEventScript(area, EventScript.Area_OnEnter, ScriptName.OnAreaEnter);
-                SetEventScript(area, EventScript.Area_OnExit, ScriptName.OnAreaExit);
-                SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
-                SetEventScript(area, EventScript.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
+                Area.RegisterEvents(area);
             }
         }
 

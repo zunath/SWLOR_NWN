@@ -468,6 +468,12 @@ namespace SWLOR.Game.Server.Service.AchievementService
         UntouchableInstinct = 179,
         [Achievement("Force-Bonded Beast", "Completed the Force-Bonded Beast capstone quest line.", true)]
         ForceBondedBeast = 180,
+
+        [Achievement("Explore Crossroads West", "Explore Crossroads West on Viscara.", true)]
+        ExploreViscaraCrossroadsWest = 181,
+
+        [Achievement("Explore Mountain Ascent", "Explore the Mountain Ascent on Viscara.", true)]
+        ExploreViscaraMountainAscent = 182,
 	}
 
     public class AchievementAttribute: Attribute

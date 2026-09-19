@@ -105,6 +105,20 @@ Grenade abilities play the same named motion as the tester. Their C# ability log
 blast and visual effects; the animation does not provide a native projectile carrier.
 Existing gameplay timing remains separate from the authored throw's visual beats.
 
+Inherited animation exports omit position and scale channels that remain at the rig's
+bind values (within one micrometre / 0.000001 scale). Those channels belong to each
+wearer's race and phenotype. Writing even one constant key overrides those proportions;
+native idle often animates only rotation and cannot restore the overwritten offset.
+This caused lowered heads after Skirmisher Stance and Blaster Beacon, and a compressed
+Cathar/Horc skeleton after Fury Stance. Keep intentional
+translations, scale changes, and rotation tracks; compare against the destination bind
+after retargeting, including its animation-scale conversion. Apply the same rule to
+entry and exit phases, and regenerate body banks and robe bridges together.
+Run `python -B SWLOR_Haks/tools/TestAuthoredAnimationBindChannels.py` to check the
+compiled head/neck channels in both the body banks and the complete robe catalog.
+The same audit measures Fury Stance's bone lengths and scales throughout its main,
+entry, and exit phases on both Cathar/Horc body rigs and every corresponding robe.
+
 Each recipe contains an ability `Id`, a motion `Description`, `Duration` in seconds,
 and labeled `Beats`. Beat `Time` is in seconds and `SourceTime` is a normalized position
 within `SourceAnimation`. An optional per-beat `SourceModel` selects another model's motion.

@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("DANMED_TRIAGE_RARES").IsRare()
                 .AddItem("triagewardenda", 1, 1, true).AddItem("triagewardendb", 1, 1, true).AddItem("bp_triagewarden", 1, 1, true);
             _builder.Create("DANMED_CHEM_RARES").IsRare()
-                .AddItem("chemslingerda", 1, 1, true).AddItem("chemslingerdb", 1, 1, true).AddItem("bp_chemslinger", 1, 1, true);
+                .AddItem("chemslingerda", 1, 1, true).AddItem("chemslingerdb", 1, 1, true).AddItem("bp_chemslinger", 1, 1, true)
+                .AddItem("recipe_dr_psn1", 1, 1, true);
             _builder.Create("DANMED_CONDUIT_RARES").IsRare()
                 .AddItem("conduitmatrnda", 1, 1, true).AddItem("conduitmatrndb", 1, 1, true).AddItem("bp_conduitmatrn", 1, 1, true);
             _builder.Create("DANMED_TRIAGE_COMP").AddItem("triagewardencm", 1, 1);
@@ -49,7 +50,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("DANENCLAVE_SENTINEL_RARES").IsRare()
                 .AddItem("enclavesentlda", 1, 1, true).AddItem("enclavesentldb", 1, 1, true).AddItem("bp_enclavesentl", 1, 1, true);
             _builder.Create("DANENCLAVE_CYCLONE_RARES").IsRare()
-                .AddItem("cycloneadptda", 1, 1, true).AddItem("cycloneadptdb", 1, 1, true).AddItem("bp_cycloneadpt", 1, 1, true);
+                .AddItem("cycloneadptda", 1, 1, true).AddItem("cycloneadptdb", 1, 1, true).AddItem("bp_cycloneadpt", 1, 1, true)
+                .AddItem("recipe_dr_mob2", 1, 1, true);
             _builder.Create("DANENCLAVE_SABRAE_COMP").AddItem("sabraetrialcm", 1, 1);
             _builder.Create("DANENCLAVE_SENTINEL_COMP").AddItem("enclavesentlcm", 1, 1);
             _builder.Create("DANENCLAVE_CYCLONE_COMP").AddItem("cycloneadptcm", 1, 1);

@@ -119,9 +119,10 @@ public class AbilityImpactDamageBonusTests
         Apply(0, bash, () => 75).Should().Be((75, true));
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void ImpactPreparation_LeavesControlBonusesArmedAndConsumesOnceForDamage(bool scheduled)
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    public void ImpactPreparation_LeavesControlBonusesArmedAndConsumesOnceForDamage(int delivery)
     {
         var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
         var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
@@ -141,7 +142,9 @@ public class AbilityImpactDamageBonusTests
         {
             void DeclareDamage(int damage)
             {
-                if (scheduled)
+                if (delivery == 2)
+                    Ability.CaptureRepeatedAbilityImpact<uint>(caster, _ => { }, baseDamage: damage);
+                else if (delivery == 1)
                     Ability.CaptureRepeatedAbilityImpact(caster, () => { }, baseDamage: damage);
                 else
                     prepare(caster, damage);

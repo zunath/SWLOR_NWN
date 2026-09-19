@@ -971,6 +971,30 @@ namespace SWLOR.Game.Server.Service
                 : RecastGroup.Invalid;
         }
 
+        /// <summary>
+        /// Restores native feats from purchased perks after loading or migrating a character file.
+        /// This does not repeat purchase triggers or change the player's quickbar layout.
+        /// </summary>
+        public static void RestorePlayerFeats(uint player)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            foreach (var (perkType, level) in dbPlayer.Perks)
+            {
+                if (level <= 0 ||
+                    !_allPerks.TryGetValue(perkType, out var detail) ||
+                    !detail.IsActive || detail.GroupType != PerkGroupType.Player)
+                    continue;
+
+                SyncGrantedFeats(player, perkType, level, true);
+            }
+        }
+
         public static void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel)
         {
             if (!GetIsObjectValid(creature))
@@ -989,7 +1013,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var feat in grantedFeats)
             {
-                if (GetHasFeat(feat, creature))
+                if (CreaturePlugin.GetKnowsFeat(creature, feat))
                     continue;
 
                 if (addByLevel)

@@ -575,6 +575,12 @@ public static class AnimationInstall
                             Scale = targetJoint.Rest.Scale * value.Scale / sourceJoint.Rest.Scale
                         };
                     }
+                    // Export compares against the destination bind, in inherited animation
+                    // units. Keeping the source bind here would key female/rest offsets again.
+                    overlayProject.Joints[jointIndex] = sourceJoint with
+                    {
+                        Rest = targetJoint.Rest with { Position = targetJoint.Rest.Position / model.Scale }
+                    };
                 }
                 for (var i = 0; i < overlayProject.Joints.Count; i++)
                     if (overlayProject.Joints[i].Parent < 0)

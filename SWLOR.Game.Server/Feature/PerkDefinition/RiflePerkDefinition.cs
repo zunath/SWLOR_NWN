@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8. Grants a Suppression stack for 30 seconds. Your Suppression stacks reduce Evasion by 2% each.")
                 .IncreasesStat(StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, 2)
                 .IncreasesStat(StatType.RangedHitSuppressionStackEvasionPenaltyPercent, 2)
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18. Grants a Suppression stack for 30 seconds. Your Suppression stacks reduce Evasion by 3% each.")
                 .IncreasesStat(StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, 3)
                 .IncreasesStat(StatType.RangedHitSuppressionStackEvasionPenaltyPercent, 3)
@@ -64,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28. Grants a Suppression stack for 30 seconds. Your Suppression stacks reduce Evasion by 4% each.")
                 .IncreasesStat(StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, 4)
                 .IncreasesStat(StatType.RangedHitSuppressionStackEvasionPenaltyPercent, 4)
@@ -72,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38. Grants a Suppression stack for 30 seconds. Your Suppression stacks reduce Evasion by 5% each.")
                 .IncreasesStat(StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, 5)
                 .IncreasesStat(StatType.RangedHitSuppressionStackEvasionPenaltyPercent, 5)
@@ -131,18 +135,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12 and inflicts Hamstring for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24 and inflicts Hamstring for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36 and inflicts Hamstring for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 38);
@@ -172,12 +179,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressiveLine1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16 in a 20m x 3m line. Targets hit by multiple Suppression stacks are Disoriented for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressiveLine2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 in a 20m x 3m line. Targets hit by multiple Suppression stacks are Disoriented for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 32);
@@ -190,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressionStance1)
+                .DroidAISlots(1)
                 .Description("While active, ranged attacks gain +10% Haste and add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, but critical damage is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 20);
@@ -229,6 +239,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.KillBox1)
+                .DroidAISlots(1)
                 .Description("Target an enemy or location to deal weapon DMG + 20 to enemies within 8m and apply Kill Box for 45 seconds. While Kill Box remains, any player's ranged attacks against affected enemies add Suppression stacks lasting 30 seconds using the Kill Box caster's Suppressing Shot stack strength; each stack reduces Evasion by an additional 3%.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)
@@ -242,24 +253,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8. If you have not attacked for 3 seconds, this deals +8 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18. If you have not attacked for 3 seconds, this deals +14 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28. If you have not attacked for 3 seconds, this deals +20 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38. If you have not attacked for 3 seconds, this deals +26 DMG.")
                 .Price(5)
                 .RequirementSkill(SkillType.Rifle, 40);
@@ -321,18 +336,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12 in a 20m x 3m line and ignores 10% Defense.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24 in a 20m x 3m line and ignores 15% Defense.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36 in a 20m x 3m line and ignores 20% Defense.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 38);
@@ -360,12 +378,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot1)
+                .DroidAISlots(1)
                 .Description("Queues your next auto-attack to deal weapon DMG + 16. If Headshot is used after 3 seconds without attacking, that attack gains +15% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot2)
+                .DroidAISlots(2)
                 .Description("Queues your next auto-attack to deal weapon DMG + 30. If Headshot is used after 3 seconds without attacking, that attack gains +25% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 32);
@@ -378,6 +398,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SniperStance1)
+                .DroidAISlots(1)
                 .Description("While active, long-range hostile ranged abilities deal +15% damage, but attack delay is increased by 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 20);
@@ -422,6 +443,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OneShot1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 50. If used after 3 seconds without attacking, gains +25% Critical Rate and ignores 25% Defense.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)

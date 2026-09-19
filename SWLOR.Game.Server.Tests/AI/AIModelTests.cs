@@ -205,6 +205,43 @@ public class AIModelTests
         score(CreateContext(self: self)).Should().Be(AIScoreBand.Defensive + 4);
     }
 
+    [TestCase(FeatType.SuppressionStance1)]
+    [TestCase(FeatType.BerserkerStance1)]
+    [TestCase(FeatType.BastionStance1)]
+    public void WeaponStanceAIScore_DoesNotToggleOffAnActiveStance(FeatType feat)
+    {
+        const uint self = 100;
+        const uint target = 200;
+        Ability.CacheData();
+        var ability = Ability.GetAbilityDetail(feat);
+        var score = ability.AIScore ?? AIScore.Ability(ability);
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var tracker = new CreatureStatusEffect();
+        var effectType = ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
+        var effect = (IStatusEffect)Activator.CreateInstance(effectType)!;
+        creatureEffects.TryGetValue(self, out var previousEffects);
+        creatureEffects[self] = tracker;
+        EnemyEnmityTables()[self] = new Dictionary<uint, int> { [target] = 1 };
+        CreatureToEnemies()[target] = new List<uint> { self };
+        try
+        {
+            var context = CreateContext(self: self);
+            score(context).Should().BeGreaterThan(0);
+            tracker.Add(new AlphaRhythm1BeastStatusEffect());
+            score(context).Should().BeGreaterThan(0, "unrelated buffs must not block the stance");
+            tracker.Add(effect);
+            score(context).Should().Be(0, "recasting a toggle would remove the active stance");
+            tracker.Remove(effect);
+            score(context).Should().BeGreaterThan(0, "an expired stance may be reapplied");
+        }
+        finally
+        {
+            if (previousEffects == null) creatureEffects.Remove(self);
+            else creatureEffects[self] = previousEffects;
+        }
+    }
+
     [TestCase("BolsterAttack")]
     [TestCase("IronHide")]
     [TestCase("EvasiveManeuver")]

@@ -48,24 +48,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 12%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 15%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 18%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Pistol, 40);
@@ -127,18 +131,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingShot1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 12. If the target is using an ability, also inflicts Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingShot2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 24. If the target is using an ability, also inflicts Disoriented for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingShot3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 36. If the target is using an ability, also inflicts Disoriented for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 38);
@@ -166,12 +173,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PointBlankBurst1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 16 to enemies within 5m and grants Point Blank Burst, providing +10% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PointBlankBurst2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 30 to enemies within 5m and grants Point Blank Burst, providing +15% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 32);
@@ -184,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SkirmisherStance1)
+                .DroidAISlots(1)
                 .Description("While active, grants +15% Evasion and +10% Movement Speed, but reduces Attack by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 20);
@@ -230,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastWord1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 35. For 45 seconds, evading an attack refreshes Snap Roll and quickens your next shot.")
                 .Price(6)
                 .RequirementSkill(SkillType.Pistol, 50)
@@ -243,24 +254,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.QuickDraw1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 8. Has +10% Critical Rate if used within 30 seconds after switching targets.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.QuickDraw2)
+                .DroidAISlots(2)
                 .Description("Deals weapon DMG + 18. Has +12% Critical Rate if used within 30 seconds after switching targets.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.QuickDraw3)
+                .DroidAISlots(3)
                 .Description("Deals weapon DMG + 28. Has +15% Critical Rate if used within 30 seconds after switching targets.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.QuickDraw4)
+                .DroidAISlots(4)
                 .Description("Deals weapon DMG + 38. Has +18% Critical Rate if used within 30 seconds after switching targets.")
                 .Price(5)
                 .RequirementSkill(SkillType.Pistol, 40);
@@ -316,18 +331,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DoubleShot1)
+                .DroidAISlots(1)
                 .Description("Fires twice for weapon DMG + 6 each. If either shot critically hits, restore 2 STM.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DoubleShot2)
+                .DroidAISlots(2)
                 .Description("Fires twice for weapon DMG + 13 each. If either shot critically hits, restore 3 STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DoubleShot3)
+                .DroidAISlots(3)
                 .Description("Fires twice for weapon DMG + 20 each. If either shot critically hits, restore 4 STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 38);
@@ -357,12 +375,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FanTheHammer1)
+                .DroidAISlots(1)
                 .Description("Fires at up to 3 enemies within 5m for weapon DMG + 14. Each hit has +8% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FanTheHammer2)
+                .DroidAISlots(2)
                 .Description("Fires at up to 3 enemies within 5m for weapon DMG + 26. Each hit has +12% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 32);
@@ -375,6 +395,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GamblerStance1)
+                .DroidAISlots(1)
                 .Description("While active, gain +12% Critical Rate, but non-critical hostile ranged abilities cost 2 additional STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 20);
@@ -418,6 +439,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadMansHand1)
+                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30. If this critically hits, your next three ranged attacks have +20% Critical Rate and no extra attack delay.")
                 .Price(6)
                 .RequirementSkill(SkillType.Pistol, 50)

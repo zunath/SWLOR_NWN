@@ -99,7 +99,11 @@ namespace SWLOR.Game.Server.Service.AIService
                 };
             }
 
-            return context => context.CurrentEnmityTarget != OBJECT_INVALID
+            // Self buffs and stances declare their effects on the ability. Recasting an
+            // active toggle would turn it off, so wait until its effect is absent.
+            var selfEffects = ability.StatusEffectTypesRemovedOnPerkRefund.ToHashSet();
+            return context => context.CurrentEnmityTarget != OBJECT_INVALID &&
+                              !StatusEffect.HasAnyActiveEffect(context.Self, selfEffects)
                 ? AIScoreBand.Defensive + ability.AbilityLevel
                 : 0;
         }

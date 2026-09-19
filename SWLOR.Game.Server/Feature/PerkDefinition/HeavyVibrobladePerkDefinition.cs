@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
+                .DroidAISlots(1)
                 .Description("For 45 seconds, party members within 5m including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50)
@@ -92,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BastionStance1)
+                .DroidAISlots(1)
                 .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
@@ -105,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlazingSpikes1)
+                .DroidAISlots(1)
                 .Description("While active, this effect delivers 10% of physical damage received back to the attacker. Damage dealt increases by 1% per MGT. (Maximum 40%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 32);
@@ -205,12 +208,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Earthshatter1)
+                .DroidAISlots(1)
                 .Description("You deal weapon DMG + 20 to all enemies in an 8m x 2.5m line from you. Inflicts Force Disruption on each target which disables the use of force abilities for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Earthshatter2)
+                .DroidAISlots(2)
                 .Description("You deal weapon DMG + 35 to all enemies in an 8m x 2.5m line from you. Inflicts Force Disruption on each target which disables the use of force abilities for 30 seconds and generates +350 Enmity.")
                 .IncreasesStat(StatType.EarthshatterDamageBonus, 15)
                 .IncreasesStat(StatType.EarthshatterEnmityBonus, 350)
@@ -254,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Flash1)
+                .DroidAISlots(1)
                 .Description("Enemies within a 5m sphere around you receive Flash, reducing Ability Accuracy by 20% for 30 seconds (physical and Force abilities). Deals no damage. You generate +650 bonus Enmity toward these enemies.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 10);
@@ -267,18 +273,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike1)
+                .DroidAISlots(1)
                 .Description("Your next attack deals weapon DMG + 10 and generates +350 Enmity plus damage dealt as Enmity. You gain +10% Physical Defense for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike2)
+                .DroidAISlots(2)
                 .Description("Your next attack deals weapon DMG + 20 and generates +450 Enmity plus damage dealt as Enmity. You gain +20% Physical Defense for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike3)
+                .DroidAISlots(3)
                 .Description("Your next attack deals weapon DMG + 30 and generates +550 Enmity plus damage dealt as Enmity. You gain +30% Physical Defense for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
@@ -360,6 +369,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Rampart1)
+                .DroidAISlots(1)
                 .Description("All allies within a 5m sphere take 15% less physical damage for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28);
@@ -373,6 +383,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SacrificialBlade1)
+                .DroidAISlots(1)
                 .Description("Deal weapon DMG + 25 to a single target. Costs 8% max HP.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 10);
@@ -434,6 +445,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulBurst1)
+                .DroidAISlots(1)
                 .Description("Deal weapon DMG + 35 to all enemies in a 5m x 5m cone. Costs 40% HP which is reduced by 1% per MGT. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
@@ -447,6 +459,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulDevourer1)
+                .DroidAISlots(1)
                 .Description("While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
@@ -491,6 +504,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStorm1)
+                .DroidAISlots(1)
                 .Description("Sacrifice 40% HP to increase the damage of all allies within a 5m sphere by 20% for 1 minute. HP sacrificed decreases by 1 percentage point per MGT. (Minimum 10%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
@@ -504,18 +518,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike1)
+                .DroidAISlots(1)
                 .Description("Your next attack deals +15 DMG and heals you for 15% of damage dealt.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike2)
+                .DroidAISlots(2)
                 .Description("Your next attack deals +30 DMG and heals you for 25% of damage dealt.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike3)
+                .DroidAISlots(3)
                 .Description("Your next attack deals +45 DMG and heals you for 30% of damage dealt. Amount healed increases by 1 percentage point per 2 MGT to a maximum of 40%.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28);

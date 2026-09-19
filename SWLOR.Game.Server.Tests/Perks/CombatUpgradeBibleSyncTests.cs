@@ -19,6 +19,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.Formats.Tlk;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -203,6 +204,26 @@ public class CombatUpgradeBibleSyncTests
     private static readonly HashSet<PerkCategoryType> DroidInstructionCategories = new()
     {
         PerkCategoryType.General,
+        PerkCategoryType.VibrobladeDefense,
+        PerkCategoryType.VibrobladeOffense,
+        PerkCategoryType.VibroknifeShadow,
+        PerkCategoryType.VibroknifeSaboteur,
+        PerkCategoryType.HeavyVibrobladeDefense,
+        PerkCategoryType.HeavyVibrobladeOffense,
+        PerkCategoryType.SpearDamage,
+        PerkCategoryType.SpearDisabler,
+        PerkCategoryType.TwinBladeCyclone,
+        PerkCategoryType.TwinBladeDuelist,
+        PerkCategoryType.KatarIronGuard,
+        PerkCategoryType.KatarVenomCurrent,
+        PerkCategoryType.StaffCrusher,
+        PerkCategoryType.StaffSentinel,
+        PerkCategoryType.PistolGunslinger,
+        PerkCategoryType.PistolSkirmisher,
+        PerkCategoryType.RifleMarksman,
+        PerkCategoryType.RiflePacification,
+        PerkCategoryType.ThrowingBombardier,
+        PerkCategoryType.ThrowingDeadeye,
         PerkCategoryType.DevicesAssaultGadgets,
         PerkCategoryType.DevicesFieldEngineer,
         PerkCategoryType.DevicesFieldSupport,
@@ -1262,6 +1283,20 @@ public class CombatUpgradeBibleSyncTests
 
         foreach (var template in templates.OrderBy(x => x.Resref))
         {
+            var isObsolete = (bool)typeof(DroidInstructions).Assembly
+                .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration")!
+                .GetMethod("IsObsoleteResRef", BindingFlags.Public | BindingFlags.Static)!
+                .Invoke(null, new object[] { template.Resref })!;
+            isObsolete.Should().BeFalse(
+                $"current instruction {template.Resref} must survive the obsolete-item migration");
+            template.Resref.Length.Should().BeLessThanOrEqualTo(16);
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", template.Resref + ".uti.json")));
+            if (blueprint.RootElement.TryGetProperty("VarTable", out var variables))
+                variables.GetProperty("value").EnumerateArray().Should().NotContain(variable =>
+                    variable.GetProperty("Name").GetProperty("value").GetString() == "NO_ECONOMY" &&
+                    variable.GetProperty("Value").GetProperty("value").GetInt32() == 1,
+                    $"craftable instruction {template.Resref} belongs in player item searches");
+
             if (!recipeResrefs.Contains(template.Resref))
                 failures.Add($"Droid instruction UTI '{template.Resref}' exists without a current recipe definition.");
 
@@ -1346,6 +1381,29 @@ public class CombatUpgradeBibleSyncTests
         migrationSource.Should().Contain("\"id_concgren3\"");
         migrationSource.Should().Contain("\"id_tranqshot3\"");
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void DroidInstructionPropertyTable_CoversOnlySupportedPerksWithMatchingBinaryLabels()
+    {
+        var root = FindRepositoryRoot();
+        var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "iprp_droidperk.2da")))
+            .Where(row => row.Value.GetValueOrDefault("Name", "****") != "****")
+            .ToDictionary(row => row.Key, row => row.Value);
+        var tlk = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
+        var binary = TlkReader.Read(Path.Combine(root.FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk"));
+        var perks = BuildPerksWithout2daLookup().ToDictionary(perk => perk.Type, perk => perk.Detail);
+        var expected = GetExpectedDroidInstructions(perks).Select(instruction => instruction.Perk).Distinct().ToArray();
+        rows.Keys.Should().BeEquivalentTo(expected.Select(perk => (int)perk));
+        foreach (var perk in expected)
+        {
+            var row = rows[(int)perk];
+            row["Label"].Should().Be(perk.ToString());
+            row["Cost"].Should().Be("0");
+            var id = int.Parse(row["Name"], CultureInfo.InvariantCulture) - 16777216;
+            tlk[id].Should().Be(perks[perk].Name, perk.ToString());
+            binary.GetString((uint)id).Should().Be(perks[perk].Name, perk.ToString());
+        }
     }
 
 

@@ -3353,6 +3353,8 @@ def generate_perk_definitions(rows, perk_values, feat_values):
                 lines.append("                .AddPerkLevel()")
                 if row["Type"] in ACTIVE_TYPES:
                     lines.append(f"                .GrantsFeat(FeatType.{choose_active_feat(row, feat_values)})")
+                    if row["CharacterType"] != "Force":
+                        lines.append(f"                .DroidAISlots({level})")
                 elif index == 0:
                     trait_feat = choose_trait_feat(base, feat_values)
                     if trait_feat:

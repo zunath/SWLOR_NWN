@@ -104,14 +104,7 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [
-        {
-          "Key": "action-teleport",
-          "Arguments": [
-            "VISCARA_LANDING"
-          ]
-        }
-      ],
+      "Actions": [],
       "Next": [],
       "EndsConversation": true,
       "IsAutomatic": false

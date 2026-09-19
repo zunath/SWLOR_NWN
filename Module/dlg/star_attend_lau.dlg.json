@@ -169,19 +169,7 @@
         "__struct_id": 1,
         "ActionParams": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Key": {
-                "type": "cexostring",
-                "value": "action-teleport"
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_LANDING"
-              }
-            }
-          ]
+          "value": []
         },
         "Animation": {
           "type": "dword",
@@ -209,7 +197,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "action"
+          "value": ""
         },
         "Sound": {
           "type": "resref",

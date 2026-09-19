@@ -381,8 +381,8 @@ public static class DlgConversationMigrator
             return;
         }
 
-        var actions = node.Actions;
-        if (string.IsNullOrWhiteSpace(node.Script) && actions.Count > 0)
+        var actions = node.Actions.Where(action => !action.IsOncePerPlayerMarker).ToArray();
+        if (string.IsNullOrWhiteSpace(node.Script) && actions.Length > 0)
         {
             issues.Add(new ConversationMigrationIssue(
                 ConversationMigrationIssueSeverity.RequiresLegacyException,
@@ -391,7 +391,7 @@ public static class DlgConversationMigrator
             return;
         }
 
-        foreach (var action in actions.Where(action => !action.IsOncePerPlayerMarker))
+        foreach (var action in actions)
         {
             destination.Add(new ConversationAction
             {

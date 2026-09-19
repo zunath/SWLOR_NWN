@@ -10,13 +10,16 @@ namespace SWLOR.Toolset.Tests;
 
 public sealed class DlgConversationMigratorTests
 {
-    [Test]
-    public void Convert_RejectsActionsWithoutADispatcherInsteadOfSilentlyDroppingThem()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Convert_RejectsActionsWithoutADispatcherInsteadOfSilentlyDroppingThem(bool includeObsoleteMarker)
     {
         var document = Load("cq_thermdet");
         var reply = document.Replies.Single(node => node.Actions.Any(action =>
             action.SnippetKey == "action-accept-quest" &&
             action.Arguments.SequenceEqual(new[] { "thermal_detonator_foundation" })));
+        if (includeObsoleteMarker)
+            reply.AddAction("once-action-accept-quest", "legacy:marker");
         reply.Script = string.Empty;
 
         var result = DlgConversationMigrator.Convert("cq_thermdet", document);
@@ -25,6 +28,55 @@ public sealed class DlgConversationMigratorTests
         result.Issues.Should().Contain(issue =>
             issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
             issue.Message.Contains("no action dispatcher", StringComparison.Ordinal));
+    }
+
+    [TestCase(DlgNodeKind.Entry)]
+    [TestCase(DlgNodeKind.Reply)]
+    public void Convert_DiscardsOrphanedOnceMarkersWithoutRequiringADispatcher(DlgNodeKind kind)
+    {
+        var document = Load("star_attend_lau");
+        var node = kind == DlgNodeKind.Entry ? document.Entries[0] : document.Replies[0];
+        node.AddAction("once-action-teleport", "legacy:marker");
+        node.Script = string.Empty;
+
+        var result = DlgConversationMigrator.Convert("star_attend_lau", document);
+
+        result.CanRunInNui.Should().BeTrue();
+        result.Issues.Should().NotContain(issue => issue.Message.Contains("no action dispatcher", StringComparison.Ordinal));
+        var actions = kind == DlgNodeKind.Entry
+            ? result.Graph.Nodes["entry-00000"].OnEnterActions
+            : result.Graph.Choices["reply-00000"].Actions;
+        actions.Should().BeEmpty();
+    }
+
+    [TestCase("star_attend_lau")]
+    [TestCase("galateaallerti")]
+    public void ShuttleAttendants_ReferPlayersToFlightTerminalsWithoutTeleporting(string id)
+    {
+        var document = Load(id);
+        document.Entries.Concat(document.Replies).SelectMany(node => node.Actions).Should().BeEmpty();
+        document.Entries.Concat(document.Replies).Should().OnlyContain(node => string.IsNullOrWhiteSpace(node.Script));
+
+        var result = DlgConversationMigrator.Convert(id, document);
+        result.CanRunInNui.Should().BeTrue();
+        var published = JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(Path.Combine(
+            CorpusLocator.RepositoryRoot, "SWLOR.Game.Server", "ConversationData", id + ".conversation.json")))!;
+
+        foreach (var graph in new[] { result.Graph, published })
+        {
+            graph.Nodes.Values.SelectMany(node => node.Text).Should()
+                .Contain(block => block.Text.Contains("flights terminal", StringComparison.Ordinal));
+            graph.Nodes.Values.SelectMany(node => node.OnEnterActions)
+                .Concat(graph.Choices.Values.SelectMany(choice => choice.Actions)).Should().BeEmpty();
+            graph.Choices.Values.Should().OnlyContain(choice => choice.EndsConversation);
+            graph.OnStartActions.Should().BeEmpty();
+            foreach (var closeActions in new[] { graph.OnEndActions, graph.OnAbortActions })
+                closeActions.Should().ContainSingle().Which.Should().BeEquivalentTo(new
+                {
+                    Key = "system.execute-owner-script",
+                    Arguments = new[] { "nw_walk_wp" }
+                });
+        }
     }
 
     [Test]

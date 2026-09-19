@@ -71,14 +71,7 @@
       "Delay": 4294967295,
       "Comment": "",
       "JournalQuest": "",
-      "Actions": [
-        {
-          "Key": "action-teleport",
-          "Arguments": [
-            "CZ220_LANDING"
-          ]
-        }
-      ],
+      "Actions": [],
       "Next": [],
       "EndsConversation": true,
       "IsAutomatic": false

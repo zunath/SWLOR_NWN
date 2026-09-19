@@ -631,7 +631,7 @@ public class AIModelTests
             "var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);",
             StringComparison.Ordinal);
         var currentSwingWeaponIndex = source.IndexOf(
-            "var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();",
+            "var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(",
             StringComparison.Ordinal);
 
         source.Should().Contain("private static bool TryCancelAttackForCombatLeash");

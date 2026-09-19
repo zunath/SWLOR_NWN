@@ -57,7 +57,7 @@ public class WeaponDeflectionTests
     {
         var source = ReadSource("SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
 
-        source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
+        source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
         source.Should().Contain("weaponSkillType == SkillType.Invalid");
         source.Should().Contain("Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
         source.Should().NotContain("!GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||");

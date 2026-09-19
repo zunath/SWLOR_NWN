@@ -12159,8 +12159,10 @@ namespace SWLOR.Game.Server.Service
             bool hasNoDelayBuff,
             int effectiveDelayWithoutLimitedReductionMilliseconds,
             int limitedReductionRemainingAttacks,
-            int limitedNoDelayRemainingAttacks = 0)
+            int limitedNoDelayRemainingAttacks = 0,
+            int attacksPerCycle = 1)
         {
+            attacksPerCycle = Math.Clamp(attacksPerCycle, 1, 2);
             var limitedSpeedRemainingAttacks = Math.Max(
                 limitedReductionRemainingAttacks,
                 limitedNoDelayRemainingAttacks);
@@ -12175,17 +12177,19 @@ namespace SWLOR.Game.Server.Service
                 attackDebt = trackedBaselineAttackDebt;
             }
 
-            var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt);
+            // Debt tracks timed cycles, while charges and one-use bonuses count actual weapon
+            // rolls. A dual-wield cycle supplies two rolls but must not double a one-use bonus.
+            var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt) * attacksPerCycle;
 
             if (hasNoDelayBuff)
             {
-                var unbuffedAttacks = CalculateAttacksPerSwing(unbuffedDelayMilliseconds, attackDebt, out _);
-                var guaranteedAttacks = Math.Clamp(unbuffedAttacks + 1, 1, MaxAttacksPerSwing);
+                var unbuffedAttacks = CalculateAttacksPerSwing(unbuffedDelayMilliseconds, attackDebt, out _) * attacksPerCycle;
+                var guaranteedAttacks = Math.Clamp(unbuffedAttacks + 1, 1, MaxAttacksPerSwing * attacksPerCycle);
                 if (guaranteedAttacks > attacks)
                 {
                     // The extra attack is granted outright rather than drawn from carried debt, so
                     // remove it from the debt the swing would otherwise bank for later swings.
-                    updatedAttackDebt = Math.Max(0f, updatedAttackDebt - (guaranteedAttacks - attacks));
+                    updatedAttackDebt = Math.Max(0f, updatedAttackDebt - (guaranteedAttacks - attacks) / (float)attacksPerCycle);
                     attacks = guaranteedAttacks;
                 }
             }
@@ -12198,7 +12202,7 @@ namespace SWLOR.Game.Server.Service
                 var baselineAttacks = CalculateAttacksPerSwing(
                     effectiveDelayWithoutLimitedReductionMilliseconds,
                     baselineAttackDebt,
-                    out var baselineUpdatedAttackDebt);
+                    out var baselineUpdatedAttackDebt) * attacksPerCycle;
                 attacks = CapAttacksPerSwingForLimitedAttackEffect(
                     attacks,
                     baselineAttacks,

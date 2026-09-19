@@ -1437,6 +1437,10 @@ namespace SWLOR.Game.Server.Service
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 var type = GetEffectType(effect);
+                if (type == EffectTypeScript.AttackIncrease &&
+                    IsWeaponAccuracyItemEffect(GetEffectCreator(effect), GetEffectDurationType(effect)))
+                    continue;
+
                 if (type == EffectTypeScript.AttackIncrease)
                 {
                     accuracy += 5 * GetEffectInteger(effect, 0);
@@ -1458,6 +1462,10 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var effect in creature.m_appliedEffects)
             {
+                if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease &&
+                    IsWeaponAccuracyItemEffect(effect.m_oidCreator, effect.m_nSubType & 7))
+                    continue;
+
                 if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
                 {
                     accuracy += 5 * effect.GetInteger(0);
@@ -1473,6 +1481,17 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Attack, $"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
+        }
+
+        private static bool IsWeaponAccuracyItemEffect(uint creator, int durationType)
+        {
+            // NWN's equipped duration is 3 (not exposed by NWScript's DurationType enum).
+            // Weapon ACC is already read from the selected weapon's properties. Counting
+            // its native equip effect again multiplies it by five and leaks it to both hands.
+            return durationType == 3 &&
+                   GetIsObjectValid(creator) &&
+                   GetObjectType(creator) == ObjectType.Item &&
+                   Item.WeaponBaseItemTypes.Contains(GetBaseItemType(creator));
         }
 
         private static int CalculateEffectEvasion(uint creature)

@@ -20,6 +20,52 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatAttackDelayTests
 {
+    [TestCase(3500, 2)]
+    [TestCase(1750, 2)]
+    [TestCase(875, 4)]
+    public void DualWieldCycles_ScheduleBothHandsOnTheSharedTimer(int delay, int expected)
+    {
+        const uint attacker = 0x7F000020;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2)
+                .Should().Be(expected);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(1, 2)]
+    [TestCase(2, 2)]
+    [TestCase(3, 3)]
+    [TestCase(4, 4)]
+    public void DualWieldLimitedHaste_CapsActualWeaponRolls(int charges, int expected)
+    {
+        const uint attacker = 0x7F000021;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 750, 1750, false, 1750, charges, 0, 2)
+                .Should().Be(expected, "baseline hands remain available but haste cannot double its charged rolls");
+            var next = Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2);
+            next.Should().Be(2, "expired acceleration must not leak into the next cycle");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [Test]
+    public void DualWieldFinalNoDelayCharge_GrantsOneExtraRollInsteadOfAnExtraPair()
+    {
+        const uint attacker = 0x7F000022;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2)
+                .Should().Be(3);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
     [Test]
     public void CalculateAttackDelayMilliseconds_UsesSingleWeaponDelay()
     {

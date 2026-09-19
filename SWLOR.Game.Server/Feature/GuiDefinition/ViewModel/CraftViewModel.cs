@@ -405,7 +405,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]"
                 : "Craft";
             RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
-            RecipeLevel = $"Level: {recipe.Level}";
+            RecipeLevel = $"Recipe level: {recipe.Level}";
 
             var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, blueprint);
             RecipeDescription = recipeDescription;
@@ -1326,14 +1326,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private int CalculateXP(
-            int recipeLevel,
+            RecipeDetail recipe,
             int playerLevel,
             int blueprintLevel,
             bool firstTime,
             float qualityPercent)
         {
-            var delta = recipeLevel - playerLevel;
-            var xp = Skill.GetDeltaXP(delta);
+            var xp = Craft.GetBaseRecipeXP(recipe, playerLevel);
             // 20% bonus for the first time.
             if (firstTime)
                 xp += (int)(xp * 0.20f);
@@ -1436,7 +1435,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Give XP plus a percent bonus based on the quality achieved.
             var xp = CalculateXP(
-                recipe.Level,
+                recipe,
                 dbPlayer.Skills[recipe.Skill].Rank,
                 _hasBlueprint ? _activeBlueprint.Level : 0,
                 firstTime,
@@ -1612,7 +1611,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // 15% of XP is gained for failures.
             var xp = CalculateXP(
-                recipe.Level,
+                recipe,
                 dbPlayer.Skills[recipe.Skill].Rank,
                 _hasBlueprint ? _activeBlueprint.Level : 0,
                 false,

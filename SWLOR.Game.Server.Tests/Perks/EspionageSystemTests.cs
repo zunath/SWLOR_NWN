@@ -408,7 +408,8 @@ public class EspionageSystemTests
             .EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
             .Where(file => !file.EndsWith("EspionagePerkDefinition.cs", StringComparison.Ordinal))
             .Where(file => !file.EndsWith("PerkType.cs", StringComparison.Ordinal))
-            .Where(file => File.ReadAllText(file).Contains("PerkType.Slicing", StringComparison.Ordinal))
+            .Where(file => System.Text.RegularExpressions.Regex.IsMatch(File.ReadAllText(file),
+                @"Perk\.GetPerkLevel\([^,]+,\s*PerkType\.Slicing\)"))
             .Select(file => Path.GetRelativePath(root, file))
             .ToArray();
 

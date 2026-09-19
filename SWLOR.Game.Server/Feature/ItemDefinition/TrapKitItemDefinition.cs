@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -30,10 +31,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void CreateKit(string tag, int tier)
         {
             _builder.Create(tag)
+                .ActivationSpell(CastSpell.UNIQUE_POWER_SELF_ONLY)
                 .Delay(2f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
+                    if (!GetIsObjectValid(item) || GetItemPossessor(item) != user)
+                        return "The trap kit must be in your inventory.";
+
                     if (!GetIsPC(user) || GetIsDM(user))
                     {
                         return "Only players may deploy trap kits.";
@@ -71,12 +76,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// </summary>
         private static bool HasRequiredTrapcraft(uint user, int tier)
         {
-            if (tier >= 5)
-            {
-                return Perk.GetPerkLevel(user, PerkType.MasterSaboteur) >= 1;
-            }
-
-            return Perk.GetPerkLevel(user, PerkType.Trapcraft) >= tier;
+            return EspionageProgression.CanUseTrapTier(
+                Perk.GetPerkLevel(user, PerkType.Trapcraft),
+                Perk.GetPerkLevel(user, PerkType.MasterSaboteur) >= 1,
+                tier);
         }
     }
 }

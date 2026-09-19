@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public const string ToolTierVariable = "SLICING_TOOL_TIER";
 
         private const int ClaimTimeoutSeconds = 180;
-        private static readonly int[] _tierSkillRequirement = { 8, 22, 30, 42, 48 };
         private static readonly Dictionary<string, ActiveSlicingSession> _sessions = new();
 
         public sealed class ActiveSlicingSession
@@ -770,8 +769,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var dbSkill = dbPlayer.Skills[SkillType.Espionage];
-            var delta = _tierSkillRequirement[tier - 1] - dbSkill.Rank;
-            Skill.GiveSkillXP(player, SkillType.Espionage, Skill.GetDeltaXP(delta), false, false);
+            var xp = EspionageProgression.CalculateXP(PerkType.Slicing, tier, dbSkill.Rank);
+            Skill.GiveSkillXP(player, SkillType.Espionage, xp, false, false);
         }
     }
 }

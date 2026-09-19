@@ -46,10 +46,6 @@ namespace SWLOR.Game.Server.Service
         private const int MinDisarmChance = 5;
         private const int MaxDisarmChance = 95;
 
-        // Espionage rank each Trapcraft tier is gated behind, used to scale disarm XP off a
-        // level-vs-rank delta the same way lockboxes scale off the Slicing gates.
-        private static readonly int[] TrapTierSkillRequirement = { 5, 18, 30, 45, 50 };
-
         // Damage and Bleed duration a kit trap deals by tier, before the placer's Trap Bonus.
         private static readonly int[] KitTrapDamageByTier = { 20, 30, 40, 52, 66 };
         private const int KitTrapStatusDurationSeconds = 30;
@@ -141,19 +137,21 @@ namespace SWLOR.Game.Server.Service
                 Tier = tier,
                 IsConcealed = true
             };
-            ownerTraps.Add(record);
-
             record.Marker = CreateObject(ObjectType.Placeable, ConcealedTrapResref, location, false, ConcealedTrapResref);
-            if (GetIsObjectValid(record.Marker))
+            if (!GetIsObjectValid(record.Marker))
             {
-                SetLocalString(record.Marker, ConcealedTrapMarkerVariable, record.Id.ToString());
-                DestroyObject(record.Marker, LifetimeSeconds);
-
-                // Hidden from the world, then revealed per-observer as detection succeeds. The
-                // owner always sees their own placement.
-                VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, record.Marker, VisibilityType.Hidden);
-                RevealTo(record, owner, sendMessage: false);
+                SendMessageToPC(owner, "The trap could not be placed. Your kit has not been consumed.");
+                return false;
             }
+
+            ownerTraps.Add(record);
+            SetLocalString(record.Marker, ConcealedTrapMarkerVariable, record.Id.ToString());
+            DestroyObject(record.Marker, LifetimeSeconds);
+
+            // Hidden from the world, then revealed per-observer as detection succeeds. The
+            // owner always sees their own placement.
+            VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, record.Marker, VisibilityType.Hidden);
+            RevealTo(record, owner, sendMessage: false);
 
             ScheduleArming(
                 record,
@@ -283,7 +281,11 @@ namespace SWLOR.Game.Server.Service
                 Expire(record);
                 if (triggeredByNonPlayerCharacter && GetIsPC(record.Owner) && !GetIsDM(record.Owner))
                 {
-                    Skill.GiveSkillXP(record.Owner, SkillType.Espionage, TrapTriggerXP, false, false);
+                    var rank = DB.Get<Player>(GetObjectUUID(record.Owner)).Skills[SkillType.Espionage].Rank;
+                    var xp = record.IsConcealed
+                        ? Math.Min(TrapTriggerXP, EspionageProgression.CalculateXP(PerkType.Trapcraft, record.Tier, rank))
+                        : TrapTriggerXP;
+                    Skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
                 }
                 CombatAreaPulses.ApplyCombatPulse(
                     record.Owner,
@@ -329,7 +331,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                if (Perk.GetPerkLevel(player, PerkType.Trapcraft) < record.Tier)
+                if (!CanUseTrapTier(player, record.Tier))
                     continue;
 
                 var range = BaseDetectionRangeMeters + Stat.GetStatAdjustment(player, StatType.TrapDetectionRangeBonus);
@@ -374,11 +376,11 @@ namespace SWLOR.Game.Server.Service
             if (record.Owner == user)
             {
                 Deactivate(record);
-                SendMessageToPC(user, "You recover your own trap.");
+                SendMessageToPC(user, "You dismantle your own trap. The kit is not recovered.");
                 return;
             }
 
-            if (Perk.GetPerkLevel(user, PerkType.Trapcraft) < record.Tier)
+            if (!CanUseTrapTier(user, record.Tier))
             {
                 SendMessageToPC(user, ColorToken.Red("You lack the Trapcraft expertise to disarm this trap."));
                 return;
@@ -387,7 +389,8 @@ namespace SWLOR.Game.Server.Service
             if (d100() <= CalculateDisarmChance(user, record.Tier))
             {
                 Deactivate(record);
-                GrantDisarmXP(user, record.Tier);
+                if (!GetIsPC(record.Owner) && GetIsEnemy(record.Owner, user))
+                    GrantDisarmXP(user, record.Tier);
                 SendMessageToPC(user, "You disarm the trap.");
                 return;
             }
@@ -409,13 +412,16 @@ namespace SWLOR.Game.Server.Service
             return Math.Clamp(chance, MinDisarmChance, MaxDisarmChance);
         }
 
+        private static bool CanUseTrapTier(uint player, int tier) => EspionageProgression.CanUseTrapTier(
+            Perk.GetPerkLevel(player, PerkType.Trapcraft),
+            Perk.GetPerkLevel(player, PerkType.MasterSaboteur) >= 1,
+            tier);
+
         private static void GrantDisarmXP(uint user, int tier)
         {
             var playerId = GetObjectUUID(user);
             var dbPlayer = DB.Get<Player>(playerId);
-            var delta = TrapTierSkillRequirement[tier - 1] - dbPlayer.Skills[SkillType.Espionage].Rank;
-
-            var xp = Skill.GetDeltaXP(delta);
+            var xp = EspionageProgression.CalculateXP(PerkType.Trapcraft, tier, dbPlayer.Skills[SkillType.Espionage].Rank);
             if (xp > 0)
             {
                 Skill.GiveSkillXP(user, SkillType.Espionage, xp, false, false);

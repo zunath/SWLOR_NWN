@@ -17,6 +17,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -202,7 +203,44 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When an item is used, if its tag is in the item cache, run it through the action item process.
+        /// Ensure saved and newly acquired scripted items expose their declared activation action.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleAcquire)]
+        public static void EnsureAcquiredItemActivation()
+        {
+            EnsureItemActivation(GetModuleItemAcquired());
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void EnsureInventoryItemActivations()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+                EnsureItemActivation(item);
+        }
+
+        private static void EnsureItemActivation(uint item)
+        {
+            if (!GetIsObjectValid(item) || !_items.TryGetValue(GetTag(item), out var detail) ||
+                !detail.ActivationSpell.HasValue)
+                return;
+
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == ItemPropertyType.CastSpell &&
+                    GetItemPropertySubType(property) == (int)detail.ActivationSpell.Value)
+                    return;
+            }
+
+            AddItemProperty(DurationType.Permanent,
+                ItemPropertyCastSpell(detail.ActivationSpell.Value, CastSpellNumberUses.UNLIMITED_USE), item);
+        }
+
+        /// <summary>
+        /// When a registered item is used, run its scripted action instead of native behavior.
         /// </summary>
         [NWNEventHandler(ScriptName.OnItemUseBefore)]
         public static void UseItem()

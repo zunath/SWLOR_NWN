@@ -53,12 +53,20 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
-        /// Sets the quantity of items the player receives when crafting this recipe.
-        /// Quantity is automatically set to 1 by default so this is only necessary if
-        /// you need a different number.
+        /// Keeps this recipe useful for training until the specified skill rank is reached.
         /// </summary>
-        /// <param name="quantity">The quantity of items to create.</param>
-        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder SkillUpToRank(int rank)
+        {
+            if (rank < 1)
+                throw new ArgumentOutOfRangeException(nameof(rank));
+
+            _activeRecipe.PracticeRankLimit = rank;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the quantity of items received from one craft (default: one).
+        /// </summary>
         public RecipeBuilder Quantity(int quantity)
         {
             if (quantity < 1)

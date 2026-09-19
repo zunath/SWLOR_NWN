@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service.ItemService
 {
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Service.ItemService
         public CalculateDelayDelegate DelayAction { get; set; }
         public bool UserFacesTarget { get; set; }
         public Animation ActivationAnimation { get; set; }
+        public CastSpell? ActivationSpell { get; set; }
         public ReducesItemChargeDelegate ReducesItemChargeAction { get; set; }
         public bool CanTargetLocation { get; set; }
         public RecastGroup? RecastGroup { get; set; }

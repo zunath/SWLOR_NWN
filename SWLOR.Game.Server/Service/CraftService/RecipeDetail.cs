@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         public RecipeCategoryType Category { get; set; }
         public bool IsActive { get; set; }
         public int Level { get; set; }
+        public int? PracticeRankLimit { get; set; }
         public RecipeEnhancementType EnhancementType { get; set; }
         public int EnhancementSlots { get; set; }
         public float ResearchCostModifier { get; set; }

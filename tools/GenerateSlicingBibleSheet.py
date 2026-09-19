@@ -262,7 +262,7 @@ def build_sheet() -> Sheet:
         ["Combat/range", "Validated on actions", "", "", "", "", "", "Starting does not force combat. Terminal actions validate interaction range."],
         ["Terminal ownership", "Shared node; 3-minute stale claim", "", "", "", "", "", "One active owner. A stale committed claim resolves as a failure before another player may claim it."],
         ["Persistence", "Seed/failures/integrity on object", "", "", "", "", "", "Transferred lockboxes preserve their seed and failure state; retries use the same authored board."],
-        ["Success", "One weighted item + XP once", "", "", "", "", "", "Lockbox is consumed. Terminal burns out and respawns at a new valid walkmesh point in 45-75 minutes."],
+        ["Success", "One weighted item + XP once", "", "", "", "", "", "Each tier grants XP until the next Slicing unlock (22/30/42/48/50). Lockbox is consumed. Terminal burns out and respawns at a new valid walkmesh point in 45-75 minutes."],
         ["Failure", "No reward or XP", "", "", "", "", "", "First failed attempt is free of destruction risk; subsequent attempts become progressively dangerous."],
         ["Direct reward rules", "Fixed-stat items", "", "", "", "", "", "Armor skill sets equipment requirements. No raw attributes, random affixes, sets, or direct-reward enhancement slots."],
     ])
@@ -270,7 +270,7 @@ def build_sheet() -> Sheet:
 
     sheet.merged("Tier Board and Progression")
     sheet.table(["Tier", "Grid", "Extra Trace", "Authored Swaps", "Slicing Rank", "Armor Bands", "", "Notes"], [
-        [1, "3 x 3", 4, 0, 1, "0 / 5", "", "Base trace equals known solution cost plus extra trace."],
+        [1, "3 x 3", 4, 0, 1, "0 / 5", "", "Slicing I starts at Espionage rank 0 and trains to 22. Optional tier 1 supplies are sold at the Veles General Store. Base trace equals solution cost plus extra trace."],
         [2, "4 x 3", 3, 1, 2, "10 / 15", "", "Deterministic guaranteed-solvable route."],
         [3, "4 x 4", 3, 2, 3, "20 / 25", "", "No runtime solver."],
         [4, "5 x 4", 2, 3, 4, "30 / 35", "", "Rare exceptional named item uses the half-tier Armor band."],

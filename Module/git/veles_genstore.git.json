@@ -370742,6 +370742,402 @@
                       "type": "float",
                       "value": 0.0
                     }
+                  },
+                  {
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 50
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Comment": {
+                      "type": "cexostring",
+                      "value": ""
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 50
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "A crafted tier 1 trace fuse. Prime it in the slicing interface to gain +1 trace on the first move. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "A crafted tier 1 trace fuse. Prime it in the slicing interface to gain +1 trace on the first move. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Copper Trace Fuse"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 2
+                    },
+                    "PaletteID": {
+                      "type": "byte",
+                      "value": 20
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "SLICING_TOOL"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "trace_fuse_1"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SLICING_TOOL_TYPE"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 11
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SLICING_TOOL_TIER"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
+                    },
+                    "__struct_id": 17,
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 6
+                    }
+                  },
+                  {
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 50
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Comment": {
+                      "type": "cexostring",
+                      "value": ""
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 50
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "A consumable slicing tool. Makes the next clockwise rotation free. Works on security tier 1 or lower; one tool may be used per attempt. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "A consumable slicing tool. Makes the next clockwise rotation free. Works on security tier 1 or lower; one tool may be used per attempt. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Ratchet Bypass Pin"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 2
+                    },
+                    "PaletteID": {
+                      "type": "byte",
+                      "value": 20
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "SLICING_TOOL"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "slt_ratchet"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SLICING_TOOL_TYPE"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SLICING_TOOL_TIER"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
+                    },
+                    "__struct_id": 18,
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 6
+                    }
+                  },
+                  {
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 50
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Comment": {
+                      "type": "cexostring",
+                      "value": ""
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 50
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "A consumable slicing tool. Identifies whether the selected tile belongs to the route. Works on security tier 1 or lower; one tool may be used per attempt. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "A consumable slicing tool. Identifies whether the selected tile belongs to the route. Works on security tier 1 or lower; one tool may be used per attempt. Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Continuity Sampler"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 2
+                    },
+                    "PaletteID": {
+                      "type": "byte",
+                      "value": 20
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "SLICING_TOOL"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "stt_sampler"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SLICING_TOOL_TYPE"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 6
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SLICING_TOOL_TIER"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 1
+                          }
+                        }
+                      ]
+                    },
+                    "__struct_id": 19,
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 6
+                    }
                   }
                 ]
               }

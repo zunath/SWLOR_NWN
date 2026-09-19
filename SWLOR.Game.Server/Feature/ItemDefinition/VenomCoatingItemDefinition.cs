@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -45,15 +46,22 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void CreateVial(string tag, int tier, bool concentrated = false)
         {
             _builder.Create(tag)
+                .ActivationSpell(CastSpell.UNIQUE_POWER)
                 .Delay(2f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .MaxDistance(0.0f)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
+                    if (!GetIsObjectValid(item) || GetItemPossessor(item) != user)
+                        return "The coating must be in your inventory.";
+
                     if (!GetIsPC(user) || GetIsDM(user))
                     {
                         return "Only players may use this coating.";
                     }
+
+                    if (!GetIsObjectValid(target) || GetItemPossessor(target) != user)
+                        return "Select a weapon in your own inventory to coat.";
 
                     var baseItemType = GetBaseItemType(target);
 

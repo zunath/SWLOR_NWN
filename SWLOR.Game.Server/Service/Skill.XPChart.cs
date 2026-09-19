@@ -194,12 +194,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the base XP amount by the delta of a player's skill rank versus the target's level.
-        /// If delta is above the highest delta, the highest delta will be used.
-        /// If delta is lower than the lowest delta, zero will be returned.
+        /// Keeps a tiered activity useful until its next unlock, with a quarter of same-level XP as the floor.
         /// </summary>
-        /// <param name="delta">The delta to compare.</param>
-        /// <returns>The base XP amount based on the delta. Returns 0 if delta is below the lowest.</returns>
+        public static int GetPracticeXP(int activityLevel, int skillRank, int rankLimit)
+        {
+            // Preserve useful practice XP until the next tier becomes available. The limit is
+            // exclusive: a mastered activity must not train the remainder of the skill.
+            return skillRank >= rankLimit ? 0 : Math.Max(150, GetDeltaXP(activityLevel - skillRank));
+        }
+
+        /// <summary>
+        /// Retrieves XP for the target level minus the player's rank. Trivial activities return zero.
+        /// </summary>
         public static int GetDeltaXP(int delta)
         {
             if (delta > _highestDelta)

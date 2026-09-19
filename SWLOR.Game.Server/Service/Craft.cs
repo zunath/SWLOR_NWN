@@ -330,6 +330,13 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(requiredRank, 0);
         }
 
+        public static int GetBaseRecipeXP(RecipeDetail recipe, int skillRank)
+        {
+            return recipe.PracticeRankLimit.HasValue
+                ? Skill.GetPracticeXP(recipe.Level, skillRank, recipe.PracticeRankLimit.Value)
+                : Skill.GetDeltaXP(recipe.Level - skillRank);
+        }
+
         private static string CheckRecipeSkillRequirement(uint player, RecipeDetail recipe)
         {
             var requiredRank = GetRequiredSkillRankForRecipe(recipe);
@@ -417,12 +424,15 @@ namespace SWLOR.Game.Server.Service
             recipeDetailColors.Add(GuiColor.Cyan);
 
             var requiredSkillRank = GetRequiredSkillRankForRecipe(detail);
-            if (requiredSkillRank > 0)
+            recipeDetails.Add($"{Skill.GetSkillDetails(detail.Skill).Name} rank {requiredSkillRank}");
+            recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, detail))
+                ? GuiColor.Green
+                : GuiColor.Red);
+
+            if (detail.PracticeRankLimit.HasValue)
             {
-                recipeDetails.Add($"{Skill.GetSkillDetails(detail.Skill).Name} lvl {requiredSkillRank}");
-                recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, detail))
-                    ? GuiColor.Green
-                    : GuiColor.Red);
+                recipeDetails.Add($"Trains {Skill.GetSkillDetails(detail.Skill).Name} up to rank {detail.PracticeRankLimit.Value}");
+                recipeDetailColors.Add(GuiColor.White);
             }
 
             foreach (var req in detail.Requirements)

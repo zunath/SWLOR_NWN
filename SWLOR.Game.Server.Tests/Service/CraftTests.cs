@@ -22,16 +22,25 @@ public class CraftTests
     }
 
     [Test]
-    public void StarterPoison_AwardsXpUntilSlicingUnlocksAtRankEight()
+    public void StarterPoison_AwardsXpUntilPoisoncraftTwoUnlocksAtRankFifteen()
     {
         var recipe = new VenomCoatingRecipes().BuildRecipes()[RecipeType.VenomCoating1];
 
-        for (var rank = 0; rank < 8; rank++)
+        for (var rank = 0; rank < 15; rank++)
         {
             Assert.That(Craft.GetRequiredSkillRankForRecipe(recipe), Is.LessThanOrEqualTo(rank));
-            Assert.That(Skill.GetDeltaXP(recipe.Level - rank), Is.GreaterThan(0),
+            Assert.That(Craft.GetBaseRecipeXP(recipe, rank), Is.GreaterThan(0),
                 $"Poisoncraft must provide a progression path at Espionage rank {rank}.");
         }
+        Assert.That(Craft.GetBaseRecipeXP(recipe, 15), Is.Zero);
+    }
+
+    [Test]
+    public void RecipesWithoutPracticeLimits_KeepTheirExistingXpCurve()
+    {
+        var recipe = new RecipeDetail { Level = 10 };
+        for (var rank = 0; rank <= 50; rank++)
+            Assert.That(Craft.GetBaseRecipeXP(recipe, rank), Is.EqualTo(Skill.GetDeltaXP(recipe.Level - rank)));
     }
 
     [TestCase(40, 37)]

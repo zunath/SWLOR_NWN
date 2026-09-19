@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A potent venom distillate. Apply to a melee or thrown weapon to coat it in poison."
+      "0": "A potent venom distillate. Apply to a melee or thrown weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a melee or thrown weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A potent venom distillate. Apply to a melee or thrown weapon to coat it in poison."
+      "0": "A potent venom distillate. Apply to a melee or thrown weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a melee or thrown weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
     }
   },
   "Identified": {
@@ -90,6 +90,37 @@
         "Subtype": {
           "type": "word",
           "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 329
         }
       }
     ]

@@ -9047,23 +9047,23 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 110
+                "value": 109
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 110
+                "value": 1
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 103
+                "value": 63
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 1
+                "value": 110
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 12
+                "value": 241
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -9071,7 +9071,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 198
+                "value": 238
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -9079,23 +9079,23 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 20
+                "value": 237
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 110
+                "value": 109
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 110
+                "value": 1
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 103
+                "value": 63
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 1
+                "value": 110
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -9103,7 +9103,7 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 12
+                "value": 241
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
@@ -9111,11 +9111,11 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 198
+                "value": 238
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 3
+                "value": 115
               },
               "BaseItem": {
                 "type": "int",
@@ -9127,11 +9127,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 99
+                "value": 1
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 123
+                "value": 1
               },
               "Cost": {
                 "type": "dword",
@@ -9157,26 +9157,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 3
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 127
+                "value": 3
               },
               "LocalizedName": {
-                "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Spice Dealer's Coat"
+                  "0": "Worker Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 6
+                "value": 8
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 9
               },
               "Plot": {
                 "type": "byte",
@@ -9196,11 +9195,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "spicedealer"
+                "value": "WorkerOutfit"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "spicedealer"
+                "value": "worker_outfit"
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -9208,23 +9207,23 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 110
+                "value": 109
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 110
+                "value": 1
               },
               "xArmorPart_LFoot": {
                 "type": "word",
-                "value": 103
+                "value": 63
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 1
+                "value": 110
               },
               "xArmorPart_LShin": {
                 "type": "word",
-                "value": 12
+                "value": 241
               },
               "xArmorPart_LShou": {
                 "type": "word",
@@ -9232,7 +9231,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 198
+                "value": 238
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -9240,23 +9239,23 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 20
+                "value": 237
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 110
+                "value": 109
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 110
+                "value": 1
               },
               "xArmorPart_RFoot": {
                 "type": "word",
-                "value": 103
+                "value": 63
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 1
+                "value": 110
               },
               "xArmorPart_Robe": {
                 "type": "word",
@@ -9264,7 +9263,7 @@
               },
               "xArmorPart_RShin": {
                 "type": "word",
-                "value": 12
+                "value": 241
               },
               "xArmorPart_RShou": {
                 "type": "word",
@@ -9272,11 +9271,11 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 198
+                "value": 238
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 3
+                "value": 115
               },
               "XOrientation": {
                 "type": "float",

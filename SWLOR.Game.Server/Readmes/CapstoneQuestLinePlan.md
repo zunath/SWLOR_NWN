@@ -134,7 +134,7 @@ All 40 capstone quest givers (39 lines plus Blood Frenzy's Sera Vonn) are hand-p
 | Smuggler's Moon Fight Club Backrooms | Dax Rell (`cq_cripdef`) | Smuggler's Moon - Hyper Dive Cantina (`pw_ar_nars_canhd`) |
 | Smuggler's Moon Fight Club Backrooms | Iven Brask (`cq_tempbloom`) | Smuggler's Moon - The Tilted Visor (`pw_ar_bhbar`) |
 | Smuggler's Moon Fight Club Backrooms | Nyra Tane (`cq_redbloom`) | Smuggler's Moon - Casino (`pw_ar_nscasino`) |
-| Viscara Sewers Depths (Blood Frenzy) | Sera Vonn (`sera_vonn`) | Viscara - Veles - Shops (`veles_shops`) |
+| Viscara Sewers Depths (Blood Frenzy) | Sera Vonn (`sera_vonn`) | Viscara - Veles - Trade Concourse (`veles_tradecon`) |
 
 ## Remaining Capstone Quest Setup
 
@@ -410,7 +410,7 @@ Blood Frenzy is the Vibroblade 50 capstone quest line.
 
 The current module content includes the level 50 Viscara Sewers Depths area and a separate Kess arena area.
 
-- Sera Vonn is hand-placed in Veles Shops.
+- Sera Vonn is hand-placed in the Veles Trade Concourse.
 - `Enter Sewers Depths` is a standard `tele_obj` instance in Veles Sewers and points to the hand-placed `VISC_SEWER_DEPTHS_INSIDE` waypoint.
 - The general Sewers Depths spawn table is wired through `VISCARA_SEWERS_DEPTHS_GENERAL`.
 - `bf_butch_call` is placed in Viscara Sewers Depths with `LocName = ???` and spawns the Butcher at `BF_BUTCHER_SPAWN`.

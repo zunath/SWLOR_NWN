@@ -720,7 +720,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Character Requirement",
                             "Espionage perks are for Standard characters and use the Espionage skill. Their branches cover infiltration and back attacks, slicing and poisoncraft, traps, disguises, and utility."),
                         new ArticleBlock("Starting at Rank 0",
-                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at the Espionage Workbench beside the market terminal in Veles Shops; its map marker shows the location."),
+                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops or the Veles Trade Concourse."),
                         new ArticleBlock("Stealth and Back Attacks",
                             "Stealth is activated out of combat and drains STM while maintained. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
                         new ArticleBlock("Slicing Lockboxes and Terminals",
@@ -741,7 +741,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Who can use espionage perks?", "Standard characters who meet the relevant Espionage skill and perk requirements."),
                         new QuestionAnswer("Do I need stealth to learn poisons or slicing?", "No. Poisoncraft I, Slicing I, and Trapcraft I each start at rank 0 and can train independently."),
                         new QuestionAnswer("Why did my recipe or slicing tier stop giving XP?", "You reached the next tier's unlock rank. Purchase that tier's perk and use its recipes or targets to continue training."),
-                        new QuestionAnswer("Where do I craft poisons and snares?", "At the marked Espionage Workbench beside the market terminal in Veles Shops."),
+                        new QuestionAnswer("Where do I craft poisons and snares?", "At a marked Espionage Workbench beside a market terminal in Veles Shops or the Veles Trade Concourse."),
                         new QuestionAnswer("How many traps can I place?", "One by default; Trap Management increases your active-trap limit."),
                         new QuestionAnswer("What breaks stealth?", "Hostile actions break stealth, and maintaining it continuously drains STM.")
                     },

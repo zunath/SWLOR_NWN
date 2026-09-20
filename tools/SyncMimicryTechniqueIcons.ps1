@@ -55,7 +55,7 @@ function Set-TokenPreservingWhitespace {
 }
 
 $techniques = [ordered]@{
-    ApexCollapseTechnique = [pscustomobject]@{ Name = "Apex Collapse"; Icon = "ife_mapexcoll"; Category = "Self" }
+    ApexCollapseStanceTechnique = [pscustomobject]@{ Name = "Apex Collapse Stance"; Icon = "ife_mapexcoll"; Category = "Self" }
     BloodFrenzyFlurryTechnique = [pscustomobject]@{ Name = "Blood Frenzy Flurry"; Icon = "ife_mbldfrenflur"; Category = "Harmful" }
     BonecrusherBiteTechnique = [pscustomobject]@{ Name = "Bonecrusher Bite"; Icon = "ife_mbonebite"; Category = "Passive" }
     BraceBreakerTechnique = [pscustomobject]@{ Name = "Brace Breaker"; Icon = "ife_mbracebrk"; Category = "Control" }
@@ -95,14 +95,14 @@ $techniques = [ordered]@{
     SignalSnareTechnique = [pscustomobject]@{ Name = "Signal Snare"; Icon = "ife_msigsnare"; Category = "Control" }
     SnapRushTechnique = [pscustomobject]@{ Name = "Snap Rush"; Icon = "ife_msnaprush"; Category = "Self" }
     StimCanisterTechnique = [pscustomobject]@{ Name = "Stim Canister"; Icon = "ife_mstimcan"; Category = "Beneficial" }
-    SustainBurnTechnique = [pscustomobject]@{ Name = "Sustain Burn"; Icon = "ife_msusburn"; Category = "Self" }
+    SustainBurnStanceTechnique = [pscustomobject]@{ Name = "Sustain Burn Stance"; Icon = "ife_msusburn"; Category = "Self" }
     WardenClampTechnique = [pscustomobject]@{ Name = "Warden Clamp"; Icon = "ife_mwardclamp"; Category = "Control" }
     WardenMarkTechnique = [pscustomobject]@{ Name = "Warden Mark"; Icon = "ife_mwardmark"; Category = "Harmful" }
     WardenMaulTechnique = [pscustomobject]@{ Name = "Warden Maul"; Icon = "ife_mwardmaul"; Category = "Control" }
     WardenOrderTechnique = [pscustomobject]@{ Name = "Warden Order"; Icon = "ife_mwardorder"; Category = "Beneficial" }
     WardenRendTechnique = [pscustomobject]@{ Name = "Warden Rend"; Icon = "ife_mwardrend"; Category = "Harmful" }
     WardenSweepTechnique = [pscustomobject]@{ Name = "Warden Sweep"; Icon = "ife_mwardsweep"; Category = "Self" }
-    WardenWallTechnique = [pscustomobject]@{ Name = "Warden Wall"; Icon = "ife_mwardwall"; Category = "Self" }
+    WardenWallStanceTechnique = [pscustomobject]@{ Name = "Warden Wall Stance"; Icon = "ife_mwardwall"; Category = "Self" }
     WillFractureTechnique = [pscustomobject]@{ Name = "Will Fracture"; Icon = "ife_mwillfract"; Category = "Control" }
 }
 

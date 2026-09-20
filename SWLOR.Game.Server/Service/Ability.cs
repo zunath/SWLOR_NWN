@@ -3094,8 +3094,12 @@ namespace SWLOR.Game.Server.Service
             var attackStat = ability == AbilityType.Invalid
                 ? 0
                 : GetAbilityScore(activator, ability);
+            // The creature's own level, matching what its auto-attacks use. The derived scaling
+            // rank still contributes the flat damage term above, but feeding it here collapsed the
+            // 2 x level component of Attack -- a level 50 enemy resolved ability damage as though
+            // it were rank ~16, cutting the attack/defense ratio to roughly half of intended.
             var attack = Stat.GetAttack(
-                scalingRank,
+                npcStats.Level,
                 attackStat,
                 GetNPCAbilityOffenseBonus(npcStats, skillType, damageType) + Stat.GetStatAdjustment(activator, StatType.Attack));
             attack = ApplyNPCAbilitySourceAttackModifiers(activator, skillType, attack);

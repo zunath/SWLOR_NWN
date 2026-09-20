@@ -45,16 +45,32 @@ public class AnimationBindPoseTests
     }
 
     [Test]
-    public void ExportPreservesIntentionalConstantOffsetsAndScaleChanges()
+    public void ExportPreservesIntentionalConstantOffsetsAndScaleChangesOnAttachmentNodes()
     {
+        var project = Rig();
+        var pose = project.Sample(0);
+        pose[4] = pose[4] with { Position = pose[4].Position + Vector3.UnitY * .02f, Scale = 1.2f };
+        project.SetKey(0, pose);
+        var animation = Parse(project, AnimationMdl.Export(project)).Animations.Single();
+        var carrier = Nodes(animation.GeometryRoot!).Single(n => n.Name == "rhand");
+        carrier.PositionValues.Should().ContainSingle().Which.Should().Be(pose[4].Position);
+        carrier.ScaleValues.Should().ContainSingle().Which.Should().Be(1.2f);
+    }
+
+    [Test]
+    public void ExportNeverKeysASkeletonBoneOffsetOrScale()
+    {
+        // A bone offset belongs to the wearer's appearance. Keying one here would
+        // latch the authoring rig's proportions onto every other body.
         var project = Rig();
         var pose = project.Sample(0);
         pose[3] = pose[3] with { Position = pose[3].Position + Vector3.UnitY * .02f, Scale = 1.2f };
         project.SetKey(0, pose);
         var animation = Parse(project, AnimationMdl.Export(project)).Animations.Single();
         var head = Nodes(animation.GeometryRoot!).Single(n => n.Name == "head_g");
-        head.PositionValues.Should().ContainSingle().Which.Should().Be(pose[3].Position);
-        head.ScaleValues.Should().ContainSingle().Which.Should().Be(1.2f);
+        head.PositionValues.Should().BeEmpty();
+        head.ScaleValues.Should().BeEmpty();
+        head.OrientationValues.Should().NotBeEmpty();
     }
 
     [Test]
@@ -100,7 +116,8 @@ public class AnimationBindPoseTests
         Joints = [new("hero", -1, new(Vector3.Zero, Quaternion.Identity, 1)),
             new("rootdummy", 0, new(Vector3.UnitZ, Quaternion.Identity, 1)),
             new("neck_g", 1, new(new(0, -.08f, .47f), Quaternion.Identity, 1)),
-            new("head_g", 2, new(new(0, .02f, .08f), Quaternion.Identity, 1))]
+            new("head_g", 2, new(new(0, .02f, .08f), Quaternion.Identity, 1)),
+            new("rhand", 1, new(new(.15f, 0, .3f), Quaternion.Identity, 1))]
     };
 
     private static MdlModel Parse(AnimationProject rig, string clips) => new MdlReader().Parse(Encoding.UTF8.GetBytes(

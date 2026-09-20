@@ -24,6 +24,10 @@ Integration corrections:
   PR's original positions were behind or overlapping those barriers.
 - Internal warehouse travel retains the original two waypoints. Each landing
   is within three metres of its corresponding return interaction.
+- A local `STUCK_WAYPOINT` shares the main entrance landing, allowing recovery
+  anywhere in the concourse or warehouse without falling back to CZ-220.
+- GIT/GIC object lists are aligned in the concourse, exterior, and Shops,
+  including the exterior travel objects and the Shops workbench map marker.
 - Usable transition doors are unlocked, un-lockable, and plot protected.
   Entrances and exits have destination labels. The unused third elevator is
   locked, requires an unavailable key, is plot protected, and is explicitly

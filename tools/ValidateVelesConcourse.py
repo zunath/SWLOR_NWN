@@ -31,9 +31,12 @@ def validate():
     assert sum(value(a, "Area_Name") == "veles_exterior" for a in value(module, "Mod_Area_list")) == 1
     assert len(value(area, "Tile_List")) == value(area, "Width") * value(area, "Height")
     assert value(area, "Tileset") == value(read("Module/are/velesinterior.are.json"), "Tileset")
-    comments = read("Module/gic/veles_tradecon.gic.json")
-    for collection in ["Creature List", "Placeable List", "WaypointList"]:
-        assert len(value(comments, collection)) == len(value(interior, collection)), collection
+    for area_name in ["veles_tradecon", "veles_exterior", "veles_shops"]:
+        placed = read(f"Module/git/{area_name}.git.json")
+        comments = read(f"Module/gic/{area_name}.gic.json")
+        for collection, entries in placed.items():
+            if isinstance(entries, dict) and entries.get("type") == "list" and collection != "VarTable":
+                assert len(value(comments, collection)) == len(entries["value"]), (area_name, collection)
     manifest = read("tools/VelesConcourseContent.json")
     placement_fields = {"Tag", "X", "Y", "Z", "XPosition", "YPosition", "ZPosition",
                         "Bearing", "XOrientation", "YOrientation"}
@@ -92,6 +95,12 @@ def validate():
         return point
 
     outside_door = tagged(interior, "Door List", "concourse_exterior_door")
+    recovery = tagged(interior, "WaypointList", "STUCK_WAYPOINT")
+    main_landing = tagged(interior, "WaypointList", "V_Veles_To_Concourse")
+    assert value(recovery, "TemplateResRef") == "wp_stuck"
+    assert value(recovery, "HasMapNote") == 0
+    for coordinate in ["XPosition", "YPosition", "ZPosition"]:
+        assert value(recovery, coordinate) == value(main_landing, coordinate)
     warehouse_door = tagged(interior, "Door List", "concourse_warehouse_door")
     warehouse_exit = tagged(interior, "Placeable List", "concourse_warehouse_exit")
     assert value(outside_door, "LinkedTo") == "V_Concourse_To_Veles"

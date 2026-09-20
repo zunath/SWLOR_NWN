@@ -2054,6 +2054,13 @@
           "type": "cexostring",
           "value": "Current Veles content: veles_shops/WP_ESPIONAGE_BENCH"
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Emergency recovery at the main concourse entrance, outside the doorway."
+        }
       }
     ]
   }

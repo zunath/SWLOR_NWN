@@ -1339,11 +1339,12 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true,
             bool useUnscaledDamage = false,
-            Action<uint> beforeImpact = null)
+            Action<uint> beforeImpact = null,
+            bool isAreaImpact = false)
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             var totalDamage = 0;
-            RecordAbilityImpactShape(activator, skillType, isArea);
+            RecordAbilityImpactShape(activator, skillType, isArea || isAreaImpact);
 
             if (isArea)
             {
@@ -2085,6 +2086,14 @@ namespace SWLOR.Game.Server.Service
             return shape == CombatImpactAreaShape.Sphere
                 ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
                 : GetLocation(activator);
+        }
+
+        public static IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius)
+        {
+            return GetHostileCreaturesInCombatImpactShape(
+                    activator, OBJECT_INVALID, location, CombatImpactAreaShape.Sphere, radius, 0f, false, false)
+                .Where(creature => HasAbilityLineOfSight(activator, creature))
+                .ToList();
         }
 
         private static IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(

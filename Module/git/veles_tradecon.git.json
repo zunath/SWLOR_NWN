@@ -8872,11 +8872,11 @@
         "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
-          "value": 40
+          "value": 206
         },
         "Appearance_Type": {
           "type": "word",
-          "value": 6
+          "value": 10004
         },
         "ArmorPart_RFoot": {
           "type": "byte",
@@ -8980,11 +8980,11 @@
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 13
+          "value": 1
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 1
+          "value": 104
         },
         "Color_Tattoo1": {
           "type": "byte",
@@ -9021,7 +9021,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Renna Tarsk is a salvage technician who rebuilds discarded electronics into working prototypes. Her worn work clothes bear the marks of long hours spent coaxing damaged devices back to life."
+            "0": "Moira Halaz, one of many of the Veles residents, takes care of supply runs out to the various remote outposts around Viscara. She’s been plagued by the local wildlife as of late, and her distraught expression betrays that trouble is never too far away."
           }
         },
         "Dex": {
@@ -9039,7 +9039,7 @@
               "__struct_id": 2,
               "AddCost": {
                 "type": "dword",
-                "value": 0
+                "value": 49
               },
               "ArmorPart_Belt": {
                 "type": "byte",
@@ -9135,11 +9135,11 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 50
               },
               "Cursed": {
                 "type": "byte",
-                "value": 0
+                "value": 1
               },
               "DescIdentified": {
                 "type": "cexolocstring",
@@ -9147,7 +9147,9 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": ""
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -9294,14 +9296,6 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
-              },
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
-              "PaletteID": {
-                "type": "byte",
-                "value": 5
               }
             }
           ]
@@ -9470,7 +9464,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3900
+          "value": 3623
         },
         "Race": {
           "type": "byte",
@@ -9807,7 +9801,7 @@
         },
         "xAppearance_Head": {
           "type": "word",
-          "value": 40
+          "value": 206
         },
         "xArmorPart_RFoot": {
           "type": "word",

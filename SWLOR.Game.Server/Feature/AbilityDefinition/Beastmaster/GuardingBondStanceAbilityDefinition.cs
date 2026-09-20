@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             builder
                 .Create(FeatType.GuardingBondStance, PerkType.GuardingBondStance)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardingBond)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardingBondStance)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Guarding Bond Stance")
                 .Level(1)

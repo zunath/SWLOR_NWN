@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             var ability = _builder
                 .Create(FeatType.SustainBurnStanceTechnique, PerkType.CombatAnalyzer)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SustainBurnTechnique)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SustainBurnStanceTechnique)
                 .Name("Sustain Burn Stance")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

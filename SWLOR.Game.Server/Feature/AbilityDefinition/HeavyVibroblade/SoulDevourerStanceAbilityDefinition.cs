@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             builder
                 .Create(FeatType.SoulDevourerStance1, PerkType.SoulDevourerStance)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulDevourer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulDevourerStance)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Soul Devourer Stance")
                 .Level(1)

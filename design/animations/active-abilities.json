@@ -22,7 +22,7 @@
     "Profile": "Call companion"
   },
   {
-    "Id": "GuardingBond",
+    "Id": "GuardingBondStance",
     "EquipmentRequirement": "Unrestricted",
     "Name": "Guarding Bond Stance",
     "DisplayName": "Guarding Bond Stance",
@@ -42,7 +42,7 @@
     "CurrentPlayback": "FireForgetTaunt"
   },
   {
-    "Id": "PredatoryBond",
+    "Id": "PredatoryBondStance",
     "EquipmentRequirement": "Unrestricted",
     "Name": "Predatory Bond Stance",
     "DisplayName": "Predatory Bond Stance",
@@ -1849,7 +1849,7 @@
     "CurrentPlayback": "CastOutAnimation"
   },
   {
-    "Id": "SoulDevourer",
+    "Id": "SoulDevourerStance",
     "EquipmentRequirement": "TwoHanded",
     "Name": "Soul Devourer Stance",
     "DisplayName": "Soul Devourer Stance",
@@ -1859,7 +1859,7 @@
     "Description": "While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)",
     "Reference": "",
     "BibleAnimationRow": 150,
-    "PerkId": "SoulDevourer",
+    "PerkId": "SoulDevourerStance",
     "Feats": [
       "SoulDevourerStance1"
     ],
@@ -2632,7 +2632,7 @@
     "CurrentPlayback": "DoubleStrike"
   },
   {
-    "Id": "ApexCollapseTechnique",
+    "Id": "ApexCollapseStanceTechnique",
     "EquipmentRequirement": "Unrestricted",
     "Name": "Apex Collapse Stance",
     "DisplayName": "Apex Collapse Stance",
@@ -3718,7 +3718,7 @@
     "CurrentPlayback": "PointPistol"
   },
   {
-    "Id": "SustainBurnTechnique",
+    "Id": "SustainBurnStanceTechnique",
     "EquipmentRequirement": "Unrestricted",
     "Name": "Sustain Burn Stance",
     "DisplayName": "Sustain Burn Stance",
@@ -3960,7 +3960,7 @@
     "CurrentPlayback": "CastOutAnimation"
   },
   {
-    "Id": "WardenWallTechnique",
+    "Id": "WardenWallStanceTechnique",
     "EquipmentRequirement": "Unrestricted",
     "Name": "Warden Wall Stance",
     "DisplayName": "Warden Wall Stance",

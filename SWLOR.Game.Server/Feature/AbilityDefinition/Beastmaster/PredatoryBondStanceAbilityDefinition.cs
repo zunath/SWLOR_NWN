@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             builder
                 .Create(FeatType.PredatoryBondStance, PerkType.PredatoryBondStance)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PredatoryBond)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PredatoryBondStance)
                 .UsesImmediateAuthoredAnimation()
                 .Name("Predatory Bond Stance")
                 .Level(1)

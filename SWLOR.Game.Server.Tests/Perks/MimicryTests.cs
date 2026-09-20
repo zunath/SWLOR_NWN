@@ -140,8 +140,9 @@ public class MimicryTests
                 $"{feat}'s MimicrySourceFeat ({ability.MimicrySourceFeat}) should be a registered NPC ability");
 
             var sourceAbility = npcAbilitiesByFeat[ability.MimicrySourceFeat];
-            ability.Name.Should().Be(sourceAbility.Name,
-                $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat})");
+            ability.Name.Should().BeOneOf(new[] { sourceAbility.Name, $"{sourceAbility.Name} Stance" },
+                $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat}), " +
+                "optionally carrying the Stance suffix that marks a toggled stance technique");
 
             // Passive traits have no activation, and stances / non-damaging support utilities are not
             // hostile casts, so hostility (an activation concept mirrored from the source) only applies

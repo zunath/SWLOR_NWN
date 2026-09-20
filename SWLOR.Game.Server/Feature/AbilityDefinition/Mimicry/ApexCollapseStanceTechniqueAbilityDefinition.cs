@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             var ability = _builder
                 .Create(FeatType.ApexCollapseStanceTechnique, PerkType.CombatAnalyzer)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ApexCollapseTechnique)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ApexCollapseStanceTechnique)
                 .Name("Apex Collapse Stance")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

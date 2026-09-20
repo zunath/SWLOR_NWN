@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
         {
             var ability = _builder
                 .Create(FeatType.WardenWallStanceTechnique, PerkType.CombatAnalyzer)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenWallTechnique)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenWallStanceTechnique)
                 .Name("Warden Wall Stance")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

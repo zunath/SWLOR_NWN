@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class ReworkedAbilityAnimationTests
 {
     private static IEnumerable<AbilityAnimationEntry> Entries => ActiveAbilityAnimationCatalog.Entries.Where(entry =>
-        entry.Category == "Devices" || entry.Id is "CallBeast" or "GuardingBond" or "PredatoryBond");
+        entry.Category == "Devices" || entry.Id is "CallBeast" or "GuardingBondStance" or "PredatoryBondStance");
 
     [Test]
     public void EveryReworkedAbilityRankUsesItsDeclaredGameplayStageAndKeepsNativeNpcFallback()

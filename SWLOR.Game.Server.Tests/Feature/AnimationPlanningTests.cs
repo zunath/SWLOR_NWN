@@ -74,7 +74,7 @@ public class AnimationPlanningTests
         var plan = Csv("design/animations/animation-plan.csv");
         plan.Select(row => row["PerkId"]).Should().NotIntersectWith(beasts);
         plan.Where(row => row["Category"] == "Beast Mastery").Select(row => row["PerkId"]).Should().BeEquivalentTo(
-            "Tame", "ReviveBeast", "Reward", "SoothePet", "GuardingBond", "PredatoryBond");
+            "Tame", "ReviveBeast", "Reward", "SoothePet", "GuardingBondStance", "PredatoryBondStance");
     }
 
     [Test]

@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .AddKillObjective(NPCGroupType.Viscara_MandalorianRangers, 9)
-                .SetStateJournalText("Beat up nine Mandalorian Rangers and return to Orlando Doon for your reward.")
+                .SetStateJournalText("Defeat nine Mandalorian Rangers inside the facility in Ruined Wildwoods, reached through North Wildwoods. Mandalorian Hunters in the Wildwoods region also count. Return to Orlando Doon in Veles Colony for your reward.")
 
                 .AddState()
                 .SetStateJournalText("You beat up nine Mandalorian Rangers. Return to Orlando Doon in Veles Colony for your reward.")
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteQuest("locate_m_fac")
 
                 .AddState()
-                .SetStateJournalText("Tal'gar needs you to find Captain N'guth, who he sent out to the Wildwoods in search of the Mandalorian facility. Find him and bring him back to Veles Colony.")
+                .SetStateJournalText("Tal'gar Meyne needs you to find Captain N'guth and his team in Viscara - Wildwoods. From Crossroads East, take the Wildwoods trail rather than the North Wildwoods trail. Search for the missing team and report back to Tal'gar in Veles Colony.")
 
                 .AddState()
                 .SetStateJournalText("You found the remains of Captain N'guth. Return to Tal'gar in Veles Colony to report.")
@@ -174,11 +174,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 // Enter trigger
                 .AddState()
-                .SetStateJournalText("There are reports of a Mandalorian facility located somewhere in the Wildwoods. Search the woods, find the facility, and report back to Tal'gar in Veles Colony.")
+                .SetStateJournalText("Travel from the Wildlands to Crossroads East, then through North Wildwoods to Ruined Wildwoods. Locate the Mandalorian facility there and report back to Tal'gar Meyne in Veles Colony. You do not need to enter the facility.")
 
                 // Talk to NPC
                 .AddState()
-                .SetStateJournalText("You found the Mandalorian facility but it's locked. Return to Tal'gar and report your findings.")
+                .SetStateJournalText("You found the Mandalorian facility in Ruined Wildwoods, but its door is locked. Return to Tal'gar Meyne in Veles Colony and report your findings.")
 
                 .AddGoldReward(2250)
                 .AddXPReward(2000);
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .AddCollectItemObjective("man_tags", 5)
-                .SetStateJournalText("Defeat Mandalorian raiders and return five of their dog tags to Irene Colsstaad in Veles Colony.")
+                .SetStateJournalText("Collect five Mandalorian dog tags. Hunters and scouts throughout the Wildwoods region can drop them, as can raiders inside the facility in Ruined Wildwoods, reached through North Wildwoods. Return the tags to Irene Colsstaad in Veles Colony.")
 
                 .AddState()
                 .SetStateJournalText("Speak to Irene Colsstaad for your reward.")
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 // Use object
                 .AddState()
-                .SetStateJournalText("Harry Mason needs you to slice six terminals found in the Mandalorian Facility. Obtain the data from each of the terminals and return them to him.")
+                .SetStateJournalText("Slice all six terminals inside the Mandalorian facility in Ruined Wildwoods, reached through North Wildwoods. Bring the data from every terminal to Harry Mason in Veles Colony.")
 
                 .AddGoldReward(4125)
                 .AddXPReward(6000)
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .AddKillObjective(NPCGroupType.Viscara_MandalorianLeader, 1)
-                .SetStateJournalText("Tal'gar wants you to avenge Captain N'guth's death. Enter the Mandalorian facility, kill the War Hero, and report back to him when it's done.")
+                .SetStateJournalText("Use Tal'gar's key to enter the Mandalorian facility in Ruined Wildwoods, reached through North Wildwoods. Kill the Mandalorian War Hero inside and report back to Tal'gar Meyne in Veles Colony.")
 
                 .AddState()
                 .SetStateJournalText("You found and killed the Mandalorian War Hero. Return to Tal'gar to report.")
@@ -379,7 +379,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .AddKillObjective(NPCGroupType.Viscara_MandalorianWarriors, 9)
-                .SetStateJournalText("Beat up nine Mandalorian Warriors and return to Orlando Doon for your reward.")
+                .SetStateJournalText("Defeat nine Mandalorian Warriors inside the facility in Ruined Wildwoods, reached through North Wildwoods. Return to Orlando Doon in Veles Colony for your reward.")
 
                 .AddState()
                 .SetStateJournalText("You beat up nine Mandalorian Warriors. Return to Orlando Doon in Veles Colony for your reward.")

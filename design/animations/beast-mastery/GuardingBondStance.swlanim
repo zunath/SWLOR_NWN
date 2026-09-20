@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Name": "GuardingBond",
+  "Name": "GuardingBondStance",
   "ModelName": "a_ba",
   "AnimationRoot": "rootdummy",
   "Duration": 1.8,

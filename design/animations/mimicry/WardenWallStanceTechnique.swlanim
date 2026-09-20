@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Name": "WardenWallTechnique",
+  "Name": "WardenWallStanceTechnique",
   "ModelName": "a_ba",
   "AnimationRoot": "rootdummy",
   "Duration": 3.15,

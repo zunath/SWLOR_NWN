@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Name": "SustainBurnTechnique",
+  "Name": "SustainBurnStanceTechnique",
   "ModelName": "a_ba",
   "AnimationRoot": "rootdummy",
   "Duration": 2.65,

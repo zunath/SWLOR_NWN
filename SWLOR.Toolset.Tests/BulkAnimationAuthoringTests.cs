@@ -165,7 +165,9 @@ public class BulkAnimationAuthoringTests
             File.WriteAllText(manifest, manifestText);
             File.WriteAllText(catalog, "// Original catalog");
             var input = Path.Combine(folder, "input.json");
-            File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.", SourceAnimation: "1hreadyr", Profile: "Pistol aim and recoil") }));
+            // The catalog is rendered from this entry, so it must declare the grip its motion was
+            // authored for; the rollback under test only runs once that rendering succeeds.
+            File.WriteAllText(input, JsonSerializer.Serialize(new[] { new ActiveMotion("NewShot", "sw_newshot", "Pistol", "Combat", "Deal damage.", SourceAnimation: "1hreadyr", Profile: "Pistol aim and recoil", EquipmentRequirement: "Pistol") }));
             using (var locked = new FileStream(catalog, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 Action generate = () => BulkMotionAuthor.Generate(model, input, output, true);

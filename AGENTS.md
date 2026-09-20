@@ -39,7 +39,8 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Building or testing `SWLOR.Game.Server` fires a Windows post-build deploy (`SWLOR.CLI.exe -o`) that is slow and unnecessary for verification. Always skip it by passing `-p:RunPostBuildEvent=Never` on builds, and use a build-once/test-many flow.
 - Build a single time, then run only the relevant tests without rebuilding: `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`, followed by `dotnet test --no-build --filter "FullyQualifiedName~<RelevantTestClass>"`. Use `|` to combine multiple filters.
-- Only run the full unfiltered suite (`dotnet test` with no `--filter`) when a change is broad enough to plausibly affect unrelated systems, or as a final pre-handoff check — not after every edit.
+- Do not run the full unfiltered suite (`dotnet test` with no `--filter`). It takes many minutes and is not a handoff requirement. Filtered runs covering the systems a change touches are the expected verification, including for the final pre-handoff check. A small or localized change — one creature's stats, one recipe, one definition, one bug fix — is verified by the tests that guard it and nothing more.
+- Run the full suite only when the user asks for it, or when a change is genuinely broad enough to plausibly affect unrelated systems (shared services, combat/stat infrastructure, enum or 2DA-wide edits, generator output). If unsure whether a change qualifies, run the filtered tests and say which ones you ran instead of reaching for the full suite.
 
 ## Naming
 

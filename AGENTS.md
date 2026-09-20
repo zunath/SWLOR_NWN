@@ -2,6 +2,10 @@
 
 This file is the shared rule set for all coding agents. Codex reads it natively; Claude Code imports it through `CLAUDE.md`. Keep cross-agent rules here rather than in agent-specific files.
 
+## Documentation
+
+- Do not add task-specific README files or README writeups for routine fixes, world-content changes, or PR work unless the user explicitly requests documentation. Keep implementation summaries and validation results in the PR description and conversation.
+
 ## Agent Skills
 
 - Agent skills are canonical in `.codex/skills/` and mirrored to `.claude/skills/` so both Codex and Claude Code discover them. The `agents/openai.yaml` files are Codex-only interface metadata and are not mirrored.

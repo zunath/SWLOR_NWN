@@ -1473,7 +1473,25 @@ function Get-StatusEffectStrRefsByKey([object[]]$statusRows, [hashtable]$tlkText
     return $map
 }
 
-function Get-StatusEffectIconRowsByKey([object[]]$statusRows, [string]$path) {
+function Get-RetiredEffectIconRows([string]$path) {
+    $retired = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($line in Get-Content -Path $path) {
+        $trimmed = $line.Trim()
+        if ($trimmed -match "^(\d+)\s+\*\*\*\*\s") {
+            $row = [int]$Matches[1]
+            if ($row -ge $StatusEffectIconStart) {
+                [void]$retired.Add($row)
+            }
+        }
+    }
+
+    return $retired
+}
+
+function Get-StatusEffectIconRowsByKey(
+    [object[]]$statusRows,
+    [string]$path,
+    [System.Collections.Generic.HashSet[int]]$retiredRows = $null) {
     $text = Get-Content -Path $path -Raw
     $existingRowsByKey = @{}
     $maximumExistingRow = $StatusEffectIconStart - 1
@@ -1492,6 +1510,17 @@ function Get-StatusEffectIconRowsByKey([object[]]$statusRows, [string]$path) {
 
     $rowsByKey = @{}
     $usedRows = [System.Collections.Generic.HashSet[int]]::new()
+
+    # Retired slots are still occupied: their rows hold blank placeholders so the live rows below
+    # them keep their indices. Reserve them so a new effect is allocated past the retired range
+    # instead of colliding with a placeholder.
+    if ($null -ne $retiredRows) {
+        foreach ($retired in $retiredRows) {
+            [void]$usedRows.Add($retired)
+            $maximumExistingRow = [Math]::Max($maximumExistingRow, $retired)
+        }
+    }
+
     foreach ($entry in $statusRows) {
         if (!$existingRowsByKey.ContainsKey($entry.Key)) {
             continue
@@ -2094,7 +2123,8 @@ $tlkTextToStrRef = Get-CustomTlkTextToStrRef (Resolve-RepoPath $TlkJsonPath)
 $statusEffectStrRefsByKey = Get-StatusEffectStrRefsByKey $statusRows $tlkTextToStrRef
 
 if ($UpdateStatusEffectCode) {
-    $statusEffectRowsByKey = Get-StatusEffectIconRowsByKey $statusRows (Resolve-RepoPath $EffectIconTypePath)
+    $retiredEffectIconRows = Get-RetiredEffectIconRows (Resolve-RepoPath $EffectIcons2daPath)
+    $statusEffectRowsByKey = Get-StatusEffectIconRowsByKey $statusRows (Resolve-RepoPath $EffectIconTypePath) $retiredEffectIconRows
     Update-EffectIconTypeEnum $statusRows (Resolve-RepoPath $EffectIconTypePath) $statusEffectRowsByKey
     Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath) $statusEffectStrRefsByKey $statusEffectRowsByKey
     Update-StatusEffectCode $statusRows

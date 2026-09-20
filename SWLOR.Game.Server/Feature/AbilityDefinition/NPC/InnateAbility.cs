@@ -129,6 +129,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 var budget = new PerCastResourceBudget(amountPerHit, maximumPerCast);
                 return (activator, _) =>
                 {
+                    // The ceiling bounds what the ability offers. The recipient's own
+                    // FPRestorePercentAdjustment then scales the per-hit amount and the ceiling
+                    // together, exactly as it does for every other authored FP restore.
                     var amount = budget.Take();
                     if (amount > 0)
                         Stat.RestoreFP(activator, amount);

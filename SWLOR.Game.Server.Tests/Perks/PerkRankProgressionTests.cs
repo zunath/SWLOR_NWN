@@ -39,11 +39,15 @@ public class PerkRankProgressionTests
                     if (before == null || after == null)
                         continue;
 
-                    if (before > 0 && after <= 0)
+                    // A benefit is not always a positive number: stats declared
+                    // BeneficialWhenNegative (recast delay reductions, for instance) help the
+                    // player by going down, so ask the stat itself rather than the sign.
+                    if (Stat.IsBeneficialStatAdjustment(stat, before.Value) &&
+                        !Stat.IsBeneficialStatAdjustment(stat, after.Value))
                     {
                         regressions.Add(
                             $"{detail.Category}/{type} ({detail.Name}): {stat} is {before} at rank " +
-                            $"{lower.Key} but absent at rank {higher.Key}");
+                            $"{lower.Key} but {(after == 0 ? "absent" : $"{after}")} at rank {higher.Key}");
                     }
                 }
             }

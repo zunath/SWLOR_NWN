@@ -2,9 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Response Style
+
+- Keep responses terse and direct. Lead with the result. Answer in as few words as the task allows.
+- Skip preamble, restatements of the request, and closing summaries. Do not recap what you just did when the user can read the diff or the PR description.
+- Do not narrate intermediate steps, tools used, files opened, or reasoning that did not change the outcome. Report what the user needs to act on.
+- Use plain language. No flowery or dramatic phrasing, no marketing tone, no filler adjectives, no "I'd be happy to", no praise of the user's question, no enthusiasm padding.
+- Prefer a short paragraph or a few bullets over tables and headings. Use a table only when comparing several values across several rows; use headings only when a response has genuinely separate sections.
+- State findings plainly rather than building up to them. One sentence of context is usually enough.
+- Do not repeat information already in the commit message, PR body, or a previous response in the same conversation. Link or reference instead.
+- When something is done and verified, say so in one line. When something failed or was skipped, say that in one line with the reason. No hedging either way.
+
 ## Agent Rules (Required Reading)
 
-The mandatory project rules — response style, read-only areas, naming, stat-driven gameplay, player identity, Design Bible workflow, TLK entries, ability definitions/icons/VFX, and more — live in AGENTS.md and are imported here:
+The mandatory project rules — read-only areas, naming, stat-driven gameplay, player identity, Design Bible workflow, TLK entries, ability definitions/icons/VFX, and more — live in AGENTS.md and are imported here:
 
 @AGENTS.md
 

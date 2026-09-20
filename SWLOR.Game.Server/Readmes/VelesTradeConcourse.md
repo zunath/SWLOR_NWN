@@ -26,11 +26,13 @@ Integration corrections:
   Entrances and exits have destination labels. The unused third elevator is
   locked, requires an unavailable key, is plot protected, and is explicitly
   labelled **Out of Service** rather than presented as a usable exit.
-- NPC conversations route through `dialog_start`. The new welcome-droid and
-  flower-shop dialogue is authored as SWLOR graphs; no legacy DLGs were added.
+- NPC conversations route through `dialog_start`. The welcome droid uses a new
+  SWLOR graph; relocated merchants retain their canonical conversation IDs.
+  No legacy DLGs were added.
 - Concourse stores have distinct tags so module-wide store lookup cannot select
-  existing Veles shops. The food merchants use separate graphs preserving their
-  existing dialogue. Oomog's existing graph now offers access to `DataStore`.
+  existing Veles shops. Adega, Volnatu, and Hana use `vendor_merchant`,
+  `veles_volnatu`, and `night_viscflower`, with their existing store actions
+  redirected to the concourse stores. Oomog's graph offers access to `DataStore`.
 - Obsolete `SCRIPT_1` dispatch locals were removed from recovered teleporters;
   their `teleport` event uses the current handler directly.
 

@@ -75,7 +75,7 @@
         {
           "Key": "action-open-store",
           "Arguments": [
-            "NIGHT_FLOWER_SHOP"
+            "concourse_flower"
           ]
         }
       ],

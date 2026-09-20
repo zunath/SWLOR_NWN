@@ -3708,7 +3708,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "concourse_treat"
+          "value": "vendor_merchant"
         },
         "CRAdjust": {
           "type": "int",
@@ -4728,7 +4728,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "concourse_food"
+          "value": "veles_volnatu"
         },
         "CRAdjust": {
           "type": "int",
@@ -6970,7 +6970,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "flowershop"
+          "value": "night_viscflower"
         },
         "CRAdjust": {
           "type": "int",

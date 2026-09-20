@@ -130,6 +130,12 @@ def validate():
         return name.removeprefix("Flower Shop ")
     npc_names = [npc_name(npc) for npc in value(interior, "Creature List")]
     assert len(npc_names) == len(set(npc_names))
+    canonical_merchants = {"Adega Jorgan": "vendor_merchant", "Volnatu Gigg": "veles_volnatu", "Hana": "night_viscflower"}
+    for name, conversation in canonical_merchants.items():
+        npc = next(npc for npc in value(interior, "Creature List") if npc_name(npc) == name)
+        assert value(npc, "Conversation") == conversation
+    for retired in ["concourse_treat", "concourse_food", "flowershop"]:
+        assert not (ROOT / f"SWLOR.Game.Server/ConversationData/{retired}.conversation.json").exists()
     opened = set()
     for npc in value(interior, "Creature List"):
         conversation = value(npc, "Conversation")

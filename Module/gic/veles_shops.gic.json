@@ -107,13 +107,6 @@
           "type": "cexostring",
           "value": ""
         }
-      },
-      {
-        "__struct_id": 4,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
       }
     ]
   },

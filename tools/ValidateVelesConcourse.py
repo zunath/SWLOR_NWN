@@ -1,6 +1,7 @@
 """Validate recovered Trade Concourse travel, merchant, and resource wiring."""
 import json
 import math
+import hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,7 +28,48 @@ def validate():
     assert sum(value(a, "Area_Name") == "veles_exterior" for a in value(module, "Mod_Area_list")) == 1
     assert len(value(area, "Tile_List")) == value(area, "Width") * value(area, "Height")
     assert value(area, "Tileset") == value(read("Module/are/velesinterior.are.json"), "Tileset")
-    read("Module/gic/veles_tradecon.gic.json")
+    comments = read("Module/gic/veles_tradecon.gic.json")
+    for collection in ["Creature List", "Placeable List", "WaypointList"]:
+        assert len(value(comments, collection)) == len(value(interior, collection)), collection
+    manifest = read("tools/VelesConcourseContent.json")
+    placement_fields = {"Tag", "X", "Y", "Z", "XPosition", "YPosition", "ZPosition",
+                        "Bearing", "XOrientation", "YOrientation"}
+    def gameplay(obj):
+        return {key: item for key, item in obj.items() if key not in placement_fields}
+
+    for entry in manifest["placements"]:
+        source = read(f"Module/git/{entry['area']}.git.json")
+        matches = [o for o in value(interior, entry["list"]) if value(o, "Tag") == entry["tag"]]
+        assert len(matches) == 1, entry["tag"]
+        placed = matches[0]
+        if entry.get("relocated"):
+            assert not any(value(o, "Tag") == entry["sourceTag"] for o in value(source, entry["list"]))
+            digest = hashlib.sha256(json.dumps(gameplay(placed), sort_keys=True).encode()).hexdigest()
+            assert digest == entry["gameplaySha256"], f"Changed relocated NPC data: {entry['tag']}"
+        else:
+            original = next(o for o in value(source, entry["list"]) if value(o, "Tag") == entry["sourceTag"])
+            assert gameplay(placed) == gameplay(original), f"Stale gameplay data: {entry['tag']}"
+        x, y = ("X", "Y") if entry["list"] == "Placeable List" else ("XPosition", "YPosition")
+        assert (value(placed, x), value(placed, y)) == (entry["x"], entry["y"])
+        assert 2 < entry["x"] < 28 and 2 < entry["y"] < 28
+        if entry["list"] == "WaypointList":
+            continue
+        # Keep the new interactions away from existing NPCs, props and exits.
+        # Floor panels/rugs and overhead dressing are not obstacles at their origins.
+        for collection, ox, oy, oz in [("Creature List", "XPosition", "YPosition", "ZPosition"),
+                                       ("Placeable List", "X", "Y", "Z"), ("Door List", "X", "Y", "Z")]:
+            for other in value(interior, collection):
+                if other is placed or value(other, oz) > 2:
+                    continue
+                name = str(value(other, "LocName") or "")
+                if "Floor -" in name or "Rug" in name:
+                    continue
+                assert math.hypot(entry["x"] - value(other, ox), entry["y"] - value(other, oy)) >= 1.25, entry["tag"]
+    for entry in manifest["stores"]:
+        source = read(f"Module/git/{entry['area']}.git.json")
+        original = next(o for o in value(source, "StoreList") if value(o, "Tag") == entry["sourceTag"])
+        placed = next(o for o in value(interior, "StoreList") if value(o, "Tag") == entry["tag"])
+        assert gameplay(placed) == gameplay(original), f"Stale store: {entry['tag']}"
     waypoints = [value(o, "Tag") for data in [interior, exterior] for o in value(data, "WaypointList")]
     for door in value(interior, "Door List"):
         if value(door, "LinkedToFlags"):
@@ -79,6 +121,11 @@ def validate():
             if obj is entrance:
                 assert destination == "V_Veles_To_Concourse"
     stores = [value(o, "Tag") for o in value(interior, "StoreList")]
+    def npc_name(npc):
+        name = " ".join((value(npc, key) or {}).get("0", "") for key in ["FirstName", "LastName"]).strip()
+        return name.removeprefix("Flower Shop ")
+    npc_names = [npc_name(npc) for npc in value(interior, "Creature List")]
+    assert len(npc_names) == len(set(npc_names))
     opened = set()
     for npc in value(interior, "Creature List"):
         conversation = value(npc, "Conversation")
@@ -97,6 +144,8 @@ def validate():
         if path.name == "veles_tradecon.git.json":
             continue
         data = read(path)
+        if "veles" in path.name or "vels" in path.name:
+            assert not set(npc_names).intersection(npc_name(npc) for npc in value(data, "Creature List")), path
         assert not opened.intersection(value(o, "Tag") for o in data.get("StoreList", {}).get("value", [])), path
         if path.name != "veles_exterior.git.json":
             assert not set(["V_Veles_To_Concourse", "V_Concourse_To_Veles",

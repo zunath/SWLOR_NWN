@@ -142,34 +142,6 @@
           "type": "cexostring",
           "value": ""
         }
-      },
-      {
-        "__struct_id": 4,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Volnatu Gigg: east side of the main market, facing the terminals. Restored from the original Veles exterior."
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Adega Jorgan: east side of the main market, facing the terminals. Restored from the original Veles exterior."
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Flower Shop Hana: east side of the main market, facing the terminals. Restored from the original Veles exterior."
-        }
       }
     ]
   },

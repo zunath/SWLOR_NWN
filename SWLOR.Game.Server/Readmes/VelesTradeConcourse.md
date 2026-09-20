@@ -5,12 +5,12 @@ commit `b6a56eda752eb6f129c83d16c9eec152ec114567`, without merging its history.
 
 The recovered map is `veles_tradecon`, named **Viscara - Veles - Trade
 Concourse**. Its warehouse is an internal section of the same area. The area
-contains eight creatures, five stores, three doors, and 262 placeables. Its
+contains ten creatures, five stores, three doors, and 266 placeables. Its
 `udp2` tileset is already used by the current module's `velesinterior` area.
 
 Only the concourse ARE/GIT/GIC and two exterior travel objects were extracted.
-Current exterior objects, other areas, scripts, and submodule revisions were
-preserved. The area is registered in the module and the Toolset's Veles folder.
+World content is preserved except for the original placements of the named
+NPCs relocated below. Scripts and submodule revisions are unchanged. The area is registered in the module and the Toolset's Veles folder.
 
 Integration corrections:
 
@@ -33,6 +33,41 @@ Integration corrections:
   existing dialogue. Oomog's existing graph now offers access to `DataStore`.
 - Obsolete `SCRIPT_1` dispatch locals were removed from recovered teleporters;
   their `teleport` event uses the current handler directly.
+
+## Current-content audit
+
+Compared the current `veles_shops` and `veles_exterior` placed-object inventories
+against those files at the source commit. Existing service stations remain
+available. Named NPCs are relocated; their original GIT and matching GIC entries
+are removed so each has exactly one placement across Veles:
+
+| Current addition | Concourse placement |
+| --- | --- |
+| Sera, including her current quest conversation | West aisle, (8, 12) |
+| Renna, including her current conversation and quest local | East aisle, (23, 14) |
+| Espionage Workbench, crafting skill 49 | West aisle, (7, 18), with its map note |
+| Contract Board | East aisle, (23, 11) |
+| Training Terminal | East aisle, (23, 17); one copy provides the service of both exterior terminals |
+| Viscara Market Terminal | West aisle, (7, 21), beside the workbench |
+
+The market terminal is included to preserve the workbench's nearby market access.
+Adega, Volnatu, and Hana were already represented by the recovered map; their
+duplicate exterior placements are removed. Sera and Renna are removed from
+Shops and the exterior and retain their canonical tags in the concourse.
+Repeated ambient guards, patrons, employees, and chefs remain unchanged. Merchant
+stores and the welcome droid's goods store now use the current exterior's full
+store data, retaining separate concourse tags and placement coordinates. The
+exterior fence, invisible wall, unstuck waypoint, and travel objects are location
+infrastructure and are not duplicated inside the concourse.
+
+`tools/VelesConcourseContent.json` records each source and destination. Validation
+compares copied services and stores against their current sources. Relocated
+NPCs retain checksums of their original placed gameplay data, including scripts,
+conversations, locals, inventory, and stats, ignoring only placement and tag
+fields. All concourse NPC names, including Hana's former Flower Shop prefix, are
+checked for duplicates across Veles. It also checks GIC alignment and minimum
+origin spacing around
+new interactions; origin spacing does not replace an engine walkmesh check.
 
 Run `python tools/ValidateVelesConcourse.py` to check registration, tile count,
 paired travel destinations and nearby return interactions, street-side exterior

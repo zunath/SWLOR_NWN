@@ -1,0 +1,87 @@
+{
+  "sourceCommit": "b6a56eda752eb6f129c83d16c9eec152ec114567",
+  "placements": [
+    {
+      "area": "veles_shops",
+      "list": "Creature List",
+      "sourceTag": "sera_vonn",
+      "tag": "sera_vonn",
+      "x": 8.0,
+      "y": 12.0,
+      "gameplaySha256": "88e9237aecf45684dbc9d7b9040b78cbd0e20ee923d155a0589383d478cb8562",
+      "relocated": true
+    },
+    {
+      "area": "veles_exterior",
+      "list": "Creature List",
+      "sourceTag": "rennatarsk",
+      "tag": "rennatarsk",
+      "x": 23.0,
+      "y": 14.0,
+      "gameplaySha256": "f965aceb47edfb1d26ac3b5a1e3512cb95137ba5079d529c11989fbdc784e863",
+      "relocated": true
+    },
+    {
+      "area": "veles_shops",
+      "list": "Placeable List",
+      "sourceTag": "espionage_bench",
+      "tag": "concourse_espionage",
+      "x": 7.0,
+      "y": 18.0
+    },
+    {
+      "area": "veles_shops",
+      "list": "Placeable List",
+      "sourceTag": "gtn_terminal",
+      "tag": "concourse_market",
+      "x": 7.0,
+      "y": 21.0
+    },
+    {
+      "area": "veles_shops",
+      "list": "Placeable List",
+      "sourceTag": "qcontract_board",
+      "tag": "concourse_contract",
+      "x": 23.0,
+      "y": 11.0
+    },
+    {
+      "area": "veles_exterior",
+      "list": "Placeable List",
+      "sourceTag": "train_terminal",
+      "tag": "concourse_training",
+      "x": 23.0,
+      "y": 17.0
+    },
+    {
+      "area": "veles_shops",
+      "list": "WaypointList",
+      "sourceTag": "WP_ESPIONAGE_BENCH",
+      "tag": "WP_CONCOURSE_ESP",
+      "x": 7.0,
+      "y": 18.0
+    }
+  ],
+  "stores": [
+    {
+      "area": "veles_exterior",
+      "sourceTag": "TreatVendor",
+      "tag": "concourse_treat"
+    },
+    {
+      "area": "veles_exterior",
+      "sourceTag": "veles_street_food",
+      "tag": "concourse_food"
+    },
+    {
+      "area": "veles_exterior",
+      "sourceTag": "NIGHT_FLOWER_SHOP",
+      "tag": "concourse_flower"
+    },
+    {
+      "area": "veles_exterior",
+      "sourceTag": "visc_smuggler",
+      "tag": "concourse_goods"
+    }
+  ]
+}

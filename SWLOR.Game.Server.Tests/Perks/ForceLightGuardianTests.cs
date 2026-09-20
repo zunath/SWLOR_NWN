@@ -479,13 +479,31 @@ public class ForceLightGuardianTests
             .Calculate(OBJECT_INVALID).Should().Be(8);
 
         var root = FindRepositoryRoot();
-        var support = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "LightGuardianPowerSupport.cs").FullName);
-        support.Should().Contain("StatType.WeaponAndForceDamageDealtPercentAdjustment",
+        var barrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
+        barrier.Should().Contain("StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment]",
             "the bonus must ride the shared weapon-and-Force damage stat rather than a bespoke path");
-        support.Should().Contain("TemporaryStatModifier.Replace(",
-            "replacing a ward pool must clear the previous caster's empowerment");
+        barrier.Should().Contain("Stat.GetStatAdjustment(Source, StatType.LightGuardianTemporaryHPEmpowerment)",
+            "the amount comes from the caster that granted the pool");
+
+        var support = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "LightGuardianPowerSupport.cs").FullName);
+        support.Should().NotContain("WeaponAndForceDamageDealtPercentAdjustment",
+            "a parallel timed modifier would outlive a ward consumed before its 30 seconds elapse");
         support.Should().NotContain("PerkType.ReflectiveBarrier",
             "shared support code must not special-case the perk that grants the stat");
+    }
+
+    [Test]
+    public void ReflectiveBarrierEmpowerment_EndsWithTheWardPoolRatherThanOnItsOwnClock()
+    {
+        var root = FindRepositoryRoot();
+        var barrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
+
+        // The damage bonus and the reflection share one effect, so the existing pool-depletion
+        // removal covers both: a hit that consumes the last temporary HP ends the bonus with it.
+        barrier.Should().Contain("private void RemoveWhenGuardianWardPoolEnds(uint creature)");
+        barrier.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(");
+        barrier.Should().Contain("TemporaryHitPointEffectKey.GuardianWard");
+        barrier.Should().Contain("public void OnBeforeDamageTaken(");
     }
 
     [Test]

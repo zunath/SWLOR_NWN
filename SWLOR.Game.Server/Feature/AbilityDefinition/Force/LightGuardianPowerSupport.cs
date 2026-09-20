@@ -43,27 +43,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(ReflectiveBarrier1StatusEffect), durationSeconds);
             }
-
-            ApplyWardEmpowerment(activator, target, durationSeconds);
-        }
-
-        /// <summary>
-        /// Grants whoever holds the pool, the caster included, a weapon and Force damage bonus for
-        /// as long as it lasts. This is the Light tree's own offensive expression: it comes out of
-        /// protecting someone rather than out of draining an enemy, and it works when the only
-        /// person a Light caster has to protect is themselves.
-        /// </summary>
-        private static void ApplyWardEmpowerment(uint activator, uint target, float durationSeconds)
-        {
-            // Pools replace one another regardless of caster, so a previous caster's bonus is
-            // cleared here even when this caster does not own the trait.
-            var empowerment = Stat.GetStatAdjustment(activator, StatType.LightGuardianTemporaryHPEmpowerment);
-            TemporaryStatModifier.Replace(
-                target,
-                StatType.WeaponAndForceDamageDealtPercentAdjustment,
-                empowerment,
-                durationSeconds,
-                StatType.LightGuardianTemporaryHPEmpowerment);
         }
 
         public static void ApplyCourageousResolve(uint activator)

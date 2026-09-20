@@ -45,23 +45,21 @@ public class ShuttleScheduleTests
             if (GalaxyMap.IsOrbitalHop(origin, destination))
                 transit.Should().Be(60, $"{origin}->{destination}");
             else
-                transit.Should().BeInRange(300, 600, $"{origin}->{destination}");
+                transit.Should().Be(300, $"{origin}->{destination}");
 
             (transit % 15).Should().Be(0, $"{origin}->{destination}");
         }
     }
 
     [Test]
-    public void GetInterplanetaryTransitSeconds_IsExactlyHalfOfEveryLegacyRouteDuration()
+    public void GetInterplanetaryTransitSeconds_IsFiveMinutesForEveryRoute()
     {
         foreach (var (origin, destination) in OrderedPairs())
         {
             if (GalaxyMap.IsOrbitalHop(origin, destination))
                 continue;
 
-            GalaxyMap.GetTransitSeconds(origin, destination).Should().Be(
-                GetLegacyInterplanetaryTransitSeconds(origin, destination) / 2,
-                $"{origin}->{destination}");
+            GalaxyMap.GetTransitSeconds(origin, destination).Should().Be(300, $"{origin}->{destination}");
         }
     }
 
@@ -133,17 +131,8 @@ public class ShuttleScheduleTests
     [Test]
     public void ViscaraToDantooine_MatchesKnownAnchorValues()
     {
-        GalaxyMap.GetTransitSeconds(PlanetType.Viscara, PlanetType.Dantooine).Should().Be(600);
+        GalaxyMap.GetTransitSeconds(PlanetType.Viscara, PlanetType.Dantooine).Should().Be(300);
         GalaxyMap.GetFare(PlanetType.Viscara, PlanetType.Dantooine).Should().Be(985);
-    }
-
-    private static int GetLegacyInterplanetaryTransitSeconds(PlanetType origin, PlanetType destination)
-    {
-        var distance = GalaxyMap.GetDistance(origin, destination);
-        var raw = 600.0 + 600.0 * (distance - 5.0) / 77.2;
-        var rounded = (int)(Math.Round(raw / 30.0, MidpointRounding.AwayFromZero) * 30.0);
-
-        return Math.Clamp(rounded, 600, 1200);
     }
 
     [Test]

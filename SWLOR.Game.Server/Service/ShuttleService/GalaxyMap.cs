@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         private const int OrbitalHopSeconds = 60;
         private const int OrbitalHopFare = 25;
         private const int MinimumTransitSeconds = 300;
-        private const int MaximumTransitSeconds = 600;
+        private const int MaximumTransitSeconds = 300;
         private const int TransitRoundingSeconds = 15;
 
         /// <summary>
@@ -52,8 +52,7 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         /// <summary>
         /// Calculates the shuttle transit time, in seconds, between two planets. The raw value is
-        /// rounded to the nearest 15 seconds and clamped between 300 (5 minutes) and 600
-        /// (10 minutes) seconds.
+        /// rounded to the nearest 15 seconds and fixed at 300 (5 minutes) seconds.
         /// </summary>
         /// <param name="origin">The origin planet.</param>
         /// <param name="destination">The destination planet.</param>

@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 135
+    "value": 40
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10007
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 13
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 39
+    "value": 1
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -173,7 +173,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "leather_tunic_1"
+          "value": "worker_outfit"
         }
       }
     ]
@@ -346,7 +346,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 578
+    "value": 3900
   },
   "Race": {
     "type": "byte",
@@ -683,7 +683,7 @@
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 135
+    "value": 40
   },
   "xArmorPart_RFoot": {
     "type": "word",

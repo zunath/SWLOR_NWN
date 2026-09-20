@@ -58,21 +58,6 @@
               "type": "int",
               "value": 1
             }
-          },
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "CREATURE_SPAWN_TABLE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 3
-            },
-            "Value": {
-              "type": "cexostring",
-              "value": "VISCARA_WILDWOODS_NORTH"
-            }
           }
         ]
       }
@@ -48762,6 +48747,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CREATURE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_NORTH"
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

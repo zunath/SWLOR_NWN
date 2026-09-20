@@ -54,10 +54,12 @@ public class ViscaraSpawnDefinitionTests
             }
         }
 
-        var areaTable = area.RootElement.GetProperty("AreaProperties").GetProperty("value")
-            .GetProperty("VarTable").GetProperty("value").EnumerateArray()
-            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == "CREATURE_SPAWN_TABLE_ID")
-            .GetProperty("Value").GetProperty("value").GetString()!;
+        // GetLocalString(area, ...) reads GIT root locals, not AreaProperties locals.
+        var areaVariable = area.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == "CREATURE_SPAWN_TABLE_ID");
+        areaVariable.GetProperty("Type").GetProperty("value").GetInt32().Should().Be(3);
+        areaVariable.GetProperty("Value").GetProperty("type").GetString().Should().Be("cexostring");
+        var areaTable = areaVariable.GetProperty("Value").GetProperty("value").GetString()!;
         areaTable.Should().Be("VISCARA_WILDWOODS_NORTH");
         using var wildwoods = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName, "Module", "git", "viscarawildwoods.git.json")));

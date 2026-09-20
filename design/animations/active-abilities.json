@@ -22,42 +22,42 @@
     "Profile": "Call companion"
   },
   {
-    "Id": "GuardingBond",
+    "Id": "GuardingBondStance",
     "EquipmentRequirement": "Unrestricted",
-    "Name": "Guarding Bond",
-    "DisplayName": "Guarding Bond",
+    "Name": "Guarding Bond Stance",
+    "DisplayName": "Guarding Bond Stance",
     "InternalName": "sw_guardbond",
     "Category": "Beast Mastery",
     "Type": "Stance",
     "Description": "While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one stance may be active at a time.",
     "Reference": "",
     "BibleAnimationRow": 122,
-    "PerkId": "GuardingBond",
+    "PerkId": "GuardingBondStance",
     "Feats": [
-      "GuardingBond"
+      "GuardingBondStance"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/GuardingBondAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/GuardingBondStanceAbilityDefinition.cs"
     ],
     "CurrentPlayback": "FireForgetTaunt"
   },
   {
-    "Id": "PredatoryBond",
+    "Id": "PredatoryBondStance",
     "EquipmentRequirement": "Unrestricted",
-    "Name": "Predatory Bond",
-    "DisplayName": "Predatory Bond",
+    "Name": "Predatory Bond Stance",
+    "DisplayName": "Predatory Bond Stance",
     "InternalName": "sw_predbond",
     "Category": "Beast Mastery",
     "Type": "Stance",
     "Description": "While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one stance may be active at a time.",
     "Reference": "",
     "BibleAnimationRow": 123,
-    "PerkId": "PredatoryBond",
+    "PerkId": "PredatoryBondStance",
     "Feats": [
-      "PredatoryBond"
+      "PredatoryBondStance"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/PredatoryBondAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/PredatoryBondStanceAbilityDefinition.cs"
     ],
     "CurrentPlayback": "FireForgetTaunt"
   },
@@ -1849,22 +1849,22 @@
     "CurrentPlayback": "CastOutAnimation"
   },
   {
-    "Id": "SoulDevourer",
+    "Id": "SoulDevourerStance",
     "EquipmentRequirement": "TwoHanded",
-    "Name": "Soul Devourer",
-    "DisplayName": "Soul Devourer",
+    "Name": "Soul Devourer Stance",
+    "DisplayName": "Soul Devourer Stance",
     "InternalName": "sw_soul_devo",
     "Category": "Heavy Vibroblade",
     "Type": "Stance",
     "Description": "While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)",
     "Reference": "",
     "BibleAnimationRow": 150,
-    "PerkId": "SoulDevourer",
+    "PerkId": "SoulDevourerStance",
     "Feats": [
-      "SoulDevourer1"
+      "SoulDevourerStance1"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/SoulDevourerAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/SoulDevourerStanceAbilityDefinition.cs"
     ],
     "CurrentPlayback": "CastOutAnimation"
   },
@@ -2632,10 +2632,10 @@
     "CurrentPlayback": "DoubleStrike"
   },
   {
-    "Id": "ApexCollapseTechnique",
+    "Id": "ApexCollapseStanceTechnique",
     "EquipmentRequirement": "Unrestricted",
-    "Name": "Apex Collapse",
-    "DisplayName": "Apex Collapse",
+    "Name": "Apex Collapse Stance",
+    "DisplayName": "Apex Collapse Stance",
     "InternalName": "sw_apex_coll",
     "Category": "Mimicry",
     "Type": "Stance",
@@ -2644,10 +2644,10 @@
     "BibleAnimationRow": 181,
     "PerkId": "CombatAnalyzer",
     "Feats": [
-      "ApexCollapseTechnique"
+      "ApexCollapseStanceTechnique"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ApexCollapseTechniqueAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/ApexCollapseStanceTechniqueAbilityDefinition.cs"
     ],
     "CurrentPlayback": "CastOutAnimation"
   },
@@ -3718,10 +3718,10 @@
     "CurrentPlayback": "PointPistol"
   },
   {
-    "Id": "SustainBurnTechnique",
+    "Id": "SustainBurnStanceTechnique",
     "EquipmentRequirement": "Unrestricted",
-    "Name": "Sustain Burn",
-    "DisplayName": "Sustain Burn",
+    "Name": "Sustain Burn Stance",
+    "DisplayName": "Sustain Burn Stance",
     "InternalName": "sw_sust_burn",
     "Category": "Mimicry",
     "Type": "Stance",
@@ -3730,10 +3730,10 @@
     "BibleAnimationRow": 235,
     "PerkId": "CombatAnalyzer",
     "Feats": [
-      "SustainBurnTechnique"
+      "SustainBurnStanceTechnique"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SustainBurnTechniqueAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/SustainBurnStanceTechniqueAbilityDefinition.cs"
     ],
     "CurrentPlayback": "CastOutAnimation"
   },
@@ -3960,10 +3960,10 @@
     "CurrentPlayback": "CastOutAnimation"
   },
   {
-    "Id": "WardenWallTechnique",
+    "Id": "WardenWallStanceTechnique",
     "EquipmentRequirement": "Unrestricted",
-    "Name": "Warden Wall",
-    "DisplayName": "Warden Wall",
+    "Name": "Warden Wall Stance",
+    "DisplayName": "Warden Wall Stance",
     "InternalName": "sw_ward_wall",
     "Category": "Mimicry",
     "Type": "Stance",
@@ -3972,10 +3972,10 @@
     "BibleAnimationRow": 247,
     "PerkId": "CombatAnalyzer",
     "Feats": [
-      "WardenWallTechnique"
+      "WardenWallStanceTechnique"
     ],
     "DefinitionFiles": [
-      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenWallTechniqueAbilityDefinition.cs"
+      "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/WardenWallStanceTechniqueAbilityDefinition.cs"
     ],
     "CurrentPlayback": "CastOutAnimation"
   },

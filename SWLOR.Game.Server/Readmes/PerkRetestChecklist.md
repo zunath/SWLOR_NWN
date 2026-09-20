@@ -126,8 +126,8 @@ Use Flash with high weapon damage, captured flat-damage bonuses, outgoing damage
 | [20](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A20:O20) | Beast Mastery | Reward I | Pass | C5 |
 | [21](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A21:O21) | Beast Mastery | Reward II | Pass | C5 |
 | [22](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A22:O22) | Beast Mastery | Reward III | Pass | C5 |
-| [28](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A28:O28) | Beast Mastery | Guarding Bond | Pass | C2 |
-| [29](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A29:O29) | Beast Mastery | Predatory Bond | Pass | C1 |
+| [28](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A28:O28) | Beast Mastery | Guarding Bond Stance | Pass | C2 |
+| [29](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A29:O29) | Beast Mastery | Predatory Bond Stance | Pass | C1 |
 | [50](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A50:O50) | Beast Mastery | Rending Claw I | Pass | C1, C4 |
 | [55](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A55:O55) | Beast Mastery | Rending Claw II | Pass | C1, C4 |
 | [60](https://docs.google.com/spreadsheets/d/1iHMKtrnh3lbUnmrgXtxEQseAJd7WIL6RU51RVSktm4s/edit?gid=2101115203#gid=2101115203&range=A60:O60) | Beast Mastery | Rending Claw III | Pass | C1, C4 |

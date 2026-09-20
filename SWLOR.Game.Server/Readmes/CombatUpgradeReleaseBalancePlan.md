@@ -23,7 +23,7 @@ The Bible-first weapon identity pass is now applied in the local workbook, regen
 - Preserve cross-tree build freedom. Perks should be broadly mixable unless a specific interaction remains broken after softer fixes.
 - Avoid dependency-only perks. A trait can prefer a weapon line, trigger type, status condition, or playstyle loop, but it should not exist only to make one named sibling perk usable.
 - Balance by design first. Tune Bible values, trigger conditions, uptime, cooldowns, and magnitude before adding new code enforcement.
-- Avoid combo-specific hardcoding. Do not add special-case logic such as "if Crusher plus Soul Devourer plus Spear, reduce damage."
+- Avoid combo-specific hardcoding. Do not add special-case logic such as "if Crusher plus Soul Devourer Stance plus Spear, reduce damage."
 - Treat any self-feeding trigger cycle as a release blocker. Secondary damage, reflection, DoT, healing, resource restoration, status application, and cooldown reduction must terminate through shared delivery types, caps, consumption, or cooldowns.
 - Use shared combat and stat concepts. When code support is needed, prefer metadata-driven or shared-stat behavior over perk-specific branches.
 - Treat curated archetypes as the release gate. Full build enumeration is required for comparison and outlier discovery, but curated builds are the main release decision surface.

@@ -108,15 +108,15 @@ public class BeastmasterCombatUpgradeTests
         new EvasiveChallenge1SelfStatusEffect().StatGroup.Stats[StatType.AvoidedAttackSingleStaminaRestore].Should().Be(1);
         new Intercept2StatusEffect().StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent].Should().Be(50);
         new PredatorsMark1StatusEffect(10).StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment].Should().Be(10);
-        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(20);
-        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(20);
-        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(-15);
-        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(75);
-        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(25);
-        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
-        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(10);
-        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
-        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(-40);
+        new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(20);
+        new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(20);
+        new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(-15);
+        new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(75);
+        new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(25);
+        new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
+        new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(10);
+        new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(-40);
     }
 
     [Test]
@@ -181,11 +181,11 @@ public class BeastmasterCombatUpgradeTests
         forceTouch.Requirements.OfType<AbilityRequirementFP>().Should().ContainSingle().Which.RequiredFP.Should().Be(6);
         forceTouch.RecastDelay(0).Should().Be(8f);
 
-        var guardingBond = new GuardingBondAbilityDefinition().BuildAbilities()[FeatType.GuardingBond];
-        AssertBeastBondAbility(guardingBond, "Guarding Bond");
+        var guardingBond = new GuardingBondStanceAbilityDefinition().BuildAbilities()[FeatType.GuardingBondStance];
+        AssertBeastBondAbility(guardingBond, "Guarding Bond Stance");
 
-        var predatoryBond = new PredatoryBondAbilityDefinition().BuildAbilities()[FeatType.PredatoryBond];
-        AssertBeastBondAbility(predatoryBond, "Predatory Bond");
+        var predatoryBond = new PredatoryBondStanceAbilityDefinition().BuildAbilities()[FeatType.PredatoryBondStance];
+        AssertBeastBondAbility(predatoryBond, "Predatory Bond Stance");
     }
 
     [Test]

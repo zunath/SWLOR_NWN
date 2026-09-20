@@ -4,15 +4,15 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class PredatoryBondBeastStatusEffect : StatusEffectBase
+    public sealed class PredatoryBondStanceBeastStatusEffect : StatusEffectBase
     {
-        public override string Name => "Predatory Bond";
-        public override EffectIconType Icon => EffectIconType.PredatoryBondBeastStatusEffect;
+        public override string Name => "Predatory Bond Stance";
+        public override EffectIconType Icon => EffectIconType.PredatoryBondStanceBeastStatusEffect;
         public override bool PersistsOnLogout => false;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;
 
-        public PredatoryBondBeastStatusEffect()
+        public PredatoryBondStanceBeastStatusEffect()
         {
             StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = 25;
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = 15;

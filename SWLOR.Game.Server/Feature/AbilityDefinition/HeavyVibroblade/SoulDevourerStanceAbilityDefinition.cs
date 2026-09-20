@@ -7,31 +7,31 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
-    public class SoulDevourerAbilityDefinition : HeavyVibrobladeActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class SoulDevourerStanceAbilityDefinition : HeavyVibrobladeActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            SoulDevourer(builder);
+            SoulDevourerStance(builder);
 
             return builder.Build();
         }
 
-        private static void SoulDevourer(AbilityBuilder builder)
+        private static void SoulDevourerStance(AbilityBuilder builder)
         {
             builder
-                .Create(FeatType.SoulDevourer1, PerkType.SoulDevourer)
+                .Create(FeatType.SoulDevourerStance1, PerkType.SoulDevourerStance)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SoulDevourer)
                 .UsesImmediateAuthoredAnimation()
-                .Name("Soul Devourer")
+                .Name("Soul Devourer Stance")
                 .Level(1)
                 .HasActivationDelay(2f)
                 .UsesAnimation(Animation.CastOutAnimation)
-                .HasRecastDelay(RecastGroup.SoulDevourer, 30f)
-                .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(SoulDevourerStatusEffect)))
-                .RemoveStatusEffectOnPerkRefund(typeof(SoulDevourerStatusEffect))
-                .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(SoulDevourerStatusEffect)))
+                .HasRecastDelay(RecastGroup.SoulDevourerStance, 30f)
+                .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(SoulDevourerStanceStatusEffect)))
+                .RemoveStatusEffectOnPerkRefund(typeof(SoulDevourerStanceStatusEffect))
+                .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(SoulDevourerStanceStatusEffect)))
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth();

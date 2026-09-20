@@ -8,25 +8,25 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
-    public class WardenWallTechniqueAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class WardenWallStanceTechniqueAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new AbilityBuilder();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var ability = _builder
-                .Create(FeatType.WardenWallTechnique, PerkType.CombatAnalyzer)
+                .Create(FeatType.WardenWallStanceTechnique, PerkType.CombatAnalyzer)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenWallTechnique)
-                .Name("Warden Wall")
+                .Name("Warden Wall Stance")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
-                .HasRecastDelay(RecastGroup.WardenWall, 30f)
+                .HasRecastDelay(RecastGroup.WardenWallStance, 30f)
                 .UsesImmediateAuthoredAnimation()
                 .MimicryStance(FeatType.WardenWall, 47, 3);
 
-            ConfigureToggle(ability, typeof(WardenWallStatusEffect));
-            ability.RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(WardenWallAuraStatusEffect));
+            ConfigureToggle(ability, typeof(WardenWallStanceStatusEffect));
+            ability.RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(WardenWallStanceAuraStatusEffect));
 
             return _builder.Build();
         }

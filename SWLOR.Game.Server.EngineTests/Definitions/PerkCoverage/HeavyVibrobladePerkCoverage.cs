@@ -180,10 +180,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 },
                 new()
                 {
-                    Perk = PerkType.SoulDevourer,
+                    Perk = PerkType.SoulDevourerStance,
                     MaxLevel = 1,
                     Prices = new[] { 4 },
-                    GrantedFeats = new[] { FeatType.SoulDevourer1 },
+                    GrantedFeats = new[] { FeatType.SoulDevourerStance1 },
                 },
                 new()
                 {

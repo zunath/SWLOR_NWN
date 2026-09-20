@@ -8,24 +8,24 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
-    public class SustainBurnTechniqueAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ApexCollapseStanceTechniqueAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new AbilityBuilder();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var ability = _builder
-                .Create(FeatType.SustainBurnTechnique, PerkType.CombatAnalyzer)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_SustainBurnTechnique)
-                .Name("Sustain Burn")
+                .Create(FeatType.ApexCollapseStanceTechnique, PerkType.CombatAnalyzer)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ApexCollapseTechnique)
+                .Name("Apex Collapse Stance")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
-                .HasRecastDelay(RecastGroup.SustainBurn, 30f)
+                .HasRecastDelay(RecastGroup.ApexCollapseStance, 30f)
                 .UsesImmediateAuthoredAnimation()
-                .MimicryStance(FeatType.SustainBurn, 45, 3);
+                .MimicryStance(FeatType.ApexCollapse, 50, 3);
 
-            ConfigureToggle(ability, typeof(SustainBurnStatusEffect));
+            ConfigureToggle(ability, typeof(ApexCollapseStanceStatusEffect));
 
             return _builder.Build();
         }

@@ -149,12 +149,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Notes = "Spends activator HP (SacrificeHitPoints) in addition to stamina.",
                 },
 
-                // SoulDevourerAbilityDefinition - manually-built self stance toggle; no stamina cost.
+                // SoulDevourerStanceAbilityDefinition - manually-built self stance toggle; no stamina cost.
                 new()
                 {
-                    Feat = FeatType.SoulDevourer1,
+                    Feat = FeatType.SoulDevourerStance1,
                     Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(SoulDevourerStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(SoulDevourerStanceStatusEffect) },
                     ExpectsRecast = true,
                 },
 

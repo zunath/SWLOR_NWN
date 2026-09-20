@@ -10,31 +10,31 @@ using SWLOR.NWN.API.NWScript.Enum.Associate;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
-    public sealed class GuardingBondAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public sealed class PredatoryBondStanceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             builder
-                .Create(FeatType.GuardingBond, PerkType.GuardingBond)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_GuardingBond)
+                .Create(FeatType.PredatoryBondStance, PerkType.PredatoryBondStance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_PredatoryBond)
                 .UsesImmediateAuthoredAnimation()
-                .Name("Guarding Bond")
+                .Name("Predatory Bond Stance")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.BeastBond, 30f)
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .SkillType(SkillType.BeastMastery)
                 .HasCustomValidation((activator, target, level, location) => ValidateBeast(activator));
 
-            ConfigureToggle(builder, typeof(GuardingBondStatusEffect));
+            ConfigureToggle(builder, typeof(PredatoryBondStanceStatusEffect));
 
             return builder.Build();
         }
 
         private static string ValidateBeast(uint activator)
         {
-            if (StatusEffect.HasStatusEffect(activator, typeof(GuardingBondStatusEffect)))
+            if (StatusEffect.HasStatusEffect(activator, typeof(PredatoryBondStanceStatusEffect)))
             {
                 return string.Empty;
             }

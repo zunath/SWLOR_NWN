@@ -9,21 +9,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// <summary>
     /// Warden Wall stance: while active, hardens the wielder's defenses and radiates the same
     /// hardening to allies within <see cref="AuraRadius"/> meters via a periodic aura tick
-    /// (<see cref="WardenWallAuraStatusEffect"/>). A Mimicry defensive stance.
+    /// (<see cref="WardenWallStanceAuraStatusEffect"/>). A Mimicry defensive stance.
     /// </summary>
-    public sealed class WardenWallStatusEffect : StatusEffectBase
+    public sealed class WardenWallStanceStatusEffect : StatusEffectBase
     {
         private const float AuraRadius = 10.0f;
         private const float AuraBuffDurationSeconds = 9.0f;
 
-        public override string Name => "Warden Wall";
-        public override EffectIconType Icon => EffectIconType.WardenWallStatusEffect;
+        public override string Name => "Warden Wall Stance";
+        public override EffectIconType Icon => EffectIconType.WardenWallStanceStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public override float Frequency => 6f;
 
         public override IStatusEffect Clone()
         {
-            return new WardenWallStatusEffect();
+            return new WardenWallStanceStatusEffect();
         }
 
         protected override void Apply(uint creature, int durationTicks)
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(
                          creature, GetLocation(creature), AuraRadius, includeActivator: false))
             {
-                StatusEffect.ApplyStatusEffect(creature, ally, new WardenWallAuraStatusEffect(), AuraBuffDurationSeconds);
+                StatusEffect.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect(), AuraBuffDurationSeconds);
             }
         }
     }

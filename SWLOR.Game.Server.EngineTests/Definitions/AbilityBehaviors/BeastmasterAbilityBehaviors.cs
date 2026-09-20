@@ -420,12 +420,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     VerifiesImmediateRecastRejection = true,
                 },
 
-                // GuardingBondAbilityDefinition - PLAYER-only toggle: ValidateBeast requires
+                // GuardingBondStanceAbilityDefinition - PLAYER-only toggle: ValidateBeast requires
                 // GetIsPC(activator) (fresh actor has no status effect yet, so the toggle-off
                 // early-return doesn't apply) then BeastMastery.IsPlayerBeast on the associate.
                 new()
                 {
-                    Feat = FeatType.GuardingBond,
+                    Feat = FeatType.GuardingBondStance,
                     Target = AbilityTargetKind.Self,
                     SkipReason = "ValidateBeast requires GetIsPC(activator) plus a live player-beast associate (BeastMastery.IsPlayerBeast); unreachable for a plain spawned NPC.",
                 },

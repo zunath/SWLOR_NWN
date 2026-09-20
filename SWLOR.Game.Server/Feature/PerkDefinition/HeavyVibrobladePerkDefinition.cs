@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SoulAscension();
             SoulBarrier();
             SoulBurst();
-            SoulDevourer();
+            SoulDevourerStance();
             SoulReaping();
             SoulSacrifice();
             SoulStorm();
@@ -452,13 +452,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
 
 
-        private void SoulDevourer()
+        private void SoulDevourerStance()
         {
-            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulDevourer)
-                .Name("Soul Devourer")
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulDevourerStance)
+                .Name("Soul Devourer Stance")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SoulDevourer1)
+                .GrantsFeat(FeatType.SoulDevourerStance1)
                 .DroidAISlots(1)
                 .Description("While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)")
                 .Price(4)

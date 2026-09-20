@@ -88,30 +88,6 @@ Relevant .NET coverage is `ConversationGraphCorpusTests`,
 `ConversationArchitectureTests`, `VelesMilitiaAnnexPlacementTests`, and
 `NPCEnemyBalanceAuditTests.AllNpcHpBudgets_AccountForNativeVitalityAndToughnessRules`.
 
-## Fabrication entrance correction
-
-The Fabrication entrance targets `Enter_Veles_Fabrication` in `veles_shops`.
-Its former landing at (52.39, 95.00) was in reception, while all three existing
-Fabrication Terminals were beyond the internal door, along the workshop's north
-wall at y=108. Checking only their presence in the same area missed this layout.
-
-The landing is now at (74, 104), facing the terminals, with a **Fabrication
-Workshop** map note. All three terminals remain in place with `craft_on_used`
-and `CRAFTING_SKILL_TYPE_ID=10`. A labelled **[Exit] Veles** interaction at
-(72, 105) returns directly to `Exit_Veles_Fabrication_Ka` beside the exterior
-entrance. The original reception exit remains, and the connecting door is
-labelled, unlocked, un-lockable, and plot protected. The new exit has a matching
-GIC entry.
-
-The terminal appearance (20735) resolves to `jsa_fstn01`; its model and placeable
-walkmesh exist in the module's loaded `sw_plc_mdrn` HAK at the pinned revision.
-
-The validator checks that the entrance lands in the workshop on the same side
-of the internal wall as all three usable stations, within seven metres of each,
-and within three metres of the direct return exit. Tile walkmesh sampling also
-confirmed floor beneath the landing and the routes to the terminal approaches
-and exit; placed-object collision still requires an in-game walkthrough.
-
 Deployment requires a server build for the embedded conversations and a module
 repack. An in-game walkthrough remains necessary to confirm appearance,
 walkability, entrance placement, both warehouse directions, and merchant behavior.

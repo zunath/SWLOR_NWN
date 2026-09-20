@@ -2518,9 +2518,6 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 skillType,
                 appliedStatusCategories);
-            var skillLevelOverride = usesNPCStatScaling
-                ? GetNPCAbilityScalingRank(activator, skillType, damageType, damageAbility)
-                : -1;
             var shouldResolveHit = resolvesHit && ShouldResolveCombatImpactHit(trackedImpact);
             var hitRate = 100;
             if (shouldResolveHit &&
@@ -2531,7 +2528,10 @@ namespace SWLOR.Game.Server.Service
                     perkType,
                     out hitRate,
                     hitChancePercentAdjustment + statusCategoryHitChanceAdjustment,
-                    skillLevelOverride,
+                    // -1 keeps NPC ability accuracy on the creature's own level, matching what its
+                    // auto-attacks use. GetNPCAbilityScalingRank stays on the damage path only:
+                    // feeding it here made a level 40 enemy resolve ability accuracy as rank 11.
+                    -1,
                     damageAbility))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
@@ -3094,8 +3094,12 @@ namespace SWLOR.Game.Server.Service
             var attackStat = ability == AbilityType.Invalid
                 ? 0
                 : GetAbilityScore(activator, ability);
+            // The creature's own level, matching what its auto-attacks use. The derived scaling
+            // rank still contributes the flat damage term above, but feeding it here collapsed the
+            // 2 x level component of Attack -- a level 50 enemy resolved ability damage as though
+            // it were rank ~16, cutting the attack/defense ratio to roughly half of intended.
             var attack = Stat.GetAttack(
-                scalingRank,
+                npcStats.Level,
                 attackStat,
                 GetNPCAbilityOffenseBonus(npcStats, skillType, damageType) + Stat.GetStatAdjustment(activator, StatType.Attack));
             attack = ApplyNPCAbilitySourceAttackModifiers(activator, skillType, attack);

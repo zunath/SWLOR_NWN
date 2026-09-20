@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 24
   },
   "Disarmable": {
     "type": "byte",

@@ -20,6 +20,9 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 ## Pull Requests and Submodules
 
 - When a parent-repository pull request changes a git submodule pointer, publishing is not complete until every modified submodule also has its own pull request. Push the submodule branch, open its companion pull request against the branch corresponding to the parent pull request's base branch, and link the parent and companion pull requests in both descriptions. Do not treat a pushed submodule branch by itself as a complete handoff.
+- When a pull request has review findings, addressing them means **resolving the review threads**, not just replying to them. After pushing the fix, mark each thread resolved (`gh api graphql` with the `resolveReviewThread` mutation against the thread id from `reviewThreads`). A reply alone leaves the thread open and the review still looks unaddressed. This applies to bot reviewers such as CodeRabbit and the Codex connector as well as human ones.
+- Resolve a thread only after the finding is actually handled: fixed and pushed, or replied to with a concrete reason it does not apply. Never resolve a thread by dismissing it silently.
+- Before calling pull request work done, verify zero unresolved threads on the parent pull request and on every companion submodule pull request.
 
 ## Background Processes
 

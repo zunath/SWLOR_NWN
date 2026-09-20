@@ -81,6 +81,47 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void AbilityAccuracy_ResolvesCreatureWeaponsForEverySkillType()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var weaponLookup = ExtractMethod(
+            combatSource, "private static uint GetRelevantSkillWeapon");
+
+        weaponLookup.Should().Contain("GetCreatureNaturalWeapon(creature)",
+            "creature-weapon NPCs carry nothing in either hand");
+        weaponLookup.Should().NotContain("skillType == SkillType.BeastMastery",
+            "the creature-weapon fallback must not be gated on BeastMastery: gating it there made "
+            + "every other skill resolve ability accuracy against an invalid weapon, which zeroes "
+            + "the attacker's accuracy stat");
+    }
+
+    [Test]
+    public void NPCAbilityHitResolution_UsesCreatureLevelNotScalingRank()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+
+        // The derived scaling rank belongs to NPC damage only. Feeding it into hit resolution made
+        // a level 40 enemy resolve its ability accuracy as though it were rank 11, which clamped
+        // its abilities to MinimumHitRate against a geared defender.
+        var hitCallIndex = abilitySource.IndexOf(
+            "!Combat.TryResolveAbilityHit(", StringComparison.Ordinal);
+        hitCallIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var hitCall = abilitySource.Substring(hitCallIndex, 600);
+        hitCall.Should().NotContain("GetNPCAbilityScalingRank(",
+            "ability hit resolution must use the creature's own level");
+
+        var damageRankIndex = abilitySource.IndexOf(
+            "var scalingRank = GetNPCAbilityScalingRank(", StringComparison.Ordinal);
+        damageRankIndex.Should().BeGreaterThanOrEqualTo(0,
+            "the scaling rank must still drive NPC ability damage");
+    }
+
+    [Test]
     public void CombatSystemLimits_ClampToDocumentedBounds()
     {
         Combat.CalculateHitRate(0, 1000, 0).Should().Be(Combat.MinimumHitRate);

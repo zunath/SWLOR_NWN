@@ -2518,9 +2518,6 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 skillType,
                 appliedStatusCategories);
-            var skillLevelOverride = usesNPCStatScaling
-                ? GetNPCAbilityScalingRank(activator, skillType, damageType, damageAbility)
-                : -1;
             var shouldResolveHit = resolvesHit && ShouldResolveCombatImpactHit(trackedImpact);
             var hitRate = 100;
             if (shouldResolveHit &&
@@ -2531,7 +2528,10 @@ namespace SWLOR.Game.Server.Service
                     perkType,
                     out hitRate,
                     hitChancePercentAdjustment + statusCategoryHitChanceAdjustment,
-                    skillLevelOverride,
+                    // -1 keeps NPC ability accuracy on the creature's own level, matching what its
+                    // auto-attacks use. GetNPCAbilityScalingRank stays on the damage path only:
+                    // feeding it here made a level 40 enemy resolve ability accuracy as rank 11.
+                    -1,
                     damageAbility))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);

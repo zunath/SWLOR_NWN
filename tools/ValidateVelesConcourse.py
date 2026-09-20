@@ -116,11 +116,15 @@ def validate():
     for obj in [entrance] + value(interior, "Placeable List"):
         if value(obj, "OnUsed") == "teleport":
             assert value(obj, "Useable") == 1 and value(obj, "Static") == 0
+            party_flags = [v for v in value(obj, "VarTable") if value(v, "Name") == "TELEPORT_PARTY_MEMBERS"]
+            assert len(party_flags) == 1 and value(party_flags[0], "Type") == 1 and value(party_flags[0], "Value") == 0
             destination = next(value(v, "Value") for v in value(obj, "VarTable") if value(v, "Name") == "DESTINATION")
             assert waypoints.count(destination) == 1
             if obj is entrance:
                 assert destination == "V_Veles_To_Concourse"
     stores = [value(o, "Tag") for o in value(interior, "StoreList")]
+    datapad_store = next(o for o in value(interior, "StoreList") if value(o, "Tag") == "DataStore")
+    assert value(datapad_store, "ResRef") == "concourse_data"
     def npc_name(npc):
         name = " ".join((value(npc, key) or {}).get("0", "") for key in ["FirstName", "LastName"]).strip()
         return name.removeprefix("Flower Shop ")
@@ -161,6 +165,18 @@ def validate():
         elif isinstance(obj, list):
             for item in obj:
                 check_items(item)
+    def inventory_entries(obj):
+        if isinstance(obj, dict):
+            if "TemplateResRef" in obj:
+                yield obj
+            for item in obj.values():
+                yield from inventory_entries(item)
+        elif isinstance(obj, list):
+            for item in obj:
+                yield from inventory_entries(item)
+    datapad_items = list(inventory_entries(datapad_store))
+    assert len(datapad_items) == 1 and value(datapad_items[0], "TemplateResRef") == "handdatapad"
+    assert value(datapad_items[0], "Infinite") == 1
     check_items(interior)
     print("Trade Concourse: registration, tiles, travel, conversations, unique stores, and inventory references passed.")
 

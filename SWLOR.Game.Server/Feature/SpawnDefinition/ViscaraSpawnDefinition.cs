@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             WildwoodsLooters();
             WildwoodsKinrath();
             WildwoodsGimpassa();
+            WildwoodsNorth();
             WildwoodsNorthMandalorianScout();
             WildwoodsRuinedMandalorianHunter();
             ValleyCairnmogs();
@@ -189,6 +190,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
+        }
+
+        private void WildwoodsNorth()
+        {
+            _builder.Create("VISCARA_WILDWOODS_NORTH", "Wildwoods North")
+                .AddSpawn(ObjectType.Creature, "ww_gimpassa").WithFrequency(80).RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "ww_kinrath").WithFrequency(120).RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "looter_1").WithFrequency(125).RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "looter_2").WithFrequency(125).RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "man_hunter").WithFrequency(20).RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "man_scout").WithFrequency(50).RandomlyWalks().ReturnsHome();
         }
 
         private void WildwoodsNorthMandalorianScout()

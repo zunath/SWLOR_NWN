@@ -187,7 +187,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "We have reports there is a Mandalorian facility located somewhere in the Wildwoods but we don't know where it is. I sent out a search party a few days ago but they haven't come back yet.\n\nYou will have to leave the city, go into the Wildlands and head east. I just want you to recon the Wildwoods, find that facility and come back to me. Got it?",
+          "Text": "We have reports of a Mandalorian facility among the ruins beyond North Wildwoods, but we don't have its exact position. I sent out a search party a few days ago and they haven't come back.\n\nLeave the city through the Wildlands and head for Crossroads East. Take the trail into North Wildwoods, then continue into Ruined Wildwoods. Find the facility and report back. This is reconnaissance; you don't need to get inside. Got it?",
           "Style": 0,
           "Color": null
         }
@@ -238,7 +238,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Have you located the Mandalorian facility yet?",
+          "Text": "Have you located the facility in Ruined Wildwoods yet? From Crossroads East, take the North Wildwoods trail and continue to the ruins.",
           "Style": 0,
           "Color": null
         }
@@ -277,7 +277,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good work. But you say the facility is locked?",
+          "Text": "Good work locating it in Ruined Wildwoods. But you say the facility is locked?",
           "Style": 0,
           "Color": null
         }
@@ -333,7 +333,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I sent him and his team off to search for the facility. He hasn't made it back yet. Something might have happened to him. Could you search the Wildwoods and try to find him for me? Mention my name and that you're working for me.",
+          "Text": "I sent him and his team to search the Wildwoods before we knew the facility was farther out in the ruins. He hasn't made it back. Something might have happened to him.\n\nTake the Wildwoods trail from Crossroads East this time, rather than the North Wildwoods trail. Search for him there. Mention my name and that you're working for me.",
           "Style": 0,
           "Color": null
         }
@@ -384,7 +384,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Have you found Captain N'guth and his team yet?",
+          "Text": "Have you found Captain N'guth and his team? Search the main Wildwoods, reached by the Wildwoods trail from Crossroads East.",
           "Style": 0,
           "Color": null
         }
@@ -479,7 +479,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Would you do that? For Czerka, you must avenge Captain N'guth! \n\nKill every last one of those Mandalorian raiders! [He hands the key back to you.] \n\nTake down their leader and the rest will fall too. You better gather a squad for this, It won't be easy. ",
+          "Text": "Would you do that? For Czerka, you must avenge Captain N'guth!\n\n[He hands the key back to you.] Return through North Wildwoods to the facility in Ruined Wildwoods. This key will get you inside. Take down their leader, the Mandalorian War Hero, then report back to me.\n\nGather a squad for this. It won't be easy.",
           "Style": 0,
           "Color": null
         }
@@ -505,7 +505,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "So, have you taken care of those Mandalorians scum and avenged Captain N'guth?",
+          "Text": "Have you killed the Mandalorian War Hero inside the facility in Ruined Wildwoods and avenged Captain N'guth?",
           "Style": 0,
           "Color": null
         }
@@ -892,7 +892,7 @@
     "reply-00014": {
       "Id": "reply-00014",
       "Text": {
-        "Text": "No problem, I'll look for Captain N'guth in the Wildwoods.",
+        "Text": "I'll take the Wildwoods trail from Crossroads East and look for Captain N'guth.",
         "Style": 4,
         "Color": null
       },

@@ -126,7 +126,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I know you've been to the Mandalorian facility at least a couple times now. I need you to go back once more to slice some data terminals.",
+          "Text": "I know you've been to the Mandalorian facility in Ruined Wildwoods a couple of times now. Head back through North Wildwoods; I need data from six terminals inside that facility.",
           "Style": 0,
           "Color": null
         }
@@ -241,7 +241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There are six terminals throughout the facility. I need you to collect data from each of them and return them to me. Be careful in there!",
+          "Text": "There are six terminals inside the Mandalorian facility in Ruined Wildwoods. Collect data from each and bring it back to me here in Veles. Be careful in there!",
           "Style": 0,
           "Color": null
         }

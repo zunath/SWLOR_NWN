@@ -91,7 +91,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You there. I spoke to Tal'gar and he told me you are headed into the Mandalorian Facility. Is that right?",
+          "Text": "You there. I spoke to Tal'gar and he told me you're headed into the Mandalorian facility in Ruined Wildwoods, beyond North Wildwoods. Is that right?",
           "Style": 0,
           "Color": null
         }
@@ -121,7 +121,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In that case why don't we make a deal? If you're going to make short work of those Mandalorians, why don't you bring me back their dog tags?",
+          "Text": "In that case why don't we make a deal? Bring me five of their dog tags. The raiders inside the facility carry them, and so do the hunters and scouts out in the Wildwoods, including North Wildwoods.",
           "Style": 0,
           "Color": null
         }
@@ -206,7 +206,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Have you obtained those dog tags yet?",
+          "Text": "Have you collected five Mandalorian dog tags yet? Try the hunters and scouts in the Wildwoods region, or the raiders inside the Ruined Wildwoods facility.",
           "Style": 0,
           "Color": null
         }

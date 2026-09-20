@@ -115,6 +115,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return (activator, _) => Stat.RestoreFP(activator, amount);
         }
 
+        /// <summary>
+        /// Restores <paramref name="amountPerHit"/> FP to the caster for each target struck, up to
+        /// <paramref name="maximumPerCast"/> FP for the whole activation. Area abilities with no
+        /// target cap would otherwise scale their resource payout linearly with the size of the
+        /// pull; this mirrors Twin Blade's Sweeping Advance, which pays per target up to a fixed
+        /// per-cast ceiling.
+        /// </summary>
+        public static Func<Action<uint, uint>> RestoreFPPerHit(int amountPerHit, int maximumPerCast)
+        {
+            return () =>
+            {
+                var budget = new PerCastResourceBudget(amountPerHit, maximumPerCast);
+                return (activator, _) =>
+                {
+                    var amount = budget.Take();
+                    if (amount > 0)
+                        Stat.RestoreFP(activator, amount);
+                };
+            };
+        }
+
         /// <summary>Heals the caster for <paramref name="amount"/> HP on each successful hit (lifesteal/drain).</summary>
         public static Action<uint, uint> HealSelfOnHit(int amount)
         {
@@ -344,7 +365,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             IEnumerable<Type> additionalStatusEffects = null,
             Func<uint, int> damagePercentAdjustment = null,
             Action<uint, uint> afterSuccessfulHit = null,
-            int maxTargets = 0)
+            int maxTargets = 0,
+            Func<Action<uint, uint>> afterSuccessfulHitPerCast = null)
         {
             var ability = builder
                 .Create(feat, profile.PlayerPerkType)
@@ -378,6 +400,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
             ability.HasImpactAction((activator, target, level, location) =>
             {
+                // Built per activation so any per-cast budget it carries resets on every cast
+                // rather than persisting across them.
+                var perCastHit = afterSuccessfulHitPerCast?.Invoke();
+
                 Ability.ApplyTelegraphedCombatImpact(
                     activator,
                     target,
@@ -398,7 +424,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     areaVisualEffect: areaVisualEffect,
                     damagePercentAdjustment: damagePercentAdjustment,
                     enmityBonus: enmityBonus,
-                    afterSuccessfulHit: hitTarget => afterSuccessfulHit?.Invoke(activator, hitTarget),
+                    afterSuccessfulHit: hitTarget =>
+                    {
+                        afterSuccessfulHit?.Invoke(activator, hitTarget);
+                        perCastHit?.Invoke(activator, hitTarget);
+                    },
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator),
                     maxTargets: maxTargets);
             });

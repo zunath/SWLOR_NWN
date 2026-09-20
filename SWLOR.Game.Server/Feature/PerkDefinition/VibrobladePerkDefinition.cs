@@ -379,9 +379,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldTrainingTrait)
-                .Description("When you deflect an attack with a shield, reduce the active cooldown of Shield Bash by 2 seconds.")
+                .Description("When you deflect an attack with a shield, reduce the active cooldown of Shield Bash by 2 seconds. This can only trigger once every 6 seconds.")
                 .IncreasesStat(StatType.DeflectionRecastReductionGroupId, creature => EquipmentPredicates.HasOffHandShield(creature) ? (int)RecastGroup.ShieldBash : 0)
                 .IncreasesStat(StatType.DeflectionRecastReductionSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
+                .IncreasesStat(StatType.DeflectionRecastReductionCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 6 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 5);
         }

@@ -1790,6 +1790,10 @@ namespace SWLOR.Game.Server.Service
                 StatType.DeflectionRecastReductionGroupId,
                 source));
             var recastReductionSeconds = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionRecastReductionSeconds, source);
+            var recastReductionCooldown = GetDeflectionStatAdjustment(
+                creatureId,
+                StatType.DeflectionRecastReductionCooldownSeconds,
+                source);
             var nextSkillAbilitySkillType = GetSkillTypeFromStat(GetDeflectionStatAdjustment(
                 creatureId,
                 StatType.DeflectionNextSkillAbilitySkillType,
@@ -1867,7 +1871,15 @@ namespace SWLOR.Game.Server.Service
                     StatType.DeflectionDefensePercentAdjustment);
             }
 
-            if (recastReductionGroup != RecastGroup.Invalid && recastReductionSeconds > 0)
+            // Rate limited like every other deflection payload: the trigger fires once per
+            // incoming attack, so without a gate the reduction outpaces the cooldown it shortens
+            // as soon as a second attacker joins.
+            if (recastReductionGroup != RecastGroup.Invalid &&
+                recastReductionSeconds > 0 &&
+                Combat.TryUseStatTrigger(
+                    creatureId,
+                    StatType.DeflectionRecastReductionSeconds,
+                    recastReductionCooldown))
             {
                 Recast.ReduceRecastDelay(creatureId, recastReductionGroup, recastReductionSeconds);
             }

@@ -85,16 +85,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Katar, 5)
 
                 .AddPerkLevel()
-                .Description("Guard chance increases to 25% and guarded hits restore 2 STM.")
+                .Description("Guard chance increases to 25% and guarded hits restore 2 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(StatType.Guard, 25)
                 .IncreasesStat(StatType.GuardStaminaRestore, 2)
+                .IncreasesStat(StatType.GuardStaminaRestoreCooldownSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 15)
 
+                // Rank 3 keeps rank 2's Stamina restore: only the purchased rank's stat bonuses
+                // apply, so the rider has to be restated here even though the rank description
+                // only calls out what changed.
                 .AddPerkLevel()
                 .Description("Guard chance increases to 35% and guarded hits reduce physical damage by 30%.")
                 .IncreasesStat(StatType.Guard, 35)
                 .IncreasesStat(StatType.GuardDamageReductionPercentAdjustment, 10)
+                .IncreasesStat(StatType.GuardStaminaRestore, 2)
+                .IncreasesStat(StatType.GuardStaminaRestoreCooldownSeconds, 6)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 28);
         }
@@ -220,10 +226,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImpenetrableGripTrait)
-                .Description("Gain +20 Mobility Resistance and +20 Mind Resistance. Guarded hits restore 4 STM.")
+                .Description("Gain +20 Mobility Resistance and +20 Mind Resistance. Guarded hits restore 4 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(StatType.MobilityResistance, 20)
                 .IncreasesStat(StatType.MindResistance, 20)
                 .IncreasesStat(StatType.GuardStaminaRestore, 4)
+                .IncreasesStat(StatType.GuardStaminaRestoreCooldownSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 35);
         }

@@ -598,6 +598,7 @@ public class CombatReleaseBalanceAuditTests
             (PerkType.ShieldTraining, StatType.DeflectionEvasionEnmityPercentAdjustment) => 3,
             (PerkType.ShieldTraining, StatType.DeflectionRecastReductionGroupId) => (int)RecastGroup.ShieldBash,
             (PerkType.ShieldTraining, StatType.DeflectionRecastReductionSeconds) => 2,
+            (PerkType.ShieldTraining, StatType.DeflectionRecastReductionCooldownSeconds) => 6,
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestore) => 3,
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestoreCooldownSeconds) => 4,
             (PerkType.CriticalWard, StatType.IncomingCriticalHitDowngradeCooldownMilliseconds) => 12000,

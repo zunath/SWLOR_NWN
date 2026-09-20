@@ -51,6 +51,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (Stat.GetStatAdjustment(activator, StatType.ControlHealingSereneFocus) <= 0)
                 return;
 
+            // Force Sanctuary heals every three seconds while this effect ticks every six, and a
+            // fresh application restarts that cadence, so re-applying on each pulse would leave it
+            // never ticking at all. Refresh the running instance instead: that extends its duration
+            // without resetting its clock.
+            if (StatusEffect.RefreshStatusEffectDuration(
+                    target, typeof(SereneFocusStatusEffect), activator, SereneFocusDurationSeconds))
+            {
+                return;
+            }
+
             // Healing someone else still pays better. A caster healing themselves gets the FP
             // half of the trait rather than nothing, so Light has an FP engine while solo.
             var restoresStamina = target != activator;

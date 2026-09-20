@@ -558,6 +558,27 @@ public class ForceLightConsularTests
     }
 
     [Test]
+    public void SereneFocus_SurvivesRepeatedSanctuaryPulsesWithoutLosingItsTick()
+    {
+        var root = FindRepositoryRoot();
+        var healing = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceControlHealingEffects.cs").FullName);
+
+        healing.Should().Contain("StatusEffect.RefreshStatusEffectDuration(",
+            "a fresh application restarts the effect's cadence, so a running instance is refreshed instead");
+
+        // Force Sanctuary heals faster than this effect ticks, so re-applying on each pulse would
+        // reset the clock before the tick could ever run.
+        new SereneFocusStatusEffect().Frequency.Should().Be(6f);
+        var areaEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityAreaEffects.cs").FullName);
+        areaEffects.Should().Contain("for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)",
+            "the three-second healing pulse is what makes the refresh necessary");
+
+        var sanctuary = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceSanctuaryAbilityDefinition.cs").FullName);
+        sanctuary.Should().Contain("ForceControlHealingEffects.ApplyRestorativeControlPower(",
+            "each sanctuary pulse runs the Control healing riders");
+    }
+
+    [Test]
     public void SereneFocus_CloneKeepsTheSelfCastVariant()
     {
         var fpOnly = new SereneFocusStatusEffect(false);

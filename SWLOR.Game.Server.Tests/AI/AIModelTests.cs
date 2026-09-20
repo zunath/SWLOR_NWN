@@ -236,16 +236,24 @@ public class AIModelTests
     }
 
     [TestCase(8, 8, 0, 8)]
-    [TestCase(8, 8, 50, 8)]
+    [TestCase(8, 8, 27, 8)]
     [TestCase(40, 10, -5, 40)]
     [TestCase(40, 10, 0, 40)]
+    // MGT values are bounded by the Design Bible's progression cap: 26 purchased points plus a
+    // one-time racial point. Cases stay inside 0-27 so they describe costs players actually pay.
     [TestCase(40, 10, 15, 25)]
-    [TestCase(40, 10, 30, 10)]
-    [TestCase(40, 10, 50, 10)]
+    [TestCase(40, 10, 20, 20)]
+    [TestCase(40, 10, 26, 14)]
+    [TestCase(40, 10, 27, 13)]
+    [TestCase(45, 20, 20, 25)]
+    [TestCase(45, 20, 25, 20)]
+    [TestCase(45, 20, 27, 20)]
     public void HitPointCost_SharedByAIAndImpact_RespectsMightAndTheMinimum(
         int basePercent, int minimumPercent, int might, int expected)
     {
         HitPointCostRules.Percent(basePercent, minimumPercent, might).Should().Be(expected);
+        HeavyVibrobladeMightCostRules.Percent(basePercent, minimumPercent, might).Should().Be(expected,
+            "the ability base class and Soul Devourer's recoil share one Might scaling rule");
     }
 
     private sealed class HitPointCostRules : HeavyVibrobladeActiveAbilityDefinitionBase

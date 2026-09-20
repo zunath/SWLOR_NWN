@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         protected static int CalculateHitPointCostPercent(int basePercent, int minimumPercent, int might)
         {
-            return Math.Max(minimumPercent, basePercent - Math.Max(0, might));
+            return HeavyVibrobladeMightCostRules.Percent(basePercent, minimumPercent, might);
         }
 
         protected static void ApplyStatusToNearbyParty(

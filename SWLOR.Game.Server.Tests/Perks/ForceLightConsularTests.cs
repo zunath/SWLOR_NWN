@@ -533,6 +533,73 @@ public class ForceLightConsularTests
         return result;
     }
 
+    [Test]
+    public void SereneFocus_GivesASoloCasterTheFPHalfInsteadOfNothing()
+    {
+        var root = FindRepositoryRoot();
+        var healing = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceControlHealingEffects.cs").FullName);
+
+        healing.Should().NotContain("if (target == activator ||",
+            "a solo Light caster must not be locked out of their own FP engine");
+        healing.Should().Contain("var restoresStamina = target != activator;",
+            "supporting someone else stays the stronger play");
+
+        var withStamina = new SereneFocusStatusEffect();
+        var fpOnly = new SereneFocusStatusEffect(false);
+        withStamina.Name.Should().Be("Serene Focus");
+        fpOnly.Name.Should().Be("Serene Focus");
+        fpOnly.Icon.Should().Be(withStamina.Icon);
+
+        var effect = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "SereneFocusStatusEffect.cs").FullName);
+        effect.Should().Contain("if (_restoresStamina)",
+            "the self-cast variant returns FP only");
+        effect.Should().Contain("public SereneFocusStatusEffect() : this(true)",
+            "reflection-based status effect caching requires a parameterless constructor");
+    }
+
+    [Test]
+    public void SereneFocus_SurvivesRepeatedSanctuaryPulsesWithoutLosingItsTick()
+    {
+        var root = FindRepositoryRoot();
+        var healing = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceControlHealingEffects.cs").FullName);
+
+        healing.Should().Contain("StatusEffect.RefreshStatusEffectDuration(",
+            "a fresh application restarts the effect's cadence, so a running instance is refreshed instead");
+
+        // Force Sanctuary heals faster than this effect ticks, so re-applying on each pulse would
+        // reset the clock before the tick could ever run.
+        new SereneFocusStatusEffect().Frequency.Should().Be(6f);
+        var areaEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityAreaEffects.cs").FullName);
+        areaEffects.Should().Contain("for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)",
+            "the three-second healing pulse is what makes the refresh necessary");
+
+        var sanctuary = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceSanctuaryAbilityDefinition.cs").FullName);
+        sanctuary.Should().Contain("ForceControlHealingEffects.ApplyRestorativeControlPower(",
+            "each sanctuary pulse runs the Control healing riders");
+    }
+
+    [Test]
+    public void SereneFocus_CloneKeepsTheSelfCastVariant()
+    {
+        var fpOnly = new SereneFocusStatusEffect(false);
+        var clone = fpOnly.Clone();
+
+        clone.Should().BeOfType<SereneFocusStatusEffect>().And.NotBeSameAs(fpOnly);
+
+        var field = typeof(SereneFocusStatusEffect)
+            .GetField("_restoresStamina", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        field.GetValue(clone).Should().Be(false);
+        field.GetValue(new SereneFocusStatusEffect()).Should().Be(true);
+    }
+
+    [Test]
+    public void SereneFocus_DescriptionStatesTheSelfCastBenefit()
+    {
+        BuildForceLightConsularPerksWithout2daLookup()[PerkType.SereneFocus]
+            .PerkLevels[1].Description
+            .Should().Contain("Targeting yourself restores 1 FP every 6 seconds instead.");
+    }
+
     private static PathInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

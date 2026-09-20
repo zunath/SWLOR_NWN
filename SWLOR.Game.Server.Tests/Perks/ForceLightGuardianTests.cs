@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -462,6 +463,74 @@ public class ForceLightGuardianTests
         }
 
         return result;
+    }
+
+    [Test]
+    public void ReflectiveBarrier_EmpowersWhoeverHoldsTheWardIncludingTheCaster()
+    {
+        var perk = BuildForceLightGuardianPerksWithout2daLookup()[PerkType.ReflectiveBarrier];
+        var level = perk.PerkLevels[1];
+
+        level.StatBonuses.Select(x => x.Stat)
+            .Should().Contain(StatType.LightGuardianTemporaryHPReflectiveBarrier)
+            .And.Contain(StatType.LightGuardianTemporaryHPEmpowerment,
+                "the Light tree's offensive expression is a stat contribution, not a perk check");
+        level.StatBonuses.Single(x => x.Stat == StatType.LightGuardianTemporaryHPEmpowerment)
+            .Calculate(OBJECT_INVALID).Should().Be(8);
+
+        var root = FindRepositoryRoot();
+        var barrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
+        barrier.Should().Contain("StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment]",
+            "the bonus must ride the shared weapon-and-Force damage stat rather than a bespoke path");
+        barrier.Should().Contain("Stat.GetStatAdjustment(Source, StatType.LightGuardianTemporaryHPEmpowerment)",
+            "the amount comes from the caster that granted the pool");
+
+        var support = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "LightGuardianPowerSupport.cs").FullName);
+        support.Should().NotContain("WeaponAndForceDamageDealtPercentAdjustment",
+            "a parallel timed modifier would outlive a ward consumed before its 30 seconds elapse");
+        support.Should().NotContain("PerkType.ReflectiveBarrier",
+            "shared support code must not special-case the perk that grants the stat");
+    }
+
+    [Test]
+    public void ReflectiveBarrierEmpowerment_EndsWithTheWardPoolRatherThanOnItsOwnClock()
+    {
+        var root = FindRepositoryRoot();
+        var barrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
+
+        // The damage bonus and the reflection share one effect, so the existing pool-depletion
+        // removal covers both: a hit that consumes the last temporary HP ends the bonus with it.
+        barrier.Should().Contain("private void RemoveWhenGuardianWardPoolEnds(uint creature)");
+        barrier.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(");
+        barrier.Should().Contain("TemporaryHitPointEffectKey.GuardianWard");
+        barrier.Should().Contain("public void OnBeforeDamageTaken(");
+    }
+
+    [Test]
+    public void GuardianWardAndLastStand_TellPlayersTheyCanTargetThemselves()
+    {
+        var perks = BuildForceLightGuardianPerksWithout2daLookup();
+        var ward = perks[PerkType.GuardianWard];
+
+        foreach (var level in ward.PerkLevels.Values)
+        {
+            level.Description.Should().StartWith("Grants an ally or yourself temporary HP",
+                "a solo Light caster must be able to tell the ward works on them");
+        }
+
+        perks[PerkType.LastStandOfTheLight].PerkLevels[1].Description
+            .Should().Contain("an ally or yourself");
+    }
+
+    [Test]
+    public void ForceAffinity_IsShownWhileBrowsingPerksNotOnlyInMyPerks()
+    {
+        var root = FindRepositoryRoot();
+        var viewModel = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "PerksViewModel.cs").FullName);
+
+        viewModel.Should().Contain("IsForceAffinityVisible = !IsInBeastPerksMode &&",
+            "affinity decides whether an opposing power lands at half strength, so it belongs on the browse screen too");
+        viewModel.Should().NotContain("IsForceAffinityVisible = IsInMyPerksMode");
     }
 
     private static PathInfo FindRepositoryRoot()

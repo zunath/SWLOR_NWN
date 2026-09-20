@@ -458,7 +458,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadForceAffinityDetails(Player dbPlayer)
         {
-            IsForceAffinityVisible = IsInMyPerksMode &&
+            // Shown while browsing as well as in My Perks: affinity decides whether an opposing
+            // power lands at half strength, so players need it before they spend SP, not after.
+            IsForceAffinityVisible = !IsInBeastPerksMode &&
                                      dbPlayer.CharacterType == CharacterType.ForceSensitive;
             if (!IsForceAffinityVisible)
             {

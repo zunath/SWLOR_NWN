@@ -446,7 +446,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulBurst1)
                 .DroidAISlots(1)
-                .Description("Deal weapon DMG + 35 to all enemies in a 5m x 5m cone. Costs 40% HP which is reduced by 1% per MGT. (Minimum 10%)")
+                .Description("Deal weapon DMG + 35 to all enemies in a 5m x 5m cone. Costs 40% HP which is reduced by 1 percentage point per MGT. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
         }
@@ -460,7 +460,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulDevourerStance1)
                 .DroidAISlots(1)
-                .Description("While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)")
+                .Description("While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1 percentage point per MGT. (Minimum 20%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }

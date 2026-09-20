@@ -547,7 +547,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
 
                     var travelSeconds = GetFieldEngineerProjectileTravelSeconds(GetDistanceBetween(emitter.MarkerObject, target));
-                    // Scripted projectile visuals do not play the native weapon firing sound.
                     PlaySound(BeaconShotSound);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(emitter.ProjectileVisualEffect), target);
 

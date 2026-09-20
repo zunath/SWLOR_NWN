@@ -276,8 +276,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         SystemicShutdown = 191,
         [RecastGroup("Soul Strike", "Soul Strike", true)]
         SoulStrike = 192,
-        [RecastGroup("Soul Devourer", "Soul Devour", true)]
-        SoulDevourer = 194,
+        [RecastGroup("Soul Devourer Stance", "Soul Dev. St.", true)]
+        SoulDevourerStance = 194,
         [RecastGroup("Soul Storm", "Soul Storm", true)]
         SoulStorm = 196,
         [RecastGroup("Bastion Stance", "Bastion St.", true)]
@@ -762,8 +762,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FieldTool = 467,
         [RecastGroup("Overload", "Overload", true)]
         Overload = 483,
-        [RecastGroup("Apex Collapse", "Apex Collapse", true)]
-        ApexCollapse = 484,
+        [RecastGroup("Apex Collapse Stance", "Apex Coll. St.", true)]
+        ApexCollapseStance = 484,
         [RecastGroup("Brace Breaker", "Brace Breaker", true)]
         BraceBreaker = 485,
         [RecastGroup("Crossfire Drill", "Crossfire", true)]
@@ -808,8 +808,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         SignalSnare = 505,
         [RecastGroup("Snap Rush", "Snap Rush", true)]
         SnapRush = 506,
-        [RecastGroup("Sustain Burn", "Sustain Burn", true)]
-        SustainBurn = 507,
+        [RecastGroup("Sustain Burn Stance", "Sust. Burn St.", true)]
+        SustainBurnStance = 507,
         [RecastGroup("Warden Clamp", "Warden Clamp", true)]
         WardenClamp = 508,
         [RecastGroup("Warden Mark", "Warden Mark", true)]
@@ -822,8 +822,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         WardenRend = 512,
         [RecastGroup("Warden Sweep", "Warden Sweep", true)]
         WardenSweep = 513,
-        [RecastGroup("Warden Wall", "Warden Wall", true)]
-        WardenWall = 514,
+        [RecastGroup("Warden Wall Stance", "Wardn Wall St.", true)]
+        WardenWallStance = 514,
         [RecastGroup("Will Fracture", "Will Fracture", true)]
         WillFracture = 515,
 

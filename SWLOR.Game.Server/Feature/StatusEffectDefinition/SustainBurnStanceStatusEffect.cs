@@ -9,15 +9,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// and ramps its damage over time). A Mimicry damage-over-time stance; reuses the shared
     /// <see cref="StatType.DamageDealtPoisonChance"/> hit rider consumed by Combat.
     /// </summary>
-    public sealed class SustainBurnStatusEffect : StatusEffectBase
+    public sealed class SustainBurnStanceStatusEffect : StatusEffectBase
     {
-        public override string Name => "Sustain Burn";
-        public override EffectIconType Icon => EffectIconType.SustainBurnStatusEffect;
+        public override string Name => "Sustain Burn Stance";
+        public override EffectIconType Icon => EffectIconType.SustainBurnStanceStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         public override IStatusEffect Clone()
         {
-            return new SustainBurnStatusEffect();
+            return new SustainBurnStanceStatusEffect();
         }
 
         protected override void Apply(uint creature, int durationTicks)

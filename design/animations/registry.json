@@ -90,24 +90,24 @@
     "ProjectPath": "design/animations/beast-mastery/CallBeast.swlanim"
   },
   {
-    "Name": "GuardingBond",
+    "Name": "GuardingBondStance",
     "AnimationName": "sw_guardbond",
     "Duration": 1.8,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/beast-mastery/GuardingBond.swlanim"
+    "ProjectPath": "design/animations/beast-mastery/GuardingBondStance.swlanim"
   },
   {
-    "Name": "PredatoryBond",
+    "Name": "PredatoryBondStance",
     "AnimationName": "sw_predbond",
     "Duration": 1.65,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/beast-mastery/PredatoryBond.swlanim"
+    "ProjectPath": "design/animations/beast-mastery/PredatoryBondStance.swlanim"
   },
   {
     "Name": "AdhesiveGrenade",
@@ -880,14 +880,14 @@
     "ProjectPath": "design/animations/heavy-vibroblade/SoulBurst.swlanim"
   },
   {
-    "Name": "SoulDevourer",
+    "Name": "SoulDevourerStance",
     "AnimationName": "sw_soul_devo",
     "Duration": 3.05,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/heavy-vibroblade/SoulDevourer.swlanim"
+    "ProjectPath": "design/animations/heavy-vibroblade/SoulDevourerStance.swlanim"
   },
   {
     "Name": "SoulStorm",
@@ -1300,14 +1300,14 @@
     "ProjectPath": "design/animations/lightsaber/SunderingSweep.swlanim"
   },
   {
-    "Name": "ApexCollapseTechnique",
+    "Name": "ApexCollapseStanceTechnique",
     "AnimationName": "sw_apex_coll",
     "Duration": 2.65,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/mimicry/ApexCollapseTechnique.swlanim"
+    "ProjectPath": "design/animations/mimicry/ApexCollapseStanceTechnique.swlanim"
   },
   {
     "Name": "ArcPulseTechnique",
@@ -1840,14 +1840,14 @@
     "ProjectPath": "design/animations/mimicry/SuppressingShotTechnique.swlanim"
   },
   {
-    "Name": "SustainBurnTechnique",
+    "Name": "SustainBurnStanceTechnique",
     "AnimationName": "sw_sust_burn",
     "Duration": 2.65,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/mimicry/SustainBurnTechnique.swlanim"
+    "ProjectPath": "design/animations/mimicry/SustainBurnStanceTechnique.swlanim"
   },
   {
     "Name": "TailSweepTechnique",
@@ -1960,14 +1960,14 @@
     "ProjectPath": "design/animations/mimicry/WardenSweepTechnique.swlanim"
   },
   {
-    "Name": "WardenWallTechnique",
+    "Name": "WardenWallStanceTechnique",
     "AnimationName": "sw_ward_wall",
     "Duration": 3.15,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/mimicry/WardenWallTechnique.swlanim"
+    "ProjectPath": "design/animations/mimicry/WardenWallStanceTechnique.swlanim"
   },
   {
     "Name": "WillFractureTechnique",

@@ -18,8 +18,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Tame();
             Reward();
             Stabling();
-            GuardingBond();
-            PredatoryBond();
+            GuardingBondStance();
+            PredatoryBondStance();
             SoothePet();
             ReviveBeast();
 
@@ -221,29 +221,29 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
 
 
-        private void GuardingBond()
+        private void GuardingBondStance()
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.GuardingBond)
-                .Name("Guarding Bond")
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.GuardingBondStance)
+                .Name("Guarding Bond Stance")
 
                 .AddPerkLevel()
                 .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one stance may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
-                .GrantsFeat(FeatType.GuardingBond);
+                .GrantsFeat(FeatType.GuardingBondStance);
         }
 
 
-        private void PredatoryBond()
+        private void PredatoryBondStance()
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.PredatoryBond)
-                .Name("Predatory Bond")
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.PredatoryBondStance)
+                .Name("Predatory Bond Stance")
 
                 .AddPerkLevel()
                 .Description("While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one stance may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
-                .GrantsFeat(FeatType.PredatoryBond);
+                .GrantsFeat(FeatType.PredatoryBondStance);
         }
 
 

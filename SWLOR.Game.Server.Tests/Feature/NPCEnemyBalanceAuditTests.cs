@@ -1040,6 +1040,7 @@ public class NPCEnemyBalanceAuditTests
 
         var failures = new List<string>();
         var requirementsByTechnique = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var sourceNameByTechnique = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var mimicryLastRow = mimicry
             .Descendants(ns + "row")
             .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
@@ -1054,7 +1055,14 @@ public class NPCEnemyBalanceAuditTests
             }
 
             var technique = GetWorkbookCellText(mimicry, sharedStrings, $"C{row}");
-            if (!sourcesByTechnique.TryGetValue(technique, out var sources) || sources.Count == 0)
+
+            // Stance techniques carry a " Stance" suffix that the creature ability they mimic does not,
+            // so match them back to the World NPCs ability list by the creature ability's own name.
+            var sourceName = technique.EndsWith(" Stance", StringComparison.OrdinalIgnoreCase)
+                ? technique[..^" Stance".Length]
+                : technique;
+            sourceNameByTechnique[technique] = sourceName;
+            if (!sourcesByTechnique.TryGetValue(sourceName, out var sources) || sources.Count == 0)
             {
                 failures.Add($"{technique}: no player-accessible source is listed in World NPCs Existing Abilities (AQ).");
                 continue;
@@ -1104,7 +1112,7 @@ public class NPCEnemyBalanceAuditTests
             {
                 Technique = entry.Key,
                 Requirement = entry.Value,
-                EarliestSourceLevel = sourcesByTechnique[entry.Key].Min(source => source.Level),
+                EarliestSourceLevel = sourcesByTechnique[sourceNameByTechnique[entry.Key]].Min(source => source.Level),
             })
             .Where(entry => entry.EarliestSourceLevel < 50)
             .GroupBy(entry => entry.EarliestSourceLevel)
@@ -1121,7 +1129,7 @@ public class NPCEnemyBalanceAuditTests
 
         foreach (var entry in requirementsByTechnique)
         {
-            var earliestLevel = sourcesByTechnique[entry.Key].Min(source => source.Level);
+            var earliestLevel = sourcesByTechnique[sourceNameByTechnique[entry.Key]].Min(source => source.Level);
             if (earliestLevel < 50)
                 continue;
 

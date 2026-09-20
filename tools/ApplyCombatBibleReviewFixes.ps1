@@ -674,7 +674,7 @@ $mimicryRequirements = @{
     "Static Burst" = 43
     "Stim Canister" = 43
     "Toxic Cloud" = 33
-    "Apex Collapse" = 50
+    "Apex Collapse Stance" = 50
     "Crossfire Drill" = 45
     "Cryo Bile" = 40
     "Final Eclipse" = 50
@@ -697,7 +697,7 @@ $mimicryRequirements = @{
     "Rupturing Quake" = 26
     "Scorching Breath" = 50
     "Snap Rush" = 46
-    "Sustain Burn" = 45
+    "Sustain Burn Stance" = 45
     "Terrifying Bellow" = 11
     "Warden Clamp" = 48
     "Warden Mark" = 49
@@ -705,7 +705,7 @@ $mimicryRequirements = @{
     "Warden Order" = 49
     "Warden Rend" = 49
     "Warden Sweep" = 48
-    "Warden Wall" = 47
+    "Warden Wall Stance" = 47
     "Will Fracture" = 46
 }
 
@@ -762,7 +762,7 @@ foreach ($entry in $mimicryAnalyzerChanges.GetEnumerator()) {
 }
 
 $mimicryDescriptions = @{
-    "Apex Collapse" = "While active, grants +25% Attack and +15% Critical Rate at the cost of -20% Physical Defense and -20% Force Defense."
+    "Apex Collapse Stance" = "While active, grants +25% Attack and +15% Critical Rate at the cost of -20% Physical Defense and -20% Force Defense."
     "Barbed Volley" = "Deals 18 physical DMG plus PER scaling in an 8m x 5m cone. Inflicts Bleed for 30 seconds."
     "Capacitor Surge" = "Inflicts Shock on enemies within 4m of you for 30 seconds. Deals no direct damage."
     "Concussive Challenge" = "Inflicts Dazed on enemies within 6m of you for 15 seconds. Deals no direct damage."

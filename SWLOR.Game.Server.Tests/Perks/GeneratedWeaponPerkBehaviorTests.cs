@@ -1018,7 +1018,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(berserker, StatType.PhysicalDefensePercentAdjustment, -20);
         AssertStatusStat(berserker, StatType.ForceDefensePercentAdjustment, -20);
 
-        var soulDevourer = new SoulDevourerStatusEffect();
+        var soulDevourer = new SoulDevourerStanceStatusEffect();
         AssertStatusStat(soulDevourer, StatType.AttackPercentAdjustment, 25);
         AssertStatusStat(soulDevourer, StatType.CriticalRatePercentAdjustment, 10);
 

@@ -1014,7 +1014,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.DrawEllipse($thin, 27, 27, 74, 74)
         $g.DrawLine($hot, 64, 35, 64, 90)
     }
-    elseif ($className -match "WardenWallAura") {
+    elseif ($className -match "WardenWallStanceAura") {
         # The radiated, ally-facing counterpart to a defensive shield: the same crest ringed by
         # concentric arcs, so a party member cannot confuse it with the self-side buff it pairs with.
         $crest = @(

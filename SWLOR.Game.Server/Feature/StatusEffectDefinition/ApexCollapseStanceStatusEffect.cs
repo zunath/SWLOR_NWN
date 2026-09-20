@@ -8,15 +8,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// Apex Collapse stance: while active, trades defense for raw offense. A Mimicry offensive stance,
     /// modelled on Berserker Stance.
     /// </summary>
-    public sealed class ApexCollapseStatusEffect : StatusEffectBase
+    public sealed class ApexCollapseStanceStatusEffect : StatusEffectBase
     {
-        public override string Name => "Apex Collapse";
-        public override EffectIconType Icon => EffectIconType.ApexCollapseStatusEffect;
+        public override string Name => "Apex Collapse Stance";
+        public override EffectIconType Icon => EffectIconType.ApexCollapseStanceStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         public override IStatusEffect Clone()
         {
-            return new ApexCollapseStatusEffect();
+            return new ApexCollapseStanceStatusEffect();
         }
 
         protected override void Apply(uint creature, int durationTicks)

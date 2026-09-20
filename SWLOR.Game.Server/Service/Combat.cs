@@ -8531,8 +8531,12 @@ namespace SWLOR.Game.Server.Service
             if (GetIsObjectValid(leftHand))
                 return leftHand;
 
-            return skillType == SkillType.BeastMastery
-                ? GetCreatureNaturalWeapon(creature)
+            // Creature-weapon NPCs carry nothing in either hand, so without this fallback their
+            // ability accuracy resolves against an invalid weapon. That yields AbilityType.Invalid
+            // from the base item and silently zeroes the attacker's accuracy stat.
+            var naturalWeapon = GetCreatureNaturalWeapon(creature);
+            return GetIsObjectValid(naturalWeapon)
+                ? naturalWeapon
                 : rightHand;
         }
 

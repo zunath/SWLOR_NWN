@@ -116,24 +116,24 @@ public class NPCEnemyBalanceAuditTests
     {
         new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 24, 30),
         new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 203, 11, 16, 20, 11, 16, 21, 27, 5, 7, 4, 3, 7, 20, 23),
-        new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 238, 20, 11, 11, 16, 16, 35, 6, 9, 0, 2, 6, 4, 27, 24),
-        new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 291, 21, 12, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 31, 24),
+        new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 238, 20, 16, 11, 16, 16, 35, 6, 9, 0, 2, 6, 4, 27, 24),
+        new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 291, 21, 17, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 31, 24),
         new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 16, 24),
-        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 46, 30),
-        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 22, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 46, 30),
+        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
     };
 
     private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
     {
-        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 22, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 81, 23),
+        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 32, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 81, 23),
         new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 977, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 17, 17, 78, 30),
-        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 23, 23, 33, 33, 121, 21, 23, 1, 10, 20, 18, 88, 23),
-        new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 25, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 23),
+        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 33, 23, 33, 33, 121, 21, 23, 1, 10, 20, 18, 88, 23),
+        new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 35, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 23),
     };
 
     private static readonly ExpectedEnemy OldScarExpectedEnemy =
-        new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 10, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
+        new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 14, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
 
     private static readonly ExpectedEnemy StormplumeExpectedEnemy =
         new("stormplume", "stormplume_sk", "stormplume_wp", 4, 164, 10, 14, 16, 10, 14, 15, 19, 4, 6, 3, 2, 6, 10, 24);
@@ -143,19 +143,19 @@ public class NPCEnemyBalanceAuditTests
         new("soot_rusk", "soot_rusk_sk", "soot_rusk_wp", 6, 230, 11, 18, 11, 15, 15, 26, 7, 9, 2, 5, 4, 4, 16, 30),
         new("nara_venn", "nara_venn_sk", "nara_venn_wp", 6, 230, 11, 18, 11, 15, 15, 26, 7, 9, 2, 5, 4, 4, 16, 25),
         new("silkshade", "silkshade_sk", "silkshade_wp", 7, 259, 11, 18, 11, 15, 15, 29, 7, 9, 2, 5, 4, 4, 17, 24),
-        new("mossback", "mossback_sk", "mossback_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("mossback", "mossback_sk", "mossback_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("tarn_kyric", "tarn_kyric_sk", "tarn_kyric_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 22),
         new("varo_skeld", "varo_skeld_sk", "varo_skeld_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 30),
         new("harrek_voss", "harrek_voss_sk", "harrek_voss_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 23),
-        new("greyspine", "greyspine_sk", "greyspine_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("greyspine", "greyspine_sk", "greyspine_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("maw_ghal", "maw_ghal_sk", "maw_ghal_wp", 17, 557, 14, 19, 23, 14, 19, 37, 48, 8, 10, 6, 6, 10, 27, 24),
-        new("redtail_kor", "redtail_kor_sk", "redtail_kor_wp", 14, 536, 22, 13, 13, 18, 18, 52, 9, 11, 2, 3, 8, 6, 31, 24),
+        new("redtail_kor", "redtail_kor_sk", "redtail_kor_wp", 14, 536, 22, 18, 13, 18, 18, 52, 9, 11, 2, 3, 8, 6, 31, 24),
         new("shardeye", "shardeye_sk", "shardeye_wp", 10, 350, 12, 20, 12, 16, 16, 36, 9, 10, 2, 6, 5, 5, 22, 24),
-        new("rootcoil", "rootcoil_sk", "rootcoil_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
-        new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("rootcoil", "rootcoil_sk", "rootcoil_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
         new("ashwing", "ashwing_sk", "ashwing_wp", 2, 114, 10, 13, 16, 10, 13, 12, 15, 3, 5, 3, 1, 5, 7, 24),
-        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 1103, 29, 17, 17, 24, 24, 88, 15, 16, 2, 6, 13, 11, 53, 24),
+        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 1103, 29, 24, 17, 24, 24, 88, 15, 16, 2, 6, 13, 11, 53, 24),
         new("sable_quarr", "sableq_sk", "sableq_wp", 29, 1082, 18, 30, 18, 25, 25, 82, 20, 17, 2, 9, 12, 12, 54, 30),
         new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1270, 19, 32, 19, 27, 27, 91, 23, 18, 2, 10, 13, 13, 61, 22),
         new("inkveil", "inkveil_sk", "inkveil_wp2", 31, 1109, 18, 25, 31, 18, 25, 60, 78, 13, 15, 9, 11, 15, 23, 24),

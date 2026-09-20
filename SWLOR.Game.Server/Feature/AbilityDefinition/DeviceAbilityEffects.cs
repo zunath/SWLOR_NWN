@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const float FieldEngineerVisualMinimumDurationSeconds = 0.1f;
         private const string FieldEngineerPulseMarkerResref = "_mdrn_pl_emitter";
         private const string FieldEngineerPulseMarkerTag = "field_engineer_pulse_marker";
+        private const string BeaconShotSound = "cb_sh_blstrfire1";
 
         private static readonly Dictionary<uint, List<FieldEngineerPulseEmitter>> _activeFieldEngineerPulseEmitters = new();
 
@@ -546,6 +547,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
 
                     var travelSeconds = GetFieldEngineerProjectileTravelSeconds(GetDistanceBetween(emitter.MarkerObject, target));
+                    // Scripted projectile visuals do not play the native weapon firing sound.
+                    PlaySound(BeaconShotSound);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(emitter.ProjectileVisualEffect), target);
 
                     // The module owns the callback so caster/marker removal cannot cancel cleanup.

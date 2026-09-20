@@ -45,7 +45,7 @@ Heavy Vibroblade Offense and Defense sustain loops were reduced so high damage n
 - `Life Siphon`: below 40 percent HP, heals 8 percent of damage dealt.
 - `Soul Strike`: rank heals reduced to 15/25/30 percent, with rank III scaling by 1 percentage point per 2 MGT to a 40 percent cap.
 - `Vampiric Fury`: critical heals reduced to 12 percent plus MGT/2 scaling, capped at 25 percent, with an 8 second cooldown.
-- `Soul Devourer`: +25 percent Attack, +10 percent critical chance, 45 percent self-damage reduced by MGT to a 20 percent floor.
+- `Soul Devourer Stance`: +25 percent Attack, +10 percent critical chance, 45 percent self-damage reduced by MGT to a 20 percent floor.
 - `Soul Sacrifice`, `Soul Amplification`, `Soul Reaping`, `Soul Ascension`, `Blood Weapon`, and `Guardian's Reaping` all received lower magnitude or shorter uptime.
 
 ### B-004 Positionals Still Need Baseline-Proofing - Implemented, Automated Coverage Added

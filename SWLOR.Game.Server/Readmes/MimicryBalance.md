@@ -81,7 +81,7 @@ Each trait grants a distinct effect profile, and stronger payload bands provide 
 - **On-hit procs** — a percent chance for a landed hit to inflict a status effect. Elemental DoT procs (Poison/Shock/Freezing) scale roughly from 12% to 15–18%. The debuff families (Bleed, Hemorrhage, Sunder) run at **half those rates** (6%, 9–10%, then 12%): their payloads scale with target max HP or strip defenses, so at equal chances they dwarf every perk-priced passive against elite/boss targets. Halved, their steady-state uptime lands near 25–45% instead of 55–85%.
 - **Flat buffs** — a permanent stat bonus, scaling roughly from +4% through +6% to +8%.
 
-Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. Traits stack additively when equipped together, including traits that adjust the same stat. The technique-slot budget is the balancing cost: `Chitin Guard` plus `Iron Carapace` consumes 4 slots, `Force Rend` plus `Essence Scar` consumes 4 slots, and combining both carapaces with the 3-slot `Apex Collapse` stance commits 7 of the maximum 10 slots to that package.
+Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. Traits stack additively when equipped together, including traits that adjust the same stat. The technique-slot budget is the balancing cost: `Chitin Guard` plus `Iron Carapace` consumes 4 slots, `Force Rend` plus `Essence Scar` consumes 4 slots, and combining both carapaces with the 3-slot `Apex Collapse Stance` commits 7 of the maximum 10 slots to that package.
 
 | Technique | Power band | Slot | Passive trait effect |
 |---|---|---|---|
@@ -118,7 +118,7 @@ Durations follow the conventions used across the other skill trees, not ad-hoc c
 
 Magnitudes are likewise capped to Bible norms: Accuracy debuffs at −10%, movement slows at −18%, Attack/Defense at ±20%, Haste/Attack buffs at +15%, critical chance at +25%, damage-taken marks at +10%, reflect at 20%, and taunt as **+25% Enmity toward you for 30 seconds** (the pattern shared with Covering Strike, etc.) rather than a forced-attack charm.
 
-Passive on-hit trait procs are a deliberate exception to the active-technique duration bands because they can trigger repeatedly without spending Stamina: Bleed and Hemorrhage last 12 seconds, Freezing 6 seconds, Shock 10 seconds, Sunder 14 seconds, and Poison 12 seconds. Freezing's Ice damage scales with twice the source's Perception modifier, its status level, Mimicry Potency when present, and the target's damage-taken modifiers. Sustain Burn overrides the shared Poison proc duration to 30 seconds while its capstone stance is active.
+Passive on-hit trait procs are a deliberate exception to the active-technique duration bands because they can trigger repeatedly without spending Stamina: Bleed and Hemorrhage last 12 seconds, Freezing 6 seconds, Shock 10 seconds, Sunder 14 seconds, and Poison 12 seconds. Freezing's Ice damage scales with twice the source's Perception modifier, its status level, Mimicry Potency when present, and the target's damage-taken modifiers. Sustain Burn Stance overrides the shared Poison proc duration to 30 seconds while its capstone stance is active.
 
 ### Loadout economy (technique slots)
 
@@ -178,7 +178,7 @@ receive Exposed.
 | Warden Sweep | Physical-damage reflection |
 | Will Fracture | Cone Foggy Mind with FP recovery |
 
-The three stances are **Warden Wall** (defensive aura), **Apex Collapse** (offense-for-defense trade), and **Sustain Burn** (30-second Poison on landed hits).
+The three stances are **Warden Wall Stance** (defensive aura), **Apex Collapse Stance** (offense-for-defense trade), and **Sustain Burn Stance** (30-second Poison on landed hits).
 
 Mechanics reuse shared, stat-driven building blocks such as the chain, detonation, pull, heal, targeting, and status-effect services. Stances use the existing `ConfigureToggle` model; stances and non-damage utility actives are classified separately from damage abilities so their scaling contracts remain accurate.
 

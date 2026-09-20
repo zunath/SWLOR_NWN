@@ -7,13 +7,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class SoulDevourerStatusEffect : StatusEffectBase
+    public sealed class SoulDevourerStanceStatusEffect : StatusEffectBase
     {
         private const int BaseRecoilPercent = 45;
         private const int MinimumRecoilPercent = 20;
 
-        public override string Name => "Soul Devourer";
-        public override EffectIconType Icon => EffectIconType.SoulDevourerStatusEffect;
+        public override string Name => "Soul Devourer Stance";
+        public override EffectIconType Icon => EffectIconType.SoulDevourerStanceStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 GetAbilityScore(attacker, AbilityType.Might));
             AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(GameMath.PercentOf(damage, percent)), attacker));
         }
-        public SoulDevourerStatusEffect()
+        public SoulDevourerStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 25;
             StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 10;

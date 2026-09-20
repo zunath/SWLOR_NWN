@@ -4,15 +4,15 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class GuardingBondBeastStatusEffect : StatusEffectBase
+    public sealed class GuardingBondStanceBeastStatusEffect : StatusEffectBase
     {
-        public override string Name => "Guarding Bond";
-        public override EffectIconType Icon => EffectIconType.GuardingBondBeastStatusEffect;
+        public override string Name => "Guarding Bond Stance";
+        public override EffectIconType Icon => EffectIconType.GuardingBondStanceBeastStatusEffect;
         public override bool PersistsOnLogout => false;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;
 
-        public GuardingBondBeastStatusEffect()
+        public GuardingBondStanceBeastStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 20;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 20;

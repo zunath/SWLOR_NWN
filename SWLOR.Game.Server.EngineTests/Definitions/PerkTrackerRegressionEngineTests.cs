@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(outsiderHP, GetCurrentHitPoints(outsider), "nonparty neighbor receives no healing");
         }
 
-        [EngineTest("Warden Wall grants one defense bonus to its source and nearby party", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        [EngineTest("Warden Wall Stance grants one defense bonus to its source and nearby party", Category = "PerkTracker", TimeoutSeconds = 30f)]
         public static async Task WardenWallDoesNotDoubleCasterBonus(EngineTestContext ctx)
         {
             var caster = ctx.SpawnCreature("nw_bandit001");
@@ -150,15 +150,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the party to include the ally");
             ctx.Assert(!AbilityTargeting.GetFriendlyTargetsNearLocation(caster, GetLocation(caster), 10f, false).Contains(caster),
                 "explicit source exclusion must override party membership");
-            StatusEffect.ApplyStatusEffect(caster, caster, new WardenWallStatusEffect(), 60f);
-            await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(ally, typeof(WardenWallAuraStatusEffect)), 10f, "the wall to reach the nearby ally");
+            StatusEffect.ApplyStatusEffect(caster, caster, new WardenWallStanceStatusEffect(), 60f);
+            await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect)), 10f, "the wall to reach the nearby ally");
             foreach (var stat in new[] { StatType.PhysicalDefensePercentAdjustment, StatType.ForceDefensePercentAdjustment })
             {
                 ctx.AssertEqual(20, Stat.GetStatAdjustment(caster, stat), $"caster {stat} is not doubled by its own aura");
                 ctx.AssertEqual(20, Stat.GetStatAdjustment(ally, stat), $"ally {stat}");
             }
-            ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(WardenWallAuraStatusEffect)), "caster must not receive its own aura effect");
-            ctx.Assert(!StatusEffect.HasStatusEffect(outsider, typeof(WardenWallAuraStatusEffect)), "wall excludes a nonparty neighbor");
+            ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(WardenWallStanceAuraStatusEffect)), "caster must not receive its own aura effect");
+            ctx.Assert(!StatusEffect.HasStatusEffect(outsider, typeof(WardenWallStanceAuraStatusEffect)), "wall excludes a nonparty neighbor");
         }
 
         [EngineTest("Area-use deflection and FP rewards work across skills without requiring a hit", Category = "PerkTracker", TimeoutSeconds = 30f)]

@@ -41,7 +41,7 @@ public class HeavyVibrobladeChoreographyTests
             recipe.Beats.Should().NotContain(beat => beat.SourceAnimation == "2hstab",
                 "these motions must not append the previously reported extra stab");
         }
-        foreach (var id in new[] { "AbsoluteDefense", "BastionStance", "BlazingSpikes", "Flash", "Rampart", "SoulDevourer", "SoulStorm" })
+        foreach (var id in new[] { "AbsoluteDefense", "BastionStance", "BlazingSpikes", "Flash", "Rampart", "SoulDevourerStance", "SoulStorm" })
             foreach (var source in recipes.Single(recipe => recipe.Id == id).Beats
                          .Where(beat => beat.SourceAnimation.StartsWith("2hslash")).GroupBy(beat => beat.SourceAnimation))
                 source.Select(beat => beat.SourceTime).Distinct().Should().ContainSingle(

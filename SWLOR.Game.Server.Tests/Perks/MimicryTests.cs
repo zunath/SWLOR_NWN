@@ -140,8 +140,9 @@ public class MimicryTests
                 $"{feat}'s MimicrySourceFeat ({ability.MimicrySourceFeat}) should be a registered NPC ability");
 
             var sourceAbility = npcAbilitiesByFeat[ability.MimicrySourceFeat];
-            ability.Name.Should().Be(sourceAbility.Name,
-                $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat})");
+            ability.Name.Should().BeOneOf(new[] { sourceAbility.Name, $"{sourceAbility.Name} Stance" },
+                $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat}), " +
+                "optionally carrying the Stance suffix that marks a toggled stance technique");
 
             // Passive traits have no activation, and stances / non-damaging support utilities are not
             // hostile casts, so hostility (an activation concept mirrored from the source) only applies
@@ -237,7 +238,7 @@ public class MimicryTests
         abilityTargeting.Should().Contain("bool includeActivator = true");
         abilityTargeting.Should().Contain(
             "if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))",
-            "excluding the caster must take precedence over party membership for Warden Wall");
+            "excluding the caster must take precedence over party membership for Warden Wall Stance");
         abilityTargeting.Should().Contain(
             "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
             "dead or unconscious party members must not receive Stim Canister");
@@ -973,9 +974,9 @@ public class MimicryTests
             .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
         techniques[FeatType.SuppressingShotTechnique]
             .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
-        techniques[FeatType.WardenWallTechnique]
+        techniques[FeatType.WardenWallStanceTechnique]
             .MimicrySkillRequirement.Should().Be(47, "level-50 boss techniques begin the final progression band");
-        techniques[FeatType.ApexCollapseTechnique]
+        techniques[FeatType.ApexCollapseStanceTechnique]
             .MimicrySkillRequirement.Should().Be(50, "apex boss techniques remain rank-50 rewards");
     }
 
@@ -1009,11 +1010,11 @@ public class MimicryTests
             "both the initial and post-cast activation checks use CanUseAbility, so an unequipped technique cannot resolve");
 
         var equipped = new Player();
-        equipped.EquippedTechniques.Add(FeatType.WardenWallTechnique);
+        equipped.EquippedTechniques.Add(FeatType.WardenWallStanceTechnique);
 
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallTechnique).Should().BeTrue();
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnTechnique).Should().BeFalse();
-        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallTechnique).Should().BeFalse();
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallStanceTechnique).Should().BeTrue();
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnStanceTechnique).Should().BeFalse();
+        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallStanceTechnique).Should().BeFalse();
     }
 
     [Test]
@@ -1024,9 +1025,9 @@ public class MimicryTests
 
         foreach (var feat in new[]
                  {
-                     FeatType.ApexCollapseTechnique,
-                     FeatType.SustainBurnTechnique,
-                     FeatType.WardenWallTechnique
+                     FeatType.ApexCollapseStanceTechnique,
+                     FeatType.SustainBurnStanceTechnique,
+                     FeatType.WardenWallStanceTechnique
                  })
         {
             techniques[feat].IsMimicryStance.Should().BeTrue();
@@ -1034,10 +1035,10 @@ public class MimicryTests
                 $"{feat} must declare its permanent wearer effect for revocation cleanup");
         }
 
-        techniques[FeatType.WardenWallTechnique]
+        techniques[FeatType.WardenWallStanceTechnique]
             .SourceOwnedStatusEffectTypesRemovedOnPerkRefund
-            .Should().Contain(typeof(WardenWallAuraStatusEffect),
-                "unequipping Warden Wall must also remove the aura it granted to nearby allies");
+            .Should().Contain(typeof(WardenWallStanceAuraStatusEffect),
+                "unequipping Warden Wall Stance must also remove the aura it granted to nearby allies");
 
         var root = FindRepositoryRoot();
         var mimicrySource = File.ReadAllText(Path.Combine(

@@ -533,6 +533,52 @@ public class ForceLightConsularTests
         return result;
     }
 
+    [Test]
+    public void SereneFocus_GivesASoloCasterTheFPHalfInsteadOfNothing()
+    {
+        var root = FindRepositoryRoot();
+        var healing = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceControlHealingEffects.cs").FullName);
+
+        healing.Should().NotContain("if (target == activator ||",
+            "a solo Light caster must not be locked out of their own FP engine");
+        healing.Should().Contain("var restoresStamina = target != activator;",
+            "supporting someone else stays the stronger play");
+
+        var withStamina = new SereneFocusStatusEffect();
+        var fpOnly = new SereneFocusStatusEffect(false);
+        withStamina.Name.Should().Be("Serene Focus");
+        fpOnly.Name.Should().Be("Serene Focus");
+        fpOnly.Icon.Should().Be(withStamina.Icon);
+
+        var effect = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "SereneFocusStatusEffect.cs").FullName);
+        effect.Should().Contain("if (_restoresStamina)",
+            "the self-cast variant returns FP only");
+        effect.Should().Contain("public SereneFocusStatusEffect() : this(true)",
+            "reflection-based status effect caching requires a parameterless constructor");
+    }
+
+    [Test]
+    public void SereneFocus_CloneKeepsTheSelfCastVariant()
+    {
+        var fpOnly = new SereneFocusStatusEffect(false);
+        var clone = fpOnly.Clone();
+
+        clone.Should().BeOfType<SereneFocusStatusEffect>().And.NotBeSameAs(fpOnly);
+
+        var field = typeof(SereneFocusStatusEffect)
+            .GetField("_restoresStamina", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        field.GetValue(clone).Should().Be(false);
+        field.GetValue(new SereneFocusStatusEffect()).Should().Be(true);
+    }
+
+    [Test]
+    public void SereneFocus_DescriptionStatesTheSelfCastBenefit()
+    {
+        BuildForceLightConsularPerksWithout2daLookup()[PerkType.SereneFocus]
+            .PerkLevels[1].Description
+            .Should().Contain("Targeting yourself restores 1 FP every 6 seconds instead.");
+    }
+
     private static PathInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SereneFocusTrait)
-                .Description("Control powers that restore HP cause affected allies to restore 1 STM and 1 FP every 6 seconds for 30 seconds. This benefit does not trigger when you target yourself.")
+                .Description("Control powers that restore HP cause affected allies to restore 1 STM and 1 FP every 6 seconds for 30 seconds. Targeting yourself restores 1 FP every 6 seconds instead.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

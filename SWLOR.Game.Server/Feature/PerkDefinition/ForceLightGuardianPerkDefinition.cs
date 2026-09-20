@@ -33,28 +33,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Grants a single ally temporary HP equal to 6% of the target's maximum HP plus WIL scaling for 30 seconds.")
+                .Description("Grants an ally or yourself temporary HP equal to 6% of the target's maximum HP plus WIL scaling for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.GuardianWard1)
 
                 .AddPerkLevel()
-                .Description("Grants a single ally temporary HP equal to 9% of the target's maximum HP plus WIL scaling for 30 seconds.")
+                .Description("Grants an ally or yourself temporary HP equal to 9% of the target's maximum HP plus WIL scaling for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.GuardianWard2)
 
                 .AddPerkLevel()
-                .Description("Grants a single ally temporary HP equal to 12% of the target's maximum HP plus WIL scaling for 30 seconds.")
+                .Description("Grants an ally or yourself temporary HP equal to 12% of the target's maximum HP plus WIL scaling for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.GuardianWard3)
 
                 .AddPerkLevel()
-                .Description("Grants a single ally temporary HP equal to 15% of the target's maximum HP plus WIL scaling for 30 seconds.")
+                .Description("Grants an ally or yourself temporary HP equal to 15% of the target's maximum HP plus WIL scaling for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -114,11 +114,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReflectiveBarrierTrait)
-                .Description("Control powers that grant temporary HP reflect 8% of force and energy damage taken, plus WIL scaling, back to the attacker while the temporary HP remains.")
+                .Description("Control powers that grant temporary HP reflect 8% of force and energy damage taken, plus WIL scaling, back to the attacker while the temporary HP remains. Whoever holds that temporary HP, including you, deals +8% weapon and Force damage for its duration.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .IncreasesStat(StatType.LightGuardianTemporaryHPReflectiveBarrier, 1);
+                .IncreasesStat(StatType.LightGuardianTemporaryHPReflectiveBarrier, 1)
+                .IncreasesStat(StatType.LightGuardianTemporaryHPEmpowerment, 8);
         }
 
         private void PurifyingWave()
@@ -142,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("For 45 seconds, damage that would drop the target below 1 HP is prevented once and the target gains temporary HP equal to 15% of maximum HP plus WIL scaling.")
+                .Description("For 45 seconds, damage that would drop an ally or yourself below 1 HP is prevented once and the target gains temporary HP equal to 15% of maximum HP plus WIL scaling.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

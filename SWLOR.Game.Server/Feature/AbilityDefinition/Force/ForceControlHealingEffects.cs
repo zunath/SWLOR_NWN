@@ -48,13 +48,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplySereneFocus(uint activator, uint target)
         {
-            if (target == activator ||
-                Stat.GetStatAdjustment(activator, StatType.ControlHealingSereneFocus) <= 0)
-            {
+            if (Stat.GetStatAdjustment(activator, StatType.ControlHealingSereneFocus) <= 0)
                 return;
-            }
 
-            StatusEffect.ApplyStatusEffect(activator, target, typeof(SereneFocusStatusEffect), SereneFocusDurationSeconds);
+            // Healing someone else still pays better. A caster healing themselves gets the FP
+            // half of the trait rather than nothing, so Light has an FP engine while solo.
+            var restoresStamina = target != activator;
+            StatusEffect.ApplyStatusEffect(
+                activator, target, new SereneFocusStatusEffect(restoresStamina), SereneFocusDurationSeconds);
         }
 
         private static void ApplyForceMend(uint activator, uint target)

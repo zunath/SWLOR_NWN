@@ -6112,6 +6112,13 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         BleedingTargetAbilitySplashMaximumTargets = 1083,
 
+        /// <summary>
+        /// Percent weapon and Force damage a Light Guardian temporary HP pool grants to whoever
+        /// holds it, including the caster, for as long as the pool lasts.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightGuardianTemporaryHPEmpowerment = 1084,
+
     }
 
     public class StatTypeAttribute : Attribute

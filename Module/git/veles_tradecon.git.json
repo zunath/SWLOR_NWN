@@ -3755,11 +3755,11 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 10
+                "value": 1
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 127
+                "value": 1
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -3771,7 +3771,7 @@
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 10
+                "value": 3
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -3787,15 +3787,15 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 35
+                "value": 105
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 10
+                "value": 1
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 127
+                "value": 1
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -3811,7 +3811,7 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 10
+                "value": 3
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
@@ -3823,7 +3823,7 @@
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 118
+                "value": 68
               },
               "BaseItem": {
                 "type": "int",
@@ -3913,11 +3913,11 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 10
+                "value": 1
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 127
+                "value": 1
               },
               "xArmorPart_LFoot": {
                 "type": "word",
@@ -3929,7 +3929,7 @@
               },
               "xArmorPart_LShin": {
                 "type": "word",
-                "value": 10
+                "value": 3
               },
               "xArmorPart_LShou": {
                 "type": "word",
@@ -3945,15 +3945,15 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 35
+                "value": 105
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 10
+                "value": 1
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 127
+                "value": 1
               },
               "xArmorPart_RFoot": {
                 "type": "word",
@@ -3969,7 +3969,7 @@
               },
               "xArmorPart_RShin": {
                 "type": "word",
-                "value": 10
+                "value": 3
               },
               "xArmorPart_RShou": {
                 "type": "word",
@@ -3981,11 +3981,11 @@
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 118
+                "value": 68
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 3.363116314379561e-43
               },
               "XPosition": {
                 "type": "float",
@@ -6842,7 +6842,7 @@
         "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
-          "value": 80
+          "value": 145
         },
         "Appearance_Type": {
           "type": "word",
@@ -6939,30 +6939,30 @@
               "__struct_id": 2,
               "Class": {
                 "type": "int",
-                "value": 63
+                "value": 4
               },
               "ClassLevel": {
                 "type": "short",
-                "value": 3
+                "value": 1
               }
             }
           ]
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 118
+          "value": 1
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 142
+          "value": 149
         },
         "Color_Tattoo1": {
           "type": "byte",
-          "value": 45
+          "value": 1
         },
         "Color_Tattoo2": {
           "type": "byte",
-          "value": 27
+          "value": 1
         },
         "Con": {
           "type": "byte",
@@ -6978,7 +6978,7 @@
         },
         "CurrentHitPoints": {
           "type": "short",
-          "value": 21
+          "value": 45
         },
         "DecayTime": {
           "type": "dword",
@@ -7011,7 +7011,7 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 115
+                "value": 0
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
@@ -7023,7 +7023,7 @@
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 63
+                "value": 1
               },
               "ArmorPart_LHand": {
                 "type": "byte",
@@ -7031,7 +7031,7 @@
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 63
+                "value": 1
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -7039,7 +7039,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 151
+                "value": 1
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -7047,7 +7047,7 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 151
+                "value": 1
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
@@ -7059,7 +7059,7 @@
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 63
+                "value": 1
               },
               "ArmorPart_RHand": {
                 "type": "byte",
@@ -7067,11 +7067,11 @@
               },
               "ArmorPart_Robe": {
                 "type": "byte",
-                "value": 0
+                "value": 249
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 63
+                "value": 1
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
@@ -7079,11 +7079,11 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 151
+                "value": 1
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 72
+                "value": 1
               },
               "BaseItem": {
                 "type": "int",
@@ -7095,11 +7095,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 8
+                "value": 149
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 24
+                "value": 149
               },
               "Cost": {
                 "type": "dword",
@@ -7123,25 +7123,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 159
+                "value": 151
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 50
+                "value": 150
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Vendor Outfit"
+                  "0": "Twi'lek Triplet Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 130
+                "value": 63
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 60
+                "value": 63
               },
               "Plot": {
                 "type": "byte",
@@ -7161,15 +7161,15 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "VendorOutfit"
+                "value": "TwilekTripletOutfit"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "vendoroutfit"
+                "value": "nw_twilektripl"
               },
               "xArmorPart_Belt": {
                 "type": "word",
-                "value": 115
+                "value": 0
               },
               "xArmorPart_LBice": {
                 "type": "word",
@@ -7181,7 +7181,7 @@
               },
               "xArmorPart_LFoot": {
                 "type": "word",
-                "value": 63
+                "value": 1
               },
               "xArmorPart_LHand": {
                 "type": "word",
@@ -7189,7 +7189,7 @@
               },
               "xArmorPart_LShin": {
                 "type": "word",
-                "value": 63
+                "value": 1
               },
               "xArmorPart_LShou": {
                 "type": "word",
@@ -7197,7 +7197,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 151
+                "value": 1
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -7205,7 +7205,7 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 151
+                "value": 1
               },
               "xArmorPart_RBice": {
                 "type": "word",
@@ -7217,7 +7217,7 @@
               },
               "xArmorPart_RFoot": {
                 "type": "word",
-                "value": 63
+                "value": 1
               },
               "xArmorPart_RHand": {
                 "type": "word",
@@ -7225,11 +7225,11 @@
               },
               "xArmorPart_Robe": {
                 "type": "word",
-                "value": 0
+                "value": 249
               },
               "xArmorPart_RShin": {
                 "type": "word",
-                "value": 63
+                "value": 1
               },
               "xArmorPart_RShou": {
                 "type": "word",
@@ -7237,15 +7237,15 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 151
+                "value": 1
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 72
+                "value": 1
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.193861450053886e-39
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -7298,21 +7298,7 @@
               "__struct_id": 1,
               "Feat": {
                 "type": "word",
-                "value": 6
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
                 "value": 10
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Feat": {
-                "type": "word",
-                "value": 26
               }
             },
             {
@@ -7369,7 +7355,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hana"
+            "0": "Flower Shop Hana"
           }
         },
         "fortbonus": {
@@ -7386,7 +7372,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 21
+          "value": 45
         },
         "Int": {
           "type": "byte",
@@ -7420,7 +7406,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 30
+          "value": 48
         },
         "NaturalAC": {
           "type": "byte",
@@ -7428,7 +7414,7 @@
         },
         "NoPermDeath": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "PerceptionRange": {
           "type": "byte",
@@ -7444,11 +7430,11 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3630
+          "value": 3620
         },
         "Race": {
           "type": "byte",
-          "value": 154
+          "value": 6
         },
         "refbonus": {
           "type": "short",
@@ -7709,7 +7695,7 @@
         },
         "SoundSetFile": {
           "type": "word",
-          "value": 65535
+          "value": 939
         },
         "SpecAbilityList": {
           "type": "list",
@@ -7717,11 +7703,11 @@
         },
         "StartingPackage": {
           "type": "byte",
-          "value": 154
+          "value": 4
         },
         "Str": {
           "type": "byte",
-          "value": 16
+          "value": 18
         },
         "Subrace": {
           "type": "cexostring",
@@ -7729,7 +7715,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "NW_CREATURE_000"
+          "value": "female_twilek"
         },
         "Tail_New": {
           "type": "dword",
@@ -7741,7 +7727,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "streetvendor002"
+          "value": "female_twilek"
         },
         "WalkRate": {
           "type": "int",
@@ -7761,7 +7747,7 @@
         },
         "xAppearance_Head": {
           "type": "word",
-          "value": 80
+          "value": 145
         },
         "xArmorPart_RFoot": {
           "type": "word",
@@ -77723,6 +77709,41 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 40
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
         }
       }
     ]

@@ -14,6 +14,8 @@ NPCs relocated below. Scripts and submodule revisions are unchanged. The area is
 
 Integration corrections:
 
+- The area declares `MAP_KEY_ITEM_ID=40` and `PLANET_TYPE_ID=1`, matching
+  Veles Shops. Owning the Veles Colony Map reveals the concourse and its map note.
 - The exterior entrance at (177.00, 22.17) targets
   `V_Veles_To_Concourse`, the main concourse entrance. The old PR incorrectly
   targeted the warehouse landing. The return door targets the restored exterior
@@ -56,6 +58,9 @@ The market terminal is included to preserve the workbench's nearby market access
 Adega, Volnatu, and Hana were already represented by the recovered map; their
 duplicate exterior placements are removed. Sera and Renna are removed from
 Shops and the exterior and retain their canonical tags in the concourse.
+Adega, Volnatu, and Hana retain their complete current exterior creature data,
+including appearance, equipment, stats, feats, and canonical dialogue. Only their
+position and orientation change; checksums guard the original creature data.
 Repeated ambient guards, patrons, employees, and chefs remain unchanged. Merchant
 stores and the welcome droid's goods store now use the current exterior's full
 store data, retaining separate concourse tags and placement coordinates. The

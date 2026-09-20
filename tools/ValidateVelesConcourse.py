@@ -24,6 +24,9 @@ def validate():
     interior = read("Module/git/veles_tradecon.git.json")
     exterior = read("Module/git/veles_exterior.git.json")
     module = read("Module/ifo/module.ifo.json")
+    area_locals = {value(local, "Name"): local for local in value(interior, "VarTable")}
+    for name, expected in [("MAP_KEY_ITEM_ID", 40), ("PLANET_TYPE_ID", 1)]:
+        assert value(area_locals[name], "Type") == 1 and value(area_locals[name], "Value") == expected
     assert sum(value(a, "Area_Name") == "veles_tradecon" for a in value(module, "Mod_Area_list")) == 1
     assert sum(value(a, "Area_Name") == "veles_exterior" for a in value(module, "Mod_Area_list")) == 1
     assert len(value(area, "Tile_List")) == value(area, "Width") * value(area, "Height")
@@ -130,6 +133,10 @@ def validate():
         return name.removeprefix("Flower Shop ")
     npc_names = [npc_name(npc) for npc in value(interior, "Creature List")]
     assert len(npc_names) == len(set(npc_names))
+    for merchant in manifest["relocatedMerchants"]:
+        npc = next(npc for npc in value(interior, "Creature List") if npc_name(npc) == merchant["name"])
+        digest = hashlib.sha256(json.dumps(gameplay(npc), sort_keys=True).encode()).hexdigest()
+        assert digest == merchant["gameplaySha256"], f"Changed merchant appearance/gameplay: {merchant['name']}"
     canonical_merchants = {"Adega Jorgan": "vendor_merchant", "Volnatu Gigg": "veles_volnatu", "Hana": "night_viscflower"}
     for name, conversation in canonical_merchants.items():
         npc = next(npc for npc in value(interior, "Creature List") if npc_name(npc) == name)

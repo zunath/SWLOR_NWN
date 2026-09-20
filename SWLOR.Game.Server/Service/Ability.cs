@@ -285,6 +285,65 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        public static Func<int, Action<T>> CaptureRepeatedAbilityImpactBatch<T>(
+            uint activator, Action<T> impactAction, int baseDamage = 0)
+        {
+            ArgumentNullException.ThrowIfNull(impactAction);
+            PrepareCombatImpactDamageBonuses(activator, baseDamage);
+            var originatingImpact = GetTrackedAbilityImpact(activator);
+
+            return count =>
+            {
+                TrackedAbilityImpact batchImpact = null;
+                var batch = new AbilityImpactBatch<T>(count, (payload, isFinalImpact) =>
+                {
+                    if (originatingImpact == null)
+                    {
+                        impactAction(payload);
+                        return;
+                    }
+
+                    if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                        return;
+
+                    var previousImpact = GetTrackedAbilityImpact(activator);
+                    try
+                    {
+                        if (batchImpact == null)
+                        {
+                            BeginAbilityImpact(activator, originatingImpact.Ability, 0, 0,
+                                countsAsAttackAttempt: false, sequence: originatingImpact.Sequence);
+                            batchImpact = GetTrackedAbilityImpact(activator);
+                            batchImpact.TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage;
+                            batchImpact.CopyRepeatedDamageBonusesFrom(originatingImpact);
+                        }
+                        else
+                        {
+                            _trackedAbilityImpacts[activator] = batchImpact;
+                        }
+
+                        impactAction(payload);
+                        _trackedAbilityImpacts.Remove(activator);
+                        batchImpact.FlushDamageEffects(activator);
+                        originatingImpact.CompleteRepeatedDamageBonusImpact(batchImpact.Summary.ImpactedTargetCount > 0);
+                        if (isFinalImpact)
+                        {
+                            _trackedAbilityImpacts[activator] = batchImpact;
+                            var summary = EndAbilityImpact(activator);
+                            Combat.ApplyAbilityImpactEffects(activator, summary);
+                        }
+                    }
+                    finally
+                    {
+                        _trackedAbilityImpacts.Remove(activator);
+                        if (previousImpact != null)
+                            _trackedAbilityImpacts[activator] = previousImpact;
+                    }
+                });
+                return batch.Apply;
+            };
+        }
+
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
         {
             if (!_trackedAbilityImpacts.TryGetValue(activator, out var impact))
@@ -1339,11 +1398,12 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true,
             bool useUnscaledDamage = false,
-            Action<uint> beforeImpact = null)
+            Action<uint> beforeImpact = null,
+            bool isAreaImpact = false)
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             var totalDamage = 0;
-            RecordAbilityImpactShape(activator, skillType, isArea);
+            RecordAbilityImpactShape(activator, skillType, isArea || isAreaImpact);
 
             if (isArea)
             {
@@ -2085,6 +2145,14 @@ namespace SWLOR.Game.Server.Service
             return shape == CombatImpactAreaShape.Sphere
                 ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
                 : GetLocation(activator);
+        }
+
+        public static IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius)
+        {
+            return GetHostileCreaturesInCombatImpactShape(
+                    activator, OBJECT_INVALID, location, CombatImpactAreaShape.Sphere, radius, 0f, false, false)
+                .Where(creature => HasAbilityLineOfSight(activator, creature))
+                .ToList();
         }
 
         private static IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(

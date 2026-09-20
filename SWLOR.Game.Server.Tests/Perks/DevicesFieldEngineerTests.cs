@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
@@ -104,8 +105,8 @@ public class DevicesFieldEngineerTests
         effects.Should().Contain("BeaconPulseDamagePercentAdjustment");
         effects.Should().Contain("BeaconPulseRangeBonusMeters");
         effects.Should().Contain("ApplyBeaconPulseRangeBonus");
-        effects.Should().Contain("resolvesHit: false");
-        effects.Should().Contain("canCritical: false");
+        effects.Should().Contain("resolvesHit: !emitter.AppliesBeaconPulseBonuses");
+        effects.Should().Contain("canCritical: !emitter.AppliesBeaconPulseBonuses");
         effects.Should().NotContain("BeaconPulseAccuracyPercentAdjustment");
         effects.Should().NotContain("BeaconPulseCriticalRatePercentAdjustment");
         effects.Should().Contain("ApplyDiagnosticSweep");
@@ -167,7 +168,7 @@ public class DevicesFieldEngineerTests
         killzoneBeacon.Should().Contain("markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue");
         killzoneBeacon.Should().Contain("markerVisualEffectScale: 4.8f");
         killzoneBeacon.Should().Contain("VisualEffect.Vfx_Imp_Lightning_M");
-        killzoneBeacon.Should().Contain("VisualEffect.Vfx_Imp_Mirv_Electric");
+        killzoneBeacon.Should().Contain("beamVisualEffect: VisualEffect.Vfx_Beam_Silent_Lightning");
         killzoneBeacon.Should().Contain("appliesBeaconPulseBonuses: true");
 
         var blasterBeacon = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "BlasterBeaconAbilityDefinition.cs").FullName)
@@ -186,6 +187,60 @@ public class DevicesFieldEngineerTests
         shockBeacon.Should().Contain("10,\n                6,\n                typeof(ShockStatusEffect),\n                5f,\n                30f,\n                CombatDamageType.Electrical");
         shockBeacon.Should().Contain("14,\n                6,\n                typeof(ShockStatusEffect),\n                5f,\n                30f,\n                CombatDamageType.Electrical");
         shockBeacon.Should().Contain("markerVisualEffectScale: 2f");
+    }
+
+    [TestCase("BlasterBeacon", 3, 0)]
+    [TestCase("ShockBeacon", 0, 2)]
+    [TestCase("KillzoneBeacon", 1, 1)]
+    public void BeaconShots_AllRanksAndDamageComponentsHaveSourceToTargetEffects(
+        string ability, int expectedBlasterShots, int expectedElectricalShots)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" /
+                                     "Devices" / $"{ability}AbilityDefinition.cs").FullName);
+        var pulses = Regex.Matches(source, @"DeviceAbilityEffects\.Schedule(?:Single|Area)HostilePulses\([\s\S]*?\);")
+            .Select(match => match.Value).ToArray();
+
+        pulses.Should().HaveCount(expectedBlasterShots + expectedElectricalShots);
+        pulses.Count(pulse => pulse.Contains("projectileVisualEffect: VisualEffect.Mirv_StarWars_Bolt2"))
+            .Should().Be(expectedBlasterShots);
+        pulses.Count(pulse => pulse.Contains("beamVisualEffect: VisualEffect.Vfx_Beam_Silent_Lightning"))
+            .Should().Be(expectedElectricalShots);
+        foreach (var pulse in pulses)
+        {
+            var isElectrical = pulse.Contains("CombatDamageType.Electrical");
+            pulse.Should().Contain(isElectrical
+                ? "beamVisualEffect: VisualEffect.Vfx_Beam_Silent_Lightning"
+                : "projectileVisualEffect: VisualEffect.Mirv_StarWars_Bolt2");
+        }
+    }
+
+    [Test]
+    public void BeaconShotSounds_ExistInDeployedSoundResources()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" /
+                                     "DeviceAbilityEffects.cs").FullName);
+        foreach (var sound in new[] { "cb_sh_blstrfire1", "ksfx_ion_ray" })
+        {
+            source.Should().Contain($"\"{sound}\"");
+            File.Exists((root / "SWLOR_Haks" / "sw_sound" / $"{sound}.wav").FullName).Should().BeTrue();
+        }
+    }
+
+    [Test]
+    public void AreaShots_ShareOneImpactBatchAcrossAllProjectileCallbacks()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" /
+                                     "DeviceAbilityEffects.cs").FullName);
+        var start = source.IndexOf("private static void ApplyAreaHostileShots", StringComparison.Ordinal);
+        var end = source.IndexOf("private static void FireFieldEngineerShot", start, StringComparison.Ordinal);
+        var pulse = source[start..end];
+        pulse.IndexOf("emitter.CreateAreaImpactBatch(targets.Count)", StringComparison.Ordinal)
+            .Should().BeLessThan(pulse.IndexOf("foreach", StringComparison.Ordinal));
+        pulse.Should().Contain("FireFieldEngineerShot(emitter, shotTarget, applyImpact)");
+        source.Should().Contain("CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>");
     }
 
     [Test]

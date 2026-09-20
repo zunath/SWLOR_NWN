@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkRefundCooldownResetRefreshEvent>
     {
         private const int ItemsPerPage = 30;
-        private const int AutoAddHotBarSlots = 11;
+        // The first hotbar row is F1 through F12, which is slot indices 0 through 11.
+        private const int AutoAddHotBarSlots = 12;
         private const int TotalHotBarSlots = 36;
         private int _pages;
         private bool _initialLoadDone;

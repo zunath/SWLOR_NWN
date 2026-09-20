@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Service
         private const string LearnTechniqueSound = "gui_prompt";
 
         private const int TotalHotBarSlots = 36;
-        private const int AutoAddHotBarSlots = 11;
+        // The first hotbar row is F1 through F12, which is slot indices 0 through 11.
+        private const int AutoAddHotBarSlots = 12;
 
         /// <summary>
         /// Caches technique lookups. Runs on OnModuleCacheAfter so Ability's cache (built on

@@ -239,13 +239,20 @@ public class AIModelTests
     [TestCase(8, 8, 50, 8)]
     [TestCase(40, 10, -5, 40)]
     [TestCase(40, 10, 0, 40)]
-    [TestCase(40, 10, 15, 25)]
-    [TestCase(40, 10, 30, 10)]
-    [TestCase(40, 10, 50, 10)]
+    [TestCase(40, 10, 15, 33)]
+    [TestCase(40, 10, 30, 25)]
+    [TestCase(40, 10, 31, 25)]
+    [TestCase(40, 10, 50, 15)]
+    [TestCase(40, 10, 60, 10)]
+    [TestCase(40, 10, 90, 10)]
+    [TestCase(45, 20, 30, 30)]
+    [TestCase(45, 20, 50, 20)]
     public void HitPointCost_SharedByAIAndImpact_RespectsMightAndTheMinimum(
         int basePercent, int minimumPercent, int might, int expected)
     {
         HitPointCostRules.Percent(basePercent, minimumPercent, might).Should().Be(expected);
+        HeavyVibrobladeMightCostRules.Percent(basePercent, minimumPercent, might).Should().Be(expected,
+            "the ability base class and Soul Devourer's recoil share one Might scaling rule");
     }
 
     private sealed class HitPointCostRules : HeavyVibrobladeActiveAbilityDefinitionBase

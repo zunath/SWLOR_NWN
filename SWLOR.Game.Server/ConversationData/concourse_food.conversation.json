@@ -1,6 +1,6 @@
 {
-  "Id": "veles_techvendor",
-  "Title": "veles_techvendor",
+  "Id": "concourse_food",
+  "Title": "concourse_food",
   "EntryPoints": [
     {
       "TargetNodeId": "entry-00000",
@@ -21,7 +21,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "\"Want to buy a new holo-communicator? There's a new release with a better holo-camera! If you don't buy it, you are missing out, and then what would your friends think of you?\"",
+          "Text": "\"Hmph. What do you want? I've got food. Freshly made. Better pay, though, or I'll kark you with a kriffin' stun-baton.\"",
           "Style": 0,
           "Color": null
         }
@@ -43,7 +43,7 @@
     "reply-00000": {
       "Id": "reply-00000",
       "Text": {
-        "Text": "No, thanks.",
+        "Text": "Leave.",
         "Style": 4,
         "Color": null
       },
@@ -61,7 +61,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'd like to see what you have for sale.",
+        "Text": "\"I want to see the menu.\"",
         "Style": 4,
         "Color": null
       },
@@ -75,7 +75,7 @@
         {
           "Key": "action-open-store",
           "Arguments": [
-            "DataStore"
+            "concourse_food"
           ]
         }
       ],

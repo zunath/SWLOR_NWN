@@ -1,6 +1,6 @@
 {
-  "Id": "veles_techvendor",
-  "Title": "veles_techvendor",
+  "Id": "concoursedroid",
+  "Title": "concoursedroid",
   "EntryPoints": [
     {
       "TargetNodeId": "entry-00000",
@@ -21,7 +21,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "\"Want to buy a new holo-communicator? There's a new release with a better holo-camera! If you don't buy it, you are missing out, and then what would your friends think of you?\"",
+          "Text": "Welcome to the concourse! Need some stuff?",
           "Style": 0,
           "Color": null
         }
@@ -61,7 +61,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'd like to see what you have for sale.",
+        "Text": "Yes. I'd like to see what you have for sale.",
         "Style": 4,
         "Color": null
       },
@@ -75,7 +75,7 @@
         {
           "Key": "action-open-store",
           "Arguments": [
-            "DataStore"
+            "concourse_goods"
           ]
         }
       ],

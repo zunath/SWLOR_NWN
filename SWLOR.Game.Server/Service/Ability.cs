@@ -285,6 +285,65 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        public static Func<int, Action<T>> CaptureRepeatedAbilityImpactBatch<T>(
+            uint activator, Action<T> impactAction, int baseDamage = 0)
+        {
+            ArgumentNullException.ThrowIfNull(impactAction);
+            PrepareCombatImpactDamageBonuses(activator, baseDamage);
+            var originatingImpact = GetTrackedAbilityImpact(activator);
+
+            return count =>
+            {
+                TrackedAbilityImpact batchImpact = null;
+                var batch = new AbilityImpactBatch<T>(count, (payload, isFinalImpact) =>
+                {
+                    if (originatingImpact == null)
+                    {
+                        impactAction(payload);
+                        return;
+                    }
+
+                    if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                        return;
+
+                    var previousImpact = GetTrackedAbilityImpact(activator);
+                    try
+                    {
+                        if (batchImpact == null)
+                        {
+                            BeginAbilityImpact(activator, originatingImpact.Ability, 0, 0,
+                                countsAsAttackAttempt: false, sequence: originatingImpact.Sequence);
+                            batchImpact = GetTrackedAbilityImpact(activator);
+                            batchImpact.TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage;
+                            batchImpact.CopyRepeatedDamageBonusesFrom(originatingImpact);
+                        }
+                        else
+                        {
+                            _trackedAbilityImpacts[activator] = batchImpact;
+                        }
+
+                        impactAction(payload);
+                        _trackedAbilityImpacts.Remove(activator);
+                        batchImpact.FlushDamageEffects(activator);
+                        originatingImpact.CompleteRepeatedDamageBonusImpact(batchImpact.Summary.ImpactedTargetCount > 0);
+                        if (isFinalImpact)
+                        {
+                            _trackedAbilityImpacts[activator] = batchImpact;
+                            var summary = EndAbilityImpact(activator);
+                            Combat.ApplyAbilityImpactEffects(activator, summary);
+                        }
+                    }
+                    finally
+                    {
+                        _trackedAbilityImpacts.Remove(activator);
+                        if (previousImpact != null)
+                            _trackedAbilityImpacts[activator] = previousImpact;
+                    }
+                });
+                return batch.Apply;
+            };
+        }
+
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
         {
             if (!_trackedAbilityImpacts.TryGetValue(activator, out var impact))

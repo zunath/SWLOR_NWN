@@ -229,6 +229,21 @@ public class DevicesFieldEngineerTests
     }
 
     [Test]
+    public void AreaShots_ShareOneImpactBatchAcrossAllProjectileCallbacks()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" /
+                                     "DeviceAbilityEffects.cs").FullName);
+        var start = source.IndexOf("private static void ApplyAreaHostileShots", StringComparison.Ordinal);
+        var end = source.IndexOf("private static void FireFieldEngineerShot", start, StringComparison.Ordinal);
+        var pulse = source[start..end];
+        pulse.IndexOf("emitter.CreateAreaImpactBatch(targets.Count)", StringComparison.Ordinal)
+            .Should().BeLessThan(pulse.IndexOf("foreach", StringComparison.Ordinal));
+        pulse.Should().Contain("FireFieldEngineerShot(emitter, shotTarget, applyImpact)");
+        source.Should().Contain("CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>");
+    }
+
+    [Test]
     public void IncendiaryFieldPersistentVfx_IsVisualOnlyFireCloud()
     {
         var root = FindRepositoryRoot();

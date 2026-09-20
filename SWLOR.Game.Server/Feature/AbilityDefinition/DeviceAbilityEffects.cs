@@ -73,13 +73,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
                         () => ApplyAreaHostilePulse(this), baseDamage: baseDamage);
                 }
+                else if (IsAreaPulse)
+                {
+                    CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                        target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
+                    ApplyPulse = () => ApplyAreaHostileShots(this);
+                }
                 else
                 {
                     ApplyTargetImpact = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
                         target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
-                    ApplyPulse = IsAreaPulse
-                        ? () => ApplyAreaHostileShots(this)
-                        : () => ApplySingleHostilePulse(this);
+                    ApplyPulse = () => ApplySingleHostilePulse(this);
                 }
             }
 
@@ -106,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public string AreaIndicatorId { get; set; }
             public Action ApplyPulse { get; }
             public Action<uint> ApplyTargetImpact { get; }
+            public Func<int, Action<uint>> CreateAreaImpactBatch { get; }
             public int PendingProjectileImpacts { get; set; }
         }
 
@@ -546,7 +551,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!GetIsObjectValid(target))
                 return;
 
-            FireFieldEngineerShot(emitter, target);
+            FireFieldEngineerShot(emitter, target, emitter.ApplyTargetImpact);
         }
 
         private static void ApplyAreaHostileShots(FieldEngineerPulseEmitter emitter)
@@ -557,14 +562,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ApplyDiagnosticSweep(emitter.Activator, emitter.Location, radius);
 
             var targets = Ability.GetHostileTargetsInSphere(emitter.Activator, emitter.Location, radius);
+            if (targets.Count == 0)
+                return;
+
+            var applyImpact = emitter.CreateAreaImpactBatch(targets.Count);
             foreach (var shotTarget in targets)
-                FireFieldEngineerShot(emitter, shotTarget);
+                FireFieldEngineerShot(emitter, shotTarget, applyImpact);
         }
 
-        private static void FireFieldEngineerShot(FieldEngineerPulseEmitter emitter, uint target)
+        private static void FireFieldEngineerShot(FieldEngineerPulseEmitter emitter, uint target, Action<uint> applyImpact)
         {
             if (!IsSingleHostilePulseTargetValid(emitter, target))
+            {
+                applyImpact(target);
                 return;
+            }
 
             if (emitter.BeamVisualEffect != VisualEffect.None && GetIsObjectValid(emitter.MarkerObject))
             {
@@ -586,7 +598,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     if (!IsSingleHostilePulseTargetValid(emitter, target))
                     {
-                        CompleteFieldEngineerProjectile(emitter);
+                        try
+                        {
+                            applyImpact(target);
+                        }
+                        finally
+                        {
+                            CompleteFieldEngineerProjectile(emitter);
+                        }
                         return;
                     }
 
@@ -599,7 +618,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     {
                         try
                         {
-                            emitter.ApplyTargetImpact(target);
+                            applyImpact(target);
                         }
                         finally
                         {
@@ -610,7 +629,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
             }
 
-            emitter.ApplyTargetImpact(target);
+            applyImpact(target);
         }
 
         private static float GetFieldEngineerProjectileTravelSeconds(float distanceMeters)

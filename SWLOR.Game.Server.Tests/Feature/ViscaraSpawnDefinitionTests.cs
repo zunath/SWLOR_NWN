@@ -26,6 +26,49 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class ViscaraSpawnDefinitionTests
 {
+    [Test]
+    public void NorthWildwoods_CreatureWaypointsResolveToSpawnTablesAndBlueprints()
+    {
+        var root = FindRepositoryRoot();
+        using var area = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName, "Module", "git", "viscara_wwnorth.git.json")));
+        var tables = new ViscaraSpawnDefinition().BuildSpawnTables();
+        var waypoints = area.RootElement.GetProperty("WaypointList").GetProperty("value")
+            .EnumerateArray().Where(waypoint =>
+            {
+                var resref = waypoint.GetProperty("TemplateResRef").GetProperty("value").GetString();
+                return resref == "creature_spawn" || resref!.StartsWith("v_wildwd_mando_", StringComparison.Ordinal);
+            }).ToArray();
+
+        waypoints.Should().HaveCount(5);
+        foreach (var waypoint in waypoints)
+        {
+            var tag = waypoint.GetProperty("Tag").GetProperty("value").GetString()!;
+            tables.Should().ContainKey(tag, "the spawn service resolves waypoint tags, not local variables");
+            tables[tag].Spawns.Should().NotBeEmpty();
+            foreach (var spawn in tables[tag].Spawns)
+            {
+                spawn.Type.Should().Be(ObjectType.Creature);
+                File.Exists(Path.Combine(root.FullName, "Module", "utc", spawn.Resref + ".utc.json"))
+                    .Should().BeTrue($"{tag} must reference an existing creature blueprint");
+            }
+        }
+
+        var areaTable = area.RootElement.GetProperty("AreaProperties").GetProperty("value")
+            .GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == "CREATURE_SPAWN_TABLE_ID")
+            .GetProperty("Value").GetProperty("value").GetString()!;
+        areaTable.Should().Be("VISCARA_WILDWOODS_NORTH");
+        using var wildwoods = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName, "Module", "git", "viscarawildwoods.git.json")));
+        var originalSpawns = wildwoods.RootElement.GetProperty("WaypointList").GetProperty("value")
+            .EnumerateArray().Select(waypoint => waypoint.GetProperty("Tag").GetProperty("value").GetString()!)
+            .Where(tables.ContainsKey).Distinct().SelectMany(tag => tables[tag].Spawns)
+            .Where(spawn => !spawn.IsRare).Select(spawn => (spawn.Resref, spawn.IsRare)).Distinct();
+        tables[areaTable].Spawns.Select(spawn => (spawn.Resref, spawn.IsRare))
+            .Should().BeEquivalentTo(originalSpawns);
+    }
+
     private static readonly string[] GeneralPurposeBloodFrenzyResrefs =
     {
         "bf_scavenger",

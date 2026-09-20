@@ -9,8 +9,9 @@ perk requirements, 67 active Mimicry techniques, and Call Beast as its own actio
 Stealth retains its native toggle and has no custom project, installed clip, or tester entry.
 The perk plan keeps its explicit `Native` exclusion without an internal animation name.
 Beast abilities are excluded because their models have separate animation sets; player
-Beast Mastery actions remain included. The Animations tab retains all 119 image references
-and documents every entry's internal name, base motion, source project, and review status.
+Beast Mastery actions remain included. The Design Bible's Animations tab has been retired;
+`animation-plan.csv` now retains all 119 image references and documents every entry's
+internal name, base motion, source project, and review status.
 The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
 clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
 The seven original Vibroblade clips are preserved. The other custom ability motions have

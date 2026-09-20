@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Name": "SoulDevourer",
+  "Name": "SoulDevourerStance",
   "ModelName": "a_ba",
   "AnimationRoot": "rootdummy",
   "Duration": 3.05,

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -115,6 +116,45 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
                 if (GetResRef(item) == LightsaberWorkbench.LightsaberResref) sabers++;
             ctx.AssertEqual(1, sabers, "Exactly one constructed saber is retained in the inventory");
+        }
+
+        [EngineTest("Workbench custom model and color survive delivery", Category = "LightsaberWorkbench")]
+        public static async Task CustomAppearanceSurvivesDelivery(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
+            ctx.Assert(GetIsObjectValid(storage), "Assembly storage exists");
+            var modify = typeof(LightsaberWorkbenchViewModel).GetMethod("ModifyWeaponPart", BindingFlags.Static | BindingFlags.NonPublic);
+            foreach (var type in new[] { SWLOR.NWN.API.NWScript.Enum.Item.BaseItem.Lightsaber, SWLOR.NWN.API.NWScript.Enum.Item.BaseItem.Saberstaff })
+            {
+                var resref = type == SWLOR.NWN.API.NWScript.Enum.Item.BaseItem.Lightsaber ? "ls_custom" : "ss_custom";
+                foreach (var slot in new[] { SWLOR.NWN.API.NWScript.Enum.Item.AppearanceWeapon.Bottom, SWLOR.NWN.API.NWScript.Enum.Item.AppearanceWeapon.Top })
+                {
+                    var values = slot == SWLOR.NWN.API.NWScript.Enum.Item.AppearanceWeapon.Bottom
+                        ? LightsaberWorkbench.GetHilts(type).Select(h => h.PartValue)
+                        : LightsaberWorkbench.GetBladeColors(type, false).Select(c => LightsaberWorkbench.GetTopValue(c, type, false));
+                    foreach (var value in values)
+                    {
+                        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                        {
+                            var item = CreateItemOnObject(resref, storage);
+                            ctx.Assert(GetIsObjectValid(item), "The module can create the output blueprint " + resref);
+                            ctx.Track(item);
+                            item = (uint)modify.Invoke(null, new object[] { item, slot, value });
+                            ctx.Assert(GetIsObjectValid(item), $"{resref} {slot} {value} was applied");
+                            var delivered = CopyItem(item, owner, true);
+                            ctx.Track(delivered);
+                            ctx.Assert(GetIsObjectValid(delivered), "Finished weapon was delivered");
+                            ctx.AssertEqual(value / 10, GetItemAppearance(delivered, SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType.WeaponModel, (int)slot), $"{resref} {slot} model survives delivery for {value}");
+                            ctx.AssertEqual(value % 10, GetItemAppearance(delivered, SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType.WeaponColor, (int)slot), $"{resref} {slot} color survives delivery for {value}");
+                            DestroyObject(item);
+                            DestroyObject(delivered);
+                        });
+                        await ctx.WaitFrameAsync();
+                    }
+                }
+            }
         }
 
         private static uint CreateKit(uint owner)

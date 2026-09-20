@@ -310,14 +310,19 @@ public class LightsaberWorkbenchTests
         var curvedColors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, true);
         var staffColors = LightsaberWorkbench.GetBladeColors(BaseItem.Saberstaff, false);
 
-        straightColors.Should().HaveCount(14);
-        staffColors.Should().HaveCount(14, "every color has a saberstaff blade model");
-        curvedColors.Should().HaveCount(14, "every color has a curved blade model");
+        straightColors.Should().HaveCount(70);
+        staffColors.Should().HaveCount(47);
+        curvedColors.Should().HaveCount(14, "legacy curved emitters keep their original model slots");
+
+        straightColors.Select(c => c.StraightTopValue).Should().Contain(new[] { 191, 192, 193, 194 });
+        straightColors.Select(c => c.StraightTopValue).Should().NotContain(new[] { 71, 72, 73, 74 });
+        curvedColors.Select(c => c.CurvedTopValue).Should().Contain(new[] { 71, 72, 73, 74 });
 
         foreach (var color in straightColors.Concat(curvedColors).Concat(staffColors))
         {
             color.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
-            File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga"))
+            (File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga")) ||
+             File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "sw_weapon", $"{color.PreviewResref}.dds")))
                 .Should().BeTrue($"preview texture {color.PreviewResref}.tga must exist in sw_ui");
         }
 
@@ -330,7 +335,8 @@ public class LightsaberWorkbenchTests
         {
             File.Exists(Path.Combine(weaponRoot, $"{prefix}_t_{value:D3}.mdl"))
                 .Should().BeTrue($"blade model {prefix}_t_{value:D3}.mdl must exist in sw_weapon");
-            File.Exists(Path.Combine(weaponRoot, $"i{prefix}_t_{value:D3}.tga"))
+            (File.Exists(Path.Combine(weaponRoot, $"i{prefix}_t_{value:D3}.tga")) ||
+             File.Exists(Path.Combine(weaponRoot, $"i{prefix}_t_{value:D3}.dds")))
                 .Should().BeTrue($"inventory icon i{prefix}_t_{value:D3}.tga must exist in sw_weapon");
         }
 
@@ -367,7 +373,7 @@ public class LightsaberWorkbenchTests
 
         var colors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false)
             .ToDictionary(color => color.Name);
-        colors.Keys.Should().BeEquivalentTo(expected.Keys);
+        colors.Keys.Should().Contain(expected.Keys);
 
         foreach (var (name, lightColor) in expected)
         {

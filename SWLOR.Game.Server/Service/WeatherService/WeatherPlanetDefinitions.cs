@@ -148,8 +148,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
 					WindyText = "A sharp wind races across the open ice.",
 					CloudyText = "A pale overcast gathers above Eshan's frozen landscape.",
 					ColdCloudyText = "Heavy clouds gather as the temperature plummets; snow is close.",
-					MildText = "Cold, clear air stretches beneath Eshan's pale sky.",
-					MildNightText = "Stars glitter above Eshan's silent ice fields."
+					ColdMildText = "Cold, clear air stretches beneath Eshan's pale sky."
 				},
 			};
         }

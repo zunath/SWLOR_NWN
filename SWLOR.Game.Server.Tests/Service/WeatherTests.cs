@@ -180,6 +180,17 @@ public class WeatherTests
     }
 
     [Test]
+    public void Eshan_CalmWeatherUsesItsAuthoredColdDescription()
+    {
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Eshan];
+        var conditions = WeatherConditions.Create(10, 1, 1, climate, 0, 0, 0, true, WeatherStorm.None, NoRoll);
+
+        conditions.Heat.Should().Be(4);
+        conditions.GetFeedback(climate, false, false).Should().Be(climate.ColdMildText);
+        climate.ColdMildText.Should().Contain("Eshan");
+    }
+
+    [Test]
     public void RepeatedAreaEntries_DoNotRerollStormsOrChangePrecipitation()
     {
         var pattern = new WeatherPattern();

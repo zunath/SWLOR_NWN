@@ -136,6 +136,21 @@ namespace SWLOR.Game.Server.Service.WeatherService
 					StormText = "The station creaks around you, but its sealed hull keeps the outside weather away.",
 					WindyText = "A steady current of recycled air moves through the station corridors."
 				},
+				[PlanetType.Eshan] = new WeatherClimate
+				{
+					HeatModifier = -6,
+					HumidityModifier = +1,
+					MaximumHeat = 4,
+					HasSnowStorms = true,
+					FreezingText = "Bitter cold sweeps across Eshan's ice fields, biting at exposed flesh.",
+					SnowText = "Fine snow drifts across Eshan's frozen landscape.",
+					ColdWindyText = "A freezing wind scours the ice and drives snow before it.",
+					WindyText = "A sharp wind races across the open ice.",
+					CloudyText = "A pale overcast gathers above Eshan's frozen landscape.",
+					ColdCloudyText = "Heavy clouds gather as the temperature plummets; snow is close.",
+					MildText = "Cold, clear air stretches beneath Eshan's pale sky.",
+					MildNightText = "Stars glitter above Eshan's silent ice fields."
+				},
 			};
         }
     }

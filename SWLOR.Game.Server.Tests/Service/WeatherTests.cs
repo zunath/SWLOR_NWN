@@ -167,6 +167,7 @@ public class WeatherTests
 
     [TestCase(PlanetType.Tatooine, WeatherStorm.Sand, WeatherHazard.Sand)]
     [TestCase(PlanetType.Hutlar, WeatherStorm.Snow, WeatherHazard.Snow)]
+    [TestCase(PlanetType.Eshan, WeatherStorm.Snow, WeatherHazard.Snow)]
     public void RegionalStorms_StartInStrongWind_AndClearWhenWindDrops(PlanetType planet, WeatherStorm storm, WeatherHazard hazard)
     {
         var climate = WeatherPlanetDefinitions.GetPlanetClimates()[planet];

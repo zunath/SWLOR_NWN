@@ -137,7 +137,10 @@ Run `python -B SWLOR_Haks/tools/TestInheritedBoneProportions.py` to check every 
 humanoid player chain - authored and native, body banks and the complete robe catalog - and to
 confirm that every distinct player skeleton keeps its bone lengths and scales throughout.
 `python -B SWLOR_Haks/tools/StripInheritedBoneTracks.py --check-only` reports the same offenders
-and, without the flag, removes them in place and refreshes the editable bank sources.
+and, without the flag, removes them in place and refreshes the editable bank sources. Robe
+bridge banks are then closed up into the packed native compiler layout - an in-place strip
+leaves vacated key slots that `RobeAnimationBanks` rejects, which blocks `GenerateRobeRgbModels.py`
+- and their `RobeRgbModels.json` digests are refreshed; `--check-only` also reports unpacked banks.
 `python -B SWLOR_Haks/tools/TestAuthoredAnimationBindChannels.py` remains the narrower authored
 head/neck and Fury Stance audit.
 

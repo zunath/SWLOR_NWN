@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
 				{
 					HeatModifier = -6,
 					HumidityModifier = +1,
-					MaximumHeat = 4,
+					MaximumHeat = 3,
 					HasSnowStorms = true,
 					FreezingText = "Bitter cold sweeps across Eshan's ice fields, biting at exposed flesh.",
 					SnowText = "Fine snow drifts across Eshan's frozen landscape.",

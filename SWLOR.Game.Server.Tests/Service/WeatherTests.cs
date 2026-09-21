@@ -185,9 +185,19 @@ public class WeatherTests
         var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Eshan];
         var conditions = WeatherConditions.Create(10, 1, 1, climate, 0, 0, 0, true, WeatherStorm.None, NoRoll);
 
-        conditions.Heat.Should().Be(4);
+        conditions.Heat.Should().Be(3);
         conditions.GetFeedback(climate, false, false).Should().Be(climate.ColdMildText);
         climate.ColdMildText.Should().Contain("Eshan");
+    }
+
+    [Test]
+    public void Eshan_SnowstormsNeverCombineWithRain()
+    {
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Eshan];
+        var conditions = WeatherConditions.Create(10, 7, 9, climate, 0, 0, 0, true, WeatherStorm.None, _ => 0);
+
+        conditions.Storm.Should().Be(WeatherStorm.Snow);
+        conditions.Precipitation.Should().Be(Precipitation.Snow);
     }
 
     [Test]

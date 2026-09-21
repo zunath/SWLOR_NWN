@@ -3380,6 +3380,13 @@
           "type": "resref",
           "value": "eshanorbit"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pwsc_eshstarport"
+        }
       }
     ]
   },

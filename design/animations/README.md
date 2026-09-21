@@ -9,8 +9,9 @@ perk requirements, 67 active Mimicry techniques, and Call Beast as its own actio
 Stealth retains its native toggle and has no custom project, installed clip, or tester entry.
 The perk plan keeps its explicit `Native` exclusion without an internal animation name.
 Beast abilities are excluded because their models have separate animation sets; player
-Beast Mastery actions remain included. The Animations tab retains all 119 image references
-and documents every entry's internal name, base motion, source project, and review status.
+Beast Mastery actions remain included. The Design Bible's Animations tab has been retired;
+`animation-plan.csv` now retains all 119 image references and documents every entry's
+internal name, base motion, source project, and review status.
 The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
 clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
 The seven original Vibroblade clips are preserved. The other custom ability motions have
@@ -136,7 +137,10 @@ Run `python -B SWLOR_Haks/tools/TestInheritedBoneProportions.py` to check every 
 humanoid player chain - authored and native, body banks and the complete robe catalog - and to
 confirm that every distinct player skeleton keeps its bone lengths and scales throughout.
 `python -B SWLOR_Haks/tools/StripInheritedBoneTracks.py --check-only` reports the same offenders
-and, without the flag, removes them in place and refreshes the editable bank sources.
+and, without the flag, removes them in place and refreshes the editable bank sources. Robe
+bridge banks are then closed up into the packed native compiler layout - an in-place strip
+leaves vacated key slots that `RobeAnimationBanks` rejects, which blocks `GenerateRobeRgbModels.py`
+- and their `RobeRgbModels.json` digests are refreshed; `--check-only` also reports unpacked banks.
 `python -B SWLOR_Haks/tools/TestAuthoredAnimationBindChannels.py` remains the narrower authored
 head/neck and Fury Stance audit.
 

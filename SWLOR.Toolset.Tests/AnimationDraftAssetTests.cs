@@ -1,15 +1,14 @@
-using System.IO.Compression;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.AnimationDrafts;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
+using TextFieldParser = Microsoft.VisualBasic.FileIO.TextFieldParser;
 
 namespace SWLOR.Toolset.Tests;
 
@@ -443,36 +442,29 @@ public class AnimationDraftAssetTests
     }
 
     [Test]
-    public void ManifestMatchesCurrentBibleReferencesAndSavedProjects()
+    public void ManifestMatchesTheCurrentAnimationPlanAndSavedProjects()
     {
         using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(Folder, "manifest.json")));
-        using var zip = ZipFile.OpenRead(Path.Combine(Root, "design", "bible", "SWLOR Design Bible - Combat Upgrade.xlsx"));
-        XDocument Xml(string name) { using var stream = zip.GetEntry(name)!.Open(); return XDocument.Load(stream); }
-        XNamespace s = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        XNamespace r = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-        var sheet = Xml("xl/workbook.xml").Descendants(s + "sheet").Single(e => (string?)e.Attribute("name") == "Animations");
-        var relationship = Xml("xl/_rels/workbook.xml.rels").Root!.Elements().Single(e =>
-            (string?)e.Attribute("Id") == (string?)sheet.Attribute(r + "id"));
-        var target = (string)relationship.Attribute("Target")!;
-        var sheetPath = target.StartsWith('/') ? target.TrimStart('/') : "xl/" + target;
-        var rows = Xml(sheetPath).Descendants(s + "row").ToDictionary(e => (int)e.Attribute("r")!);
-        var shared = zip.GetEntry("xl/sharedStrings.xml") == null ? [] :
-            Xml("xl/sharedStrings.xml").Descendants(s + "si").Select(e => string.Concat(e.Descendants(s + "t").Select(t => t.Value))).ToArray();
-        string Text(XElement cell) => (string?)cell.Attribute("t") switch
+        // The Design Bible's Animations tab was retired; design/animations/animation-plan.csv keeps
+        // each entry's display name, reference image and original Bible row.
+        using var reader = new TextFieldParser(Path.Combine(Root, "design", "animations", "animation-plan.csv"));
+        reader.SetDelimiters(",");
+        var headers = reader.ReadFields()!;
+        var plan = new List<Dictionary<string, string>>();
+        while (!reader.EndOfData)
         {
-            "s" => shared[int.Parse(cell.Element(s + "v")!.Value)],
-            "inlineStr" => string.Concat(cell.Descendants(s + "t").Select(t => t.Value)),
-            _ => cell.Element(s + "v")?.Value ?? ""
-        };
+            var fields = reader.ReadFields()!;
+            plan.Add(headers.Select((header, index) => (header, fields[index])).ToDictionary(pair => pair.header, pair => pair.Item2));
+        }
         var entries = manifest.RootElement.GetProperty("Animations").EnumerateArray().ToArray();
         entries.Select(e => e.GetProperty("Id").GetString()).Should().Equal(Names);
         entries.Select(e => e.GetProperty("BibleRow").GetInt32()).Should().OnlyHaveUniqueItems();
         foreach (var entry in entries)
         {
-            var row = entry.GetProperty("BibleRow").GetInt32();
-            string Cell(string column) => Text(rows[row].Elements(s + "c").Single(c => (string?)c.Attribute("r") == column + row));
-            Cell("C").Should().Be(entry.GetProperty("Name").GetString());
-            Cell("E").Should().Be(entry.GetProperty("Reference").GetString());
+            var row = plan.Single(r => r["PerkId"] == entry.GetProperty("Id").GetString());
+            row["Name"].Should().Be(entry.GetProperty("Name").GetString());
+            row["Reference"].Should().Be(entry.GetProperty("Reference").GetString());
+            row["BibleAnimationRow"].Should().Be(entry.GetProperty("BibleRow").GetInt32().ToString(System.Globalization.CultureInfo.InvariantCulture));
             var text = File.ReadAllText(Path.Combine(Folder, entry.GetProperty("Project").GetString()!)).Replace("\r\n", "\n");
             var bytes = System.Text.Encoding.UTF8.GetBytes(text);
             Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant().Should().Be(entry.GetProperty("ProjectSha256").GetString());

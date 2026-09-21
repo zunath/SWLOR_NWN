@@ -31,6 +31,9 @@ $ApprovedCategories = @("Beneficial", "Harmful", "Self", "Control", "Deployable"
 $GeneratedEnumStartMarker = "        // Custom status effect icons"
 $GeneratedEnumEndMarker = "        // End custom status effect icons"
 $CustomTlkOffset = 16777216
+# Placeholder left behind when a status effect icon is retired. The row must stay in the table:
+# EffectIconType values are effecticons.2da row indices, so removing a line reindexes the rest.
+$RetiredEffectIconLabel = "****"
 $IconStopWords = @("a", "an", "and", "of", "the", "status", "effect")
 $RomanNumerals = @{
     I = 1; II = 2; III = 3; IV = 4; V = 5
@@ -1470,7 +1473,25 @@ function Get-StatusEffectStrRefsByKey([object[]]$statusRows, [hashtable]$tlkText
     return $map
 }
 
-function Get-StatusEffectIconRowsByKey([object[]]$statusRows, [string]$path) {
+function Get-RetiredEffectIconRows([string]$path) {
+    $retired = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($line in Get-Content -Path $path) {
+        $trimmed = $line.Trim()
+        if ($trimmed -match "^(\d+)\s+\*\*\*\*\s") {
+            $row = [int]$Matches[1]
+            if ($row -ge $StatusEffectIconStart) {
+                [void]$retired.Add($row)
+            }
+        }
+    }
+
+    return $retired
+}
+
+function Get-StatusEffectIconRowsByKey(
+    [object[]]$statusRows,
+    [string]$path,
+    [System.Collections.Generic.HashSet[int]]$retiredRows = $null) {
     $text = Get-Content -Path $path -Raw
     $existingRowsByKey = @{}
     $maximumExistingRow = $StatusEffectIconStart - 1
@@ -1489,6 +1510,17 @@ function Get-StatusEffectIconRowsByKey([object[]]$statusRows, [string]$path) {
 
     $rowsByKey = @{}
     $usedRows = [System.Collections.Generic.HashSet[int]]::new()
+
+    # Retired slots are still occupied: their rows hold blank placeholders so the live rows below
+    # them keep their indices. Reserve them so a new effect is allocated past the retired range
+    # instead of colliding with a placeholder.
+    if ($null -ne $retiredRows) {
+        foreach ($retired in $retiredRows) {
+            [void]$usedRows.Add($retired)
+            $maximumExistingRow = [Math]::Max($maximumExistingRow, $retired)
+        }
+    }
+
     foreach ($entry in $statusRows) {
         if (!$existingRowsByKey.ContainsKey($entry.Key)) {
             continue
@@ -1546,10 +1578,17 @@ function Update-EffectIcons2da(
     [hashtable]$statusEffectStrRefsByKey,
     [hashtable]$statusEffectRowsByKey) {
     $baseLines = @()
+    $retiredRows = @{}
     foreach ($line in Get-Content -Path $path) {
         $trimmed = $line.Trim()
         if ($trimmed -match "^(\d+)\s+") {
             if ([int]$Matches[1] -ge $StatusEffectIconStart) {
+                # Retired slots survive regeneration. EffectIconType values are row INDICES, so
+                # dropping a removed status effect's line would shift every icon below it.
+                if ($trimmed -match "^(\d+)\s+\*\*\*\*\s") {
+                    $retiredRows[[int]$Matches[1]] = $true
+                }
+
                 continue
             }
         }
@@ -1557,6 +1596,7 @@ function Update-EffectIcons2da(
         $baseLines += $line
     }
 
+    $generatedRows = @{}
     foreach ($entry in @($statusRows | Sort-Object { [int]$statusEffectRowsByKey[$_.Key] })) {
         $row = [int]$statusEffectRowsByKey[$entry.Key]
         $label = Get-EffectIconLabel $entry
@@ -1564,7 +1604,19 @@ function Update-EffectIcons2da(
             throw "No TLK string ref found for status effect '$($entry.Key)'."
         }
 
-        $baseLines += ("{0,-5} {1,-45} {2,-18} {3}" -f $row, $label, $entry.IconResRef, $statusEffectStrRefsByKey[$entry.Key])
+        if ($retiredRows.ContainsKey($row)) {
+            throw "Status effect '$($entry.Key)' claims retired effecticons.2da row $row. Clear the placeholder deliberately before reusing a retired slot."
+        }
+
+        $generatedRows[$row] = ("{0,-5} {1,-45} {2,-18} {3}" -f $row, $label, $entry.IconResRef, $statusEffectStrRefsByKey[$entry.Key])
+    }
+
+    foreach ($retired in $retiredRows.Keys) {
+        $generatedRows[$retired] = ("{0,-5} {1,-45} {2,-18} {3}" -f $retired, $RetiredEffectIconLabel, $RetiredEffectIconLabel, 0)
+    }
+
+    foreach ($row in @($generatedRows.Keys | Sort-Object { [int]$_ })) {
+        $baseLines += $generatedRows[$row]
     }
 
     # Write as UTF-8 without a BOM. NWN's 2DA parser rejects any file that
@@ -1838,6 +1890,18 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 $label = $Matches[2]
                 $resRef = $Matches[3]
                 $strRef = $Matches[4]
+
+                # A retired slot. EffectIconType values are row INDICES, so a removed status
+                # effect must leave its row in place as a blank placeholder; deleting the line
+                # would shift every icon below it onto the wrong row.
+                if ($label -eq $RetiredEffectIconLabel) {
+                    if ($resRef -ne $RetiredEffectIconLabel -or $strRef -ne "0") {
+                        $errors.Add("effecticons.2da row $row is a retired slot and must read '$RetiredEffectIconLabel $RetiredEffectIconLabel 0'; found icon '$resRef' strref '$strRef'.") | Out-Null
+                    }
+
+                    continue
+                }
+
                 if ($label -notmatch "^[A-Za-z][A-Za-z0-9]*$") {
                     $errors.Add("effecticons.2da row $row label '$label' must be compact PascalCase without underscores.") | Out-Null
                 }
@@ -2059,7 +2123,8 @@ $tlkTextToStrRef = Get-CustomTlkTextToStrRef (Resolve-RepoPath $TlkJsonPath)
 $statusEffectStrRefsByKey = Get-StatusEffectStrRefsByKey $statusRows $tlkTextToStrRef
 
 if ($UpdateStatusEffectCode) {
-    $statusEffectRowsByKey = Get-StatusEffectIconRowsByKey $statusRows (Resolve-RepoPath $EffectIconTypePath)
+    $retiredEffectIconRows = Get-RetiredEffectIconRows (Resolve-RepoPath $EffectIcons2daPath)
+    $statusEffectRowsByKey = Get-StatusEffectIconRowsByKey $statusRows (Resolve-RepoPath $EffectIconTypePath) $retiredEffectIconRows
     Update-EffectIconTypeEnum $statusRows (Resolve-RepoPath $EffectIconTypePath) $statusEffectRowsByKey
     Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath) $statusEffectStrRefsByKey $statusEffectRowsByKey
     Update-StatusEffectCode $statusRows

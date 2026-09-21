@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Aura_Negative_Energy,
                 VisualEffect.Vfx_Fnf_Howl_Mind,
                 centerOnActivator: true,
-                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(4),
-                enmityBonus: 75)
+                enmityBonus: 75,
+                afterSuccessfulHitPerCast: InnateAbility.RestoreFPPerHit(4, 12))
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenRendTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

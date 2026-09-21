@@ -657,6 +657,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         durationSeconds);
                 }
 
+                // Keyed off landing the cone, not off dealing damage: a target that resists the
+                // hit down to zero still counts as struck, and the authored restore does not
+                // depend on damage. This has to run before the damage-only early return.
+                if (RestoreFPAfterRangedDeflection > 0 &&
+                    RestoreFPAfterRangedDeflectionWindowSeconds > 0 &&
+                    (summary?.ImpactedTargetCount ?? 0) > 0 &&
+                    Combat.HasRecentDeflection(
+                        activator,
+                        DeflectionSource.Ranged,
+                        RestoreFPAfterRangedDeflectionWindowSeconds))
+                {
+                    if (Stat.RestoreFP(activator, RestoreFPAfterRangedDeflection) > 0)
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
+                }
+
                 if (totalDamage <= 0)
                 {
                     if ((summary?.ImpactedTargetCount ?? 0) > 0)
@@ -691,17 +706,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (RestoreFPAfterImpact > 0)
                 {
                     if (Stat.RestoreFP(activator, RestoreFPAfterImpact) > 0)
-                        Combat.ApplyAbilityRestoredFPEffects(activator);
-                }
-                if (RestoreFPAfterRangedDeflection > 0 &&
-                    RestoreFPAfterRangedDeflectionWindowSeconds > 0 &&
-                    (summary?.ImpactedTargetCount ?? 0) > 0 &&
-                    Combat.HasRecentDeflection(
-                        activator,
-                        DeflectionSource.Ranged,
-                        RestoreFPAfterRangedDeflectionWindowSeconds))
-                {
-                    if (Stat.RestoreFP(activator, RestoreFPAfterRangedDeflection) > 0)
                         Combat.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (HitCount > 1 && successfulHitCount >= HitCount)

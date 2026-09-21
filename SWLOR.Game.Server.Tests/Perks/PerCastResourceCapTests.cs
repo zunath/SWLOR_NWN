@@ -72,6 +72,21 @@ public class PerCastResourceCapTests
         source.Should().Contain("RestoreFPAfterRangedDeflectionWindowSeconds = 30");
     }
 
+    [Test]
+    public void MaelstromArcRestore_SurvivesAConeThatLandsForZeroDamage()
+    {
+        // The restore is keyed off landing the cone, so a target that resists the hit down to
+        // zero must still pay out. AfterImpact returns early once damage is zero.
+        var source = ReadSource("Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
+        var restore = source.IndexOf("if (RestoreFPAfterRangedDeflection > 0 &&", StringComparison.Ordinal);
+        var damageOnlyReturn = source.IndexOf("if (totalDamage <= 0)", StringComparison.Ordinal);
+
+        restore.Should().BeGreaterThan(-1);
+        damageOnlyReturn.Should().BeGreaterThan(-1);
+        restore.Should().BeLessThan(damageOnlyReturn,
+            "a hit-based restore placed after the damage-only early return never runs on a fully resisted hit");
+    }
+
     private static Type InnateAbilityType =>
         typeof(IPerkListDefinition).Assembly
             .GetType("SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbility", throwOnError: true)!;

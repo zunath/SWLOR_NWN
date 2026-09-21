@@ -49,6 +49,27 @@ public class TriggeredResourceRestoreGateTests
     }
 
     [Test]
+    public void TheDeflectionGate_IsOnlySpentWhenThereIsACooldownToShorten()
+    {
+        var stat = ReadSource("SWLOR.Game.Server", "Service", "Stat.cs");
+        var deflection = ExtractMethod(stat, "public static void ApplyDeflectionEffectsNative(");
+
+        deflection.Should().Contain("Recast.IsOnRecastDelay(creatureId, recastReductionGroup)",
+            "deflecting while the ability is ready must not burn the window the next cooldown needs");
+
+        var readyCheck = deflection.IndexOf("isOnRecastDelay &&", StringComparison.Ordinal);
+        var gate = deflection.IndexOf(
+            "Combat.TryUseStatTrigger(",
+            readyCheck < 0 ? 0 : readyCheck,
+            StringComparison.Ordinal);
+        readyCheck.Should().BeGreaterThan(-1);
+        gate.Should().BeGreaterThan(readyCheck,
+            "the readiness check has to short-circuit before TryUseStatTrigger consumes the gate");
+        deflection.IndexOf("Recast.ReduceRecastDelay(", StringComparison.Ordinal)
+            .Should().BeGreaterThan(gate, "the reduction runs only after both the readiness check and the gate");
+    }
+
+    [Test]
     public void ShieldTraining_GatesItsCooldownReductionLikeItsDeflectionSiblings()
     {
         var perk = Perk<VibrobladePerkDefinition>("ShieldTraining", PerkType.ShieldTraining);

@@ -8563,25 +8563,39 @@ namespace SWLOR.Game.Server.Service
             uint creature,
             SkillType skillType,
             StatType skillTypeStat,
-            StatType adjustmentStat)
+            StatType adjustmentStat,
+            bool unselectedSourcesApplyToEverySkill = false)
         {
             return SumSkillSelectedStatAdjustment(
                 Stat.GetStatSources(creature, adjustmentStat),
                 skillType,
                 skillTypeStat,
-                adjustmentStat);
+                adjustmentStat,
+                unselectedSourcesApplyToEverySkill);
         }
 
+        /// <param name="unselectedSourcesApplyToEverySkill">
+        /// True where a source that declares no selector is authored as global - Eclipse of
+        /// Resolve's accuracy debuff, Alpha Rhythm and Improved Attentiveness all set an ability
+        /// hit chance with no skill of their own and are described as affecting every ability.
+        /// False where the selector *is* the scope, as it is for the thrown bleeding payloads, so
+        /// a source missing its selector grants nothing rather than leaking onto every skill.
+        /// </param>
         public static int SumSkillSelectedStatAdjustment(
             IReadOnlyList<StatAdjustmentSource> sources,
             SkillType skillType,
             StatType skillTypeStat,
-            StatType adjustmentStat)
+            StatType adjustmentStat,
+            bool unselectedSourcesApplyToEverySkill = false)
         {
             var adjustment = 0;
             foreach (var source in sources)
             {
-                if (SkillTypeMatches(skillType, GetSkillTypeFromStat(source[skillTypeStat])))
+                var requiredSkillType = GetSkillTypeFromStat(source[skillTypeStat]);
+                var matches = unselectedSourcesApplyToEverySkill
+                    ? SkillTypeMatchesOrGlobal(skillType, requiredSkillType)
+                    : SkillTypeMatches(skillType, requiredSkillType);
+                if (matches)
                     adjustment += source[adjustmentStat];
             }
 
@@ -8602,8 +8616,14 @@ namespace SWLOR.Game.Server.Service
             // Each source carries its own skill selector alongside its own magnitude. Reading the
             // aggregated selector would sum unrelated skill ids (Force 5 + Force 5 becomes
             // Fabrication 10, Pistol 45 + Devices 33 becomes nothing at all), which silently
-            // disables every contributing bonus. Resolve per source instead.
-            var adjustment = GetSkillSelectedStatAdjustment(creature, skillType, skillTypeStat, adjustmentStat);
+            // disables every contributing bonus. Resolve per source instead, and honour the
+            // selectorless sources that are authored to affect every ability.
+            var adjustment = GetSkillSelectedStatAdjustment(
+                creature,
+                skillType,
+                skillTypeStat,
+                adjustmentStat,
+                unselectedSourcesApplyToEverySkill: true);
 
             // Long-range bonuses are independent of the generic skill-selector stats. This
             // allows a perk to affect every ranged ability without installing a second selector.
@@ -8656,7 +8676,8 @@ namespace SWLOR.Game.Server.Service
                 defender,
                 skillType,
                 StatType.IncomingAbilityHitChancePercentAdjustmentSkillType,
-                StatType.IncomingAbilityHitChancePercentAdjustment);
+                StatType.IncomingAbilityHitChancePercentAdjustment,
+                unselectedSourcesApplyToEverySkill: true);
         }
 
         public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(uint attacker, uint defender, SkillType skillType)

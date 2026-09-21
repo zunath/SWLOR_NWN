@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         }
         /// <summary>
         /// Check player's pheno:
-        /// Pheno = normal: change tail to speederbike, set pheno to speederbike and movement rate to DMfast.
-        /// Pheno = SpeederBike: change tail to none, set pheno and speed to normal.
+        /// Not riding: change tail to speederbike, set the riding pheno for the body type and movement rate to DMfast.
+        /// Riding: change tail to none, restore the body type's pheno and normal speed.
         /// </summary>
         private void Speeder()
         {
@@ -39,17 +39,23 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return;
                     }
 
-                    if (GetPhenoType(user) == PhenoType.SpeederBike)
+                    if (SpeederPhenotype.IsRiding(GetPhenoType(user)))
                     {
-                        SetPhenoType(PhenoType.Normal, user);
-                        SetCreatureTailType(TailType.None, user);
-                        Stat.ApplyCreatureMovementRate(user);
+                        Dismount(user);
                         SendMessageToPC(user, "You dismount your speeder.");
                     }
                     else
                     {
+                        // An RGB robe swaps in a generated phenotype; ride with the body type underneath it.
+                        var body = (PhenoType)RobeModelRenderer.GetBasePhenotype(user);
+                        if (!SpeederPhenotype.TryGetRiding(body, out var riding))
+                        {
+                            SendMessageToPC(user, "You cannot ride a speeder in your current form.");
+                            return;
+                        }
+
                         SetCreatureTailType(TailType.SpeederBike, user);
-                        SetPhenoType(PhenoType.SpeederBike, user);
+                        SetPhenoType(riding, user);
                         CreaturePlugin.SetMovementRate(user, MovementRate.DMFast);
                         SendMessageToPC(user, "You mount your speeder.");
                     }
@@ -57,6 +63,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     TintMapService.QueueRefreshAndEditor(user, user);
                 });
         }
+        /// <summary>
+        /// Returns a rider to the body type they mounted with and removes the speeder.
+        /// </summary>
+        private static void Dismount(uint rider)
+        {
+            SetPhenoType(SpeederPhenotype.GetDismounted(GetPhenoType(rider)), rider);
+            SetCreatureTailType(TailType.None, rider);
+            Stat.ApplyCreatureMovementRate(rider);
+        }
+
         /// <summary>
         /// On creature damaged if mounted, 25% chance for player to be dazed while getting knocked off the bike.
         /// Play a matching animation that lasts the duration of the stun.
@@ -67,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             var player = OBJECT_SELF; ;
 
-            if (GetPhenoType(player) == PhenoType.SpeederBike)
+            if (SpeederPhenotype.IsRiding(GetPhenoType(player)))
             {
                 Effect stun = EffectStunned();
                 int dazeChance = Random(100);
@@ -81,9 +97,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 });
 
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
-                SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                Stat.ApplyCreatureMovementRate(player);
+                Dismount(player);
                 TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
@@ -96,13 +110,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             var player = OBJECT_SELF;
 
-            if (GetPhenoType(player) == PhenoType.SpeederBike)
+            if (SpeederPhenotype.IsRiding(GetPhenoType(player)))
             {
                 SendMessageToPC(player, "You have been dismounted.");
                 PlayerFeedback.ShowDiagnosticFloatingText("You have been dismounted.", player, false);
-                SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                Stat.ApplyCreatureMovementRate(player);
+                Dismount(player);
                 TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
@@ -118,12 +130,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             var targetAreaTag = GetLocalString(player, "spdr_hook_t_tag");
             var targetArea = GetObjectByTag(targetAreaTag);
 
-            if (GetPhenoType(player) == PhenoType.SpeederBike && GetIsAreaInterior(targetArea))
+            if (SpeederPhenotype.IsRiding(GetPhenoType(player)) && GetIsAreaInterior(targetArea))
             {
                 FloatingTextStringOnCreature("You have been dismounted for entering an area with a speeder.", player, false);
-                SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                Stat.ApplyCreatureMovementRate(player);
+                Dismount(player);
                 TintMapService.QueueRefreshAndEditor(player, player);
             }
         }

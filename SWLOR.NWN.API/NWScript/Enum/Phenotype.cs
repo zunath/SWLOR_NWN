@@ -26,6 +26,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         Custom19,
         SpeederBike,
         Custom21,
-        Custom22,
+        SpeederBikeLarge,
     }
 }

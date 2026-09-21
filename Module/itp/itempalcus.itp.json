@@ -72127,6 +72127,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Speeder Bike"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "speeder"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Stonewake Relay"
               },
               "RESREF": {

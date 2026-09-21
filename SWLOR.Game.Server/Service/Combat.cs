@@ -3823,7 +3823,9 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyGuardedHitRecovery(uint defender)
         {
             var staminaRestore = Stat.GetStatAdjustment(defender, StatType.GuardStaminaRestore);
-            if (staminaRestore > 0)
+            var cooldown = Stat.GetStatAdjustment(defender, StatType.GuardStaminaRestoreCooldownSeconds);
+            if (staminaRestore > 0 &&
+                TryUseStatTrigger(defender, StatType.GuardStaminaRestore, cooldown))
             {
                 Stat.RestoreStamina(defender, staminaRestore);
             }
@@ -4379,14 +4381,13 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding))
             {
                 adjustment += Stat.GetStatAdjustment(attacker, StatType.DamageToBleedingTargetPercentAdjustment);
-                if (isAbilityDamage &&
-                    SkillTypeMatches(
-                        skillType,
-                        GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                            attacker,
-                            StatType.AbilityDamageToBleedingTargetSkillType))))
+                if (isAbilityDamage)
                 {
-                    flatBonus += Stat.GetStatAdjustment(attacker, StatType.AbilityDamageToBleedingTargetBonus);
+                    flatBonus += GetSkillSelectedStatAdjustment(
+                        attacker,
+                        skillType,
+                        StatType.AbilityDamageToBleedingTargetSkillType,
+                        StatType.AbilityDamageToBleedingTargetBonus);
                 }
             }
 
@@ -6380,14 +6381,13 @@ namespace SWLOR.Game.Server.Service
             if (!StatusEffect.HasStatusEffect(defender, typeof(BleedStatusEffect), attacker))
                 return;
 
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+            // Flurry Bleed and Ricochet Toss both declare the Throwing selector, so the
+            // aggregated value would be a skill id that matches nothing. Only extend for the
+            // sources that actually name this skill.
+            var extensionSeconds = GetSkillSelectedStatAdjustment(
                 attacker,
-                StatType.AbilityDamageToBleedingTargetSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
-                return;
-
-            var extensionSeconds = Stat.GetStatAdjustment(
-                attacker,
+                skillType,
+                StatType.AbilityDamageToBleedingTargetSkillType,
                 StatType.BleedingTargetAbilityBleedDurationExtensionSeconds);
             if (extensionSeconds <= 0)
                 return;
@@ -8553,6 +8553,55 @@ namespace SWLOR.Game.Server.Service
             return GetItemInSlot(InventorySlot.CreatureBite, creature);
         }
 
+        /// <summary>
+        /// Sums every source of <paramref name="adjustmentStat"/> whose own
+        /// <paramref name="skillTypeStat"/> selector names <paramref name="skillType"/>. Selector
+        /// stats hold a <see cref="SkillType"/> id, so they must never be aggregated across
+        /// sources before they are compared.
+        /// </summary>
+        private static int GetSkillSelectedStatAdjustment(
+            uint creature,
+            SkillType skillType,
+            StatType skillTypeStat,
+            StatType adjustmentStat,
+            bool unselectedSourcesApplyToEverySkill = false)
+        {
+            return SumSkillSelectedStatAdjustment(
+                Stat.GetStatSources(creature, adjustmentStat),
+                skillType,
+                skillTypeStat,
+                adjustmentStat,
+                unselectedSourcesApplyToEverySkill);
+        }
+
+        /// <param name="unselectedSourcesApplyToEverySkill">
+        /// True where a source that declares no selector is authored as global - Eclipse of
+        /// Resolve's accuracy debuff, Alpha Rhythm and Improved Attentiveness all set an ability
+        /// hit chance with no skill of their own and are described as affecting every ability.
+        /// False where the selector *is* the scope, as it is for the thrown bleeding payloads, so
+        /// a source missing its selector grants nothing rather than leaking onto every skill.
+        /// </param>
+        public static int SumSkillSelectedStatAdjustment(
+            IReadOnlyList<StatAdjustmentSource> sources,
+            SkillType skillType,
+            StatType skillTypeStat,
+            StatType adjustmentStat,
+            bool unselectedSourcesApplyToEverySkill = false)
+        {
+            var adjustment = 0;
+            foreach (var source in sources)
+            {
+                var requiredSkillType = GetSkillTypeFromStat(source[skillTypeStat]);
+                var matches = unselectedSourcesApplyToEverySkill
+                    ? SkillTypeMatchesOrGlobal(skillType, requiredSkillType)
+                    : SkillTypeMatches(skillType, requiredSkillType);
+                if (matches)
+                    adjustment += source[adjustmentStat];
+            }
+
+            return adjustment;
+        }
+
         private static int GetAbilityHitOrCriticalAdjustment(
             uint creature,
             SkillType skillType,
@@ -8564,13 +8613,17 @@ namespace SWLOR.Game.Server.Service
             bool includePerkTargeting,
             uint defender = OBJECT_INVALID)
         {
-            var adjustment = 0;
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, skillTypeStat));
-            if (SkillTypeMatches(skillType, requiredSkillType))
-            {
-                adjustment += Stat.GetStatAdjustment(creature, adjustmentStat);
-
-            }
+            // Each source carries its own skill selector alongside its own magnitude. Reading the
+            // aggregated selector would sum unrelated skill ids (Force 5 + Force 5 becomes
+            // Fabrication 10, Pistol 45 + Devices 33 becomes nothing at all), which silently
+            // disables every contributing bonus. Resolve per source instead, and honour the
+            // selectorless sources that are authored to affect every ability.
+            var adjustment = GetSkillSelectedStatAdjustment(
+                creature,
+                skillType,
+                skillTypeStat,
+                adjustmentStat,
+                unselectedSourcesApplyToEverySkill: true);
 
             // Long-range bonuses are independent of the generic skill-selector stats. This
             // allows a perk to affect every ranged ability without installing a second selector.
@@ -8619,13 +8672,12 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetIncomingAbilityHitChanceAdjustment(uint defender, SkillType skillType)
         {
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+            return GetSkillSelectedStatAdjustment(
                 defender,
-                StatType.IncomingAbilityHitChancePercentAdjustmentSkillType));
-
-            return SkillTypeMatches(skillType, requiredSkillType)
-                ? Stat.GetStatAdjustment(defender, StatType.IncomingAbilityHitChancePercentAdjustment)
-                : 0;
+                skillType,
+                StatType.IncomingAbilityHitChancePercentAdjustmentSkillType,
+                StatType.IncomingAbilityHitChancePercentAdjustment,
+                unselectedSourcesApplyToEverySkill: true);
         }
 
         public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(uint attacker, uint defender, SkillType skillType)

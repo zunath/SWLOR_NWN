@@ -2754,9 +2754,11 @@ namespace SWLOR.Game.Server.Service.StatService
         HeavyVibrobladeOffenseHitPointSpendSoulSacrifice = 490,
 
         /// <summary>
-        /// Window in seconds after spending HP during which Soul Ascension can trigger.
+        /// Window in seconds after spending HP during which Soul Ascension can trigger. Soul
+        /// Ascension and Soul Sacrifice each author 30 seconds, so the longest authored window
+        /// applies instead of the sum.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         HeavyVibrobladeOffenseHitPointSpendWindowSeconds = 491,
 
         /// <summary>
@@ -4020,9 +4022,11 @@ namespace SWLOR.Game.Server.Service.StatService
         StatusAppliedSelfEnmityPercentAdjustment = 711,
 
         /// <summary>
-        /// Duration in seconds for status-applied self stat riders.
+        /// Duration in seconds for status-applied self stat riders. Guard Training and
+        /// Redirecting Guard each author 30 seconds, so the longest authored window applies
+        /// instead of the sum.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         StatusAppliedSelfDurationSeconds = 712,
 
         /// <summary>
@@ -4140,9 +4144,11 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityRestoredFPHastePercentAdjustment = 731,
 
         /// <summary>
-        /// Duration in seconds for AbilityRestoredFPHastePercentAdjustment.
+        /// Duration in seconds for AbilityRestoredFPHastePercentAdjustment. Energized Forms and
+        /// Flow of the Maelstrom each author 30 seconds, so the longest authored window applies
+        /// instead of the sum.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AbilityRestoredFPHasteDurationSeconds = 732,
 
         /// <summary>
@@ -4820,9 +4826,11 @@ namespace SWLOR.Game.Server.Service.StatService
         SameTargetPressureWeaponAbilityDamageBonus = 852,
 
         /// <summary>
-        /// RecastGroup value whose active cooldown is reduced when a deflection succeeds.
+        /// RecastGroup value whose active cooldown is reduced when a deflection succeeds. This
+        /// holds a <see cref="AbilityService.RecastGroup"/> id, so a second source must replace
+        /// the selector rather than add to it.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Shield)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum, deflectionSource: DeflectionSource.Shield)]
         DeflectionRecastReductionGroupId = 853,
 
         /// <summary>
@@ -6118,6 +6126,22 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         LightGuardianTemporaryHPEmpowerment = 1084,
+
+        /// <summary>
+        /// Cooldown in seconds for GuardStaminaRestore. Guard rolls on every landed physical hit
+        /// from every attacker, so the restore needs the same trigger gate every other defensive
+        /// resource proc uses.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        GuardStaminaRestoreCooldownSeconds = 1085,
+
+        /// <summary>
+        /// Cooldown in seconds for DeflectionRecastReductionSeconds. Shield Deflection rolls on
+        /// every incoming attack from every attacker, so an ungated reduction outruns the
+        /// cooldown it is shortening once deflections average one every two seconds.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum, deflectionSource: DeflectionSource.Shield)]
+        DeflectionRecastReductionCooldownSeconds = 1086,
 
     }
 

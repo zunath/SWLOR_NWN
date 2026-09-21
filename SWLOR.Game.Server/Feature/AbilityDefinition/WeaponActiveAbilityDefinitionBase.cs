@@ -125,6 +125,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int RestoreStaminaIfMinimumTargetsHit { get; init; }
             public int StaminaRestoreMinimumTargets { get; init; }
             public int RestoreFPAfterImpact { get; init; }
+
+            /// <summary>
+            /// FP restored once per cast when the caster's Ranged Deflection negated a ranged
+            /// weapon auto-attack within
+            /// <see cref="RestoreFPAfterRangedDeflectionWindowSeconds"/>. This is deliberately a
+            /// per-cast payload rather than a per-hit one: an authored "restore N FP" on an area
+            /// ability must not pay out once per struck target.
+            /// </summary>
+            public int RestoreFPAfterRangedDeflection { get; init; }
+
+            /// <summary>Deflection lookback window for <see cref="RestoreFPAfterRangedDeflection"/>.</summary>
+            public int RestoreFPAfterRangedDeflectionWindowSeconds { get; init; }
             public int RestoreStaminaIfAllHitsLand { get; init; }
             public int RestoreFPIfAllHitsLand { get; init; }
             public int RestoreStaminaIfAnyCriticalHit { get; init; }
@@ -643,6 +655,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         activator,
                         SelfStatusEffectOnCriticalHitFactory(summary),
                         durationSeconds);
+                }
+
+                // Keyed off landing the cone, not off dealing damage: a target that resists the
+                // hit down to zero still counts as struck, and the authored restore does not
+                // depend on damage. This has to run before the damage-only early return.
+                if (RestoreFPAfterRangedDeflection > 0 &&
+                    RestoreFPAfterRangedDeflectionWindowSeconds > 0 &&
+                    (summary?.ImpactedTargetCount ?? 0) > 0 &&
+                    Combat.HasRecentDeflection(
+                        activator,
+                        DeflectionSource.Ranged,
+                        RestoreFPAfterRangedDeflectionWindowSeconds))
+                {
+                    if (Stat.RestoreFP(activator, RestoreFPAfterRangedDeflection) > 0)
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
                 }
 
                 if (totalDamage <= 0)

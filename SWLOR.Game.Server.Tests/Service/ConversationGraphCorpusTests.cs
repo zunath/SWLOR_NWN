@@ -21,8 +21,16 @@ public sealed class ConversationGraphCorpusTests
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        resources.Should().HaveCount(341,
-            "all active authored graphs must be embedded; retired quest dialogues and native DMFI are excluded");
+        var repositoryRoot = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (repositoryRoot != null && !File.Exists(Path.Combine(repositoryRoot.FullName, "SWLOR.Game.Server.sln")))
+            repositoryRoot = repositoryRoot.Parent;
+        repositoryRoot.Should().NotBeNull("the authored conversation corpus must be available to the test");
+        var authoredGraphCount = Directory.EnumerateFiles(
+            Path.Combine(repositoryRoot!.FullName, "SWLOR.Game.Server", "ConversationData"),
+            "*.conversation.json").Count();
+
+        resources.Should().HaveCount(authoredGraphCount,
+            "every active authored graph must be embedded; retired quest dialogues and native DMFI are excluded");
         resources.Should().NotContain(resource =>
             resource.EndsWith(".dmfi_universal.conversation.json", StringComparison.OrdinalIgnoreCase));
         foreach (var resource in resources)

@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 13
+    "value": 25
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 79.0
   },
   "ClassList": {
     "type": "list",
@@ -99,11 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 4
+          "value": 20
         },
         "ClassLevel": {
           "type": "short",
-          "value": 3
+          "value": 40
         }
       }
     ]
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 11
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 65
+    "value": 4151
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 28
   },
   "Disarmable": {
     "type": "byte",
@@ -177,13 +177,6 @@
         }
       },
       {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "humanpirate_wp"
-        }
-      },
-      {
         "__struct_id": 4096,
         "EquippedRes": {
           "type": "resref",
@@ -191,10 +184,17 @@
         }
       },
       {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "esh_nc_scout_wp"
+        }
+      },
+      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "humanpirate_sk"
+          "value": "esh_nc_scout_sk"
         }
       }
     ]
@@ -231,42 +231,42 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 10
+          "value": 1349
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1089
+          "value": 1242
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 27
+          "value": 1602
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 258
+          "value": 411
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 32
+          "value": 289
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 106
+          "value": 44
         }
       },
       {
@@ -287,14 +287,49 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1850
+          "value": 1785
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1851
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1824
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1754
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1844
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1767
         }
       }
     ]
@@ -319,11 +354,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 65
+    "value": 3951
   },
   "Int": {
     "type": "byte",
-    "value": 11
+    "value": 28
   },
   "Interruptable": {
     "type": "byte",
@@ -353,7 +388,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 65
+    "value": 4151
   },
   "NaturalAC": {
     "type": "byte",
@@ -654,11 +689,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 4
+    "value": 82
   },
   "Str": {
     "type": "byte",
-    "value": 8
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -694,7 +729,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 8
+    "value": 35
   },
   "xAppearance_Head": {
     "type": "word",
@@ -775,6 +810,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ESHAN_SCRAPYARD_SMUGGLER,100,1"
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

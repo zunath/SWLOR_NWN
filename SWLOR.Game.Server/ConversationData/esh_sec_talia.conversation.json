@@ -677,7 +677,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their hunters have stopped chasing soldiers. They're taking couriers and anyone who knows the side trails through the Veylan Groves. End six of those hunts.",
+          "Text": "Their hunters have stopped chasing soldiers. They're taking couriers and isolated patrols across the Winter Marches. End six of those hunts.",
           "Style": 0,
           "Color": null
         }
@@ -707,7 +707,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use the trees for cover, but assume they've trapped the obvious paths. Six hunters. No trophies required.",
+          "Text": "Use the broken ice for cover, but assume they've trapped the obvious approaches. Six hunters. No trophies required.",
           "Style": 0,
           "Color": null
         }
@@ -733,7 +733,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use the trees for cover, but assume they've trapped the obvious paths. Six hunters. No trophies required.",
+          "Text": "Use the broken ice for cover, but assume they've trapped the obvious approaches. Six hunters. No trophies required.",
           "Style": 0,
           "Color": null
         }
@@ -759,7 +759,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Our couriers reached the groves without being shadowed. Report what happened to the hunters.",
+          "Text": "Our couriers crossed the Winter Marches without being shadowed. Report what happened to the hunters.",
           "Style": 0,
           "Color": null
         }
@@ -789,7 +789,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Our couriers can move again. More importantly, the enemy now knows the groves don't belong to them.",
+          "Text": "Our couriers can move again. More importantly, the enemy no longer controls the Winter Marches trails.",
           "Style": 0,
           "Color": null
         }
@@ -815,7 +815,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Courier traffic through the Veylan Groves has returned to schedule.",
+          "Text": "Courier traffic through the Winter Marches has returned to schedule.",
           "Style": 0,
           "Color": null
         }
@@ -3484,7 +3484,7 @@
     "reply-turnin-05": {
       "Id": "reply-turnin-05",
       "Text": {
-        "Text": "The hunters in the groves are finished.",
+        "Text": "The hunters in the Winter Marches are finished.",
         "Style": 4,
         "Color": null
       },

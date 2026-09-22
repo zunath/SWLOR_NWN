@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_mando_salv", 5, 2)
                 .AddGold(500, 10);
 
+            _builder.Create("ESHAN_SCRAPYARD_SMUGGLER")
+                .AddItem("elec_flawed", 5, 1)
+                .AddGold(250, 10);
+
             return _builder.Build();
         }
     }

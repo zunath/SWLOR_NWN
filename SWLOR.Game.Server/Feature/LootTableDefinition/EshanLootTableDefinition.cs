@@ -33,6 +33,30 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("elec_flawed", 5, 1)
                 .AddGold(250, 10);
 
+            _builder.Create("ESHAN_MAP_RARES")
+                .IsRare()
+                .AddItem("esh_map_orbit", 2, 1, true)
+                .AddItem("esh_map_height", 2, 1, true)
+                .AddItem("esh_map_silver", 2, 1, true)
+                .AddItem("esh_map_gate", 2, 1, true)
+                .AddItem("esh_map_peaks", 2, 1, true)
+                .AddItem("esh_map_high", 2, 1, true)
+                .AddItem("esh_map_shimmer", 2, 1, true)
+                .AddItem("esh_map_farms", 2, 1, true)
+                .AddItem("esh_map_battle", 2, 1, true)
+                .AddItem("esh_map_hearth", 2, 1, true)
+                .AddItem("esh_map_starport", 2, 1, true)
+                .AddItem("esh_map_verdant", 2, 1, true)
+                .AddItem("esh_map_river", 2, 1, true)
+                .AddItem("esh_map_marches", 2, 1, true)
+                .AddItem("esh_map_oldquart", 2, 1, true)
+                .AddItem("esh_map_groves", 2, 1, true)
+                .AddItem("esh_map_proving", 2, 1, true)
+                .AddItem("esh_map_scrap", 2, 1, true)
+                .AddItem("esh_map_tunnels", 2, 1, true)
+                .AddItem("esh_map_vein", 2, 1, true)
+                .AddItem("esh_map_scrcave", 2, 1, true);
+
             return _builder.Build();
         }
     }

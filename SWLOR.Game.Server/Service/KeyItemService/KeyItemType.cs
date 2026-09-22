@@ -845,6 +845,49 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.FieldNotes, "Wraithweb Nythrax", true, "")]
         IncubationFieldNoteWraithwebNythrax = 2138,
 
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan Orbit Map", true, "Map of the space surrounding Eshan.")]
+        EshanOrbitMap = 2139,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Keshan Heights Map", true, "Map of Keshan Heights on Eshan.")]
+        EshanKeshanHeightsMap = 2140,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Silverwood Expanse Map", true, "Map of the Silverwood Expanse on Eshan.")]
+        EshanSilverwoodExpanseMap = 2141,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - Silver Gate District Map", true, "Map of Eshan City's Silver Gate District.")]
+        EshanSilverGateDistrictMap = 2142,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Keshan Peaks Map", true, "Map of the Keshan Peaks on Eshan.")]
+        EshanKeshanPeaksMap = 2143,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - Highcrest Quarter Map", true, "Map of Eshan City's Highcrest Quarter.")]
+        EshanHighcrestQuarterMap = 2144,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - The Shimmerdeep Map", true, "Map of the Shimmerdeep on Eshan.")]
+        EshanShimmerdeepMap = 2145,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Farmlands Map", true, "Map of the farmlands on Eshan.")]
+        EshanFarmlandsMap = 2146,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Battlegrounds Map", true, "Map of the battlegrounds on Eshan.")]
+        EshanBattlegroundsMap = 2147,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - Hearth Ward Map", true, "Map of Eshan City's Hearth Ward.")]
+        EshanHearthWardMap = 2148,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Starport Map", true, "Map of the starport on Eshan.")]
+        EshanStarportMap = 2149,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - Verdant Crown Map", true, "Map of Eshan City's Verdant Crown.")]
+        EshanVerdantCrownMap = 2150,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - The Riverway Map", true, "Map of Eshan City's Riverway.")]
+        EshanRiverwayMap = 2151,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - The Winter Marches Map", true, "Map of the Winter Marches on Eshan.")]
+        EshanWinterMarchesMap = 2152,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - The Old Quarter Map", true, "Map of Eshan City's Old Quarter.")]
+        EshanOldQuarterMap = 2153,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - The Veylan Groves Map", true, "Map of the Veylan Groves on Eshan.")]
+        EshanVeylanGrovesMap = 2154,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - The Grand Proving Grounds Map", true, "Map of the Grand Proving Grounds on Eshan.")]
+        EshanGrandProvingGroundsMap = 2155,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Scraplands Map", true, "Map of the Scraplands on Eshan.")]
+        EshanScraplandsMap = 2156,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - Tunnels Map", true, "Map of the tunnels beneath Eshan City.")]
+        EshanCityTunnelsMap = 2157,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - The Shattervein Map", true, "Map of the Shattervein on Eshan.")]
+        EshanShatterveinMap = 2158,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Scraplands Caves Map", true, "Map of the caves beneath Eshan's Scraplands.")]
+        EshanScraplandsCavesMap = 2159,
+
 	}
 
 	public class KeyItemAttribute : Attribute

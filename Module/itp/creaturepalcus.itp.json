@@ -18557,6 +18557,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 165.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gorak Vesh, the Icebound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_gorakvesh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 227.0
                     },
                     "FACTION": {

@@ -34,6 +34,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "esh_wolfalpha")
                 .WithFrequency(10)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "esh_gorakvesh")
+                .WithFrequency(5)
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 

@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 525
+    "value": 70
   },
   "Charges": {
     "type": "byte",
@@ -18,15 +18,17 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -34,29 +36,21 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Neo-Crusader Vanguard Electroblade"
+      "0": "Gorak Vesh Creature Weapon"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 141
-  },
-  "ModelPart2": {
-    "type": "byte",
-    "value": 131
-  },
-  "ModelPart3": {
-    "type": "byte",
-    "value": 183
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 36
+    "value": 55
   },
   "Plot": {
     "type": "byte",
@@ -73,42 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 134
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 3
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 37
+          "value": 94
         },
         "Param1": {
           "type": "byte",
@@ -170,11 +133,15 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ESH_NCVANG_WP"
+    "value": "ESH_GORAK_WP"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "esh_ncvang_wp"
+    "value": "esh_gorak_wp"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   },
   "VarTable": {
     "type": "list",
@@ -195,17 +162,5 @@
         }
       }
     ]
-  },
-  "xModelPart1": {
-    "type": "word",
-    "value": 24
-  },
-  "xModelPart2": {
-    "type": "word",
-    "value": 11
-  },
-  "xModelPart3": {
-    "type": "word",
-    "value": 14
   }
 }

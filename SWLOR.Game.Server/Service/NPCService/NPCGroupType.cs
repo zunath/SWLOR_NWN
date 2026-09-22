@@ -540,6 +540,26 @@ namespace SWLOR.Game.Server.Service.NPCService
         Dathomir_ForceBondedBeast_InnerCircle = 265,
         [NPCGroup("Force-Bonded Beast Master")]
         Dathomir_ForceBondedBeast_Master = 266,
+        [NPCGroup("Eshan Dire Wolves")]
+        Eshan_DireWolf = 267,
+        [NPCGroup("Eshan Frost Dire Wolves")]
+        Eshan_FrostWolf = 268,
+        [NPCGroup("Eshan Dire Wolf Alpha")]
+        Eshan_DireWolfAlpha = 269,
+        [NPCGroup("Eshan Neo-Crusader Scouts")]
+        Eshan_NeoCrusaderScout = 270,
+        [NPCGroup("Eshan Neo-Crusader Hunters")]
+        Eshan_NeoCrusaderHunter = 271,
+        [NPCGroup("Eshan Neo-Crusader Vanguards")]
+        Eshan_NeoCrusaderVanguard = 272,
+        [NPCGroup("Eshan Neo-Crusader Heavy Troopers")]
+        Eshan_NeoCrusaderHeavy = 273,
+        [NPCGroup("Eshan Neo-Crusader Medics")]
+        Eshan_NeoCrusaderMedic = 274,
+        [NPCGroup("Eshan Neo-Crusader Captains")]
+        Eshan_NeoCrusaderCaptain = 275,
+        [NPCGroup("Eshan Sun Guard")]
+        Eshan_SunGuard = 276,
     }
 
     public class NPCGroupAttribute : Attribute

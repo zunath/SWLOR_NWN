@@ -474,6 +474,33 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Mountain Ascent", "Explore the Mountain Ascent on Viscara.", true)]
         ExploreViscaraMountainAscent = 182,
+
+        [Achievement("Explore Eshan Orbit", "Explore the space surrounding Eshan.", true)]
+        ExploreEshanOrbit = 183,
+        [Achievement("Explore Keshan Heights", "Explore Keshan Heights on Eshan.", true)]
+        ExploreEshanKeshanHeights = 184,
+        [Achievement("Explore Silverwood Expanse", "Explore the Silverwood Expanse on Eshan.", true)]
+        ExploreEshanSilverwoodExpanse = 185,
+        [Achievement("Explore Silver Gate District", "Explore Eshan City's Silver Gate District.", true)]
+        ExploreEshanSilverGateDistrict = 186,
+        [Achievement("Explore Keshan Peaks", "Explore the Keshan Peaks on Eshan.", true)]
+        ExploreEshanKeshanPeaks = 187,
+        [Achievement("Explore Highcrest Quarter", "Explore Eshan City's Highcrest Quarter.", true)]
+        ExploreEshanHighcrestQuarter = 188,
+        [Achievement("Explore the Shimmerdeep", "Explore the Shimmerdeep on Eshan.", true)]
+        ExploreEshanShimmerdeep = 189,
+        [Achievement("Explore Eshan Farmlands", "Explore the farmlands on Eshan.", true)]
+        ExploreEshanFarmlands = 190,
+        [Achievement("Explore Eshan Battlegrounds", "Explore the battlegrounds on Eshan.", true)]
+        ExploreEshanBattlegrounds = 191,
+        [Achievement("Explore Hearth Ward", "Explore Eshan City's Hearth Ward.", true)]
+        ExploreEshanHearthWard = 192,
+        [Achievement("Explore Eshan Starport", "Explore the starport on Eshan.", true)]
+        ExploreEshanStarport = 193,
+        [Achievement("Explore Verdant Crown", "Explore Eshan City's Verdant Crown.", true)]
+        ExploreEshanVerdantCrown = 194,
+        [Achievement("Explore the Riverway", "Explore Eshan City's Riverway.", true)]
+        ExploreEshanRiverway = 195,
 	}
 
     public class AchievementAttribute: Attribute

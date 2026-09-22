@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Service.LootService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -39,6 +40,45 @@ public class LootTableDefinitionTests
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void EshanEnemies_CanDropEveryEshanMap()
+    {
+        var expectedMaps = new HashSet<string>
+        {
+            "esh_map_orbit",
+            "esh_map_height",
+            "esh_map_silver",
+            "esh_map_gate",
+            "esh_map_peaks",
+            "esh_map_high",
+            "esh_map_shimmer",
+            "esh_map_farms",
+            "esh_map_battle",
+            "esh_map_hearth",
+            "esh_map_starport",
+            "esh_map_verdant",
+            "esh_map_river"
+        };
+        var tables = new EshanLootTableDefinition().BuildLootTables();
+
+        tables.Keys.Should().BeEquivalentTo(
+            "ESHAN_NEOCRUSADER",
+            "ESHAN_DIRE_WOLF",
+            "ESHAN_FROST_WOLF",
+            "ESHAN_DIRE_WOLF_ALPHA",
+            "ESHAN_SUN_GUARD",
+            "ESHAN_SCRAPYARD_SMUGGLER");
+
+        foreach (var (tableId, table) in tables)
+        {
+            var maps = table.Where(item => expectedMaps.Contains(item.Resref)).ToList();
+            maps.Select(item => item.Resref).Should().BeEquivalentTo(expectedMaps,
+                $"{tableId} should provide all Eshan maps");
+            maps.Should().OnlyContain(item => item.Weight == 2 && item.MaxQuantity == 1 && item.IsRare,
+                $"{tableId} maps should use the standard rare-map loot settings");
+        }
     }
 
     private static IEnumerable<Type> GetLootTableDefinitionTypes()

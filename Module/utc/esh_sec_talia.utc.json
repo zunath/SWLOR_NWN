@@ -173,7 +173,14 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "refugee_outfit"
+          "value": "adventurer_g_mal"
+        }
+      },
+      {
+        "__struct_id": 1,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ashlashood00"
         }
       }
     ]

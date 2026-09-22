@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 1
+    "value": 196
   },
   "Appearance_Type": {
     "type": "word",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 20
+    "value": 13
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 55.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -99,26 +99,26 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 4
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 3
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 15
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 136
   },
   "Color_Tattoo2": {
     "type": "byte",
@@ -126,11 +126,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "Generic human smuggler NPC"
   },
   "Con": {
     "type": "byte",
-    "value": 28
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 10
+    "value": 0
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 5154
+    "value": 65
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A battle-hardened Neo-Crusader deployed to Eshan. The warrior combines disciplined Mandalorian tactics with equipment selected for cold-weather operations."
+      "0": "A smuggler defending an illicit salvage claim in Eshan's Scraplands."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 28
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -170,31 +170,31 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 1,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "man_helm_npc"
-        }
-      },
-      {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "man_armor_npc"
+          "value": "pirate_armor"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "esh_nc_medic_wp"
+          "value": "humanpirate_wp"
+        }
+      },
+      {
+        "__struct_id": 4096,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "blaster_bullets"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "esh_nc_medic_sk"
+          "value": "humanpirate_sk"
         }
       }
     ]
@@ -231,49 +231,42 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1611
+          "value": 10
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1602
+          "value": 1089
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1482
+          "value": 27
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 411
+          "value": 258
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1608
+          "value": 32
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 44
+          "value": 106
         }
       },
       {
@@ -294,14 +287,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1842
+          "value": 1850
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1754
+          "value": 1851
         }
       }
     ]
@@ -309,7 +302,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Neo-Crusader Field Medic"
+      "0": "Scrapyard Smuggler"
     }
   },
   "fortbonus": {
@@ -326,11 +319,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4794
+    "value": 65
   },
   "Int": {
     "type": "byte",
-    "value": 19
+    "value": 11
   },
   "Interruptable": {
     "type": "byte",
@@ -360,7 +353,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 5154
+    "value": 65
   },
   "NaturalAC": {
     "type": "byte",
@@ -368,15 +361,15 @@
   },
   "NoPermDeath": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 159
+    "value": 0
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Phenotype": {
     "type": "int",
@@ -388,7 +381,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3560
+    "value": 4143
   },
   "Race": {
     "type": "byte",
@@ -400,55 +393,55 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_attacked"
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondamage"
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondeath"
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onconv"
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_ondisturb"
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_endcombat"
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_heartbeat"
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_onblocked"
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_percept"
   },
   "ScriptRested": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_rested"
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spawn"
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spellcast"
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_userdef"
   },
   "SkillList": {
     "type": "list",
@@ -653,7 +646,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 932
+    "value": 926
   },
   "SpecAbilityList": {
     "type": "list",
@@ -661,11 +654,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 4
   },
   "Str": {
     "type": "byte",
-    "value": 19
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -673,7 +666,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ESH_NC_MEDIC"
+    "value": "ESH_SCRAP_SMUG"
   },
   "Tail_New": {
     "type": "dword",
@@ -685,11 +678,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "esh_nc_medic"
+    "value": "esh_scrap_smug"
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -701,11 +694,11 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 34
+    "value": 8
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 1
+    "value": 196
   },
   "xArmorPart_RFoot": {
     "type": "word",
@@ -786,21 +779,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "ESHAN_NEOCRUSADER,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
@@ -809,7 +787,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 274
+          "value": 277
         }
       }
     ]

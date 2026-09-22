@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "esh_gorakvesh")
                 .WithFrequency(5)
+                .AsRare()
                 .RandomlyWalks()
                 .ReturnsHome();
         }

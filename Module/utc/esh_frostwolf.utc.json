@@ -223,7 +223,7 @@
   },
   "Race": {
     "type": "byte",
-    "value": 13
+    "value": 8
   },
   "refbonus": {
     "type": "short",
@@ -525,21 +525,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 237
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "LOOT_TABLE_1"
         },
         "Type": {
@@ -548,22 +533,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "CAPSTONE_DATHOMIR_TARN_JUNGLE_PRESERVE_LESSON_LOOT,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "CAPSTONE_APEXBITE_RARES,5,1"
+          "value": "ESHAN_FROST_WOLF,100,1"
         }
       }
     ]

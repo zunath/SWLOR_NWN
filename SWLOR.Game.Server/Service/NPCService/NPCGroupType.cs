@@ -560,6 +560,8 @@ namespace SWLOR.Game.Server.Service.NPCService
         Eshan_NeoCrusaderCaptain = 275,
         [NPCGroup("Eshan Sun Guard")]
         Eshan_SunGuard = 276,
+        [NPCGroup("Eshan Scrapyard Smugglers")]
+        Eshan_ScrapyardSmuggler = 277,
     }
 
     public class NPCGroupAttribute : Attribute

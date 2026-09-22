@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             EshanMedicCutoff();
             EshanCaptainFall();
             EshanSunguardStand();
+            EshanScrapyardSmugglers();
             return _builder.Build();
         }
 
@@ -171,6 +172,21 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddXPReward(25000)
                 .AddGoldReward(22000);
+        }
+
+        private void EshanScrapyardSmugglers()
+        {
+            _builder.Create("eshan_scrapyard_smugglers", "Scrap Without Questions")
+
+                .AddState()
+                .SetStateJournalText("Raalo Kes wants the rival smugglers occupying Eshan's Scraplands driven away. Defeat eight Scrapyard Smugglers, then return to Raalo near the smuggler landing point.")
+                .AddKillObjective(NPCGroupType.Eshan_ScrapyardSmuggler, 8)
+
+                .AddState()
+                .SetStateJournalText("Eight Scrapyard Smugglers have been defeated. Return to Raalo Kes near the smuggler landing point in Eshan's Scraplands.")
+
+                .AddXPReward(15000)
+                .AddGoldReward(13000);
         }
 
     }

@@ -43,7 +43,7 @@ public class LootTableDefinitionTests
     }
 
     [Test]
-    public void EshanEnemies_CanDropEveryEshanMap()
+    public void EshanMaps_UseASeparateRareLootTableWiredToEveryEnemy()
     {
         var expectedMaps = new HashSet<string>
         {
@@ -61,23 +61,40 @@ public class LootTableDefinitionTests
             "esh_map_verdant",
             "esh_map_river"
         };
+        var enemyResrefs = new[]
+        {
+            "esh_direwolf", "esh_frostwolf", "esh_gorakvesh", "esh_nc_captain",
+            "esh_nc_heavy", "esh_nc_hunter", "esh_nc_medic", "esh_nc_scout",
+            "esh_nc_vanguard", "esh_scrap_smug", "esh_sunguard", "esh_wolfalpha"
+        };
         var tables = new EshanLootTableDefinition().BuildLootTables();
 
-        tables.Keys.Should().BeEquivalentTo(
-            "ESHAN_NEOCRUSADER",
-            "ESHAN_DIRE_WOLF",
-            "ESHAN_FROST_WOLF",
-            "ESHAN_DIRE_WOLF_ALPHA",
-            "ESHAN_SUN_GUARD",
-            "ESHAN_SCRAPYARD_SMUGGLER");
+        var mapTable = tables["ESHAN_MAP_RARES"];
+        mapTable.IsRare.Should().BeTrue();
+        mapTable.Select(item => item.Resref).Should().BeEquivalentTo(expectedMaps);
+        mapTable.Should().OnlyContain(item => item.Weight == 2 && item.MaxQuantity == 1 && item.IsRare,
+            "maps should use the standard rare-map loot settings");
 
-        foreach (var (tableId, table) in tables)
+        foreach (var (tableId, table) in tables.Where(entry => entry.Key != "ESHAN_MAP_RARES"))
         {
-            var maps = table.Where(item => expectedMaps.Contains(item.Resref)).ToList();
-            maps.Select(item => item.Resref).Should().BeEquivalentTo(expectedMaps,
-                $"{tableId} should provide all Eshan maps");
-            maps.Should().OnlyContain(item => item.Weight == 2 && item.MaxQuantity == 1 && item.IsRare,
-                $"{tableId} maps should use the standard rare-map loot settings");
+            table.Should().NotContain(item => expectedMaps.Contains(item.Resref),
+                $"{tableId} should preserve its normal material and credit roll");
+        }
+
+        var root = FindRepositoryRoot();
+        foreach (var enemyResref in enemyResrefs)
+        {
+            using var creature = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName, "Module", "utc", $"{enemyResref}.utc.json")));
+            var lootVariables = creature.RootElement.GetProperty("VarTable").GetProperty("value")
+                .EnumerateArray()
+                .Where(variable => variable.GetProperty("Name").GetProperty("value").GetString()!
+                    .StartsWith("LOOT_TABLE_"))
+                .Select(variable => variable.GetProperty("Value").GetProperty("value").GetString())
+                .ToList();
+
+            lootVariables.Should().Contain("ESHAN_MAP_RARES,5,1",
+                $"{enemyResref} should roll separately for an Eshan map");
         }
     }
 

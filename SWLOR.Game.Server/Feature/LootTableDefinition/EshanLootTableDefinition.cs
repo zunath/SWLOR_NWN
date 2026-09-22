@@ -12,39 +12,29 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ESHAN_NEOCRUSADER")
                 .AddItem("esh_mando_salv", 10, 2)
                 .AddGold(150, 5);
-            AddEshanMaps();
 
             _builder.Create("ESHAN_DIRE_WOLF")
                 .AddItem("esh_wolf_pelt", 10, 2);
-            AddEshanMaps();
 
             _builder.Create("ESHAN_FROST_WOLF")
                 .AddItem("esh_wolf_pelt", 10, 2)
                 .AddItem("esh_frost_fang", 4, 1);
-            AddEshanMaps();
 
             _builder.Create("ESHAN_DIRE_WOLF_ALPHA")
                 .AddItem("esh_wolf_pelt", 10, 3)
                 .AddItem("esh_frost_fang", 10, 2);
-            AddEshanMaps();
 
             _builder.Create("ESHAN_SUN_GUARD")
                 .AddItem("esh_sun_insignia", 10, 1)
                 .AddItem("esh_mando_salv", 5, 2)
                 .AddGold(500, 10);
-            AddEshanMaps();
 
             _builder.Create("ESHAN_SCRAPYARD_SMUGGLER")
                 .AddItem("elec_flawed", 5, 1)
                 .AddGold(250, 10);
-            AddEshanMaps();
 
-            return _builder.Build();
-        }
-
-        private void AddEshanMaps()
-        {
-            _builder
+            _builder.Create("ESHAN_MAP_RARES")
+                .IsRare()
                 .AddItem("esh_map_orbit", 2, 1, true)
                 .AddItem("esh_map_height", 2, 1, true)
                 .AddItem("esh_map_silver", 2, 1, true)
@@ -58,6 +48,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_map_starport", 2, 1, true)
                 .AddItem("esh_map_verdant", 2, 1, true)
                 .AddItem("esh_map_river", 2, 1, true);
+
+            return _builder.Build();
         }
     }
 }

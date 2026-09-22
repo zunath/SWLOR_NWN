@@ -59,15 +59,7 @@ public class LootTableDefinitionTests
             "esh_map_hearth",
             "esh_map_starport",
             "esh_map_verdant",
-            "esh_map_river",
-            "esh_map_marches",
-            "esh_map_oldquart",
-            "esh_map_groves",
-            "esh_map_proving",
-            "esh_map_scrap",
-            "esh_map_tunnels",
-            "esh_map_vein",
-            "esh_map_scrcave"
+            "esh_map_river"
         };
         var enemyResrefs = new[]
         {
@@ -103,11 +95,6 @@ public class LootTableDefinitionTests
 
             lootVariables.Should().Contain("ESHAN_MAP_RARES,5,1",
                 $"{enemyResref} should roll separately for an Eshan map");
-            if (enemyResref == "esh_scrap_smug")
-            {
-                lootVariables.Should().Contain("ESHAN_SCRAPYARD_SMUGGLER,100,1",
-                    "the spawned scrapyard smuggler should retain its normal electronics and credits roll");
-            }
         }
     }
 

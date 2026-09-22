@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 184
+    "value": 1780
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 23
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 116.0
+    "value": 165.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 33
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 683
+    "value": 2197
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A massive dire wolf adapted to Eshan’s bitter climate. Dense pale fur, powerful jaws, and coordinated pack instincts make it a dangerous predator."
+      "0": "An ancient, hulking predator of Eshan's frozen wilds. Echani hunters call it Gorak Vesh—the Icebound—and speak of its roar carrying across the Silverwood before an attack."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 33
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "esh_frostwolf_wp"
+          "value": "esh_gorak_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "esh_frostwolf_sk"
+          "value": "esh_gorak_sk"
         }
       }
     ]
@@ -111,14 +111,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1824
+          "value": 1823
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1828
+          "value": 1820
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1821
         }
       },
       {
@@ -132,7 +139,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 2724
+          "value": 1768
         }
       }
     ]
@@ -140,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Eshan Frost Dire Wolf"
+      "0": "Gorak Vesh, the Icebound"
     }
   },
   "fortbonus": {
@@ -157,11 +164,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 243
+    "value": 1717
   },
   "Int": {
     "type": "byte",
-    "value": 33
+    "value": 34
   },
   "Interruptable": {
     "type": "byte",
@@ -191,7 +198,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 683
+    "value": 2197
   },
   "NaturalAC": {
     "type": "byte",
@@ -219,7 +226,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 321
+    "value": 3502
   },
   "Race": {
     "type": "byte",
@@ -484,7 +491,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 919
+    "value": 943
   },
   "SpecAbilityList": {
     "type": "list",
@@ -496,7 +503,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 41
+    "value": 42
   },
   "Subrace": {
     "type": "cexostring",
@@ -504,7 +511,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ESH_FROSTWOLF"
+    "value": "ESH_GORAK_VESH"
   },
   "Tail_New": {
     "type": "dword",
@@ -516,7 +523,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "esh_frostwolf"
+    "value": "esh_gorakvesh"
   },
   "VarTable": {
     "type": "list",
@@ -533,7 +540,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ESHAN_FROST_WOLF,100,1"
+          "value": "ESHAN_DIRE_WOLF_ALPHA,100,1"
         }
       },
       {
@@ -548,7 +555,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 268
+          "value": 278
         }
       }
     ]
@@ -567,6 +574,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 23
+    "value": 24
   }
 }

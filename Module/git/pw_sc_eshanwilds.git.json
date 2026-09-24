@@ -38791,6 +38791,21 @@
           "type": "int",
           "value": 2141
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ESHAN_SILVERWOOD_EXPANSE_RESOURCES"
+        }
       }
     ]
   },

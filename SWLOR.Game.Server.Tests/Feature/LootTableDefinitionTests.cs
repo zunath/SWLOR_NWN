@@ -59,7 +59,15 @@ public class LootTableDefinitionTests
             "esh_map_hearth",
             "esh_map_starport",
             "esh_map_verdant",
-            "esh_map_river"
+            "esh_map_river",
+            "esh_map_marches",
+            "esh_map_oldquart",
+            "esh_map_groves",
+            "esh_map_proving",
+            "esh_map_scrap",
+            "esh_map_tunnels",
+            "esh_map_vein",
+            "esh_map_scrcave"
         };
         var enemyResrefs = new[]
         {

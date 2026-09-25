@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("Defeat four former Revanite Thyrsian warriors fighting on Eshan, then report to Security Officer Talia Venn in the Silver Gate District.")
-                .AddKillObjective(NPCGroupType.Eshan_ThyrsianExile, 4)
+                .AddKillObjective(NPCGroupType.Eshan_SunGuard, 4)
 
                 .AddState()
                 .SetStateJournalText("Four Thyrsian exiles have been defeated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")

@@ -1,7 +1,10 @@
 using System.Text.Json;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.QuestDefinition;
+using SWLOR.Game.Server.Service.NPCService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -35,6 +38,17 @@ public class EshanThyrsianLoreTests
             .Should().Be("Thyrsian Exile");
         root.GetProperty("Description").GetProperty("value").GetProperty("0").GetString()
             .Should().Contain("once served the Revanite Order");
+    }
+
+    [Test]
+    public void LegacySunGuardKillProgress_StillDeserializes()
+    {
+        const string persistedQuest = "{\"KillProgresses\":{\"Eshan_SunGuard\":3}}";
+
+        var quest = JsonConvert.DeserializeObject<PlayerQuest>(persistedQuest)!;
+
+        quest.KillProgresses.Should().ContainSingle();
+        quest.KillProgresses[NPCGroupType.Eshan_SunGuard].Should().Be(3);
     }
 
     private static DirectoryInfo FindRepositoryRoot()

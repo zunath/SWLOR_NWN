@@ -559,7 +559,7 @@ namespace SWLOR.Game.Server.Service.NPCService
         [NPCGroup("Eshan Neo-Crusader Captains")]
         Eshan_NeoCrusaderCaptain = 275,
         [NPCGroup("Eshan Thyrsian Exiles")]
-        Eshan_ThyrsianExile = 276,
+        Eshan_SunGuard = 276,
         [NPCGroup("Eshan Scrapyard Smugglers")]
         Eshan_ScrapyardSmuggler = 277,
         [NPCGroup("Gorak Vesh, the Icebound")]

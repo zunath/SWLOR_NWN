@@ -733,14 +733,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The hazard slot is nested two partials deep (window root -> hazards tab
             // partial -> slot). SwapNestedPartialView's root-redraw pass would reset
-            // the tab content and destroy the slot element, so apply directly and
-            // re-apply once after the redraw nudge settles instead.
+            // the tab content and destroy the slot element, so apply directly;
+            // ChangePartialView reapplies nested partials after the redraw settles.
             ChangePartialView(HazardSlotElement, partialName);
-            DelayCommand(0.0f, () =>
-            {
-                if (Gui.IsWindowOpen(Player, WindowType))
-                    ChangePartialView(HazardSlotElement, partialName);
-            });
         }
 
         public Action OnClickHazardButtonRow() => () =>

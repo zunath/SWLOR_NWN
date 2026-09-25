@@ -50,10 +50,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             // Restoring the main view (e.g. when a modal closes) re-renders the static window
             // template, whose content placeholder is empty - the generated form must be swapped
-            // back in. NUI can drop nested layouts while the parent is being redrawn, so reapply
-            // again on the next tick (same workaround as the character sheet's tab swaps).
+            // back in.
             ReapplyContentLayout();
-            DelayCommand(0.0f, ReapplyContentLayout);
         }
 
         public string Title

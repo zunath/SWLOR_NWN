@@ -273,11 +273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Capture the client's current position before the partial-view redraw workaround
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
-
-            // The settings content is a partial nested inside the window's root partial. NUI can
-            // drop a nested layout swap while the root is redrawn, leaving the tab blank until the
-            // player resizes the window, so use the nested-safe swap which reapplies next tick.
-            SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);
+            ChangePartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);
         }
 
         private void RefreshPartialViewBindings()

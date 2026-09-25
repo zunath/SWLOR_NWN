@@ -23,10 +23,10 @@ public class SettingsWindowTests
             "private string GetSelectedPartial");
         var geometryCapture = changeSettingsView.IndexOf("UpdatePropertyFromClient(nameof(Geometry));", StringComparison.Ordinal);
         var partialSwap = changeSettingsView.IndexOf(
-            "SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);",
+            "ChangePartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);",
             StringComparison.Ordinal);
 
-        changeSettingsView.Should().NotContain("ChangePartialView(SettingsView");
+        changeSettingsView.Should().NotContain("SwapNestedPartialView");
         geometryCapture.Should().BeGreaterThanOrEqualTo(0);
         partialSwap.Should().BeGreaterThan(geometryCapture);
         viewModelSource.Should().Contain("ChangeSettingsView(GeneralPartial);");
@@ -58,7 +58,7 @@ public class SettingsWindowTests
             "private void ChangeSettingsView",
             "private string GetSelectedPartial");
         var partialSwap = changeSettingsView.IndexOf(
-            "SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);",
+            "ChangePartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);",
             StringComparison.Ordinal);
         var refresh = changeSettingsView.IndexOf(
             "private void RefreshPartialViewBindings()",

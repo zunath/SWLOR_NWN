@@ -14,7 +14,7 @@ public class GuiPartialViewReplayTests
 
         var changePartialView = ExtractSection(
             source,
-            "private void ChangePartialView(string elementId, string partialName, Action onBeforeApply,",
+            "protected void ChangePartialView(string elementId, string partialName, Action onBeforeApply = null,",
             "private void ChangeGroupLayout");
         var changeGroupLayout = ExtractSection(source, "private void ChangeGroupLayout", "private void ApplyGroupLayout");
         var setGroupLayout = ExtractSection(source, "protected void SetGroupLayout", "/// <summary>");

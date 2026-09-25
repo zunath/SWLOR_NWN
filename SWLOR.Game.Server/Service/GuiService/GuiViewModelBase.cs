@@ -447,8 +447,19 @@ namespace SWLOR.Game.Server.Service.GuiService
             ChangePartialView(elementId, partialName, null, null);
         }
 
-        private void ChangePartialView(string elementId, string partialName, Action onBeforeApply,
-            Action onAfterApply)
+        /// <summary>
+        /// Changes an element's layout to a different partial view, running the callbacks around
+        /// the initial apply and again around the next-tick reapply of a nested element.
+        /// </summary>
+        /// <param name="elementId">The element Id of the element to target.</param>
+        /// <param name="partialName">The new partial to display.</param>
+        /// <param name="onBeforeApply">Optional callback run immediately before each apply.</param>
+        /// <param name="onAfterApply">
+        /// Optional callback run after each apply. Use this to restore child partials and publish
+        /// bindings the new controls need.
+        /// </param>
+        protected void ChangePartialView(string elementId, string partialName, Action onBeforeApply = null,
+            Action onAfterApply = null)
         {
             var window = Gui.GetWindowTemplate(WindowType);
             ChangeGroupLayout(elementId, window.PartialViews[partialName], onBeforeApply, onAfterApply);

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_wolf_pelt", 10, 3)
                 .AddItem("esh_frost_fang", 10, 2);
 
-            _builder.Create("ESHAN_SUN_GUARD")
+            _builder.Create("ESHAN_THYRSIAN_EXILE")
                 .AddItem("esh_sun_insignia", 10, 1)
                 .AddItem("esh_mando_salv", 5, 2)
                 .AddGold(500, 10);

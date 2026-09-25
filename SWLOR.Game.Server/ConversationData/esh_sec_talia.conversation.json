@@ -1497,7 +1497,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Sun Guard have entered the fight. They're not screening troops or holding ground; they're measuring our best defenders. Defeat four and give them an answer worth carrying home.",
+          "Text": "Four Thyrsian warriors who once served the Revanite Order have entered the fight. They're not screening troops or holding ground; they're measuring our best defenders. Defeat them and give the exiles an answer worth carrying home.",
           "Style": 0,
           "Color": null
         }
@@ -1579,7 +1579,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Sun Guard have pulled back to reassess. Tell me exactly how their challenge ended.",
+          "Text": "The Thyrsian exiles have pulled back to reassess. Tell me exactly how their challenge ended.",
           "Style": 0,
           "Color": null
         }
@@ -1635,7 +1635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Sun Guard remember the answer you gave them on Eshan.",
+          "Text": "The Thyrsian exiles remember the answer you gave them on Eshan.",
           "Style": 0,
           "Color": null
         }
@@ -4789,7 +4789,7 @@
     "reply-offer-10": {
       "Id": "reply-offer-10",
       "Text": {
-        "Text": "Against the Sun Guard",
+        "Text": "Thyrsian Incursion",
         "Style": 4,
         "Color": null
       },
@@ -4812,7 +4812,7 @@
     "reply-remind-10": {
       "Id": "reply-remind-10",
       "Text": {
-        "Text": "Against the Sun Guard — review the assignment.",
+        "Text": "Thyrsian Incursion — review the assignment.",
         "Style": 4,
         "Color": null
       },
@@ -4835,7 +4835,7 @@
     "reply-ready-10": {
       "Id": "reply-ready-10",
       "Text": {
-        "Text": "Against the Sun Guard — report success.",
+        "Text": "Thyrsian Incursion — report success.",
         "Style": 4,
         "Color": null
       },
@@ -4858,7 +4858,7 @@
     "reply-done-10": {
       "Id": "reply-done-10",
       "Text": {
-        "Text": "Against the Sun Guard — ask about the result.",
+        "Text": "Thyrsian Incursion — ask about the result.",
         "Style": 4,
         "Color": null
       },
@@ -4934,7 +4934,7 @@
     "reply-turnin-10": {
       "Id": "reply-turnin-10",
       "Text": {
-        "Text": "Four Sun Guard tested Eshan and failed.",
+        "Text": "Four Thyrsian exiles tested Eshan and failed.",
         "Style": 4,
         "Color": null
       },

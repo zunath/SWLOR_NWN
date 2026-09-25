@@ -872,6 +872,23 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.Maps, "Eshan City - The Riverway Map", true, "Map of Eshan City's Riverway.")]
         EshanRiverwayMap = 2151,
 
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Winter Marches Map", true, "Map of the Winter Marches on Eshan.")]
+        EshanWinterMarchesMap = 2152,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - The Old Quarter Map", true, "Map of Eshan City's Old Quarter.")]
+        EshanOldQuarterMap = 2153,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Veylan Groves Map", true, "Map of the Veylan Groves on Eshan.")]
+        EshanVeylanGrovesMap = 2154,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Grand Proving Grounds Map", true, "Map of the Grand Proving Grounds on Eshan.")]
+        EshanGrandProvingGroundsMap = 2155,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Scraplands Map", true, "Map of the Scraplands on Eshan.")]
+        EshanScraplandsMap = 2156,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan City - Tunnels Map", true, "Map of the tunnels beneath Eshan City.")]
+        EshanCityTunnelsMap = 2157,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Shattervein Map", true, "Map of the Shattervein on Eshan.")]
+        EshanShatterveinMap = 2158,
+        [KeyItem(KeyItemCategoryType.Maps, "Eshan - Scraplands - Caves Map", true, "Map of the caves beneath Eshan's Scraplands.")]
+        EshanScraplandsCavesMap = 2159,
+
 	}
 
 	public class KeyItemAttribute : Attribute

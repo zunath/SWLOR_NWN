@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An elite Thyrsian Sun Guard commander in ceremonial battle armor. The Strategos is a disciplined boss combatant trained to dominate close quarters with a force pike and layered defensive techniques."
+      "0": "A Thyrsian warrior who once served the Revanite Order. The exile remains a disciplined combatant, trained to dominate close quarters with a force pike and layered defensive techniques."
     }
   },
   "Dex": {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sun Guard Strategos"
+      "0": "Thyrsian Exile"
     }
   },
   "fortbonus": {
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ESHAN_SUN_GUARD,100,1"
+          "value": "ESHAN_THYRSIAN_EXILE,100,1"
         }
       },
       {

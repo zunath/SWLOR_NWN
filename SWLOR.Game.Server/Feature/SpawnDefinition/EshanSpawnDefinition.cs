@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             EshanSilverwoodExpanse();
             EshanWinterMarches();
             EshanBattlegrounds();
-            EshanScraplands();
+            EshanScraplandCaves();
 
             return _builder.Build();
         }
@@ -86,9 +86,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void EshanScraplands()
+        private void EshanScraplandCaves()
         {
-            _builder.Create("ESHAN_SCRAPLANDS", "Eshan - Scraplands")
+            _builder.Create("ESHAN_SCRAPLAND_CAVES", "Eshan - Scrapland Caves")
                 .AddSpawn(ObjectType.Creature, "esh_scrap_smug")
                 .WithFrequency(100)
                 .RandomlyWalks()

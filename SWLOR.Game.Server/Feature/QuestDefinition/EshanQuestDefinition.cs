@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("eshan_scrapyard_smugglers", "Scrap Without Questions")
 
                 .AddState()
-                .SetStateJournalText("Raalo Kes wants the rival smugglers occupying Eshan's Scraplands driven away. Defeat eight Scrapyard Smugglers, then return to Raalo near the smuggler landing point.")
+                .SetStateJournalText("Raalo Kes wants the rival smugglers occupying the caves in Eshan's Scraplands driven away. Enter the Scrapland Caves and defeat eight Scrapyard Smugglers, then return to Raalo near the smuggler landing point.")
                 .AddKillObjective(NPCGroupType.Eshan_ScrapyardSmuggler, 8)
 
                 .AddState()

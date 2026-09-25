@@ -13,8 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Keep TabContentElement, rename the single partial const to
         // MainContentPartial, and in Initialize (after assignments and watches) call:
         //     ChangePartialView(TabContentElement, MainContentPartial);
-        // If the window shows modals, override OnModalClosedRestore with that same
-        // ChangePartialView call (rule R6).
+        // The base class restores it after modals close (rule R6).
         private const int FirstTabId = 0;
         private const int SecondTabId = 1;
         public const string TabContentElement = "templatewindow_tab_content"; // TEMPLATE: unique element id
@@ -67,10 +66,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TabToggles.SyncTo(tabId, v => TabToggleValue = v);
             Tabs.Select(this, TabContentElement, tabId);
         }
-
-        // Rule R6: modal close wipes the nested tab partial; this restores it.
-        // TEMPLATE: delete ONLY if this window never calls ShowModal/ShowInputModal.
-        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
 
         private void RefreshSecondTab()
         {

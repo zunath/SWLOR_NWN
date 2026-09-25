@@ -274,10 +274,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
             ChangePartialView(SettingsView, partialName);
-            RefreshPartialViewBindings();
         }
 
-        private void RefreshPartialViewBindings()
+        protected override void OnNestedLayoutsReapplied()
         {
             // Republish scalar bindings after replacing the partial. Newly inserted controls
             // otherwise render their client-side defaults until the value changes, which makes
@@ -299,22 +298,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChatColorNames?.ResetBindings();
             ChatColors?.ResetBindings();
             ChatColorToggles?.ResetBindings();
-        }
-
-        private string GetSelectedPartial()
-        {
-            if (IsIdentitySelected)
-                return IdentityPartial;
-
-            if (IsChatSelected)
-                return ChatPartial;
-
-            return GeneralPartial;
-        }
-
-        protected override void OnMainViewRestored()
-        {
-            ChangeSettingsView(GetSelectedPartial());
         }
 
         private void LoadColor()

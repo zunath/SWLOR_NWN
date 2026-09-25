@@ -141,16 +141,27 @@ a player's persisted window geometry is small. `Gui.CreatePlayerWindows` discard
 only non-positive persisted dimensions; legitimate compact HUD windows are as small
 as 72x52 and must retain their saved positions.
 
-### R6 — Re-apply the current tab partial after any modal closes (framework hook)
-Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root, which
-**wipes any partial applied to a nested element** — the selected tab's content
-disappears. Tabbed windows must override the base-class hook:
+### R6 — Nested partials are tracked and restored by the framework (enforced by the base class)
+NUI drops nested layouts in two ways: replacing the root (e.g. closing
+`ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back in) **wipes every partial
+applied to a nested element**, and a freshly applied nested partial can be **dropped
+mid-redraw**, leaving the content area blank (reported on the Settings Identity and
+Chat tabs).
 
-```csharp
-protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
-```
+`GuiViewModelBase.ChangePartialView` handles both for every window:
+- It records the partial applied to each nested element (`GuiPartialViewState`), in
+  parent-first order, and forgets entries whose element no longer exists.
+- A nested swap redraws the root, re-applies the whole tracked tree, then re-applies it
+  once more on the next tick — the sequence CharacterSheet, Disguise, and Notes each
+  hand-rolled before.
+- Swapping `%%WINDOW_MAIN%%` back into the root re-applies the tracked tree. While a
+  modal is showing, nested swaps are recorded and applied when the main view returns.
+- `SetGroupLayout` (runtime layouts) is tracked and restored too, but applies without a
+  root redraw because callers regenerate it on resize.
 
-The hook fires after every modal close (confirm and cancel, both modal kinds).
+Do not hand-roll root-redraw/reapply sequences. Override `OnNestedLayoutsReapplied` if
+replaced controls need bindings republished (Settings does), and `OnModalClosedRestore`
+only to refresh data after a modal — not to restore layouts.
 
 ### R7 — Partial-view element rules (doc-only; verified 2026-07)
 - **Element ids are not validated server-side.** `ChangePartialView` onto a
@@ -159,7 +170,8 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   constants in the ViewModel and reference them from the definition.
 - **Do not nest partials more than 2 deep** (window root → partial → nested slot is
   the proven maximum, used by every tabbed window). At 3 deep the innermost content
-  renders and is then dropped by the parent's re-apply pass (gallery P13b).
+  renders and is then dropped by the parent's re-apply pass (gallery P13b; verified
+  before R6's tracked re-apply existed, which re-applies children after their parent).
 - After a partial swap makes the whole window layout fail (e.g. loading an R2c shape),
   subsequent `NuiSetGroupLayout` calls report `element id not found` because the
   client discarded the layout — close and reopen the window.

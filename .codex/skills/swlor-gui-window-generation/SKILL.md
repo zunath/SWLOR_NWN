@@ -16,7 +16,9 @@ Build with the framework's proven components — never hand-roll their equivalen
   standard shape freezes the content region at a constant width regardless of window
   resizing (layout rule R5).
 - `GuiTabGroup` + `GuiToggleGroupSync` for tabs (rule R4).
-- `OnModalClosedRestore` override for any tabbed window that shows modals (rule R6).
+- `ChangePartialView` / `GuiTabGroup` for every partial swap. The base class tracks nested
+  partials and restores them after modals and redraws (rule R6) — never hand-roll a
+  root-redraw/reapply sequence or a restore-only `OnModalClosedRestore`.
 - Copy widget patterns from `SWLOR.Game.Server/Feature/GuiDefinition/DebugNuiGalleryDefinition.cs`
   (the living example of every widget and binding path) before inventing anything.
   Every builder call you write must already exist under

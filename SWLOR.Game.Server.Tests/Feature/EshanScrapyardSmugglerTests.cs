@@ -2,6 +2,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -39,10 +40,29 @@ public class EshanScrapyardSmugglerTests
             item.Resref == "elec_good" && item.Weight == 5 && item.MaxQuantity == 1);
     }
 
+    [Test]
+    public void ScrapWithoutQuestions_DirectsPlayersIntoTheScraplandCaves()
+    {
+        var quest = new EshanQuestDefinition().BuildQuests()["eshan_scrapyard_smugglers"];
+        quest.States[1].JournalText.Should().Contain("Enter the Scrapland Caves");
+
+        var root = FindRepositoryRoot();
+        using var conversation = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "ConversationData", "esh_smug_raalo.conversation.json")));
+        var nodes = conversation.RootElement.GetProperty("Nodes");
+        GetNodeText(nodes, "entry-accepted").Should().Contain("Scrapland Caves");
+        GetNodeText(nodes, "entry-remind").Should().Contain("Scrapland Caves");
+    }
+
     private static JsonDocument ReadArea(DirectoryInfo root, string resref)
     {
         return JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName, "Module", "git", $"{resref}.git.json")));
+    }
+
+    private static string GetNodeText(JsonElement nodes, string nodeId)
+    {
+        return nodes.GetProperty(nodeId).GetProperty("Text")[0].GetProperty("Text").GetString() ?? string.Empty;
     }
 
     private static string GetLocalString(JsonElement area, string name)

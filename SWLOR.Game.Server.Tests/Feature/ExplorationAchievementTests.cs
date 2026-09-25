@@ -43,6 +43,22 @@ public class ExplorationAchievementTests
         "Explore Verdant Crown", "Explore Eshan City's Verdant Crown.")]
     [TestCase("pw_sc_esh_riverw", AchievementType.ExploreEshanRiverway,
         "Explore the Riverway", "Explore Eshan City's Riverway.")]
+    [TestCase("pw_sc_es_plains", AchievementType.ExploreEshanWinterMarches,
+        "Explore the Winter Marches", "Explore the Winter Marches on Eshan.")]
+    [TestCase("pw_sc_es_oldgate", AchievementType.ExploreEshanOldQuarter,
+        "Explore the Old Quarter", "Explore Eshan City's Old Quarter.")]
+    [TestCase("sc_eswildlandn", AchievementType.ExploreEshanVeylanGroves,
+        "Explore the Veylan Groves", "Explore the Veylan Groves on Eshan.")]
+    [TestCase("pw_sc_esmountd", AchievementType.ExploreEshanGrandProvingGrounds,
+        "Explore the Grand Proving Grounds", "Explore the Grand Proving Grounds on Eshan.")]
+    [TestCase("sc_esscraplands", AchievementType.ExploreEshanScraplands,
+        "Explore the Scraplands", "Explore the Scraplands on Eshan.")]
+    [TestCase("pw_sc_esctunnel", AchievementType.ExploreEshanCityTunnels,
+        "Explore Eshan City Tunnels", "Explore the tunnels beneath Eshan City.")]
+    [TestCase("pw_sc_esvein", AchievementType.ExploreEshanShattervein,
+        "Explore the Shattervein", "Explore the Shattervein on Eshan.")]
+    [TestCase("pw_sc_es_scrcave", AchievementType.ExploreEshanScraplandsCaves,
+        "Explore the Scraplands Caves", "Explore the caves beneath Eshan's Scraplands.")]
     public void AreaExploration_GrantsTheCorrectActiveAchievement(
         string areaResref,
         AchievementType expectedAchievement,
@@ -95,6 +111,14 @@ public class ExplorationAchievementTests
     [TestCase("pwsc_eshstarport", KeyItemType.EshanStarportMap, "esh_map_starport")]
     [TestCase("pw_ar_sc_eshanto", KeyItemType.EshanVerdantCrownMap, "esh_map_verdant")]
     [TestCase("pw_sc_esh_riverw", KeyItemType.EshanRiverwayMap, "esh_map_river")]
+    [TestCase("pw_sc_es_plains", KeyItemType.EshanWinterMarchesMap, "esh_map_marches")]
+    [TestCase("pw_sc_es_oldgate", KeyItemType.EshanOldQuarterMap, "esh_map_oldquart")]
+    [TestCase("sc_eswildlandn", KeyItemType.EshanVeylanGrovesMap, "esh_map_groves")]
+    [TestCase("pw_sc_esmountd", KeyItemType.EshanGrandProvingGroundsMap, "esh_map_proving")]
+    [TestCase("sc_esscraplands", KeyItemType.EshanScraplandsMap, "esh_map_scrap")]
+    [TestCase("pw_sc_esctunnel", KeyItemType.EshanCityTunnelsMap, "esh_map_tunnels")]
+    [TestCase("pw_sc_esvein", KeyItemType.EshanShatterveinMap, "esh_map_vein")]
+    [TestCase("pw_sc_es_scrcave", KeyItemType.EshanScraplandsCavesMap, "esh_map_scrcave")]
     public void EshanAreaMap_HasMatchingMapItem(
         string areaResref,
         KeyItemType expectedMap,

@@ -501,6 +501,23 @@ namespace SWLOR.Game.Server.Service.AchievementService
         ExploreEshanVerdantCrown = 194,
         [Achievement("Explore the Riverway", "Explore Eshan City's Riverway.", true)]
         ExploreEshanRiverway = 195,
+
+        [Achievement("Explore the Winter Marches", "Explore the Winter Marches on Eshan.", true)]
+        ExploreEshanWinterMarches = 196,
+        [Achievement("Explore the Old Quarter", "Explore Eshan City's Old Quarter.", true)]
+        ExploreEshanOldQuarter = 197,
+        [Achievement("Explore the Veylan Groves", "Explore the Veylan Groves on Eshan.", true)]
+        ExploreEshanVeylanGroves = 198,
+        [Achievement("Explore the Grand Proving Grounds", "Explore the Grand Proving Grounds on Eshan.", true)]
+        ExploreEshanGrandProvingGrounds = 199,
+        [Achievement("Explore the Scraplands", "Explore the Scraplands on Eshan.", true)]
+        ExploreEshanScraplands = 200,
+        [Achievement("Explore Eshan City Tunnels", "Explore the tunnels beneath Eshan City.", true)]
+        ExploreEshanCityTunnels = 201,
+        [Achievement("Explore the Shattervein", "Explore the Shattervein on Eshan.", true)]
+        ExploreEshanShattervein = 202,
+        [Achievement("Explore the Scraplands Caves", "Explore the caves beneath Eshan's Scraplands.", true)]
+        ExploreEshanScraplandsCaves = 203,
 	}
 
     public class AchievementAttribute: Attribute

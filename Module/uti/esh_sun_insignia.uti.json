@@ -28,13 +28,13 @@
     "id": 90753,
     "type": "cexolocstring",
     "value": {
-      "0": "A gilded insignia carried by an elite Thyrsian Sun Guard warrior."
+      "0": "A gilded insignia carried by a Thyrsian warrior who once served the Revanite Order."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A gilded insignia carried by an elite Thyrsian Sun Guard warrior."
+      "0": "A gilded insignia carried by a Thyrsian warrior who once served the Revanite Order."
     }
   },
   "Identified": {
@@ -45,7 +45,7 @@
     "id": 90756,
     "type": "cexolocstring",
     "value": {
-      "0": "Thyrsian Sun Guard Insignia"
+      "0": "Thyrsian Exile Insignia"
     }
   },
   "ModelPart1": {

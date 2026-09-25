@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_wolf_pelt", 10, 3)
                 .AddItem("esh_frost_fang", 10, 2);
 
-            _builder.Create("ESHAN_SUN_GUARD")
+            _builder.Create("ESHAN_THYRSIAN_EXILE")
                 .AddItem("esh_sun_insignia", 10, 1)
                 .AddItem("esh_mando_salv", 5, 2)
                 .AddGold(500, 10);
@@ -48,7 +48,15 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_map_hearth", 2, 1, true)
                 .AddItem("esh_map_starport", 2, 1, true)
                 .AddItem("esh_map_verdant", 2, 1, true)
-                .AddItem("esh_map_river", 2, 1, true);
+                .AddItem("esh_map_river", 2, 1, true)
+                .AddItem("esh_map_marches", 2, 1, true)
+                .AddItem("esh_map_oldquart", 2, 1, true)
+                .AddItem("esh_map_groves", 2, 1, true)
+                .AddItem("esh_map_proving", 2, 1, true)
+                .AddItem("esh_map_scrap", 2, 1, true)
+                .AddItem("esh_map_tunnels", 2, 1, true)
+                .AddItem("esh_map_vein", 2, 1, true)
+                .AddItem("esh_map_scrcave", 2, 1, true);
 
             return _builder.Build();
         }

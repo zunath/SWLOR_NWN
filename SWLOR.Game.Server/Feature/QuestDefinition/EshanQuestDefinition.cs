@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             EshanHeavySilence();
             EshanMedicCutoff();
             EshanCaptainFall();
-            EshanSunguardStand();
+            EshanThyrsianExiles();
             EshanScrapyardSmugglers();
             return _builder.Build();
         }
@@ -159,16 +159,16 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(18000);
         }
 
-        private void EshanSunguardStand()
+        private void EshanThyrsianExiles()
         {
-            _builder.Create("eshan_sunguard_stand", "Against the Sun Guard")
+            _builder.Create("eshan_sunguard_stand", "Thyrsian Incursion")
 
                 .AddState()
-                .SetStateJournalText("Defeat four Sun Guard operatives fighting on Eshan, then report to Security Officer Talia Venn in the Silver Gate District.")
+                .SetStateJournalText("Defeat four former Revanite Thyrsian warriors fighting on Eshan, then report to Security Officer Talia Venn in the Silver Gate District.")
                 .AddKillObjective(NPCGroupType.Eshan_SunGuard, 4)
 
                 .AddState()
-                .SetStateJournalText("Four Sun Guard operatives have been defeated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
+                .SetStateJournalText("Four Thyrsian exiles have been defeated. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
 
                 .AddXPReward(25000)
                 .AddGoldReward(22000);

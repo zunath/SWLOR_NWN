@@ -24,26 +24,15 @@ public class GuiPartialViewReplayTests
         setGroupLayout.Should().NotContain("NuiSetGroupLayout");
 
         var rootCheck = changeGroupLayout.IndexOf("if (elementId == \"_window_\")", StringComparison.Ordinal);
-        var queue = changeGroupLayout.IndexOf("QueuePartialViewReplay(", StringComparison.Ordinal);
+        var reapply = changeGroupLayout.IndexOf("DelayCommand(0.0f,", StringComparison.Ordinal);
         rootCheck.Should().BeGreaterThanOrEqualTo(0);
-        queue.Should().BeGreaterThan(rootCheck, "only nested elements are replayed; a root swap clears the queue");
-        changeGroupLayout.Should().Contain("_pendingPartialViews.Clear();");
-        changeGroupLayout.Should().Contain("_partialViewReplayVersion++;");
-        changeGroupLayout.Should().Contain("if (_partialViewApplyDepth == 0)");
-    }
-
-    [Test]
-    public void Replay_IsSkippedForStaleOrClosedWindows()
-    {
-        var source = LoadViewModelBaseSource();
-        var queue = ExtractSection(source, "private void QueuePartialViewReplay", "/// <summary>");
-
-        queue.Should().Contain("DelayCommand(0.0f,");
-        queue.Should().Contain("if (replayVersion != _partialViewReplayVersion)");
-        queue.Should().Contain("bindingGeneration != _bindingGeneration");
-        queue.Should().Contain("windowToken != WindowToken");
-        queue.Should().Contain("!Gui.IsWindowOpen(Player, WindowType)");
-        queue.Should().Contain("_pendingPartialViews.RemoveAll(existing => existing.ElementId == pending.ElementId);");
+        reapply.Should().BeGreaterThan(rootCheck, "only nested elements are reapplied");
+        changeGroupLayout.Should().Contain("_rootLayoutGeneration++;");
+        changeGroupLayout.Should().Contain("generation != _groupLayoutGenerations[elementId]");
+        changeGroupLayout.Should().Contain("rootGeneration != _rootLayoutGeneration");
+        changeGroupLayout.Should().Contain("bindingGeneration != _bindingGeneration");
+        changeGroupLayout.Should().Contain("windowToken != WindowToken");
+        changeGroupLayout.Should().Contain("!Gui.IsWindowOpen(Player, WindowType)");
     }
 
     [Test]

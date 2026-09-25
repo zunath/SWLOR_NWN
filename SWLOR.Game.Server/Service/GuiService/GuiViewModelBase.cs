@@ -30,17 +30,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected int WindowToken { get; private set; }
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
-        private readonly List<PendingPartialView> _pendingPartialViews = new();
-        private bool _isPartialViewReplayScheduled;
-        private int _partialViewApplyDepth;
-        private int _partialViewReplayVersion;
+        private readonly Dictionary<string, int> _groupLayoutGenerations = new();
+        private int _rootLayoutGeneration;
         private int _bindingGeneration;
-
-        private sealed record PendingPartialView(
-            string ElementId,
-            Json Layout,
-            Action OnBeforeApply,
-            Action OnAfterApply);
 
         protected abstract void Initialize(TPayload initialPayload);
 
@@ -469,84 +461,43 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             if (elementId == "_window_")
             {
-                // Replacing the root destroys every nested element, so reapplying a nested
-                // partial queued earlier would target an element that no longer exists. Bumping
-                // the version also retires any replay already scheduled for the old root.
-                _pendingPartialViews.Clear();
-                _isPartialViewReplayScheduled = false;
-                _partialViewReplayVersion++;
+                // Replacing the root destroys every nested element, retiring their pending reapplies.
+                _rootLayoutGeneration++;
                 ApplyGroupLayout(elementId, layout, onBeforeApply, onAfterApply);
                 return;
             }
 
-            // A swap made from inside another swap's callbacks (e.g. restoring a palette inside a
-            // newly applied tab) is repeated when that outer swap is reapplied, so only queue
-            // top-level swaps.
-            if (_partialViewApplyDepth == 0)
-                QueuePartialViewReplay(new PendingPartialView(elementId, layout, onBeforeApply, onAfterApply));
+            _groupLayoutGenerations.TryGetValue(elementId, out var previousGeneration);
+            var generation = previousGeneration + 1;
+            _groupLayoutGenerations[elementId] = generation;
+            var rootGeneration = _rootLayoutGeneration;
+            var bindingGeneration = _bindingGeneration;
+            var windowToken = WindowToken;
+
+            // Skip the reapply if the element was swapped again, the root was replaced, or the
+            // window was closed or reopened; NuiSetGroupLayout against a missing element raises a
+            // client-side "element id not found" error.
+            DelayCommand(0.0f, () =>
+            {
+                if (generation != _groupLayoutGenerations[elementId] ||
+                    rootGeneration != _rootLayoutGeneration ||
+                    bindingGeneration != _bindingGeneration ||
+                    windowToken != WindowToken ||
+                    !Gui.IsWindowOpen(Player, WindowType))
+                    return;
+
+                ApplyGroupLayout(elementId, layout, onBeforeApply, onAfterApply);
+            });
 
             ApplyGroupLayout(elementId, layout, onBeforeApply, onAfterApply);
         }
 
         private void ApplyGroupLayout(string elementId, Json layout, Action onBeforeApply, Action onAfterApply)
         {
-            _partialViewApplyDepth++;
-            try
-            {
-                onBeforeApply?.Invoke();
-                NuiSetGroupLayout(Player, WindowToken, elementId, layout);
-
-                ApplyRefreshBugFix();
-
-                onAfterApply?.Invoke();
-            }
-            finally
-            {
-                _partialViewApplyDepth--;
-            }
-        }
-
-        private void QueuePartialViewReplay(PendingPartialView pending)
-        {
-            // Only the latest swap per element matters, but replay order must follow the order
-            // of the latest swaps so a parent is reapplied before any child placed inside it.
-            _pendingPartialViews.RemoveAll(existing => existing.ElementId == pending.ElementId);
-            _pendingPartialViews.Add(pending);
-
-            if (_isPartialViewReplayScheduled)
-                return;
-
-            _isPartialViewReplayScheduled = true;
-            var replayVersion = _partialViewReplayVersion;
-            var bindingGeneration = _bindingGeneration;
-            var windowToken = WindowToken;
-
-            DelayCommand(0.0f, () =>
-            {
-                if (replayVersion != _partialViewReplayVersion)
-                    return;
-
-                _isPartialViewReplayScheduled = false;
-                var replays = _pendingPartialViews.ToArray();
-                _pendingPartialViews.Clear();
-
-                // The replay can fire after the player has closed or reopened the window;
-                // NuiSetGroupLayout against a destroyed window raises a client-side
-                // "element id not found" error.
-                if (bindingGeneration != _bindingGeneration || windowToken != WindowToken ||
-                    !Gui.IsWindowOpen(Player, WindowType))
-                    return;
-
-                foreach (var replay in replays)
-                {
-                    // A replay callback that swaps the root (e.g. opening a modal) removes the
-                    // elements the remaining replays target.
-                    if (replayVersion != _partialViewReplayVersion)
-                        break;
-
-                    ApplyGroupLayout(replay.ElementId, replay.Layout, replay.OnBeforeApply, replay.OnAfterApply);
-                }
-            });
+            onBeforeApply?.Invoke();
+            NuiSetGroupLayout(Player, WindowToken, elementId, layout);
+            ApplyRefreshBugFix();
+            onAfterApply?.Invoke();
         }
 
         /// <summary>

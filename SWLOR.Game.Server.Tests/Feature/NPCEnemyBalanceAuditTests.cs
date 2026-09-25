@@ -1102,7 +1102,7 @@ public class NPCEnemyBalanceAuditTests
 
         requirementsByTechnique["Sonic Shriek"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
         requirementsByTechnique["Disorienting Screech"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
-        requirementsByTechnique["Precision Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+        requirementsByTechnique["Precision Shot"].Should().Be(12, "CZ220 droids no longer use it; Viscara level-6 Outlaws are its first source");
         requirementsByTechnique["Static Web"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
         requirementsByTechnique["Suppressing Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
 
@@ -1663,6 +1663,16 @@ public class NPCEnemyBalanceAuditTests
         AssertCreatureHasFeat(root, "malspiderdroid", FeatType.StaticWeb);
         AssertCreatureDoesNotHaveFeat(root, "malsecdroid", FeatType.IonBurst);
         AssertCreatureDoesNotHaveFeat(root, "malspiderdroid", FeatType.StaticBurst);
+    }
+
+    [Test]
+    public void CZ220Droids_DoNotUsePrecisionShot()
+    {
+        var root = FindRepositoryRoot();
+
+        // Marked for Death removed most of a new character's HP from these entry enemies.
+        AssertCreatureDoesNotHaveFeat(root, "malsecdroid", FeatType.PrecisionShot);
+        AssertCreatureDoesNotHaveFeat(root, "malspiderdroid", FeatType.PrecisionShot);
     }
 
     [Test]

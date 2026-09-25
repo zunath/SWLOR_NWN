@@ -969,7 +969,7 @@ public class MimicryTests
         techniques[FeatType.DisorientingScreechTechnique]
             .MimicrySkillRequirement.Should().Be(0, "CZ-220 Mynocks are a level-1 source");
         techniques[FeatType.PrecisionShotTechnique]
-            .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
+            .MimicrySkillRequirement.Should().Be(12, "CZ-220 droids no longer use it; Viscara level-6 Outlaws are its first source");
         techniques[FeatType.StaticWebTechnique]
             .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
         techniques[FeatType.SuppressingShotTechnique]

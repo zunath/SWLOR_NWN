@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         ImmunitySpecificSpell = 53,
         ImmunitySpellSchool = 54,
         ThievesTools = 55,
-        AccuracyBonus = 56, // NWN Attack Bonus replaced with Accuracy Bonus
+        AttackBonus = 56, // Native engine attack bonus. Retired in favor of Accuracy; kept for item migration.
         AttackBonusVsAlignmentGroup = 57,
         AttackBonusVsRacialGroup = 58,
         AttackBonusVsSpecificAlignment = 59,
@@ -140,5 +140,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         Disarm = 139,
         PoisonBonus = 140,
         Lockpicking = 141,
+        Accuracy = 142,
     }
 }

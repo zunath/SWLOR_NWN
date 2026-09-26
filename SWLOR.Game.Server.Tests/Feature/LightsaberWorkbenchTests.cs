@@ -228,7 +228,8 @@ public class LightsaberWorkbenchTests
                      "ItemPropertyType.WeaponDamageType",
                      "ItemPropertyType.EnhancementBonus",
                      "ItemPropertyType.DamageBonus",
-                     "ItemPropertyType.AccuracyBonus",
+                     "ItemPropertyType.AttackBonus",
+                     "ItemPropertyType.Accuracy",
                  })
         {
             saberMigration.Should().Contain(normalizedProperty, $"{normalizedProperty} is part of the normalized damage profile");

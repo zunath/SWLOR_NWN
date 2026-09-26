@@ -45,6 +45,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
             // Combat.
             Add(ItemStatGroup.Combat, "Attack", 111, costTableId: 45);
+            Add(ItemStatGroup.Combat, "Accuracy", 142, costTableId: 45);
             Add(ItemStatGroup.Combat, "Force Attack", 112, costTableId: 45);
             Add(ItemStatGroup.Combat, "DMG", 93, costTableId: 34);
             Add(ItemStatGroup.Combat, "Delay", 98, costTableId: 52);

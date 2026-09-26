@@ -18,8 +18,8 @@ namespace SWLOR.Toolset.Tests.Items
         private static string AdrenHarnessPath =>
             Path.Combine(CorpusLocator.ModuleDirectory, "uti", "adren_harness.uti.json");
 
-        // zomb_bite carries AttackBonus (56, no subtype table) and Damage (16, IPRP_DAMAGETYPE
-        // subtype 1 = Physical) among its PropertiesList entries - verified against the corpus.
+        // zomb_bite carries Damage (16, IPRP_DAMAGETYPE subtype 1 = Physical) and OnHit (48) among
+        // its PropertiesList entries - verified against the corpus.
         private static string ZombBitePath =>
             Path.Combine(CorpusLocator.ModuleDirectory, "uti", "zomb_bite.uti.json");
 
@@ -46,27 +46,31 @@ namespace SWLOR.Toolset.Tests.Items
                     : Array.Empty<BehaviorChoice>());
 
             section.HasEntries.Should().BeTrue();
-            section.Entries.Should().Contain(entry => entry.SubtypeDisplay == "AttackBonus");
             section.Entries.Should().Contain(entry => entry.SubtypeDisplay == "Damage (Physical)");
+            section.Entries.Should().Contain(entry => entry.SubtypeDisplay.StartsWith("OnHit"));
         }
 
         [Test]
         public void EditingAnEntryRoundTripsAndRemovingOneRebuildsTheRowSet()
         {
             var store = OpenStore(ZombBitePath);
-            var section = new ItemEngineLegacySectionViewModel(store, (_, mutation) => { mutation(); return true; });
+            var section = new ItemEngineLegacySectionViewModel(
+                store, (_, mutation) => { mutation(); return true; },
+                resolveSubtypeChoices: key => key == "item.subtypes:IPRP_DAMAGETYPE"
+                    ? new[] { new BehaviorChoice(1, "Physical") }
+                    : Array.Empty<BehaviorChoice>());
 
-            var attackBonus = section.Entries.Single(entry => entry.SubtypeDisplay == "AttackBonus");
-            attackBonus.Number = 9;
-            store.GetPropertyValue(56, 0).Should().Be(9);
+            var damage = section.Entries.Single(entry => entry.SubtypeDisplay == "Damage (Physical)");
+            damage.Number = 9;
+            store.GetPropertyValue(16, 1).Should().Be(9);
 
             var countBefore = section.Entries.Count;
-            attackBonus.RemoveCommand.Execute(null);
+            damage.RemoveCommand.Execute(null);
 
-            store.GetPropertyValue(56, 0).Should().BeNull();
+            store.GetPropertyValue(16, 1).Should().BeNull();
             section.Entries.Should().HaveCount(countBefore - 1);
-            section.Entries.Should().NotContain(entry => entry.SubtypeDisplay == "AttackBonus");
-            section.HasEntries.Should().BeTrue("Damage and the OnHit rows are still present");
+            section.Entries.Should().NotContain(entry => entry.SubtypeDisplay == "Damage (Physical)");
+            section.HasEntries.Should().BeTrue("the OnHit rows are still present");
         }
 
         [Test]
@@ -74,14 +78,17 @@ namespace SWLOR.Toolset.Tests.Items
         {
             var store = OpenStore(ZombBitePath);
             var section = new ItemEngineLegacySectionViewModel(
-                store, (_, mutation) => { mutation(); return true; });
-            var attackBonus = section.Entries.Single(entry => entry.SubtypeDisplay == "AttackBonus");
-            var original = attackBonus.Number;
+                store, (_, mutation) => { mutation(); return true; },
+                resolveSubtypeChoices: key => key == "item.subtypes:IPRP_DAMAGETYPE"
+                    ? new[] { new BehaviorChoice(1, "Physical") }
+                    : Array.Empty<BehaviorChoice>());
+            var damage = section.Entries.Single(entry => entry.SubtypeDisplay == "Damage (Physical)");
+            var original = damage.Number;
 
-            attackBonus.Number = original + 0.5m;
+            damage.Number = original + 0.5m;
 
-            attackBonus.Number.Should().Be(original);
-            store.GetPropertyValue(56, 0).Should().Be((int?)original);
+            damage.Number.Should().Be(original);
+            store.GetPropertyValue(16, 1).Should().Be((int?)original);
         }
     }
 }

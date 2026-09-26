@@ -893,6 +893,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's accuracy granted by non-weapon equipment.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustAccuracy(Player entity, int adjustBy)
+        {
+            entity.Accuracy += adjustBy;
+        }
+
+        /// <summary>
         /// Modifies a player's force attack by a certain amount. Force Attack affects damage output.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
@@ -1282,8 +1293,7 @@ namespace SWLOR.Game.Server.Service
             for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
             {
                 var type = GetItemPropertyType(ip);
-                if (type != ItemPropertyType.AccuracyBonus &&
-                    type != ItemPropertyType.EnhancementBonus &&
+                if (type != ItemPropertyType.Accuracy &&
                     type != ItemPropertyType.AccuracyStat)
                     continue;
 
@@ -1308,24 +1318,26 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
 
 
-            // Creature skill level / NPC level
-            if (skillLevelOverride >= 0)
-            {
-                skillLevel = skillLevelOverride;
-            }
-            else if (GetIsPC(creature) && !GetIsDM(creature))
+            // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
+            if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
                     skillLevel = dbPlayer.Skills[skillType].Rank;
+
+                accuracyBonus += dbPlayer.Accuracy;
             }
             else
             {
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
+                accuracyBonus += npcStats.Accuracy;
             }
+
+            if (skillLevelOverride >= 0)
+                skillLevel = skillLevelOverride;
 
             // Accuracy increases granted by effects
             accuracyBonus = CalculateEffectAccuracy(creature, accuracyBonus);
@@ -1347,7 +1359,7 @@ namespace SWLOR.Game.Server.Service
             int value,
             bool ignoreWeaponAccuracyStatOverride)
         {
-            if (type == ItemPropertyType.AccuracyBonus || type == ItemPropertyType.EnhancementBonus)
+            if (type == ItemPropertyType.Accuracy)
                 return (statOverride, accuracyBonus + value);
 
             if (type == ItemPropertyType.AccuracyStat && !ignoreWeaponAccuracyStatOverride)
@@ -1372,9 +1384,8 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var ip in weapon.m_lstPassiveProperties)
                 {
-                    // Attack Bonus / Enhancement Bonus found on the weapon.
-                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyBonus ||
-                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
+                    // Accuracy found on the weapon.
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.Accuracy)
                     {
                         accuracyBonus += ip.m_nCostTableValue;
                     }
@@ -1397,21 +1408,25 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
 
 
-            // Creature skill level / NPC level
+            // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                if (dbPlayer != null && skillType != SkillType.Invalid)
+                if (dbPlayer != null)
                 {
-                    skillLevel = dbPlayer.Skills[skillType].Rank;
+                    if (skillType != SkillType.Invalid)
+                        skillLevel = dbPlayer.Skills[skillType].Rank;
+
+                    accuracyBonus += dbPlayer.Accuracy;
                 }
             }
             else
             {
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
+                accuracyBonus += npcStats.Accuracy;
             }
 
             accuracyBonus = CalculateEffectAccuracyNative(creature, accuracyBonus);
@@ -1434,23 +1449,6 @@ namespace SWLOR.Game.Server.Service
 
         private static int CalculateEffectAccuracy(uint creature, int accuracy)
         {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var type = GetEffectType(effect);
-                if (type == EffectTypeScript.AttackIncrease &&
-                    IsWeaponAccuracyItemEffect(GetEffectCreator(effect), GetEffectDurationType(effect)))
-                    continue;
-
-                if (type == EffectTypeScript.AttackIncrease)
-                {
-                    accuracy += 5 * GetEffectInteger(effect, 0);
-                }
-                else if (type == EffectTypeScript.AttackDecrease)
-                {
-                    accuracy -= 5 * GetEffectInteger(effect, 0);
-                }
-            }
-
             accuracy += GetStatAdjustment(creature, StatType.Accuracy);
 
             Log.Write(LogGroup.Attack, $"Effect Accuracy: {accuracy}");
@@ -1460,38 +1458,11 @@ namespace SWLOR.Game.Server.Service
 
         private static int CalculateEffectAccuracyNative(CNWSCreature creature, int accuracy)
         {
-            foreach (var effect in creature.m_appliedEffects)
-            {
-                if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease &&
-                    IsWeaponAccuracyItemEffect(effect.m_oidCreator, effect.m_nSubType & 7))
-                    continue;
-
-                if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
-                {
-                    accuracy += 5 * effect.GetInteger(0);
-                }
-                else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
-                {
-                    accuracy -= 5 * effect.GetInteger(0);
-                }
-            }
-
             accuracy += GetStatAdjustment(creature.m_idSelf, StatType.Accuracy);
 
             Log.Write(LogGroup.Attack, $"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
-        }
-
-        private static bool IsWeaponAccuracyItemEffect(uint creator, int durationType)
-        {
-            // NWN's equipped duration is 3 (not exposed by NWScript's DurationType enum).
-            // Weapon ACC is already read from the selected weapon's properties. Counting
-            // its native equip effect again multiplies it by five and leaks it to both hands.
-            return durationType == 3 &&
-                   GetIsObjectValid(creator) &&
-                   GetObjectType(creator) == ObjectType.Item &&
-                   Item.IsAttackWeaponType(GetBaseItemType(creator));
         }
 
         private static int CalculateEffectEvasion(uint creature)
@@ -2356,6 +2327,10 @@ namespace SWLOR.Game.Server.Service
                 {
                     npcStats.Attack = GetItemPropertyCostTableValue(ip);
                 }
+                else if (type == ItemPropertyType.Accuracy)
+                {
+                    npcStats.Accuracy = GetItemPropertyCostTableValue(ip);
+                }
                 else if (type == ItemPropertyType.ForceAttack)
                 {
                     npcStats.ForceAttack = GetItemPropertyCostTableValue(ip);
@@ -2421,6 +2396,10 @@ namespace SWLOR.Game.Server.Service
                     else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Attack)
                     {
                         npcStats.Attack = prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Accuracy)
+                    {
+                        npcStats.Accuracy = prop.m_nCostTableValue;
                     }
                     else if (prop.m_nPropertyName == (ushort)ItemPropertyType.ForceAttack)
                     {

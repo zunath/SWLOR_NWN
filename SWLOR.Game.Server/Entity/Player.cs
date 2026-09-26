@@ -163,6 +163,7 @@ namespace SWLOR.Game.Server.Entity
         public string CitizenPropertyId { get; set; }
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
+        public int Accuracy { get; set; }
         public int ForceAttack { get; set; }
         public int Evasion { get; set; }
         public int Stealth { get; set; }

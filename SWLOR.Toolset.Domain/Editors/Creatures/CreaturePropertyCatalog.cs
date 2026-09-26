@@ -18,6 +18,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
         public const int NpcSkill = 125;
         public const int Resistance = 133;
         public const int WeaponDamageType = 134;
+        public const int Accuracy = 142;
 
         public const int StatSkinSlot = 131072;
         public const int StatSkinBaseItem = 73;
@@ -27,13 +28,13 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
 
         public static IReadOnlySet<int> SurfacedSkinProperties { get; } = new HashSet<int>
         {
-            FocusPoints, Stamina, Defense, HitPoints, Level, Attack, ForceAttack,
+            FocusPoints, Stamina, Defense, HitPoints, Level, Attack, Accuracy, ForceAttack,
             Evasion, CombatReadiness, NpcSkill, Resistance
         };
 
         public static IReadOnlySet<int> SurfacedWeaponProperties { get; } = new HashSet<int>
         {
-            Damage, Delay, DamageStat, WeaponDamageType
+            Damage, Delay, DamageStat, WeaponDamageType, Accuracy
         };
 
         /// <summary>Ordinary engine item effects found on stat skins and intentionally left intact.</summary>
@@ -45,7 +46,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
         /// <summary>Ordinary engine weapon effects found on natural weapons and intentionally left intact.</summary>
         public static IReadOnlySet<int> PreservedWeaponProperties { get; } = new HashSet<int>
         {
-            16, 20, 21, 24, 37, 48, 56, 67, 72, 82, 83
+            16, 20, 21, 24, 37, 48, 67, 72, 82, 83
         };
 
         public static int DecodeResistance(int stored) => stored > 100 ? -(stored - 100) : stored;

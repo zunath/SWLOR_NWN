@@ -21,8 +21,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
         private static readonly HashSet<string> RangedLabels = new(StringComparer.OrdinalIgnoreCase)
         {
-            "pistol", "rifle", "longbow", "shortbow", "lightcrossbow", "heavycrossbow", "sling",
-            "dart", "shuriken", "throwingaxe", "grenade", "cannon"
+            "pistol", "pistol_native_sling", "rifle", "longbow", "shortbow", "lightcrossbow", "heavycrossbow",
+            "sling", "dart", "shuriken", "throwingaxe", "grenade", "cannon"
         };
 
         private static readonly HashSet<string> AccessoryLabels = new(StringComparer.OrdinalIgnoreCase)

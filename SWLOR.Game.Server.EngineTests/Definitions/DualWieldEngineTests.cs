@@ -526,7 +526,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
                 for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
-                    if (GetItemPropertyType(ip) == ItemPropertyType.AccuracyBonus)
+                    if (GetItemPropertyType(ip) == ItemPropertyType.Accuracy)
                         RemoveItemProperty(weapon, ip);
                 ctx.AssertEqual(weapon, GetItemInSlot(InventorySlot.CreatureRight, attacker), "Natural weapon is equipped");
                 foreach (var type in Item.CreatureBaseItemTypes)
@@ -544,7 +544,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var baseline = Stat.GetAccuracyNative(native, nativeWeapon);
             var scriptBaseline = Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
                 Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon)));
-            var accuracy = ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, 5);
+            var accuracy = ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 5);
             AddItemProperty(DurationType.Permanent, accuracy, weapon);
             ctx.AssertEqual(baseline + 5, Stat.GetAccuracyNative(native, nativeWeapon), $"{GetBaseItemType(weapon)} native ACC counts once");
             ctx.AssertEqual(scriptBaseline + 5, Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
@@ -652,8 +652,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var mainScriptBaseline = Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife);
                 var offScriptBaseline = Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife);
 
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, 5), main);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, 10), off);
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 5), main);
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 10), off);
                 ctx.AssertEqual(mainBaseline + 5, Stat.GetAccuracyNative(native, mainWeapon), "Main-hand ACC counts once, excluding off-hand ACC");
                 ctx.AssertEqual(offBaseline + 10, Stat.GetAccuracyNative(native, offWeapon), "Off-hand ACC counts once, excluding main-hand ACC");
                 ctx.AssertEqual(mainScriptBaseline + 5, Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy agrees");

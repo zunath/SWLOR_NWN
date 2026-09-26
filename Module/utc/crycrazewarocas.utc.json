@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 380
+    "value": 343
   },
   "DecayTime": {
     "type": "dword",
@@ -141,7 +141,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 370
+    "value": 333
   },
   "Int": {
     "type": "byte",
@@ -175,7 +175,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 380
+    "value": 343
   },
   "NaturalAC": {
     "type": "byte",

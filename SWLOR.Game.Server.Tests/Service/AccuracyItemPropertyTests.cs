@@ -47,6 +47,8 @@ public class AccuracyItemPropertyTests
             itemPropRows[(int)ItemPropertyType.Accuracy][column].Should().Be("1", $"Accuracy is valid on {column}");
             itemPropRows[(int)ItemPropertyType.AccuracyBonus][column].Should().Be("****",
                 "the native Accuracy Bonus is superseded by Accuracy and must not be offered to builders");
+            itemPropRows[(int)ItemPropertyType.EnhancementBonus][column].Should().Be("****",
+                "the native Enhancement Bonus no longer affects accuracy and must not be offered to builders");
         }
     }
 

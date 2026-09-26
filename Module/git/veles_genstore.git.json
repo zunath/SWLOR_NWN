@@ -370744,6 +370744,7 @@
                     }
                   },
                   {
+                    "__struct_id": 17,
                     "AddCost": {
                       "type": "dword",
                       "value": 50
@@ -370861,7 +370862,6 @@
                         }
                       ]
                     },
-                    "__struct_id": 17,
                     "Infinite": {
                       "type": "byte",
                       "value": 1
@@ -370876,6 +370876,7 @@
                     }
                   },
                   {
+                    "__struct_id": 18,
                     "AddCost": {
                       "type": "dword",
                       "value": 50
@@ -370993,7 +370994,6 @@
                         }
                       ]
                     },
-                    "__struct_id": 18,
                     "Infinite": {
                       "type": "byte",
                       "value": 1
@@ -371008,6 +371008,7 @@
                     }
                   },
                   {
+                    "__struct_id": 19,
                     "AddCost": {
                       "type": "dword",
                       "value": 50
@@ -371125,7 +371126,6 @@
                         }
                       ]
                     },
-                    "__struct_id": 19,
                     "Infinite": {
                       "type": "byte",
                       "value": 1

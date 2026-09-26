@@ -4438,6 +4438,27 @@
     "Call": "SendMessageToPC(receiver, ColorToken.Combat(message))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/PlayerIntroduction.cs",
+    "Line": 49,
+    "Member": "Introduce",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(presenter, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlayerIntroduction.cs",
+    "Line": 71,
+    "Member": "Introduce",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(observer,\n                        $\"{PlayerName.GetColoredDisplayName(observer, presenter)} introduces themselves as '{name}'. \" +\n                        \"Use /introductions to remember or dismiss this name. Your private label stays unchanged until you accept.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlayerIntroduction.cs",
+    "Line": 76,
+    "Member": "Introduce",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(presenter, ColorToken.Green(\n                $\"You introduced yourself as '{name}' to nearby players. They choose whether to remember this name.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/PlayerMarket.cs",
     "Line": 71,
     "Member": "CheckMarketTill",

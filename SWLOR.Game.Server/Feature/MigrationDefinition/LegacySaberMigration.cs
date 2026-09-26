@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             ItemPropertyType.EnhancementBonus,
             ItemPropertyType.DamageBonus,
             ItemPropertyType.AccuracyBonus,
+            ItemPropertyType.Accuracy,
         };
 
         /// <summary>

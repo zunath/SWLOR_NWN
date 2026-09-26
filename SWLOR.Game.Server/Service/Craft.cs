@@ -629,7 +629,7 @@ namespace SWLOR.Game.Server.Service
                 case EnhancementSubType.Perception: // Perception
                     return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
                 case EnhancementSubType.Accuracy: // Accuracy
-                    return ItemPropertyAttackBonus(amount);
+                    return ItemPropertyCustom(ItemPropertyType.Accuracy, -1, amount);
                 case EnhancementSubType.CombatReadiness: // Combat Readiness
                     return ItemPropertyCustom(ItemPropertyType.CombatReadiness, -1, amount);
                 case EnhancementSubType.StructureBonus: // Structure Bonus

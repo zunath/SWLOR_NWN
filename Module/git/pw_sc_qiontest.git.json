@@ -51,6 +51,7 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 8,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -249,10 +250,9 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 8,
         "X": {
           "type": "float",
-          "value": 2.79
+          "value": 2.789999961853027
         },
         "Y": {
           "type": "float",
@@ -264,10 +264,11 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         }
       },
       {
+        "__struct_id": 8,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -466,14 +467,13 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 8,
         "X": {
           "type": "float",
           "value": 115.0
         },
         "Y": {
           "type": "float",
-          "value": 147.21
+          "value": 147.2100067138672
         },
         "Z": {
           "type": "float",
@@ -513,7 +513,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -719,7 +719,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.050880723162841784
+          "value": 0.05088072270154953
         },
         "VarTable": {
           "type": "list",
@@ -746,7 +746,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 4.614214018979345
+          "value": 4.614213943481445
         },
         "BodyBag": {
           "type": "byte",
@@ -945,7 +945,7 @@
         },
         "X": {
           "type": "float",
-          "value": 17.967620849609403
+          "value": 17.96762084960938
         },
         "Y": {
           "type": "float",
@@ -953,7 +953,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.7908670832359314
+          "value": 0.7908670902252197
         },
         "VarTable": {
           "type": "list",
@@ -976,7 +976,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817470749232435
+          "value": -0.9817470908164978
         },
         "BodyBag": {
           "type": "byte",
@@ -1179,11 +1179,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 93.23857116699222
+          "value": 93.23857116699219
         },
         "Z": {
           "type": "float",
-          "value": 0.7908670832359314
+          "value": 0.7908670902252197
         },
         "VarTable": {
           "type": "list",
@@ -1206,7 +1206,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817470749232435
+          "value": -0.9817470908164978
         },
         "BodyBag": {
           "type": "byte",
@@ -1405,7 +1405,7 @@
         },
         "X": {
           "type": "float",
-          "value": 19.264556884765597
+          "value": 19.26455688476563
         },
         "Y": {
           "type": "float",
@@ -1413,7 +1413,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.05087547795410155
+          "value": 0.0508754774928093
         },
         "VarTable": {
           "type": "list",
@@ -1436,7 +1436,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -0.9817470749232435
+          "value": -0.9817470908164978
         },
         "BodyBag": {
           "type": "byte",
@@ -1635,15 +1635,15 @@
         },
         "X": {
           "type": "float",
-          "value": 18.62794494628909
+          "value": 18.62794494628906
         },
         "Y": {
           "type": "float",
-          "value": 96.1356506347656
+          "value": 96.13565063476563
         },
         "Z": {
           "type": "float",
-          "value": 0.05087547795410155
+          "value": 0.0508754774928093
         },
         "VarTable": {
           "type": "list",
@@ -1666,7 +1666,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -2006,7 +2006,7 @@
         },
         "X": {
           "type": "float",
-          "value": 20.4
+          "value": 20.39999961853027
         },
         "Y": {
           "type": "float",
@@ -2014,7 +2014,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.05088119999999999
+          "value": 0.05088119953870773
         }
       },
       {
@@ -2033,7 +2033,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -2239,7 +2239,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343779231628418
+          "value": 0.1343779265880585
         },
         "VarTable": {
           "type": "list",
@@ -2266,7 +2266,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.4726213653895512
+          "value": 1.472621321678162
         },
         "BodyBag": {
           "type": "byte",
@@ -2465,7 +2465,7 @@
         },
         "X": {
           "type": "float",
-          "value": 95.0323791503906
+          "value": 95.03237915039063
         },
         "Y": {
           "type": "float",
@@ -2473,7 +2473,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.8743642832359314
+          "value": 0.8743642568588257
         },
         "VarTable": {
           "type": "list",
@@ -2496,7 +2496,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -4.123339728513036
+          "value": -4.123339653015137
         },
         "BodyBag": {
           "type": "byte",
@@ -2699,11 +2699,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 83.76142883300778
+          "value": 83.76142883300781
         },
         "Z": {
           "type": "float",
-          "value": 0.8743642832359314
+          "value": 0.8743642568588257
         },
         "VarTable": {
           "type": "list",
@@ -2726,7 +2726,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -4.123339728513036
+          "value": -4.123339653015137
         },
         "BodyBag": {
           "type": "byte",
@@ -2925,7 +2925,7 @@
         },
         "X": {
           "type": "float",
-          "value": 93.7354431152344
+          "value": 93.73544311523438
         },
         "Y": {
           "type": "float",
@@ -2933,7 +2933,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.13437267795410157
+          "value": 0.1343726813793182
         },
         "VarTable": {
           "type": "list",
@@ -2956,7 +2956,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -4.123339728513036
+          "value": -4.123339653015137
         },
         "BodyBag": {
           "type": "byte",
@@ -3155,15 +3155,15 @@
         },
         "X": {
           "type": "float",
-          "value": 94.37205505371091
+          "value": 94.37205505371094
         },
         "Y": {
           "type": "float",
-          "value": 80.8643493652344
+          "value": 80.86434936523438
         },
         "Z": {
           "type": "float",
-          "value": 0.13437267795410157
+          "value": 0.1343726813793182
         },
         "VarTable": {
           "type": "list",
@@ -3186,7 +3186,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -3526,7 +3526,7 @@
         },
         "X": {
           "type": "float",
-          "value": 92.6
+          "value": 92.59999847412109
         },
         "Y": {
           "type": "float",
@@ -3534,7 +3534,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         }
       },
       {
@@ -3553,7 +3553,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -3759,7 +3759,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -4.76837158203125e-07
+          "value": -4.76837158203125e-007
         },
         "VarTable": {
           "type": "list",
@@ -3786,7 +3786,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.4726213653895512
+          "value": 1.472621321678162
         },
         "BodyBag": {
           "type": "byte",
@@ -4016,7 +4016,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -4.123339728513036
+          "value": -4.123339653015137
         },
         "BodyBag": {
           "type": "byte",
@@ -4219,7 +4219,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 42.761428833007784
+          "value": 42.76142883300781
         },
         "Z": {
           "type": "float",
@@ -4246,7 +4246,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -4.123339728513036
+          "value": -4.123339653015137
         },
         "BodyBag": {
           "type": "byte",
@@ -4453,7 +4453,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -5.7220458984375e-006
         },
         "VarTable": {
           "type": "list",
@@ -4476,7 +4476,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -4.123339728513036
+          "value": -4.123339653015137
         },
         "BodyBag": {
           "type": "byte",
@@ -4679,11 +4679,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 39.8643493652344
+          "value": 39.86434936523438
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -5.7220458984375e-006
         },
         "VarTable": {
           "type": "list",
@@ -4706,7 +4706,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -5046,7 +5046,7 @@
         },
         "X": {
           "type": "float",
-          "value": 132.6
+          "value": 132.6000061035156
         },
         "Y": {
           "type": "float",
@@ -5058,6 +5058,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -5268,7 +5269,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -5314,6 +5314,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -5524,7 +5525,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -5570,6 +5570,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -5780,7 +5781,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -5826,6 +5826,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -6036,7 +6037,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -6082,6 +6082,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -6292,7 +6293,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -6324,15 +6324,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -6353,7 +6353,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -6559,7 +6559,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -6567,6 +6567,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -6777,7 +6778,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -6796,7 +6796,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4022824
+          "value": 0.4022823870182037
         },
         "Bearing": {
           "type": "float",
@@ -6809,15 +6809,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -6838,7 +6838,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -7044,7 +7044,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -7067,7 +7067,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -7273,7 +7273,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -7504,7 +7504,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "VarTable": {
           "type": "list",
@@ -7733,7 +7733,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "VarTable": {
           "type": "list",
@@ -7962,7 +7962,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -8191,7 +8191,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3343783999999999
+          "value": 1.334378361701965
         },
         "VarTable": {
           "type": "list",
@@ -8420,7 +8420,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -8649,7 +8649,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3343783999999999
+          "value": 1.334378361701965
         },
         "VarTable": {
           "type": "list",
@@ -8657,6 +8657,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -8869,7 +8870,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -8888,7 +8888,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
@@ -8915,6 +8915,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -9127,7 +9128,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -9146,7 +9146,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "Bearing": {
           "type": "float",
@@ -9394,7 +9394,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.22337399999999996
+          "value": 0.2233739942312241
         },
         "VarTable": {
           "type": "list",
@@ -9623,7 +9623,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "VarTable": {
           "type": "list",
@@ -9646,7 +9646,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -9854,7 +9854,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.15264360000000002
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -10083,7 +10083,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1526436
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -10312,7 +10312,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3526436
+          "value": 1.352643609046936
         },
         "VarTable": {
           "type": "list",
@@ -10335,7 +10335,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -10772,7 +10772,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1526436
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -11001,7 +11001,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3526436
+          "value": 1.352643609046936
         },
         "VarTable": {
           "type": "list",
@@ -11009,6 +11009,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -11219,7 +11220,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -11238,7 +11238,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "Bearing": {
           "type": "float",
@@ -11251,15 +11251,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             }
           }
         }
@@ -11486,7 +11486,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.17799120000000002
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -11715,7 +11715,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.1779912
+          "value": 1.177991151809692
         },
         "VarTable": {
           "type": "list",
@@ -11723,6 +11723,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -11933,7 +11934,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -11979,6 +11979,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -12189,7 +12190,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -12235,6 +12235,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -12445,7 +12446,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -12491,6 +12491,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -12701,7 +12702,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -12747,6 +12747,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -12957,7 +12958,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -12976,7 +12976,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "Bearing": {
           "type": "float",
@@ -12989,15 +12989,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -13018,7 +13018,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -13224,7 +13224,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -13232,6 +13232,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -13442,7 +13443,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -13474,15 +13474,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -13503,7 +13503,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -13709,7 +13709,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -13717,6 +13717,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -13929,7 +13930,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -13948,11 +13948,11 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "VisualTransform": {
           "__struct_id": 0,
@@ -13961,20 +13961,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -14187,7 +14188,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -14206,7 +14206,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "Bearing": {
           "type": "float",
@@ -14219,20 +14219,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -14445,7 +14446,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -14464,11 +14464,11 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "VisualTransform": {
           "__struct_id": 0,
@@ -14477,20 +14477,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -14703,7 +14704,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -14722,7 +14722,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.22337399999999996
+          "value": 0.2233739942312241
         },
         "Bearing": {
           "type": "float",
@@ -14735,20 +14735,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -14959,7 +14960,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -14978,7 +14978,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "Bearing": {
           "type": "float",
@@ -14991,20 +14991,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -15217,7 +15218,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -15236,13 +15236,14 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "Bearing": {
           "type": "float",
           "value": 0.0
         },
         "VisualTransform": {
+          "__struct_id": 0,
           "type": "struct",
           "value": {
             "__struct_id": 0,
@@ -15258,8 +15259,7 @@
               "type": "float",
               "value": 1.5
             }
-          },
-          "__struct_id": 0
+          }
         }
       },
       {
@@ -15484,7 +15484,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -15713,7 +15713,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3343783999999999
+          "value": 1.334378361701965
         },
         "VarTable": {
           "type": "list",
@@ -15942,7 +15942,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.5366607999999999
+          "value": 0.5366607904434204
         },
         "VarTable": {
           "type": "list",
@@ -16171,7 +16171,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.7366608
+          "value": 1.736660838127136
         },
         "VarTable": {
           "type": "list",
@@ -16179,6 +16179,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -16391,7 +16392,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -16410,7 +16410,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "Bearing": {
           "type": "float",
@@ -16437,6 +16437,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -16649,7 +16650,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -16668,7 +16668,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
@@ -16916,7 +16916,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.49213080000000003
+          "value": 0.4921307861804962
         },
         "VarTable": {
           "type": "list",
@@ -17145,7 +17145,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "VarTable": {
           "type": "list",
@@ -17168,7 +17168,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -17376,7 +17376,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.17799120000000002
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -17605,7 +17605,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -17834,7 +17834,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3779911999999999
+          "value": 1.377991199493408
         },
         "VarTable": {
           "type": "list",
@@ -17857,7 +17857,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -18065,7 +18065,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.15264360000000002
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -18523,7 +18523,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.2
+          "value": 1.200000047683716
         },
         "VarTable": {
           "type": "list",
@@ -18531,6 +18531,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -18741,7 +18742,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -18787,6 +18787,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -18997,7 +18998,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -19043,6 +19043,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -19253,7 +19254,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -19299,6 +19299,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -19509,7 +19510,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -19555,6 +19555,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -19765,7 +19766,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -19784,7 +19784,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "Bearing": {
           "type": "float",
@@ -19797,15 +19797,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -19826,7 +19826,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -20032,7 +20032,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -20040,6 +20040,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -20250,7 +20251,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -20282,15 +20282,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -20311,7 +20311,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -20517,7 +20517,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -20540,7 +20540,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -20748,7 +20748,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -20771,7 +20771,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -20977,7 +20977,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.5366607999999999
+          "value": 0.5366607904434204
         },
         "VarTable": {
           "type": "list",
@@ -21000,7 +21000,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -21208,7 +21208,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -21231,7 +21231,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -21437,7 +21437,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -21897,7 +21897,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "VarTable": {
           "type": "list",
@@ -22126,7 +22126,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -22355,7 +22355,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3343783999999999
+          "value": 1.334378361701965
         },
         "VarTable": {
           "type": "list",
@@ -22584,7 +22584,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.5366607999999999
+          "value": 0.5366607904434204
         },
         "VarTable": {
           "type": "list",
@@ -22813,7 +22813,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.7366608
+          "value": 1.736660838127136
         },
         "VarTable": {
           "type": "list",
@@ -22821,6 +22821,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -23033,7 +23034,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -23052,7 +23052,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "Bearing": {
           "type": "float",
@@ -23079,6 +23079,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -23291,7 +23292,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -23310,7 +23310,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
@@ -23558,7 +23558,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.33551960000000003
+          "value": 0.3355196118354797
         },
         "VarTable": {
           "type": "list",
@@ -23787,7 +23787,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "VarTable": {
           "type": "list",
@@ -23810,7 +23810,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -24247,7 +24247,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -24476,7 +24476,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3779911999999999
+          "value": 1.377991199493408
         },
         "VarTable": {
           "type": "list",
@@ -24499,7 +24499,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -24707,7 +24707,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.15264360000000002
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -24936,7 +24936,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -25165,7 +25165,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3779911999999999
+          "value": 1.377991199493408
         },
         "VarTable": {
           "type": "list",
@@ -25396,7 +25396,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.3123696
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -25625,7 +25625,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.3017118
+          "value": 0.3017117977142334
         },
         "VarTable": {
           "type": "list",
@@ -25856,7 +25856,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.044497800000000004
+          "value": 0.04449779912829399
         },
         "VarTable": {
           "type": "list",
@@ -26085,7 +26085,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.10057060000000001
+          "value": 0.1005705967545509
         },
         "VarTable": {
           "type": "list",
@@ -26093,6 +26093,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -26303,7 +26304,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -26349,6 +26349,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -26559,7 +26560,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -26578,7 +26578,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.08899560000000001
+          "value": 0.08899559825658798
         },
         "Bearing": {
           "type": "float",
@@ -26605,6 +26605,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -26815,7 +26816,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -26834,7 +26834,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.08899560000000001
+          "value": 0.08899559825658798
         },
         "Bearing": {
           "type": "float",
@@ -26861,6 +26861,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -27071,7 +27072,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -27117,6 +27117,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -27327,7 +27328,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -27359,15 +27359,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -27388,7 +27388,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -27594,7 +27594,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -27617,7 +27617,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -27825,7 +27825,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -27848,7 +27848,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -28054,7 +28054,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -28077,7 +28077,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -28283,7 +28283,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -28512,7 +28512,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -28743,7 +28743,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "VarTable": {
           "type": "list",
@@ -28972,7 +28972,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -29201,7 +29201,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.5123696
+          "value": 1.512369632720947
         },
         "VarTable": {
           "type": "list",
@@ -29209,6 +29209,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -29421,7 +29422,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -29440,7 +29440,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "Bearing": {
           "type": "float",
@@ -29688,7 +29688,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.33551960000000003
+          "value": 0.3355196118354797
         },
         "VarTable": {
           "type": "list",
@@ -29917,7 +29917,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "VarTable": {
           "type": "list",
@@ -29940,7 +29940,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -30148,7 +30148,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.17799120000000002
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -30606,7 +30606,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.2
+          "value": 1.200000047683716
         },
         "VarTable": {
           "type": "list",
@@ -30629,7 +30629,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -31066,7 +31066,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -31295,7 +31295,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3779911999999999
+          "value": 1.377991199493408
         },
         "VarTable": {
           "type": "list",
@@ -31526,7 +31526,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.10057060000000001
+          "value": 0.1005705967545509
         },
         "VarTable": {
           "type": "list",
@@ -31757,7 +31757,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.15264360000000002
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -31986,7 +31986,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.10057060000000001
+          "value": 0.1005705967545509
         },
         "VarTable": {
           "type": "list",
@@ -31994,6 +31994,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -32204,7 +32205,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -32250,6 +32250,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -32460,7 +32461,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -32479,7 +32479,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.08899560000000001
+          "value": 0.08899559825658798
         },
         "Bearing": {
           "type": "float",
@@ -32506,6 +32506,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -32716,7 +32717,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -32762,6 +32762,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -32972,7 +32973,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -33018,6 +33018,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -33228,7 +33229,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -33260,15 +33260,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -33289,7 +33289,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -33495,7 +33495,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -33503,6 +33503,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -33713,7 +33714,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -33732,7 +33732,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4022824
+          "value": 0.4022823870182037
         },
         "Bearing": {
           "type": "float",
@@ -33745,15 +33745,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -33774,7 +33774,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -33980,7 +33980,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -33988,6 +33988,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -34200,7 +34201,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -34219,11 +34219,11 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "VisualTransform": {
           "__struct_id": 0,
@@ -34232,20 +34232,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -34458,7 +34459,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -34477,7 +34477,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "Bearing": {
           "type": "float",
@@ -34490,20 +34490,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -34716,7 +34717,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -34735,11 +34735,11 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.49213080000000003
+          "value": 0.4921307861804962
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "VisualTransform": {
           "__struct_id": 0,
@@ -34748,20 +34748,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -34974,7 +34975,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -34993,7 +34993,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "Bearing": {
           "type": "float",
@@ -35006,20 +35006,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -35232,7 +35233,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -35251,13 +35251,14 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "Bearing": {
           "type": "float",
           "value": 0.0
         },
         "VisualTransform": {
+          "__struct_id": 0,
           "type": "struct",
           "value": {
             "__struct_id": 0,
@@ -35273,8 +35274,7 @@
               "type": "float",
               "value": 1.5
             }
-          },
-          "__struct_id": 0
+          }
         }
       },
       {
@@ -35499,7 +35499,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.5366607999999999
+          "value": 0.5366607904434204
         },
         "VarTable": {
           "type": "list",
@@ -35728,7 +35728,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.7366608
+          "value": 1.736660838127136
         },
         "VarTable": {
           "type": "list",
@@ -35957,7 +35957,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -36186,7 +36186,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.5123696
+          "value": 1.512369632720947
         },
         "VarTable": {
           "type": "list",
@@ -36194,6 +36194,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -36406,7 +36407,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -36425,7 +36425,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
@@ -36452,6 +36452,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -36664,7 +36665,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -36683,7 +36683,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "Bearing": {
           "type": "float",
@@ -36931,7 +36931,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.22337399999999996
+          "value": 0.2233739942312241
         },
         "VarTable": {
           "type": "list",
@@ -37160,7 +37160,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "VarTable": {
           "type": "list",
@@ -37183,7 +37183,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -37414,7 +37414,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -37622,7 +37622,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.17799120000000002
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -37851,7 +37851,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1526436
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -38080,7 +38080,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3526436
+          "value": 1.352643609046936
         },
         "VarTable": {
           "type": "list",
@@ -38088,6 +38088,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -38298,7 +38299,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -38344,6 +38344,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -38554,7 +38555,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -38600,6 +38600,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -38810,7 +38811,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -38856,6 +38856,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -39066,7 +39067,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -39085,7 +39085,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.08899560000000001
+          "value": 0.08899559825658798
         },
         "Bearing": {
           "type": "float",
@@ -39112,6 +39112,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -39322,7 +39323,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -39354,15 +39354,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -39383,7 +39383,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -39589,7 +39589,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -39597,6 +39597,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -39807,7 +39808,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -39826,7 +39826,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "Bearing": {
           "type": "float",
@@ -39839,15 +39839,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -39868,7 +39868,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -40074,7 +40074,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -40082,6 +40082,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -40294,7 +40295,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -40313,11 +40313,11 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "VisualTransform": {
           "__struct_id": 0,
@@ -40326,20 +40326,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -40552,7 +40553,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -40571,7 +40571,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "Bearing": {
           "type": "float",
@@ -40584,20 +40584,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -40810,7 +40811,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -40829,11 +40829,11 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.33551960000000003
+          "value": 0.3355196118354797
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "VisualTransform": {
           "__struct_id": 0,
@@ -40842,20 +40842,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleY": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             },
             "ScaleZ": {
               "type": "float",
-              "value": 0.9
+              "value": 0.8999999761581421
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -41068,7 +41069,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -41087,7 +41087,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.33551960000000003
+          "value": 0.3355196118354797
         },
         "Bearing": {
           "type": "float",
@@ -41100,20 +41100,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.1
+              "value": 1.100000023841858
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -41324,7 +41325,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -41343,7 +41343,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "Bearing": {
           "type": "float",
@@ -41356,20 +41356,21 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             }
           }
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -41582,7 +41583,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -41601,13 +41601,14 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "Bearing": {
           "type": "float",
           "value": 0.0
         },
         "VisualTransform": {
+          "__struct_id": 0,
           "type": "struct",
           "value": {
             "__struct_id": 0,
@@ -41623,8 +41624,7 @@
               "type": "float",
               "value": 1.5
             }
-          },
-          "__struct_id": 0
+          }
         }
       },
       {
@@ -41849,7 +41849,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -42078,7 +42078,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3343783999999999
+          "value": 1.334378361701965
         },
         "VarTable": {
           "type": "list",
@@ -42307,7 +42307,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.5366607999999999
+          "value": 0.5366607904434204
         },
         "VarTable": {
           "type": "list",
@@ -42536,7 +42536,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.7366608
+          "value": 1.736660838127136
         },
         "VarTable": {
           "type": "list",
@@ -42544,6 +42544,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -42756,7 +42757,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -42775,7 +42775,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
@@ -42802,6 +42802,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -43014,7 +43015,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -43033,7 +43033,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "Bearing": {
           "type": "float",
@@ -43281,7 +43281,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -43510,7 +43510,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "VarTable": {
           "type": "list",
@@ -43533,7 +43533,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -43741,7 +43741,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.15264360000000002
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -43970,7 +43970,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1779912
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -44199,7 +44199,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3779911999999999
+          "value": 1.377991199493408
         },
         "VarTable": {
           "type": "list",
@@ -44222,7 +44222,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -44888,7 +44888,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.2
+          "value": 1.200000047683716
         },
         "VarTable": {
           "type": "list",
@@ -44896,6 +44896,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -45106,7 +45107,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -45152,6 +45152,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -45362,7 +45363,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -45408,6 +45408,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -45618,7 +45619,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -45637,7 +45637,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.08899560000000001
+          "value": 0.08899559825658798
         },
         "Bearing": {
           "type": "float",
@@ -45664,6 +45664,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -45874,7 +45875,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -45920,6 +45920,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -46130,7 +46131,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -46149,7 +46149,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4022824
+          "value": 0.4022823870182037
         },
         "Bearing": {
           "type": "float",
@@ -46162,15 +46162,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -46191,7 +46191,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -46397,7 +46397,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -46405,6 +46405,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -46615,7 +46616,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -46647,15 +46647,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.45
+              "value": 1.450000047683716
             }
           }
         }
@@ -46676,7 +46676,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -46882,7 +46882,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "VarTable": {
           "type": "list",
@@ -46890,6 +46890,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -47100,7 +47101,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -47119,11 +47119,11 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.671892
+          "value": 0.671891987323761
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "VisualTransform": {
           "__struct_id": 0,
@@ -47161,7 +47161,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.5707963267948966
+          "value": -1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -47367,7 +47367,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -47598,7 +47598,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "VarTable": {
           "type": "list",
@@ -47827,7 +47827,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "VarTable": {
           "type": "list",
@@ -48056,7 +48056,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.31236959999999997
+          "value": 0.3123696148395538
         },
         "VarTable": {
           "type": "list",
@@ -48285,7 +48285,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.5123696
+          "value": 1.512369632720947
         },
         "VarTable": {
           "type": "list",
@@ -48514,7 +48514,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "VarTable": {
           "type": "list",
@@ -48743,7 +48743,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3343783999999999
+          "value": 1.334378361701965
         },
         "VarTable": {
           "type": "list",
@@ -48751,6 +48751,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -48963,7 +48964,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -48982,7 +48982,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.6042764
+          "value": 0.6042764186859131
         },
         "Bearing": {
           "type": "float",
@@ -49009,6 +49009,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -49221,7 +49222,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -49240,7 +49240,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4921308
+          "value": 0.4921307861804962
         },
         "Bearing": {
           "type": "float",
@@ -49488,7 +49488,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.49213080000000003
+          "value": 0.4921307861804962
         },
         "VarTable": {
           "type": "list",
@@ -49717,7 +49717,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.4031352
+          "value": 0.40313521027565
         },
         "VarTable": {
           "type": "list",
@@ -49740,7 +49740,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -49948,7 +49948,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.17799120000000002
+          "value": 0.177991196513176
         },
         "VarTable": {
           "type": "list",
@@ -50177,7 +50177,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.1526436
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -50406,7 +50406,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.3526436
+          "value": 1.352643609046936
         },
         "VarTable": {
           "type": "list",
@@ -50429,7 +50429,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         },
         "BodyBag": {
           "type": "byte",
@@ -51095,7 +51095,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.2
+          "value": 1.200000047683716
         },
         "VarTable": {
           "type": "list",
@@ -51103,6 +51103,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -51313,7 +51314,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "VarTable": {
           "type": "list",
           "value": []
@@ -51332,7 +51332,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.05088119999999999
+          "value": 0.05088119953870773
         },
         "Bearing": {
           "type": "float",
@@ -51345,15 +51345,15 @@
             "__struct_id": 0,
             "ScaleX": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleY": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             },
             "ScaleZ": {
               "type": "float",
-              "value": 1.3
+              "value": 1.299999952316284
             }
           }
         }
@@ -51580,7 +51580,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.15264360000000002
+          "value": 0.1526436060667038
         },
         "VarTable": {
           "type": "list",
@@ -51809,7 +51809,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.0508812
+          "value": 1.050881147384644
         },
         "VarTable": {
           "type": "list",
@@ -51899,6 +51899,7 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -51939,10 +51940,9 @@
           "type": "resref",
           "value": "wp_velescmd_ent"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
-          "value": 10.79
+          "value": 10.78999996185303
         },
         "YPosition": {
           "type": "float",
@@ -51962,6 +51962,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52002,10 +52003,9 @@
           "type": "resref",
           "value": "wp_velescmd_ent"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
-          "value": 13.79
+          "value": 13.78999996185303
         },
         "YPosition": {
           "type": "float",
@@ -52013,7 +52013,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.07030652399999993
+          "value": 0.07030652463436127
         },
         "XOrientation": {
           "type": "float",
@@ -52025,6 +52025,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52065,14 +52066,13 @@
           "type": "resref",
           "value": "wp_velescmd_ent"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 115.0
         },
         "YPosition": {
           "type": "float",
-          "value": 139.21
+          "value": 139.2100067138672
         },
         "ZPosition": {
           "type": "float",
@@ -52088,6 +52088,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52128,7 +52129,6 @@
           "type": "resref",
           "value": "wp_perflurry_wd"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 30.0
@@ -52151,6 +52151,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52191,7 +52192,6 @@
           "type": "resref",
           "value": "wp_thermdet_wd"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 83.0
@@ -52214,6 +52214,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52254,7 +52255,6 @@
           "type": "resref",
           "value": "wp_overbarr_wd"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 125.0
@@ -52265,7 +52265,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4022824
+          "value": 0.4022823870182037
         },
         "XOrientation": {
           "type": "float",
@@ -52277,6 +52277,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52317,7 +52318,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 91.0
@@ -52340,6 +52340,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52380,7 +52381,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 129.0
@@ -52391,7 +52391,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.06674669999999999
+          "value": 0.06674669682979584
         },
         "XOrientation": {
           "type": "float",
@@ -52403,6 +52403,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52443,7 +52444,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 19.0
@@ -52466,6 +52466,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52506,7 +52507,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 85.0
@@ -52517,7 +52517,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "XOrientation": {
           "type": "float",
@@ -52529,6 +52529,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52569,7 +52570,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 79.0
@@ -52592,6 +52592,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52632,7 +52633,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 137.0
@@ -52643,7 +52643,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.050285300000000005
+          "value": 0.05028529837727547
         },
         "XOrientation": {
           "type": "float",
@@ -52655,6 +52655,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52695,7 +52696,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 31.0
@@ -52706,7 +52706,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.1017624
+          "value": 0.1017623990774155
         },
         "XOrientation": {
           "type": "float",
@@ -52718,6 +52718,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52758,7 +52759,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 79.0
@@ -52781,6 +52781,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52821,7 +52822,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 79.0
@@ -52844,6 +52844,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52884,7 +52885,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 123.0
@@ -52895,7 +52895,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 2.7755575615628914e-17
+          "value": 2.775557561562891e-017
         },
         "XOrientation": {
           "type": "float",
@@ -52907,6 +52907,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -52947,7 +52948,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 15.0
@@ -52970,6 +52970,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53010,7 +53011,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 89.0
@@ -53021,7 +53021,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.06674669999999999
+          "value": 0.06674669682979584
         },
         "XOrientation": {
           "type": "float",
@@ -53033,6 +53033,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53073,7 +53074,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 91.0
@@ -53096,6 +53096,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53136,7 +53137,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 135.0
@@ -53147,7 +53147,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.06674669999999999
+          "value": 0.06674669682979584
         },
         "XOrientation": {
           "type": "float",
@@ -53159,6 +53159,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53199,7 +53200,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 13.0
@@ -53210,7 +53210,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.3573099
+          "value": 0.3573099076747894
         },
         "XOrientation": {
           "type": "float",
@@ -53222,6 +53222,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53262,7 +53263,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 79.0
@@ -53273,7 +53273,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.1228195
+          "value": 0.1228194981813431
         },
         "XOrientation": {
           "type": "float",
@@ -53285,6 +53285,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53325,7 +53326,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 91.0
@@ -53336,7 +53336,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.1112445
+          "value": 0.1112444996833801
         },
         "XOrientation": {
           "type": "float",
@@ -53348,6 +53348,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53388,7 +53389,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 129.0
@@ -53411,6 +53411,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53451,7 +53452,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 25.0
@@ -53462,7 +53462,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.1343784
+          "value": 0.1343784034252167
         },
         "XOrientation": {
           "type": "float",
@@ -53474,6 +53474,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53514,7 +53515,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 91.0
@@ -53525,7 +53525,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.1112445
+          "value": 0.1112444996833801
         },
         "XOrientation": {
           "type": "float",
@@ -53537,6 +53537,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -53577,7 +53578,6 @@
           "type": "resref",
           "value": "wp_cap_hutlar"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 80.0

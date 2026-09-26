@@ -151256,6 +151256,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -151530,7 +151531,6 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "X": {
           "type": "float",
           "value": 105.0
@@ -151545,7 +151545,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         }
       }
     ]
@@ -155464,6 +155464,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -155504,7 +155505,6 @@
           "type": "resref",
           "value": "wp_velescmd_ent"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 105.0

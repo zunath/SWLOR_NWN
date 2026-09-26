@@ -70707,7 +70707,7 @@
         },
         "X": {
           "type": "float",
-          "value": 5.662000179290771
+          "value": 5.662000179290772
         },
         "Y": {
           "type": "float",
@@ -169941,8 +169941,8 @@
           "value": -0.01200000010430813
         },
         "VisualTransform": {
-          "type": "struct",
           "__struct_id": 0,
+          "type": "struct",
           "value": {
             "__struct_id": 0,
             "ScaleX": {
@@ -170187,8 +170187,8 @@
           "value": -0.02400000020861626
         },
         "VisualTransform": {
-          "type": "struct",
           "__struct_id": 0,
+          "type": "struct",
           "value": {
             "__struct_id": 0,
             "ScaleX": {
@@ -170424,7 +170424,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 29.05
+          "value": 29.04999923706055
         },
         "Z": {
           "type": "float",
@@ -170470,7 +170470,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.141592653589793
+          "value": 3.141592741012573
         },
         "BodyBag": {
           "type": "byte",
@@ -170703,6 +170703,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -170977,14 +170978,13 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "X": {
           "type": "float",
           "value": 34.0
         },
         "Y": {
           "type": "float",
-          "value": 27.4
+          "value": 27.39999961853027
         },
         "Z": {
           "type": "float",
@@ -170992,7 +170992,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.5707963267948966
+          "value": 1.570796370506287
         }
       }
     ]
@@ -191271,6 +191271,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -191311,14 +191312,13 @@
           "type": "resref",
           "value": "wp_velescmd_ent"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 34.0
         },
         "YPosition": {
           "type": "float",
-          "value": 25.1
+          "value": 25.10000038146973
         },
         "ZPosition": {
           "type": "float",

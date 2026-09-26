@@ -22,8 +22,14 @@ namespace SWLOR.Toolset.Tests
             // A floor rather than an exact count: since WP7.3 the toolset can create areas (which
             // register themselves here), so the module is a living corpus that legitimately grows.
             document.AreaList.Should().HaveCountGreaterThanOrEqualTo(438);
-            document.AreaResRefs[0].Should().Be("anchor_entreenor");
-            document.AreaResRefs[1].Should().Be("anchor_entreesud");
+            // Registration order is not meaningful to the engine (the entry area is explicit) and
+            // content packages have been registered ahead of the original list, so check that the
+            // resrefs are read in stored order rather than pinning absolute positions.
+            var areaResRefs = document.AreaResRefs.ToList();
+            var entreeNorth = areaResRefs.IndexOf("anchor_entreenor");
+            var entreeSouth = areaResRefs.IndexOf("anchor_entreesud");
+            entreeNorth.Should().BeGreaterThanOrEqualTo(0);
+            entreeSouth.Should().Be(entreeNorth + 1);
             document.HakList.Should().HaveCount(119);
             document.HakNames[0].Should().Be("sw_2da");
             document.HakNames[1].Should().Be("sw_ability");

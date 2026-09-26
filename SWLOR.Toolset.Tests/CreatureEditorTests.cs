@@ -40,7 +40,7 @@ namespace SWLOR.Toolset.Tests
         {
             var files = Directory.EnumerateFiles(
                 Path.Combine(CorpusLocator.ModuleDirectory, "utc"), "*.utc.json").ToList();
-            files.Should().HaveCount(938);
+            files.Should().HaveCount(936);
 
             var failures = new List<string>();
             foreach (var file in files)

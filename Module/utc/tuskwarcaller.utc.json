@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This angry-looking Tusken brandishes a deadly gaderffii, ready to bash, hack, and stab at any invaders on the sacred homeland of the Sand People."
+      "0": "Aa'rkha howls the old war chants of the Sand People, driving the clan into a frenzy and breaking the nerve of anyone who hears her."
     }
   },
   "Dex": {
@@ -198,14 +198,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_wp"
+          "value": "tuskwarcaller_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_sk"
+          "value": "tuskwarcaller_sk"
         }
       }
     ]
@@ -236,13 +236,6 @@
         "Feat": {
           "type": "word",
           "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1155
         }
       },
       {
@@ -410,21 +403,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1863
+          "value": 1843
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1853
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1854
+          "value": 1769
         }
       },
       {
@@ -440,21 +426,13 @@
           "type": "word",
           "value": 1761
         }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1762
-        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Elite",
-      "2": "Tusken"
+      "0": "Warcaller Aa'rkha"
     }
   },
   "fortbonus": {
@@ -818,7 +796,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tusken_elite2"
+    "value": "tuskwarcaller"
   },
   "Tail_New": {
     "type": "dword",
@@ -830,7 +808,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tusken_elite2"
+    "value": "tuskwarcaller"
   },
   "VarTable": {
     "type": "list",
@@ -840,6 +818,51 @@
         "Name": {
           "type": "cexostring",
           "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_WARCALLER_RARES,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_WARCALLER_RARES,10,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_WARCALLER_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
         },
         "Type": {
           "type": "dword",
@@ -863,36 +886,6 @@
         "Value": {
           "type": "int",
           "value": 27
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE_RARES,8,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE,40,1"
         }
       }
     ]

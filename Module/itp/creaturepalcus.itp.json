@@ -17404,6 +17404,82 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 53.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Urrok, Gaderffii Champion"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tuskchampion"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 49.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sharrak Long-Eye"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusklongeye"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 53.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Warcaller Aa'rkha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tuskwarcaller"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 53.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Warlord"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tuskwarlord"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 17.0
                     },
                     "FACTION": {

@@ -141,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 21
+    "value": 33
   },
   "Conversation": {
     "type": "resref",
@@ -153,7 +153,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1587
+    "value": 4698
   },
   "DecayTime": {
     "type": "dword",
@@ -166,12 +166,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This angry-looking Tusken brandishes a deadly gaderffii, ready to bash, hack, and stab at any invaders on the sacred homeland of the Sand People."
+      "0": "The war leader of the clans that hold these caverns. Draped in bantha hide and trophies taken from careless settlers, the Warlord rules the deepest chamber and answers every intrusion with a massive gaderffii."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 30
+    "value": 33
   },
   "Disarmable": {
     "type": "byte",
@@ -198,14 +198,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_wp"
+          "value": "tuskwarlord_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_sk"
+          "value": "tuskwarlord_sk"
         }
       }
     ]
@@ -236,13 +236,6 @@
         "Feat": {
           "type": "word",
           "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1155
         }
       },
       {
@@ -410,42 +403,42 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1863
+          "value": 1820
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1853
+          "value": 1821
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1854
+          "value": 1824
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1855
+          "value": 1768
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1761
+          "value": 1844
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1762
+          "value": 1767
         }
       }
     ]
@@ -453,8 +446,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Elite",
-      "2": "Tusken"
+      "0": "Tusken Warlord"
     }
   },
   "fortbonus": {
@@ -471,11 +463,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1482
+    "value": 4467
   },
   "Int": {
     "type": "byte",
-    "value": 30
+    "value": 33
   },
   "Interruptable": {
     "type": "byte",
@@ -505,7 +497,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1587
+    "value": 4698
   },
   "NaturalAC": {
     "type": "byte",
@@ -810,7 +802,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 21
+    "value": 40
   },
   "Subrace": {
     "type": "cexostring",
@@ -818,7 +810,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tusken_elite2"
+    "value": "tuskwarlord"
   },
   "Tail_New": {
     "type": "dword",
@@ -830,7 +822,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tusken_elite2"
+    "value": "tuskwarlord"
   },
   "VarTable": {
     "type": "list",
@@ -847,7 +839,82 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE,100,1"
+          "value": "TATOOINE_TUSKEN_WARLORD_ELECTRONICS,100,3"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_WARLORD_FIBERPLAST,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_WARLORD_LOCKBOX,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_WARLORD_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_WARLORD_RARES,30,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_6"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_ELITE,100,2"
         }
       },
       {
@@ -863,36 +930,6 @@
         "Value": {
           "type": "int",
           "value": 27
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE_RARES,8,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE,40,1"
         }
       }
     ]
@@ -911,7 +948,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 36
+    "value": 24
   },
   "xAppearance_Head": {
     "type": "word",

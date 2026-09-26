@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 53.0
+    "value": 49.0
   },
   "ClassList": {
     "type": "list",
@@ -103,7 +103,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 20
+          "value": 10
         }
       },
       {
@@ -141,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 21
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -149,11 +149,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -12
+    "value": -10
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1587
+    "value": 1680
   },
   "DecayTime": {
     "type": "dword",
@@ -166,12 +166,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This angry-looking Tusken brandishes a deadly gaderffii, ready to bash, hack, and stab at any invaders on the sacred homeland of the Sand People."
+      "0": "Sharrak watches every approach to the caverns through the scope of a battered cycler rifle. The Sand People say no trespasser has ever walked out of his sights."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 30
+    "value": 36
   },
   "Disarmable": {
     "type": "byte",
@@ -198,14 +198,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_wp"
+          "value": "tusklongeye_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_sk"
+          "value": "tusklongeye_sk"
         }
       }
     ]
@@ -242,7 +242,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1155
+          "value": 408
         }
       },
       {
@@ -270,13 +270,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 58
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 26
         }
       },
@@ -292,13 +285,6 @@
         "Feat": {
           "type": "word",
           "value": 721
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 716
         }
       },
       {
@@ -368,13 +354,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 96
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 45
         }
       },
@@ -403,34 +382,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 134
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1863
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1853
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1854
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 1855
         }
       },
@@ -438,7 +389,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1761
+          "value": 1850
         }
       },
       {
@@ -447,14 +398,20 @@
           "type": "word",
           "value": 1762
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1852
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Elite",
-      "2": "Tusken"
+      "0": "Sharrak Long-Eye"
     }
   },
   "fortbonus": {
@@ -471,7 +428,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1482
+    "value": 1570
   },
   "Int": {
     "type": "byte",
@@ -501,11 +458,11 @@
   },
   "Lootable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1587
+    "value": 1680
   },
   "NaturalAC": {
     "type": "byte",
@@ -814,11 +771,11 @@
   },
   "Subrace": {
     "type": "cexostring",
-    "value": "Tusken"
+    "value": ""
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tusken_elite2"
+    "value": "tusklongeye"
   },
   "Tail_New": {
     "type": "dword",
@@ -830,7 +787,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tusken_elite2"
+    "value": "tusklongeye"
   },
   "VarTable": {
     "type": "list",
@@ -840,6 +797,51 @@
         "Name": {
           "type": "cexostring",
           "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_LONGEYE_RARES,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_LONGEYE_RARES,10,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_LONGEYE_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
         },
         "Type": {
           "type": "dword",
@@ -864,36 +866,6 @@
           "type": "int",
           "value": 27
         }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE_RARES,8,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE,40,1"
-        }
       }
     ]
   },
@@ -911,7 +883,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 36
+    "value": 21
   },
   "xAppearance_Head": {
     "type": "word",

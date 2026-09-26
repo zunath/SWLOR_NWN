@@ -141,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 21
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -153,7 +153,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1587
+    "value": 1867
   },
   "DecayTime": {
     "type": "dword",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This angry-looking Tusken brandishes a deadly gaderffii, ready to bash, hack, and stab at any invaders on the sacred homeland of the Sand People."
+      "0": "The chosen champion of the cave clans, a towering Tusken who settles raids and blood feuds alike with a heavy gaderffii. Where Urrok charges, the rest of the war band follows."
     }
   },
   "Dex": {
@@ -198,14 +198,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_wp"
+          "value": "tuskchampion_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "tuskenelitem_sk"
+          "value": "tuskchampion_sk"
         }
       }
     ]
@@ -236,13 +236,6 @@
         "Feat": {
           "type": "word",
           "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1155
         }
       },
       {
@@ -410,42 +403,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1863
+          "value": 1823
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1853
+          "value": 1820
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1854
+          "value": 1824
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1855
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1761
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1762
+          "value": 1768
         }
       }
     ]
@@ -453,8 +432,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Elite",
-      "2": "Tusken"
+      "0": "Urrok, Gaderffii Champion"
     }
   },
   "fortbonus": {
@@ -471,7 +449,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1482
+    "value": 1657
   },
   "Int": {
     "type": "byte",
@@ -505,7 +483,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1587
+    "value": 1867
   },
   "NaturalAC": {
     "type": "byte",
@@ -810,7 +788,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 21
+    "value": 36
   },
   "Subrace": {
     "type": "cexostring",
@@ -818,7 +796,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tusken_elite2"
+    "value": "tuskchampion"
   },
   "Tail_New": {
     "type": "dword",
@@ -830,7 +808,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tusken_elite2"
+    "value": "tuskchampion"
   },
   "VarTable": {
     "type": "list",
@@ -840,6 +818,51 @@
         "Name": {
           "type": "cexostring",
           "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_CHAMPION_RARES,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_CHAMPION_RARES,10,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_CHAMPION_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
         },
         "Type": {
           "type": "dword",
@@ -864,36 +887,6 @@
           "type": "int",
           "value": 27
         }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE_RARES,8,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_ELITE,40,1"
-        }
       }
     ]
   },
@@ -911,7 +904,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 36
+    "value": 21
   },
   "xAppearance_Head": {
     "type": "word",

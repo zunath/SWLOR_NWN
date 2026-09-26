@@ -204,6 +204,25 @@ public class NPCEnemyBalanceAuditTests
         new("tarnapexmaw", "tarnapexmaw_sk", "tarnapexmaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 24),
         new("quillstalker", "quillstalker_sk", "quillstalker_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 24),
         new("rhydelalpha", "rhydelalpha_sk", "rhydelalpha_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 24),
+        new("tuskchampion", "tuskchampion_sk", "tuskchampion_wp", 41, 1867, 36, 30, 21, 30, 30, 127, 22, 21, 2, 9, 23, 18, 78, 27),
+        new("tusklongeye", "tusklongeye_sk", "tusklongeye_wp", 41, 1680, 21, 36, 21, 30, 30, 110, 28, 21, 2, 12, 21, 18, 74, 30),
+        new("tuskwarcaller", "tuskwarcaller_sk", "tuskwarcaller_wp", 41, 1587, 21, 30, 36, 21, 30, 77, 99, 17, 19, 11, 20, 21, 59, 27),
+    };
+
+    // Tatooine Tusken cave boss: level 45 Boss Melee Humanoid with a gaderffii (staff delay).
+    private static readonly ExpectedEnemy TuskenWarlordExpectedEnemy =
+        new("tuskwarlord", "tuskwarlord_sk", "tuskwarlord_wp", 45, 4698, 40, 33, 24, 33, 33, 230, 40, 23, 3, 10, 45, 29, 92, 27);
+
+    private static readonly IReadOnlyDictionary<ResistanceType, int> TuskenWarlordExpectedResistances = new Dictionary<ResistanceType, int>
+    {
+        [ResistanceType.Fire] = 11,
+        [ResistanceType.Poison] = -5,
+        [ResistanceType.Electrical] = 11,
+        [ResistanceType.Ice] = 11,
+        [ResistanceType.Mind] = -5,
+        [ResistanceType.Mobility] = 11,
+        [ResistanceType.Trauma] = 12,
+        [ResistanceType.Disruption] = 11,
     };
 
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
@@ -292,6 +311,9 @@ public class NPCEnemyBalanceAuditTests
             ["tarnapexmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
             ["quillstalker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
             ["rhydelalpha"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["tuskchampion"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 9, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 9, [ResistanceType.Ice] = 9, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = 9 },
+            ["tusklongeye"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 9, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 9, [ResistanceType.Ice] = 9, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = 9 },
+            ["tuskwarcaller"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 9, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 9, [ResistanceType.Ice] = 9, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = 9 },
         };
 
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
@@ -364,6 +386,9 @@ public class NPCEnemyBalanceAuditTests
         ["tarnapexmaw"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
         ["quillstalker"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
         ["rhydelalpha"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["tuskchampion"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["tusklongeye"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["tuskwarcaller"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
     };
 
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
@@ -856,6 +881,53 @@ public class NPCEnemyBalanceAuditTests
         GetCreatureFeats(utc.RootElement)
             .Should()
             .Contain(expectedFeatIds, "the Chirodactyl should use the Boss Melee package from the World NPCs Bible");
+    }
+
+    [Test]
+    public void TuskenWarlord_UsesBossMeleeBibleStats()
+    {
+        var root = FindRepositoryRoot();
+        var expected = TuskenWarlordExpectedEnemy;
+        using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+        using var skin = ReadJson(root, "Module", "uti", $"{expected.SkinResref}.uti.json");
+        using var weapon = ReadJson(root, "Module", "uti", $"{expected.WeaponResref}.uti.json");
+
+        GetString(utc.RootElement, "Tag").Should().Be(expected.Resref);
+        GetString(utc.RootElement, "TemplateResRef").Should().Be(expected.Resref);
+        GetEquippedResref(utc.RootElement, RightHandSlot).Should().Be(expected.WeaponResref);
+        GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(expected.SkinResref);
+
+        AssertCreatureHitPoints(utc.RootElement, expected);
+        AssertCreatureAttributes(utc.RootElement, expected);
+        AssertSkinCombatStats(skin.RootElement, expected);
+        AssertWeaponStats(weapon.RootElement, expected);
+
+        foreach (var (resistanceType, expectedValue) in TuskenWarlordExpectedResistances)
+        {
+            var rawCostValue = GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)resistanceType);
+            rawCostValue.Should().NotBeNull($"the Tusken Warlord should define {resistanceType} resistance");
+            Resistance.DecodeItemPropertyCostTableValue(rawCostValue!.Value)
+                .Should()
+                .Be(expectedValue, $"{resistanceType} should match the level 45 Boss Humanoid package");
+        }
+
+        var expectedFeatIds = new[]
+        {
+            (int)FeatType.MaulingBite,
+            (int)FeatType.BonecrusherBite,
+            (int)FeatType.TailSweep,
+            (int)FeatType.TerrifyingBellow,
+            (int)FeatType.ChitinGuard,
+            (int)FeatType.RupturingQuake,
+        };
+        var creatureFeats = GetCreatureFeats(utc.RootElement);
+        creatureFeats.Should().Contain(expectedFeatIds, "the Tusken Warlord should use the Boss Melee package");
+        creatureFeats
+            .Intersect(ResistanceThreatFeats.Keys)
+            .Should()
+            .BeEquivalentTo(
+                expectedFeatIds.Intersect(ResistanceThreatFeats.Keys),
+                "the Tusken Warlord should not inherit the Tusken Elite's resistance-pressure abilities");
     }
 
     [Test]

@@ -1082,6 +1082,7 @@
               "name": "Veles",
               "members": [
                 "cleanwatertube",
+                "concoursedroid",
                 "czerka_concierge",
                 "czerkapatrol",
                 "czerkasoda",
@@ -1171,6 +1172,7 @@
             "talgarmeyne",
             "tristan_talyron",
             "veles_thug1",
+            "vendor",
             "wf_droid",
             "wf_engineer"
           ]

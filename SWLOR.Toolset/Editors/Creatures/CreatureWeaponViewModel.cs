@@ -16,6 +16,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         public string Label { get; }
         public CreatureStatCellViewModel Damage { get; }
         public CreatureStatCellViewModel Delay { get; }
+        public CreatureStatCellViewModel Accuracy { get; }
         public CreatureOptionCellViewModel DamageType { get; }
         public CreatureOptionCellViewModel DamageStat { get; }
         public bool Exists => !string.IsNullOrWhiteSpace(_equipment.EquippedResRef(_slot));
@@ -69,6 +70,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
             Damage = Numeric("DMG", CreaturePropertyCatalog.Damage, 34, 0);
             Delay = Numeric("Delay", CreaturePropertyCatalog.Delay, 52, 24);
+            Accuracy = Numeric("Accuracy", CreaturePropertyCatalog.Accuracy, 45, 0);
             DamageType = Exclusive(
                 "Damage Type",
                 Enum.GetValues<CombatDamageType>()
@@ -89,6 +91,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             Damage.Reload();
             Delay.Reload();
+            Accuracy.Reload();
             DamageType.Reload();
             DamageStat.Reload();
             OnPropertyChanged(nameof(Exists));

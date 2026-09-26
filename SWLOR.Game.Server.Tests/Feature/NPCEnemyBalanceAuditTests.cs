@@ -120,20 +120,25 @@ public class NPCEnemyBalanceAuditTests
         new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 291, 21, 17, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 31, 24),
         new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 16, 24),
         new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 22, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 46, 30),
-        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
     };
 
     private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
     {
-        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 32, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 81, 23),
-        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 977, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 17, 17, 78, 30),
-        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 33, 23, 33, 33, 121, 21, 23, 1, 10, 20, 18, 88, 23),
-        new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 35, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 23),
+        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 32, 22, 32, 32, 101, 18, 22, 0, 10, 69, 39, 81, 23),
+        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 977, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 67, 39, 78, 30),
+        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 33, 23, 33, 33, 121, 21, 23, 1, 10, 70, 40, 88, 23),
+        new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 35, 25, 35, 35, 253, 44, 25, 3, 11, 72, 42, 102, 23),
     };
 
     private static readonly ExpectedEnemy OldScarExpectedEnemy =
         new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 14, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
+
+    // Dathomir world boss: shares DATHOMIR_GROTTOS_BOSS with the Rancor and Dark Side Adept, so it uses
+    // the level 50 Boss Melee preset. The two different claws split the preset DMG (102).
+    private static readonly ExpectedEnemy ChirodactylExpectedEnemy =
+        new("vdathchirodac", "chirodactyl_sk", "chirodactyl_wp", 50, 5425, 43, 35, 25, 35, 35, 253, 44, 25, 3, 11, 72, 42, 51, 24);
 
     private static readonly ExpectedEnemy StormplumeExpectedEnemy =
         new("stormplume", "stormplume_sk", "stormplume_wp", 4, 164, 10, 14, 16, 10, 14, 15, 19, 4, 6, 3, 2, 6, 10, 24);
@@ -153,52 +158,52 @@ public class NPCEnemyBalanceAuditTests
         new("shardeye", "shardeye_sk", "shardeye_wp", 10, 350, 12, 20, 12, 16, 16, 36, 9, 10, 2, 6, 5, 5, 22, 24),
         new("rootcoil", "rootcoil_sk", "rootcoil_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
-        new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
+        new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 30),
         new("ashwing", "ashwing_sk", "ashwing_wp", 2, 114, 10, 13, 16, 10, 13, 12, 15, 3, 5, 3, 1, 5, 7, 24),
         new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 1103, 29, 24, 17, 24, 24, 88, 15, 16, 2, 6, 13, 11, 53, 24),
         new("sable_quarr", "sableq_sk", "sableq_wp", 29, 1082, 18, 30, 18, 25, 25, 82, 20, 17, 2, 9, 12, 12, 54, 30),
         new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1270, 19, 32, 19, 27, 27, 91, 23, 18, 2, 10, 13, 13, 61, 22),
         new("inkveil", "inkveil_sk", "inkveil_wp2", 31, 1109, 18, 25, 31, 18, 25, 60, 78, 13, 15, 9, 11, 15, 23, 24),
         new("glassjaw", "glassjaw_sk", "glassjaw_wp2", 30, 1128, 18, 31, 18, 25, 25, 84, 21, 17, 2, 10, 12, 12, 28, 24),
-        new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 24, 34, 42, 24, 139, 46, 21, 2, 9, 25, 22, 76, 23),
-        new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("blastbreaker", "blastbreaker_sk", "blastbreaker_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("suppressor", "suppressor_sk", "suppressor_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("ironjaw", "ironjaw_sk", "ironjaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("quickdraw", "quickdraw_sk", "quickdraw_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("hexcaller", "hexcaller_sk", "hexcaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("grottoalpha", "grottoalpha_sk", "grottoalpha_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
-        new("spinequill", "spinequill_sk", "spinequill_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
-        new("ritestalker", "ritestalker_sk", "ritestalker_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
-        new("invictus", "invictus_sk", "invictus_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("ruptorvane", "ruptorvane_sk", "ruptorvane_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("blackoutwrd", "blackoutwrd_sk", "blackoutwrd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("sabraetrial", "sabraetrial_sk", "sabraetrial_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("enclavesentl", "enclavesentl_sk", "enclavesentl_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("cycloneadpt", "cycloneadpt_sk", "cycloneadpt_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("forgewright", "forgewright_sk", "forgewright_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("flameweaver", "flameweaver_sk", "flameweaver_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("banecaller", "banecaller_sk", "banecaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("canyonbulwrk", "canyonbulwrk_sk", "canyonbulwrk_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("dunedeadeye", "dunedeadeye_sk", "dunedeadeye_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("deadhandzeph", "deadhandzeph_sk", "deadhandzeph_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("flurrychamp", "flurrychamp_sk", "flurrychamp_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("thermlancer", "thermlancer_sk", "thermlancer_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("barrieroverse", "barrieroverse_sk", "barrieroverse_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("cryptwarden", "cryptwarden_sk", "cryptwarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("markahunger", "markahunger_sk", "markahunger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("eclipseshade", "eclipseshade_sk", "eclipseshade_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("bunkerbreak", "bunkerbreak_sk", "bunkerbreak_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("beaconmarks", "beaconmarks_sk", "beaconmarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("decurioncmd", "decurioncmd_sk", "decurioncmd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("triagewarden", "triagewarden_sk", "triagewarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("chemslinger", "chemslinger_sk", "chemslinger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("conduitmatrn", "conduitmatrn_sk", "conduitmatrn_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("tarnapexmaw", "tarnapexmaw_sk", "tarnapexmaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
-        new("quillstalker", "quillstalker_sk", "quillstalker_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
-        new("rhydelalpha", "rhydelalpha_sk", "rhydelalpha_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
+        new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 34, 34, 42, 24, 139, 46, 21, 2, 9, 75, 44, 76, 23),
+        new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("blastbreaker", "blastbreaker_sk", "blastbreaker_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("suppressor", "suppressor_sk", "suppressor_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("ironjaw", "ironjaw_sk", "ironjaw_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("quickdraw", "quickdraw_sk", "quickdraw_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("hexcaller", "hexcaller_sk", "hexcaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("grottoalpha", "grottoalpha_sk", "grottoalpha_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 24),
+        new("spinequill", "spinequill_sk", "spinequill_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 24),
+        new("ritestalker", "ritestalker_sk", "ritestalker_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 24),
+        new("invictus", "invictus_sk", "invictus_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("ruptorvane", "ruptorvane_sk", "ruptorvane_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("blackoutwrd", "blackoutwrd_sk", "blackoutwrd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("sabraetrial", "sabraetrial_sk", "sabraetrial_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("enclavesentl", "enclavesentl_sk", "enclavesentl_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("cycloneadpt", "cycloneadpt_sk", "cycloneadpt_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("forgewright", "forgewright_sk", "forgewright_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("flameweaver", "flameweaver_sk", "flameweaver_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("banecaller", "banecaller_sk", "banecaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("canyonbulwrk", "canyonbulwrk_sk", "canyonbulwrk_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("dunedeadeye", "dunedeadeye_sk", "dunedeadeye_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("deadhandzeph", "deadhandzeph_sk", "deadhandzeph_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("flurrychamp", "flurrychamp_sk", "flurrychamp_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("thermlancer", "thermlancer_sk", "thermlancer_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("barrieroverse", "barrieroverse_sk", "barrieroverse_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("cryptwarden", "cryptwarden_sk", "cryptwarden_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("markahunger", "markahunger_sk", "markahunger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("eclipseshade", "eclipseshade_sk", "eclipseshade_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("bunkerbreak", "bunkerbreak_sk", "bunkerbreak_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("beaconmarks", "beaconmarks_sk", "beaconmarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("decurioncmd", "decurioncmd_sk", "decurioncmd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("triagewarden", "triagewarden_sk", "triagewarden_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("chemslinger", "chemslinger_sk", "chemslinger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("conduitmatrn", "conduitmatrn_sk", "conduitmatrn_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("tarnapexmaw", "tarnapexmaw_sk", "tarnapexmaw_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 24),
+        new("quillstalker", "quillstalker_sk", "quillstalker_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 24),
+        new("rhydelalpha", "rhydelalpha_sk", "rhydelalpha_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 24),
     };
 
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
@@ -408,8 +413,6 @@ public class NPCEnemyBalanceAuditTests
         new("qion_hive_tunnel", "qiontunneler_wp", 31),
         new("qion_hive_tunnel", "qiontunneler_wp2", 30),
         new("vkorrdun1sword", "sithguardmel_wp", 85),
-        new("vdathchirodac", "chirodactyl_wp", 41),
-        new("vdathchirodac", "chirodactyl_wp2", 40),
         new("korr_wraid", "wraid_wp", 35),
         new("ww_kinrath", "wwkinrath_wp", 15),
     };
@@ -814,6 +817,45 @@ public class NPCEnemyBalanceAuditTests
                 .Should()
                 .Be(expectedValue, $"{resistanceType} should match Old Scar's level 4 Elite Beast package");
         }
+    }
+
+    [Test]
+    public void Chirodactyl_UsesDathomirWorldBossStats()
+    {
+        var root = FindRepositoryRoot();
+        var expected = ChirodactylExpectedEnemy;
+        using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+        using var skin = ReadJson(root, "Module", "uti", $"{expected.SkinResref}.uti.json");
+        using var leftClaw = ReadJson(root, "Module", "uti", "chirodactyl_wp.uti.json");
+        using var rightClaw = ReadJson(root, "Module", "uti", "chirodactyl_wp2.uti.json");
+
+        GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(expected.SkinResref);
+        GetEquippedResref(utc.RootElement, CreatureLeftSlot).Should().Be("chirodactyl_wp");
+        GetEquippedResref(utc.RootElement, CreatureWeaponSlot).Should().Be("chirodactyl_wp2");
+
+        AssertCreatureHitPoints(utc.RootElement, expected);
+        AssertCreatureAttributes(utc.RootElement, expected);
+        AssertSkinCombatStats(skin.RootElement, expected);
+
+        (GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDMG).GetValueOrDefault() +
+         GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDMG).GetValueOrDefault())
+            .Should()
+            .Be(102, "the two Chirodactyl claws should split the level 50 Boss Melee DMG");
+        GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
+        GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
+
+        var expectedFeatIds = new[]
+        {
+            (int)FeatType.MaulingBite,
+            (int)FeatType.BonecrusherBite,
+            (int)FeatType.TailSweep,
+            (int)FeatType.TerrifyingBellow,
+            (int)FeatType.ChitinGuard,
+            (int)FeatType.RupturingQuake,
+        };
+        GetCreatureFeats(utc.RootElement)
+            .Should()
+            .Contain(expectedFeatIds, "the Chirodactyl should use the Boss Melee package from the World NPCs Bible");
     }
 
     [Test]

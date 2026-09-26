@@ -174,10 +174,10 @@ public class ViscaraSpawnDefinitionTests
         ("pulse_calrifle", "Pulse-Frame Calibration Rifle", 7, 38, 46, 45, 30, true),
         ("rending_cleaver", "Rending Cleaver", 13, 42, 39, 45, 30, false),
         ("duel_splitter", "Duelist's Splitter", 12, 27, 41, 45, 29, false),
-        ("redvein_pistol", "Red Vein Holdout", 11, 22, 45, 45, 25, true),
+        ("redvein_pistol", "Red Vein Holdout", 61, 22, 45, 45, 25, true),
         ("sump_vknife", "Sump-Cut Vibroknife", 22, 21, 37, 45, 22, false),
         ("gutter_staff", "Gutterline Staff", 50, 23, 44, 45, 27, false),
-        ("servo_pistol", "Servo-Tuned Pistol", 11, 22, 45, 45, 25, true),
+        ("servo_pistol", "Servo-Tuned Pistol", 61, 22, 45, 45, 25, true),
         ("cad_rifle", "Cadence Rifle", 7, 38, 46, 45, 30, true),
         ("pulse_conduct", "Pulse Conductor", 50, 23, 44, 45, 27, false),
         ("adrenal_injector", "Adrenal Injector", 58, 41, 40, 45, 28, false),
@@ -198,8 +198,8 @@ public class ViscaraSpawnDefinitionTests
     {
         ("pulse_calrifle", 7, 11, 31, 11),
         ("cad_rifle", 7, 31, 164, 23),
-        ("redvein_pistol", 11, 231, 101, 61),
-        ("servo_pistol", 11, 11, 221, 71),
+        ("redvein_pistol", 61, 231, 101, 61),
+        ("servo_pistol", 61, 11, 221, 71),
     };
 
     private static readonly (
@@ -296,6 +296,15 @@ public class ViscaraSpawnDefinitionTests
         ("recipe_spcharm", "Blueprint: Skycrest Charm", RecipeType.SkycrestCharm, "sp_beakcharm", "Skycrest Charm", 19, RecipeCategoryType.Necklace),
         ("recipe_sptroph", "Blueprint: Skycrest Trophy Band", RecipeType.SkycrestTrophyBand, "sp_trophy", "Skycrest Trophy Band", 52, RecipeCategoryType.Ring),
         ("recipe_spplume", "Blueprint: Skycrest Braid", RecipeType.SkycrestBraid, "sp_plumebraid", "Skycrest Braid", 21, RecipeCategoryType.Belt),
+    };
+
+    /// <summary>
+    /// Recipe books deliberately seeded into a named rare table on top of its named rare pool
+    /// (each droid resistance recipe book has one rare drop source).
+    /// </summary>
+    private static readonly Dictionary<string, string[]> AdditionalNamedRareDrops = new()
+    {
+        ["VISCARA_VRIX7_RARES"] = new[] { "recipe_dr_elec2" },
     };
 
     private static readonly NamedRareEliteSpec[] NamedRareEliteSpecs =
@@ -881,11 +890,14 @@ public class ViscaraSpawnDefinitionTests
 
             expectedRecipeResrefs.Length.Should().BeInRange(10, 20, $"{spec.Resref} should expose a 10-20 recipe named rare pool");
 
+            var expectedRareResrefs = expectedRecipeResrefs
+                .Concat(AdditionalNamedRareDrops.GetValueOrDefault(spec.RareLootTableId, Array.Empty<string>()))
+                .ToArray();
             var rareTable = tables[spec.RareLootTableId];
             rareTable.IsRare.Should().BeTrue();
-            rareTable.Should().HaveCount(expectedRecipeResrefs.Length);
+            rareTable.Should().HaveCount(expectedRareResrefs.Length);
             rareTable.Should().OnlyContain(item => item.IsRare && item.MaxQuantity == 1 && item.Weight == 1);
-            rareTable.Select(item => item.Resref).Should().BeEquivalentTo(expectedRecipeResrefs);
+            rareTable.Select(item => item.Resref).Should().BeEquivalentTo(expectedRareResrefs);
 
             var componentTable = tables[spec.ComponentLootTableId];
             componentTable.IsRare.Should().BeFalse();

@@ -95,3 +95,24 @@ silently inflate reviewed NPC profiles.
   Evasion 19), preserving the line's evasive identity while matching the
   other capstone bosses; Bible rows, UTCs, skins, and claw weapons updated
   together. Trash ranks (`_ad`/`_sp`/`_ic`) intentionally stay Swarm-role.
+
+## 2026-09 endgame defense pass
+
+- Player feedback: level 50 enemies, especially the Chirodactyl, died far faster
+  than on the pre-combat-upgrade server. Measured cause: pre-upgrade endgame
+  skins carried up to +160 Defense, which the preset system flattened, while
+  level-45 equipment adds about 100 Attack (head, arms, two rings, weapon) and
+  about 44 Force Attack that per-level defense growth never tracked. Relative
+  to live, the level 46-50 band kept about 1.0x its HP x Defense while every
+  lower band gained 1.6-2.3x.
+- `Enemy Formula Source` row 42 documents the new endgame equipment defense
+  term: Physical Defense + ROUND(50 * CLAMP((Level - 40) / 10, 0, 1)) and Force
+  Defense + ROUND(22 * CLAMP(...)), full from level 50 up. It offsets half of
+  the level-45 equipment surge. `Enemy Stat Presets` levels 41-100 were
+  regenerated with it, and every World NPCs row and stat skin at level 41+ was
+  updated to match.
+- `vdathchirodac` was misclassified as Normal. It shares the
+  `DATHOMIR_GROTTOS_BOSS` world-boss table with the Rancor and Dark Side Adept
+  (both Boss) and shared their boss skin and 3000 HP before the upgrade. It now
+  uses the level 50 Boss Melee preset and ability package (5425 HP, claws
+  51/51 DMG).

@@ -31,6 +31,8 @@ public sealed class ConversationGraphCorpusTests
 
         resources.Should().HaveCount(authoredGraphCount,
             "every active authored graph must be embedded; retired quest dialogues and native DMFI are excluded");
+        resources.Should().HaveCount(342,
+            "all active authored graphs must be embedded; retired quest dialogues and native DMFI are excluded");
         resources.Should().NotContain(resource =>
             resource.EndsWith(".dmfi_universal.conversation.json", StringComparison.OrdinalIgnoreCase));
         foreach (var resource in resources)

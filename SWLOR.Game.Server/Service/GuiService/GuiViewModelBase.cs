@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
         private readonly Dictionary<string, int> _partialViewGenerations = new();
         private int _bindingGeneration;
+        private string _rootPartial;
 
         protected abstract void Initialize(TPayload initialPayload);
 
@@ -250,6 +251,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             uint tetherObject)
         {
             _bindingGeneration++;
+            _rootPartial = null;
             Player = player;
             WindowToken = windowToken;
             WindowType = type;
@@ -426,12 +428,35 @@ namespace SWLOR.Game.Server.Service.GuiService
             ChangePartialView("_window_", "%%WINDOW_INPUT_MODAL%%");
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Applies a partial view to the window root (<c>_window_</c>) or to a group element.
+        /// A group that sits directly in the main view goes through
+        /// <see cref="SwapNestedPartialView"/>: NUI can drop a plain nested layout mid-redraw
+        /// and leave the content area blank. Other targets (the root, slots nested inside
+        /// another partial, anything while a modal is showing) are applied directly.
+        /// </summary>
+        /// <param name="elementId">The element to change, or <c>_window_</c> for the root.</param>
+        /// <param name="partialName">The partial view to apply.</param>
         public void ChangePartialView(string elementId, string partialName)
+        {
+            var window = Gui.GetWindowTemplate(WindowType);
+            if (GuiPartialViewRouting.RequiresRedrawSafeSwap(elementId, _rootPartial, window.PartialElementIds))
+            {
+                SwapNestedPartialView(elementId, partialName);
+                return;
+            }
+
+            ApplyPartialView(elementId, partialName);
+        }
+
+        private void ApplyPartialView(string elementId, string partialName)
         {
             var window = Gui.GetWindowTemplate(WindowType);
             var partial = window.PartialViews[partialName];
             NuiSetGroupLayout(Player, WindowToken, elementId, partial);
+
+            if (elementId == GuiPartialViewRouting.WindowElementId)
+                _rootPartial = partialName;
 
             ApplyRefreshBugFix();
         }
@@ -447,12 +472,13 @@ namespace SWLOR.Game.Server.Service.GuiService
         }
 
         /// <summary>
-        /// Swaps a partial view that is nested inside another partial (e.g. a
-        /// tab's content area within a window whose own root is a partial).
+        /// Swaps a partial view on a group that sits directly in the main view.
         /// NUI can silently drop a nested partial layout while its parent is
         /// being redrawn. This forces a root redraw first, applies the target
         /// partial, then reapplies it once more on the next tick to guarantee
-        /// it survives the parent's redraw pass.
+        /// it survives the parent's redraw pass. <see cref="ChangePartialView"/>
+        /// routes such groups here automatically; call this directly only to
+        /// pass callbacks.
         /// </summary>
         /// <param name="elementId">The nested element id to change.</param>
         /// <param name="partialName">The partial view to apply.</param>
@@ -485,20 +511,21 @@ namespace SWLOR.Game.Server.Service.GuiService
                     _partialViewGenerations[elementId] != generation)
                     return;
                 onBeforeApply?.Invoke();
-                ChangePartialView(elementId, partialName);
+                ApplyPartialView(elementId, partialName);
                 onAfterApply?.Invoke();
             }
 
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            ApplyPartialView(GuiPartialViewRouting.WindowElementId, GuiPartialViewRouting.MainViewPartial);
             Apply();
 
             // The delayed re-apply can fire after the player has already closed (or
-            // rapidly toggled) the window; NuiSetGroupLayout against a destroyed window
-            // raises a client-side "element id not found" error. Only re-apply while
-            // the window is still open.
+            // rapidly toggled) the window, or after a modal replaced the main view;
+            // NuiSetGroupLayout against a missing element raises a client-side
+            // "element id not found" error. Only re-apply while the main view is showing.
             DelayCommand(0.0f, () =>
             {
-                if (Gui.IsWindowOpen(Player, WindowType))
+                if (Gui.IsWindowOpen(Player, WindowType) &&
+                    _rootPartial == GuiPartialViewRouting.MainViewPartial)
                     Apply();
             });
         }

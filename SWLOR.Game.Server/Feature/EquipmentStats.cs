@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.STMRegen] = ApplySTMRegenBonus;
             _statChangeActions[ItemPropertyType.CombatReadiness] = ApplyCombatReadiness;
             _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
+            _statChangeActions[ItemPropertyType.Accuracy] = ApplyAccuracy;
             _statChangeActions[ItemPropertyType.ForceAttack] = ApplyForceAttack;
             _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
             _statChangeActions[ItemPropertyType.Resistance] = ApplyResistance;
@@ -380,7 +381,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Applies or removes attack bonuses. This affects the end result of the damage calculation (not to be confused with NWN's Attack Bonus property which is accuracy).
+        /// Applies or removes attack bonuses. This affects the end result of the damage calculation (not to be confused with Accuracy, which affects the chance to hit).
         /// </summary>
         /// <param name="creature">The creature to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>
@@ -416,7 +417,49 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Applies or removes force attack bonuses. This affects the end result of the damage calculation (not to be confused with NWN's Attack Bonus property which is accuracy).
+        /// Applies or removes accuracy granted by non-weapon equipment, which applies to every attack.
+        /// Accuracy on a weapon only applies to that weapon's attacks, so it is read from the weapon when attacking instead.
+        /// Creature skins are skipped because their accuracy is read directly as the NPC's total.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the accuracy, if false we're removing it.</param>
+        private static void ApplyAccuracy(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var baseItemType = GetBaseItemType(item);
+            if (Item.IsAttackWeaponType(baseItemType) || baseItemType == BaseItem.CreatureItem)
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Stat.AdjustAccuracy(dbPlayer, amount);
+                }
+                else
+                {
+                    Stat.AdjustAccuracy(dbPlayer, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                ReapplyNPCStat(creature, ItemPropertyType.Accuracy, amount, isAdding);
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes force attack bonuses. This affects the end result of the damage calculation (not to be confused with Accuracy, which affects the chance to hit).
         /// </summary>
         /// <param name="creature">The creature to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>

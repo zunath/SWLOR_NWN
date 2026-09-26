@@ -137,13 +137,17 @@ public class CharacterSheetCombatUpgradeTests
 
         var forceAccuracyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
             null,
-            new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyBonus, 4, true })!;
+            new object[] { AbilityType.Willpower, 7, ItemPropertyType.Accuracy, 4, true })!;
         forceAccuracyBonus.Should().Be((AbilityType.Willpower, 11));
 
-        var forceEnhancementBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
-            null,
-            new object[] { AbilityType.Willpower, 7, ItemPropertyType.EnhancementBonus, 5, true })!;
-        forceEnhancementBonus.Should().Be((AbilityType.Willpower, 12));
+        // The retired native properties no longer grant accuracy; the item migration converts them.
+        foreach (var legacyType in new[] { ItemPropertyType.AccuracyBonus, ItemPropertyType.EnhancementBonus })
+        {
+            var legacyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
+                null,
+                new object[] { AbilityType.Willpower, 7, legacyType, 5, true })!;
+            legacyBonus.Should().Be((AbilityType.Willpower, 7));
+        }
     }
 
     [Test]

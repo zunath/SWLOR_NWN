@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (value)
                 {
-                    ChangePartialView(BeastDetailsPartial, PartialViewStats);
+                    SwapNestedPartialView(BeastDetailsPartial, PartialViewStats);
                     LoadSelectedBeast();
                 }
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (value)
                 {
-                    ChangePartialView(BeastDetailsPartial, PartialViewPurities);
+                    SwapNestedPartialView(BeastDetailsPartial, PartialViewPurities);
                     LoadSelectedBeast();
                 }
 
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (value)
                 {
-                    ChangePartialView(BeastDetailsPartial, PartialViewPerks);
+                    SwapNestedPartialView(BeastDetailsPartial, PartialViewPerks);
                     LoadSelectedBeast();
                 }
 

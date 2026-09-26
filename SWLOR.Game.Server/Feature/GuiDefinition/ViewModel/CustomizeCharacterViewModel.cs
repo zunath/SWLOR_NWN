@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsVoiceSelected = false;
             IsCustomPortraitVisible = _target == Player;
 
-            ChangePartialView(PartialElement, PortraitPartial);
+            SwapNestedPartialView(PartialElement, PortraitPartial);
             LoadCurrentPortrait();
 
             WatchOnClient(model => model.CustomPortraitFile);
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPortraitSelected = false;
             IsVoiceSelected = true;
 
-            ChangePartialView(PartialElement, VoicePartial);
+            SwapNestedPartialView(PartialElement, VoicePartial);
             LoadSoundSets();
         }
 

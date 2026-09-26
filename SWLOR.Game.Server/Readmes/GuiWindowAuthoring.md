@@ -301,15 +301,17 @@ the VM side to refresh all column lists from one row-DTO list.
 ## 6. Partials, tabs, and modals
 
 - `DefinePartialView(name, builder)` declares a swappable layout; it renders only
-  when applied to an element via `ChangePartialView(elementId, partialName)` (direct)
-  or `SwapNestedPartialView(...)` (root-redraw-safe path used by `GuiTabGroup`).
+  when applied to an element. Swap nested elements with
+  `SwapNestedPartialView(elementId, partialName)` (the root-redraw-safe path used by
+  `GuiTabGroup`), never a plain `ChangePartialView` (R7). `ChangePartialView` is for
+  the window root (`_window_`) only.
 - Tabs: register in a static `GuiTabGroup`, sync toggle rows with
   `GuiToggleGroupSync`, drive swaps from `SelectTab` — exactly as in §3. Never bind
   the swap-driving property to the widget (R4).
 - **Windows without tabs still use `AddStandardLayout`** (R5 applies regardless):
   zero `AddTabRow` calls, ONE partial holding the entire body (stacked sections as
   rows inside it), applied at the end of `Initialize` via
-  `ChangePartialView(TabContentElement, MainContentPartial)` — and re-applied in
+  `SwapNestedPartialView(TabContentElement, MainContentPartial)` — and re-applied in
   `OnModalClosedRestore` if the window shows modals (R6).
 - Element ids are NOT validated server-side; a typo produces a client-only error and
   the window must be reopened (R7). Keep ids as ViewModel consts.

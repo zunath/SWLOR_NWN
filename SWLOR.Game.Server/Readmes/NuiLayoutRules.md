@@ -152,7 +152,15 @@ protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentEl
 
 The hook fires after every modal close (confirm and cancel, both modal kinds).
 
-### R7 — Partial-view element rules (doc-only; verified 2026-07)
+### R7 — Partial-view element rules (verified 2026-07)
+- **Swap nested elements with `SwapNestedPartialView`, never a plain
+  `ChangePartialView`** (enforced by `GuiNestedPartialSwapTests`). NUI can drop a
+  nested partial mid-redraw and leave the content area blank — the Settings Identity
+  and Chat tabs shipped this way. `SwapNestedPartialView` (and `GuiTabGroup`, which
+  wraps it) redraws the root, applies the partial, and re-applies it on the next tick.
+  It targets elements that live directly in the main view; a slot nested inside
+  another partial must be applied from the parent's swap callback instead (see the
+  AppearanceEditor armor palette), because the root redraw would wipe its parent.
 - **Element ids are not validated server-side.** `ChangePartialView` onto a
   nonexistent element id produces a client-side `NuiSetLayout failed: element id not
   found` error and the window must be closed/reopened (gallery P13a). Keep element-id

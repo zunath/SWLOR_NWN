@@ -1,6 +1,6 @@
 {
-  "Id": "esh_war_kestra",
-  "Title": "Kestra Vale",
+  "Id": "esh_firedancer",
+  "Title": "Temple Firedancer",
   "EntryPoints": [
     {
       "TargetNodeId": "entry-00000",
@@ -21,7 +21,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep your awareness beyond the walls. The Riverway is calm; the wilds it leads to are not.",
+          "Text": "Walk softly in this hall. We Firedancers keep its peace, as our forebears kept faith beneath the open night sky.",
           "Style": 0,
           "Color": null
         }
@@ -30,10 +30,6 @@
       "Choices": [
         {
           "ChoiceId": "reply-00000",
-          "Conditions": []
-        },
-        {
-          "ChoiceId": "reply-00001",
           "Conditions": []
         },
         {
@@ -55,7 +51,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Dire wolves hunt the Silverwood in packs, and the frost wolves are bolder still. Farther out, Neo-Crusader scouts test the roads. If the birds go silent, stop moving and listen.",
+          "Text": "Before it guarded temples, Firedancing was a ritual form of combat. Beneath the night sky, warriors crossed firebrands in ceremony; each movement an offering, each exchange a prayer. The discipline outlived the old rites, but we still carry their flame.",
           "Style": 0,
           "Color": null
         }
@@ -67,39 +63,13 @@
           "Conditions": []
         }
       ]
-    },
-    "entry-00002": {
-      "Id": "entry-00002",
-      "SpeakerName": "",
-      "SpeakerTag": "",
-      "PortraitResref": "",
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Text": [
-        {
-          "Text": "Do not chase a lone predator into the trees. It may be drawing you toward the pack. Carry supplies, keep the river on one side, and turn back before fatigue dulls your balance.",
-          "Style": 0,
-          "Color": null
-        }
-      ],
-      "OnEnterActions": [],
-      "Choices": [
-        {
-          "ChoiceId": "reply-00101",
-          "Conditions": []
-        }
-      ]
     }
   },
   "Choices": {
     "reply-00000": {
       "Id": "reply-00000",
       "Text": {
-        "Text": "What is dangerous outside the city?",
+        "Text": "What is the origin of Firedancing?",
         "Style": 4,
         "Color": null
       },
@@ -122,48 +92,7 @@
     "reply-00100": {
       "Id": "reply-00100",
       "Text": {
-        "Text": "Thank you. Safe travels.",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [],
-      "Next": [],
-      "EndsConversation": true,
-      "IsAutomatic": false
-    },
-    "reply-00001": {
-      "Id": "reply-00001",
-      "Text": {
-        "Text": "Any advice for traveling safely?",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [],
-      "Next": [
-        {
-          "TargetNodeId": "entry-00002",
-          "Conditions": []
-        }
-      ],
-      "EndsConversation": false,
-      "IsAutomatic": false
-    },
-    "reply-00101": {
-      "Id": "reply-00101",
-      "Text": {
-        "Text": "Thank you. Safe travels.",
+        "Text": "I will remember that tradition.",
         "Style": 4,
         "Color": null
       },
@@ -181,7 +110,7 @@
     "reply-99999": {
       "Id": "reply-99999",
       "Text": {
-        "Text": "I should be going.",
+        "Text": "I will leave you to your watch.",
         "Style": 4,
         "Color": null
       },

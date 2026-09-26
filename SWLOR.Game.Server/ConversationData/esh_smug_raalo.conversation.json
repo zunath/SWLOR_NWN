@@ -1,0 +1,444 @@
+{
+  "Id": "esh_smug_raalo",
+  "Title": "Raalo Kes",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-done",
+      "Conditions": [
+        {
+          "Key": "condition-completed-quest",
+          "Arguments": [
+            "eshan_scrapyard_smugglers"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-ready",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "eshan_scrapyard_smugglers",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-remind",
+      "Conditions": [
+        {
+          "Key": "condition-has-quest",
+          "Arguments": [
+            "eshan_scrapyard_smugglers"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-offer",
+      "Conditions": [
+        {
+          "Key": "condition-can-accept-quest",
+          "Arguments": [
+            "eshan_scrapyard_smugglers"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-fallback",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-offer": {
+      "Id": "entry-offer",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Keep your boots off the blue-marked scrap. Unless you're here to make credits. A rival crew has claimed the best salvage lanes and started charging tolls at blaster point.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-why",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-decline",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-why": {
+      "Id": "entry-why",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Because shooting them myself tells every buyer I'm fighting over that wreckage. You do it, you're another hard case passing through. Put down eight of their crew and the rest will abandon the claim.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-accept",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-decline",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-accepted": {
+      "Id": "entry-accepted",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Eight Scrapyard Smugglers. They moved their toll operation into the caves among the Scraplands wreckage. Head into the Scrapland Caves beyond this landing point and break it. Don't bring me cargo; I only need them gone.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-end",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-remind": {
+      "Id": "entry-remind",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The rival crew still owns the caves among the Scraplands wreckage. Head into the Scrapland Caves and put down eight Scrapyard Smugglers before their friends decide the claim costs too much blood.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-end",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-ready": {
+      "Id": "entry-ready",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Scraplands went quiet, and my spotters count eight empty posts. Tell me the rival crew is finished.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-turnin",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-later",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-complete": {
+      "Id": "entry-complete",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "That's the answer I needed. Their remaining people are already loading up. Take your cut; the salvage buyers funded it, whether they know that or not.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-end",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-done": {
+      "Id": "entry-done",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The salvage lanes are moving again. No toll collectors, no heroic speeches, just business. That's how I like it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-end",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-fallback": {
+      "Id": "entry-fallback",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "No work today. If that changes, you'll hear the blaster fire before you hear it from me.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-end",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "reply-why": {
+      "Id": "reply-why",
+      "Text": {
+        "Text": "Why hire an outsider for your own dispute?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-why",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-accept": {
+      "Id": "reply-accept",
+      "Text": {
+        "Text": "I'll break their hold on the scrapyard.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "eshan_scrapyard_smugglers"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-accepted",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-decline": {
+      "Id": "reply-decline",
+      "Text": {
+        "Text": "Find someone else to settle your claim.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-turnin": {
+      "Id": "reply-turnin",
+      "Text": {
+        "Text": "Eight smugglers are down. The lanes are yours.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "eshan_scrapyard_smugglers"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-complete",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-later": {
+      "Id": "reply-later",
+      "Text": {
+        "Text": "I'll make my report later.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-end": {
+      "Id": "reply-end",
+      "Text": {
+        "Text": "Understood.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ],
+  "OnAbortActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ]
+}

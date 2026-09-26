@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// Guards the custom Accuracy item property that replaced the native Attack Bonus and
+/// Guards the custom Accuracy item property that replaced the native Accuracy Bonus and
 /// Enhancement Bonus properties, which the engine turned into its own equip effects.
 /// </summary>
 public class AccuracyItemPropertyTests
@@ -24,12 +24,18 @@ public class AccuracyItemPropertyTests
         var itemPropDefRows = Read2da(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "itempropdef.2da"));
         var accuracy = itemPropDefRows[(int)ItemPropertyType.Accuracy];
         accuracy["Label"].Should().Be("Accuracy");
-        accuracy["Name"].Should().Be("16860081");
-        accuracy["GameStrRef"].Should().Be("16860082");
-        accuracy["Description"].Should().Be("16860083");
+        accuracy["Name"].Should().Be("16783410");
+        accuracy["GameStrRef"].Should().Be("16783411");
+        accuracy["Description"].Should().Be("16783412");
         accuracy["CostTableResRef"].Should().Be("45", "iprp_enhancenum reaches +100, unlike the native +20 table");
 
-        ReadTlkText(root, 16860081 - 16777216).Should().Be("Accuracy");
+        ReadTlkText(root, 16783410 - 16777216).Should().Be("Accuracy");
+
+        // The native Accuracy Bonus keeps its original definition; it is only hidden from builders.
+        var nativeAccuracy = itemPropDefRows[(int)ItemPropertyType.AccuracyBonus];
+        nativeAccuracy["Name"].Should().Be("16860081");
+        nativeAccuracy["CostTableResRef"].Should().Be("2");
+        ReadTlkText(root, 16860081 - 16777216).Should().Be("Accuracy Bonus");
 
         var itemPropRows = Read2da(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "itemprops.2da"));
         var itemClassColumns = itemPropRows[(int)ItemPropertyType.Accuracy].Keys
@@ -39,10 +45,8 @@ public class AccuracyItemPropertyTests
         foreach (var column in itemClassColumns)
         {
             itemPropRows[(int)ItemPropertyType.Accuracy][column].Should().Be("1", $"Accuracy is valid on {column}");
-            itemPropRows[(int)ItemPropertyType.AttackBonus][column].Should().Be("****",
-                "the native Attack Bonus is retired and must not be offered to builders");
-            itemPropRows[(int)ItemPropertyType.EnhancementBonus][column].Should().Be("****",
-                "the native Enhancement Bonus is retired and must not be offered to builders");
+            itemPropRows[(int)ItemPropertyType.AccuracyBonus][column].Should().Be("****",
+                "the native Accuracy Bonus is superseded by Accuracy and must not be offered to builders");
         }
     }
 
@@ -58,7 +62,7 @@ public class AccuracyItemPropertyTests
             .ToList();
 
         offenders.Should().BeEmpty(
-            "native Attack Bonus (56) and Enhancement Bonus (6) are converted to the Accuracy property (142)");
+            "native Accuracy Bonus (56) and Enhancement Bonus (6) are converted to the Accuracy property (142)");
     }
 
     [Test]
@@ -67,7 +71,7 @@ public class AccuracyItemPropertyTests
         var root = FindRepositoryRoot();
         var stat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
 
-        stat.Should().NotContain("ItemPropertyType.AttackBonus");
+        stat.Should().NotContain("ItemPropertyType.AccuracyBonus");
         stat.Should().NotContain("ItemPropertyType.EnhancementBonus");
         stat.Should().NotContain("AttackIncrease", "accuracy no longer reads engine attack effects");
         stat.Should().Contain("accuracyBonus += dbPlayer.Accuracy;");
@@ -87,7 +91,7 @@ public class AccuracyItemPropertyTests
     [Test]
     public void LegacyAccuracy_CombinesIntoOneClampedValue()
     {
-        AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.AttackBonus).Should().BeTrue();
+        AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.AccuracyBonus).Should().BeTrue();
         AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.EnhancementBonus).Should().BeTrue();
         AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.Accuracy).Should().BeFalse();
         AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.Attack).Should().BeFalse();

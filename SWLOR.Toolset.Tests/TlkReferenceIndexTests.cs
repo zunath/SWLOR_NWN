@@ -85,7 +85,7 @@ namespace SWLOR.Toolset.Tests
             var firstSafeGap = document.FindFirstAvailableBlank(index);
             TestContext.Out.WriteLine($"First corpus-safe custom TLK gap: {firstSafeGap}");
             firstSafeGap.Should().Be(expectedFirstSafeGap);
-            firstSafeGap.Should().Be(6194, "the current corpus's first unpopulated and unreferenced row is stable");
+            firstSafeGap.Should().Be(6197, "the current corpus's first unpopulated and unreferenced row is stable");
         }
 
         [Test]

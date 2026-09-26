@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     /// <summary>
-    /// Converts the native Attack Bonus and Enhancement Bonus item properties into the custom
+    /// Converts the native Accuracy Bonus and Enhancement Bonus item properties into the custom
     /// Accuracy property everywhere serialized item data can be stored. This includes equipped
     /// items, nested containers, and the separately serialized items inside droid controllers.
     /// </summary>
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// </summary>
         public static bool IsLegacyAccuracyProperty(ItemPropertyType type)
         {
-            return type == ItemPropertyType.AttackBonus ||
+            return type == ItemPropertyType.AccuracyBonus ||
                    type == ItemPropertyType.EnhancementBonus;
         }
 

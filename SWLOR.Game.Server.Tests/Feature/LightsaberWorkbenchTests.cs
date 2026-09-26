@@ -228,7 +228,7 @@ public class LightsaberWorkbenchTests
                      "ItemPropertyType.WeaponDamageType",
                      "ItemPropertyType.EnhancementBonus",
                      "ItemPropertyType.DamageBonus",
-                     "ItemPropertyType.AttackBonus",
+                     "ItemPropertyType.AccuracyBonus",
                      "ItemPropertyType.Accuracy",
                  })
         {

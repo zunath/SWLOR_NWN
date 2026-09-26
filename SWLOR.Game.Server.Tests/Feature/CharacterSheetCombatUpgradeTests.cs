@@ -141,7 +141,7 @@ public class CharacterSheetCombatUpgradeTests
         forceAccuracyBonus.Should().Be((AbilityType.Willpower, 11));
 
         // The retired native properties no longer grant accuracy; the item migration converts them.
-        foreach (var legacyType in new[] { ItemPropertyType.AttackBonus, ItemPropertyType.EnhancementBonus })
+        foreach (var legacyType in new[] { ItemPropertyType.AccuracyBonus, ItemPropertyType.EnhancementBonus })
         {
             var legacyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
                 null,

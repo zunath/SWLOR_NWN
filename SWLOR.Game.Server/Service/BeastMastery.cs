@@ -360,7 +360,7 @@ namespace SWLOR.Game.Server.Service
             var evasionBonus = (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f));
 
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.AttackBonus, DurationType.Invalid, -1);
+            BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.AccuracyBonus, DurationType.Invalid, -1);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Evasion, -1, evasionBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 

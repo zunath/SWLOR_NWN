@@ -92,7 +92,7 @@ Lightsaber Offense riders were moved from mostly area-only payoff to the actual 
 
 ### W-000A Cross-Skill Feedback Loops - Automated Coverage Added
 
-`CrossSkillPerkInteractionSafetyTests` proves the shared static termination rules: triggered and periodic damage exit before direct-hit perk/status procs; reflection and Marked for Death bonus damage use triggered delivery; transferred damage cannot reshare; one-shot redirects are consumed before damage dispatch; damage-derived healing aggregates under one per-hit cap; cross-resource conversion stays below 100 percent of paid cost and cannot call the inverse conversion; and cooldown reduction cannot reset capstones or run past ready.
+`CrossSkillPerkInteractionSafetyTests` proves the shared static termination rules: triggered and periodic damage exit before direct-hit perk/status procs; reflection uses triggered delivery; Marked for Death amplifies the marker's own hits rather than adding a separate damage instance; transferred damage cannot reshare; one-shot redirects are consumed before damage dispatch; damage-derived healing aggregates under one per-hit cap; cross-resource conversion stays below 100 percent of paid cost and cannot call the inverse conversion; and cooldown reduction cannot reset capstones or run past ready.
 
 ### W-001 Crit Cap Pressure - Automated Coverage Added
 

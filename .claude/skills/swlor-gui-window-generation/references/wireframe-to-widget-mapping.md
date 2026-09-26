@@ -33,7 +33,7 @@ column names the method to copy from. Every `Add*/Set*/Bind*` call below exists 
 | Color swatch/picker | `row.AddColorPicker().BindSelectedColor(m => m.Picked).SetHeight(150f).SetWidth(250f)` — watch it | `GuiColor` (watched) | `AddSelectionTab` |
 | Horizontal centering | `row.AddSpacer();` before and after the element | — | `AddGroupsTab` |
 | Bordered panel/frame | `row.AddGroup(g => { g.SetShowBorder(true); g.AddColumn(...); })` | — | `AddGroupsTab` |
-| Confirm dialog | in a handler: `ShowModal("Prompt?", onConfirm, onCancel)` — nested partials are restored automatically (R6) | `Action`s | `AddModalsTab` + VM |
+| Confirm dialog | in a handler: `ShowModal("Prompt?", onConfirm, onCancel)` — window MUST override `OnModalClosedRestore` | `Action`s | `AddModalsTab` + VM |
 | Text-entry dialog | `ShowInputModal("Prompt", initial, onConfirm)`; read `ModalInputText` in onConfirm | — | VM `OnClickShowInputModal` |
 | Tooltip | `.SetTooltip("...")` or `.BindTooltip(m => m.Tip)` on any widget | `string` if bound | everywhere |
 | Enabled/disabled state | `.BindIsEnabled(m => m.CanDoX)` + `.SetDisabledTooltip("why")` | `bool` | `AddBindingsTab` |

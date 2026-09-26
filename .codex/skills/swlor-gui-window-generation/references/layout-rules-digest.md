@@ -24,9 +24,9 @@ lines for your window is a hard gate — every warning is a confirmed defect.**
   `window.AddStandardLayout(...)`. Hand-rolled roots freeze the content region at a
   constant width. Tab partials are fixed-width (250-560f) borderless
   `Scrollbars(None)` panels; scrolling comes from the standard layout's host group.
-- **R6 (enforced by base class):** `ChangePartialView` tracks nested partials, redraws
-  and re-applies them on the next tick, and restores them when a modal closes. Do not
-  hand-roll restores; override `OnNestedLayoutsReapplied` only to republish bindings.
+- **R6 (doc; framework hook):** tabbed windows with modals MUST override
+  `protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);`
+  or the tab content vanishes when any modal closes.
 - **R7 (doc):** element ids are not validated server-side (typos = client-only error);
   never nest partials more than 2 deep (window root → partial → one nested slot).
 

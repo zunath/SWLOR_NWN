@@ -66,30 +66,6 @@ namespace SWLOR.Game.Server.Service.GuiService
             RegisterElementEvents(_activeWindow.Elements, windowId);
         }
 
-        private Dictionary<string, IReadOnlyCollection<string>> BuildPartialElementIds()
-        {
-            var partialElementIds = new Dictionary<string, IReadOnlyCollection<string>>();
-            foreach (var (partialName, partial) in _activeWindow.PartialViews)
-            {
-                var elementIds = new HashSet<string>();
-                CollectElementIds(partial.Elements, elementIds);
-                partialElementIds[partialName] = elementIds;
-            }
-
-            return partialElementIds;
-        }
-
-        private static void CollectElementIds(List<IGuiWidget> elements, HashSet<string> elementIds)
-        {
-            foreach (var element in elements)
-            {
-                if (!string.IsNullOrWhiteSpace(element.Id))
-                    elementIds.Add(element.Id);
-
-                CollectElementIds(element.Elements, elementIds);
-            }
-        }
-
         /// <summary>
         /// Builds the window and registers all associated events.
         /// </summary>
@@ -214,7 +190,6 @@ namespace SWLOR.Game.Server.Service.GuiService
             // solver, with a widget path - the client error itself carries no context.
             // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
             var layoutFindings = GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews);
-            var partialElementIds = BuildPartialElementIds();
 
             if (GuiLayoutValidator.IsValidationOnlyBuild)
             {
@@ -225,7 +200,6 @@ namespace SWLOR.Game.Server.Service.GuiService
                     _activeWindow.Geometry,
                     new Dictionary<string, Json>(),
                     layoutFindings,
-                    partialElementIds,
                     () =>
                     {
                         var dataModelInstance = Activator.CreateInstance<T>();
@@ -278,7 +252,6 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _activeWindow.Geometry,
                 partialViews,
                 layoutFindings,
-                partialElementIds,
                 () =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();

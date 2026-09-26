@@ -20,7 +20,7 @@ public class SettingsWindowTests
         var changeSettingsView = ExtractMethod(
             viewModelSource,
             "private void ChangeSettingsView",
-            "protected override void OnNestedLayoutsReapplied");
+            "private string GetSelectedPartial");
         var geometryCapture = changeSettingsView.IndexOf("UpdatePropertyFromClient(nameof(Geometry));", StringComparison.Ordinal);
         var partialSwap = changeSettingsView.IndexOf("ChangePartialView(SettingsView, partialName);", StringComparison.Ordinal);
 
@@ -53,25 +53,30 @@ public class SettingsWindowTests
         var changeSettingsView = ExtractMethod(
             viewModelSource,
             "private void ChangeSettingsView",
-            "protected override void OnNestedLayoutsReapplied");
-        var republish = ExtractMethod(
+            "private string GetSelectedPartial");
+        var partialSwap = changeSettingsView.IndexOf(
+            "ChangePartialView(SettingsView, partialName);",
+            StringComparison.Ordinal);
+        var refresh = changeSettingsView.IndexOf(
+            "RefreshPartialViewBindings();",
+            StringComparison.Ordinal);
+        var restoreMainView = ExtractMethod(
             viewModelSource,
-            "protected override void OnNestedLayoutsReapplied",
+            "protected override void OnMainViewRestored",
             "private void LoadColor");
 
-        // The base class re-applies the partial (and restores it after modals), then calls
-        // OnNestedLayoutsReapplied each time, so bindings are republished for every insertion.
-        changeSettingsView.Should().Contain("ChangePartialView(SettingsView, partialName);");
+        partialSwap.Should().BeGreaterThanOrEqualTo(0);
+        refresh.Should().BeGreaterThan(partialSwap);
+        changeSettingsView.Should().NotContain("partialName == ChatPartial");
+        changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ShowOwnDescriptor));");
+        changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));");
+        changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ScrambleAccountName));");
+        changeSettingsView.Should().Contain("ChatColorNames?.ResetBindings();");
+        changeSettingsView.Should().Contain("ChatColors?.ResetBindings();");
+        changeSettingsView.Should().Contain("ChatColorToggles?.ResetBindings();");
         changeSettingsView.Should().NotContain("LoadChatView();");
-        republish.Should().Contain("OnPropertyChanged(nameof(ShowOwnDescriptor));");
-        republish.Should().Contain("OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));");
-        republish.Should().Contain("OnPropertyChanged(nameof(ScrambleAccountName));");
-        republish.Should().Contain("ChatColorNames?.ResetBindings();");
-        republish.Should().Contain("ChatColors?.ResetBindings();");
-        republish.Should().Contain("ChatColorToggles?.ResetBindings();");
-        republish.Should().NotContain("LoadChatView();");
-        viewModelSource.Should().NotContain("override void OnMainViewRestored",
-            "the base class restores tracked partials when the main view returns");
+        restoreMainView.Should().Contain("ChangeSettingsView(GetSelectedPartial());");
+        restoreMainView.Should().NotContain("ChangePartialView(SettingsView");
     }
 
     [Test]

@@ -12,8 +12,8 @@ Run every sweep; each must answer YES before building.
       `window.AddColumn` root (rule R5). This holds even for windows WITHOUT tabs:
       grep your definition for `AddStandardLayout` — zero matches is an automatic fail.
 - [ ] No-tab windows: exactly one body partial, applied in `Initialize` via
-      `ChangePartialView(TabContentElement, MainContentPartial)`. The framework restores
-      it after modals (R6).
+      `ChangePartialView(TabContentElement, MainContentPartial)` (and re-applied in
+      `OnModalClosedRestore` if the window shows modals).
 - [ ] Every tab partial is a fixed-width borderless `Scrollbars(None)` panel.
 - [ ] Partial names and element ids are `const string`s on the ViewModel, referenced
       from the definition (never string literals in two places).
@@ -29,8 +29,8 @@ Run every sweep; each must answer YES before building.
       grid. (Tab rows with `AddToggles` are the other sanctioned exception.)
 - [ ] R4: the toggles-bound tab property only calls `HandleClientChange`; the swap
       logic lives in a separate `SelectTab` method.
-- [ ] R6: no hand-rolled root-redraw/reapply sequences; partial swaps go through
-      `ChangePartialView` or `GuiTabGroup`.
+- [ ] R6: if the window calls `ShowModal` or `ShowInputModal` anywhere AND has tabs,
+      `OnModalClosedRestore` is overridden.
 - [ ] R1: every non-last `AddTable` column passes a width > 0.
 - [ ] Lists: every cell of one list binds a `GuiBindingList` property, all kept the
       same length; `BindRowCount` is called; per-row click handlers use

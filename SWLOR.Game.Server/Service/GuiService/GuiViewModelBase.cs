@@ -31,14 +31,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
         private readonly Dictionary<string, int> _partialViewGenerations = new();
-        private readonly GuiPartialViewState _partialViews;
         private int _bindingGeneration;
-        private bool _isLayoutReapplyScheduled;
-
-        protected GuiViewModelBase()
-        {
-            _partialViews = new GuiPartialViewState(GetPartialElementIds);
-        }
 
         protected abstract void Initialize(TPayload initialPayload);
 
@@ -257,8 +250,6 @@ namespace SWLOR.Game.Server.Service.GuiService
             uint tetherObject)
         {
             _bindingGeneration++;
-            _isLayoutReapplyScheduled = false;
-            _partialViews.Reset();
             Player = player;
             WindowToken = windowToken;
             WindowType = type;
@@ -435,69 +426,44 @@ namespace SWLOR.Game.Server.Service.GuiService
             ChangePartialView("_window_", "%%WINDOW_INPUT_MODAL%%");
         }
 
-        /// <summary>
-        /// Applies a partial view to the window root (<c>_window_</c>) or to a group element.
-        /// Every window gets the same protection against NUI dropping layouts: nested layouts
-        /// are tracked, re-applied after anything that redraws their parent, and applied once
-        /// more on the next tick. Callers do not need their own redraw or restore workarounds.
-        /// </summary>
-        /// <param name="elementId">The element to change, or <c>_window_</c> for the root.</param>
-        /// <param name="partialName">The partial view to apply.</param>
+        /// <inheritdoc />
         public void ChangePartialView(string elementId, string partialName)
         {
-            var partial = Gui.GetWindowTemplate(WindowType).PartialViews[partialName];
+            var window = Gui.GetWindowTemplate(WindowType);
+            var partial = window.PartialViews[partialName];
+            NuiSetGroupLayout(Player, WindowToken, elementId, partial);
 
-            if (elementId == GuiPartialViewState.WindowElementId)
-            {
-                NuiSetGroupLayout(Player, WindowToken, elementId, partial);
-                _partialViews.SetRootPartial(partialName);
-
-                // Replacing the root wipes every nested layout. Put them back when the main
-                // view returns (e.g. a modal closing) so tabs and content areas never go blank.
-                if (_partialViews.IsMainViewShown && _partialViews.NestedLayouts.Count > 0)
-                {
-                    ApplyNestedLayouts();
-                    ScheduleNestedLayoutReapply();
-                }
-
-                ApplyRefreshBugFix();
-                return;
-            }
-
-            _partialViews.SetNestedPartial(elementId, partialName);
-            ApplyNestedLayout(elementId, partial);
+            ApplyRefreshBugFix();
         }
 
         /// <summary>
         /// Swaps a group element's layout for one generated at runtime. Event handlers
         /// remain valid when regenerated elements reuse their registered element IDs.
-        /// The layout is tracked like a partial view, so root redraws restore it. It is applied
-        /// directly without a root redraw because callers regenerate it on every resize step.
         /// </summary>
         protected void SetGroupLayout(string elementId, Json layout)
         {
-            _partialViews.SetNestedLayout(elementId, layout);
-            if (!_partialViews.IsMainViewShown)
-                return;
-
             NuiSetGroupLayout(Player, WindowToken, elementId, layout);
             ApplyRefreshBugFix();
         }
 
         /// <summary>
-        /// Swaps a nested partial view and runs callbacks around it. The swap itself goes
-        /// through <see cref="ChangePartialView"/>, which redraws and re-applies nested layouts
-        /// on the next tick; both callbacks run again after that deferred re-apply.
+        /// Swaps a partial view that is nested inside another partial (e.g. a
+        /// tab's content area within a window whose own root is a partial).
+        /// NUI can silently drop a nested partial layout while its parent is
+        /// being redrawn. This forces a root redraw first, applies the target
+        /// partial, then reapplies it once more on the next tick to guarantee
+        /// it survives the parent's redraw pass.
         /// </summary>
         /// <param name="elementId">The nested element id to change.</param>
         /// <param name="partialName">The partial view to apply.</param>
         /// <param name="onBeforeApply">
-        /// Optional callback run before the swap and again on the next tick (e.g. to refresh
-        /// the data the partial will display).
+        /// Optional callback run immediately before each apply (e.g. to refresh
+        /// the data the partial will display). Runs twice - once per apply -
+        /// matching the existing RestoreSelectedTabPartial behavior.
         /// </param>
         /// <param name="onAfterApply">
-        /// Optional callback run after the swap and again on the next tick. Use this to
-        /// publish bindings the replaced controls need.
+        /// Optional callback run after each replacement layout is applied, including the
+        /// deferred apply. Use this to restore child partials and publish their bindings.
         /// </param>
         /// <remarks>
         /// Public rather than protected: orchestrator helpers like GuiTabGroup
@@ -513,102 +479,27 @@ namespace SWLOR.Game.Server.Service.GuiService
             var bindingGeneration = _bindingGeneration;
             var windowToken = WindowToken;
 
-            onBeforeApply?.Invoke();
-            ChangePartialView(elementId, partialName);
-            onAfterApply?.Invoke();
-
-            // Queued after ChangePartialView's deferred re-apply, so the callbacks see the
-            // final controls. Skip if the window closed or a newer swap replaced this one.
-            DelayCommand(0.0f, () =>
+            void Apply()
             {
                 if (bindingGeneration != _bindingGeneration || windowToken != WindowToken ||
-                    _partialViewGenerations[elementId] != generation ||
-                    !Gui.IsWindowOpen(Player, WindowType))
+                    _partialViewGenerations[elementId] != generation)
                     return;
-
                 onBeforeApply?.Invoke();
+                ChangePartialView(elementId, partialName);
                 onAfterApply?.Invoke();
-            });
-        }
-
-        /// <summary>
-        /// Called after tracked nested layouts are re-applied, which replaces their controls.
-        /// Override to republish bindings the new controls need. Default: no-op.
-        /// </summary>
-        protected virtual void OnNestedLayoutsReapplied()
-        {
-        }
-
-        private IReadOnlyCollection<string> GetPartialElementIds(string partialName)
-        {
-            var elementIds = Gui.GetWindowTemplate(WindowType).PartialElementIds;
-            return elementIds != null && elementIds.TryGetValue(partialName, out var ids) ? ids : null;
-        }
-
-        private void ApplyNestedLayout(string elementId, Json layout)
-        {
-            // While a modal (or another root partial) is showing, the element is not on screen.
-            // The change stays tracked and is applied when the main view is restored.
-            if (!_partialViews.IsMainViewShown)
-                return;
-
-            // An element the tracker cannot place in the layout tree (for example one inside a
-            // runtime-generated layout) is applied directly, as-is.
-            if (!_partialViews.IsTracked(elementId))
-            {
-                NuiSetGroupLayout(Player, WindowToken, elementId, layout);
-                ApplyRefreshBugFix();
-                return;
             }
 
-            // NUI can drop a nested layout while its parent is being redrawn, leaving the
-            // content area blank. Redraw from the root, re-apply the whole nested tree in
-            // parent-first order, then re-apply it once more on the next tick.
-            NuiSetGroupLayout(Player, WindowToken, GuiPartialViewState.WindowElementId,
-                Gui.GetWindowTemplate(WindowType).PartialViews[GuiPartialViewState.MainViewPartial]);
-            ApplyNestedLayouts();
-            ApplyRefreshBugFix();
-            ScheduleNestedLayoutReapply();
-        }
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            Apply();
 
-        private void ApplyNestedLayouts()
-        {
-            var partialViews = Gui.GetWindowTemplate(WindowType).PartialViews;
-            foreach (var layout in _partialViews.NestedLayouts)
-            {
-                var json = layout.PartialName != null ? partialViews[layout.PartialName] : layout.Layout;
-                NuiSetGroupLayout(Player, WindowToken, layout.ElementId, json);
-            }
-
-            OnNestedLayoutsReapplied();
-        }
-
-        private void ScheduleNestedLayoutReapply()
-        {
-            // Several swaps in one tick share a single deferred pass.
-            if (_isLayoutReapplyScheduled)
-                return;
-
-            _isLayoutReapplyScheduled = true;
-            var bindingGeneration = _bindingGeneration;
-            var windowToken = WindowToken;
-
+            // The delayed re-apply can fire after the player has already closed (or
+            // rapidly toggled) the window; NuiSetGroupLayout against a destroyed window
+            // raises a client-side "element id not found" error. Only re-apply while
+            // the window is still open.
             DelayCommand(0.0f, () =>
             {
-                if (bindingGeneration != _bindingGeneration || windowToken != WindowToken)
-                    return;
-
-                _isLayoutReapplyScheduled = false;
-
-                // The window may have closed, or a modal replaced the main view, since the swap.
-                if (!Gui.IsWindowOpen(Player, WindowType) || !_partialViews.IsMainViewShown)
-                    return;
-
-                // The client can drop the Geometry watch while a root layout is applied (see
-                // Bind). Re-arm it so window moves keep reaching the server.
-                NuiSetBindWatch(Player, WindowToken, nameof(Geometry), true);
-                ApplyNestedLayouts();
-                ApplyRefreshBugFix();
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    Apply();
             });
         }
 

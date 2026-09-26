@@ -31,7 +31,7 @@
       },
       "MusicDay": {
         "type": "int",
-        "value": 0
+        "value": 612
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 612
       }
     }
   },
@@ -740,14 +740,6 @@
                 "type": "byte",
                 "value": 11
               },
-              "ModelPart2": {
-                "type": "byte",
-                "value": 11
-              },
-              "ModelPart3": {
-                "type": "byte",
-                "value": 11
-              },
               "Plot": {
                 "type": "byte",
                 "value": 0
@@ -773,14 +765,6 @@
                 "value": "blaster_bullets"
               },
               "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart3": {
                 "type": "word",
                 "value": 11
               },
@@ -20266,6 +20250,36 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CREATURE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ESHAN_SCRAPLANDS"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CREATURE_SPAWN_COUNT"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 10
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadIdentityView();
             LoadChatView();
 
-            ChangePartialView(SettingsView, GeneralPartial);
+            SwapNestedPartialView(SettingsView, GeneralPartial, onAfterApply: RefreshPartialViewBindings);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
@@ -273,8 +273,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Capture the client's current position before the partial-view redraw workaround
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
-            ChangePartialView(SettingsView, partialName);
-            RefreshPartialViewBindings();
+
+            // A plain nested ChangePartialView can be dropped by NUI mid-redraw, leaving the tab
+            // blank. Use the same root-redraw + next-tick reapply path as the character sheet.
+            SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);
         }
 
         private void RefreshPartialViewBindings()

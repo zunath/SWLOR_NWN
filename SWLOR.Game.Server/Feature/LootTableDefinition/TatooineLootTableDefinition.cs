@@ -158,6 +158,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("TATOOINE_TUSKEN_RAIDER")
                 .AddItem("elec_imperfect", 20)
+                .AddItem("elec_high", 5)
                 .AddItem("fiberp_imperfect", 15)
 
                 .AddItem("raider_longsword", 5)

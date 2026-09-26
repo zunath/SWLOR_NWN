@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -162,7 +163,10 @@ public class CrossSkillPerkInteractionSafetyTests
             "legacy and delivery-aware status hooks must ignore triggered and periodic damage");
         blazingSpikes.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
         blazingSpikes.Should().Contain("Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
-        markedForDeath.Should().Contain("Combat.ApplyTriggeredDamage(Source, defender, DamageBonus, damageType)");
+        markedForDeath.Should().NotContain("ApplyTriggeredDamage",
+            "Marked for Death amplifies the marker's own hits instead of adding a separate unmitigated damage instance");
+        new MarkedForDeathStatusEffect().StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment]
+            .Should().Be(MarkedForDeathStatusEffect.DamageTakenFromSourcePercent);
 
         var statusDirectory = Path.Combine(
             root.FullName,

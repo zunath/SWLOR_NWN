@@ -33,18 +33,26 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
         {
-            if (_remainingAttacks <= 0 ||
-                !GetIsObjectValid(Source) ||
-                attacker != Source)
-            {
+            if (!GetIsObjectValid(Source))
                 return;
-            }
 
-            _remainingAttacks--;
-            if (_remainingAttacks <= 0)
+            if (RegisterDamagingHit(attacker))
             {
                 StatusEffect.RemoveStatusEffect(defender, typeof(MarkedForDeathStatusEffect), Source);
             }
+        }
+
+        /// <summary>
+        /// Spends one charge when <paramref name="attacker"/> is the marker. Returns true when that
+        /// hit used the last charge and the mark should be removed.
+        /// </summary>
+        public bool RegisterDamagingHit(uint attacker)
+        {
+            if (_remainingAttacks <= 0 || attacker != Source)
+                return false;
+
+            _remainingAttacks--;
+            return _remainingAttacks <= 0;
         }
     }
 }

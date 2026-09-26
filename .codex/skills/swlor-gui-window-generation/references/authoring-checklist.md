@@ -12,7 +12,7 @@ Run every sweep; each must answer YES before building.
       `window.AddColumn` root (rule R5). This holds even for windows WITHOUT tabs:
       grep your definition for `AddStandardLayout` — zero matches is an automatic fail.
 - [ ] No-tab windows: exactly one body partial, applied in `Initialize` via
-      `SwapNestedPartialView(TabContentElement, MainContentPartial)` (and re-applied in
+      `ChangePartialView(TabContentElement, MainContentPartial)` (and re-applied in
       `OnModalClosedRestore` if the window shows modals).
 - [ ] Every tab partial is a fixed-width borderless `Scrollbars(None)` panel.
 - [ ] Partial names and element ids are `const string`s on the ViewModel, referenced

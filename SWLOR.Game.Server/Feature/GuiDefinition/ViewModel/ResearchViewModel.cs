@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // New Job
             if (dbJob == null)
             {
-                SwapNestedPartialView(PartialView, StartStageView);
+                ChangePartialView(PartialView, StartStageView);
 
                 var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
                 RecipeName = $"Recipe: {researchJob.Quantity}x {researchJob.RecipeName}";
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // In Progress
             else if (now < dbJob.DateCompleted)
             {
-                SwapNestedPartialView(PartialView, InProgressView);
+                ChangePartialView(PartialView, InProgressView);
 
                 var recipe = Craft.GetRecipe(dbJob.Recipe);
                 var delta = dbJob.DateCompleted - dbJob.DateStarted;
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Complete
             else if (now >= dbJob.DateCompleted)
             {
-                SwapNestedPartialView(PartialView, StageCompleteView);
+                ChangePartialView(PartialView, StageCompleteView);
 
                 var recipe = Craft.GetRecipe(dbJob.Recipe);
 
@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!string.IsNullOrWhiteSpace(jobValidation))
                     {
                         FloatingTextStringOnCreature(jobValidation, Player, false);
-                        SwapNestedPartialView(PartialView, StartStageView);
+                        ChangePartialView(PartialView, StartStageView);
                         return;
                     }
 
@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                 }, () =>
                 {
-                    SwapNestedPartialView(PartialView, StartStageView);
+                    ChangePartialView(PartialView, StartStageView);
                 });
         };
 
@@ -378,7 +378,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 },
                 () =>
                 {
-                    SwapNestedPartialView(PartialView, InProgressView);
+                    ChangePartialView(PartialView, InProgressView);
                 });
         };
 

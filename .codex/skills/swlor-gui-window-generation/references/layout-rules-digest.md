@@ -27,11 +27,8 @@ lines for your window is a hard gate — every warning is a confirmed defect.**
 - **R6 (doc; framework hook):** tabbed windows with modals MUST override
   `protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);`
   or the tab content vanishes when any modal closes.
-- **R7 (test-enforced):** swap nested elements with `SwapNestedPartialView` (or
-  `GuiTabGroup`), never a plain `ChangePartialView` — NUI can drop it and blank the
-  content (`GuiNestedPartialSwapTests`). Element ids are not validated server-side
-  (typos = client-only error); never nest partials more than 2 deep (window root →
-  partial → one nested slot).
+- **R7 (doc):** element ids are not validated server-side (typos = client-only error);
+  never nest partials more than 2 deep (window root → partial → one nested slot).
 
 ## Verified working — do NOT avoid these (all confirmed in-game)
 

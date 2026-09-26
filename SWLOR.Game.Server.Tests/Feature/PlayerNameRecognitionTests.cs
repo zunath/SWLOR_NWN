@@ -799,12 +799,14 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("EmptyStateTitle = \"No Retired Disguises\";");
         viewModelSource.Should().Contain("EmptyStateTitle = \"No Available Disguises\";");
         viewModelSource.Should().Contain("SelectDisguiseAtIndex(0);");
-        viewModelSource.Should().Contain("SwapNestedPartialView(ContentPartialElement, GetContentPartialName()");
+        viewModelSource.Should().Contain("ChangePartialView(ContentPartialElement, GetContentPartialName())");
         viewModelSource.Should().NotContain("ChangePartialView(DetailPartialElement");
         viewModelSource.Should().NotContain("ChangePartialView(PortraitPartialElement");
         viewModelSource.Should().NotContain("ChangePartialView(ActionPartialElement");
         viewModelSource.Should().Contain("private Action WithLayoutRestore(Action action)");
         viewModelSource.Should().Contain("private void RestoreLayoutPartials()");
+        viewModelSource.Should().Contain("ChangePartialView(\"_window_\", \"%%WINDOW_MAIN%%\");");
+        viewModelSource.Should().Contain("DelayCommand(0.0f, ApplyLayoutPartials);");
         viewModelSource.Should().Contain("private string GetContentPartialName()");
         viewModelSource.Should().Contain("return ContentEditPartial;");
         viewModelSource.Should().Contain("return ContentRetiredPartial;");

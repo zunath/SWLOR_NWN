@@ -28,11 +28,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (GetIsPC(initialPayload.Target))
             {
-                SwapNestedPartialView(EditorPartialId, PlayerEditorPartialName);
+                ChangePartialView(EditorPartialId, PlayerEditorPartialName);
             }
             else
             {
-                SwapNestedPartialView(EditorPartialId, ItemEditorPartialName);
+                ChangePartialView(EditorPartialId, ItemEditorPartialName);
             }
 
             _target = initialPayload.Target;

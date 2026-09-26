@@ -52,7 +52,7 @@ public class AnimationDebugViewModel : GuiViewModelBase<AnimationDebugViewModel,
             return;
         }
         WatchOnClient(m => m.SearchText);
-        SwapNestedPartialView(ContentElement, MainContentPartial);
+        ChangePartialView(ContentElement, MainContentPartial);
         if (!IsPlaybackReady) SchedulePreviewReady();
     }
 

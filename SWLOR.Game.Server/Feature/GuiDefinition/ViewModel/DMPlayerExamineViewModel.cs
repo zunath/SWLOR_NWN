@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPerksToggled = false;
             IsNotesToggled = false;
 
-            SwapNestedPartialView(PartialView, DetailView);
+            ChangePartialView(PartialView, DetailView);
             LoadTargetDetails();
 
             WatchOnClient(model => model.Description);
@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPerksToggled = false;
             IsNotesToggled = false;
 
-            SwapNestedPartialView(PartialView, DetailView);
+            ChangePartialView(PartialView, DetailView);
             LoadTargetDetails();
         };
 
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPerksToggled = false;
             IsNotesToggled = false;
 
-            SwapNestedPartialView(PartialView, SkillsView);
+            ChangePartialView(PartialView, SkillsView);
             LoadTargetSkills();
         };
 
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPerksToggled = true;
             IsNotesToggled = false;
 
-            SwapNestedPartialView(PartialView, PerksView);
+            ChangePartialView(PartialView, PerksView);
             LoadTargetPerks();
         };
 
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPerksToggled = false;
             IsNotesToggled = true;
 
-            SwapNestedPartialView(PartialView, NotesView);
+            ChangePartialView(PartialView, NotesView);
             LoadTargetNotes();
         };
 

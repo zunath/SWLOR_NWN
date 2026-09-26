@@ -12,10 +12,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // SecondTabId, the Tabs/TabToggles statics, TabToggleValue, and SelectTab.
         // Keep TabContentElement, rename the single partial const to
         // MainContentPartial, and in Initialize (after assignments and watches) call:
-        //     SwapNestedPartialView(TabContentElement, MainContentPartial);
+        //     ChangePartialView(TabContentElement, MainContentPartial);
         // If the window shows modals, override OnModalClosedRestore with that same
-        // SwapNestedPartialView call (rule R6). Never use a plain ChangePartialView on a
-        // nested element (rule R7): NUI can drop it and leave the content blank.
+        // ChangePartialView call (rule R6).
         private const int FirstTabId = 0;
         private const int SecondTabId = 1;
         public const string TabContentElement = "templatewindow_tab_content"; // TEMPLATE: unique element id

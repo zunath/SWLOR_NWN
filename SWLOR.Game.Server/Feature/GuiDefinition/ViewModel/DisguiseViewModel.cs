@@ -787,13 +787,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshLayoutPartials()
         {
-            // Root redraw + next-tick reapply: a plain nested ChangePartialView can be dropped
-            // by NUI mid-redraw, leaving the content area blank.
-            SwapNestedPartialView(ContentPartialElement, GetContentPartialName(), onAfterApply: () =>
-            {
-                if (HasSelection)
-                    RefreshSoundSetBindings();
-            });
+            ChangePartialView(ContentPartialElement, GetContentPartialName());
+
+            if (HasSelection)
+                RefreshSoundSetBindings();
         }
 
         private Action WithLayoutRestore(Action action)
@@ -813,8 +810,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RestoreLayoutPartials()
         {
-            // SwapNestedPartialView already redraws the root and re-applies on the next tick.
-            RefreshLayoutPartials();
+            void ApplyLayoutPartials()
+            {
+                RefreshLayoutPartials();
+            }
+
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            ApplyLayoutPartials();
+            DelayCommand(0.0f, ApplyLayoutPartials);
         }
 
         private string GetContentPartialName()

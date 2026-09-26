@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbJob = GetJob();
             if (dbJob == null)
             {
-                SwapNestedPartialView(PartialElement, NewJobPartial);
+                ChangePartialView(PartialElement, NewJobPartial);
             }
             else
             {
@@ -291,11 +291,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (dbJob.CurrentStage >= NumberOfStages)
                     {
                         IsCompleteJobEnabled = true;
-                        SwapNestedPartialView(PartialElement, CompleteJobPartial);
+                        ChangePartialView(PartialElement, CompleteJobPartial);
                     }
                     else
                     {
-                        SwapNestedPartialView(PartialElement, StageCompleteJobPartial);
+                        ChangePartialView(PartialElement, StageCompleteJobPartial);
                     }
                 }
                 else
@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var deltaTime = dbJob.DateCompleted - now;
                     JobProgressTime = $"Stage {dbJob.CurrentStage} Remaining: {Time.GetTimeShortIntervals(deltaTime, false)}";
                     IsStartJobEnabled = false;
-                    SwapNestedPartialView(PartialElement, InProgressJobPartial);
+                    ChangePartialView(PartialElement, InProgressJobPartial);
                 }
 
             }

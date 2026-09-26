@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             RefreshOffers();
-            SwapNestedPartialView(ContentElement, MainContentPartial);
+            ChangePartialView(ContentElement, MainContentPartial);
         }
 
-        protected override void OnModalClosedRestore() => SwapNestedPartialView(ContentElement, MainContentPartial);
+        protected override void OnModalClosedRestore() => ChangePartialView(ContentElement, MainContentPartial);
 
         public override Action OnWindowClosed() => () => _rows.Clear();
 

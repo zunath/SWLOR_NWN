@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             SandWorm();
             TuskenRaider();
             TuskenElite();
+            TuskenChampion();
+            TuskenLongEye();
+            TuskenWarcaller();
+            TuskenWarlord();
             TuskenCrate();
             AncientWorm();
 
@@ -158,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("TATOOINE_TUSKEN_RAIDER")
                 .AddItem("elec_imperfect", 20)
+                .AddItem("elec_high", 5)
                 .AddItem("fiberp_imperfect", 15)
 
                 .AddItem("raider_longsword", 5)
@@ -209,10 +214,70 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("bread_flour", 4, 1, true)
                 .AddItem("ruby", 8, 1, true)
-                .AddItem("hyphae_wood", 4, 1, true)
+                .AddItem("hyphae_wood", 6, 1, true)
                 .AddItem("map_038", 1, 1, true)
                 .AddItem("map_036", 1, 1, true)
-                .AddItem("lockbox_t4", 2, 1, true);
+                .AddItem("lockbox_t4", 5, 1, true);
+        }
+
+        private void TuskenChampion()
+        {
+            _builder.Create("TATOOINE_TUSKEN_CHAMPION_RARES")
+                .IsRare()
+                .AddItem("gaffi_bracer", 1, 1, true)
+                .AddItem("hide_warbelt", 1, 1, true)
+                .AddItem("bp_hidecuirass", 1, 1, true);
+
+            _builder.Create("TATOOINE_TUSKEN_CHAMPION_COMP")
+                .AddItem("sun_bantha_hide", 1);
+        }
+
+        private void TuskenLongEye()
+        {
+            _builder.Create("TATOOINE_TUSKEN_LONGEYE_RARES")
+                .IsRare()
+                .AddItem("dunescout_boots", 1, 1, true)
+                .AddItem("dunescout_glove", 1, 1, true)
+                .AddItem("bp_scopecap", 1, 1, true);
+
+            _builder.Create("TATOOINE_TUSKEN_LONGEYE_COMP")
+                .AddItem("cycler_scope", 1);
+        }
+
+        private void TuskenWarcaller()
+        {
+            _builder.Create("TATOOINE_TUSKEN_WARCALLER_RARES")
+                .IsRare()
+                .AddItem("ritual_beads", 1, 1, true)
+                .AddItem("sandcall_wraps", 1, 1, true)
+                .AddItem("bp_windmantle", 1, 1, true);
+
+            _builder.Create("TATOOINE_TUSKEN_WARCALLER_COMP")
+                .AddItem("bone_fetish", 1);
+        }
+
+        private void TuskenWarlord()
+        {
+            _builder.Create("TATOOINE_TUSKEN_WARLORD_ELECTRONICS")
+                .AddItem("elec_high", 1, 2);
+
+            _builder.Create("TATOOINE_TUSKEN_WARLORD_FIBERPLAST")
+                .AddItem("fiberp_high", 1, 3);
+
+            _builder.Create("TATOOINE_TUSKEN_WARLORD_LOCKBOX")
+                .AddItem("lockbox_t5", 1);
+
+            _builder.Create("TATOOINE_TUSKEN_WARLORD_COMP")
+                .AddItem("bone_totem", 1);
+
+            _builder.Create("TATOOINE_TUSKEN_WARLORD_RARES")
+                .IsRare()
+                .AddItem("sandstorm_gaffi", 1, 1, true)
+                .AddItem("warband_legs", 1, 1, true)
+                .AddItem("bp_warbandhelm", 1, 1, true)
+                .AddItem("bp_hidecuirass", 1, 1, true)
+                .AddItem("bp_scopecap", 1, 1, true)
+                .AddItem("bp_windmantle", 1, 1, true);
         }
 
         private void TuskenCrate()

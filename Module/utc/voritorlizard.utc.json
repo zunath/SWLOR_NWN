@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 47
+          "value": 30
         }
       }
     ]
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 997
+    "value": 400
   },
   "DecayTime": {
     "type": "dword",
@@ -148,7 +148,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 527
+    "value": 100
   },
   "Int": {
     "type": "byte",
@@ -182,7 +182,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 997
+    "value": 400
   },
   "NaturalAC": {
     "type": "byte",

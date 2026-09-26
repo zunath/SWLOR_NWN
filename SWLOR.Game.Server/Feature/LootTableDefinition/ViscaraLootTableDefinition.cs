@@ -605,6 +605,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_SEWERS_DEPTHS_SCAVENGER")
                 .AddItem("lth_flawed", 20)
                 .AddItem("elec_flawed", 20)
+                .AddItem("elec_high", 4)
                 .AddItem("stim_pack", 10, 2)
                 .AddGold(100, 10);
 
@@ -624,6 +625,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_PULSE_DROID")
                 .AddItem("elec_good", 20)
+                .AddItem("elec_high", 4)
                 .AddItem("med_supplies", 10, 2)
                 .AddGold(100, 10);
 

@@ -225,6 +225,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 		{
 			_builder.Create("NARSHADDAA_TROUBLEMAKERS")
 				.AddItem("elec_imperfect", 12)
+				.AddItem("elec_high", 4)
 				.AddItem("ns_moonspice", 50)
 				.AddGold(30, 20);
 		}

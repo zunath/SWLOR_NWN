@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SandDemon();
             TuskenRaider();
             TuskenElite();
+            TuskenWarlord();
             SandWorm();
             AridHillyDesert();
             Flatlands();
@@ -98,7 +99,34 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "tusken_elite2")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "tuskchampion")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "tusklongeye")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "tuskwarcaller")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
+        }
+
+        private void TuskenWarlord()
+        {
+            _builder.Create("TATOOINE_TUSKEN_WARLORD", "Tusken Warlord")
+                .AddSpawn(ObjectType.Creature, "tuskwarlord")
+                .WithFrequency(1)
+                .ReturnsHome()
+                .RespawnDelay(61, 160);
         }
 
         private void SandWorm()

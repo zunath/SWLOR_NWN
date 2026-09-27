@@ -79519,6 +79519,226 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Gaderffii Grip Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gaffi_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bantha-Hide War Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hide_warbelt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sun-Cured Bantha Hide"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sun_bantha_hide"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Sun-Cured Hide Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_hidecuirass"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sun-Cured Hide Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hide_cuirass"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dune Scout Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunescout_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dune Scout Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunescout_glove"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cycler Scope Assembly"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cycler_scope"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Scopewright Cap"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_scopecap"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Scopewright Cap"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "scopewright_cap"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ritual Bone Beads"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ritual_beads"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sandcaller Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sandcall_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ritual Bone Fetish"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bone_fetish"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Windcaller Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_windmantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Windcaller Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "windcall_mantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sandstorm Gaderffii"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sandstorm_gaffi"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warband Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "warband_legs"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tribal Bone Totem"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bone_totem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Warband Helm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_warbandhelm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warband Helm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "warband_helm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Flurry Gauntlets"
                           },
                           "RESREF": {

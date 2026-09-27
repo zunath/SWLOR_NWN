@@ -730,6 +730,10 @@ namespace SWLOR.Game.Server.Service.CraftService
         QuietstepReinforcedBoots = 693,
         DeadDropArmoredCloak = 694,
         BlacksiteBreachHarness = 695,
+        SunCuredHideCuirass = 696,
+        ScopewrightCap = 697,
+        WindcallerMantle = 698,
+        WarbandHelm = 699,
         #endregion
 
 		#region Fabrication:  1001-2000

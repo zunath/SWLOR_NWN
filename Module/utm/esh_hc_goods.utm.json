@@ -1,0 +1,946 @@
+{
+  "__data_type": "UTM ",
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "ID": {
+    "type": "byte",
+    "value": 0
+  },
+  "BlackMarket": {
+    "type": "byte",
+    "value": 0
+  },
+  "BM_MarkDown": {
+    "type": "int",
+    "value": 25
+  },
+  "IdentifyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Highcrest Provisions"
+    }
+  },
+  "MarkDown": {
+    "type": "int",
+    "value": 40
+  },
+  "MarkUp": {
+    "type": "int",
+    "value": 100
+  },
+  "MaxBuyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "OnOpenStore": {
+    "type": "resref",
+    "value": "on_open_store"
+  },
+  "OnStoreClosed": {
+    "type": "resref",
+    "value": "on_close_store"
+  },
+  "ResRef": {
+    "type": "resref",
+    "value": "esh_hc_goods"
+  },
+  "StoreGold": {
+    "type": "int",
+    "value": -1
+  },
+  "StoreList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0
+      },
+      {
+        "__struct_id": 4
+      },
+      {
+        "__struct_id": 2
+      },
+      {
+        "__struct_id": 3
+      },
+      {
+        "__struct_id": 1,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "AddCost": {
+                "type": "dword",
+                "value": 7
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 311
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 1
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 7
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Famous Seamus Cookies"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 24
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 3
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 13
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 335
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 106
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 8
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "FOOD"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vendor_cookies"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 24
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "AddCost": {
+                "type": "dword",
+                "value": 7
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 311
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 1
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 7
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Energy Bar"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 153
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 3
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 13
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 335
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 106
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 6
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "FOOD"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "energy_bar"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 153
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "AddCost": {
+                "type": "dword",
+                "value": 7
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 311
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 1
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 7
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Packaged Muffin"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 24
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 3
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 13
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 335
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 106
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 8
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "FOOD"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vendor_muffin"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 24
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "AddCost": {
+                "type": "dword",
+                "value": 6
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 311
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 1
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 6
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Off-Brand Fruit Juice"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 182
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 3
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 13
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 335
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 106
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 4
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "FOOD"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vendor_juice"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 182
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 4,
+              "AddCost": {
+                "type": "dword",
+                "value": 5
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 311
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 1
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 5
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "It's bland, unpleasant to eat, and wreaks havoc on your bowels, but... it's better than nothing."
+                }
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Veripex-Brand NutriCube"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 11
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 3
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 13
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 335
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 106
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 7
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "FOOD"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "nutricube"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "esh_hc_goods"
+  },
+  "WillNotBuy": {
+    "type": "list",
+    "value": []
+  },
+  "WillOnlyBuy": {
+    "type": "list",
+    "value": []
+  }
+}

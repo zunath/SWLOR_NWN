@@ -247,7 +247,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "republic_outfit2"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -991,7 +999,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "nw_merchguardout"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -1735,7 +1751,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "nw_merchguardout"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -2479,7 +2503,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "nw_merchguardout"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -3223,7 +3255,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "vendoroutfit001"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -3967,7 +4007,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "weaponsmith"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -4711,7 +4759,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "orientaldress"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -5455,7 +5511,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "party_female2"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -6199,7 +6263,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "party_female"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -6943,7 +7015,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "shipcaptainblkf"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -7687,7 +7767,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "worker_outfit"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -8431,7 +8519,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "worker_outfit"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -9175,7 +9271,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "worker_outfit"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",
@@ -9919,7 +10023,15 @@
         },
         "Equip_ItemList": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "worker_outfit"
+              }
+            }
+          ]
         },
         "FactionID": {
           "type": "word",

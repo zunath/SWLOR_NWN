@@ -12,6 +12,20 @@ public class EshanNeoCrusaderBaseTests
     private const string SpawnTableId = "ESHAN_NEOCRUSADER_BASE";
 
     [Test]
+    public void ModuleIdentifier_PreservesRawVoidBytes()
+    {
+        var modulePath = Path.Combine(FindRepositoryRoot().FullName, "Module", "ifo", "module.ifo.json");
+        var bytes = File.ReadAllBytes(modulePath);
+        var modId = FindByteSequence(bytes, "\"Mod_ID\""u8);
+        var value = FindByteSequence(bytes, "\"value\": \""u8, modId);
+
+        bytes.AsSpan(value + 10, 4).ToArray().Should().Equal(0xff, 0xff, 0xff, 0xff);
+        bytes.AsSpan(value + 10, 8)
+            .SequenceEqual(new byte[] { 0xc3, 0xbf, 0xc3, 0xbf, 0xc3, 0xbf, 0xc3, 0xbf })
+            .Should().BeFalse();
+    }
+
+    [Test]
     public void DriiquarRedoubt_IsRegisteredAndConfiguredAsAnEshanCombatArea()
     {
         using var module = Load("ifo", "module.ifo.json");
@@ -89,6 +103,14 @@ public class EshanNeoCrusaderBaseTests
             List(gic.RootElement, listName).Length.Should().Be(List(git.RootElement, listName).Length,
                 $"{listName} comments must remain aligned with placed instances");
         }
+    }
+
+    private static int FindByteSequence(byte[] source, ReadOnlySpan<byte> sequence, int start = 0)
+    {
+        var index = source.AsSpan(start).IndexOf(sequence);
+        return index >= 0
+            ? start + index
+            : throw new InvalidDataException("Expected byte sequence was not found in module.ifo.json.");
     }
 
     private static JsonDocument Load(string directory, string fileName)

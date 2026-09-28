@@ -3401,6 +3401,13 @@
           "type": "resref",
           "value": "pw_sc_eshtemp"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "esh_nc_redoubt"
+        }
       }
     ]
   },
@@ -4306,7 +4313,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "Ã¿Ã¿Ã¿Ã¿\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

@@ -38,8 +38,10 @@ public class EshanNeoCrusaderBaseTests
 
         List(battlegrounds.RootElement, "TriggerList")
             .Should().ContainSingle(trigger => Text(trigger, "LinkedTo") == "WP_esh_nc_base");
-        List(redoubt.RootElement, "WaypointList")
-            .Should().ContainSingle(waypoint => Text(waypoint, "Tag") == "WP_esh_nc_base");
+        var redoubtArrival = List(redoubt.RootElement, "WaypointList")
+            .Single(waypoint => Text(waypoint, "Tag") == "WP_esh_nc_base");
+        Text(redoubtArrival, "MapNote").Should().Be("Pass to the Eshan Battlegrounds");
+        Number(redoubtArrival, "MapNoteEnabled").Should().Be(1);
 
         List(redoubt.RootElement, "TriggerList")
             .Should().ContainSingle(trigger => Text(trigger, "LinkedTo") == "WP_esh_battle_base");
@@ -106,6 +108,11 @@ public class EshanNeoCrusaderBaseTests
         return value.ValueKind == JsonValueKind.Object
             ? value.GetProperty("0").GetString() ?? string.Empty
             : value.GetString() ?? string.Empty;
+    }
+
+    private static int Number(JsonElement element, string name)
+    {
+        return element.GetProperty(name).GetProperty("value").GetInt32();
     }
 
     private static JsonElement[] LocalVariables(JsonElement instance)

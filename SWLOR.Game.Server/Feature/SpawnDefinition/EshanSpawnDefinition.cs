@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             EshanSilverwoodExpanse();
             EshanWinterMarches();
             EshanBattlegrounds();
+            EshanNeoCrusaderBase();
             EshanScraplandCaves();
 
             return _builder.Build();
@@ -82,6 +83,30 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "esh_sunguard")
                 .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void EshanNeoCrusaderBase()
+        {
+            _builder.Create("ESHAN_NEOCRUSADER_BASE", "Eshan - Driiquar Redoubt")
+                .AddSpawn(ObjectType.Creature, "esh_nc_vanguard")
+                .WithFrequency(100)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "esh_nc_heavy")
+                .WithFrequency(80)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "esh_nc_medic")
+                .WithFrequency(55)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "esh_nc_captain")
+                .WithFrequency(25)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

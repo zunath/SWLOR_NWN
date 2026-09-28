@@ -48,6 +48,20 @@ public class EshanNeoCrusaderBaseTests
     }
 
     [Test]
+    public void DriiquarRedoubt_DoesNotRetainCopiedViscaraTeleporters()
+    {
+        using var redoubt = Load("git", $"{AreaResref}.git.json");
+        var placeables = List(redoubt.RootElement, "Placeable List");
+
+        placeables.Should().NotContain(placeable => Text(placeable, "Tag") == "RepBaseExtEntrance");
+        placeables.Should().NotContain(placeable => Text(placeable, "Tag") == "RepBaseExtJuniorMessEntrance");
+        placeables.SelectMany(LocalVariables)
+            .Should().NotContain(variable =>
+                Text(variable, "Name") == "DESTINATION" &&
+                Text(variable, "Value").StartsWith("WP_V_"));
+    }
+
+    [Test]
     public void DriiquarRedoubt_SpawnsTheNeoCrusaderGarrison()
     {
         var spawns = new EshanSpawnDefinition().BuildSpawnTables()[SpawnTableId].Spawns;
@@ -92,6 +106,13 @@ public class EshanNeoCrusaderBaseTests
         return value.ValueKind == JsonValueKind.Object
             ? value.GetProperty("0").GetString() ?? string.Empty
             : value.GetString() ?? string.Empty;
+    }
+
+    private static JsonElement[] LocalVariables(JsonElement instance)
+    {
+        return instance.TryGetProperty("VarTable", out var variables)
+            ? variables.GetProperty("value").EnumerateArray().ToArray()
+            : [];
     }
 
     private static JsonElement Local(JsonElement area, string name)

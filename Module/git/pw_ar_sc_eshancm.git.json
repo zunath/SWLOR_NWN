@@ -4725,7 +4725,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "esh_hc_textile"
+          "value": "esh_hc_provis"
         },
         "CRAdjust": {
           "type": "int",
@@ -6094,7 +6094,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 10.0
+          "value": 0.0
         }
       },
       {
@@ -6846,7 +6846,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 10.0
+          "value": 0.0
         }
       },
       {
@@ -7598,7 +7598,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 10.0
+          "value": 0.0
         }
       },
       {
@@ -185614,7 +185614,7 @@
         },
         "ResRef": {
           "type": "resref",
-          "value": "esh_hc_goods"
+          "value": "snackvendor"
         },
         "StoreGold": {
           "type": "int",
@@ -186572,7 +186572,7 @@
         },
         "ResRef": {
           "type": "resref",
-          "value": "esh_hc_techstore"
+          "value": "concourse_data"
         },
         "StoreGold": {
           "type": "int",
@@ -186766,245 +186766,6 @@
         "YPosition": {
           "type": "float",
           "value": 59.2
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 11,
-        "BlackMarket": {
-          "type": "byte",
-          "value": 0
-        },
-        "BM_MarkDown": {
-          "type": "int",
-          "value": 25
-        },
-        "IdentifyPrice": {
-          "type": "int",
-          "value": -1
-        },
-        "LocName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Highcrest Textiles"
-          }
-        },
-        "MarkDown": {
-          "type": "int",
-          "value": 40
-        },
-        "MarkUp": {
-          "type": "int",
-          "value": 100
-        },
-        "MaxBuyPrice": {
-          "type": "int",
-          "value": -1
-        },
-        "OnOpenStore": {
-          "type": "resref",
-          "value": "on_open_store"
-        },
-        "OnStoreClosed": {
-          "type": "resref",
-          "value": "on_close_store"
-        },
-        "ResRef": {
-          "type": "resref",
-          "value": "esh_hc_textiles"
-        },
-        "StoreGold": {
-          "type": "int",
-          "value": -1
-        },
-        "StoreList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0
-            },
-            {
-              "__struct_id": 4
-            },
-            {
-              "__struct_id": 2
-            },
-            {
-              "__struct_id": 3
-            },
-            {
-              "__struct_id": 1,
-              "ItemList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "InventoryRes": {
-                      "type": "resref",
-                      "value": "party_female"
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 1,
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "InventoryRes": {
-                      "type": "resref",
-                      "value": "party_female2"
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 2,
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "InventoryRes": {
-                      "type": "resref",
-                      "value": "party_male"
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 3,
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "InventoryRes": {
-                      "type": "resref",
-                      "value": "party_male2"
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 4,
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "InventoryRes": {
-                      "type": "resref",
-                      "value": "orientaldress"
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 5,
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "InventoryRes": {
-                      "type": "resref",
-                      "value": "adventurer_fem"
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 5
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 6,
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "InventoryRes": {
-                      "type": "resref",
-                      "value": "adventurer_male"
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "esh_hc_textiles"
-        },
-        "WillNotBuy": {
-          "type": "list",
-          "value": []
-        },
-        "WillOnlyBuy": {
-          "type": "list",
-          "value": []
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 77.2
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 66.2
         },
         "ZPosition": {
           "type": "float",

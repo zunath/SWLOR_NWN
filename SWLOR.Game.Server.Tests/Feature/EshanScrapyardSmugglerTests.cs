@@ -30,6 +30,32 @@ public class EshanScrapyardSmugglerTests
     }
 
     [Test]
+    public void ScrapyardSmugglers_AreAvailableInTheEshanCreaturePalette()
+    {
+        var root = FindRepositoryRoot();
+        using var palette = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName, "Module", "itp", "creaturepalcus.itp.json")));
+        var worldCreatures = palette.RootElement.GetProperty("MAIN").GetProperty("value")
+            .Single(category => category.TryGetProperty("NAME", out var name) &&
+                                name.GetProperty("value").GetString() == "World Creatures");
+        var eshan = worldCreatures.GetProperty("LIST").GetProperty("value")
+            .Single(category => category.GetProperty("ID").GetProperty("value").GetInt32() == 159);
+        var smugglers = eshan.GetProperty("LIST").GetProperty("value")
+            .Where(creature => creature.GetProperty("RESREF").GetProperty("value").GetString() == "esh_scrap_smug")
+            .ToArray();
+
+        smugglers.Should().ContainSingle();
+        smugglers[0].GetProperty("NAME").GetProperty("value").GetString().Should().Be("Scrapyard Smuggler");
+        smugglers[0].GetProperty("FACTION").GetProperty("value").GetString().Should().Be("Hostile");
+        smugglers[0].GetProperty("CR").GetProperty("value").GetSingle().Should().Be(4.0f);
+
+        using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName, "Module", "utc", "esh_scrap_smug.utc.json")));
+        blueprint.RootElement.GetProperty("PaletteID").GetProperty("value").GetInt32().Should().Be(159,
+            "the module packer rebuilds creature palette categories from each blueprint's PaletteID");
+    }
+
+    [Test]
     public void ScrapyardSmugglers_DropFlawedAndGoodQualityElectronics()
     {
         var loot = new EshanLootTableDefinition().BuildLootTables()["ESHAN_SCRAPYARD_SMUGGLER"];

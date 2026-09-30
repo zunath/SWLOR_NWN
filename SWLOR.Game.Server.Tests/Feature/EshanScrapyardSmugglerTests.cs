@@ -36,11 +36,14 @@ public class EshanScrapyardSmugglerTests
         using var palette = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName, "Module", "itp", "creaturepalcus.itp.json")));
         var worldCreatures = palette.RootElement.GetProperty("MAIN").GetProperty("value")
+            .EnumerateArray()
             .Single(category => category.TryGetProperty("NAME", out var name) &&
                                 name.GetProperty("value").GetString() == "World Creatures");
         var eshan = worldCreatures.GetProperty("LIST").GetProperty("value")
+            .EnumerateArray()
             .Single(category => category.GetProperty("ID").GetProperty("value").GetInt32() == 159);
         var smugglers = eshan.GetProperty("LIST").GetProperty("value")
+            .EnumerateArray()
             .Where(creature => creature.GetProperty("RESREF").GetProperty("value").GetString() == "esh_scrap_smug")
             .ToArray();
 

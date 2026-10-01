@@ -55,6 +55,10 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
         /// </summary>
         public string? GetString(int row, string column)
         {
+            if (row < 0 || row >= _file.Rows.Count)
+                return _file.DefaultValue;
+            if (!HasColumn(column))
+                return null;
             return _file.GetValue(row, column);
         }
 

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using Newtonsoft.Json;
+using Nwn.Authoring.Documents;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.GameData.GameCode;
@@ -29,11 +30,9 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     private readonly IEditorPromptService _prompts;
     private readonly ScriptSession _session;
     private readonly Behaviors.ChoicePreviewService? _choicePreviews;
-    private readonly Stack<string> _undo = new();
-    private readonly Stack<string> _redo = new();
     private readonly HashSet<string> _collapsedTreeBranches = new(StringComparer.Ordinal);
     private ConversationGraph _graph;
-    private string _savedJson;
+    private DocumentHistory<ConversationGraph> _history;
     private string? _selectedNodeId;
     private ConversationLink? _selectedOpeningLink;
     private ConversationLink? _selectedIncomingNodeLink;
@@ -149,7 +148,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         _choicePreviews = choicePreviews;
         _session = ScriptSession.Open(filePath);
         _graph = LoadGraph(_session.Document.Text, filePath);
-        _savedJson = Serialize(_graph);
+        _history = new DocumentHistory<ConversationGraph>(_graph, new ConversationGraphCodec());
         Id = $"nui-conversation:{filePath}";
 
         BehaviorOptions.Add(new ConversationBehaviorOption(
@@ -219,16 +218,14 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     public string ValidationSummary => HasErrors
         ? $"{Problems.Count(problem => problem.IsError)} errors"
         : Problems.Count == 0 ? "Everything looks good" : $"{Problems.Count} checks";
-    public bool IsDirty => Serialize(_graph) != _savedJson;
-    public bool CanUndo => _undo.Count > 0;
-    public bool CanRedo => _redo.Count > 0;
+    public bool IsDirty => _history.IsDirty;
+    public bool CanUndo => _history.CanUndo;
+    public bool CanRedo => _history.CanRedo;
     /// <summary>
     /// Returns a deep copy suitable for background readers such as conversation search. The live
     /// graph stays owned by the UI thread.
     /// </summary>
-    public ConversationGraph SnapshotGraph() =>
-        JsonConvert.DeserializeObject<ConversationGraph>(Serialize(_graph))
-        ?? throw new InvalidOperationException("The conversation snapshot was empty.");
+    public ConversationGraph SnapshotGraph() => _history.Inspect(graph => graph);
 
     private ConversationNode? CurrentNode => _selectedNodeId != null && _graph.Nodes.TryGetValue(_selectedNodeId, out var node)
         ? node
@@ -575,9 +572,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
                 {
                     var reloaded = _session.ReloadFromDisk();
                     _graph = LoadGraph(reloaded.Text, _filePath);
-                    _savedJson = Serialize(_graph);
-                    _undo.Clear();
-                    _redo.Clear();
+                    _history = new DocumentHistory<ConversationGraph>(_graph, new ConversationGraphCodec());
                     RefreshAll(selectFirst: true);
                     return true;
                 }
@@ -589,6 +584,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
 
             var json = Serialize(_graph);
             var saveBytes = _session.ToBytes(json);
+            var savedGraph = LoadGraph(json, _filePath);
             if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
             {
                 _log.AppendLine(
@@ -598,7 +594,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
             }
 
             _session.MarkSaved(json, saveBytes);
-            _savedJson = json;
+            _history.MarkSaved(savedGraph);
             NotifyHistoryChanged();
             _log.AppendLine($"Saved NUI conversation {_filePath}.");
             return true;
@@ -613,19 +609,17 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
     [RelayCommand(CanExecute = nameof(CanUndo))]
     public void Undo()
     {
-        if (_undo.Count == 0)
+        if (!_history.Undo())
             return;
-        _redo.Push(Serialize(_graph));
-        RestoreSnapshot(_undo.Pop());
+        RestoreSnapshot();
     }
 
     [RelayCommand(CanExecute = nameof(CanRedo))]
     public void Redo()
     {
-        if (_redo.Count == 0)
+        if (!_history.Redo())
             return;
-        _undo.Push(Serialize(_graph));
-        RestoreSnapshot(_redo.Pop());
+        RestoreSnapshot();
     }
 
     internal void ApproveApplicationClose() => _closeApproved = true;
@@ -690,8 +684,7 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         var after = Serialize(_graph);
         if (before == after)
             return;
-        _undo.Push(before);
-        _redo.Clear();
+        _history.Replace(_graph);
         RefreshAll(selectFirst: false);
     }
 
@@ -709,18 +702,16 @@ public sealed partial class NuiConversationEditorViewModel : Document, IEditorDo
         var after = Serialize(_graph);
         if (before == after)
             return;
-        _undo.Push(before);
-        _redo.Clear();
+        _history.Replace(_graph);
         Validate();
         RefreshTreeDisplay();
         ShowSelectedNodeInPreview();
         NotifyHistoryChanged();
     }
 
-    private void RestoreSnapshot(string json)
+    private void RestoreSnapshot()
     {
-        _graph = JsonConvert.DeserializeObject<ConversationGraph>(json)
-                 ?? throw new InvalidOperationException("The conversation history snapshot was empty.");
+        _graph = _history.Inspect(graph => graph);
         RefreshAll(selectFirst: _selectedNodeId == null || !_graph.Nodes.ContainsKey(_selectedNodeId));
     }
 

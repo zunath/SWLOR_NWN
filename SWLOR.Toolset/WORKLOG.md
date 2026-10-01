@@ -2547,3 +2547,27 @@ files are unchanged in this worktree. The focused package-mode suite passed
 Locked Debug/Release restores and the source/package tests qualify this SWLOR
 consumer slice. This extraction does not establish assembled-body appearance,
 native-client rendering, or later shared AreaSceneBuilder-core extraction.
+
+## Shared area-scene composition - 2026-10-01
+
+`SWLOR.Toolset.Domain.Render.AreaSceneBuilder` now adapts the shared
+`Nwn.Preview.Areas.AreaSceneComposer`. Shared composition owns tile placement,
+fallback diagnostics, trigger geometry and draping, lighting, marker grouping,
+model corrections, and door anchors. SWLOR retains resource resolution,
+instance appearance/tint policy, and the model and walkmesh producers. The
+existing transform order and fallback behavior are preserved.
+
+SWLOR pins `Nwn.Preview 0.1.0-dev.22`, SHA256
+`135F4DA507FCB304C4EC26332859FA9E03FCC8C72C79DBFA330010A67FC43A27`.
+Its nuspec records shared source commit
+`325381733a5508b83c784edf3014e93edd2f0ad4` and direct dependencies
+`Nwn.Authoring 0.1.0-dev.21` and `Nwn.Formats 0.1.0-dev.21`. The shared source
+test suite passed 44/44 with zero skips. SWLOR's focused source-mode and
+package-mode suites each passed 213/213 with zero skips using explicit
+repository, HAK, and content roots. TRX files:
+`SWLOR.Toolset.Tests/TestResults/area-composer-source-focused.trx` and
+`SWLOR.Toolset.Tests/TestResults/area-composer-package-focused.trx`.
+Locked Debug/Release package graphs were regenerated for the four toolset
+consumers. A source-mode lock rewrite in `SWLOR.NWN.Formats` was discarded;
+the package lock remains unchanged. This extraction does not establish native
+client appearance or move the SWLOR geometry/model producers into shared code.

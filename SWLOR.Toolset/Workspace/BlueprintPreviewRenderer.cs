@@ -1,4 +1,5 @@
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
@@ -725,8 +726,8 @@ namespace SWLOR.Toolset.Workspace
                 .Select(part => part.Model)
                 .FirstOrDefault();
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? sharedFrames = null;
-            IReadOnlyList<MdlAnimationPose.SampledAnimation> sharedAnimations =
-                Array.Empty<MdlAnimationPose.SampledAnimation>();
+            IReadOnlyList<MdlSampledAnimation> sharedAnimations =
+                Array.Empty<MdlSampledAnimation>();
             if (weightedRobe != null)
             {
                 var bindPose = LayeredGarmentBindPose(weightedRobe, skeleton);

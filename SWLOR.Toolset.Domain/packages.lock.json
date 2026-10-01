@@ -13,18 +13,18 @@
       },
       "Nwn.Formats": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.21, )",
-        "resolved": "0.1.0-dev.21",
-        "contentHash": "BS2woF+pZAQRr39DYLx6rm4ANno5oScxCQEMIyqLNlar5o6nxQxq/ysiAuHEJQ2iHq26/tWSOlyVPFrJ219UtQ=="
+        "requested": "[0.1.0-dev.22, )",
+        "resolved": "0.1.0-dev.22",
+        "contentHash": "O5hvqKw3rms9xOziUqIIAuodIYQx+VFsbVDSM34cSDB7pjBpYc4u3+mTb4y9mDJ+R+6xhJ6Fyxv3WDrLwCwEkQ=="
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.22, )",
-        "resolved": "0.1.0-dev.22",
-        "contentHash": "+rJFbMVLDqoOfarqdb190vJObBLGoQB5b+RD3bEm5RCWe2Twc0sx4+ZeoU3KwHxd1TFGKEDB8bOoY5t1nVGRmQ==",
+        "requested": "[0.1.0-dev.24, )",
+        "resolved": "0.1.0-dev.24",
+        "contentHash": "hN9lHLAog6hsH88wcGvxjwINNhfOBuSuj1OPYnJdrc7Xn1tw+xKfW1LQQxBq18ZY9vWOHE1hyAr4TyFMcc64xA==",
         "dependencies": {
           "Nwn.Authoring": "0.1.0-dev.21",
-          "Nwn.Formats": "0.1.0-dev.21"
+          "Nwn.Formats": "0.1.0-dev.22"
         }
       },
       "Serilog": {
@@ -148,7 +148,7 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.21, )"
+          "Nwn.Formats": "[0.1.0-dev.22, )"
         }
       }
     }

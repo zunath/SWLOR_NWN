@@ -2571,3 +2571,82 @@ Locked Debug/Release package graphs were regenerated for the four toolset
 consumers. A source-mode lock rewrite in `SWLOR.NWN.Formats` was discarded;
 the package lock remains unchanged. This extraction does not establish native
 client appearance or move the SWLOR geometry/model producers into shared code.
+
+## Native MDL reader and mesh producer extraction - 2026-10-01
+
+SWLOR's mutable binary/ASCII model records and reader now come from
+`Nwn.Formats.NativeModels`; the old immutable `Nwn.Formats.Mdl` API remains
+separate. The shared package also owns the existing MDL guarded reader,
+allocation budget and text decoder, while SWLOR's remaining format readers
+continue using their local copies. Shared `NwnFormatException` preserves the
+original constructors, base type and messages; project aliases keep remaining
+SWLOR parser, consumer and test catches on that shared type.
+
+Animation sampling and the existing `MdlMeshBuilder` now come from
+`Nwn.Preview.Scene`. The builder preserves the current geometry, skinning,
+animation, emitter and placeable behavior. Typed options provide the existing
+purpose selectors and a callback that associates SWLOR mesh metadata without
+introducing game API types into Preview. The SWLOR toolset, tests and animation
+draft tools now consume the shared parser and producer; the duplicate source
+files are removed.
+
+Source-mode Release build passed with zero warnings/errors. Source regressions
+passed: Format `MdlReaderTests` 33/33; Preview 45/45; SWLOR animation,
+skinmesh, filtering and placeable tests 40/40; SWLOR render/composition filter
+53/53; explicit HAK MDL parse sweep 1/1. All passed with zero skips. The HAK
+sweep used `SWLOR_HAKS_CORPUS=C:/Projects/SWLOR_NWN/SWLOR_Haks`; render tests
+used `SWLOR_TEST_REPOSITORY_ROOT=C:/Projects/SWLOR_NWN` and
+`SWLOR_TEST_HAKS_ROOT=C:/Projects/SWLOR_NWN/SWLOR_Haks`. Shared Preview tests
+also used `XENOMECH_TEST_CONTENT_ROOT` for native Xenomech resources. Legacy
+hard-coded SWLOR corpus tests now honor those configured read-only paths.
+
+An initial broad render run against the isolated checkout's absent HAK folder
+failed five cases; after wiring the explicit fixture root, the affected native
+case filter passed 6/6 and the selected 53-case filter passed. The initial
+failure remains failed evidence, not a pass. The first corpus-sweep invocation
+also skipped because it lacked `SWLOR_HAKS_CORPUS`; rerunning with that exact
+selector passed.
+
+The local packages are `Nwn.Formats 0.1.0-dev.22`, SHA256
+`13F560F01A219D49B2E8EA7C3FD0FB5ABF3F528026203591EC52F874A1DD9C5F`, and
+`Nwn.Preview 0.1.0-dev.24`, SHA256
+`6F9461216A0770B3A12672D1F0640B71CD4A403E2787535CE8ADF70A8A67388E`.
+Formats22's nuspec records source commit
+`e721d5fa24e315511b9c858d8cbbcd3cbe485b6a`; Preview24 records
+`72258dd0cc91dadb0cf632bed2cde15bb8cacd55` and depends on Authoring 0.1.0-dev.21
+and Formats 0.1.0-dev.22. Package archives are immutable.
+
+Package-mode SWLOR regressions passed Formats 95/95, the MDL/parser/render
+filter 84/84, the explicit HAK MDL sweep 1/1 and the area/assembly/resource/
+appearance filter 94/94, all with zero skips. The last filter TRX is
+`SWLOR.Toolset.Tests/TestResults/mdl-area-adapter-package-final.trx`. It
+includes `AreaSceneBuilder`, incremental placement, lighting, walkmesh, draw
+batching, anchors, cache concurrency, resource indexing, appearance gallery,
+material resolution and native preview adapter checks. The two legacy anchor
+and cache tests now use `SWLOR_TEST_REPOSITORY_ROOT` and
+`SWLOR_TEST_HAKS_ROOT`, matching the other explicit-corpus tests.
+
+Offline Linux source qualification used the pinned SDK image
+`10.0.401@sha256:35d40304542c8689331f8cab17c65926cdf48fe711e289321d71924b230a7d29`,
+network none, and read-only source, package cache, SWLOR HAK and Xenomech
+content mounts. Shared Formats passed 144/144 and Preview 45/45 with zero
+skips. Results are under
+`C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/swlor-mdl-extraction/linux-final/`.
+
+An initial package area run failed four corpus assertions because two tests
+selected the isolated checkout instead of the configured HAK root. Those
+failures were preserved and the corrected run passed 94/94. An initial
+unconfigured source render run and corpus sweep are likewise retained as failed
+evidence; only corrected explicit-corpus runs count above. The extraction
+preserves the SWLOR mesh producer but does not qualify a full renderer move,
+assembled appearance or official-client behavior.
+
+Preview24 also fixes two option-overload parity defects: configured
+`PlaceablePreview` keeps hidden selection geometry, and `AnimatedPreview`
+collapses multi-pose input to the settled pose even when the named-clip list is
+empty. The shared Windows Preview suite passed 47/47 and offline Linux passed
+Formats 144/144 and Preview 47/47, zero skips; Linux TRX files are in
+`C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/swlor-mdl-extraction/linux-parity-review/`.
+With Preview24 locked, the focused SWLOR hidden-placeable, animation, skinmesh
+and composition filter passed 50/50, zero skips, in
+`SWLOR.Toolset.Tests/TestResults/mdl-options-parity-package.trx`.

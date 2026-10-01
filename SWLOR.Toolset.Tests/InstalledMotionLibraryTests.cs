@@ -3,7 +3,8 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.AnimationDrafts;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.NWN.Formats;
 using SWLOR.Toolset.Domain.Animation;
 

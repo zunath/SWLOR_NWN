@@ -198,7 +198,7 @@ namespace SWLOR.Toolset.Tests
             {
                 typeof(SWLOR.Toolset.App).Assembly,
                 typeof(SWLOR.Toolset.Domain.Workspace.ModuleWorkspace).Assembly,
-                typeof(SWLOR.NWN.Formats.NwnFormatException).Assembly
+                typeof(NwnFormatException).Assembly
             };
 
             var violations = assemblies

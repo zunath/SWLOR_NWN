@@ -1,7 +1,8 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests
@@ -102,7 +103,7 @@ namespace SWLOR.Toolset.Tests
             {
                 ["forearm_g"] = new(new Vector3(1f, 3f, 0f), Quaternion.Identity, 1f)
             };
-            var animation = new MdlAnimationPose.SampledAnimation(
+            var animation = new MdlSampledAnimation(
                 "walk",
                 1f,
                 [firstPose, finalPose]);

@@ -18,6 +18,9 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot)
+                    return configuredRoot;
+
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -37,7 +40,8 @@ namespace SWLOR.Toolset.Tests
         private static (TilesetCatalog Catalog, TileModelCache Models, ModuleWorkspace Workspace) BuildFixture()
         {
             var index = ResourceIndex.FromHakBuilderConfig(
-                Path.Combine(RepoRoot, "Build", "hakbuilder.json"), Path.Combine(RepoRoot, "SWLOR_Haks"));
+                Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
+                Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"));
 
             return (new TilesetCatalog(index), new TileModelCache(index), new ModuleWorkspace(CorpusLocator.ModuleDirectory));
         }

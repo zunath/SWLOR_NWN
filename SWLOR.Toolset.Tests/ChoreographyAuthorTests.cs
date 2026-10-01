@@ -3,7 +3,8 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.AnimationDrafts;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 
 namespace SWLOR.Toolset.Tests;
@@ -50,9 +51,9 @@ public class ChoreographyAuthorTests
             foreach (var beat in recipe.Beats)
             {
                 var sourceModel = beat.SourceModel == null ? model : sourceModels[beat.SourceModel];
-                var native = SWLOR.Toolset.Domain.Render.MdlAnimationPose.Sample(sourceModel.Animations.Single(a => a.Name == beat.SourceAnimation),
+                var native = MdlAnimationPose.Sample(sourceModel.Animations.Single(a => a.Name == beat.SourceAnimation),
                     beat.SourceTime * sourceModel.Animations.Single(a => a.Name == beat.SourceAnimation).Length,
-                    SWLOR.Toolset.Domain.Render.MdlAnimationPose.BindPose(model));
+                    MdlAnimationPose.BindPose(model));
                 foreach (var (hand, target) in new[] { ("lhand_g", beat.LeftHand), ("rhand_g", beat.RightHand) })
                 {
                     if (target == null) continue;
@@ -96,8 +97,8 @@ public class ChoreographyAuthorTests
             foreach (var beat in recipe.Beats)
             {
                 var clip = model.Animations.Single(a => a.Name == beat.SourceAnimation);
-                var native = SWLOR.Toolset.Domain.Render.MdlAnimationPose.Sample(clip, beat.SourceTime * clip.Length,
-                    SWLOR.Toolset.Domain.Render.MdlAnimationPose.BindPose(model));
+                var native = MdlAnimationPose.Sample(clip, beat.SourceTime * clip.Length,
+                    MdlAnimationPose.BindPose(model));
                 foreach (var (name, target) in new[] { ("lhand_g", beat.LeftHand), ("rhand_g", beat.RightHand) })
                 {
                     if (target == null) continue;
@@ -165,8 +166,8 @@ public class ChoreographyAuthorTests
             {
                 var owner = beat.SourceModel == null ? model : sources[beat.SourceModel];
                 var clip = owner.Animations.Single(animation => animation.Name == beat.SourceAnimation);
-                var native = SWLOR.Toolset.Domain.Render.MdlAnimationPose.Sample(clip, beat.SourceTime * clip.Length,
-                    SWLOR.Toolset.Domain.Render.MdlAnimationPose.BindPose(model));
+                var native = MdlAnimationPose.Sample(clip, beat.SourceTime * clip.Length,
+                    MdlAnimationPose.BindPose(model));
                 foreach (var hand in hands)
                     Math.Abs(Quaternion.Dot(project.Sample(beat.Time)[hand].Orientation,
                         native[project.Joints[hand].Name].Orientation)).Should().BeGreaterThan(.99999f,
@@ -242,8 +243,8 @@ public class ChoreographyAuthorTests
             foreach (var key in frames)
             {
                 var fraction = (key.Time - span.First.Time) / (span.Second.Time - span.First.Time);
-                var pose = SWLOR.Toolset.Domain.Render.MdlAnimationPose.Sample(native, fraction * native.Length,
-                    SWLOR.Toolset.Domain.Render.MdlAnimationPose.BindPose(model));
+                var pose = MdlAnimationPose.Sample(native, fraction * native.Length,
+                    MdlAnimationPose.BindPose(model));
                 var actual = project.Sample(key.Time);
                 for (var i = 0; i < project.Joints.Count; i++)
                     Math.Abs(Quaternion.Dot(actual[i].Orientation, pose.GetValueOrDefault(project.Joints[i].Name, project.Joints[i].Rest).Orientation))

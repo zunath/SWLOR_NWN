@@ -1,7 +1,8 @@
 using System.Globalization;
 using System.Numerics;
 using System.Text;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Domain.Animation;

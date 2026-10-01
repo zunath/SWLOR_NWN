@@ -128,8 +128,11 @@ public class TlkWriterTests
     [Test]
     public void Writer_ReproducesTheCheckedInSwlorCustomTlk()
     {
-        var repoRoot = FindRepositoryRoot();
-        var tlkDirectory = Path.Combine(repoRoot, "SWLOR_Haks", "sw_tlk");
+        var configuredHaksRoot = Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT");
+        var haksRoot = string.IsNullOrWhiteSpace(configuredHaksRoot)
+            ? Path.Combine(FindRepositoryRoot(), "SWLOR_Haks")
+            : Path.GetFullPath(configuredHaksRoot);
+        var tlkDirectory = Path.Combine(haksRoot, "sw_tlk");
         using var json = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(tlkDirectory, "sw_tlk.tlk.json")));
         var languageId = json.RootElement.GetProperty("language").GetUInt32();
         var entries = json.RootElement.GetProperty("entries")

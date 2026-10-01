@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using SWLOR.NWN.Formats.Gff;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
 using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.NWN.Formats.Corpus.Tests;

@@ -2147,6 +2147,35 @@ it: a builder is watching the area, not the log, so the click read as dead.
   deliberate addition for clarity rather than a copied behaviour; the red cursor remains the part
   that is confirmed against it.
 
+## Shared 2DA consumer - 2026-10-01 - Every complete corpus table must load
+
+The tolerant corpus test reported 748 loaded files and one failure while still
+passing. The failed file, `iprp_spells past.2da`, is a six-row scratch fragment
+without a 2DA signature or column header. It remains explicitly rejected; the
+primary HAK checkout is unchanged.
+
+`TwoDaCorpusQualificationTests` requires every other discovered table to load
+through the real SWLOR `TwoDaService` shared-format integration. Any additional
+parse failure fails this gate. It also verifies that the documented fragment
+remains unavailable; making it a complete table requires removing the exception.
+The corpus must be explicitly selected with `SWLOR_TEST_HAKS_ROOT`, and a missing
+fixture fails rather than skips.
+
+Qualification uses clean HAK commit `3ec67b47d533c06773a86596d917999029915db9`:
+748 complete tables pass, zero failures; fragment rejection passes separately.
+The two test methods pass with zero skipped against `Nwn.Formats 0.1.0-dev.14`.
+The build has eight existing warnings and zero errors. Command:
+
+```powershell
+$env:SWLOR_TEST_HAKS_ROOT = 'C:\Projects\SWLOR_NWN\SWLOR_Haks'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter FullyQualifiedName~TwoDaCorpusQualificationTests --logger 'trx;LogFileName=swlor-complete-two-da-corpus.trx' --results-directory C:\Users\Zunath\.codex\worktrees\7a40\Xenomech\artifacts\swlor-package-adoption-dev14-dev16-dev12-dev8 --blame-hang-timeout 60s
+```
+
+TRX: Xenomech qualification directory
+`artifacts/swlor-package-adoption-dev14-dev16-dev12-dev8/swlor-complete-two-da-corpus.trx`.
+This establishes parsing of all complete files in that source corpus, not native
+runtime semantics for each table or full SWLOR editor/appearance acceptance.
+
 ## Area editor - 2026-07-28 - Group previews show their footprint, and a paint stops building walls
 
 Two things reported from live use:

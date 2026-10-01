@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Placement;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using Nwn.Authoring.Editing;

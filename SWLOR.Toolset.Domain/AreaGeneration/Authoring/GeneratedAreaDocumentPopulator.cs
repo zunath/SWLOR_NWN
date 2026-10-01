@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Placement;
 #nullable enable
 using Serilog;
 using SWLOR.NWN.Formats;

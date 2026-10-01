@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Placement;
 using System.Numerics;
 
 namespace SWLOR.Toolset.Domain.Render

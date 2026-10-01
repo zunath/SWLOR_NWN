@@ -438,8 +438,8 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.18",
-        "contentHash": "vuW9Mn2m4+rJFkHga4jcboubbr+7UJGV8st/zoOk75FWM1gKpG/bzgIXebCD5T7nYDl6iVL2E8k1QhafNqBwcg==",
+        "resolved": "0.1.0-dev.19",
+        "contentHash": "5X8RbrKSQCqFB/dMPQaYLJlK9eROzJDbMvh/2VmMv91umjxvHd2y2Oj1/6EEnZHgCO4bckMR0sH4nfxZHtqBtQ==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.20"
         }
@@ -670,7 +670,7 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-dev.18, )",
+          "Nwn.Authoring": "[0.1.0-dev.19, )",
           "Nwn.Toolset.Avalonia": "[0.1.0-dev.11, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
@@ -681,7 +681,7 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.18, )",
+          "Nwn.Authoring": "[0.1.0-dev.19, )",
           "Nwn.Formats": "[0.1.0-dev.20, )",
           "Nwn.Preview": "[0.1.0-dev.16, )",
           "SWLOR.Game.Server": "[1.0.0, )",

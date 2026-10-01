@@ -45,7 +45,7 @@ namespace SWLOR.Toolset.Tests
         /// <summary>A brand-new dialog, exactly as Module Contents' "New Dialog…" creates it.</summary>
         private static DlgDocument NewConversation() =>
             DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
-                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+                Nwn.Authoring.Resources.ModuleResourceType.Dlg, "test_convo", "Test"));
 
         // ---------- problems, in words ----------
 

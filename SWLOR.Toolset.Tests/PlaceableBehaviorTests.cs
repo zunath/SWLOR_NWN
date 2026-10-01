@@ -727,7 +727,7 @@ namespace SWLOR.Toolset.Tests
             var gallerySource = new BehaviorValueSourceProvider(
                 gameCode: null,
                 tags: () => null,
-                blueprints: type => type == Domain.Workspace.ResourceType.Utp
+                blueprints: type => type == Nwn.Authoring.Resources.ModuleResourceType.Utp
                     ? new[]
                     {
                         new Domain.Workspace.CatalogEntry(

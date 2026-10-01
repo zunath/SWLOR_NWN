@@ -1,4 +1,7 @@
 <Project>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender' Or '$(MSBuildProjectName)' == 'SWLOR.AnimationDrafts' Or '$(MSBuildProjectName)' == 'SWLOR.ConversationMigrator'">
+    <Using Include="Nwn.Authoring.Resources.ModuleResourceType" Alias="ResourceType" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RestoreLockedMode Condition="'$(NwnToolsetSourceRoot)' == '' And '$(RestoreLockedMode)' == ''">true</RestoreLockedMode>

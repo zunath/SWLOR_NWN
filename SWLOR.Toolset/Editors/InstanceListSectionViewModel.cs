@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Placement;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;

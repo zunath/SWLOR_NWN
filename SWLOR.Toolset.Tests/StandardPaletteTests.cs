@@ -6,6 +6,7 @@ using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Tests.Support;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -28,6 +29,8 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (ToolsetCorpusPaths.RepositoryRoot is { } selectedRoot)
+                    return selectedRoot;
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {

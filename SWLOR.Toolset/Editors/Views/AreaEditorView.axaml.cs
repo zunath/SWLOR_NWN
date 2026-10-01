@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Placement;
 using Avalonia.Interactivity;
 using System.ComponentModel;
 using System.Numerics;

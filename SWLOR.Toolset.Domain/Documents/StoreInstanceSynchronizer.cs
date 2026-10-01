@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Placement;
 using Nwn.Authoring.Documents.Native;
 using System.Globalization;
 using System.Text;

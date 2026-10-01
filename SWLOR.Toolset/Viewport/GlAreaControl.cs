@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+using Nwn.Authoring.Areas.Placement;
+using System.Numerics;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.OpenGL;

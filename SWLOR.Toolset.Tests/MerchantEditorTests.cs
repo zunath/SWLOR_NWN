@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Placement;
 using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using FluentAssertions;
 using NUnit.Framework;

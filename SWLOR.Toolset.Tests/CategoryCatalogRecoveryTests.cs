@@ -115,7 +115,7 @@ namespace SWLOR.Toolset.Tests
             var catalog = CategoryCatalog.Load(_file, out _);
 
             catalog.IsReadOnly.Should().BeTrue("it still must not be written back");
-            var section = catalog.Section(SWLOR.Toolset.Domain.Workspace.ResourceType.Utc);
+            var section = catalog.Section(Nwn.Authoring.Resources.ModuleResourceType.Utc);
             section.Should().NotBeNull();
             section!.Folders.Should().ContainSingle().Which.Name.Should().Be("Troopers");
         }

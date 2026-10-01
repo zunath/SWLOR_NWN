@@ -25,7 +25,16 @@ The corpus is selected explicitly with `SWLOR_TEST_REPOSITORY_ROOT` and
 `SWLOR_TEST_HAKS_ROOT`; no HAK or module source is copied to a primary checkout.
 The first failed fixture attempts remain preserved alongside the passing reports.
 
-Placement mapping/GIC, scene and viewport moves are still required. The current
+Native placement mapping and GIC comment alignment also move into the shared
+library in `Nwn.Authoring 0.1.0-dev.19`; SWLOR retains module naming and palette
+policy. Their real package integration passes 206/206 placement, scene, workspace
+and palette checks with zero skips:
+`artifacts/test-results/area-placement-extraction-package-corpus.trx`.
+The initial source run skipped a palette check against the empty worktree HAK
+folder; correcting its explicit corpus selection passes all 12 palette checks.
+That report remains preserved.
+
+Scene, viewport and atomic creation moves are still required. The current
 checks establish the extracted document/tile responsibilities and the actual
 SWLOR package consumer, not a completed cross-game graphical area builder or
 official-client acceptance. Builds use `RunPostBuildEvent=Never`.

@@ -1,32 +1,6 @@
 namespace SWLOR.Toolset.Domain.Workspace
 {
     /// <summary>
-    /// The module resource kinds a <see cref="ModuleWorkspace"/> knows how to enumerate and load:
-    /// areas (.are, paired with .git/.gic), the blueprint types, dialogs, and scripts.
-    /// </summary>
-    public enum ResourceType
-    {
-        Area,
-        Utc,
-        Uti,
-        Utp,
-        Utd,
-        Utm,
-        Utt,
-        Uts,
-        Utw,
-
-        /// <summary>A dialog (.dlg). Stored like the blueprints - nwn_gff JSON under Module/dlg.</summary>
-        Dlg,
-
-        /// <summary>
-        /// A NWScript source file (.nss). The one type that is NOT nwn_gff JSON: these are plain text,
-        /// so they live at Module/nss/&lt;resref&gt;.nss with no second extension.
-        /// </summary>
-        Nss
-    }
-
-    /// <summary>
     /// File-naming conventions for <see cref="ResourceType"/>: the module subfolder name matches the
     /// resource extension for every type (e.g. the "utc" folder holds "utc" resources), so one string
     /// covers both. Whether a file carries a further ".json" suffix is a separate question -

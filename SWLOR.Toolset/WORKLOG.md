@@ -9,6 +9,57 @@ orchestration protocol, ground rules, corrected format specs) lives in-repo at
 `SWLOR.Toolset\PLAN.md`. One entry per work package; update the status line in place and
 append details as work happens. Statuses: `pending | in-progress | done | blocked`.
 
+## Shared conversation graph overview — done within the stated scope — 2026-10-01
+
+The conversation editor's Graph button opens the shared directed graph control.
+The SWLOR adapter retains native entry/reply indices, opening and route order,
+conditions and reuse markers; disconnected nodes and unresolved targets remain
+visible. Selection shows the full original text, while canvas subtitles are
+bounded. Refresh rebuilds the overview from the current unsaved draft because
+native list edits can renumber node indices. Layout, selection and dragging are
+view state; authoring and saves remain in the existing editor.
+
+The shared UI package is `Nwn.Toolset.Avalonia` `0.1.0-dev.11`, source
+`f85cb5b25df8011f045cfcd336bcf7c836ec87fa`, SHA256
+`8E9B3010F4ACAFF09ADDAAC788321B7354213CFBD28CB8D8F22A5D2AB6DA43BC`.
+Its inspected nuspec retains minimum Preview `0.1.0-dev.13`; this consumer
+directly pins Preview `0.1.0-dev.14`. Formats and Authoring remain `dev.17`.
+The six affected Debug/Release locks are updated; all eight tracked locks are
+byte-identical before and after explicit-source verification.
+
+The final selected tests pass 61/61 with zero skips in source and ordinary locked
+package modes. They cover the native graph adapter, the toolbar, real Skia node
+selection/full-text/refresh, conversation/script editor regressions, module
+deletion controls and native material/OpenGL preview. The inspected 1100×750
+graph frame is `SWLOR.Toolset.Tests/bin/Debug/net10.0/swlor-conversation-graph-f9e3294e5d794329953115d3196c0524.png`,
+SHA256 `3254134056053D38C92BC4A685AA9F57EB36C16BC1BA321274E94CC7E509B167`.
+Later runs retain their own PNG attachments. The test application now uses real
+Skia drawing and the application's styles rather than the mock drawing backend.
+Adding the mirrored test namespace required disambiguating the older relative
+`Editors` references in `ModuleExplorerDeleteTests`; its regression cases pass.
+
+Commands from this checkout (`$source` selects the shared checkout, `$feed` its
+immutable `artifacts/packages` directory, `SWLOR_HAKS_ROOT` the read-only corpus):
+
+```powershell
+$filter = 'FullyQualifiedName~ConversationGraph|FullyQualifiedName~ConversationEditorViewRenderTests|FullyQualifiedName~ScriptEditorViewRenderTests|FullyQualifiedName~NativeModelPreviewAdapterTests|FullyQualifiedName~NativeMaterialViewportTests|FullyQualifiedName~ModuleExplorerDeleteTests'
+dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:Configuration=Release -p:NwnToolsetPackageFeed=$feed -p:RestoreLockedMode=false --force-evaluate -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetSourceRoot=$source -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-graph-final-source.trx' --blame-hang-timeout 60s
+dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-graph-final-locked-package.trx' --blame-hang-timeout 60s
+```
+
+Release builds with zero errors and eight existing API/server warnings. Earlier
+failed evidence includes a code-built window namescope lookup and a legacy
+namespace collision; both are corrected. An initial command accidentally invoked
+the unrelated server post-build script and failed to resolve `dotnet`; final
+commands explicitly disable that deployment event. This scope qualifies a
+read-only graph overview, not graph authoring, large-module performance or native
+dialogue/client behavior. Shared Windows tests pass 10/10; Linux portable tests
+pass 9/9, while the Linux software-render case timed out and remains unqualified.
+
 ## Neutral material-reader adoption — done — 2026-10-01
 - `SWLOR.Toolset.Domain.Render.MaterialResolver` now adapts the shared
   `Nwn.Formats.Mtr.MtrDocument`/`MtrReader` rather than maintaining a second MTR grammar.

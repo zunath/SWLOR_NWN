@@ -21,6 +21,7 @@ using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
+    using ToolsetEditors = global::SWLOR.Toolset.Editors;
     /// <summary>Resource deletion from each of Module Contents' Areas, Dialogs, and Scripts tabs.</summary>
     [TestFixture]
     public sealed class ModuleExplorerDeleteTests
@@ -206,8 +207,8 @@ namespace SWLOR.Toolset.Tests
             var source = Path.Combine(_module, "nss", resRef + ".nss");
             File.WriteAllText(source, "void main() {}");
             var prompts = new RecordingPrompts(answer: true);
-            Editors.EditorService? editors = null;
-            Editors.ScriptEditorViewModel? document = null;
+            ToolsetEditors.EditorService? editors = null;
+            ToolsetEditors.ScriptEditorViewModel? document = null;
             var (explorer, _) = CreateExplorer(
                 ResourceType.Nss,
                 prompts,
@@ -215,16 +216,16 @@ namespace SWLOR.Toolset.Tests
                 {
                     var dockFactory = new ToolsetDockFactory(
                         null!, null!, null!, null!, null!, null!, null!, null!, null!);
-                    editors = new Editors.EditorService(
+                    editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         dockFactory,
                         prompts);
-                    document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                    document = new ToolsetEditors.ScriptEditorViewModel(source, resRef, log, prompts);
                     document.OnTextChanged("void main() { // unsaved\n}");
-                    var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
-                        typeof(Editors.EditorService)
+                    var openScripts = (Dictionary<string, ToolsetEditors.ScriptEditorViewModel>)
+                        typeof(ToolsetEditors.EditorService)
                             .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
                                                                System.Reflection.BindingFlags.NonPublic)!
                             .GetValue(editors)!;
@@ -251,8 +252,8 @@ namespace SWLOR.Toolset.Tests
             const string resRef = "changed_open_script";
             var source = Path.Combine(_module, "nss", resRef + ".nss");
             File.WriteAllText(source, "void main() { // original\n}");
-            Editors.EditorService? editors = null;
-            Editors.ScriptEditorViewModel? document = null;
+            ToolsetEditors.EditorService? editors = null;
+            ToolsetEditors.ScriptEditorViewModel? document = null;
             var prompts = new RecordingPrompts(
                 answer: true,
                 onConfirm: () => File.WriteAllText(source, "void main() { // external\n}"));
@@ -263,16 +264,16 @@ namespace SWLOR.Toolset.Tests
                 {
                     var dockFactory = new ToolsetDockFactory(
                         null!, null!, null!, null!, null!, null!, null!, null!, null!);
-                    editors = new Editors.EditorService(
+                    editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         dockFactory,
                         prompts);
-                    document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                    document = new ToolsetEditors.ScriptEditorViewModel(source, resRef, log, prompts);
                     document.OnTextChanged("void main() { // unsaved\n}");
-                    var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
-                        typeof(Editors.EditorService)
+                    var openScripts = (Dictionary<string, ToolsetEditors.ScriptEditorViewModel>)
+                        typeof(ToolsetEditors.EditorService)
                             .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
                                                                System.Reflection.BindingFlags.NonPublic)!
                             .GetValue(editors)!;
@@ -298,8 +299,8 @@ namespace SWLOR.Toolset.Tests
             var source = Path.Combine(_module, "nss", resRef + ".nss");
             File.WriteAllText(source, "void main() {}");
             Action? openScript = null;
-            Editors.EditorService? editors = null;
-            Editors.ScriptEditorViewModel? document = null;
+            ToolsetEditors.EditorService? editors = null;
+            ToolsetEditors.ScriptEditorViewModel? document = null;
             var prompts = new RecordingPrompts(answer: true, onConfirm: () => openScript!());
             var (explorer, _) = CreateExplorer(
                 ResourceType.Nss,
@@ -308,18 +309,18 @@ namespace SWLOR.Toolset.Tests
                 {
                     var dockFactory = new ToolsetDockFactory(
                         null!, null!, null!, null!, null!, null!, null!, null!, null!);
-                    editors = new Editors.EditorService(
+                    editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         dockFactory,
                         prompts);
                     openScript = () =>
                     {
-                        document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                        document = new ToolsetEditors.ScriptEditorViewModel(source, resRef, log, prompts);
                         document.OnTextChanged("void main() { // newly opened and unsaved\n}");
-                        var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
-                            typeof(Editors.EditorService)
+                        var openScripts = (Dictionary<string, ToolsetEditors.ScriptEditorViewModel>)
+                            typeof(ToolsetEditors.EditorService)
                                 .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
                                                                    System.Reflection.BindingFlags.NonPublic)!
                                 .GetValue(editors)!;
@@ -406,21 +407,21 @@ namespace SWLOR.Toolset.Tests
                 prompts,
                 editorServiceFactory: (workspace, log) =>
                 {
-                    var editors = new Editors.EditorService(
+                    var editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         factory: null!,
                         prompts);
                     openModuleProperties = () =>
                     {
-                        var document = new Editors.Module.ModulePropertiesDocumentViewModel(
+                        var document = new ToolsetEditors.Module.ModulePropertiesDocumentViewModel(
                             ifoPath,
                             _module,
                             workspace.Workspace!,
                             log,
                             prompts);
-                        typeof(Editors.EditorService)
+                        typeof(ToolsetEditors.EditorService)
                             .GetField("_moduleProperties", System.Reflection.BindingFlags.Instance |
                                                           System.Reflection.BindingFlags.NonPublic)!
                             .SetValue(editors, document);
@@ -731,7 +732,7 @@ namespace SWLOR.Toolset.Tests
             ResourceType type,
             IEditorPromptService prompts,
             ModuleMutationLock? mutationLock = null,
-            Func<WorkspaceContext, OutputLogService, Editors.EditorService>? editorServiceFactory = null)
+            Func<WorkspaceContext, OutputLogService, ToolsetEditors.EditorService>? editorServiceFactory = null)
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);

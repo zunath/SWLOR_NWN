@@ -1,11 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
+using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors;
+using SWLOR.Toolset.Editors.Conversations;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -56,6 +58,31 @@ namespace SWLOR.Toolset.Tests
             }
 
             throw new DirectoryNotFoundException("Could not locate the SWLOR.Game.Server source tree.");
+        }
+
+        [AvaloniaTest]
+        public void TheGraphToolbarOpensTheSharedOverviewForTheCurrentDraft()
+        {
+            var editor = OpenEditor();
+            var view = new ConversationEditorView { DataContext = editor };
+            var owner = new Window { Content = view, Width = 1200, Height = 800 };
+            owner.Show();
+            try
+            {
+                owner.UpdateLayout();
+                view.GetVisualDescendants().OfType<Button>().Single(button => Equals(button.Content, "Graph"))
+                    .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                var overview = owner.OwnedWindows.OfType<ConversationGraphWindow>().Single();
+                overview.Title.Should().Contain("dantherbs");
+                overview.GetVisualDescendants().OfType<Nwn.Toolset.Avalonia.Graph.GraphCanvas>()
+                    .Single().Viewport.Document!.Nodes.Count.Should().Be(editor.LiveDialog.Entries.Count + editor.LiveDialog.Replies.Count + 1);
+                overview.Close();
+            }
+            finally
+            {
+                foreach (var child in owner.OwnedWindows.ToArray()) child.Close();
+                owner.Close();
+            }
         }
 
         [AvaloniaTest]

@@ -107,7 +107,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            NewAreaWriter.TilesetResolver? resolver = _tilesetCatalog == null
+            AreaTilesetResolver? resolver = _tilesetCatalog == null
                 ? null
                 : (string resRef, out TilesetDefinition tileset) => _tilesetCatalog.TryGetTileset(resRef, out tileset);
 

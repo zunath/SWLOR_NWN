@@ -2460,3 +2460,41 @@ Two things reported from live use:
   untouched, so a floor painted beside a corridor still meets it, and the crosser brush exempts the
   edge it is painting. A preference, not a filter: where every legal tile carries one, the cell
   still solves.
+
+## Shared area creation transaction - 2026-10-01
+
+`SWLOR.Toolset.Domain.NewAreaWriter` now adapts the shared
+`Nwn.Authoring.Areas.Creation.AreaCreationWriter` using SWLOR's lexical
+`NimGffDocumentCodec` and subfolder layout. Shared code owns the existing fill,
+byte-copy, registration, marker, fingerprint, recovery, and lock-order behavior.
+Host paths, template identity, and document codec remain explicit inputs. The
+XM consumer can supply its distinct GFF codec and flat layout; no common
+on-disk JSON representation is assumed.
+
+`ModuleWriteLock` moved to `Nwn.Formats.Io`, so SWLOR.NWN.Formats and the CLI
+do not gain an Authoring dependency. The CLI uses the shared pending-marker
+contract. SWLOR pins Formats `0.1.0-dev.21` SHA256
+`439E07F854170D805B9E69CBD0329F79B4BC2FDBF30E125DF508E08A896064FF` and
+Authoring `0.1.0-dev.20` SHA256
+`85CB0DD151AE2D166280A537CC0A57374C18A81AA26113D47223184408B5DEEC`. Both
+nuspecs identify shared source commit
+`151c164f7b4d80dc84aafb14d90c4acabfe75c47`; Authoring dev.20 depends on
+Formats dev.21. These local immutable packages were not published. Debug and
+Release package locks cover Domain, Toolset, Toolset.Tests, and PreviewRender
+(eight lock files); locked restores passed for all eight graphs.
+
+Validation used the primary HAK directory read-only with
+`SWLOR_TEST_REPOSITORY_ROOT=C:\Projects\SWLOR_NWN`,
+`SWLOR_TEST_HAKS_ROOT=C:\Projects\SWLOR_NWN\SWLOR_Haks`, and
+`SWLOR_HAKS_ROOT` set to the same path. Focused writer, module-lock, and packer
+tests passed 38/38 in source mode and 38/38 in package mode, with zero skips.
+This includes real tileset resolution, registration, recovery, and packer
+marker refusal. Package-mode Release builds of Toolset and CLI passed with
+zero warnings and errors. Shared regressions passed Formats 144/144 and
+Authoring 32/32, zero skips; the latest marker-alias change also passed the
+focused shared creation tests 2/2. Earlier runs without explicit corpus roots
+were retained and excluded from qualification.
+
+This qualifies the shared writer adapter, SWLOR package consumer, and selected
+HAK-backed creation tests. Native game activation and official-client behavior
+are outside this transaction boundary.

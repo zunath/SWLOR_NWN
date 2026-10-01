@@ -11,11 +11,11 @@
   <ItemGroup>
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Authoring\Nwn.Authoring.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Authoring" Version="0.1.0-dev.19"
+    <PackageReference Include="Nwn.Authoring" Version="0.1.0-dev.20"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Formats\Nwn.Formats.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.20"
+    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.21"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Preview\Nwn.Preview.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />

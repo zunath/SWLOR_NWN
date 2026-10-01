@@ -35,7 +35,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             }
 
             var canonicalResref = (resref ?? string.Empty).Trim().ToLowerInvariant();
-            NewAreaWriter.TilesetResolver resolver = tilesets.TryGetTileset;
+            AreaTilesetResolver resolver = tilesets.TryGetTileset;
             Logger.Information(
                 "Creating generated area {AreaResref} from a {Width}x{Height} solved layout.",
                 canonicalResref,

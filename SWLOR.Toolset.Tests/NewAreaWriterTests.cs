@@ -75,7 +75,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>Resolves real tilesets, so the fill tile comes from genuine .set corner rules.</summary>
-        private static NewAreaWriter.TilesetResolver? RealTilesets()
+        private static AreaTilesetResolver? RealTilesets()
         {
             var installPath = NwnInstallLocator.Locate();
             if (installPath == null)
@@ -158,7 +158,7 @@ namespace SWLOR.Toolset.Tests
                     }
                 }
             };
-            NewAreaWriter.TilesetResolver resolver =
+            AreaTilesetResolver resolver =
                 (string _, out TilesetDefinition resolved) =>
                 {
                     resolved = tileset;
@@ -317,7 +317,7 @@ namespace SWLOR.Toolset.Tests
                     }
                 }
             };
-            NewAreaWriter.TilesetResolver resolver =
+            AreaTilesetResolver resolver =
                 (string _, out TilesetDefinition resolved) =>
                 {
                     resolved = tileset;
@@ -466,7 +466,7 @@ namespace SWLOR.Toolset.Tests
                     }
                 }
             };
-            NewAreaWriter.TilesetResolver resolver =
+            AreaTilesetResolver resolver =
                 (string _, out TilesetDefinition resolved) =>
                 {
                     resolved = tileset;
@@ -515,7 +515,7 @@ namespace SWLOR.Toolset.Tests
                 .AreaResRefs.Should().Contain(new[] { "concurrent_a", "concurrent_b" });
         }
 
-        private static NewAreaWriter.TilesetResolver SyntheticTilesets()
+        private static AreaTilesetResolver SyntheticTilesets()
         {
             var tileset = new TilesetDefinition
             {

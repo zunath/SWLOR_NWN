@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SWLOR.NWN.Formats.Common;
+using Nwn.Formats.Io;
 
 namespace SWLOR.CLI
 {
@@ -21,10 +22,6 @@ namespace SWLOR.CLI
         private const string PackingDirectory = "./packing";
         private const string PaletteRefreshDirectory = "./palette-refresh";
         private const string WorkerCountEnvironmentVariable = "SWLOR_RESOURCE_CONVERSION_WORKERS";
-        // Mirrors NewAreaWriter.PendingMarkerPrefix in SWLOR.Toolset.Domain - this project cannot
-        // reference that one (see RequireNoInterruptedAreaCreation), so the literal is duplicated.
-        private const string NewAreaPendingMarkerPrefix = ".swlor-toolset-new-area-";
-        private const string NewAreaPendingMarkerSuffix = ".pending";
         private const string ErfImportPendingMarkerPattern = ".swlor-toolset-erf-import-*.pending.json";
         private const string ItemRenamePendingMarkerPattern = ".swlor-toolset-item-rename-*.pending.json";
         // Mirrors ModuleResourceDeletionService.DeleteTransactionSuffix. SWLOR.CLI cannot reference
@@ -626,13 +623,13 @@ namespace SWLOR.CLI
         /// </summary>
         private static void RequireNoInterruptedAreaCreation()
         {
-            var markers = Directory.GetFiles(".", NewAreaPendingMarkerPrefix + "*" + NewAreaPendingMarkerSuffix);
+            var markers = PendingAreaCreationMarker.Enumerate(Environment.CurrentDirectory).ToArray();
             if (markers.Length == 0)
                 return;
 
             var pendingResRefs = markers
                 .Select(marker => Path.GetFileNameWithoutExtension(Path.GetFileName(marker)))
-                .Select(nameWithoutMarkerExtension => nameWithoutMarkerExtension[NewAreaPendingMarkerPrefix.Length..])
+                .Select(nameWithoutMarkerExtension => nameWithoutMarkerExtension[PendingAreaCreationMarker.DefaultPrefix.Length..])
                 .ToList();
 
             throw new InvalidOperationException(

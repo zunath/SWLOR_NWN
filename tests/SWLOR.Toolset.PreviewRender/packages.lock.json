@@ -377,10 +377,10 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.19",
-        "contentHash": "5X8RbrKSQCqFB/dMPQaYLJlK9eROzJDbMvh/2VmMv91umjxvHd2y2Oj1/6EEnZHgCO4bckMR0sH4nfxZHtqBtQ==",
+        "resolved": "0.1.0-dev.20",
+        "contentHash": "CQ76WjDYZnfFVGqmecb9N+n6GvoL3jAiveDNHhG/BAUtYxSOKadG05znbX14Xv53SkiSIEqxMq750vgDCWWqXg==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.20"
+          "Nwn.Formats": "0.1.0-dev.21"
         }
       },
       "NWN.Core": {
@@ -393,8 +393,8 @@
       },
       "Nwn.Formats": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.20",
-        "contentHash": "q9Z/WqJDpvnD9EMw8lt7R1y9tHZDu30YJGh4BPuEiQL1wLIcHBfoJy2dfdZlVj2lIvkXb8P7f58AgaK8HzBGMA=="
+        "resolved": "0.1.0-dev.21",
+        "contentHash": "BS2woF+pZAQRr39DYLx6rm4ANno5oScxCQEMIyqLNlar5o6nxQxq/ysiAuHEJQ2iHq26/tWSOlyVPFrJ219UtQ=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -552,7 +552,7 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.20, )"
+          "Nwn.Formats": "[0.1.0-dev.21, )"
         }
       },
       "swlor.toolset": {
@@ -572,7 +572,7 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-dev.19, )",
+          "Nwn.Authoring": "[0.1.0-dev.20, )",
           "Nwn.Toolset.Avalonia": "[0.1.0-dev.11, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
@@ -583,8 +583,8 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.19, )",
-          "Nwn.Formats": "[0.1.0-dev.20, )",
+          "Nwn.Authoring": "[0.1.0-dev.20, )",
+          "Nwn.Formats": "[0.1.0-dev.21, )",
           "Nwn.Preview": "[0.1.0-dev.16, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",

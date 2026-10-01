@@ -11,6 +11,31 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 
 ## Shared conversation graph overview — done within the stated scope — 2026-10-01
 
+The later static-scene package update directly pins Formats `0.1.0-dev.19`
+and Preview `0.1.0-dev.16`; Authoring `dev.17` and Avalonia `dev.11` remain
+unchanged. Formats source is `73209d7bec73ac4bf41d2b7b60de1543c4a7b835`, archive
+SHA-256 `74b91e2e80ccdd2d041abfbede5fdd4f1dd52acefddaf336dfce8220cfeee639`
+(its nuspec stores the verified `73209d7` prefix). Preview source is
+`2ced6cf7132ba59d92ba2a0df4faf51ab0dcdde2`, archive SHA-256
+`f021274b528002b52b2b7f5636c47c1f1650b5c4b586da5623f82e9a7c945d0f`.
+Formats now reads compiled quaternions in native `X,Y,Z,W` order, bounds local
+hierarchies by the inherited node numbering count and retains pointer identities
+for duplicate native dummy names. Preview resolves those identities and scopes
+assembled scene materials without a game convention in the neutral library.
+
+The same selected 61 regressions pass with zero skips in Release package and
+explicit-source profiles: `compiled-quaternion-final-package.trx` and
+`compiled-quaternion-final-source.trx`. The package run's inspected real OpenGLES
+3.0 `pfa0_chest001` frame is 1200×900 with 144,655 colored pixels and one
+geometry/material upload reused on its second frame. Its attachment is
+`SWLOR.Toolset.Tests/bin/Release/net10.0/swlor-material-843049f0fde343cc9bc566c5b6fdd525.png`.
+All eight Debug/Release consumer locks were regenerated against the immutable
+local feed and remain unchanged through source verification and the final
+ordinary locked restore. This qualifies the existing rigid SWLOR part preview
+and the selected editor regressions; animated assembly and official-client
+comparison remain separate gates. Earlier package-update checks passed 16 cases;
+they are superseded by the complete 61-case selection above.
+
 The conversation editor's Graph button opens the shared directed graph control.
 The SWLOR adapter retains native entry/reply indices, opening and route order,
 conditions and reuse markers; disconnected nodes and unresolved targets remain

@@ -425,8 +425,8 @@
       },
       "Nwn.Formats": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.17",
-        "contentHash": "iQbXfbcTgC2W7/Ujj5ThwqOKjDJ3V3veyH+OZIkM47lErSBmm0k+IWu98e7Q35roYpqCeAXuk5zGmeNnqC7scA=="
+        "resolved": "0.1.0-dev.19",
+        "contentHash": "v5NJQfPlLCnFVzEx87Ggpw4zfilY3575Kg1COa5HXA1/AO8Mlxj8kSAOSQde35l7Ew755nvWlRnpRnbYGV5rdw=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -438,10 +438,10 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.14",
-        "contentHash": "Ny2OEVoxcbemZ54V167Ris3WGpd/RRkCaUlJ/oHtUvXAtB4Rp+JOEpP00qzfqmwhfpfKl05Hp60t13UW5b77Iw==",
+        "resolved": "0.1.0-dev.16",
+        "contentHash": "uTnUkFgmsd4RXWzap8hV//t5fkZWNWCV3W5zgBtB2j5Op6kAgSbywsnvA2sqltzax9AN/RDNvwZgGlQdzdZTSw==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.17"
+          "Nwn.Formats": "0.1.0-dev.18"
         }
       },
       "NWNX.NET": {
@@ -555,8 +555,8 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.17, )",
-          "Nwn.Preview": "[0.1.0-dev.14, )",
+          "Nwn.Formats": "[0.1.0-dev.19, )",
+          "Nwn.Preview": "[0.1.0-dev.16, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

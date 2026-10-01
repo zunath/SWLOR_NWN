@@ -11,11 +11,11 @@
   <ItemGroup>
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Formats\Nwn.Formats.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.17"
+    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.19"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Preview\Nwn.Preview.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Preview" Version="0.1.0-dev.14"
+    <PackageReference Include="Nwn.Preview" Version="0.1.0-dev.16"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj"

@@ -2785,3 +2785,23 @@ The shared `Nwn.Toolset.Avalonia.Tests` source-mode suite passed 12/12 in
 The package combined filter and corpus/reflection filter above were run in Debug
 with the six locked files active; the Release app build also used its regenerated
 locked package graph.
+
+## Shared ERF stream ownership
+
+The shared `Nwn.Formats` ERF reader now disposes streams it owns when parsing
+fails, while preserving borrowed streams. `ErfArchive.Open` and
+`ErfArchive.Read(..., ownsStream: true)` both cover this failure path. The
+shared source regression passed 17/17 with zero skips in
+`NWN.Toolset/artifacts/erf-owned-stream-final/erf-owned-stream-final.trx`.
+
+SWLOR package mode now pins `Nwn.Formats` 0.1.0-dev.25 in the formats and
+domain projects. The immutable package SHA256 is
+`ECA4211B341A21D1753B1BD48E2850C540D72047F260F8D90B223C212A823154`, built
+from source commit `0779949c9fa1db0c8c310fde7832ac617f0c78b8`; the nuspec has
+no package dependencies. Prior dev.24 remains unchanged. The package consumer
+resource/material/viewport filter passed 23/23 with zero skips in
+`artifacts/formats25-package-consumer/formats25-package-consumer.trx`, using
+the explicit primary HAK roots. The locked Release app build completed with
+zero errors and the same eight existing nullable warnings listed above.
+Affected package locks were regenerated for both Debug and Release graphs
+(formats has only a Debug lock). Source-mode locks remain untouched.

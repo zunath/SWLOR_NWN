@@ -13,9 +13,9 @@
       },
       "Nwn.Formats": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.23, )",
-        "resolved": "0.1.0-dev.23",
-        "contentHash": "DTTD9U8GZUtf5z54xBEirWOJkOmoO5k0shEUtJa4i+Cz02fNluZd802MK3EvJl2dTcnj1Q/dHuzP26C7JtST4A=="
+        "requested": "[0.1.0-dev.25, )",
+        "resolved": "0.1.0-dev.25",
+        "contentHash": "pEsVWiRIdJw5fMFN1XPaBU/1MrmFL8PQd0IVPg1CNI79Wh4worKphKwbQ12qtMwADBv2utTLVJAylKoOV7N8GQ=="
       },
       "Nwn.Preview": {
         "type": "Direct",
@@ -148,7 +148,7 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.23, )"
+          "Nwn.Formats": "[0.1.0-dev.25, )"
         }
       }
     }

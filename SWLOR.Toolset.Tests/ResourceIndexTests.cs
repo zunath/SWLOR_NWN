@@ -39,7 +39,8 @@ namespace SWLOR.Toolset.Tests
 
         private static string HakBuilderConfigPath => Path.Combine(RepoRoot, "Build", "hakbuilder.json");
 
-        private static string HaksDirectory => Path.Combine(RepoRoot, "SWLOR_Haks");
+        private static string HaksDirectory => Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT")
+            ?? Path.Combine(RepoRoot, "SWLOR_Haks");
 
         [Test]
         public void TgaLookup_UsesSharedResourceTypeMappingForLooseHakLayer()

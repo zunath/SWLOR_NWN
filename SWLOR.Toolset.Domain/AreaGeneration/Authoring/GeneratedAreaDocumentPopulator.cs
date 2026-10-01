@@ -1,7 +1,6 @@
 #nullable enable
 using Serilog;
 using SWLOR.NWN.Formats;
-using SWLOR.NWN.Formats.TwoDA;
 using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
@@ -739,7 +738,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 
             try
             {
-                return new TwoDaTable("appearance", TwoDAReader.Read(resource.GetBytes()));
+                return TwoDaTable.Parse("appearance", resource.GetBytes());
             }
             catch (NwnFormatException ex)
             {

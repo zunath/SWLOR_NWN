@@ -140,7 +140,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        private static Domain.Gff.JsonGffStruct TransitionDoor()
+        private static Nwn.Authoring.Documents.NimGff.JsonGffStruct TransitionDoor()
         {
             var door = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
                 .LoadBlueprint(ResourceType.Utd, "_mdrn_dt_bars")

@@ -7,6 +7,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 

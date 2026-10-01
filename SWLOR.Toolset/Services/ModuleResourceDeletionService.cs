@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Services

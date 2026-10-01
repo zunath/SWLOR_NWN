@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -154,7 +156,7 @@ namespace SWLOR.Toolset.Tests
                          $"unresolved: {string.Join(", ", unresolved.Take(10))}");
         }
 
-        private static bool UsesIntentionalNullCreatureAppearance(Domain.Gff.JsonGffStruct root)
+        private static bool UsesIntentionalNullCreatureAppearance(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             var appearanceId = root.GetIntOrNull("Appearance_Type");
             if (appearanceId is not >= 0)
@@ -300,7 +302,7 @@ namespace SWLOR.Toolset.Tests
             Data.BaseItems.GetOrNull(int.MaxValue).Should().BeNull();
         }
 
-        private static bool ResolvesPortrait(Domain.Gff.JsonGffStruct root)
+        private static bool ResolvesPortrait(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             if (!root.TryGet("PortraitId", out var field))
                 return false;
@@ -535,7 +537,7 @@ namespace SWLOR.Toolset.Tests
                 because: $"measured {type} coverage outside the module was above this when written");
         }
 
-        private static bool ResolvesModel(ResourceType type, Domain.Gff.JsonGffStruct root)
+        private static bool ResolvesModel(ResourceType type, Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             var reference = BlueprintModelResolver.Resolve(
                 type, root, Data.Appearances, Data.Placeables, Data.Doors);

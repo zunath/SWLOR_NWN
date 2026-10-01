@@ -17,7 +17,7 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Tests.Items
 {
     /// <summary>
-    /// End-to-end coverage that <see cref="BlueprintPreviewRenderer.BuildModel(ResourceType, Domain.Gff.JsonGffStruct, bool)"/>
+    /// End-to-end coverage that <see cref="BlueprintPreviewRenderer.BuildModel(ResourceType, Nwn.Authoring.Documents.NimGff.JsonGffStruct, bool)"/>
     /// actually produces geometry for a real corpus item now that <see cref="BlueprintModelResolver"/>
     /// has a <see cref="ResourceType.Uti"/> case - before this it always returned null via the
     /// resolver's default arm for every base item, composite or not.
@@ -91,8 +91,8 @@ namespace SWLOR.Toolset.Tests.Items
             var renderer = BuildRenderer();
 
             var store = new ItemValueStore(root);
-            store.SetInteger(BehaviorFieldStorage.Field, "Cloth1Color", Domain.Gff.GffFieldType.Byte, 3);
-            store.SetInteger(BehaviorFieldStorage.Field, "Metal1Color", Domain.Gff.GffFieldType.Byte, 7);
+            store.SetInteger(BehaviorFieldStorage.Field, "Cloth1Color", Nwn.Authoring.Documents.NimGff.GffFieldType.Byte, 3);
+            store.SetInteger(BehaviorFieldStorage.Field, "Metal1Color", Nwn.Authoring.Documents.NimGff.GffFieldType.Byte, 7);
             var model = renderer.BuildModel(ResourceType.Uti, root);
 
             model.Should().NotBeNull();
@@ -100,7 +100,7 @@ namespace SWLOR.Toolset.Tests.Items
             model.LayerColorIndices[PltLayers.Cloth1].Should().Be(3);
             model.LayerColorIndices[PltLayers.Metal1].Should().Be(7);
 
-            store.SetInteger(BehaviorFieldStorage.Field, "Cloth1Color", Domain.Gff.GffFieldType.Byte, 11);
+            store.SetInteger(BehaviorFieldStorage.Field, "Cloth1Color", Nwn.Authoring.Documents.NimGff.GffFieldType.Byte, 11);
             renderer.BuildModel(ResourceType.Uti, root)!
                 .LayerColorIndices[PltLayers.Cloth1].Should().Be(11, "a dye edit reaches the model");
         }
@@ -377,7 +377,7 @@ namespace SWLOR.Toolset.Tests.Items
                 "the wearable's actual equipment tint channels remain editable");
         }
 
-        private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>
+        private static Nwn.Authoring.Documents.NimGff.JsonGffStruct CorpusItem(string resRef) =>
             new ModuleWorkspace(CorpusLocator.ModuleDirectory).LoadBlueprint(ResourceType.Uti, resRef).Document.Root;
     }
 }

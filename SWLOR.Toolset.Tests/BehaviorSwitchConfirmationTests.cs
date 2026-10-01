@@ -1,11 +1,13 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Placeables;
 using SWLOR.Toolset.Editors.Doors;

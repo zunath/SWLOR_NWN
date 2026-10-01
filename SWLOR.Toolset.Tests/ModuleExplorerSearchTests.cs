@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;

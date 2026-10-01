@@ -1,4 +1,6 @@
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Documents

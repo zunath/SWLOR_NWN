@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Nwn.Toolset.Avalonia.Graph;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 
 namespace SWLOR.Toolset.Editors.Conversations;
 

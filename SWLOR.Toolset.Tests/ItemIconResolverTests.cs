@@ -2,6 +2,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render.Icons;
 

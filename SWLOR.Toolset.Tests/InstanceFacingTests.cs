@@ -227,7 +227,7 @@ namespace SWLOR.Toolset.Tests
                 area.Are, area.Git, new TilesetCatalog(index), new TileModelCache(index));
         }
 
-        private static (Domain.Documents.AreDocument Are, Domain.Documents.GitDocument Git) LoadArea(string resRef)
+        private static (Nwn.Authoring.Documents.Native.AreDocument Are, Nwn.Authoring.Documents.Native.GitDocument Git) LoadArea(string resRef)
         {
             var (are, git, _) = new ModuleWorkspace(CorpusLocator.ModuleDirectory).LoadArea(resRef);
             return (are, git);

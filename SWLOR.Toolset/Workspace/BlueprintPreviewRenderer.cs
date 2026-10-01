@@ -2,6 +2,7 @@ using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
@@ -182,7 +183,7 @@ namespace SWLOR.Toolset.Workspace
         /// the point: a ghost built any other way drifts from the preview the builder just clicked.
         /// Composition is not cheap, so callers are expected to hold the result for as long as the
         /// blueprint stays armed rather than rebuild it per frame - and, per the note on
-        /// <see cref="RenderModel(ResourceType, Domain.Gff.JsonGffStruct)"/>, nothing here is cached:
+        /// <see cref="RenderModel(ResourceType, Nwn.Authoring.Documents.NimGff.JsonGffStruct)"/>, nothing here is cached:
         /// caching every blueprint's expanded meshes is what once reached a 37 GB working set.
         /// </remarks>
         public RenderModel? BuildModel(
@@ -221,7 +222,7 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public RenderModel? BuildModel(
             ResourceType type,
-            Domain.Gff.JsonGffStruct root,
+            Nwn.Authoring.Documents.NimGff.JsonGffStruct root,
             bool useIndexedBlueprint = false,
             bool armorPreviewFemale = false) =>
             BuildModelResult(type, root, useIndexedBlueprint, armorPreviewFemale).Model;
@@ -232,7 +233,7 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public BlueprintModelRenderResult BuildModelResult(
             ResourceType type,
-            Domain.Gff.JsonGffStruct root,
+            Nwn.Authoring.Documents.NimGff.JsonGffStruct root,
             bool useIndexedBlueprint = false,
             bool armorPreviewFemale = false)
         {
@@ -329,7 +330,7 @@ namespace SWLOR.Toolset.Workspace
         /// previews its own unsaved document; the disk-loading <see cref="Render"/> path cannot see
         /// edits that have not been saved yet.
         /// </summary>
-        public IconImage? RenderItemIcon(Domain.Gff.JsonGffStruct root)
+        public IconImage? RenderItemIcon(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             ArgumentNullException.ThrowIfNull(root);
             if (_baseItems == null || _resourceIndex == null)
@@ -353,7 +354,7 @@ namespace SWLOR.Toolset.Workspace
             return null;
         }
 
-        private IconImage? RenderPortrait(Domain.Gff.JsonGffStruct root)
+        private IconImage? RenderPortrait(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             if (_portraits == null || _resourceIndex == null)
                 return null;
@@ -401,7 +402,7 @@ namespace SWLOR.Toolset.Workspace
         /// </remarks>
         private IconImage? RenderModel(
             ResourceType type,
-            Domain.Gff.JsonGffStruct root,
+            Nwn.Authoring.Documents.NimGff.JsonGffStruct root,
             bool useIndexedBlueprint,
             IReadOnlyDictionary<int, int>? layerColorOverrides = null)
         {
@@ -581,8 +582,8 @@ namespace SWLOR.Toolset.Workspace
                 return RenderModel(appearance.Race);
             }
 
-            var root = new Domain.Gff.JsonGffStruct();
-            root.SetInt("Appearance_Type", Domain.Gff.GffFieldType.Word, appearanceId);
+            var root = new Nwn.Authoring.Documents.NimGff.JsonGffStruct();
+            root.SetInt("Appearance_Type", Nwn.Authoring.Documents.NimGff.GffFieldType.Word, appearanceId);
             CreatureAppearanceDefaults.ApplyGenericSegmentedBody(root);
 
             return RenderModel(
@@ -1222,7 +1223,7 @@ namespace SWLOR.Toolset.Workspace
             _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
 
         /// <summary>Loads an equipped item's root struct so armor can override a creature's body parts.</summary>
-        private Domain.Gff.JsonGffStruct? LoadItemBlueprintRoot(
+        private Nwn.Authoring.Documents.NimGff.JsonGffStruct? LoadItemBlueprintRoot(
             string resRef,
             bool useIndexedBlueprint)
         {

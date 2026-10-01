@@ -1,9 +1,13 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 
 namespace SWLOR.Toolset.Domain.Workspace
 {

@@ -1,6 +1,7 @@
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;

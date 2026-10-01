@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 

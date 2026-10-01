@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 
 namespace SWLOR.Toolset.Editors

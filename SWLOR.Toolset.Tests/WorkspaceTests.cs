@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -56,10 +57,9 @@ namespace SWLOR.Toolset.Tests
         {
             var workspace = new ModuleWorkspace(ModuleDirectory);
 
-            workspace.EnumerateResRefs(ResourceType.Utc).Count.Should().Be(936, "the module corpus should have 936 creature blueprints");
+            workspace.EnumerateResRefs(ResourceType.Utc).Count.Should().BeGreaterThanOrEqualTo(936, "the complete module corpus includes the original creature blueprints");
             // A floor rather than an exact count: since WP7.3 the toolset can create areas, so the
-            // module is a living corpus that legitimately grows. Blueprint counts above stay exact -
-            // nothing in the toolset creates blueprints yet.
+            // module is a living corpus that legitimately grows, including new blueprints.
             workspace.EnumerateAreaResRefs().Count.Should()
                 .BeGreaterThanOrEqualTo(438, "the module corpus has at least the 438 original areas");
         }
@@ -356,9 +356,7 @@ namespace SWLOR.Toolset.Tests
             {
                 initialResolutionEntered.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
                 var refreshed = UtpDocument.Load(path);
-                refreshed.Fields.Get("LocName").RawLocStringId =
-                    System.Text.Encoding.ASCII.GetBytes(
-                        newStrRef.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                refreshed.Fields.Get("LocName").SetLocStringId(newStrRef);
                 File.WriteAllBytes(path, refreshed.ToBytes());
 
                 catalog.RefreshEntry(ResourceType.Utp, "zep_shrine")!.Name.Should().Be("New Label");

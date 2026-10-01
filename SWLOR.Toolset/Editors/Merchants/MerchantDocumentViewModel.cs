@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using Avalonia.Media.Imaging;
 using System.ComponentModel;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;

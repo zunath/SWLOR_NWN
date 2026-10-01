@@ -1,4 +1,7 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.NWN.Formats.Common;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Workspace;
@@ -112,7 +115,7 @@ namespace SWLOR.Toolset.Domain.Documents
         {
             // A brand-new dialog is on nobody's undo stack, but the guard is ambient per call
             // context, so with an editor open every field added below would otherwise throw.
-            using var construction = Editing.EditScope.EnterConstruction();
+            using var construction = Nwn.Authoring.Editing.EditScope.EnterConstruction();
 
             // The unpack pipeline writes an LF body terminated by a single CRLF; matching that keeps a
             // new dialog byte-shaped like every other file in Module\.

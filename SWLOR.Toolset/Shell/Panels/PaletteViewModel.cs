@@ -1,3 +1,4 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Collections.ObjectModel;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,7 +9,10 @@ using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;

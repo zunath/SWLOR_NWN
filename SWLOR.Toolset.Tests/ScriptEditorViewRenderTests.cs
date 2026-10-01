@@ -9,6 +9,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Shell.Views;

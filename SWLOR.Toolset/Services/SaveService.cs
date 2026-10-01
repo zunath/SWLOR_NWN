@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.NWN.Formats.Common;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Workspace;
 

@@ -1,8 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 

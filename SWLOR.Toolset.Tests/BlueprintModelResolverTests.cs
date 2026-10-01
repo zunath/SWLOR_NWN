@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -75,7 +77,7 @@ namespace SWLOR.Toolset.Tests
         private static CreatureAttachmentModelService CreatureAttachmentModels() =>
             new(new TwoDaService(Sw2DaDirectory));
 
-        private static Domain.Gff.JsonGffStruct BlueprintRoot(ResourceType type, string resRef)
+        private static Nwn.Authoring.Documents.NimGff.JsonGffStruct BlueprintRoot(ResourceType type, string resRef)
         {
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
             return workspace.LoadBlueprint(type, resRef).Document.Root;

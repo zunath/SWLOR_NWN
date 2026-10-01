@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 
 namespace SWLOR.Toolset.Domain.Conversations;
 

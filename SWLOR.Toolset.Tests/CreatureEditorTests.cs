@@ -9,7 +9,8 @@ using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
@@ -17,6 +18,7 @@ using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
@@ -40,7 +42,7 @@ namespace SWLOR.Toolset.Tests
         {
             var files = Directory.EnumerateFiles(
                 Path.Combine(CorpusLocator.ModuleDirectory, "utc"), "*.utc.json").ToList();
-            files.Should().HaveCount(936);
+            files.Count.Should().BeGreaterThanOrEqualTo(936);
 
             var failures = new List<string>();
             foreach (var file in files)

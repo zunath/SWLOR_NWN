@@ -8,6 +8,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;

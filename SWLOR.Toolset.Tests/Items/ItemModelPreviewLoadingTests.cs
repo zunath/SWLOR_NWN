@@ -3,6 +3,7 @@ using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Items;

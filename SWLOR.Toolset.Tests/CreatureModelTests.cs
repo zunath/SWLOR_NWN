@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
@@ -79,7 +80,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         private sealed record AreDocumentPair(
-            Domain.Documents.AreDocument Are, Domain.Documents.GitDocument Git);
+            Nwn.Authoring.Documents.Native.AreDocument Are, Nwn.Authoring.Documents.Native.GitDocument Git);
 
         [Test]
         public void WithAResolver_PlacedCreaturesCarryTheirModel()

@@ -1,6 +1,9 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.NWN.Formats.Common;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 

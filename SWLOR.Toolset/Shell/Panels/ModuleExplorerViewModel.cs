@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Validation;

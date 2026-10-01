@@ -1,7 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using System.Runtime.ExceptionServices;
 using System.Text;
 

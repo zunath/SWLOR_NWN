@@ -2,7 +2,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Tests

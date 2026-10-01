@@ -9,6 +9,7 @@ using SWLOR.NWN.Formats.Tlk;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;

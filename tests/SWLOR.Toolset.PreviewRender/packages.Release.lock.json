@@ -359,10 +359,10 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.17",
-        "contentHash": "eSCMlDjNKRUsgFlFZcBixFv/46nzzSrrIJa3XqC5eN/hmCIAEaj4mcnrsoflD/HseL36Lr9XevKQeqJl2k4EQg==",
+        "resolved": "0.1.0-dev.18",
+        "contentHash": "vuW9Mn2m4+rJFkHga4jcboubbr+7UJGV8st/zoOk75FWM1gKpG/bzgIXebCD5T7nYDl6iVL2E8k1QhafNqBwcg==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.15"
+          "Nwn.Formats": "0.1.0-dev.20"
         }
       },
       "NWN.Core": {
@@ -375,8 +375,8 @@
       },
       "Nwn.Formats": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.19",
-        "contentHash": "v5NJQfPlLCnFVzEx87Ggpw4zfilY3575Kg1COa5HXA1/AO8Mlxj8kSAOSQde35l7Ew755nvWlRnpRnbYGV5rdw=="
+        "resolved": "0.1.0-dev.20",
+        "contentHash": "q9Z/WqJDpvnD9EMw8lt7R1y9tHZDu30YJGh4BPuEiQL1wLIcHBfoJy2dfdZlVj2lIvkXb8P7f58AgaK8HzBGMA=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -532,7 +532,10 @@
         }
       },
       "swlor.nwn.formats": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Nwn.Formats": "[0.1.0-dev.20, )"
+        }
       },
       "swlor.toolset": {
         "type": "Project",
@@ -550,7 +553,7 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-dev.17, )",
+          "Nwn.Authoring": "[0.1.0-dev.18, )",
           "Nwn.Toolset.Avalonia": "[0.1.0-dev.11, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
@@ -561,7 +564,8 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.19, )",
+          "Nwn.Authoring": "[0.1.0-dev.18, )",
+          "Nwn.Formats": "[0.1.0-dev.20, )",
           "Nwn.Preview": "[0.1.0-dev.16, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",

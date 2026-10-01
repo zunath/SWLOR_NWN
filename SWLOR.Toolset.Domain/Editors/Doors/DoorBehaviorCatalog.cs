@@ -1,6 +1,9 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Editors.Doors

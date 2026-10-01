@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -18,6 +20,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.HaksRoot is { } configuredRoot) return configuredRoot;
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {

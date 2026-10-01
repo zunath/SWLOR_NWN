@@ -1,6 +1,8 @@
+using Nwn.Authoring.Documents.Native;
 using System.Globalization;
 using System.Numerics;
 using System.Text;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -537,7 +539,8 @@ namespace SWLOR.Toolset.Domain.Documents
                     break;
             }
 
-            clone.RawLocStringId = CloneBytes(source.RawLocStringId);
+            if (clone.Type == GffFieldType.CExoLocString)
+                clone.SetLocStringId(source.GetLocStringId());
             return clone;
         }
 

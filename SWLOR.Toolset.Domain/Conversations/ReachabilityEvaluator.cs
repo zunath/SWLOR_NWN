@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 
 namespace SWLOR.Toolset.Domain.Conversations

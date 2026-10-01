@@ -5,6 +5,8 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -1533,7 +1535,7 @@ namespace SWLOR.Toolset.Editors
                     id.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 context.Document.Root.Add(
                     "Appearance_Type",
-                    Domain.Gff.JsonGffField.CreateScalar(Domain.Gff.GffFieldType.Word, raw));
+                    Nwn.Authoring.Documents.NimGff.JsonGffField.CreateScalar(Nwn.Authoring.Documents.NimGff.GffFieldType.Word, raw));
                 return;
             }
 

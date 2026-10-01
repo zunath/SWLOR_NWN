@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Editors

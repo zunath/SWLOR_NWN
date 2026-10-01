@@ -5,9 +5,13 @@ using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 

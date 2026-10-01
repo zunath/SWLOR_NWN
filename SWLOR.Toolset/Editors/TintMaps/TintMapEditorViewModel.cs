@@ -3,7 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Editors.TintMaps

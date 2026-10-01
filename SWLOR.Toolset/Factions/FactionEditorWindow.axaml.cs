@@ -41,7 +41,7 @@ namespace SWLOR.Toolset.Factions
 
             var factionCount = await Task.Run(() =>
             {
-                using var session = Domain.Editing.DocumentSession.Open(factionPath);
+                using var session = Nwn.Authoring.Editing.DocumentSession.Open(factionPath);
                 return new Domain.Documents.FacDocument(session.Document).FactionList.Count;
             }).ConfigureAwait(true);
             // Opening the editor must not parse every blueprint and area-instance file merely to

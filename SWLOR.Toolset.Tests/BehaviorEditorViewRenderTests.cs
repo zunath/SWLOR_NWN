@@ -11,12 +11,14 @@ using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Doors;
@@ -128,9 +130,9 @@ namespace SWLOR.Toolset.Tests
             var store = new BehaviorValueStore(Struct("UTW "));
             var rows = new[]
             {
-                Row(store, "Tag", BehaviorFieldKind.Text, Domain.Gff.GffFieldType.CExoString),
-                Row(store, "HasMapNote", BehaviorFieldKind.Check, Domain.Gff.GffFieldType.Byte),
-                Row(store, "Appearance", BehaviorFieldKind.Integer, Domain.Gff.GffFieldType.Byte)
+                Row(store, "Tag", BehaviorFieldKind.Text, Nwn.Authoring.Documents.NimGff.GffFieldType.CExoString),
+                Row(store, "HasMapNote", BehaviorFieldKind.Check, Nwn.Authoring.Documents.NimGff.GffFieldType.Byte),
+                Row(store, "Appearance", BehaviorFieldKind.Integer, Nwn.Authoring.Documents.NimGff.GffFieldType.Byte)
             };
 
             foreach (var row in rows)
@@ -230,7 +232,7 @@ namespace SWLOR.Toolset.Tests
                 new BehaviorFieldDefinition
                 {
                     Label = "Dialog", Name = "Conversation", Kind = BehaviorFieldKind.Choice,
-                    FieldType = Domain.Gff.GffFieldType.ResRef, IsSearchable = true
+                    FieldType = Nwn.Authoring.Documents.NimGff.GffFieldType.ResRef, IsSearchable = true
                 },
                 new BehaviorValueStore(Struct("UTW ")),
                 Accept,
@@ -268,7 +270,7 @@ namespace SWLOR.Toolset.Tests
                     Label = "Appearance",
                     Name = "Appearance",
                     Kind = BehaviorFieldKind.Choice,
-                    FieldType = Domain.Gff.GffFieldType.Byte
+                    FieldType = Nwn.Authoring.Documents.NimGff.GffFieldType.Byte
                 },
                 new BehaviorValueStore(Struct("UTW ")),
                 Accept,
@@ -352,7 +354,7 @@ namespace SWLOR.Toolset.Tests
             BehaviorValueStore store,
             string name,
             BehaviorFieldKind kind,
-            Domain.Gff.GffFieldType type) =>
+            Nwn.Authoring.Documents.NimGff.GffFieldType type) =>
             new(
                 new BehaviorFieldDefinition
                 {

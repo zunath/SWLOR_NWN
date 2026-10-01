@@ -1,4 +1,4 @@
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Items;
 
 namespace SWLOR.Toolset.Editors.Creatures

@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Settings;

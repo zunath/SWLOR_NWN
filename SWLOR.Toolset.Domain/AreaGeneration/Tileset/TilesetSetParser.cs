@@ -1,5 +1,7 @@
 #nullable disable
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Tileset
 {

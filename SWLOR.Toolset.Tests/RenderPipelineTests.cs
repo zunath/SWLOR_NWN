@@ -5,6 +5,8 @@ using NUnit.Framework;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 

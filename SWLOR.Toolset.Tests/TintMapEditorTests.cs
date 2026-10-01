@@ -11,12 +11,14 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
@@ -33,6 +35,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return configuredRoot;
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {

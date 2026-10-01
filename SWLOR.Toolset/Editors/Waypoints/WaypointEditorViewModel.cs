@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 

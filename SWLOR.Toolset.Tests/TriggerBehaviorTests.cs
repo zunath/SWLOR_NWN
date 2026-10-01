@@ -1,10 +1,13 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Services;

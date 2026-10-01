@@ -3,6 +3,8 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -27,6 +29,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return configuredRoot;
                 var c = new DirectoryInfo(AppContext.BaseDirectory);
                 while (c != null)
                 {

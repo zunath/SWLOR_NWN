@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;

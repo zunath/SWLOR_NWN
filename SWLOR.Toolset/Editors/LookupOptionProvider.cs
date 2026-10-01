@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Workspace;
 

@@ -1,6 +1,7 @@
 using System.Runtime.ExceptionServices;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;

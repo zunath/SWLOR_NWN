@@ -3,10 +3,13 @@ using NUnit.Framework;
 using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -25,6 +28,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return configuredRoot;
                 var c = new DirectoryInfo(AppContext.BaseDirectory);
                 while (c != null)
                 {

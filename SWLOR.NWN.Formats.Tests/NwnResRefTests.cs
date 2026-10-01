@@ -1,3 +1,4 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;

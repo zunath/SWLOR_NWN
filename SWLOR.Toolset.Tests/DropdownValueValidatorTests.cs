@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Tests

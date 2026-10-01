@@ -42,6 +42,30 @@ namespace SWLOR.Toolset.Tests
         private static string HaksDirectory => Path.Combine(RepoRoot, "SWLOR_Haks");
 
         [Test]
+        public void TgaLookup_UsesSharedResourceTypeMappingForLooseHakLayer()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            try
+            {
+                var texturePath = Path.Combine(tempRoot, "tint_mask.tga");
+                File.WriteAllBytes(texturePath, [1, 2, 3]);
+                var index = new ResourceIndex(null, [new ResourceIndex.HakLayer("fixture", tempRoot)]);
+                var identity = ResourceIdentity.FromFileName("TINT_MASK.tga");
+
+                ResourceIdentity.TypeFromExtension(".tga").Should().Be((ushort)Nwn.Formats.Resources.ResourceType.Tga);
+                identity.Extension.Should().Be("tga");
+                index.TryLookup(identity, out var handle).Should().BeTrue();
+                handle.Provenance.SourcePath.Should().Be(texturePath);
+                handle.GetBytes().Should().Equal(1, 2, 3);
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
         public void TryLookup_WhenSameResourceExistsInTwoHakLayers_FirstLayerWinsAndProvenanceReflectsIt()
         {
             var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));

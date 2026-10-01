@@ -153,7 +153,7 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         private static bool TextureResourceExists(ResourceIndex index, string resRef) =>
-            index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("tga")), out _) ||
-            index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("dds")), out _);
+            index.Contains(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("tga"))) ||
+            index.Contains(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("dds")));
     }
 }

@@ -100,7 +100,7 @@ namespace SWLOR.Toolset.Domain.Categories
 
             foreach (var resRef in section.AssignedResRefs())
             {
-                if (index.TryLookup(new ResourceIdentity(resRef, blueprintType), out _))
+                if (index.Contains(new ResourceIdentity(resRef, blueprintType)))
                     resolvable.Add(resRef);
             }
 

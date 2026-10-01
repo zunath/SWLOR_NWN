@@ -55,10 +55,13 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public static string ExtensionFromType(ushort resourceType)
         {
-            if (SharedResourceTypes.TryGetByCode(resourceType, out var sharedType))
-                return SharedResourceTypes.GetExtension(sharedType);
+            var swlorExtension = ResourceTypes.GetExtension(resourceType).TrimStart('.');
+            if (!string.IsNullOrEmpty(swlorExtension))
+                return swlorExtension;
 
-            return ResourceTypes.GetExtension(resourceType).TrimStart('.');
+            return SharedResourceTypes.TryGetByCode(resourceType, out var sharedType)
+                ? SharedResourceTypes.GetExtension(sharedType)
+                : string.Empty;
         }
 
         public string Extension => ExtensionFromType(ResourceType);

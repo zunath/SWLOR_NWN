@@ -4,27 +4,27 @@
     "net10.0": {
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.21, )",
-        "resolved": "0.1.0-dev.21",
-        "contentHash": "hQOUdFtUpu21OCSdXThXBQ5RVR8F36dgJLp0IOfv3fx15noHV/wfaQLLD94d5jBZ07DHGJOTzirxrfWiSpTvdA==",
+        "requested": "[0.1.0-dev.22, )",
+        "resolved": "0.1.0-dev.22",
+        "contentHash": "ZyPLjTUrMHJivU/5B6evsPuA0avYldmG7IT8RqFs3kgCBVi5yGFuz9kzlhedxNtG8B50xhSLmAC7PsQeMWX5jg==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.21"
+          "Nwn.Formats": "0.1.0-dev.23"
         }
       },
       "Nwn.Formats": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.22, )",
-        "resolved": "0.1.0-dev.22",
-        "contentHash": "O5hvqKw3rms9xOziUqIIAuodIYQx+VFsbVDSM34cSDB7pjBpYc4u3+mTb4y9mDJ+R+6xhJ6Fyxv3WDrLwCwEkQ=="
+        "requested": "[0.1.0-dev.23, )",
+        "resolved": "0.1.0-dev.23",
+        "contentHash": "DTTD9U8GZUtf5z54xBEirWOJkOmoO5k0shEUtJa4i+Cz02fNluZd802MK3EvJl2dTcnj1Q/dHuzP26C7JtST4A=="
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.24, )",
-        "resolved": "0.1.0-dev.24",
-        "contentHash": "hN9lHLAog6hsH88wcGvxjwINNhfOBuSuj1OPYnJdrc7Xn1tw+xKfW1LQQxBq18ZY9vWOHE1hyAr4TyFMcc64xA==",
+        "requested": "[0.1.0-dev.25, )",
+        "resolved": "0.1.0-dev.25",
+        "contentHash": "X0sSN4qzbUeg2FXhy2wSwCtDDRU00v/nWqGEn89qMLXFI01j53DFtvfjVQi58zLw3bKdCubZZE3nnFO2V7j4FA==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.21",
-          "Nwn.Formats": "0.1.0-dev.22"
+          "Nwn.Authoring": "0.1.0-dev.22",
+          "Nwn.Formats": "0.1.0-dev.23"
         }
       },
       "Serilog": {
@@ -148,7 +148,7 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.22, )"
+          "Nwn.Formats": "[0.1.0-dev.23, )"
         }
       }
     }

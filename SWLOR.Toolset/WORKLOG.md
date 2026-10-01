@@ -2650,3 +2650,64 @@ Formats 144/144 and Preview 47/47, zero skips; Linux TRX files are in
 With Preview24 locked, the focused SWLOR hidden-placeable, animation, skinmesh
 and composition filter passed 50/50, zero skips, in
 `SWLOR.Toolset.Tests/TestResults/mdl-options-parity-package.trx`.
+
+## Shared resource and texture pipeline adoption
+
+The SWLOR HAK index now uses shared `ResourceLayer`/`ResourceResolver` for
+loose and packed HAK resources. `TryLookup` retains lazy payload reads and
+applies the caller's byte limit before allocation; `Contains` is metadata-only.
+Reload still constructs a complete index before atomically publishing it, and
+old handles keep their selected source readable across that swap. SWLOR keeps
+module HAK discovery, precedence configuration, material parsing/tint policy,
+palette names and armor classification. Its base-game `KeyBifCatalog` remains
+the compatibility adapter for callers that directly query the native KEY/BIF
+catalog; moving that remaining reader is a later responsibility.
+
+`TextureLoader` now delegates resource preference, shared TGA/DDS/PLT decoding
+and palette composition to `Nwn.Preview/Textures/TextureResourceLoader`. The
+adapter supplies SWLOR palette resources, row choices, NWN standard-DDS
+BottomUp orientation and the existing compressed-input bound. `PreviewTextureCache`
+uses the shared count/byte-bounded LRU while retaining the SWLOR-specific tint
+and material cache key.
+
+Source mode was qualified with explicit read-only fixture roots. The shared
+Formats suite passed 146/146, Authoring 37/37 and Preview 51/51 with zero skips.
+SWLOR focused source tests passed ResourceIndex/orientation/material adapters
+28/28, native ATI2/MTR/PLT and tint/cache checks 4/4, and channel-order native
+checks 3/3 with zero skips in their separate corrected invocations. The first
+combined invocation also selected three unrelated channel-order rows without
+the explicit NWN install parameter; those rows skipped, then passed separately
+after the fixture honored its selector. The native mask test confirms the existing ATI2
+resource hash and canonical decoded-pixel hash. `TextureChannelOrderTests`
+now honors `NWN_INSTALL_PATH` and the explicit corpus selectors so it does not
+silently look under the isolated checkout for the primary HAK data. TRX files:
+`SWLOR.Toolset.Tests/TestResults/resource-index-source-qualified.trx`,
+`resource-texture-native-source-elevated.trx`, and
+`texture-channel-order-native-source-fixed.trx`.
+
+The first native run failed compilation because the test lacked the corpus
+helper namespace; the corrected run passed. An earlier shared suite omitted
+native selectors and failed those corpus rows; the corrected complete run
+passed without skips. These initial failures are retained and are not counted
+as passes.
+
+The immutable package train is Formats `0.1.0-dev.23` (`49F04AB87117CDA54D2F2FD55BA9FA8F97CBADC7CD2B6894E41FC691909A1C00`),
+Authoring `0.1.0-dev.22` (`DD3C063169A382152D8ACE247D077475BB95674FAE18D022A696B39FDC67417B`) and
+Preview `0.1.0-dev.25` (`62B10516074F589F1B035608CD6932CACCEC1014F50CC687CB472169A71BA85E`). Their nuspecs identify shared source commit
+`f6aacb570d970b85259094a97fffcc62eb23ef92`; Preview depends on Authoring22/Formats23 and Authoring depends on Formats23. Previous package files were left unchanged.
+
+Package mode regenerated and then successfully restored both Debug and Release lock graphs with the local feed and locked mode. The Release `SWLOR.Toolset.Tests` filter for ResourceIndex, texture orientation, material adapter, channel order, native ATI2/MTR/PLT, tint composition and cache passed 35/35 with zero skips in `SWLOR.Toolset.Tests/TestResults/resource-texture-package-focused.trx`. Command:
+
+```powershell
+$env:SWLOR_TEST_REPOSITORY_ROOT='C:/Projects/SWLOR_NWN'
+$env:SWLOR_TEST_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+$env:SWLOR_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+$env:NWN_INSTALL_PATH='C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --filter 'FullyQualifiedName~ResourceIndexTests|FullyQualifiedName~TextureOrientationTests|FullyQualifiedName~MaterialResolverAdapterTests|FullyQualifiedName~TextureChannelOrderTests|FullyQualifiedName~TextureLoader_LoadDds_ForNativeTintAti2MatchesIndependentCanonicalPixels|FullyQualifiedName~TintMapTextureRenderer_ComposesNativeChestMaterialThroughSharedAti2Decoder|FullyQualifiedName~TextureLoader_LoadPlt_ForKnownCorpusTexture_DecodesToReportedDimensions|FullyQualifiedName~PreviewTextureCache_TintMapMaterial_AppliesRgbOverride' -p:NwnToolsetPackageFeed=C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages -p:RunPostBuildEvent=Never -p:NuGetAudit=false -m:1
+```
+
+The source-mode Release toolset app build succeeded with eight existing SWLOR
+API/server nullable warnings and zero errors. An initial command named a
+nonexistent `SWLOR.Toolset.sln`; this checkout only has `SWLOR.Game.Server.sln`,
+so the actual toolset app project was built directly. The native package test
+uses the primary HAK corpus read-only; no primary checkout or service changed.

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-using System.Buffers.Binary;
 using Nwn.Preview.Dds;
-using SWLOR.NWN.Formats.Plt;
-using SWLOR.NWN.Formats.Tga;
+using Nwn.Preview.Pixels;
+using Nwn.Preview.Plt;
+using Nwn.Preview.Tga;
+using Nwn.Preview.Textures;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render
@@ -85,9 +86,16 @@ namespace SWLOR.Toolset.Domain.Render
             // base-game leftover under the same name. Preferring the PLT repainted SWLOR's custom
             // parts in unrelated palette colours. Genuinely dyeable parts carry a PLT and no TGA,
             // which is how Aurora decides the same question.
-            return LoadTga(resourceIndex, resRef) ??
-                   LoadDds(resourceIndex, resRef, standardDdsRowOrder) ??
-                   LoadPlt(resourceIndex, resRef, layerColorIndices);
+            var request = CreateRequest(resourceIndex, layerColorIndices, standardDdsRowOrder);
+            try
+            {
+                var loaded = TextureResourceLoader.Load(resRef, (name, type) => ReadResource(resourceIndex, name, (ushort)type), request);
+                return loaded is null ? null : ToTextureImage(loaded);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>Loads a TGA resource, returning null for missing or malformed data.</summary>
@@ -99,12 +107,12 @@ namespace SWLOR.Toolset.Domain.Render
 
             try
             {
-                var image = TgaReader.Read(bytes);
+                var image = TgaDecoder.Decode(bytes);
                 return new TextureImage
                 {
                     Width = image.Width,
                     Height = image.Height,
-                    Pixels = image.Pixels,
+                    Pixels = image.CopyRgbaBytes(),
                     SourceFormat = TextureSourceFormat.Tga
                 };
             }
@@ -131,17 +139,12 @@ namespace SWLOR.Toolset.Domain.Render
                 if (bytes.Length > MaximumCompressedBytes)
                     throw new InvalidDataException("DDS resource exceeds the configured compressed-input limit.");
 
-                var isStandard = IsStandardDds(bytes);
-                var rowOrder = isStandard ? standardDdsRowOrder : DdsStoredRowOrder.FormatDefault;
-                var decoded = DdsDecoder.Decode(bytes, new DdsDecodeOptions { StoredRowOrder = rowOrder });
-                return new TextureImage
-                {
-                    Width = decoded.Width,
-                    Height = decoded.Height,
-                    Pixels = decoded.CopyRgbaBytes(),
-                    SourceFormat = TextureSourceFormat.Dds,
-                    AlphaMean = isStandard ? null : ReadCompactAlphaMean(bytes)
-                };
+                var loaded = TextureResourceLoader.Load(resRef,
+                    (name, type) => type == Nwn.Formats.Resources.ResourceType.Dds
+                        ? bytes
+                        : null,
+                    new TextureLoadRequest { StandardDdsRowOrder = standardDdsRowOrder });
+                return loaded is null ? null : ToTextureImage(loaded);
             }
             catch (Exception)
             {
@@ -164,59 +167,9 @@ namespace SWLOR.Toolset.Domain.Render
 
             try
             {
-                var plt = PltReader.Read(bytes);
-                var palettes = new TextureImage?[PltLayers.Count];
-                var paletteLoaded = new bool[PltLayers.Count];
-                var output = new byte[checked(plt.Width * plt.Height * 4)];
-
-                for (var sourceIndex = 0; sourceIndex < plt.Pixels.Count; sourceIndex++)
-                {
-                    var sourceX = sourceIndex % plt.Width;
-                    var sourceY = sourceIndex / plt.Width;
-                    var targetY = plt.Height - 1 - sourceY;
-                    var targetOffset = (targetY * plt.Width + sourceX) * 4;
-                    var pixel = plt.Pixels[sourceIndex];
-
-                    var layer = pixel.Layer;
-                    if (!paletteLoaded[layer])
-                    {
-                        palettes[layer] = LoadTga(resourceIndex, PaletteNames[layer]);
-                        paletteLoaded[layer] = true;
-                    }
-
-                    var palette = palettes[layer];
-                    if (palette == null || palette.Width <= 0 || palette.Height <= 0 ||
-                        palette.Pixels.Length < palette.Width * palette.Height * 4)
-                    {
-                        output[targetOffset] = pixel.Intensity;
-                        output[targetOffset + 1] = pixel.Intensity;
-                        output[targetOffset + 2] = pixel.Intensity;
-                        output[targetOffset + 3] = pixel.Intensity == 0 ? (byte)0 : (byte)255;
-                        continue;
-                    }
-
-                    var row = layerColorIndices != null &&
-                              layerColorIndices.TryGetValue(layer, out var selected)
-                        ? Math.Clamp(selected, 0, palette.Height - 1)
-                        : 0;
-                    var column = palette.Width == 1
-                        ? 0
-                        : pixel.Intensity * (palette.Width - 1) / 255;
-                    var paletteOffset = (row * palette.Width + column) * 4;
-
-                    output[targetOffset] = palette.Pixels[paletteOffset];
-                    output[targetOffset + 1] = palette.Pixels[paletteOffset + 1];
-                    output[targetOffset + 2] = palette.Pixels[paletteOffset + 2];
-                    output[targetOffset + 3] = palette.Pixels[paletteOffset + 3];
-                }
-
-                return new TextureImage
-                {
-                    Width = plt.Width,
-                    Height = plt.Height,
-                    Pixels = output,
-                    SourceFormat = TextureSourceFormat.Plt
-                };
+                var request = CreateRequest(resourceIndex, layerColorIndices, DdsStoredRowOrder.BottomUp);
+                var loaded = TextureResourceLoader.LoadPlt(bytes, request);
+                return ToTextureImage(loaded);
             }
             catch (Exception)
             {
@@ -224,7 +177,56 @@ namespace SWLOR.Toolset.Domain.Render
             }
         }
 
-        private static bool TryGetBytes(
+    private static TextureLoadRequest CreateRequest(
+        ResourceIndex resourceIndex,
+        IReadOnlyDictionary<int, int>? layerColorIndices,
+        DdsStoredRowOrder standardDdsRowOrder)
+    {
+        var rows = new Dictionary<byte, int>();
+        if (layerColorIndices is not null)
+        {
+            foreach (var (layer, row) in layerColorIndices)
+            {
+                if (layer >= byte.MinValue && layer < PaletteNames.Length)
+                    rows[(byte)layer] = row;
+            }
+        }
+
+        return new TextureLoadRequest
+        {
+            PaletteRows = rows,
+            StandardDdsRowOrder = standardDdsRowOrder,
+            ResolvePalette = layer => layer < PaletteNames.Length
+                ? LoadTga(resourceIndex, PaletteNames[layer]) is { } palette
+                    ? new RgbaImage(palette.Width, palette.Height, palette.Pixels)
+                    : null
+                : null
+        };
+    }
+
+    private static TextureImage ToTextureImage(TextureLoadResult loaded) => new()
+    {
+        Width = loaded.Image.Width,
+        Height = loaded.Image.Height,
+        Pixels = loaded.Image.CopyRgbaBytes(),
+        SourceFormat = loaded.SourceFormat switch
+        {
+            Nwn.Preview.Textures.TextureSourceFormat.Tga => TextureSourceFormat.Tga,
+            Nwn.Preview.Textures.TextureSourceFormat.Dds => TextureSourceFormat.Dds,
+            _ => TextureSourceFormat.Plt
+        },
+        AlphaMean = loaded.CompactAlphaMean
+    };
+
+    private static byte[]? ReadResource(ResourceIndex resourceIndex, string resRef, ushort type)
+    {
+        var identity = new ResourceIdentity(resRef, type);
+        return resourceIndex.TryLookup(identity, out var handle)
+            ? handle.GetBytes(MaximumCompressedBytes)
+            : null;
+    }
+
+    private static bool TryGetBytes(
             ResourceIndex resourceIndex,
             string resRef,
             string extension,
@@ -247,18 +249,8 @@ namespace SWLOR.Toolset.Domain.Render
             // Only "not indexed" means "no such artwork". A read that throws (file vanished,
             // sharing violation, BIF extraction failure) must escape so callers report a failure
             // and retry later, instead of persisting a no-artwork result for a real texture.
-            bytes = handle.GetBytes();
+            bytes = handle.GetBytes(MaximumCompressedBytes);
             return bytes.Length > 0;
         }
-
-        private static bool IsStandardDds(byte[] bytes) =>
-            bytes.Length >= 4 &&
-            bytes[0] == (byte)'D' &&
-            bytes[1] == (byte)'D' &&
-            bytes[2] == (byte)'S' &&
-            bytes[3] == (byte)' ';
-
-        private static float ReadCompactAlphaMean(byte[] bytes) =>
-            BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(16, 4)));
     }
 }

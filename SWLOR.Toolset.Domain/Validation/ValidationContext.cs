@@ -54,7 +54,7 @@ namespace SWLOR.Toolset.Domain.Validation
             try
             {
                 var identity = ResourceIdentity.FromFileName($"{resRef}.{type.Extension()}");
-                return ResourceIndex.TryLookup(identity, out _);
+                return ResourceIndex.Contains(identity);
             }
             catch (Exception)
             {

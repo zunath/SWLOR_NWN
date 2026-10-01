@@ -1,3 +1,5 @@
+using Nwn.Formats.Erf;
+using Nwn.Formats.Resources;
 using SWLOR.NWN.Formats.Common;
 
 namespace SWLOR.Toolset.Domain.GameData.Resources;
@@ -61,7 +63,8 @@ public static class HakSetupValidation
     {
         try
         {
-            return HakArchiveCatalog.Open(path).ResourceCount > 0;
+            using var archive = ErfArchive.Open(path);
+            return archive.Kind == ErfContainerKind.Hak && archive.Entries.Count > 0;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
         {
@@ -93,13 +96,13 @@ public static class HakSetupValidation
             foreach (var path in enumerateFiles(directory))
             {
                 // Scan the whole directory even after finding content: a late enumeration failure
-                // would also prevent HakDirectoryCatalog from loading this layer.
+                // would also prevent the shared resource layer from indexing this directory.
                 if (foundResource)
                     continue;
                 var extension = Path.GetExtension(path);
                 var qualifies = requiredExtension == null
                     // BMU music is shipped beside the game's indexed Aurora resources.
-                    ? ResourceIdentity.TypeFromExtension(extension) != ResourceTypes.Invalid ||
+                    ? ResourceIdentity.TypeFromExtension(extension) != SWLOR.NWN.Formats.Common.ResourceTypes.Invalid ||
                       extension.Equals(".bmu", StringComparison.OrdinalIgnoreCase)
                     : extension.Equals(requiredExtension, StringComparison.OrdinalIgnoreCase);
                 foundResource = qualifies && HasNonemptyFile(path);

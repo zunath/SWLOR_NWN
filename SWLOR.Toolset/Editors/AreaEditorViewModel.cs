@@ -445,7 +445,7 @@ namespace SWLOR.Toolset.Editors
             var identity = new ResourceIdentity(
                 resRef,
                 ResourceIdentity.TypeFromExtension(type.Extension()));
-            return ResourceIndex.TryLookup(identity, out _);
+            return ResourceIndex.Contains(identity);
         }
 
         private void OnMutationLockChanged() =>

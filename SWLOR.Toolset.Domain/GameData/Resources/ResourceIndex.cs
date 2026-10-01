@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Nwn.Authoring.Resources;
 
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
@@ -58,7 +59,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     ///
     /// Index construction is two-phase: the constructor records the layer list synchronously and
     /// kicks off <see cref="InitializationTask"/>, which does the (potentially slow, ~130 folders)
-    /// directory scan in the background. <see cref="TryLookup"/> calls <see cref="EnsureInitialized"/>
+    /// resource scan in the background. <see cref="TryLookup"/> calls <see cref="EnsureInitialized"/>
     /// internally, so callers can either await <see cref="InitializationTask"/> ahead of time or
     /// just call <see cref="TryLookup"/> and accept blocking until the scan completes.
     /// </summary>
@@ -75,8 +76,8 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         private KeyBifCatalog? _baseLayer;
         private readonly Func<KeyBifCatalog?>? _baseLayerFactory;
         private IReadOnlyList<HakLayer> _hakLayerSpecs;
-        private IReadOnlyList<(string Name, IHakResourceCatalog Catalog)> _hakLayers =
-            Array.Empty<(string, IHakResourceCatalog)>();
+        private IReadOnlyList<ResourceLayer> _hakLayers = Array.Empty<ResourceLayer>();
+        private ResourceResolver _hakResolver = new(Array.Empty<ResourceLayer>());
 
         private readonly SemaphoreSlim _reloadGate = new(1, 1);
 
@@ -101,8 +102,8 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             {
                 EnsureInitialized();
                 var latest = _baseLayer?.ContentVersionUtc ?? DateTime.MinValue;
-                foreach (var (_, catalog) in Volatile.Read(ref _hakLayers))
-                    latest = latest >= catalog.ContentVersionUtc ? latest : catalog.ContentVersionUtc;
+                foreach (var layer in Volatile.Read(ref _hakLayers))
+                    latest = latest >= layer.ContentVersionUtc ? latest : layer.ContentVersionUtc;
                 return latest;
             }
         }
@@ -140,16 +141,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             }
 
             var specs = Volatile.Read(ref _hakLayerSpecs);
-            var scanned = new List<(string Name, IHakResourceCatalog Catalog)>(specs.Count);
-
-            foreach (var layer in specs)
-            {
-                var catalog = OpenCatalog(layer.DirectoryPath);
-                if (catalog != null)
-                    scanned.Add((layer.Name, catalog));
-            }
-
-            Volatile.Write(ref _hakLayers, scanned);
+            PublishHakLayers(BuildHakLayers(specs));
         }
 
         /// <summary>
@@ -183,23 +175,11 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                     return;
 
                 var scanned = await Task.Run(
-                    () =>
-                    {
-                        var result = new List<(string Name, IHakResourceCatalog Catalog)>(specs.Length);
-                        foreach (var layer in specs)
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-                            var catalog = OpenCatalog(layer.DirectoryPath);
-                            if (catalog != null)
-                                result.Add((layer.Name, catalog));
-                        }
-
-                        return (IReadOnlyList<(string Name, IHakResourceCatalog Catalog)>)result;
-                    },
+                    () => BuildHakLayers(specs, cancellationToken),
                     cancellationToken).ConfigureAwait(false);
 
                 Volatile.Write(ref _hakLayerSpecs, specs);
-                Volatile.Write(ref _hakLayers, scanned);
+                PublishHakLayers(scanned);
             }
             finally
             {
@@ -231,17 +211,49 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             return true;
         }
 
-        private static IHakResourceCatalog? OpenCatalog(string path)
+        private static IReadOnlyList<ResourceLayer> BuildHakLayers(
+            IReadOnlyList<HakLayer> specs,
+            CancellationToken cancellationToken = default)
         {
-            if (Directory.Exists(path))
-                return HakDirectoryCatalog.Scan(path);
-            if (File.Exists(path) &&
-                string.Equals(Path.GetExtension(path), ".hak", StringComparison.OrdinalIgnoreCase))
+            var layers = new List<ResourceLayer>(specs.Count);
+            try
             {
-                return HakArchiveCatalog.Open(path);
-            }
+                foreach (var spec in specs)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (Directory.Exists(spec.DirectoryPath))
+                    {
+                        layers.Add(ResourceLayer.FromLooseDirectory(
+                            spec.Name,
+                            spec.DirectoryPath,
+                            ResourceDuplicatePolicy.LastWins));
+                    }
+                    else if (File.Exists(spec.DirectoryPath) &&
+                             string.Equals(Path.GetExtension(spec.DirectoryPath), ".hak", StringComparison.OrdinalIgnoreCase))
+                    {
+                        layers.Add(ResourceLayer.FromErf(
+                            spec.Name,
+                            spec.DirectoryPath,
+                            ResourceDuplicatePolicy.LastWins));
+                    }
+                }
 
-            return null;
+                return layers;
+            }
+            catch
+            {
+                foreach (var layer in layers)
+                    layer.Dispose();
+                throw;
+            }
+        }
+
+        private void PublishHakLayers(IReadOnlyList<ResourceLayer> layers)
+        {
+            var resolver = new ResourceResolver(layers, ownsLayers: true);
+            var previous = Interlocked.Exchange(ref _hakResolver, resolver);
+            previous.Dispose();
+            Volatile.Write(ref _hakLayers, layers);
         }
 
         /// <summary>
@@ -259,33 +271,35 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         {
             EnsureInitialized();
 
-            var layers = Volatile.Read(ref _hakLayers);
-            for (var i = 0; i < layers.Count; i++)
+            if (identity.ResRef.Length > 16)
             {
-                var (name, catalog) = layers[i];
-                if (!catalog.Resources.Contains(identity))
-                    continue;
+                handle = null!;
+                return false;
+            }
 
-                var source = catalog.Describe(identity);
+            var resolver = Volatile.Read(ref _hakResolver);
+            var sharedIdentity = new Nwn.Authoring.Resources.ResourceIdentity(
+                identity.ResRef,
+                (Nwn.Formats.Resources.ResourceType)identity.ResourceType);
+            var resolution = resolver.ResolveHandle(sharedIdentity);
+            if (resolution != null)
+            {
+                var source = resolution.Winner.SourcePath;
                 handle = new ResourceHandle(
                     identity,
-                    new ResourceProvenance(ResourceLayerKind.Hak, name, source),
+                    new ResourceProvenance(ResourceLayerKind.Hak, resolution.Winner.LayerName, source),
                     maximumBytes =>
                     {
-                        var message =
-                            $"The indexed resource '{identity.ResRef}' could not be read from '{source}'.";
                         try
                         {
-                            if (catalog.TryGetBytes(identity, out var bytes, maximumBytes))
-                                return bytes;
+                            return resolution.ReadBytes(maximumBytes);
                         }
-                        catch (Exception exception) when (
-                            exception is IOException or UnauthorizedAccessException)
+                        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
                         {
-                            throw new IOException(message, exception);
+                            throw new IOException(
+                                $"The indexed resource '{identity.ResRef}' could not be read from '{source}'.",
+                                exception);
                         }
-
-                        throw new IOException(message);
                     });
                 return true;
             }
@@ -319,6 +333,19 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             return false;
         }
 
+        public bool Contains(ResourceIdentity identity)
+        {
+            EnsureInitialized();
+            if (identity.ResRef.Length > 16)
+                return false;
+            var resolver = Volatile.Read(ref _hakResolver);
+            if (resolver.ResolveHandle(new Nwn.Authoring.Resources.ResourceIdentity(
+                    identity.ResRef,
+                    (Nwn.Formats.Resources.ResourceType)identity.ResourceType)) is not null)
+                return true;
+            return _baseLayer?.Contains(identity) == true;
+        }
+
         /// <summary>
         /// True when the NWN installation's KEY/BIF layer contains the resource, irrespective of
         /// any HAK override. Used by consumers such as the script compiler that receive the game
@@ -349,10 +376,11 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                 }
             }
 
-            foreach (var (_, catalog) in Volatile.Read(ref _hakLayers))
+            foreach (var layer in Volatile.Read(ref _hakLayers))
             {
-                foreach (var identity in catalog.Resources)
+                foreach (var sharedIdentity in layer.Resources)
                 {
+                    var identity = new ResourceIdentity(sharedIdentity.Resref, (ushort)sharedIdentity.Type);
                     if (identity.ResourceType == resourceType)
                         resources.Add(identity);
                 }
@@ -371,17 +399,18 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         {
             EnsureInitialized();
             var providers = new Dictionary<ResourceIdentity, List<string>>();
-            foreach (var (name, catalog) in Volatile.Read(ref _hakLayers))
+            foreach (var layer in Volatile.Read(ref _hakLayers))
             {
-                foreach (var resource in catalog.Resources)
+                foreach (var sharedIdentity in layer.Resources)
                 {
+                    var resource = new ResourceIdentity(sharedIdentity.Resref, (ushort)sharedIdentity.Type);
                     if (!providers.TryGetValue(resource, out var layers))
                     {
                         layers = new List<string>();
                         providers[resource] = layers;
                     }
 
-                    layers.Add(name);
+                    layers.Add(layer.Name);
                 }
             }
 

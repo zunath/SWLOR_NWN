@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Tests.Support;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -15,29 +16,9 @@ namespace SWLOR.Toolset.Tests
     /// </remarks>
     public class TextureChannelOrderTests
     {
-        private static string RepoRoot
-        {
-            get
-            {
-                var current = new DirectoryInfo(AppContext.BaseDirectory);
-                while (current != null)
-                {
-                    if (File.Exists(Path.Combine(current.FullName, "Build", "hakbuilder.json")) &&
-                        Directory.Exists(Path.Combine(current.FullName, "SWLOR_Haks")))
-                    {
-                        return current.FullName;
-                    }
-
-                    current = current.Parent;
-                }
-
-                throw new DirectoryNotFoundException("Could not locate the repository root from the test context.");
-            }
-        }
-
         private static ResourceIndex? BuildIndex()
         {
-            var installPath = NwnInstallLocator.Locate();
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installPath == null)
                 return null;
 
@@ -46,8 +27,10 @@ namespace SWLOR.Toolset.Tests
                 return null;
 
             return ResourceIndex.FromHakBuilderConfig(
-                Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepoRoot, "SWLOR_Haks"),
+                Path.Combine(ToolsetCorpusPaths.RepositoryRoot ?? throw new DirectoryNotFoundException(
+                    "Set SWLOR_TEST_REPOSITORY_ROOT to the SWLOR source fixture root."), "Build", "hakbuilder.json"),
+                ToolsetCorpusPaths.HaksRoot ?? throw new DirectoryNotFoundException(
+                    "Set SWLOR_TEST_HAKS_ROOT to the SWLOR HAK fixture root."),
                 KeyBifCatalog.Load(dataDirectory));
         }
 

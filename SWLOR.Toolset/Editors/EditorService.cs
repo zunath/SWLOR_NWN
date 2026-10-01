@@ -2377,9 +2377,9 @@ namespace SWLOR.Toolset.Editors
             if (index == null || string.IsNullOrWhiteSpace(resRef))
                 return false;
 
-            return index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("tga")), out _)
-                || index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("dds")), out _)
-                || index.TryLookup(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("plt")), out _);
+            return index.Contains(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("tga")))
+                || index.Contains(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("dds")))
+                || index.Contains(new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension("plt")));
         }
 
         private IReadOnlyList<BehaviorChoice> ResolveItemChoices(string key) =>

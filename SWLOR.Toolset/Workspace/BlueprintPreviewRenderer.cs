@@ -1221,7 +1221,7 @@ namespace SWLOR.Toolset.Workspace
 
         private bool PartModelExists(string resRef) =>
             _resourceIndex != null &&
-            _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
+            _resourceIndex.Contains(ResourceIdentity.FromFileName(resRef + ".mdl"));
 
         /// <summary>Loads an equipped item's root struct so armor can override a creature's body parts.</summary>
         private Nwn.Authoring.Documents.NimGff.JsonGffStruct? LoadItemBlueprintRoot(

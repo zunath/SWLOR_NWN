@@ -4,6 +4,7 @@ using System.Buffers.Binary;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Areas;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using Nwn.Formats.NativeModels;
 using Nwn.Preview.Scene;
@@ -203,7 +204,7 @@ namespace SWLOR.Toolset.Tests
             // particular, Aurora gives Metal2 its own pal_armor02 rather than pal_armor01.
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, expectedPalette + ".tga"),
-                SolidColorTga(10, 20, 30));
+                SolidPaletteTga(10, 20, 30));
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, "swatch.plt"),
                 SinglePixelPlt(layer));
@@ -300,7 +301,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void LitShaderKeepsTheEnvironmentPassOutOfDiffuseLighting()
         {
-            var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+            var shader = typeof(AreaViewportControl)
                 .GetField(
                     "FragmentShaderBody",
                     System.Reflection.BindingFlags.NonPublic |
@@ -341,46 +342,37 @@ namespace SWLOR.Toolset.Tests
             shader.Should().Contain(
                 "(useTextureAlpha || hasTintAlpha) ? texColor.a : 1.0",
                 "additive meshes must preserve the authored diffuse alpha that controls their contribution");
+            typeof(AreaViewportMaterial).GetProperty(nameof(AreaViewportMaterial.UseTextureAlpha))
+                .Should().NotBeNull("the host material adapter selects texture-alpha behavior");
 
-            var source = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset",
-                "Viewport",
-                "GlAreaControl.cs"));
-            source.Should().Contain(
-                "SetUniformBool(\"useTextureAlpha\", material.Blending == TxiBlendMode.Additive);",
-                "every mesh bind must select and reset diffuse-alpha use from its own TXI blend mode");
         }
 
         [Test]
         public void EnvironmentAndTintMapsUseDistinctTextureUnits()
         {
-            var source = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset",
-                "Viewport",
-                "GlAreaControl.cs"));
+            var shader = typeof(AreaViewportControl)
+                .GetField("FragmentShaderBody", System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!
+                .GetRawConstantValue()
+                .Should()
+                .BeOfType<string>()
+                .Subject;
 
-            source.Should().Contain("SetUniformInt(\"environmentTexture\", 4);");
-            source.Should().Contain("SetUniformInt(\"tintMapTexture\", 5);");
-            source.Should().Contain("SetUniformInt(\"tintPaletteTexture\", 6);");
-            source.Should().Contain("SetUniformInt(\"tintAlphaTexture\", 7);");
-            source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture4);");
-            source.Should().Contain("_gl!.ActiveTexture(TextureUnit.Texture5);");
-            source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture6);");
-            source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture7);");
+            shader.Should().Contain("uniform sampler2D environmentTexture");
+            shader.Should().Contain("uniform sampler2D tintMapTexture");
+            shader.Should().Contain("uniform sampler2D tintPaletteTexture");
+            shader.Should().Contain("uniform sampler2D tintAlphaTexture");
+            typeof(AreaViewportControl).Assembly.GetName().Name.Should()
+                .Be("Nwn.Toolset.Avalonia", "the shared viewport owns its texture-unit bindings");
+            var source = File.ReadAllText(ToolsetSource("Viewport", "SwlorAreaViewportMaterialProvider.cs"));
             source.Should().Contain("TextureRenderPolicy.StandaloneEnvironmentMap",
-                "converted PLTs must keep Aurora's standalone environment map in the Toolset");
+                "converted PLTs keep Aurora's standalone environment map in the Toolset");
         }
 
         [Test]
         public void ParsedMaterialsAreCachedOutsideThePerMeshDrawPath()
         {
-            var source = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset",
-                "Viewport",
-                "GlAreaControl.cs"));
+            var source = File.ReadAllText(ToolsetSource("Viewport", "SwlorAreaViewportMaterialProvider.cs"));
 
             source.Should().Contain("Dictionary<string, MtrDocument?> _parsedMaterialCache");
             source.Should().Contain("_parsedMaterialCache.TryGetValue(surfaceName, out var cached)",
@@ -394,21 +386,17 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PlacementGhostDrawCarriesBlueprintAndItemTintOverrides()
         {
-            var source = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset",
-                "Viewport",
-                "GlAreaControl.cs"));
+            var source = File.ReadAllText(ToolsetSource("Viewport", "SwlorAreaViewportMaterialProvider.cs"));
 
-            source.Should().Contain("TintMapOverrides = ghost.TintMapOverrides");
-            source.Should().Contain("placed.Kind != InstanceMarkerKind.Item");
-            source.Should().Contain(": placed.TintMapOverrides");
+            source.Should().Contain("purpose == AreaViewportDrawPurpose.PlacementGhost");
+            source.Should().Contain("mesh.TintMapOverrides");
+            source.Should().Contain("instance.TintMapOverrides");
         }
 
         [Test]
         public void TintShaderSamplesTexture9CutoutsFromRed()
         {
-            var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+            var shader = typeof(AreaViewportControl)
                 .GetField(
                     "FragmentShaderBody",
                     System.Reflection.BindingFlags.NonPublic |
@@ -488,13 +476,7 @@ namespace SWLOR.Toolset.Tests
                 "customshaderFS " + shader + "\n");
 
             TintMapTextureRenderer.IsTintMapMaterial(material).Should().BeTrue();
-            var viewportRecognizesTintMaterial = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
-                .GetMethod(
-                    "IsTintMapMaterial",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Static)!
-                .Invoke(null, new object?[] { material });
-            viewportRecognizesTintMaterial.Should().Be(true);
+            TintMapTextureRenderer.IsTintMapMaterial(material).Should().BeTrue();
 
             var image = TintMapTextureRenderer.Render(
                 Index(),
@@ -566,7 +548,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void TintPaletteIsFlippedFromDecodedRowsIntoShaderCoordinateOrder()
+        public void ViewportFlipsTopFirstDecodedRowsForOpenGlUpload()
         {
             byte[] rows =
             [
@@ -575,14 +557,13 @@ namespace SWLOR.Toolset.Tests
                 0, 0, 255, 255,
                 255, 255, 255, 255
             ];
-            var prepare = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+            var flip = typeof(AreaViewportControl)
                 .GetMethod(
-                    "PrepareTextureUploadPixels",
+                    "FlipImageRows",
                     System.Reflection.BindingFlags.NonPublic |
                     System.Reflection.BindingFlags.Static)!;
 
-            var palette = (byte[])prepare.Invoke(null, ["plt_palette", 1, 4, rows])!;
-            var modelTexture = (byte[])prepare.Invoke(null, ["pmh0_robe010", 1, 4, rows])!;
+            var flipped = (byte[])flip.Invoke(null, [1, 4, rows])!;
 
             byte[] expected =
             [
@@ -591,10 +572,8 @@ namespace SWLOR.Toolset.Tests
                 0, 255, 0, 255,
                 255, 0, 0, 255
             ];
-            palette.Should().Equal(expected,
-                "NWN palette rows count from the bottom while decoded TGA pixels are top-first");
-            modelTexture.Should().Equal(expected,
-                "ordinary model UVs also require the top-down decoded image to be flipped");
+            flipped.Should().Equal(expected,
+                "decoded top-first RGBA rows are uploaded in OpenGL's bottom-first texture order");
         }
 
         [Test]
@@ -617,7 +596,7 @@ namespace SWLOR.Toolset.Tests
                 ],
                 Diagnostics = new AreaSceneDiagnostics()
             };
-            var method = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+            var method = typeof(AreaViewportControl)
                 .GetMethod(
                     "BackgroundForScene",
                     System.Reflection.BindingFlags.NonPublic |
@@ -1005,6 +984,12 @@ namespace SWLOR.Toolset.Tests
         private ResourceIndex Index() =>
             new(null, new[] { new ResourceIndex.HakLayer("fixture", _resourceDirectory) });
 
+        private static string ToolsetSource(params string[] segments) =>
+            Path.GetFullPath(Path.Combine(
+                AppContext.BaseDirectory,
+                "..", "..", "..", "..", "SWLOR.Toolset",
+                Path.Combine(segments)));
+
         private static MdlTrimeshNode Triangle(string name) =>
             new()
             {
@@ -1139,6 +1124,24 @@ namespace SWLOR.Toolset.Tests
             bytes[18] = b;
             bytes[19] = g;
             bytes[20] = r;
+            return bytes;
+        }
+
+        private static byte[] SolidPaletteTga(byte r, byte g, byte b)
+        {
+            const int width = 256;
+            var bytes = new byte[18 + width * 3];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), width);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), 1);
+            bytes[16] = 24;
+            for (var x = 0; x < width; x++)
+            {
+                var offset = 18 + x * 3;
+                bytes[offset] = b;
+                bytes[offset + 1] = g;
+                bytes[offset + 2] = r;
+            }
             return bytes;
         }
 

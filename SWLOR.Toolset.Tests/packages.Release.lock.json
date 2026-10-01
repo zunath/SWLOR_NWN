@@ -476,11 +476,13 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.11",
-        "contentHash": "Ot5cyKZ3uvyquyHcscJ1v21+8IQkguRN+/XQQTqYBENDqsH7jHz5OuNlQaDulbWRgU1wRaG0yPntIk8WXRQG7A==",
+        "resolved": "0.1.0-dev.12",
+        "contentHash": "keugar2Gatiz1LaklmI+ThYnSwXqFPkkQ9EF/COV/gs62arq1qgQyZxs24KiJP0n77X3ICyIyQt72/PCOR+xGg==",
         "dependencies": {
           "Avalonia": "11.3.17",
-          "Nwn.Preview": "0.1.0-dev.13",
+          "Nwn.Authoring": "0.1.0-dev.22",
+          "Nwn.Preview": "0.1.0-dev.25",
+          "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
       },
@@ -672,11 +674,10 @@
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
           "Nwn.Authoring": "[0.1.0-dev.22, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-dev.11, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-dev.12, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
-          "Serilog.Sinks.File": "[7.0.0, )",
-          "Silk.NET.OpenGL": "[2.23.0, )"
+          "Serilog.Sinks.File": "[7.0.0, )"
         }
       },
       "swlor.toolset.domain": {

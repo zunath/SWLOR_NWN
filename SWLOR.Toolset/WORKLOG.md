@@ -2711,3 +2711,77 @@ API/server nullable warnings and zero errors. An initial command named a
 nonexistent `SWLOR.Toolset.sln`; this checkout only has `SWLOR.Game.Server.sln`,
 so the actual toolset app project was built directly. The native package test
 uses the primary HAK corpus read-only; no primary checkout or service changed.
+
+## Shared OpenGL area viewport adoption
+
+`AreaViewportControl` now lives in `Nwn.Toolset.Avalonia` and consumes neutral scene
+objects plus explicit host material and mesh-metadata providers. The SWLOR adapter
+retains HAK/material/tint/armor interpretation; the shared renderer owns the GL
+control, camera, draw loop, and GPU caches. `SWLOR.Toolset` and model-preview XAML
+use the shared control directly, and the former SW-only `GlAreaControl` and its
+viewport-state/framebuffer/pick types were removed. The material adapter caches
+both parsed MTR results and resolved CPU surfaces by normalized resource/palette
+inputs, with revision-based invalidation.
+
+The shared Avalonia contract suite passed 12/12 in source mode. SWLOR focused
+source-mode viewport regressions passed 73/73, and the native production-chest
+shared-control render passed 1/1 with `pfa0_chest001` from the primary HAK corpus.
+The package-mode combined viewport regression passed 74/74; the locked package
+resource-index/material/XAML reflection filter passed 23/23. All runs used the
+explicit primary corpus roots and had zero skips. The 1200x900 native frame differs
+from the expected #666 single-preview background in 59,939 pixels and is retained
+at `artifacts/viewport-source-native-focused-final/.../swlor-material-5845c2ad633d4a339b1de34c6e800248.png`
+(SHA256 `83C111E457D98FC8EB268539AA8D7DB450A63BF0AA0DA39425A40C32994EA74E`). The
+initial gray-frame failures came from the test forcing focus to Z=1 m while the
+fixture model's bounds were approximately 0.32 m high; removing the forced focus
+uses the renderer's existing model-bounds framing. This is OpenGL control evidence,
+not official NWN-client appearance qualification.
+
+The immutable Avalonia package is `0.1.0-dev.12`, SHA256
+`CA876EF8EF9D4E8D7961D894C9F43D4A7A72F9B3F9294AE77CC5896F1EF25E48`, nuspec
+`repository.commit=b4bda64a0d1b15331de5e02064256cd6fbcf8d5c`, with direct dependencies
+Avalonia 11.3.17, Silk.NET.OpenGL 2.23.0, Serilog 4.4.0, Nwn.Authoring dev.22 and
+Nwn.Preview dev.25. Earlier package archives remain unchanged. SWLOR pins dev.12
+and regenerated the six affected Toolset/Toolset.Tests/PreviewRender Debug/Release
+package locks in package mode.
+
+The first native control test captured only the gray background because it
+explicitly focused above the actual chest bounds; that failure and its output are
+retained under `artifacts/viewport-source-native-diagnostics/` and
+`artifacts/viewport-source-native-bounds-retry/`. The initial shared test compile
+also caught use of a removed MSTest assertion API; it was changed to
+`Assert.ThrowsExactly` before the 12/12 run. The unrelated lock-file change emitted
+by source restore was restored before packaging.
+
+The focused package-mode viewport command was:
+
+```powershell
+$env:SWLOR_TEST_REPOSITORY_ROOT='C:/Projects/SWLOR_NWN'
+$env:SWLOR_TEST_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+$env:SWLOR_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -m:1 -p:NwnToolsetSourceRoot='' -p:NwnToolsetPackageFeed='C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages' -p:RunPostBuildEvent=Never -p:NuGetAudit=false --filter 'FullyQualifiedName~AreaViewportStateTests|FullyQualifiedName~AreaManipulationTests|FullyQualifiedName~ModelPreviewCameraInputTests|FullyQualifiedName~RenderReplacementPortableTests|FullyQualifiedName~NativeMaterialViewportTests' --logger 'trx;LogFileName=viewport-package-focused-final.trx' --results-directory artifacts/viewport-package-focused-final
+```
+
+Result: `artifacts/viewport-package-focused-final/viewport-package-focused-final.trx`
+(74 passed, zero skipped). Resource/reflection result:
+`artifacts/viewport-package-corpus-reflection/viewport-package-corpus-reflection.trx`
+(23 passed, zero skipped).
+
+The packaged Release `SWLOR.Toolset` app also built successfully against the locked
+dev.12 graph with zero errors and eight existing nullable warnings (seven in
+`SWLOR.NWN.API/NWNX/{Enum/QuickBarSlot.cs,JournalEntry.cs}` and one in
+`SWLOR.Game.Server/Service/GuiService/Component/GuiWidget.cs`). Debug/Release
+lock entries resolve Avalonia UI dev.12 to Preview dev.25; the existing F23/A22/P25
+pins are unchanged. Package-mode selected tests ran without a source root, so the
+results exercise the nupkg consumer path.
+
+Source regression details for this extraction: the SWLOR area-camera, picking,
+manipulation, ceiling visibility and render-replacement reflection filter passed
+73/73 in `artifacts/viewport-source-focused-final/viewport-source-focused-final.trx`;
+the source-mode native shared-control chest test passed 1/1 in
+`artifacts/viewport-source-native-focused-final/viewport-source-native-focused-final.trx`.
+The shared `Nwn.Toolset.Avalonia.Tests` source-mode suite passed 12/12 in
+`NWN.Toolset/artifacts/viewport-source-shared-tests-fixed/viewport-source-shared-tests-fixed.trx`.
+The package combined filter and corpus/reflection filter above were run in Debug
+with the six locked files active; the Release app build also used its regenerated
+locked package graph.

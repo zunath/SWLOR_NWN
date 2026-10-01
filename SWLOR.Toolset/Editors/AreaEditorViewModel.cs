@@ -1,4 +1,5 @@
 using Nwn.Authoring.Areas.Placement;
+using Nwn.Toolset.Avalonia.Areas;
 using System.Collections.ObjectModel;
 using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -139,7 +140,7 @@ namespace SWLOR.Toolset.Editors
         public Vector2 PropertiesScrollOffset { get; set; }
 
         /// <summary>The last camera owned by this open area tab, restored when its view is recreated.</summary>
-        public Viewport.AreaViewportState? ViewportState { get; set; }
+        public AreaViewportState? ViewportState { get; set; }
 
         public bool IsDirty =>
             _areSession.UndoStack.IsDirty ||
@@ -228,7 +229,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// The instance currently selected (from either the 3D view or an instance-list row) - the
-        /// view mirrors this onto <c>GlAreaControl.SelectedInstance</c> for the 3D highlight. Always
+        /// view mirrors this onto <c>AreaViewportControl.SelectedInstance</c> for the 3D highlight. Always
         /// an object from the current <see cref="AreaScene"/>'s <c>Instances</c> list (or null);
         /// changes flow through <see cref="ApplySelection"/> only, so it and every section's
         /// SelectedRow never drift out of sync.
@@ -596,7 +597,7 @@ namespace SWLOR.Toolset.Editors
         private bool _pendingPlacementUsesIndexedBlueprint;
         private AreaInstanceClipboardEntry? _pendingPlacementCopy;
 
-        /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives GlAreaControl.IsPlacementActive.</summary>
+        /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives AreaViewportControl.IsPlacementActive.</summary>
         public bool IsPlacementPending => _pendingPlacementSection != null;
 
         /// <summary>
@@ -624,7 +625,7 @@ namespace SWLOR.Toolset.Editors
 
         private TilePaletteEntry? _pendingTile;
 
-        /// <summary>True while a tile or group is armed - drives GlAreaControl.IsTilePlacementActive.</summary>
+        /// <summary>True while a tile or group is armed - drives AreaViewportControl.IsTilePlacementActive.</summary>
         public bool IsTilePlacementPending => _pendingTile != null;
 
         /// <summary>
@@ -641,7 +642,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>
         /// True while the armed palette entry is a terrain - which paints grid VERTICES, the way the
         /// reference toolset does, rather than stamping cells. Drives
-        /// GlAreaControl.TilePlacementTargetsVertex: the viewport then snaps its cursor to the
+        /// AreaViewportControl.TilePlacementTargetsVertex: the viewport then snaps its cursor to the
         /// nearest vertex, draws the red vertex-centred paint square, and reports vertex
         /// coordinates through the pick event.
         /// </summary>
@@ -651,7 +652,7 @@ namespace SWLOR.Toolset.Editors
         /// True while the armed palette entry is a crosser brush (road, bridge, wall - or the
         /// eraser, whose crosser is the empty string). Crossers paint grid EDGES: the viewport
         /// snaps to the nearest edge, draws the red edge-centred paint square, and reports edge
-        /// coordinates through GlAreaControl.TileEdgePicked.
+        /// coordinates through AreaViewportControl.TileEdgePicked.
         /// </summary>
         public bool TilePlacementTargetsEdge => _pendingTile?.Crosser != null;
 
@@ -897,7 +898,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// The grid cell the builder has selected in the 3D view, or null when none is. The view
-        /// mirrors it onto <c>GlAreaControl.SelectedTileCell</c> for the highlight, and the raise and
+        /// mirrors it onto <c>AreaViewportControl.SelectedTileCell</c> for the highlight, and the raise and
         /// lower commands act on it.
         /// </summary>
         /// <remarks>
@@ -1379,7 +1380,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// Called by the view when a viewport click resolves a pending placement
-        /// (GlAreaControl.PlacementPointPicked): creates the instance at the clicked ground
+        /// (AreaViewportControl.PlacementPointPicked): creates the instance at the clicked ground
         /// position through the pending section's InstanceFieldMap-based Add path (one RunGitEdit
         /// transaction), then appends its one marker to the scene and selects it. A full rebuild is
         /// retained as a fallback when the scene was already stale.
@@ -1508,7 +1509,7 @@ namespace SWLOR.Toolset.Editors
             return true;
         }
 
-        /// <summary>Called by the view when a pending placement is cancelled (Esc or right-click in the viewport, GlAreaControl.PlacementCancelled).</summary>
+        /// <summary>Called by the view when a pending placement is cancelled (Esc or right-click in the viewport, AreaViewportControl.PlacementCancelled).</summary>
         public void CancelPlacement()
         {
             if (_pendingPlacementSection == null)
@@ -1523,7 +1524,7 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Called by the view when the 3D-view move gizmo releases (GlAreaControl.InstanceMoved):
+        /// Called by the view when the 3D-view move gizmo releases (AreaViewportControl.InstanceMoved):
         /// commits the final X/Y (Z unchanged) through the matching section's
         /// InstanceFieldMap.SetPosition path as one RunGitEdit transaction, then refreshes the
         /// scene keeping the same instance selected (rebind by kind+index).
@@ -1587,7 +1588,7 @@ namespace SWLOR.Toolset.Editors
                 _ = BuildSceneAsync((instance.Kind, index));
         }
 
-        /// <summary>Called by the view when the 3D-view rotate gizmo releases (GlAreaControl.InstanceRotated): mirrors <see cref="MoveSelectedInstance"/> for heading.</summary>
+        /// <summary>Called by the view when the 3D-view rotate gizmo releases (AreaViewportControl.InstanceRotated): mirrors <see cref="MoveSelectedInstance"/> for heading.</summary>
         public void RotateSelectedInstance(InstanceMarker instance, Vector2 newOrientation)
         {
             // Guarded here as well as on CanRotateSelection: the gizmo reaches this directly, and a

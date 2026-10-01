@@ -4,7 +4,7 @@
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
              xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
              xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
-             xmlns:viewport="using:SWLOR.Toolset.Viewport"
+             xmlns:viewport="using:Nwn.Toolset.Avalonia.Areas"
              x:Class="SWLOR.Toolset.Editors.AreaEditorView"
              x:DataType="editors:AreaEditorViewModel">
 
@@ -27,7 +27,7 @@
              offered lives on the right-click menu below instead. -->
         <Grid>
 
-          <viewport:GlAreaControl Grid.Row="0" x:Name="AreaView" />
+          <viewport:AreaViewportControl Grid.Row="0" x:Name="AreaView" />
 
           <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it.
                This transparent overlay captures camera input and forwards it to the control; the HUD

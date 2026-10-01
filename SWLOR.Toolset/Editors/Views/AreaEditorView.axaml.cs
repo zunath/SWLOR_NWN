@@ -1,4 +1,5 @@
 using Nwn.Authoring.Areas.Placement;
+using Nwn.Toolset.Avalonia.Areas;
 using Avalonia.Interactivity;
 using System.ComponentModel;
 using System.Numerics;
@@ -13,6 +14,7 @@ namespace SWLOR.Toolset.Editors
     public partial class AreaEditorView : UserControl
     {
         private AreaEditorViewModel? _viewModel;
+        private Viewport.SwlorAreaViewportMaterialProvider? _materialProvider;
         private bool _viewportStateRestored;
 
         public AreaEditorView()
@@ -105,7 +107,11 @@ namespace SWLOR.Toolset.Editors
 
             _viewportStateRestored = false;
 
-            AreaView.ResourceIndex = _viewModel.ResourceIndex;
+            _materialProvider = _viewModel.ResourceIndex is { } resources
+                ? new Viewport.SwlorAreaViewportMaterialProvider(resources)
+                : null;
+            AreaView.MaterialProvider = _materialProvider;
+            AreaView.MeshMetadataProvider = _materialProvider;
             AreaView.InvalidateGameResources();
             AreaView.Scene = _viewModel.AreaScene;
             RestoreViewportStateWhenReady();
@@ -189,7 +195,10 @@ namespace SWLOR.Toolset.Editors
                 ConsumePendingCameraFocus();
             }
             else if (e.PropertyName == nameof(AreaEditorViewModel.GameResourceRevision))
+            {
+                _materialProvider?.Invalidate();
                 AreaView.InvalidateGameResources();
+            }
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
                 AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsPlacementPending))
@@ -300,7 +309,7 @@ namespace SWLOR.Toolset.Editors
             _viewModel?.RotateSelectedInstance(instance, newOrientation);
 
         /// <summary>A pending placement resolved to a viewport click.</summary>
-        private void OnPlacementPointPicked(Viewport.PlacementPick pick) =>
+        private void OnPlacementPointPicked(PlacementPick pick) =>
             _viewModel?.CommitPlacement(pick.Position, pick.Orientation);
 
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
@@ -308,7 +317,7 @@ namespace SWLOR.Toolset.Editors
 
         // ----- Object rotate. Held, these spin the selection continuously; a tap turns one step.
         // Both go through the viewport's live preview, so the scene is not rebuilt per tick and the
-        // whole turn is a single undo entry - see GlAreaControl.NudgeSelectedRotation. -----
+        // whole turn is a single undo entry - see AreaViewportControl.NudgeSelectedRotation. -----
 
         /// <summary>Whether this press has repeated yet - the first tick is the tap step, the rest are the glide.</summary>
         private bool _rotateHasRepeated;

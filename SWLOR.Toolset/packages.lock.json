@@ -157,12 +157,14 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.11, )",
-        "resolved": "0.1.0-dev.11",
-        "contentHash": "Ot5cyKZ3uvyquyHcscJ1v21+8IQkguRN+/XQQTqYBENDqsH7jHz5OuNlQaDulbWRgU1wRaG0yPntIk8WXRQG7A==",
+        "requested": "[0.1.0-dev.12, )",
+        "resolved": "0.1.0-dev.12",
+        "contentHash": "keugar2Gatiz1LaklmI+ThYnSwXqFPkkQ9EF/COV/gs62arq1qgQyZxs24KiJP0n77X3ICyIyQt72/PCOR+xGg==",
         "dependencies": {
           "Avalonia": "11.3.17",
-          "Nwn.Preview": "0.1.0-dev.13",
+          "Nwn.Authoring": "0.1.0-dev.22",
+          "Nwn.Preview": "0.1.0-dev.25",
+          "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
       },
@@ -179,16 +181,6 @@
         "contentHash": "fKL7mXv7qaiNBUC71ssvn/dU0k9t0o45+qm2XgKAlSt19xF+ijjxyA3R6HmCgfKEKwfcfkwWjayuQtRueZFkYw==",
         "dependencies": {
           "Serilog": "4.2.0"
-        }
-      },
-      "Silk.NET.OpenGL": {
-        "type": "Direct",
-        "requested": "[2.23.0, )",
-        "resolved": "2.23.0",
-        "contentHash": "CIakUoUqiAyRPykMk54tr1M1XpbJrT/iw12T85HDQcuRCFlBa1cxbX7v3FmtznKO5eM89esfmGNCgqDaKBiWfg==",
-        "dependencies": {
-          "Silk.NET.Core": "2.23.0",
-          "Silk.NET.Maths": "2.23.0"
         }
       },
       "Avalonia.Angle.Windows.Natives": {
@@ -495,6 +487,15 @@
         "type": "Transitive",
         "resolved": "2.23.0",
         "contentHash": "r8PdIVzME8EH0qAgbmRPO87I4GfgR2j8TofT7EMuRJDf1QluoQwnVypDoFJjQ2ZBSRsGYk5unYxxogI05Ogsmw=="
+      },
+      "Silk.NET.OpenGL": {
+        "type": "Transitive",
+        "resolved": "2.23.0",
+        "contentHash": "CIakUoUqiAyRPykMk54tr1M1XpbJrT/iw12T85HDQcuRCFlBa1cxbX7v3FmtznKO5eM89esfmGNCgqDaKBiWfg==",
+        "dependencies": {
+          "Silk.NET.Core": "2.23.0",
+          "Silk.NET.Maths": "2.23.0"
+        }
       },
       "SkiaSharp": {
         "type": "Transitive",

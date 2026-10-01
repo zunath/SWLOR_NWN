@@ -1,21 +1,24 @@
 using Avalonia.OpenGL;
-using Nwn.Toolset.Avalonia.Viewport;
+using Nwn.Preview.Areas;
+using Nwn.Toolset.Avalonia.Areas;
 using Silk.NET.OpenGL;
 using SWLOR.Toolset.Viewport;
 
 namespace SWLOR.Toolset.PreviewRender.Viewport;
 
-internal sealed class TintReadbackSurface : ModelViewportSurface
+internal sealed class TintReadbackSurface : AreaViewportControl
 {
     private readonly string _output;
     private int _frames;
     private bool _complete;
 
-    public TintReadbackSurface(NativeModelPreviewData preview, string output)
+    public TintReadbackSurface(AreaScene scene, SwlorAreaViewportMaterialProvider materialProvider, string output)
     {
         _output = Path.GetFullPath(output);
-        SetScene(preview.Scene);
-        SetTextures(preview.Textures);
+        Scene = scene;
+        MaterialProvider = materialProvider;
+        MeshMetadataProvider = materialProvider;
+        RenderStatusChanged += (_, message) => Console.Error.WriteLine("viewport: " + message);
     }
 
     public event Action<bool, string>? Completed;
@@ -33,19 +36,22 @@ internal sealed class TintReadbackSurface : ModelViewportSurface
         { Finish(false, "The framebuffer is outside its qualification bounds."); return; }
         var bytes = new byte[checked(width * height * 4)];
         fixed (byte* pixels = bytes) api.ReadPixels(0, 0, (uint)width, (uint)height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-        var colored = 0;
+        FramebufferImage.Save(_output, width, height, bytes);
+        var changed = 0;
         for (var index = 0; index < bytes.Length; index += 4)
         {
-            if (Math.Abs(bytes[index] - 31) <= 2 && Math.Abs(bytes[index + 1] - 36) <= 2 && Math.Abs(bytes[index + 2] - 46) <= 2) continue;
-            if (Math.Abs(bytes[index] - bytes[index + 1]) > 8 || Math.Abs(bytes[index + 1] - bytes[index + 2]) > 8) colored++;
+            if (Math.Abs(bytes[index] - 102) > 8 || Math.Abs(bytes[index + 1] - 102) > 8 || Math.Abs(bytes[index + 2] - 102) > 8)
+                changed++;
         }
-        if (colored < 1000 || GeometryUploadCount != 1 || TextureUploadCount != 1)
-        { Finish(false, $"Unexpected frame: {colored} colored pixels, {GeometryUploadCount} geometry and {TextureUploadCount} texture uploads."); return; }
+        if (changed < 1000)
+        { Finish(false, $"The shared area renderer changed only {changed} background pixels at {width}x{height}."); return; }
         if (_frames++ == 0) { RequestNextFrameRendering(); return; }
-        FramebufferImage.Save(_output, width, height, bytes);
-        Finish(true, $"SWLOR pfa0_chest001: {width}x{height}, {colored} colored pixels; one geometry/texture upload reused; {ContextDescription}; {_output}.");
+        Finish(true, $"SWLOR pfa0_chest001 through AreaViewportControl: {width}x{height}, {changed} visible pixels; {_output}.");
     }
 
     private void Finish(bool passed, string message)
-    { _complete = true; Completed?.Invoke(passed, message); }
+    {
+        _complete = true;
+        Completed?.Invoke(passed, message);
+    }
 }

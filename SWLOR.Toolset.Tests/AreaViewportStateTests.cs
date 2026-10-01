@@ -3,8 +3,8 @@ using System.Reflection;
 using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Areas;
 using SWLOR.Toolset.Domain.Render;
-using SWLOR.Toolset.Viewport;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -13,7 +13,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void CreatureModelsDrawTwoSidedWithoutDisablingPropCulling()
         {
-            var policy = typeof(GlAreaControl).GetMethod(
+            var policy = typeof(AreaViewportControl).GetMethod(
                 "CullInstanceModelFaces",
                 BindingFlags.NonPublic | BindingFlags.Static)!;
 
@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void StoreMarkersUseAurorasWaypointYellow()
         {
-            var markerColor = typeof(GlAreaControl).GetMethod(
+            var markerColor = typeof(AreaViewportControl).GetMethod(
                 "MarkerColor",
                 BindingFlags.NonPublic | BindingFlags.Static)!;
 
@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Tests
                 InitialDistance: 50f,
                 Azimuth: 1.25f,
                 Elevation: 0.45f);
-            var replacementControl = new GlAreaControl();
+            var replacementControl = new AreaViewportControl();
 
             replacementControl.RestoreViewportState(expected);
             replacementControl.Scene = new AreaScene
@@ -68,7 +68,7 @@ namespace SWLOR.Toolset.Tests
         public void FocusRequestedBeforeInitialScene_IsAppliedAfterSceneFraming()
         {
             var expectedTarget = new Vector3(73f, 41f, 2.5f);
-            var control = new GlAreaControl();
+            var control = new AreaViewportControl();
 
             control.FocusOn(expectedTarget);
             control.Scene = new AreaScene
@@ -93,7 +93,7 @@ namespace SWLOR.Toolset.Tests
         public void DeferredGoToFocusAppliedAfterViewportRestore_Wins()
         {
             var expectedTarget = new Vector3(17f, 29f, 3f);
-            var control = new GlAreaControl
+            var control = new AreaViewportControl
             {
                 Scene = new AreaScene
                 {
@@ -122,7 +122,7 @@ namespace SWLOR.Toolset.Tests
         public void RecoloringTheSamePreviewModel_PreservesTheExactCamera()
         {
             var model = PreviewModel();
-            var control = new GlAreaControl();
+            var control = new AreaViewportControl();
             SetViewportSize(control, width: 1000, height: 100);
             control.Scene = PreviewScene(model, new Dictionary<string, int>());
 
@@ -187,11 +187,11 @@ namespace SWLOR.Toolset.Tests
             Diagnostics = new AreaSceneDiagnostics()
         };
 
-        private static void SetViewportSize(GlAreaControl control, int width, int height)
+        private static void SetViewportSize(AreaViewportControl control, int width, int height)
         {
-            typeof(GlAreaControl).GetField(
+            typeof(AreaViewportControl).GetField(
                 "_viewportWidth", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(control, width);
-            typeof(GlAreaControl).GetField(
+            typeof(AreaViewportControl).GetField(
                 "_viewportHeight", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(control, height);
         }
     }

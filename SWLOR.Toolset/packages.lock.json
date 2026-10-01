@@ -457,10 +457,10 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.16",
-        "contentHash": "uTnUkFgmsd4RXWzap8hV//t5fkZWNWCV3W5zgBtB2j5Op6kAgSbywsnvA2sqltzax9AN/RDNvwZgGlQdzdZTSw==",
+        "resolved": "0.1.0-dev.18",
+        "contentHash": "n6v54LHe+hePnd97fWox/b0cn4UBj+bVMbjXw4fNFW2LVWDS255fnfsHFXyY2KJIy1o76bxAZVV2+6ojK//P0A==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.18"
+          "Nwn.Formats": "0.1.0-dev.21"
         }
       },
       "NWNX.NET": {
@@ -579,7 +579,7 @@
         "dependencies": {
           "Nwn.Authoring": "[0.1.0-dev.20, )",
           "Nwn.Formats": "[0.1.0-dev.21, )",
-          "Nwn.Preview": "[0.1.0-dev.16, )",
+          "Nwn.Preview": "[0.1.0-dev.18, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

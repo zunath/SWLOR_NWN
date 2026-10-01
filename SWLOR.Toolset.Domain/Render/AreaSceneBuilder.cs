@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Domain.Render
     public static class AreaSceneBuilder
     {
         /// <summary>NWN area tiles sit on a 10-meter grid.</summary>
-        public const float TileSize = 10f;
+        public const float TileSize = AreaGrid.TileSize;
 
         /// <summary>
         /// Builds the scene for one area. Never throws for missing/unresolvable tile models or

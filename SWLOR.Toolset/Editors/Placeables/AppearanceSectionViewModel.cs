@@ -14,7 +14,7 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Editors.Placeables
 {
     /// <summary>One model-declared state as it appears in the preview picker.</summary>
-    public sealed record PlaceableAnimationOption(Domain.Render.RenderAnimation Animation)
+    public sealed record PlaceableAnimationOption(RenderAnimation Animation)
     {
         public string Name => Animation.Name;
 
@@ -50,7 +50,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private readonly Func<PlaceableAppearanceUsageIndex> _usage;
 
         /// <summary>Builds the render geometry for a model resref; null leaves the 3D view empty.</summary>
-        private readonly Func<string, Domain.Render.RenderModel?>? _resolveModel;
+        private readonly Func<string, RenderModel?>? _resolveModel;
 
         /// <summary>False until the tab has been shown once; see EnsureLoaded.</summary>
         private bool _loaded;
@@ -88,7 +88,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             Func<PlaceableAppearanceUsageIndex> usage,
             Func<string, Action, bool> runEdit,
             Domain.GameData.Resources.ResourceIndex? resourceIndex = null,
-            Func<string, Domain.Render.RenderModel?>? resolveModel = null)
+            Func<string, RenderModel?>? resolveModel = null)
         {
             _context = context;
             _catalog = catalog;
@@ -214,7 +214,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// renderer to keep working. The scene is an empty 1x1 grid holding a single placeable
         /// marker at the origin, which the control's own framing then centres on.
         /// </remarks>
-        public Domain.Render.AreaScene? PreviewScene { get; private set; }
+        public AreaScene? PreviewScene { get; private set; }
 
         /// <summary>States declared by the highlighted model, in file order.</summary>
         public ObservableCollection<PlaceableAnimationOption> AnimationStates { get; } = new();
@@ -348,17 +348,17 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             PreviewScene = model == null
                 ? null
-                : new Domain.Render.AreaScene
+                : new AreaScene
                 {
                     Tileset = string.Empty,
                     Width = 1,
                     Height = 1,
-                    Tiles = Array.Empty<Domain.Render.TilePlacement>(),
+                    Tiles = Array.Empty<TilePlacement>(),
                     Instances = new[]
                     {
-                        new Domain.Render.InstanceMarker
+                        new InstanceMarker
                         {
-                            Kind = Domain.Render.InstanceMarkerKind.Placeable,
+                            Kind = InstanceMarkerKind.Placeable,
                             TemplateResRef = modelName!,
                             Tag = string.Empty,
                             Position = new System.Numerics.Vector3(
@@ -369,7 +369,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                             Model = model
                         }
                     },
-                    Diagnostics = new Domain.Render.AreaSceneDiagnostics()
+                    Diagnostics = new AreaSceneDiagnostics()
                 };
 
             OnPropertyChanged(nameof(PreviewScene));
@@ -384,7 +384,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             BeginLoading();
         }
 
-        private void PublishAnimationStates(Domain.Render.RenderModel? model)
+        private void PublishAnimationStates(RenderModel? model)
         {
             AnimationStates.Clear();
             if (model != null)

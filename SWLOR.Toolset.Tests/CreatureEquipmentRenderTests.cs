@@ -35,6 +35,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return configuredRoot;
                 for (var current = new DirectoryInfo(AppContext.BaseDirectory);
                      current != null;
                      current = current.Parent)

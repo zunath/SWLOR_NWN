@@ -86,7 +86,7 @@ namespace SWLOR.Toolset.Tests
             const string second = "pmh0_r_ro_c34862";
             var meshes = ModelWith(first).Meshes.Concat(ModelWith(second).Meshes).ToArray();
             foreach (var mesh in meshes)
-                mesh.ArmorPart = AppearanceArmor.Robe;
+                SwlorRenderMeshMetadataStore.SetArmorPart(mesh, AppearanceArmor.Robe);
             var editor = new TintMapEditorViewModel(variables,
                 (_, mutation) => { mutation(); return true; }, catalog);
             editor.Reload(new RenderModel { Meshes = meshes,
@@ -127,11 +127,12 @@ namespace SWLOR.Toolset.Tests
             var editor = new TintMapEditorViewModel(store.Locals, Edit, catalog);
             var meshes = ModelWith("pmh0_robe170").Meshes
                 .Concat(ModelWith("pmh0_r_ro_c34862").Meshes).ToList();
-            foreach (var mesh in meshes) mesh.ArmorPart = AppearanceArmor.Robe;
+            foreach (var mesh in meshes)
+                SwlorRenderMeshMetadataStore.SetArmorPart(mesh, AppearanceArmor.Robe);
             if (secondPart)
             {
                 var torso = ModelWith("pmh0_chest156").Meshes.Single();
-                torso.ArmorPart = AppearanceArmor.Torso;
+                SwlorRenderMeshMetadataStore.SetArmorPart(torso, AppearanceArmor.Torso);
                 meshes.Add(torso);
             }
             editor.Reload(new RenderModel { Meshes = meshes });
@@ -588,7 +589,7 @@ namespace SWLOR.Toolset.Tests
                 },
                 catalog!);
             var model = ItemOwnedModelWith(material);
-            model.Meshes.Single().ArmorPart = AppearanceArmor.Torso;
+            SwlorRenderMeshMetadataStore.SetArmorPart(model.Meshes.Single(), AppearanceArmor.Torso);
 
             editor.Reload(model, includeNonItemOwnedMaterials: false);
 

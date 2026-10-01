@@ -2498,3 +2498,52 @@ were retained and excluded from qualification.
 This qualifies the shared writer adapter, SWLOR package consumer, and selected
 HAK-backed creation tests. Native game activation and official-client behavior
 are outside this transaction boundary.
+
+## Neutral area-preview extraction - 2026-10-01
+
+Pure area-scene data, camera math, picking, manipulation, walkmesh queries and
+loading, gizmo math, door anchors, and draw batching now live in
+`Nwn.Preview.Areas`; neutral render-model, mesh, animation and emitter records
+live in `Nwn.Preview.Scene`. SWLOR keeps its ARE/GIT/resource readers, scene
+assembly adapters, model builders, GPU control and game-specific appearance
+policy. `AppearanceArmor` remains in SWLOR and is attached to shared meshes by
+reference through `SwlorRenderMeshMetadataStore`; tile-group composition copies
+that classification when it clones meshes. The existing scene and rendering
+algorithms remain the SWLOR behavior.
+
+Shared source commit is `d347acf7d5a8d24d4c3a6936682710b7000e6222`.
+`Nwn.Preview 0.1.0-dev.18` is the pinned package, SHA256
+`9A79EC2FC720D0B424E5EE80A0907F850A881FFABCCC8A2034430843DE56A31C`; its
+nuspec identifies that exact commit and depends on `Nwn.Formats 0.1.0-dev.21`.
+An earlier source-mode pack attempt produced a dev17 nuspec with the wrong
+Formats dependency; that archive was left untouched and is not referenced by
+SWLOR. SWLOR's conditional source mode still replaces shared package references
+with projects. Package-mode Debug/Release locks were regenerated for the four
+toolset consumers (eight files); the direct `SWLOR.NWN.Formats` Formats consumer
+also has a Debug lock. No other package versions changed.
+
+The read-only primary module and HAK roots were selected explicitly with
+`SWLOR_TEST_REPOSITORY_ROOT=C:/Projects/SWLOR_NWN`,
+`SWLOR_TEST_HAKS_ROOT=C:/Projects/SWLOR_NWN/SWLOR_Haks`,
+`SWLOR_HAKS_ROOT=C:/Projects/SWLOR_NWN/SWLOR_Haks`, and
+`XENOMECH_TEST_CONTENT_ROOT=C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/content`.
+The SWLOR source-mode Release test-project build passed with zero warnings and
+errors. Its focused area/render/tint suite passed 213/213 with zero skips,
+including the all-area assembly corpus gate and a clone/composition regression
+for SWLOR armor metadata. TRX:
+`SWLOR.Toolset.Tests/TestResults/preview-extraction-source-focused.trx`.
+Shared Preview Release tests passed 43/43 with zero skips, including synthetic
+area geometry/camera tests and actual model/texture corpus tests. TRX:
+`NWN.Toolset/tests/Nwn.Preview.Tests/TestResults/preview-extraction-source.trx`.
+
+The package-mode Release build passed with eight warnings and zero errors.
+Seven are CS8618 warnings on the four string properties in
+`SWLOR.NWN.API/NWNX/Enum/QuickBarSlot.cs` and the three string properties in
+`SWLOR.NWN.API/NWNX/JournalEntry.cs`; one is CS8632 in
+`SWLOR.Game.Server/Service/GuiService/Component/GuiWidget.cs:48`. All three
+files are unchanged in this worktree. The focused package-mode suite passed
+213/213 with zero skips in 7m49s. TRX:
+`SWLOR.Toolset.Tests/TestResults/preview-extraction-package-focused.trx`.
+Locked Debug/Release restores and the source/package tests qualify this SWLOR
+consumer slice. This extraction does not establish assembled-body appearance,
+native-client rendering, or later shared AreaSceneBuilder-core extraction.

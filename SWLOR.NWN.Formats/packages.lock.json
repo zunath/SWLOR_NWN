@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "Nwn.Formats": {
+        "type": "Direct",
+        "requested": "[0.1.0-dev.21, )",
+        "resolved": "0.1.0-dev.21",
+        "contentHash": "BS2woF+pZAQRr39DYLx6rm4ANno5oScxCQEMIyqLNlar5o6nxQxq/ysiAuHEJQ2iHq26/tWSOlyVPFrJ219UtQ=="
+      }
+    }
+  }
+}

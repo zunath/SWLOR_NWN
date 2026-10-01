@@ -19,11 +19,11 @@
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.16, )",
-        "resolved": "0.1.0-dev.16",
-        "contentHash": "uTnUkFgmsd4RXWzap8hV//t5fkZWNWCV3W5zgBtB2j5Op6kAgSbywsnvA2sqltzax9AN/RDNvwZgGlQdzdZTSw==",
+        "requested": "[0.1.0-dev.18, )",
+        "resolved": "0.1.0-dev.18",
+        "contentHash": "n6v54LHe+hePnd97fWox/b0cn4UBj+bVMbjXw4fNFW2LVWDS255fnfsHFXyY2KJIy1o76bxAZVV2+6ojK//P0A==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.18"
+          "Nwn.Formats": "0.1.0-dev.21"
         }
       },
       "Serilog": {

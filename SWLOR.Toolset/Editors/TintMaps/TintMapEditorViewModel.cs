@@ -208,7 +208,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     string.Equals(mesh.TextureName, materialResref, StringComparison.OrdinalIgnoreCase))
                 .ToList();
             var armorParts = matchingMeshes
-                .Select(mesh => mesh.ArmorPart)
+                .Select(SwlorRenderMeshMetadataStore.GetArmorPart)
                 .Where(part => part != AppearanceArmor.Invalid)
                 .Distinct()
                 .ToList();

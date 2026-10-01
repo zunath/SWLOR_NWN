@@ -525,7 +525,7 @@ namespace SWLOR.Toolset.Workspace
                 // bitmap-only meshes must retain their authored bitmap even when an unrelated MTR
                 // happens to share its resref.
                 resolveMaterial,
-                mesh.ArmorPart);
+                SwlorRenderMeshMetadataStore.GetArmorPart(mesh));
         }
 
         private bool IsGeneratedTintMaterial(string surfaceName)
@@ -832,7 +832,7 @@ namespace SWLOR.Toolset.Workspace
                         mesh.UsesItemTintOverrides = true;
                         mesh.TintMapOverrides = part.Part.TintMapOverrides ??
                                                 new Dictionary<string, int>(StringComparer.Ordinal);
-                        mesh.ArmorPart = part.Part.ArmorPart;
+                        SwlorRenderMeshMetadataStore.SetArmorPart(mesh, part.Part.ArmorPart);
                     }
                 }
 
@@ -1020,7 +1020,7 @@ namespace SWLOR.Toolset.Workspace
             }
 
             for (var index = 0; index < model.Meshes.Count; index++)
-                model.Meshes[index].ArmorPart = armorParts[index];
+                SwlorRenderMeshMetadataStore.SetArmorPart(model.Meshes[index], armorParts[index]);
         }
 
         /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>

@@ -443,11 +443,11 @@ namespace SWLOR.Toolset.Tests
             var first = TexturedQuad("shared_mtr").Meshes[0];
             first.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
             first.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
-            first.ArmorPart = AppearanceArmor.LeftHand;
+            SwlorRenderMeshMetadataStore.SetArmorPart(first, AppearanceArmor.LeftHand);
             var otherPart = TexturedQuad("shared_mtr").Meshes[0];
             otherPart.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
             otherPart.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
-            otherPart.ArmorPart = AppearanceArmor.RightHand;
+            SwlorRenderMeshMetadataStore.SetArmorPart(otherPart, AppearanceArmor.RightHand);
             var itemOwned = TexturedQuad("shared_mtr").Meshes[0];
             itemOwned.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
             itemOwned.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };

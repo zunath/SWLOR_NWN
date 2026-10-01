@@ -52,7 +52,7 @@ namespace SWLOR.Toolset.Domain.Render
 
                 foreach (var mesh in model.Meshes)
                 {
-                    meshes.Add(new RenderMesh
+                    var composed = new RenderMesh
                     {
                         NodeName = mesh.NodeName,
                         TextureName = mesh.TextureName,
@@ -65,7 +65,9 @@ namespace SWLOR.Toolset.Domain.Render
                         DiffuseColor = mesh.DiffuseColor,
                         TileFade = mesh.TileFade,
                         Transform = mesh.Transform * placement
-                    });
+                    };
+                    SwlorRenderMeshMetadataStore.Copy(mesh, composed);
+                    meshes.Add(composed);
                 }
             }
 

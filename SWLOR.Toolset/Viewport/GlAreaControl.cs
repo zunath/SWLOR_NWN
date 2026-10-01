@@ -576,7 +576,7 @@ void main()
         private SceneState _sceneState = new(null, 0);
         private long _nextSceneVersion;
         private long _renderedSceneVersion = -1;
-        private IReadOnlyList<AreaDrawBatcher.TileBatch>? _tileBatches;
+        private IReadOnlyList<TileBatch>? _tileBatches;
 
         /// <summary>
         /// The tile list <see cref="_tileBatches"/> and the walkmesh buffer were built from, so a
@@ -5082,7 +5082,7 @@ void main()
                     LayerColorIndices = mesh.LayerColorIndices,
                     UsesItemTintOverrides = mesh.UsesItemTintOverrides,
                     TintMapOverrides = mesh.TintMapOverrides,
-                    ArmorPart = mesh.ArmorPart,
+                    ArmorPart = SwlorRenderMeshMetadataStore.GetArmorPart(mesh),
                     TileFade = mesh.TileFade
                 });
             }

@@ -280,7 +280,7 @@ namespace SWLOR.Toolset.Domain.Render
                 : mesh.UsesItemTintOverrides ? "|item" : "|owner";
             var armorPartKey = resolveMeshTexture == null
                 ? string.Empty
-                : $"|part:{(int)mesh.ArmorPart}";
+                : $"|part:{(int)SwlorRenderMeshMetadataStore.GetArmorPart(mesh)}";
             var cacheKey = mesh.MaterialName + "|" + mesh.TextureName + paletteKey + tintKey +
                            ownershipKey + armorPartKey;
             if (decoded.TryGetValue(cacheKey, out var cached))

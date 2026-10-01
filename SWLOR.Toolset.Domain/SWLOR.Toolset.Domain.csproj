@@ -11,7 +11,11 @@
   <ItemGroup>
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Formats\Nwn.Formats.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.16"
+    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.17"
+                      Condition="'$(NwnToolsetSourceRoot)' == ''" />
+    <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Preview\Nwn.Preview.csproj"
+                      Condition="'$(NwnToolsetSourceRoot)' != ''" />
+    <PackageReference Include="Nwn.Preview" Version="0.1.0-dev.14"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj"
@@ -19,8 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- BioWare's proprietary DDS variant is wrapped as standard DXT before Pfim decodes it. -->
-    <PackageReference Include="Pfim" Version="0.11.4" />
     <PackageReference Include="Serilog" Version="4.4.0" />
   </ItemGroup>
 

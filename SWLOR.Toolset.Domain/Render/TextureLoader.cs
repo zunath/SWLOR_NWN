@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.Buffers.Binary;
-using Pfim;
+using Nwn.Preview.Dds;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.NWN.Formats.Tga;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -43,15 +43,12 @@ namespace SWLOR.Toolset.Domain.Render
     /// Resolves and decodes the texture representations consumed by toolset previews.
     /// </summary>
     /// <remarks>
-    /// TGA decoding is delegated to the standalone formats library. Standard DDS is decoded by
-    /// Pfim; compact BioWare DDS is decoded directly from its 20-byte little-endian header and
-    /// DXT payload. PLT remains palette policy here rather than in the low-level PLT reader.
+    /// TGA decoding is delegated to the standalone formats library. Standard and compact DDS
+    /// decoding is delegated to the bounded shared reader; NWN's standard DDS row convention is
+    /// selected by this adapter. PLT remains palette policy here rather than in the low-level reader.
     /// </remarks>
     public static class TextureLoader
     {
-        private const int CompactDdsHeaderSize = 20;
-        private const int MaximumDimension = 16_384;
-        private const int MaximumPixels = 64_000_000;
         private const int MaximumCompressedBytes = 512 * 1024 * 1024;
 
         private static readonly string[] PaletteNames =
@@ -75,7 +72,8 @@ namespace SWLOR.Toolset.Domain.Render
         public static TextureImage? Load(
             ResourceIndex resourceIndex,
             string resRef,
-            IReadOnlyDictionary<int, int>? layerColorIndices = null)
+            IReadOnlyDictionary<int, int>? layerColorIndices = null,
+            DdsStoredRowOrder standardDdsRowOrder = DdsStoredRowOrder.BottomUp)
         {
             ArgumentNullException.ThrowIfNull(resourceIndex);
             if (string.IsNullOrWhiteSpace(resRef))
@@ -88,7 +86,7 @@ namespace SWLOR.Toolset.Domain.Render
             // parts in unrelated palette colours. Genuinely dyeable parts carry a PLT and no TGA,
             // which is how Aurora decides the same question.
             return LoadTga(resourceIndex, resRef) ??
-                   LoadDds(resourceIndex, resRef) ??
+                   LoadDds(resourceIndex, resRef, standardDdsRowOrder) ??
                    LoadPlt(resourceIndex, resRef, layerColorIndices);
         }
 
@@ -119,7 +117,10 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>
         /// Loads either a standard DDS stream or Aurora's compact 20-byte DDS representation.
         /// </summary>
-        public static TextureImage? LoadDds(ResourceIndex resourceIndex, string resRef)
+        public static TextureImage? LoadDds(
+            ResourceIndex resourceIndex,
+            string resRef,
+            DdsStoredRowOrder standardDdsRowOrder = DdsStoredRowOrder.BottomUp)
         {
             ArgumentNullException.ThrowIfNull(resourceIndex);
             if (!TryGetBytes(resourceIndex, resRef, "dds", out var bytes))
@@ -127,9 +128,20 @@ namespace SWLOR.Toolset.Domain.Render
 
             try
             {
-                return IsStandardDds(bytes)
-                    ? DecodeStandardDds(bytes)
-                    : DecodeCompactDds(bytes);
+                if (bytes.Length > MaximumCompressedBytes)
+                    throw new InvalidDataException("DDS resource exceeds the configured compressed-input limit.");
+
+                var isStandard = IsStandardDds(bytes);
+                var rowOrder = isStandard ? standardDdsRowOrder : DdsStoredRowOrder.FormatDefault;
+                var decoded = DdsDecoder.Decode(bytes, new DdsDecodeOptions { StoredRowOrder = rowOrder });
+                return new TextureImage
+                {
+                    Width = decoded.Width,
+                    Height = decoded.Height,
+                    Pixels = decoded.CopyRgbaBytes(),
+                    SourceFormat = TextureSourceFormat.Dds,
+                    AlphaMean = isStandard ? null : ReadCompactAlphaMean(bytes)
+                };
             }
             catch (Exception)
             {
@@ -246,296 +258,7 @@ namespace SWLOR.Toolset.Domain.Render
             bytes[2] == (byte)'S' &&
             bytes[3] == (byte)' ';
 
-        private static TextureImage DecodeStandardDds(byte[] bytes)
-        {
-            ValidateStandardDdsHeader(bytes);
-
-            using var stream = new MemoryStream(bytes, writable: false);
-            using var image = Pfimage.FromStream(stream);
-            ValidateDimensions(image.Width, image.Height);
-
-            var output = new byte[checked(image.Width * image.Height * 4)];
-            var sourcePixelBytes = image.Format switch
-            {
-                ImageFormat.Rgba32 => 4,
-                ImageFormat.Rgb24 => 3,
-                ImageFormat.Rgb8 => 1,
-                _ => throw new InvalidDataException($"Unsupported decoded DDS pixel format {image.Format}.")
-            };
-
-            var stride = Math.Abs(image.Stride);
-            if (stride < checked(image.Width * sourcePixelBytes) ||
-                image.Data.Length < checked(stride * image.Height))
-            {
-                throw new InvalidDataException("Decoded DDS rows do not fit the returned pixel buffer.");
-            }
-
-            for (var y = 0; y < image.Height; y++)
-            {
-                // Pfim exposes positive-stride DDS rows in file order. NWN artwork was authored
-                // for the engine's bottom-up UV convention, so the toolset's consumer-facing
-                // orientation reverses those rows. Negative-stride output is already reversed.
-                var sourceY = image.Stride > 0 ? image.Height - 1 - y : y;
-                var sourceRow = sourceY * stride;
-                var targetRow = y * image.Width * 4;
-                for (var x = 0; x < image.Width; x++)
-                {
-                    var source = sourceRow + x * sourcePixelBytes;
-                    var target = targetRow + x * 4;
-                    if (sourcePixelBytes == 1)
-                    {
-                        output[target] = image.Data[source];
-                        output[target + 1] = image.Data[source];
-                        output[target + 2] = image.Data[source];
-                        output[target + 3] = 255;
-                    }
-                    else
-                    {
-                        // Pfim exposes DDS color bytes blue-first.
-                        output[target] = image.Data[source + 2];
-                        output[target + 1] = image.Data[source + 1];
-                        output[target + 2] = image.Data[source];
-                        output[target + 3] = sourcePixelBytes == 4 ? image.Data[source + 3] : (byte)255;
-                    }
-                }
-            }
-
-            return new TextureImage
-            {
-                Width = image.Width,
-                Height = image.Height,
-                Pixels = output,
-                SourceFormat = TextureSourceFormat.Dds
-            };
-        }
-
-        private static void ValidateStandardDdsHeader(byte[] bytes)
-        {
-            const int standardHeaderSize = 128;
-            if (bytes.Length < standardHeaderSize)
-                throw new InvalidDataException("Standard DDS header is truncated.");
-            if (!IsStandardDds(bytes))
-                throw new InvalidDataException("Standard DDS signature is invalid.");
-            if (BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(4, 4)) != 124)
-                throw new InvalidDataException("Standard DDS header size must be 124 bytes.");
-            if (BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(76, 4)) != 32)
-                throw new InvalidDataException("Standard DDS pixel-format header size must be 32 bytes.");
-
-            var rawHeight = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(12, 4));
-            var rawWidth = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(16, 4));
-            if (rawWidth > int.MaxValue || rawHeight > int.MaxValue)
-                throw new InvalidDataException($"Standard DDS dimensions {rawWidth}x{rawHeight} are invalid.");
-
-            // This check deliberately precedes Pfim.FromStream. A hostile header must not be allowed
-            // to make the third-party decoder size or allocate a surface outside project limits.
-            ValidateDimensions((int)rawWidth, (int)rawHeight);
-            _ = checked((int)rawWidth * (int)rawHeight * 4);
-        }
-
-        private static TextureImage DecodeCompactDds(byte[] bytes)
-        {
-            if (bytes.Length < CompactDdsHeaderSize)
-                throw new InvalidDataException("Compact DDS header is truncated.");
-
-            var width = BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(0, 4));
-            var height = BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(4, 4));
-            var channels = BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(8, 4));
-            var linearSize = BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(12, 4));
-            var alphaMean = BitConverter.Int32BitsToSingle(
-                BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(16, 4)));
-
-            ValidateDimensions(width, height);
-            if (channels is not (3 or 4))
-                throw new InvalidDataException($"Compact DDS channel count {channels} is unsupported.");
-            if (!float.IsFinite(alphaMean))
-                throw new InvalidDataException("Compact DDS alpha mean is not finite.");
-            if (linearSize <= 0 || linearSize > MaximumCompressedBytes ||
-                linearSize > bytes.Length - CompactDdsHeaderSize)
-            {
-                throw new InvalidDataException("Compact DDS linear size is outside the payload.");
-            }
-
-            var blockBytes = channels == 3 ? 8 : 16;
-            var blockColumns = (width + 3) / 4;
-            var blockRows = (height + 3) / 4;
-            var required = checked(blockColumns * blockRows * blockBytes);
-            if (linearSize < required)
-                throw new InvalidDataException("Compact DDS payload is shorter than its top mip surface.");
-
-            var output = new byte[checked(width * height * 4)];
-            var payload = bytes.AsSpan(CompactDdsHeaderSize, linearSize);
-            for (var blockY = 0; blockY < blockRows; blockY++)
-            {
-                for (var blockX = 0; blockX < blockColumns; blockX++)
-                {
-                    var blockOffset = (blockY * blockColumns + blockX) * blockBytes;
-                    if (channels == 3)
-                        DecodeDxt1Block(payload.Slice(blockOffset, 8), output, width, height, blockX, blockY);
-                    else
-                        DecodeDxt5Block(payload.Slice(blockOffset, 16), output, width, height, blockX, blockY);
-                }
-            }
-
-            return new TextureImage
-            {
-                Width = width,
-                Height = height,
-                Pixels = output,
-                SourceFormat = TextureSourceFormat.Dds,
-                AlphaMean = alphaMean
-            };
-        }
-
-        private static void DecodeDxt1Block(
-            ReadOnlySpan<byte> block,
-            byte[] output,
-            int width,
-            int height,
-            int blockX,
-            int blockY)
-        {
-            var color0 = BinaryPrimitives.ReadUInt16LittleEndian(block.Slice(0, 2));
-            var color1 = BinaryPrimitives.ReadUInt16LittleEndian(block.Slice(2, 2));
-            Span<Rgba> colors = stackalloc Rgba[4];
-            colors[0] = Expand565(color0);
-            colors[1] = Expand565(color1);
-            if (color0 > color1)
-            {
-                colors[2] = Interpolate(colors[0], colors[1], 2, 1, 3);
-                colors[3] = Interpolate(colors[0], colors[1], 1, 2, 3);
-            }
-            else
-            {
-                colors[2] = Interpolate(colors[0], colors[1], 1, 1, 2);
-                colors[3] = new Rgba(0, 0, 0, 0);
-            }
-
-            var indices = BinaryPrimitives.ReadUInt32LittleEndian(block.Slice(4, 4));
-            WriteColorBlock(
-                output,
-                width,
-                height,
-                blockX,
-                blockY,
-                colors,
-                indices,
-                alphaValues: default,
-                alphaIndices: 0);
-        }
-
-        private static void DecodeDxt5Block(
-            ReadOnlySpan<byte> block,
-            byte[] output,
-            int width,
-            int height,
-            int blockX,
-            int blockY)
-        {
-            Span<byte> alphas = stackalloc byte[8];
-            alphas[0] = block[0];
-            alphas[1] = block[1];
-            if (alphas[0] > alphas[1])
-            {
-                for (var index = 1; index <= 6; index++)
-                    alphas[index + 1] = (byte)(((7 - index) * alphas[0] + index * alphas[1]) / 7);
-            }
-            else
-            {
-                for (var index = 1; index <= 4; index++)
-                    alphas[index + 1] = (byte)(((5 - index) * alphas[0] + index * alphas[1]) / 5);
-                alphas[6] = 0;
-                alphas[7] = 255;
-            }
-
-            ulong alphaIndices = 0;
-            for (var index = 0; index < 6; index++)
-                alphaIndices |= (ulong)block[2 + index] << (index * 8);
-
-            var color0 = BinaryPrimitives.ReadUInt16LittleEndian(block.Slice(8, 2));
-            var color1 = BinaryPrimitives.ReadUInt16LittleEndian(block.Slice(10, 2));
-            Span<Rgba> colors = stackalloc Rgba[4];
-            colors[0] = Expand565(color0);
-            colors[1] = Expand565(color1);
-            colors[2] = Interpolate(colors[0], colors[1], 2, 1, 3);
-            colors[3] = Interpolate(colors[0], colors[1], 1, 2, 3);
-
-            var colorIndices = BinaryPrimitives.ReadUInt32LittleEndian(block.Slice(12, 4));
-            WriteColorBlock(
-                output,
-                width,
-                height,
-                blockX,
-                blockY,
-                colors,
-                colorIndices,
-                alphas,
-                alphaIndices);
-        }
-
-        private static void WriteColorBlock(
-            byte[] output,
-            int width,
-            int height,
-            int blockX,
-            int blockY,
-            ReadOnlySpan<Rgba> colors,
-            uint colorIndices,
-            ReadOnlySpan<byte> alphaValues,
-            ulong alphaIndices)
-        {
-            for (var pixel = 0; pixel < 16; pixel++)
-            {
-                var x = blockX * 4 + pixel % 4;
-                var y = blockY * 4 + pixel / 4;
-                if (x >= width || y >= height)
-                    continue;
-
-                var color = colors[(int)((colorIndices >> (pixel * 2)) & 0x3)];
-                var alpha = alphaValues.IsEmpty
-                    ? color.A
-                    : alphaValues[(int)((alphaIndices >> (pixel * 3)) & 0x7)];
-                // Decoded blocks arrive in file order (top-down). DecodeStandardDds reverses rows
-                // to match the toolset's bottom-up consumer convention, so this path must do the
-                // same per-pixel-row flip rather than a per-block-row one, since height % 4 may
-                // leave a partial bottom block.
-                var targetY = height - 1 - y;
-                var target = (targetY * width + x) * 4;
-                output[target] = color.R;
-                output[target + 1] = color.G;
-                output[target + 2] = color.B;
-                output[target + 3] = alpha;
-            }
-        }
-
-        private static Rgba Expand565(ushort value)
-        {
-            var red5 = (value >> 11) & 0x1F;
-            var green6 = (value >> 5) & 0x3F;
-            var blue5 = value & 0x1F;
-            return new Rgba(
-                (byte)((red5 << 3) | (red5 >> 2)),
-                (byte)((green6 << 2) | (green6 >> 4)),
-                (byte)((blue5 << 3) | (blue5 >> 2)),
-                255);
-        }
-
-        private static Rgba Interpolate(Rgba left, Rgba right, int leftWeight, int rightWeight, int divisor) =>
-            new(
-                (byte)((left.R * leftWeight + right.R * rightWeight) / divisor),
-                (byte)((left.G * leftWeight + right.G * rightWeight) / divisor),
-                (byte)((left.B * leftWeight + right.B * rightWeight) / divisor),
-                255);
-
-        private static void ValidateDimensions(int width, int height)
-        {
-            if (width <= 0 || height <= 0 || width > MaximumDimension || height > MaximumDimension)
-                throw new InvalidDataException($"Texture dimensions {width}x{height} are invalid.");
-
-            var pixels = checked((long)width * height);
-            if (pixels > MaximumPixels)
-                throw new InvalidDataException($"Texture pixel count {pixels:N0} exceeds {MaximumPixels:N0}.");
-        }
-
-        private readonly record struct Rgba(byte R, byte G, byte B, byte A);
+        private static float ReadCompactAlphaMean(byte[] bytes) =>
+            BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(16, 4)));
     }
 }

@@ -9,11 +9,9 @@ namespace SWLOR.Toolset.Tests
     /// Decoded textures come out with red in the red channel.
     /// </summary>
     /// <remarks>
-    /// Pfim's <c>ImageFormat</c> names describe the DDS pixel format rather than the byte order it
-    /// returns, and it hands back blue-first data. Getting that wrong exchanges red and blue, which is
-    /// invisible on the grey and desaturated artwork most of a tileset is made of and obvious on
-    /// anything with a hue - which is exactly how it survived: it was corrected only for BioWare's DDS
-    /// variant, and every standard DDS drew inside out.
+    /// DDS block and pixel formats encode channels independently of the canonical RGBA surface. The
+    /// shared decoder normalizes those channels; this corpus check keeps that contract observable with
+    /// red-dominant artwork instead of relying on grayscale samples.
     /// </remarks>
     public class TextureChannelOrderTests
     {

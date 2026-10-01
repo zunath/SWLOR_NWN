@@ -2276,6 +2276,46 @@ dotnet test $project --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false
 These checks qualify dependency selection and the selected consumer behavior.
 Full SWLOR desktop, appearance and native-runtime acceptance remain separate.
 
+## Shared DDS decoding - 2026-10-01 - SWLOR texture previews use the neutral decoder
+
+`TextureLoader` now delegates standard and compact DDS decoding to
+`Nwn.Preview.Dds.DdsDecoder`; the duplicate DXT decoder and Pfim dependency are
+removed. The adapter retains the 512 MiB compressed-input limit and compact
+BioWare alpha-mean metadata. Standard NWN DDS inputs explicitly use bottom-up
+stored rows to preserve SWLOR's existing orientation; compact BioWare inputs
+use the shared format default. Tint-mask and alpha-mask callers make the
+standard row convention explicit. TGA and PLT decoding and SWLOR palette policy
+remain unchanged.
+
+Package mode pins Formats `0.1.0-dev.17` and Preview `0.1.0-dev.14`; Authoring
+`0.1.0-dev.17` and Avalonia `0.1.0-dev.10` remain unchanged. The six Debug and
+Release consumer locks were regenerated. Package SHA256 values were checked
+against the local feed: Formats `F723CE378F1FED414BB8361736476981F549EDA66796FF45D01060DF79E286AC`,
+Preview `E19BA97F8928367951A48EAC99F00F1408C1A127DA5AE398A056BE3CC1CB86DD`,
+Authoring `807B2A82C9AC1EBF12BD62D28D68AD9F111EA1C8EFD397790A4554CC7EEAA968`,
+and Avalonia `4439E6E629D807EF8CE07339096AFA6E8C4575F0E7CD10F612AB3BAAFF8B1DDA`.
+Formats and Preview declare source commit
+`0f2b05dad98880e32769b1c8d8f668b555f4cfbc`; Authoring remains from
+`dc14a4d843c83dff9a7375d77778744b1981275d` and Avalonia from
+`308528a8a9a17287064ad1777a38d43dd637798c`.
+
+The native `sw_tint0/tm_e99bcc752e32b.dds` fixture (512x512 ATI2) is verified
+against its source SHA256
+`40f5b64a6c8b5e03fdf625cc4da881a1e30a34df84f2934ad1d545c7aea10e6e` and the
+independently derived canonical top-down RGBA SHA256
+`c3def9de95a0b41bc28765529d2299d03b387b4e0f98e73e33ee538a7a995541`. Tests
+also verify asymmetric row orientation, ATI2 channels (`B=0`, `A=255`), and
+the `pfh0_chest001` material/tint composition path. The selected package and
+explicit-source test runs each pass 50/50 with zero skips; Debug and Release
+locked restores pass, and the final package-mode Debug build has zero warnings
+and errors. Synthetic fixtures initially exposed missing declared compact DDS
+mip payloads and a reversed expected BC5 channel pair; the fixtures were
+corrected and both modes pass the same final suite.
+
+This qualifies SWLOR's shared decoder adapter and the selected native ATI2
+fixture. Full shader material interpretation, all native textures, equipped
+client appearance, and game-runtime behavior remain separate acceptance gates.
+
 ## Area editor - 2026-07-28 - Group previews show their footprint, and a paint stops building walls
 
 Two things reported from live use:

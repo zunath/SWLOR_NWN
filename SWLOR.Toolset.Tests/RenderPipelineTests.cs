@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using FluentAssertions;
 using Nwn.Formats.Mtr;
 using NUnit.Framework;
@@ -208,6 +209,61 @@ namespace SWLOR.Toolset.Tests
             image.Height.Should().Be(512);
             image.Pixels.Length.Should().Be(image.Width * image.Height * 4);
             image.SourceFormat.Should().Be(TextureSourceFormat.Dds);
+        }
+
+        [Test]
+        public void TextureLoader_LoadDds_ForNativeTintAti2MatchesIndependentCanonicalPixels()
+        {
+            var index = BuildHakOnlyIndex();
+            var identity = new ResourceIdentity(
+                "tm_e99bcc752e32b",
+                ResourceIdentity.TypeFromExtension("dds"));
+            index.TryLookup(identity, out var handle).Should().BeTrue(
+                "the explicit SWLOR_HAKS_ROOT fixture contains the pfa0 chest tint mask");
+            var source = handle.GetBytes();
+            Convert.ToHexStringLower(SHA256.HashData(source)).Should().Be(
+                "40f5b64a6c8b5e03fdf625cc4da881a1e30a34df84f2934ad1d545c7aea10e6e",
+                "the independent BC5 decode oracle is tied to this exact native resource");
+
+            var image = TextureLoader.LoadDds(
+                index,
+                "tm_e99bcc752e32b",
+                Nwn.Preview.Dds.DdsStoredRowOrder.BottomUp);
+
+            image.Should().NotBeNull();
+            image!.Width.Should().Be(512);
+            image.Height.Should().Be(512);
+            image.Pixels.Length.Should().Be(512 * 512 * 4);
+            Convert.ToHexStringLower(SHA256.HashData(image.Pixels)).Should().Be(
+                "c3def9de95a0b41bc28765529d2299d03b387b4e0f98e73e33ee538a7a995541",
+                "ATI2 RG must be decoded and standard NWN rows normalized bottom-up to top-down");
+            image.Pixels.Where((_, index) => index % 4 == 2).Should().OnlyContain(channel => channel == 0);
+            image.Pixels.Where((_, index) => index % 4 == 3).Should().OnlyContain(channel => channel == 255);
+        }
+
+        [Test]
+        public void TintMapTextureRenderer_ComposesNativeChestMaterialThroughSharedAti2Decoder()
+        {
+            var index = BuildHakOnlyIndex();
+            var material = MaterialResolver.TryParseMaterial(index, "pfh0_chest001");
+
+            material.Should().NotBeNull();
+            material!.RawShaderBindings.Should().ContainKey("customshaderFS").WhoseValue
+                .Should().Be("fs_plt_tinter");
+            MaterialResolver.GetTexture(material, 7).Should().Be("tm_e99bcc752e32b");
+
+            var image = TintMapTextureRenderer.Render(
+                index,
+                "pfh0_chest001",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>());
+
+            image.Should().NotBeNull("the native ATI2 mask and palette resolve through the SWLOR resource index");
+            image!.Width.Should().Be(512);
+            image.Height.Should().Be(512);
+            image.Pixels.Length.Should().Be(512 * 512 * 4);
+            image.Pixels.Where((_, offset) => offset % 4 == 3).Should().OnlyContain(alpha => alpha == 255);
         }
 
         [Test]

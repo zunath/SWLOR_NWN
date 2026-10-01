@@ -425,8 +425,8 @@
       },
       "Nwn.Formats": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.16",
-        "contentHash": "iPfI86R1y2HOximWyNHiH30Hqf01va+ZMTBttkIOxjJ3mePEdlTDabXvERpkBmu18oK5fyJLLmz4WiIQGUlj/g=="
+        "resolved": "0.1.0-dev.17",
+        "contentHash": "iQbXfbcTgC2W7/Ujj5ThwqOKjDJ3V3veyH+OZIkM47lErSBmm0k+IWu98e7Q35roYpqCeAXuk5zGmeNnqC7scA=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -438,21 +438,16 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.13",
-        "contentHash": "BvIWpLBk2XS6NnhUS1iE9zYVyDD6GdeSAi9LnIyZhwLGUAfvquMNPwnGCuDsRh4sKY3MbKQF/O5FRJHk+1MBTQ==",
+        "resolved": "0.1.0-dev.14",
+        "contentHash": "Ny2OEVoxcbemZ54V167Ris3WGpd/RRkCaUlJ/oHtUvXAtB4Rp+JOEpP00qzfqmwhfpfKl05Hp60t13UW5b77Iw==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.15"
+          "Nwn.Formats": "0.1.0-dev.17"
         }
       },
       "NWNX.NET": {
         "type": "Transitive",
         "resolved": "1.0.3",
         "contentHash": "9jorNV7Afpbt3h16Z6IJjXysaD3F81rcZycEwRlgTe2f0Cz6VK7IBbT2iI+FhpQzR/cCeTdug9K+nOD+QfUrXQ=="
-      },
-      "Pfim": {
-        "type": "Transitive",
-        "resolved": "0.11.4",
-        "contentHash": "B3KDFyxY1NTqbeqGEaOM9uE+G71GG2TxWqVSs57e1pWYPf2vNLMIxk+x55MXdkon0iGeaekolFTlLS2CkgktYg=="
       },
       "RESPite": {
         "type": "Transitive",
@@ -560,8 +555,8 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.16, )",
-          "Pfim": "[0.11.4, )",
+          "Nwn.Formats": "[0.1.0-dev.17, )",
+          "Nwn.Preview": "[0.1.0-dev.14, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

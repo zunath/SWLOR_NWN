@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using Nwn.Preview.Dds;
 using Nwn.Formats.Mtr;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -40,14 +41,20 @@ namespace SWLOR.Toolset.Domain.Render
             if (string.IsNullOrWhiteSpace(tintMapName) || string.IsNullOrWhiteSpace(paletteName))
                 return null;
 
-            var tintMap = TextureLoader.Load(resourceIndex, tintMapName);
+            var tintMap = TextureLoader.Load(
+                resourceIndex,
+                tintMapName,
+                standardDdsRowOrder: DdsStoredRowOrder.BottomUp);
             var palette = TextureLoader.Load(resourceIndex, paletteName);
             if (tintMap == null || palette == null || palette.Width <= 0 || palette.Height <= 0)
                 return null;
 
             var alphaSource = MaterialResolver.GetAlphaSource(material);
             var alphaTexture = alphaSource is { } source
-                ? TextureLoader.Load(resourceIndex, source.TextureName)
+                ? TextureLoader.Load(
+                    resourceIndex,
+                    source.TextureName,
+                    standardDdsRowOrder: DdsStoredRowOrder.BottomUp)
                 : null;
 
             var output = new byte[checked(tintMap.Width * tintMap.Height * 4)];

@@ -71,9 +71,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void StandardDdsPositiveStrideIsReversedForTheNwnUvContract()
         {
-            // Pfim exposes these positive-stride rows in file order. The toolset reverses them to
-            // match the orientation NWN artists authored against. Distinct block rows make an
-            // accidental no-flip implementation visible: consumer-facing row zero must be green.
+            // NWN's standard DDS rows are bottom-up for this consumer. Distinct block rows make an
+            // accidental default/top-down selection visible: consumer-facing row zero must be green.
             var payload = RedDxt1Block().Concat(GreenDxt1Block()).ToArray();
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, "standardrows.dds"),
@@ -84,6 +83,25 @@ namespace SWLOR.Toolset.Tests
             image.Should().NotBeNull();
             Pixel(image!, 0, 0).Should().Be((0, 255, 0, 255));
             Pixel(image, 0, 7).Should().Be((255, 0, 0, 255));
+        }
+
+        [Test]
+        public void StandardAti2DecodesShadeAndLayerChannelsAndReversesRowsPerTexel()
+        {
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "mask.dds"),
+                StandardAti2(Bc5RowPatternBlock()));
+
+            var image = TextureLoader.LoadDds(Index(), "mask");
+
+            image.Should().NotBeNull();
+            image!.Width.Should().Be(4);
+            image.Height.Should().Be(4);
+            image.AlphaMean.Should().BeNull();
+            Pixel(image, 0, 0).Should().Be((182, 148, 0, 255),
+                "the first consumer row comes from the final stored row and ATI2 is R=shade/G=layer");
+            Pixel(image, 0, 3).Should().Be((255, 200, 0, 255),
+                "the final consumer row comes from the first stored row");
         }
 
         [Test]
@@ -131,7 +149,7 @@ namespace SWLOR.Toolset.Tests
 
         [TestCase(16_385, 1)]
         [TestCase(16_000, 16_000)]
-        public void OversizedStandardDdsIsRejectedBeforePfimSurfaceAllocation(int width, int height)
+        public void OversizedStandardDdsIsRejectedBeforeSurfaceAllocation(int width, int height)
         {
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, "oversized.dds"),
@@ -146,7 +164,7 @@ namespace SWLOR.Toolset.Tests
             image.Should().BeNull();
             allocated.Should().BeLessThan(
                 1_000_000,
-                "the project dimension and pixel caps run before Pfim can size a decoded surface");
+                "the configured dimension and pixel caps reject the header before surface allocation");
         }
 
         [Test]
@@ -1028,15 +1046,28 @@ namespace SWLOR.Toolset.Tests
             float alphaMean,
             byte[] payload)
         {
-            var bytes = new byte[20 + payload.Length];
+            var topMipBytes = checked(((width + 3) / 4) * ((height + 3) / 4) * (channels == 3 ? 8 : 16));
+            var mipBytes = topMipBytes;
+            var mipWidth = width;
+            var mipHeight = height;
+            while (mipWidth > 1 || mipHeight > 1)
+            {
+                mipWidth = Math.Max(1, mipWidth / 2);
+                mipHeight = Math.Max(1, mipHeight / 2);
+                mipBytes = checked(mipBytes + ((mipWidth + 3) / 4) * ((mipHeight + 3) / 4) * (channels == 3 ? 8 : 16));
+            }
+
+            var completePayload = new byte[mipBytes];
+            payload.CopyTo(completePayload, 0);
+            var bytes = new byte[20 + completePayload.Length];
             BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(0, 4), width);
             BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(4, 4), height);
             BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(8, 4), channels);
-            BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(12, 4), payload.Length);
+            BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(12, 4), topMipBytes);
             BinaryPrimitives.WriteInt32LittleEndian(
                 bytes.AsSpan(16, 4),
                 BitConverter.SingleToInt32Bits(alphaMean));
-            payload.CopyTo(bytes, 20);
+            completePayload.CopyTo(bytes, 20);
             return bytes;
         }
 
@@ -1055,6 +1086,45 @@ namespace SWLOR.Toolset.Tests
             BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(108, 4), 0x1000);
             payload.CopyTo(bytes, 128);
             return bytes;
+        }
+
+        private static byte[] StandardAti2(byte[] payload, int width = 4, int height = 4)
+        {
+            var bytes = new byte[128 + payload.Length];
+            "DDS "u8.CopyTo(bytes);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(4, 4), 124);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(8, 4), 0x000A1007);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12, 4), (uint)height);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16, 4), (uint)width);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(20, 4), (uint)payload.Length);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(28, 4), 1);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(76, 4), 32);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(80, 4), 4);
+            "ATI2"u8.CopyTo(bytes.AsSpan(84, 4));
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(108, 4), 0x1000);
+            payload.CopyTo(bytes, 128);
+            return bytes;
+        }
+
+        private static byte[] Bc5RowPatternBlock()
+        {
+            var block = new byte[16];
+            block[0] = 255;
+            block[1] = 0;
+            block[8] = 200;
+            block[9] = 20;
+            ulong indices = 0;
+            for (var pixel = 0; pixel < 16; pixel++)
+            {
+                var rowIndex = (ulong)(pixel / 4);
+                indices |= rowIndex << (pixel * 3);
+            }
+
+            Span<byte> packed = stackalloc byte[sizeof(ulong)];
+            BinaryPrimitives.WriteUInt64LittleEndian(packed, indices);
+            packed[..6].CopyTo(block.AsSpan(2, 6));
+            packed[..6].CopyTo(block.AsSpan(10, 6));
+            return block;
         }
 
         private static byte[] SolidColorTga(byte r, byte g, byte b)

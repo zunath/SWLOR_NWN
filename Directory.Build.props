@@ -1,5 +1,5 @@
 <Project>
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RestoreLockedMode Condition="'$(NwnToolsetSourceRoot)' == '' And '$(RestoreLockedMode)' == ''">true</RestoreLockedMode>
     <NuGetLockFilePath Condition="'$(NwnToolsetSourceRoot)' == '' And '$(Configuration)' != '' And '$(Configuration)' != 'Debug'">$(MSBuildProjectDirectory)/packages.$(Configuration).lock.json</NuGetLockFilePath>

@@ -54,9 +54,10 @@ public sealed class NativeModelPreviewWindow : Window
             var data = await Task.Run(() => _adapter.Load(_resRefBox.Text ?? string.Empty));
             _viewport.Textures = data.Textures;
             _viewport.Scene = data.Scene;
-            _status.Text = data.MissingTextures.Count == 0
-                ? Path.GetFileName(data.ModelSourcePath)
-                : $"{Path.GetFileName(data.ModelSourcePath)} · missing DDS: {string.Join(", ", data.MissingTextures)}";
+            var details = new List<string> { "Unlit", Path.GetFileName(data.ModelSourcePath) };
+            if (data.MissingTextures.Count > 0) details.Add($"missing maps: {string.Join(", ", data.MissingTextures)}");
+            if (data.UnsupportedMaterials.Count > 0) details.Add($"partial materials: {string.Join(", ", data.UnsupportedMaterials)}");
+            _status.Text = string.Join(" · ", details);
         }
         catch (Exception exception) when (exception is FormatException or IOException or ArgumentException or NotSupportedException)
         {

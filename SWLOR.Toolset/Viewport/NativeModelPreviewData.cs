@@ -8,10 +8,12 @@ public sealed class NativeModelPreviewData(
     PreparedScene scene,
     IReadOnlyDictionary<string, RgbaImage> textures,
     IReadOnlyList<string> missingTextures,
-    string modelSourcePath)
+    string modelSourcePath,
+    IReadOnlyList<string>? unsupportedMaterials = null)
 {
     public PreparedScene Scene { get; } = scene;
     public IReadOnlyDictionary<string, RgbaImage> Textures { get; } = textures;
     public IReadOnlyList<string> MissingTextures { get; } = missingTextures;
     public string ModelSourcePath { get; } = modelSourcePath;
+    public IReadOnlyList<string> UnsupportedMaterials { get; } = unsupportedMaterials ?? Array.Empty<string>();
 }

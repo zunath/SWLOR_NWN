@@ -2276,6 +2276,53 @@ dotnet test $project --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false
 These checks qualify dependency selection and the selected consumer behavior.
 Full SWLOR desktop, appearance and native-runtime acceptance remain separate.
 
+## Shared material viewport - 2026-10-01 - Actual SWLOR material adapter and GPU evidence
+
+The native-resource window now resolves explicit/bitmap-named MTR bindings and
+uses SWLOR's tint/palette policy before falling back to diffuse maps. It supports
+ASCII and compiled geometry, preserves authored TGA precedence and explicitly
+normalizes NWN DDS rows. Material failures stay visible as partial-material
+diagnostics. The window labels the result unlit; it does not evaluate skinning,
+native lighting or equipped animation.
+
+The five adapter cases cover the actual `pfa0_chest001` / `pfh0_chest001` tint
+path, asymmetric DDS row orientation, changed-byte cache invalidation, explicit
+material precedence, TGA precedence and the `NULL` material sentinel. An owned
+separate real desktop fixture is referenced by the test project and registered
+in `SWLOR.Game.Server.sln`. It requires explicit `SWLOR_HAKS_ROOT`, has bounded
+process/frame deadlines and retains its framebuffer image. No application
+settings, module sources, active client or services are changed by the fixture.
+
+Both package and explicit-source rebuilds pass all six adapter/GPU checks with
+zero skipped. TRX files: `SWLOR.Toolset.Tests/TestResults/swlor-native-material-package-gpu.trx`
+and `swlor-native-material-source-gpu.trx`. The source path selects neutral commit
+`f85cb5b25df8011f045cfcd336bcf7c836ec87fa`; package pins remain Formats dev.17,
+Authoring dev.17, Preview dev.14 and Avalonia dev.10. The OpenGLES 3.0 frame is
+1200×900 with 145,297 colored pixels and one geometry/one texture upload reused
+across two frames. Package/source PNGs have identical SHA-256:
+`dbbedcdb256481e63c1eba4d8c6e075bcfdfa8c1c4946938536627c1ec522cc2`.
+The package image was visually inspected. The native renderer's coordinates and
+shared texture orientation are measured here, not inferred from compilation.
+
+The new fixture adds Debug/Release locks (eight consumer locks total). The seven
+existing Debug/Release locks plus the initial fixture Debug lock are unchanged
+across source restore/build/test. Release regeneration and normal locked Debug
+restore pass. Rebuilding the game reference graph reports eight existing API/server
+warnings and zero errors; no warnings are attributed to this change. An initial
+native fixture omitted the separate material/palette resource layers and failed;
+the final fixture selects all four layers explicitly. Earlier failed TRX is retained.
+
+Example selected run (add `-p:NwnToolsetSourceRoot=<shared checkout>` after the
+matching source restore to test that mode):
+
+```powershell
+$env:SWLOR_HAKS_ROOT = 'C:/Projects/SWLOR_NWN/SWLOR_Haks'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:UsedAvaloniaProducts= -p:NuGetAudit=false --filter 'FullyQualifiedName~NativeModelPreviewAdapterTests|FullyQualifiedName~NativeMaterialViewportTests' --blame-hang-timeout 60s
+```
+
+Native item editing/save/undo/reopen, six-fit assembly and official-client
+appearance remain wider acceptance work. This fixture changes no engine behavior.
+
 ## Shared DDS decoding - 2026-10-01 - SWLOR texture previews use the neutral decoder
 
 `TextureLoader` now delegates standard and compact DDS decoding to

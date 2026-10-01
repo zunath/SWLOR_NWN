@@ -38,6 +38,7 @@
          against a real file rather than inferred from the serializer's behaviour; nothing here
          constructs a control, so no Avalonia runtime is needed. -->
     <ProjectReference Include="..\SWLOR.Toolset\SWLOR.Toolset.csproj" />
+    <ProjectReference Include="../tests/SWLOR.Toolset.PreviewRender/SWLOR.Toolset.PreviewRender.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

@@ -117,6 +117,26 @@ namespace SWLOR.Toolset.Shell
         private bool _isRescanningAfterWatcherOverflow;
         private bool _rescanRequestedWhileRunning;
 
+        /// <summary>Opens the native rigid-model inspection window over the active game resource layers.</summary>
+        [RelayCommand]
+        private async Task NativeModelPreview()
+        {
+            if (_resourceIndex is null)
+            {
+                StatusText = "Native Model Preview needs an initialized resource index.";
+                return;
+            }
+
+            try
+            {
+                await Viewport.NativeModelPreviewWindow.ShowAsync(_resourceIndex).ConfigureAwait(true);
+            }
+            catch (Exception exception) when (exception is InvalidOperationException or IOException)
+            {
+                StatusText = $"Native Model Preview could not open: {exception.Message}";
+            }
+        }
+
         public ShellViewModel(
             ToolsetSettings settings,
             WorkspaceContext workspaceContext,

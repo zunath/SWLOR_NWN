@@ -363,7 +363,7 @@ namespace SWLOR.Toolset.Tests
                 "Viewport",
                 "GlAreaControl.cs"));
 
-            source.Should().Contain("Dictionary<string, MtrMaterial?> _parsedMaterialCache");
+            source.Should().Contain("Dictionary<string, MtrDocument?> _parsedMaterialCache");
             source.Should().Contain("_parsedMaterialCache.TryGetValue(surfaceName, out var cached)",
                 "repeated meshes must not reload and parse the same MTR every frame");
             source.Should().Contain("_parsedMaterialCache[surfaceName] = material",

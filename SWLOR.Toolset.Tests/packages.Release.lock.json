@@ -438,10 +438,10 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.16",
-        "contentHash": "TGAbdQBvciFcwtNoPvpRY99JMoyUSm4lbi1mVLTyEHd/pVDry7eVCGKL8q5ADBEfhW/2yX2FjEWHKOY1CHCXlw==",
+        "resolved": "0.1.0-dev.17",
+        "contentHash": "eSCMlDjNKRUsgFlFZcBixFv/46nzzSrrIJa3XqC5eN/hmCIAEaj4mcnrsoflD/HseL36Lr9XevKQeqJl2k4EQg==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.14"
+          "Nwn.Formats": "0.1.0-dev.15"
         }
       },
       "NWN.Core": {
@@ -454,8 +454,8 @@
       },
       "Nwn.Formats": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.14",
-        "contentHash": "vXWt/BDBtoMQpyIXEuHzwJVT3rjpxLCK1FC51Rz57PwxlTGEYu6BJAkYLZmmTCeD/oBjhYarerfhuy3+ZmQrnA=="
+        "resolved": "0.1.0-dev.16",
+        "contentHash": "iPfI86R1y2HOximWyNHiH30Hqf01va+ZMTBttkIOxjJ3mePEdlTDabXvERpkBmu18oK5fyJLLmz4WiIQGUlj/g=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -467,19 +467,19 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.12",
-        "contentHash": "woypdUqwNH0LjMxHEjSVVDnJjew8cDcfYDOqk+T2JEC/1EHUOgyy8GWqDUbIQFOICJmUBw6qW+baGsPy3UJ9OQ==",
+        "resolved": "0.1.0-dev.13",
+        "contentHash": "BvIWpLBk2XS6NnhUS1iE9zYVyDD6GdeSAi9LnIyZhwLGUAfvquMNPwnGCuDsRh4sKY3MbKQF/O5FRJHk+1MBTQ==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.14"
+          "Nwn.Formats": "0.1.0-dev.15"
         }
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.8",
-        "contentHash": "earFxZaXfxbHRu6ddwXgaNcOxxeEhXXXkGzFJb2ZADQ8Aw2CpVmPh9gim+1lCXyypmLS0VsS9jme0fbGdrV7Dw==",
+        "resolved": "0.1.0-dev.10",
+        "contentHash": "mTzVkbAIF/Ie0HChg7GFNKPrKP6oQlEbAYNwjzl6SitulCRXM8GZoWZ3oG4vMiJol5hzo7C8sZyh3+b1jaPqRA==",
         "dependencies": {
           "Avalonia": "11.3.17",
-          "Nwn.Preview": "0.1.0-dev.12",
+          "Nwn.Preview": "0.1.0-dev.13",
           "Silk.NET.OpenGL": "2.23.0"
         }
       },
@@ -672,8 +672,8 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-dev.16, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-dev.8, )",
+          "Nwn.Authoring": "[0.1.0-dev.17, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-dev.10, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
@@ -683,7 +683,7 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.14, )",
+          "Nwn.Formats": "[0.1.0-dev.16, )",
           "Pfim": "[0.11.4, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",

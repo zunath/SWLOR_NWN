@@ -408,8 +408,8 @@ namespace SWLOR.Toolset.Tests
                     : mesh.MaterialName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Where(materialName => MaterialResolver.TryParseMaterial(_resources, materialName) is { } material &&
-                    material.CustomShaders.Values.Any(shader =>
-                        shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)))
+                    material.RawShaderBindings.Values.Any(shader =>
+                        shader?.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase) == true))
                 .ToList();
             tintMaterials.Should().Contain("pmh0_chest027",
                 "modular body parts with stale bitmaps must retain their explicit same-name tint material");
@@ -464,23 +464,24 @@ namespace SWLOR.Toolset.Tests
                     : mesh.MaterialName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Select(name => (Name: name, Material: MaterialResolver.TryParseMaterial(resources, name)))
-                .Where(entry => entry.Material?.CustomShaders.Values.Any(shader =>
-                    shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)) == true)
+                .Where(entry => entry.Material?.RawShaderBindings.Values.Any(shader =>
+                    shader?.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase) == true) == true)
                 .ToList();
             tintMaterials.Select(entry => entry.Name).Should().Contain("pmh0_h_lh_83916d",
                 "the left hand's isolated material profile must retain its collision-proof tint mask");
             foreach (var (name, material) in tintMaterials)
             {
-                var tintTexture = material!.GetTexture(7);
+                var parsedMaterial = material!;
+                var tintTexture = MaterialResolver.GetTexture(parsedMaterial, 7);
                 tintTexture.Should().MatchRegex("^tm_[0-9a-f]{13}$",
                     $"{name} must bind a collision-proof internal tint resource");
                 var tintImage = TextureLoader.Load(resources, tintTexture);
                 tintImage.Should().NotBeNull($"installed HAK resources must resolve {name}'s tint mask");
                 var expectedWidth = int.Parse(
-                    material.Parameters["tintMapWidth"].Split('.')[0],
+                    parsedMaterial.Parameters["tintMapWidth"].RawValues[0].Split('.')[0],
                     System.Globalization.CultureInfo.InvariantCulture);
                 var expectedHeight = int.Parse(
-                    material.Parameters["tintMapHeight"].Split('.')[0],
+                    parsedMaterial.Parameters["tintMapHeight"].RawValues[0].Split('.')[0],
                     System.Globalization.CultureInfo.InvariantCulture);
                 tintImage!.Width.Should().Be(expectedWidth,
                     $"{name} must not resolve a same-name legacy DDS with different dimensions");

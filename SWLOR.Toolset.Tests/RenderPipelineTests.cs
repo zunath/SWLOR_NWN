@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Nwn.Formats.Mtr;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -39,7 +40,9 @@ namespace SWLOR.Toolset.Tests
 
         private static string HakBuilderConfigPath => Path.Combine(RepoRoot, "Build", "hakbuilder.json");
 
-        private static string HaksDirectory => Path.Combine(RepoRoot, "SWLOR_Haks");
+        private static string HaksDirectory =>
+            Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT") ??
+            Path.Combine(RepoRoot, "SWLOR_Haks");
 
         private static ResourceIndex BuildHakOnlyIndex() =>
             ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
@@ -298,7 +301,7 @@ namespace SWLOR.Toolset.Tests
             var material = MaterialResolver.Parse(sample);
 
             material.RenderHint.Should().Be("NormalAndSpecMapped");
-            material.GetTexture(0).Should().Be("hutt_hbody");
+            MaterialResolver.GetTexture(material, 0).Should().Be("hutt_hbody");
         }
 
         [Test]
@@ -316,15 +319,16 @@ namespace SWLOR.Toolset.Tests
             var material = MaterialResolver.Parse(sample);
 
             material.RenderHint.Should().Be("Legacy");
-            material.GetTexture(0).Should().Be("base_diffuse");
-            material.GetTexture(1).Should().Be("base_normal");
-            material.CustomShaders.Should().ContainKey("customshaderVSH").WhoseValue.Should().Be("my_vertex_shader");
-            material.CustomShaders.Should().ContainKey("customshaderPSH").WhoseValue.Should().Be("my_pixel_shader");
-            material.Parameters.Should().ContainKey("useTexture1Alpha").WhoseValue.Should().Be("1.0");
-            material.GetAlphaTexture().Should().Be("base_normal");
-            material.GetAlphaSource().Should().Be(new MtrAlphaSource("base_normal", UsesRedChannel: false));
-            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.2f);
-            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(51);
+            MaterialResolver.GetTexture(material, 0).Should().Be("base_diffuse");
+            MaterialResolver.GetTexture(material, 1).Should().Be("base_normal");
+            material.RawShaderBindings.Should().ContainKey("customshaderVSH").WhoseValue.Should().Be("my_vertex_shader");
+            material.RawShaderBindings.Should().ContainKey("customshaderPSH").WhoseValue.Should().Be("my_pixel_shader");
+            material.Parameters["useTexture1Alpha"].TypeName.Should().Be("float");
+            material.Parameters["useTexture1Alpha"].RawValues.Should().Equal("1.0");
+            MaterialResolver.GetAlphaSource(material).Should().Be(new MtrAlphaSource("base_normal", UsesRedChannel: false));
+            MaterialResolver.GetAlphaSource(material)!.Value.Cutoff.Should().Be(0.2f);
+            MaterialResolver.GetAlphaSource(material)!.Value.ByteCutoff.Should().Be(51);
+            material.UnrecognizedDirectives.Should().ContainSingle(item => item.Text.Contains("someunknownparam"));
         }
 
         [Test]
@@ -336,9 +340,9 @@ namespace SWLOR.Toolset.Tests
 
             var material = MaterialResolver.Parse(sample);
 
-            material.GetAlphaSource().Should().Be(new MtrAlphaSource("cutout_mask", UsesRedChannel: true));
-            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.3f);
-            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(77);
+            MaterialResolver.GetAlphaSource(material).Should().Be(new MtrAlphaSource("cutout_mask", UsesRedChannel: true));
+            MaterialResolver.GetAlphaSource(material)!.Value.Cutoff.Should().Be(0.3f);
+            MaterialResolver.GetAlphaSource(material)!.Value.ByteCutoff.Should().Be(77);
         }
 
         [Test]
@@ -355,7 +359,7 @@ namespace SWLOR.Toolset.Tests
             var material = MaterialResolver.Parse(File.ReadAllText(path!));
 
             material.RenderHint.Should().Be("NormalAndSpecMapped");
-            material.GetTexture(0).Should().Be("hutt_hbody");
+            MaterialResolver.GetTexture(material, 0).Should().Be("hutt_hbody");
         }
 
         [Test]

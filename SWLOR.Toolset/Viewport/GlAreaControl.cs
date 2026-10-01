@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
+using Nwn.Formats.Mtr;
 using Serilog;
 using Silk.NET.OpenGL;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -522,7 +523,7 @@ void main()
         // MTR parsing reads and decodes the resource. Keep both successful parses and misses out of
         // the per-mesh draw path; invalidating game resources clears this together with the GPU
         // material cache so a changed HAK can be reparsed.
-        private readonly Dictionary<string, MtrMaterial?> _parsedMaterialCache =
+        private readonly Dictionary<string, MtrDocument?> _parsedMaterialCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         private int _gameResourceInvalidationRequested;
@@ -5262,7 +5263,7 @@ void main()
             var surfaceName = hasMaterial
                 ? materialName!
                 : rawTextureName;
-            MtrMaterial? parsedMaterial = null;
+            MtrDocument? parsedMaterial = null;
             if (hasMaterial)
             {
                 parsedMaterial = TryParseMaterial(surfaceName);
@@ -5307,7 +5308,7 @@ void main()
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
             var isTintMap = IsTintMapMaterial(parsedMaterial);
-            var alphaSource = isTintMap ? parsedMaterial?.GetAlphaSource() : null;
+            var alphaSource = isTintMap ? MaterialResolver.GetAlphaSource(parsedMaterial) : null;
             var material = cached.TexId == 0
                 ? new MeshMaterial(0, 0f, TxiBlendMode.None, 0, 0, 0, 0, 0, 0, 0, false, 0f)
                 : new MeshMaterial(
@@ -5323,10 +5324,10 @@ void main()
                               TextureRenderPolicy.StandaloneEnvironmentMap
                             : cached.EnvironmentMapTexture),
                     isTintMap
-                        ? ResolveMapTexture(parsedMaterial!.GetTexture(7))
+                        ? ResolveMapTexture(MaterialResolver.GetTexture(parsedMaterial, 7))
                         : 0,
                     isTintMap
-                        ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
+                        ? ResolveMapTexture(MaterialResolver.GetTexture(parsedMaterial, 10))
                         : 0,
                     ResolveTintAlphaTexture(parsedMaterial),
                     alphaSource?.UsesRedChannel == true,
@@ -5336,12 +5337,12 @@ void main()
             return material;
         }
 
-        private MtrMaterial? TryParseMaterial(string surfaceName)
+        private MtrDocument? TryParseMaterial(string surfaceName)
         {
             if (_parsedMaterialCache.TryGetValue(surfaceName, out var cached))
                 return cached;
 
-            MtrMaterial? material;
+            MtrDocument? material;
             try
             {
                 material = MaterialResolver.TryParseMaterial(ResourceIndex!, surfaceName);
@@ -5355,17 +5356,17 @@ void main()
             return material;
         }
 
-        private static bool IsTintMapMaterial(MtrMaterial? material)
+        private static bool IsTintMapMaterial(MtrDocument? material)
         {
             return TintMapTextureRenderer.IsTintMapMaterial(material);
         }
 
-        private uint ResolveTintAlphaTexture(MtrMaterial? material)
+        private uint ResolveTintAlphaTexture(MtrDocument? material)
         {
             if (!IsTintMapMaterial(material))
                 return 0;
 
-            return ResolveMapTexture(material!.GetAlphaSource()?.TextureName);
+            return ResolveMapTexture(MaterialResolver.GetAlphaSource(material)?.TextureName);
         }
 
         private void BindTintMapState(

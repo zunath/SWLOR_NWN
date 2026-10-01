@@ -9,6 +9,49 @@ orchestration protocol, ground rules, corrected format specs) lives in-repo at
 `SWLOR.Toolset\PLAN.md`. One entry per work package; update the status line in place and
 append details as work happens. Statuses: `pending | in-progress | done | blocked`.
 
+## Neutral material-reader adoption — done — 2026-10-01
+- `SWLOR.Toolset.Domain.Render.MaterialResolver` now adapts the shared
+  `Nwn.Formats.Mtr.MtrDocument`/`MtrReader` rather than maintaining a second MTR grammar.
+  SWLOR retains its tint alpha-channel/cutoff policy and resource-resolution behavior; raw
+  shader bindings, parameter source values, and unsupported directives remain available from
+  the shared document instead of being guessed or discarded.
+- Package mode pins `Nwn.Formats 0.1.0-dev.16`, `Nwn.Authoring 0.1.0-dev.17`,
+  `Nwn.Preview 0.1.0-dev.13`, and `Nwn.Toolset.Avalonia 0.1.0-dev.10`. The local immutable
+  packages are in Xenomech's `artifacts/worktrees/NWN.Toolset/artifacts/packages` feed.
+  Their SHA-256 hashes respectively are `535076EF2F85F8864A291268EC1837A7DD8AE9705A2B81E53ADA7B9D4998F742`,
+  `807B2A82C9AC1EBF12BD62D28D68AD9F111EA1C8EFD397790A4554CC7EEAA968`,
+  `13AE306FE6C1E7174CFFAEF76A472607B6DA2BEE24BF8D83EC999C8BFAB9BEB9`, and
+  `4439E6E629D807EF8CE07339096AFA6E8C4575F0E7CD10F612AB3BAAFF8B1DDA`. Formats/UI
+  record source commit `308528a8a9a17287064ad1777a38d43dd637798c`; Authoring/Preview record
+  `dc14a4d843c83dff9a7375d77778744b1981275d`. The six Debug/Release lock files were
+  regenerated; source-mode restore keeps tracked package locks unchanged and places source
+  locks under `obj`.
+- With `SWLOR_TEST_HAKS_ROOT` and `SWLOR_HAKS_ROOT` both explicitly set to
+  `C:\Projects\SWLOR_NWN\SWLOR_Haks`, the native material corpus adapter parsed all 8,843
+  discovered `.mtr` files. Unknown corpus directives remain inspectable. The focused package
+  consumer suite passed 71/71 with zero skips; the explicit-source consumer suite also passed
+  71/71 with zero skips. Debug and Release locked restores passed, and the final package-mode
+  Debug test-project build completed with zero warnings/errors.
+- Commands (from this worktree; the package feed and source root are explicit):
+
+  ```powershell
+  $feed = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages'
+  $source = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset'
+  $env:SWLOR_TEST_HAKS_ROOT = 'C:\Projects\SWLOR_NWN\SWLOR_Haks'
+  $env:SWLOR_HAKS_ROOT = $env:SWLOR_TEST_HAKS_ROOT
+  dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:Configuration=Release -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --no-restore --filter 'FullyQualifiedName~MaterialResolverAdapterTests|FullyQualifiedName~RenderPipelineTests|FullyQualifiedName~RenderReplacementPortableTests' -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --logger 'trx;LogFileName=mtr-adapter-native-package-final.trx'
+  dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --filter 'FullyQualifiedName~MaterialResolverAdapterTests|FullyQualifiedName~RenderPipelineTests|FullyQualifiedName~RenderReplacementPortableTests' -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --logger 'trx;LogFileName=mtr-adapter-native-source.trx'
+  ```
+
+- TRX files are under `SWLOR.Toolset.Tests/TestResults/` with the names above. This qualifies
+  shared MTR parsing and this SWLOR adapter, not complete in-client tint/material appearance;
+  shader execution, engine material semantics, and full desktop acceptance remain separate.
+
 ## WP0.1 — done — 2026-07-19
 - Tier: Mid (controller-executed).
 - Files: `External/Radoub` submodule (pinned `radoub-v0.11.0`, commit `8dd65638`),

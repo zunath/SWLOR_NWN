@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using Nwn.Formats.Mtr;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
@@ -14,19 +15,19 @@ namespace SWLOR.Toolset.Domain.Render
         private const string NormalMappedTintShader = "fs_plt_tinter_nm";
         private const string HairTintShader = "fs_plt_hair_nm";
 
-        public static bool IsTintMapMaterial(MtrMaterial? material)
+        public static bool IsTintMapMaterial(MtrDocument? material)
         {
             return material != null &&
-                   material.CustomShaders.Values.Any(shader =>
-                       shader.Equals(TintShader, StringComparison.OrdinalIgnoreCase) ||
-                       shader.Equals(NormalMappedTintShader, StringComparison.OrdinalIgnoreCase) ||
-                       shader.Equals(HairTintShader, StringComparison.OrdinalIgnoreCase));
+                   material.RawShaderBindings.Values.Any(shader =>
+                       shader?.Equals(TintShader, StringComparison.OrdinalIgnoreCase) == true ||
+                       shader?.Equals(NormalMappedTintShader, StringComparison.OrdinalIgnoreCase) == true ||
+                       shader?.Equals(HairTintShader, StringComparison.OrdinalIgnoreCase) == true);
         }
 
         public static TextureImage? Render(
             ResourceIndex resourceIndex,
             string materialName,
-            MtrMaterial material,
+            MtrDocument material,
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? overrides,
             AppearanceArmor armorPart = AppearanceArmor.Invalid)
@@ -34,8 +35,8 @@ namespace SWLOR.Toolset.Domain.Render
             if (!IsTintMapMaterial(material))
                 return null;
 
-            var tintMapName = material.GetTexture(7);
-            var paletteName = material.GetTexture(10);
+            var tintMapName = MaterialResolver.GetTexture(material, 7);
+            var paletteName = MaterialResolver.GetTexture(material, 10);
             if (string.IsNullOrWhiteSpace(tintMapName) || string.IsNullOrWhiteSpace(paletteName))
                 return null;
 
@@ -44,7 +45,7 @@ namespace SWLOR.Toolset.Domain.Render
             if (tintMap == null || palette == null || palette.Width <= 0 || palette.Height <= 0)
                 return null;
 
-            var alphaSource = material.GetAlphaSource();
+            var alphaSource = MaterialResolver.GetAlphaSource(material);
             var alphaTexture = alphaSource is { } source
                 ? TextureLoader.Load(resourceIndex, source.TextureName)
                 : null;

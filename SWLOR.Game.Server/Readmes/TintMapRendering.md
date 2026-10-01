@@ -265,8 +265,8 @@ includes an actual compiled rotated mesh, its skinned vertex positions, and a
 scan of the complete robe catalog; preserving old inverse-bind bytes alone is
 not sufficient to prove correct placement.
 
-Robe 236's torso coverings (`coat_top` / `coat_top2`) are ordinary rigid meshes.
-The legacy versions used dangly meshes despite having zero constraints on every
+Robe 236's torso coverings (`coat_top` / `coat_top2`) originally used dangly
+meshes despite having zero constraints on every
 vertex, sending an immobile panel through the cloth-physics renderer. A September
 16 report showed that panel displaced above the hood; skeleton and inverse-bind
 checks alone did not cover that renderer path. The correction keeps the authored
@@ -282,6 +282,43 @@ refreshes owned resource hashes and drops affected cached build proofs. Run
 to check all native and RGB variants. In-game confirmation is still required for
 the reported displacement after deploying the updated `sw_pt_robe` and
 `sw_pt_root` HAKs.
+
+A subsequent player report after that update still showed the upper robe
+displaced after movement or a skill. The torso covering, hood (`hood002`) and
+belt (`beltjr`) now use skin meshes with a single full torso weight, matching the
+bone-following renderer used by the sleeves and skirt. Their rigid shapes,
+materials, local transforms, animation IDs and existing sleeve/skirt inverse
+bindings are preserved. New panel inverse binds are calculated from the compiled
+world transforms rather than relying on the legacy compiler's calculation.
+This covers all 24 native and RGB models across eight body families.
+Run `SWLOR_Haks/tools/BindRobePanels.py --robe 236 --panel coat_top --panel coat_top2
+--panel hood002 --panel beltjr --game-data "<NWN data>" --apply` to reproduce the
+repair. `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestBoundRobePanels.py"`
+checks all 72 panel bindings and compiled vertex placement through movement,
+skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the native
+client's animation transitions remains an in-game check.
+
+The catalog audit extends this treatment to every visible static attachment
+under a body bone, including nested belts, chest ornaments and leg coverings.
+It scans all 7,171 native attachments and RGB roots by mesh flags and hierarchy,
+without a robe-number or mesh-name repair list. A September 30 pass bound 696
+additional models across 33 robe styles. Moving cloth and independently animated
+attachments retain their authored motion; invisible skeleton meshes are excluded.
+Constant animation reset tracks count as static only when every controller value
+matches the attachment's own bind pose. A different reset remains animated.
+Duplicate visible leaves are renamed only after checking animation and skin-bone
+references. Scaled static geometry is baked into the skin vertices, with inverse
+translations divided by the bone's bind scale, preserving its world shape.
+ASCII attachments without existing skins can be compiled and round-trip validated
+as a binding reference; ASCII models with existing skins fail closed because their
+authored inverse binds have no compiled preservation reference.
+Run `BindRobePanels.py --all --game-data "<NWN data>" --apply` from
+`SWLOR_Haks/tools` to validate and repair new matching attachments, or use
+`--all --audit --game-data "<NWN data>"` for a read-only corpus check. The audit
+returns a failing exit code when matching unbound geometry remains. The catalog
+regression checks every attachment and every vertex of body-bound child skins
+through sampled bone translation, rotation and scale changes. Both
+`sw_pt_robe` and `sw_pt_root` must be rebuilt after a repair.
 
 `animation_bridges` in `RobeRgbModels.json` preserves stable shared parent names.
 The manifest records generator/source/output hashes, pose coverage, and any

@@ -1,4 +1,11 @@
 <Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests'">
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(NwnToolsetSourceRoot)' == '' And '$(RestoreLockedMode)' == ''">true</RestoreLockedMode>
+    <NuGetLockFilePath Condition="'$(NwnToolsetSourceRoot)' == '' And '$(Configuration)' != '' And '$(Configuration)' != 'Debug'">$(MSBuildProjectDirectory)/packages.$(Configuration).lock.json</NuGetLockFilePath>
+    <NuGetLockFilePath Condition="'$(NwnToolsetSourceRoot)' != ''">$(MSBuildProjectDirectory)/obj/packages.Debug.source.lock.json</NuGetLockFilePath>
+    <NuGetLockFilePath Condition="'$(NwnToolsetSourceRoot)' != '' And '$(Configuration)' != '' And '$(Configuration)' != 'Debug'">$(MSBuildProjectDirectory)/obj/packages.$(Configuration).source.lock.json</NuGetLockFilePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(NwnToolsetPackageFeed)' != ''">
     <RestoreAdditionalProjectSources>$(NwnToolsetPackageFeed);$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
   </PropertyGroup>

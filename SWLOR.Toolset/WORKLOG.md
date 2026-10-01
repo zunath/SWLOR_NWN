@@ -2176,6 +2176,63 @@ TRX: Xenomech qualification directory
 This establishes parsing of all complete files in that source corpus, not native
 runtime semantics for each table or full SWLOR editor/appearance acceptance.
 
+## Shared dependency locks - 2026-10-01 - Reproducible package and source configurations
+
+The three toolset consumer projects commit their complete NuGet dependency graphs
+and default to locked restore in package mode. Debug uses `packages.lock.json`;
+Release uses `packages.Release.lock.json`, because desktop diagnostics are a
+Debug-only dependency. Intentional dependency updates require an explicit
+`RestoreLockedMode=false` restore and review of the changed locks.
+
+Explicit `NwnToolsetSourceRoot` development writes its own configuration-specific
+lock under each project's `obj` directory. It resolves all four shared assemblies
+as projects and leaves all six tracked package locks byte-identical. Switching
+back resolves only Formats `0.1.0-dev.14`, Authoring `0.1.0-dev.16`, Preview
+`0.1.0-dev.12` and Avalonia `0.1.0-dev.8` from the qualified immutable packages.
+
+Qualification:
+
+- Ordinary locked Debug and Release restores succeed. A Release restore initially
+  rejected the Debug-only graph with `NU1004`; separate locks close that defect.
+- The Release desktop build succeeds with eight existing warnings and zero errors.
+- Five selected checks pass with zero skipped after explicitly rebuilding source
+  mode, and the same five pass in package mode: the real native chest reader,
+  both strict full-corpus checks, and conversation undo/save history. The complete
+  table check reports 748 loaded and zero failed.
+- Source-mode Debug and Release restores preserve every tracked lock hash. Assets
+  inspection confirms four project references in source mode and four package
+  references in package mode.
+
+The first broad source test invocation omitted the corpus environment variables
+and failed fixture discovery. A later invocation also skipped the native fixture
+without its separate variable. Neither is acceptance evidence; the final rebuilt
+run configures both variables and has no failures or skips. TRX evidence is under
+Xenomech's `artifacts/swlor-package-adoption-dev14-dev16-dev12-dev8`:
+`swlor-locked-source-rebuilt.trx` and `swlor-locked-package-consumer.trx`.
+
+Commands from this worktree (the additional flags avoid unrelated server
+postbuild actions, vulnerability network access and Avalonia product prompts):
+
+```powershell
+$feed = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages'
+$source = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset'
+$results = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/swlor-package-adoption-dev14-dev16-dev12-dev8'
+$project = 'SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj'
+$env:SWLOR_HAKS_ROOT = 'C:\Projects\SWLOR_NWN\SWLOR_Haks'
+$env:SWLOR_TEST_HAKS_ROOT = $env:SWLOR_HAKS_ROOT
+$filter = 'FullyQualifiedName~NativeModelPreviewAdapterTests|FullyQualifiedName~TwoDaCorpusQualificationTests|FullyQualifiedName~UndoRestoresTheLineAndTheCleanState|FullyQualifiedName~SavingDerivedWordCountsDoesNotAddAnUndoStep'
+dotnet restore $project -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet restore $project -p:Configuration=Release -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet build SWLOR.Toolset/SWLOR.Toolset.csproj -c Release --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet restore $project -p:NwnToolsetSourceRoot=$source -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test $project --no-restore -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-locked-source-rebuilt.trx' --results-directory $results --blame-hang-timeout 60s
+dotnet restore $project -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test $project --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-locked-package-consumer.trx' --results-directory $results --blame-hang-timeout 60s
+```
+
+These checks qualify dependency selection and the selected consumer behavior.
+Full SWLOR desktop, appearance and native-runtime acceptance remain separate.
+
 ## Area editor - 2026-07-28 - Group previews show their footprint, and a paint stops building walls
 
 Two things reported from live use:

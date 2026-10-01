@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using Nwn.Preview.Cache;
 using Nwn.Formats.Mdl;
 using Nwn.Preview.Dds;
 using Nwn.Preview.Scene;
@@ -8,6 +10,7 @@ namespace SWLOR.Toolset.Viewport;
 /// <summary>Adapts SWLOR's ordered resource index to neutral static MDL and DDS readers.</summary>
 public sealed class NativeModelPreviewAdapter(ResourceIndex resources)
 {
+    private static readonly PreviewAssetCache AssetCache = new(maximumEntries: 256, maximumBytes: 512L * 1024 * 1024);
     private const int MaximumModelBytes = 64 * 1024 * 1024;
     private const int MaximumTextureBytes = 64 * 1024 * 1024;
 
@@ -17,8 +20,9 @@ public sealed class NativeModelPreviewAdapter(ResourceIndex resources)
         var modelIdentity = ResourceIdentity.FromFileName($"{resRef}.mdl");
         if (!resources.TryLookup(modelIdentity, out var modelHandle))
             throw new FileNotFoundException($"Model '{resRef}.mdl' was not found in the configured game resource layers.");
-        var source = MdlBinaryReader.Read(modelHandle.GetBytes(MaximumModelBytes));
-        var scene = MdlScenePreparer.Prepare(source);
+        var modelBytes = modelHandle.GetBytes(MaximumModelBytes);
+        var modelCacheKey = $"{modelHandle.Provenance.SourcePath}|{Convert.ToHexStringLower(SHA256.HashData(modelBytes))}";
+        var scene = AssetCache.GetOrAddScene(modelCacheKey, () => MdlScenePreparer.Prepare(MdlBinaryReader.Read(modelBytes)));
         var textures = new Dictionary<string, Nwn.Preview.Pixels.RgbaImage>(StringComparer.OrdinalIgnoreCase);
         var missingTextures = new List<string>();
         foreach (var bitmap in scene.Nodes.Select(node => node.Mesh?.BitmapName).Where(name => !string.IsNullOrWhiteSpace(name)).Distinct(StringComparer.OrdinalIgnoreCase))
@@ -29,7 +33,10 @@ public sealed class NativeModelPreviewAdapter(ResourceIndex resources)
                 missingTextures.Add(bitmap!);
                 continue;
             }
-            textures[bitmap!] = DdsDecoder.Decode(handle.GetBytes(MaximumTextureBytes));
+            var textureBytes = handle.GetBytes(MaximumTextureBytes);
+            var textureCacheKey = $"{handle.Provenance.SourcePath}|{Convert.ToHexStringLower(SHA256.HashData(textureBytes))}";
+            textures[bitmap!] = AssetCache.GetOrAddImage(textureCacheKey,
+                () => DdsDecoder.Decode(textureBytes));
         }
 
         return new NativeModelPreviewData(scene, textures, missingTextures, modelHandle.Provenance.SourcePath);

@@ -2838,3 +2838,13 @@ An initial Preview dev.26 archive was created with incorrect transitive package
 versions during source-mode packing and was not adopted. Preview dev.27 was
 correctly repacked in package mode but superseded by the final F25-aligned dev.28
 train; all archives remain immutable.
+
+## Shared creature-part composition extraction
+
+The existing MIT creature-part composition, bone mapping, transform flattening and forward-axis correction now live in `Nwn.Preview.Scene`. The SWLOR composer/resolver retains resource lookup, appearance classification, tint metadata and game-specific policy; its existing production call sites consume the shared implementation. `MdlPartBoneMap` returns defensive read-only candidate collections and a read-only preferred-bone map.
+
+Shared source commit: `1e016953d34db71b646c2a7ed0a7467a54a76f3e`. Immutable local packages: Preview `0.1.0-dev.29`, SHA256 `1579BF8A364288C8C4AAE5DE8964934ADC0034951C55286D247BD2D71C67EF9E`; Avalonia `0.1.0-dev.15`, SHA256 `5A3D18015D1C0A8EA5CAE32932D8EA4487BBDB762612EC968E287C6C655CFAC6`. Both nuspecs identify that exact source commit. Preview pins Formats25 and Authoring24; Avalonia pins Authoring24 and Preview29. Earlier package archives remain unchanged.
+
+The affected SWLOR consumers pin Preview29 and Avalonia15. All eight package lock files (four consumers, Debug and Release) were intentionally regenerated; source-mode lock state remains under each project's `obj` directory. Ordinary locked restores passed for all four consumers in both configurations. The SWLOR source-mode parser/composition/attachment/HAK-corpus filter passed 59/59, zero skips, in `SWLOR.Toolset.Tests/TestResults/shared-native-composition-source.trx`. The same package-mode filter passed 59/59, zero skips, in `artifacts/shared-native-composition-package/shared-native-composition-package.trx`. The production Release app build succeeded with zero warnings and zero errors.
+
+The new shared tests passed 6/6 on Windows and 6/6 in the fixed offline Linux SDK `10.0.401@sha256:35d40304542c8689331f8cab17c65926cdf48fe711e289321d71924b230a7d29`, with network disabled. Linux headless Avalonia area/graph contracts passed 8/8, zero skips. Linux logs and TRX files are under `C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/preview-composition-linux-1e01695/output/`. These checks qualify the shared composition and data contracts; they do not establish an official-client appearance result.

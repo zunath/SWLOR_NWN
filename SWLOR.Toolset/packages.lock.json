@@ -157,13 +157,13 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.14, )",
-        "resolved": "0.1.0-dev.14",
-        "contentHash": "XFWV7Bi3eBL2y6NjXHvzajP7hhVh3VuSVZIa+xYPZbgDlmf/lqfeqmDeu4LHlmhmPfnR5N5XCtG47HxDXR9YGg==",
+        "requested": "[0.1.0-dev.15, )",
+        "resolved": "0.1.0-dev.15",
+        "contentHash": "FwfJyi7T/Q9tmniQlIjv1skEyHbP93kNFS74ld38bZmx7h4ERVs6JeVR5BYIs7mj21nt78ENiJr+9cYHMos0Ww==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Nwn.Authoring": "0.1.0-dev.24",
-          "Nwn.Preview": "0.1.0-dev.28",
+          "Nwn.Preview": "0.1.0-dev.29",
           "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
@@ -449,8 +449,8 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.28",
-        "contentHash": "MDX7sSIRtdOd3fxOo2g4FNuouCWMfFuoKSwSKcs92cXP/7jxRf86YQJemB7OSAmGFV21qOEqiRf5nRZnNu0jCA==",
+        "resolved": "0.1.0-dev.29",
+        "contentHash": "XM/8mtRtd54zDs7MNFbgGRP/fxT4SZJ4E39A0axD+mht0Zs+BMUlqO2eBpwvyxF67wNonsGc2A1GZFFdkn3LJw==",
         "dependencies": {
           "Nwn.Authoring": "0.1.0-dev.24",
           "Nwn.Formats": "0.1.0-dev.25"
@@ -581,7 +581,7 @@
         "dependencies": {
           "Nwn.Authoring": "[0.1.0-dev.24, )",
           "Nwn.Formats": "[0.1.0-dev.25, )",
-          "Nwn.Preview": "[0.1.0-dev.28, )",
+          "Nwn.Preview": "[0.1.0-dev.29, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

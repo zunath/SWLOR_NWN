@@ -376,14 +376,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FanTheHammer1)
                 .DroidAISlots(1)
-                .Description("Fires at up to 3 enemies within 5m for weapon DMG + 14. Each hit has +8% Critical Rate.")
+                .Description("Fires at up to 3 enemies in a 10m x 10m cone in front of you for weapon DMG + 14. Each hit has +8% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FanTheHammer2)
                 .DroidAISlots(2)
-                .Description("Fires at up to 3 enemies within 5m for weapon DMG + 26. Each hit has +12% Critical Rate.")
+                .Description("Fires at up to 3 enemies in a 10m x 10m cone in front of you for weapon DMG + 26. Each hit has +12% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 32);
         }

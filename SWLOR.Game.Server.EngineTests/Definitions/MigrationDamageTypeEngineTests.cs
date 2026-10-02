@@ -90,7 +90,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            var item = await CreateItemAsync(ctx, owner, "b_longsword", owner);
+            // Basic vibroblades deliberately repair missing DMG during migration.
+            // Use another weapon to isolate damage-type normalization.
+            var item = await CreateItemAsync(ctx, owner, "b_staff", owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () => ClearProperties(item));
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>

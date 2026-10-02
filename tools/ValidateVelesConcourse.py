@@ -92,7 +92,7 @@ def validate():
     assert sum(value(a, "Area_Name") == "veles_exterior" for a in value(module, "Mod_Area_list")) == 1
     assert len(value(area, "Tile_List")) == value(area, "Width") * value(area, "Height")
     assert value(area, "Tileset") == value(read("Module/are/velesinterior.are.json"), "Tileset")
-    for area_name in ["veles_tradecon", "veles_exterior", "veles_shops"]:
+    for area_name in ["veles_tradecon", "veles_exterior", "veles_shops", "veles_sheriff"]:
         placed = read(f"Module/git/{area_name}.git.json")
         comments = read(f"Module/gic/{area_name}.gic.json")
         for collection, entries in placed.items():
@@ -103,6 +103,21 @@ def validate():
                         "Bearing", "XOrientation", "YOrientation"}
     def gameplay(obj):
         return {key: item for key, item in obj.items() if key not in placement_fields}
+
+    # These services belong in the guild halls and clinic, outside the concourse.
+    service_resrefs = {"espionage_bench", "mkt_visc_term", "qcontract_board", "train_terminal"}
+    assert not any(value(o, "TemplateResRef") in service_resrefs for o in value(interior, "Placeable List"))
+    assert not any(value(o, "Tag") == "WP_CONCOURSE_ESP" for o in value(interior, "WaypointList"))
+    shops = read("Module/git/veles_shops.git.json")
+    for resref in service_resrefs - {"train_terminal"}:
+        assert any(value(o, "TemplateResRef") == resref for o in value(shops, "Placeable List")), resref
+    clinic = read("Module/git/veles_sheriff.git.json")
+    terminals = [o for o in value(clinic, "Placeable List") if value(o, "TemplateResRef") == "train_terminal"]
+    assert len(terminals) == 1, "The Veles clinic must provide a training terminal."
+    terminal, = terminals
+    blueprint = read("Module/utp/train_terminal.utp.json")
+    for field in ["Appearance", "Conversation", "OnUsed", "Useable", "Static"]:
+        assert value(terminal, field) == value(blueprint, field), field
 
     for entry in manifest["placements"]:
         source = read(f"Module/git/{entry['area']}.git.json")
@@ -181,7 +196,11 @@ def validate():
         assert value(outside_landing, "XPosition") < value(barrier, "X") - 2
     for door in [outside_door, warehouse_door]:
         assert value(door, "LinkedToFlags") == 2
-        assert value(door, "Plot") == 1 and value(door, "Locked") == 0 and value(door, "Lockable") == 0
+        assert value(door, "Plot") == 1
+    assert value(outside_door, "Locked") == value(outside_door, "Lockable") == value(outside_door, "KeyRequired") == 0
+    assert value(warehouse_door, "Locked") == value(warehouse_door, "Lockable") == value(warehouse_door, "KeyRequired") == 1
+    assert value(warehouse_door, "KeyName") == value(read("Module/uti/key_smuggler01.uti.json"), "Tag") == "Key_Smuggler_1"
+    assert value(warehouse_door, "AutoRemoveKey") == 0, "The Smuggler keycard must remain reusable."
     closed_lift = tagged(interior, "Door List", "concourse_closed_lift")
     assert value(closed_lift, "Locked") == 1 and value(closed_lift, "Plot") == 1
     assert value(closed_lift, "KeyRequired") == 1 and value(closed_lift, "LinkedToFlags") == 0
@@ -262,7 +281,7 @@ def validate():
     assert value(datapad_items[0], "Infinite") == 1
     check_items(interior)
     validate_fabrication(read("Module/git/veles_shops.git.json"), exterior)
-    print("Veles: concourse registration, travel, conversations, stores, inventory, and Fabrication workshop access passed.")
+    print("Veles: concourse registration, travel, conversations, stores, inventory, guild/clinic services, and Fabrication workshop access passed.")
 
 
 if __name__ == "__main__":

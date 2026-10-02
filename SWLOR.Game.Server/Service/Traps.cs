@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Service
         private const float LifetimeSeconds = 300f;
         private const float ProximityCheckIntervalSeconds = 1f;
         private const int TrapTriggerXP = 150;
+        private const string TrapMarkerResref = "trap_marker";
 
         // Concealed kit traps. Placement is hidden from everyone but the owner until an observer
         // with the matching Trapcraft training gets close enough to spot it.
@@ -104,7 +105,8 @@ namespace SWLOR.Game.Server.Service
                 location,
                 markerVisualEffect,
                 1.5f,
-                LifetimeSeconds);
+                LifetimeSeconds,
+                TrapMarkerResref);
             if (!GetIsObjectValid(record.Marker))
             {
                 SendMessageToPC(owner, "The trap could not be placed.");

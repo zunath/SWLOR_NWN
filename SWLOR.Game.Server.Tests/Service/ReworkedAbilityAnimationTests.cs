@@ -36,6 +36,12 @@ public class ReworkedAbilityAnimationTests
                     ability.AuthoredAnimation.Should().BeNull();
                     ability.AuthoredImpactAnimation.Should().BeNull();
                 }
+                else if (ability.PreservesNativeAnimationChoreography)
+                {
+                    ability.AuthoredAnimation.Should().BeNull();
+                    ability.AuthoredImpactAnimation.Should().BeNull();
+                    AbilityAnimationBinding.ActivationType(ability, true, 0).Should().Be(native[feat]);
+                }
                 else if (ability.UsesAuthoredImpactAnimation)
                 {
                     ability.AuthoredAnimation.Should().BeNull("impact-owned devices must not play twice");
@@ -57,7 +63,6 @@ public class ReworkedAbilityAnimationTests
     [TestCase("ClusterGrenade")]
     [TestCase("ConcussionGrenade")]
     [TestCase("FlashGrenade")]
-    [TestCase("FragGrenade")]
     public void GrenadesKeepNativeNpcThrowAndInstantImpactWhilePlayersUseAuthoredClips(string id)
     {
         var entry = Entries.Single(entry => entry.Id == id);
@@ -93,6 +98,6 @@ public class ReworkedAbilityAnimationTests
         impact.Should().Contain("trackedAbility.ImmediateNativeImpactAnimationDuration, immediate: true)");
         var remap = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server/Feature/PistolAnimationRemap.cs"));
         remap.Should().Contain("if (immediate) PlayAnimation(animation, speed, durationSeconds);");
-        remap.Should().Contain("if (immediate) NamedAnimation.ReleaseForNativePlayback(creature);");
+        remap.Should().Contain("if (immediate && releaseAuthoredPose) NamedAnimation.ReleaseForNativePlayback(creature);");
     }
 }

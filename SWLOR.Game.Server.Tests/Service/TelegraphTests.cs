@@ -160,7 +160,7 @@ public class TelegraphTests
     }
 
     /// <summary>
-    /// Guards snapshot capture and propagation while ensuring delayed impacts do not reuse expired warnings.
+    /// Guards snapshot capture and propagation, including impacts after a separate delay.
     /// </summary>
     [Test]
     public void AbilityActivation_CapturesDisplayedGeometryBeforeTheTelegraphExpires()
@@ -172,9 +172,15 @@ public class TelegraphTests
 
         source.Should().Contain("Telegraph.CaptureGeometry(activationTelegraphIds)");
         source.Should().Contain("activationAreaTelegraphs: activationAreaTelegraphs");
-        source.Should().Contain(
-            "ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null",
-            "a delayed impact occurs after its activation telegraph has been removed and still needs an impact flash");
+        var impactBody = ExtractBlockBody(source, source.IndexOf("void ResolveImpact()", StringComparison.Ordinal));
+        impactBody.Should().Contain("activationAreaTelegraphs",
+            "the warned footprint must survive until damage resolves");
+        impactBody.Should().NotContain("ImpactDelay",
+            "a separate delay must not discard the warned footprint");
+
+        var abilitySource = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
+        abilitySource.Should().Contain("trackedImpact?.Ability.ImpactDelay > 0f ? null : trackedImpact?.ActivationAreaTelegraphs",
+            "a separately delayed impact still needs a fresh flash at the original footprint");
     }
 
     [Test]

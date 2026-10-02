@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Starts impact tracking and defers pending damage bonuses until a damaging payload,
-        /// retaining any activation-marker snapshots for the impact flash decision.
+        /// retaining activation-marker snapshots for the impact footprint and flash decision.
         /// </summary>
         public static void BeginAbilityImpact(
             uint activator,
@@ -1539,6 +1539,9 @@ namespace SWLOR.Game.Server.Service
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var backOffsetOrigin = trackedImpact?.Ability.Targeting?.Flags
                 .HasFlag(AbilityTargetingFlags.BackOffsetOrigin) == true;
+            var geometry = ResolveCombatImpactGeometry(
+                activator, target, targetLocation, shape, lengthOrRadius, width, centerOnActivator, backOffsetOrigin,
+                trackedImpact?.ActivationAreaTelegraphs);
 
             if (telegraphDuration <= 0f)
             {
@@ -1548,29 +1551,18 @@ namespace SWLOR.Game.Server.Service
                 // the actual impact geometry with the activation marker before suppressing a redraw.
                 ShowAreaImpactFlash(
                     activator,
-                    target,
-                    targetLocation,
-                    shape,
-                    lengthOrRadius,
-                    width,
-                    centerOnActivator,
+                    geometry,
                     impactFlashDuration,
-                    backOffsetOrigin,
-                    trackedImpact?.ActivationAreaTelegraphs);
+                    trackedImpact?.Ability.ImpactDelay > 0f ? null : trackedImpact?.ActivationAreaTelegraphs);
 
                 var totalDamage = ApplyCombatImpactInShape(
                     activator,
-                    target,
-                    targetLocation,
+                    geometry,
                     skillType,
                     baseDamage,
                     duration,
                     statusEffect,
-                    shape,
-                    lengthOrRadius,
-                    width,
                     additionalStatusEffects,
-                    centerOnActivator,
                     statusEffectFactory,
                     damageType,
                     statusResistanceType,
@@ -1593,8 +1585,7 @@ namespace SWLOR.Game.Server.Service
                     sendsNoTargetMessage,
                     resolvesHit,
                     canCritical,
-                    useUnscaledDamage,
-                    backOffsetOrigin);
+                    useUnscaledDamage);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
@@ -1604,21 +1595,9 @@ namespace SWLOR.Game.Server.Service
                 return totalDamage;
             }
 
-            var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
-                GetPosition(activator),
-                impactRotation,
-                shape,
-                backOffsetOrigin);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
-                shape,
-                lengthOrRadius,
-                backOffsetOrigin);
             var areaVisualLocation = Location(
-                GetArea(activator),
-                shape == CombatImpactAreaShape.Sphere
-                    ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
-                    : directionalOrigin,
+                geometry.Area,
+                geometry.Position,
                 0f);
             var deferredNextAbilityDamageBonus =
                 (trackedImpact?.NextAbilityDamageBonus ?? 0) -
@@ -1668,7 +1647,7 @@ namespace SWLOR.Game.Server.Service
                     Telegraph.CreateSphereTelegraph(
                         activator,
                         GetPositionFromLocation(areaVisualLocation),
-                        lengthOrRadius,
+                        geometry.Size.X,
                         telegraphDuration,
                         true,
                         action);
@@ -1676,10 +1655,10 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Cone:
                     Telegraph.CreateConeTelegraph(
                         activator,
-                        directionalOrigin,
-                        impactRotation,
-                        adjustedLength,
-                        width > 0f ? width : adjustedLength,
+                        geometry.Position,
+                        geometry.Rotation,
+                        geometry.Size.X,
+                        geometry.Size.Y,
                         telegraphDuration,
                         true,
                         action);
@@ -1687,10 +1666,10 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Line:
                     Telegraph.CreateLineTelegraph(
                         activator,
-                        directionalOrigin,
-                        impactRotation,
-                        adjustedLength,
-                        width > 0f ? width : 2.0f,
+                        geometry.Position,
+                        geometry.Rotation,
+                        geometry.Size.X,
+                        geometry.Size.Y,
                         telegraphDuration,
                         true,
                         action);
@@ -1714,75 +1693,36 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ShowAreaImpactFlash(
             uint activator,
-            uint target,
-            Location targetLocation,
-            CombatImpactAreaShape shape,
-            float lengthOrRadius,
-            float width,
-            bool centerOnActivator,
+            TelegraphGeometry geometry,
             float flashDuration,
-            bool backOffsetOrigin,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs)
         {
-            if (flashDuration <= 0f || lengthOrRadius <= 0f)
+            if (flashDuration <= 0f || geometry.Size.X <= 0f)
                 return;
-
-            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
-                GetPosition(activator),
-                rotation,
-                shape,
-                backOffsetOrigin);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
-                shape,
-                lengthOrRadius,
-                backOffsetOrigin);
-
-            var telegraphType = shape switch
-            {
-                CombatImpactAreaShape.Sphere => TelegraphType.Sphere,
-                CombatImpactAreaShape.Cone => TelegraphType.Cone,
-                CombatImpactAreaShape.Line => TelegraphType.Line,
-                _ => TelegraphType.None
-            };
-            if (telegraphType == TelegraphType.None)
+            if (geometry.Shape == TelegraphType.None)
                 return;
-
-            var position = shape == CombatImpactAreaShape.Sphere
-                ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
-                : directionalOrigin;
-            var size = shape == CombatImpactAreaShape.Sphere
-                ? new System.Numerics.Vector2(lengthOrRadius, lengthOrRadius)
-                : new System.Numerics.Vector2(adjustedLength,
-                    width > 0f ? width : shape == CombatImpactAreaShape.Cone ? adjustedLength : 2.0f);
-            var geometry = new TelegraphGeometry(GetArea(activator), telegraphType, position, size, rotation);
             if (!Telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs))
                 return;
 
             Telegraph.CreateTelegraph(
                 activator,
-                position,
-                shape == CombatImpactAreaShape.Sphere ? 0f : rotation,
-                size,
+                geometry.Position,
+                geometry.Shape == TelegraphType.Sphere ? 0f : geometry.Rotation,
+                geometry.Size,
                 flashDuration,
                 true,
-                telegraphType,
+                geometry.Shape,
                 null);
         }
 
         private static int ApplyCombatImpactInShape(
             uint activator,
-            uint target,
-            Location targetLocation,
+            TelegraphGeometry geometry,
             SkillType skillType,
             int baseDamage,
             int duration,
             Type statusEffect,
-            CombatImpactAreaShape shape,
-            float lengthOrRadius,
-            float width,
             IEnumerable<Type> additionalStatusEffects,
-            bool centerOnActivator,
             Func<IStatusEffect> statusEffectFactory,
             CombatDamageType damageType,
             ResistanceType statusResistanceType,
@@ -1805,21 +1745,12 @@ namespace SWLOR.Game.Server.Service
             bool sendsNoTargetMessage,
             bool resolvesHit,
             bool canCritical,
-            bool useUnscaledDamage,
-            bool backOffsetOrigin)
+            bool useUnscaledDamage)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
-            var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
-            var creatures = GetHostileCreaturesInCombatImpactShape(
-                    activator,
-                    target,
-                    targetLocation,
-                    shape,
-                    lengthOrRadius,
-                    width,
-                    centerOnActivator,
-                    backOffsetOrigin)
+            var origin = Location(geometry.Area, geometry.Position, 0f);
+            var creatures = GetHostileCreaturesInCombatImpactShape(activator, geometry)
                 .Where(creature => HasAbilityLineOfSight(activator, creature))
                 .ToList();
 
@@ -2165,6 +2096,22 @@ namespace SWLOR.Game.Server.Service
             bool centerOnActivator,
             bool backOffsetOrigin)
         {
+            return GetHostileCreaturesInCombatImpactShape(activator,
+                ResolveCombatImpactGeometry(activator, target, targetLocation, shape, lengthOrRadius, width,
+                    centerOnActivator, backOffsetOrigin));
+        }
+
+        private static TelegraphGeometry ResolveCombatImpactGeometry(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            bool centerOnActivator,
+            bool backOffsetOrigin,
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
+        {
             var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
             var rotation = GetImpactRotationRadians(activator, target, targetLocation);
             var originPosition = CombatImpactShapeGeometry.ResolveOrigin(
@@ -2176,20 +2123,43 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 lengthOrRadius,
                 backOffsetOrigin);
-            var maxDistance = GetCombatImpactShapeSearchRadius(shape, adjustedLength, width);
-            var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
+            var telegraphType = shape switch
+            {
+                CombatImpactAreaShape.Sphere => TelegraphType.Sphere,
+                CombatImpactAreaShape.Cone => TelegraphType.Cone,
+                CombatImpactAreaShape.Line => TelegraphType.Line,
+                _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, null)
+            };
+            var size = new System.Numerics.Vector2(adjustedLength,
+                shape == CombatImpactAreaShape.Sphere ? adjustedLength :
+                width > 0f ? width : shape == CombatImpactAreaShape.Cone ? adjustedLength : 2f);
+            var impact = new TelegraphGeometry(GetAreaFromLocation(origin), telegraphType, originPosition, size, rotation);
+            return Telegraph.ResolveImpactGeometry(impact, activationAreaTelegraphs);
+        }
+
+        private static IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(uint activator, TelegraphGeometry geometry)
+        {
+            var shape = geometry.Shape switch
+            {
+                TelegraphType.Sphere => CombatImpactAreaShape.Sphere,
+                TelegraphType.Cone => CombatImpactAreaShape.Cone,
+                TelegraphType.Line => CombatImpactAreaShape.Line,
+                _ => throw new ArgumentOutOfRangeException(nameof(geometry), geometry.Shape, null)
+            };
+            var maxDistance = GetCombatImpactShapeSearchRadius(shape, geometry.Size.X, geometry.Size.Y);
+            var candidates = GetAliveCreaturesInArea(geometry.Area)
                 .Select(creature => new
                 {
                     Creature = creature,
                     Position = GetPosition(creature)
                 })
-                .Where(candidate => GetHorizontalDistance(candidate.Position, originPosition) <= maxDistance)
-                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, originPosition));
+                .Where(candidate => GetHorizontalDistance(candidate.Position, geometry.Position) <= maxDistance)
+                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, geometry.Position));
 
             foreach (var candidate in candidates)
             {
                 if (GetIsReactionTypeHostile(candidate.Creature, activator) &&
-                    IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, adjustedLength, width))
+                    IsPositionInCombatImpactShape(candidate.Position, geometry.Position, geometry.Rotation, shape, geometry.Size.X, geometry.Size.Y))
                 {
                     yield return candidate.Creature;
                 }

@@ -8219,7 +8219,7 @@ namespace SWLOR.Game.Server.Service
             if (Stat.GetStatAdjustment(activator, StatType.ForcePrecognition) > 0 &&
                 TryUseStatTrigger(activator, StatType.ForcePrecognition, 12))
             {
-                StatusEffect.ApplyStatusEffect(activator, activator, typeof(PrecognitionStatusEffect), 30f);
+                StatusEffect.ApplyStatusEffect(activator, activator, typeof(DangerSenseStatusEffect), 30f);
             }
 
             if (Stat.GetStatAdjustment(activator, StatType.ForceConvergence) > 0 &&

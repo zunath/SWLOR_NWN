@@ -97,7 +97,33 @@ public class EquipmentRestrictionsTests
             BaseItem.Pistol,
             null);
 
-        error.Should().Be("Off-hand pistols cannot be equipped.");
+        error.Should().Be("Legacy off-hand pistols cannot be equipped.");
+    }
+
+    [Test]
+    public void LegacyOffHandPistols_UseClearEquipErrorBeforeRetiredRequirement()
+    {
+        var error = EquipmentRestrictions.GetPistolEquipmentError(
+            BaseItem.OffHandPistol,
+            InventorySlot.LeftHand,
+            null,
+            null,
+            "This item requires Invalid rank 100 to use.");
+
+        error.Should().Be("Legacy off-hand pistols cannot be equipped.");
+    }
+
+    [Test]
+    public void LegacyOffHandPistols_ShowWarningWithoutReplacingExistingDescription()
+    {
+        const string existing = "A customized pistol with a worn grip.";
+
+        var description = EquipmentRestrictions.GetLegacyOffHandPistolDescription(existing);
+        var repeatedDescription = EquipmentRestrictions.GetLegacyOffHandPistolDescription(description);
+
+        description.Should().Contain(existing);
+        description.Should().Contain("Legacy item: this off-hand pistol cannot be equipped.");
+        repeatedDescription.Should().Be(description);
     }
 
     [Test]
@@ -176,6 +202,34 @@ public class EquipmentRestrictionsTests
             bulletSlotOccupied);
 
         result.Should().Be(expected);
+    }
+
+    [TestCase(BaseItem.Pistol, BaseItem.Sling, true, true, true, false, true)]
+    [TestCase(BaseItem.LegacyPistol, BaseItem.Sling, true, true, true, false, true)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, true, true, false, true)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, false, true, true, false, false)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, false, true, false, false)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, true, false, false, false)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, true, true, true, false)]
+    [TestCase(BaseItem.LegacyPistol, BaseItem.LegacyPistol, true, true, true, false, false)]
+    [TestCase(BaseItem.Arrow, BaseItem.Bullet, true, true, true, false, false)]
+    public void PistolBaseItems_RepairOnlyMissingGeneratedBulletsOnEquippedCanonicalPistols(
+        BaseItem currentBaseItem,
+        BaseItem canonicalBaseItem,
+        bool isEquipped,
+        bool hasUnlimitedAmmunition,
+        bool generatedArrows,
+        bool generatedBullets,
+        bool expected)
+    {
+        PistolBaseItemCompatibility.ShouldRepairGeneratedPistolAmmunition(
+                currentBaseItem,
+                canonicalBaseItem,
+                isEquipped,
+                hasUnlimitedAmmunition,
+                generatedArrows,
+                generatedBullets)
+            .Should().Be(expected);
     }
 
     [Test]

@@ -637,7 +637,7 @@ namespace SWLOR.Game.Server.Feature
 
             /// <summary>
             /// Completes or cancels a finished activation, retaining its marker snapshots
-            /// for an immediate impact while separately delayed impacts receive a fresh flash.
+            /// for the impact footprint, including impacts with a separate delay.
             /// </summary>
             void CompleteActivation(
                 string activationId,
@@ -714,7 +714,7 @@ namespace SWLOR.Game.Server.Feature
 
                 /// <summary>
                 /// Executes the validated impact and resumes combat, reusing activation
-                /// geometry only when no separate impact delay elapsed.
+                /// geometry so the impact cannot follow a target that dodged the warning.
                 /// </summary>
                 void ResolveImpact()
                 {
@@ -724,8 +724,7 @@ namespace SWLOR.Game.Server.Feature
                         feat,
                         ability,
                         targetLocation,
-                        activationAreaTelegraphs:
-                            ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null);
+                        activationAreaTelegraphs);
                     // NPCs must clear their combat state before reattacking. Queue that reset
                     // after the authored clip, so it cannot erase the animation at impact.
                     if (AbilityAnimationBinding.ActivationClip(ability, activator) != null && !GetIsPC(activator))

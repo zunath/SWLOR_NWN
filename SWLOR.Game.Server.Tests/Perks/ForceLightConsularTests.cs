@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -56,6 +57,42 @@ public class ForceLightConsularTests
         confusionSource.Should().Contain("public override string CanApply(uint creature)");
         confusionSource.Should().Contain("Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)");
         confusionSource.Should().Contain("Target is temporarily immune to confusion.");
+    }
+
+    [Test]
+    [NonParallelizable]
+    public void ThrowRock_IsUniversalInAffinityScalingAndPerkDetails()
+    {
+        var perk = BuildForceLightConsularPerksWithout2daLookup()[PerkType.ThrowRock];
+        AssertUniversalForcePower(perk);
+        perk.PerkLevels.Values.SelectMany(level => level.StatBonuses)
+            .Should().NotContain(bonus => bonus.Stat == StatType.ForceAffinity);
+
+        var cache = (Dictionary<PerkType, PerkDetail>)typeof(Perk)
+            .GetField("_allPerks", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var hadPrevious = cache.TryGetValue(PerkType.ThrowRock, out var previous);
+        cache[PerkType.ThrowRock] = perk;
+        try
+        {
+            Perk.TryGetForceSideAffinity(0, PerkType.ThrowRock, out var affinity).Should().BeFalse();
+            affinity.Should().Be(0);
+            Perk.GetForceAffinityMagnitudeMultiplier(0, PerkType.ThrowRock).Should().Be(1f);
+            Perk.GetForceAffinityHitChanceAdjustment(0, PerkType.ThrowRock).Should().Be(0);
+            foreach (var damage in new[] { 22, 40, 60 })
+                Perk.ApplyForceAffinityMagnitude(0, PerkType.ThrowRock, damage).Should().Be(damage);
+
+            var details = (string)typeof(PerksViewModel)
+                .GetMethod("BuildForceAffinityPerkDetailText", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(new PerksViewModel(), new object[] { perk })!;
+            details.Should().Contain("UNIVERSAL FORCE POWER")
+                .And.Contain("Does not change Force Affinity")
+                .And.NotContain("LIGHT-ALIGNED");
+        }
+        finally
+        {
+            if (hadPrevious) cache[PerkType.ThrowRock] = previous!;
+            else cache.Remove(PerkType.ThrowRock);
+        }
     }
 
     [Test]
@@ -138,7 +175,7 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void OffensiveLightConsularPowers_UseSharedForceAccuracyAndMeetOrdinaryDathomirSoloTargets()
+    public void ConsularRotation_UsesUniversalThrowRockAndLightAffinityForOtherPowers()
     {
         const int attackerAttackAndAccuracy = 148;
         const int attackerWillpower = 40;
@@ -179,8 +216,8 @@ public class ForceLightConsularTests
                 attackerWillpower,
                 squellbugPhysicalDefense,
                 squellbugVitality,
-                hitRate,
-                fullLightAffinityMagnitude) / 6f +
+                Combat.CalculateHitRate(attackerAttackAndAccuracy, squellbugEvasion, 0),
+                1d) / 6f +
             ExpectedDamagePerUse(
                 GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "Rank3BaseDamage"),
                 attackerAttackAndAccuracy,
@@ -207,7 +244,8 @@ public class ForceLightConsularTests
                 fullLightAffinityMagnitude) / 15f;
 
         var estimatedSecondsToDefeat = squellbugHP / expectedDamagePerSecond;
-        estimatedSecondsToDefeat.Should().BeInRange(20d, 33d);
+        estimatedSecondsToDefeat.Should().BeInRange(38d, 42d,
+            "Throw Rock receives no affinity bonus while the other powers retain full Light affinity");
     }
 
     [Test]

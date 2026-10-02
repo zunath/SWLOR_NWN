@@ -452,13 +452,15 @@ def make_structures() -> None:
 
 def make_world_terminals() -> None:
     template = load(UTP / "holonetterminal.utp.json")
+    crate_appearance = load(UTP / "_mdrn_pl_crgc1m.utp.json")["Appearance"]["value"]
     for tier in range(1, 6):
         resref = f"slice_term_{tier}"
         terminal = copy.deepcopy(template)
         terminal["TemplateResRef"]["value"] = resref
         terminal["Tag"]["value"] = "SlicingTerminal"
-        set_loc(terminal["LocName"], "Sealed Field Terminal")
-        set_loc(terminal["Description"], "A neutral field terminal with a sealed local cache. Its security tier is not externally marked.")
+        terminal["Appearance"]["value"] = crate_appearance
+        set_loc(terminal["LocName"], "Sealed Field Crate")
+        set_loc(terminal["Description"], "A sealed cargo crate with an electronic lock. Its security tier is not externally marked.")
         terminal["OnUsed"]["value"] = "slice_terminal"
         terminal["Plot"]["value"] = 1
         terminal["Useable"]["value"] = 1

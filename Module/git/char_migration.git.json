@@ -100,7 +100,7 @@
           "id": 14717,
           "type": "cexolocstring",
           "value": {
-            "0": "Welcome back to Star Wars: Legends of the Old Republic!\n\nMany changes have occurred since the last time you logged in. Please take this time to redistribute your character's starting stats and skills.\n\nThis is a one-time free rebuild of your character. Please be sure to read your player guide to learn more about the changes. Further information can be found at  https://wiki.starwarsnwn.com/\n"
+            "0": "Welcome back to Star Wars: Legends of the Old Republic!\n\nMany changes have occurred since the last time you logged in. Please take this time to redistribute your character's starting stats and skills.\n\nThis is a one-time free rebuild of your character. Please be sure to read your player guide to learn more about the changes. Further information can be found at  https://wiki.starwarsnwn.com/\n\n== Names and Introductions ==\n\nUntil you name another player, you see their gray public description.\n\nType /name <label>, then click another player, to save a private name or nickname that only you see. Example: /name Mira.\n\nTo set your own gray public description, type /name <description>, then click yourself. Example: /name A Weathered Human.\n\nType /introduce <name> to offer a name or alias to visible players within 20m. Example: /introduce Mira. This command has a 5-minute cooldown.\n\nUse /introductions to review offered names and choose Remember or Dismiss. An introduction saves no name until the recipient chooses Remember."
           }
         },
         "DisarmDC": {

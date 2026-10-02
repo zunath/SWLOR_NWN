@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 20629
+    "value": 1354
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -35,7 +35,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A neutral field terminal with a sealed local cache. Its security tier is not externally marked."
+      "0": "A sealed cargo crate with an electronic lock. Its security tier is not externally marked."
     }
   },
   "DisarmDC": {
@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sealed Field Terminal"
+      "0": "Sealed Field Crate"
     }
   },
   "OnClick": {

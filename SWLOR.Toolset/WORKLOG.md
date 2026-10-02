@@ -2936,3 +2936,37 @@ with zero skips, using explicit primary repository, HAK, and installed data root
 `SWLOR.Toolset.Tests/TestResults/area-creation-package-final.trx`. An initial package run lacked
 the explicit fixture roots and skipped one native tileset case; its report is preserved as
 incomplete at `SWLOR.Toolset.Tests/TestResults/area-creation-package.trx`.
+
+## Shared blueprint-to-placement synchronization
+
+The common authoring library now owns SWLOR's existing GFF blueprint-to-placement transforms:
+`BlueprintInstanceSynchronizer`, `StoreInstanceSynchronizer`, and
+`StoreInstanceSyncStatus` live in `Nwn.Authoring.Areas.Placement`. The source moved from
+`SWLOR.Toolset.Domain/Documents` at SWLOR commit
+`4d1db02cfb852923b88aad0d504b03647ef71615`, retaining the MIT notice in the shared package.
+The merchant editor supplies the existing `Func<string, JsonGffDocument?>` item-blueprint
+resolver; no SWLOR game, catalog, deployment, or resource policy moved. Rebuild synchronization
+preserves placement position/orientation and the existing trigger geometry and visual transforms;
+rename operations remain reference-only. Supported placed kinds remain UTC, UTD, UTI, UTP, UTS,
+UTM, UTT, and UTW.
+
+Shared source commit `ceefc61c3e8ad81b857180336ab356f969b802eb` produced immutable local
+packages Authoring `0.1.0-dev.27` (SHA-256
+`FD613B405B4B336EBDE1AB191533DC9BE7B0A67762A590684A66878DA951A5BC`), Preview
+`0.1.0-dev.32` (SHA-256
+`4301C5143D6240C32325A99F98E6F1CB17670BAA78A9F5B614308F2DC8FD4B97`), and Avalonia
+`0.1.0-dev.20` (SHA-256
+`0449A940782CB12CBD9CF168E52BA185E65C4227AA9771E89984523960E0A96E`). Their nuspecs
+all identify that exact source commit; Authoring depends on Formats25, Preview on Authoring27/
+Formats25, and Avalonia on Authoring27/Preview32. Debug and Release package locks were
+regenerated and the bounded Release package-mode test used locked restore.
+
+SWLOR source-mode and package-mode runs each passed 37/37 with zero skips using the explicit
+repository, HAK, and installed NWN data roots. They cover `BlueprintSaveCoordinatorTests` and
+`MerchantEditorTests`; reports are `SWLOR.Toolset.Tests/TestResults/placement-sync-source-final.trx`
+and `SWLOR.Toolset.Tests/TestResults/placement-sync-package-final.trx`. Shared Authoring passed
+64/64 on Windows and 64/64 in the pinned offline Linux SDK container; both have zero skips and
+include resolver inventory/lazy-resource tests. The focused placement/resolver subset passed
+15/15 on Windows. Linux logs and TRX are under
+`NWN.Toolset/artifacts/linux-placement-sync-retry/`. The broad HAK corpus was not part of this
+document-transform slice.

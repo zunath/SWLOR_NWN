@@ -137,22 +137,22 @@
       },
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.26, )",
-        "resolved": "0.1.0-dev.26",
-        "contentHash": "MwpDwvYwczp7NtJ/HGeG+lCZSj8w9dAgQ2FkzvYselOBY5N0lDvVfLgQ5YaPaASjpyDpTcObS/nb0JlEPux/sA==",
+        "requested": "[0.1.0-dev.27, )",
+        "resolved": "0.1.0-dev.27",
+        "contentHash": "2nL/RI4/DdguBDHZ1frF+DM9SRhSkAH4RPyS87yXmqtYGKxg63JZQpjzqtmddJb7Y5g5BrB4b83leQNEotydWw==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.25"
         }
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.19, )",
-        "resolved": "0.1.0-dev.19",
-        "contentHash": "wHM0h80RZoelZLSGFKRxl3SsHuPwY/1V/7jCRs7+nGt6GqWVWHMMtfQM95RwIRC20/6p9g48cXBErlFoGcb7lg==",
+        "requested": "[0.1.0-dev.20, )",
+        "resolved": "0.1.0-dev.20",
+        "contentHash": "RiHn8XjSSz+jr54iqWzQDUsAPNMAUBLc4Pp04M24Z2hKsjKVJTF2TnqiFmY3jli2EZRrjzvafBd+QcYnL2b8Yw==",
         "dependencies": {
           "Avalonia": "11.3.17",
-          "Nwn.Authoring": "0.1.0-dev.26",
-          "Nwn.Preview": "0.1.0-dev.31",
+          "Nwn.Authoring": "0.1.0-dev.27",
+          "Nwn.Preview": "0.1.0-dev.32",
           "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
@@ -430,10 +430,10 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.31",
-        "contentHash": "dtsSL8fKYzqm2Sh+AVUaHpwb5xgG1RUf0iea3UJ0eApgDJRC8ix+EgCzjZfcYWLop23PnDBCKldPRL0UBYhH5A==",
+        "resolved": "0.1.0-dev.32",
+        "contentHash": "32vCrsWXWnpRaBaTwx9k+1hKFM/nKk2prtnjJwLmbhYglytT/DWTHr0z1NEG0isU2Vs7U1RmoBeCZFKNsAPucg==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.26",
+          "Nwn.Authoring": "0.1.0-dev.27",
           "Nwn.Formats": "0.1.0-dev.25"
         }
       },
@@ -560,9 +560,9 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.26, )",
+          "Nwn.Authoring": "[0.1.0-dev.27, )",
           "Nwn.Formats": "[0.1.0-dev.25, )",
-          "Nwn.Preview": "[0.1.0-dev.31, )",
+          "Nwn.Preview": "[0.1.0-dev.32, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

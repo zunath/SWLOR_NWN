@@ -4,9 +4,9 @@
     "net10.0": {
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.26, )",
-        "resolved": "0.1.0-dev.26",
-        "contentHash": "MwpDwvYwczp7NtJ/HGeG+lCZSj8w9dAgQ2FkzvYselOBY5N0lDvVfLgQ5YaPaASjpyDpTcObS/nb0JlEPux/sA==",
+        "requested": "[0.1.0-dev.27, )",
+        "resolved": "0.1.0-dev.27",
+        "contentHash": "2nL/RI4/DdguBDHZ1frF+DM9SRhSkAH4RPyS87yXmqtYGKxg63JZQpjzqtmddJb7Y5g5BrB4b83leQNEotydWw==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.25"
         }
@@ -19,11 +19,11 @@
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.31, )",
-        "resolved": "0.1.0-dev.31",
-        "contentHash": "dtsSL8fKYzqm2Sh+AVUaHpwb5xgG1RUf0iea3UJ0eApgDJRC8ix+EgCzjZfcYWLop23PnDBCKldPRL0UBYhH5A==",
+        "requested": "[0.1.0-dev.32, )",
+        "resolved": "0.1.0-dev.32",
+        "contentHash": "32vCrsWXWnpRaBaTwx9k+1hKFM/nKk2prtnjJwLmbhYglytT/DWTHr0z1NEG0isU2Vs7U1RmoBeCZFKNsAPucg==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.26",
+          "Nwn.Authoring": "0.1.0-dev.27",
           "Nwn.Formats": "0.1.0-dev.25"
         }
       },

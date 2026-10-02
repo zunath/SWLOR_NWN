@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Appearances;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using Nwn.Authoring.Documents.NimGff;
@@ -109,34 +110,6 @@ namespace SWLOR.Toolset.Domain.Render
     /// </summary>
     public static class BlueprintModelResolver
     {
-        /// <summary>
-        /// Creature field → armor-override key → MdlPartComposer / MdlPartBoneMap part type. Head is
-        /// handled separately (utc field Appearance_Head; armor never overrides it). Note the Aurora
-        /// format quirk on the right foot: the CREATURE's right-foot part number is stored under
-        /// "ArmorPart_RFoot" on the utc root — "BodyPart_RFoot" does not exist anywhere in the format
-        /// (corpus-verified: 447 utcs carry ArmorPart_RFoot, zero carry BodyPart_RFoot).
-        /// </summary>
-        private static readonly (string CreatureField, string ArmorKey, string PartType)[] BodyPartFields =
-        {
-            ("BodyPart_Neck", "Neck", "neck"),
-            ("BodyPart_Torso", "Torso", "chest"),
-            ("BodyPart_Belt", "Belt", "belt"),
-            ("BodyPart_Pelvis", "Pelvis", "pelvis"),
-            ("BodyPart_LShoul", "LShoul", "shol"),
-            ("BodyPart_RShoul", "RShoul", "shor"),
-            ("BodyPart_LBicep", "LBicep", "bicepl"),
-            ("BodyPart_RBicep", "RBicep", "bicepr"),
-            ("BodyPart_LFArm", "LFArm", "forel"),
-            ("BodyPart_RFArm", "RFArm", "forer"),
-            ("BodyPart_LHand", "LHand", "handl"),
-            ("BodyPart_RHand", "RHand", "handr"),
-            ("BodyPart_LThigh", "LThigh", "legl"),
-            ("BodyPart_RThigh", "RThigh", "legr"),
-            ("BodyPart_LShin", "LShin", "shinl"),
-            ("BodyPart_RShin", "RShin", "shinr"),
-            ("BodyPart_LFoot", "LFoot", "footl"),
-            ("ArmorPart_RFoot", "RFoot", "footr"),
-        };
 
         /// <summary>
         /// Parts a FULL-BODY robe replaces (same set as Quartermaster's RobePartSuppression):
@@ -357,7 +330,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
 
-            foreach (var (_, armorKey, partType) in BodyPartFields)
+            foreach (var (_, armorKey, partType) in CreatureBodyPartFields.All)
             {
                 var armorValue = ItemAppearanceValues.Read(root, "ArmorPart_" + armorKey) ?? 0;
 
@@ -421,7 +394,7 @@ namespace SWLOR.Toolset.Domain.Render
                     UsesItemTintOverrides: true)
             };
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
-            foreach (var (_, _, partType) in BodyPartFields)
+            foreach (var (_, _, partType) in CreatureBodyPartFields.All)
             {
                 // The body is here to hang the cape on, so it stays plain: part 1 everywhere it
                 // exists, and shoulders (which have no bare-body piece) left off.
@@ -542,7 +515,7 @@ namespace SWLOR.Toolset.Domain.Render
             if (head is > 0)
                 parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", head.Value)));
 
-            foreach (var (creatureField, armorKey, partType) in BodyPartFields)
+            foreach (var (creatureField, armorKey, partType) in CreatureBodyPartFields.All)
             {
                 if (visibleEquipment.HiddenBodyParts.Contains(partType))
                     continue;

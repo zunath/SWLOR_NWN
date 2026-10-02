@@ -68,7 +68,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly ArmorDyeSwatchService _dyeSwatches;
 
         /// <summary>Authored part textures for the compose run in flight; guarded by _composerGate.</summary>
-        private readonly Domain.Render.ComposedPartTextures _partTextures = new();
+        private readonly ComposedPartTextures _partTextures = new();
 
         private readonly MdlPartComposer? _partComposer;
 

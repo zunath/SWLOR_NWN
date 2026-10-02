@@ -423,7 +423,9 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedDualWieldDamage[] ExpectedDualWieldDamageTotals =
     {
-        new("s_app", 36),
+        new("s_app", 35),
+        new("korr_frostbind", 35),
+        new("s_app_m", 29),
         new("byysk_warrior", 33),
         new("vdathguard", 81),
         new("vkorrdunmarauder", 73),

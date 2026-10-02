@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors;
+using SWLOR.Game.Server.EngineTests.Definitions;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -82,7 +83,8 @@ namespace SWLOR.Game.Server.Tests.Feature
 
         private static bool HasObservableOutcome(AbilityBehaviorCase behaviorCase)
         {
-            return behaviorCase.ExpectedActivatorStatusEffects.Length > 0 ||
+            return (behaviorCase.RequiresPlayerBeastFixture && PlayerBeastAbilityEngineTests.Supports(behaviorCase.Feat)) ||
+                   behaviorCase.ExpectedActivatorStatusEffects.Length > 0 ||
                    behaviorCase.ExpectedTargetStatusEffects.Length > 0 ||
                    behaviorCase.ExpectedActivatorStatAdjustments.Count > 0 ||
                    behaviorCase.ExpectedTargetStatAdjustments.Count > 0 ||
@@ -158,6 +160,16 @@ namespace SWLOR.Game.Server.Tests.Feature
                 .ToList();
 
             badSkips.Should().BeEmpty("a skipped behavior case must say why it cannot run in-engine yet");
+        }
+
+        [Test]
+        public void PlayerBeastCases_RequireACompleteDedicatedFixture()
+        {
+            var cases = BuildAllCases().Where(c => c.RequiresPlayerBeastFixture).ToList();
+            cases.Should().HaveCount(11);
+            cases.Should().OnlyContain(c => PlayerBeastAbilityEngineTests.Supports(c.Feat) &&
+                                           string.IsNullOrWhiteSpace(c.SkipReason) && c.ExpectsRecast,
+                "player-only cases must execute an ownership, impact, cost and recast fixture");
         }
 
         [Test]

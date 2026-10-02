@@ -18,11 +18,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
     /// player's equipped-technique list (Mimicry.GetStatBonus/GetResistanceBonus) for as long as it
     /// stays equipped, with no activation, cooldown, or resource cost of its own.
     ///
-    /// UsePerkFeat.TryUseAbility and Ability.CanUseAbility have no such distinction, though: nothing
-    /// stops a direct feat activation from succeeding (ability.ImpactAction is simply null, so
-    /// ExecuteAbilityImpact's null-conditional invoke does nothing observable). Every case here
-    /// therefore only asserts that the activation itself succeeds - no status effect, damage, cost,
-    /// or recast is expected because the definition declares none.
+    /// The executor equips each trait through the player loadout, checks its stats and
+    /// resistances, then unequips it and verifies removal. Traits never receive an active feat.
     /// </summary>
     public class MimicryTraitAbilityBehaviors : IAbilityBehaviorSource
     {

@@ -659,9 +659,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(mainScriptBaseline + 5, Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy agrees");
                 ctx.AssertEqual(offScriptBaseline + 10, Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy agrees");
 
-                ApplyEffectToObject(DurationType.Temporary, EffectAccuracyIncrease(2), attacker, 30f);
-                ctx.AssertEqual(mainBaseline + 15, Stat.GetAccuracyNative(native, mainWeapon), "Ordinary attack buffs still affect main-hand accuracy");
-                ctx.AssertEqual(offBaseline + 20, Stat.GetAccuracyNative(native, offWeapon), "Ordinary attack buffs still affect off-hand accuracy");
+                TemporaryStatModifier.Add(attacker, StatType.Accuracy, 10, 30f);
+                ctx.AssertEqual(mainBaseline + 15, Stat.GetAccuracyNative(native, mainWeapon), "Stat-driven accuracy buffs affect the main hand once");
+                ctx.AssertEqual(offBaseline + 20, Stat.GetAccuracyNative(native, offWeapon), "Stat-driven accuracy buffs affect the off hand once");
+                ctx.AssertEqual(mainScriptBaseline + 15, Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy includes the buff");
+                ctx.AssertEqual(offScriptBaseline + 20, Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy includes the buff");
             });
         }
 

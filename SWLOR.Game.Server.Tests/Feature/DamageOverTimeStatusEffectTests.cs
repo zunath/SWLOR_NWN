@@ -117,6 +117,27 @@ public class DamageOverTimeStatusEffectTests
     }
 
     [Test]
+    public void EveryDamagingStatusTick_UsesTheSharedMitigationStage()
+    {
+        var root = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+        var examined = 0;
+        foreach (var file in Directory.EnumerateFiles(root, "*.cs"))
+        {
+            var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot();
+            foreach (var method in syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                         .Where(method => method.Identifier.Text == "Tick"))
+            {
+                var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                if (!calls.Any(call => call.Expression.ToString() == "EffectDamage")) continue;
+                examined++;
+                calls.Should().Contain(call => call.Expression.ToString() == "Combat.ApplyDamageTakenModifiers",
+                    Path.GetFileName(file) + " must honor reduction, immunity, redirection and survival effects");
+            }
+        }
+        examined.Should().BeGreaterThanOrEqualTo(10, "the entire damaging status corpus must be examined");
+    }
+
+    [Test]
     public void AutoAttackSplash_DefersDamageEventsUntilTheNativeAttackReturns()
     {
         var file = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs");

@@ -21,7 +21,18 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         public uint Creature { get; }
         public string Id { get; }
         private readonly int _wasPlayer;
-        private readonly CNWSPlayer _client;
+        private CNWSPlayer _client;
+        private bool _recordWriteAttempted;
+        private bool _clientRegistrationAttempted;
+        private bool _disposed;
+
+        internal enum IdentitySetupStage
+        {
+            RecordPersisted,
+            PlayerFlagApplied,
+            ClientCreated,
+            ClientRegistered,
+        }
 
         private sealed class WorldPlayerCreature : CNWSCreature
         {
@@ -35,6 +46,15 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             Id = GetObjectUUID(creature);
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSCreature();
             _wasPlayer = native.m_bPlayerCharacter;
+        }
+
+        /// <summary>
+        /// Installs persistence and native identity inside CreateAsync's rollback scope.
+        /// Stage callbacks let engine tests interrupt partial setup before arena entry.
+        /// </summary>
+        private unsafe void InstallIdentity(Action<PlayerAbilityFixture, IdentitySetupStage> afterStage)
+        {
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(Creature).AsNWSCreature();
             var record = new Player(Id)
             {
                 Name = "Engine test player", RebuildComplete = true,
@@ -49,24 +69,42 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             foreach (var skill in new[] { SkillType.Mimicry, SkillType.BeastMastery, SkillType.FirstAid, SkillType.Force, SkillType.Vibroblade })
                 record.Skills[skill].Rank = 50;
             foreach (var stat in record.BaseStats.Keys.ToArray())
-                record.BaseStats[stat] = GetAbilityScore(creature, stat);
+                record.BaseStats[stat] = GetAbilityScore(Creature, stat);
             record.Perks[PerkType.CombatAnalyzer] = 1;
             record.Perks[PerkType.AnalyzerMemory] = 1;
             record.Perks[PerkType.Tame] = 5;
+            // DB.Set writes the search index before JSON, so even a failed write needs cleanup.
+            _recordWriteAttempted = true;
             DB.Set(record);
+            afterStage?.Invoke(this, IdentitySetupStage.RecordPersisted);
             native.m_bPlayerCharacter = 1;
+            afterStage?.Invoke(this, IdentitySetupStage.PlayerFlagApplied);
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             uint clientId = 1;
             while (server.GetClientObjectByPlayerId(clientId) is { } existing && existing.Pointer != nint.Zero)
                 clientId++;
             _client = new CNWSPlayer(clientId);
-            _client.SetGameObject(NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSObject());
-            _client.m_oidPCObject = creature;
+            afterStage?.Invoke(this, IdentitySetupStage.ClientCreated);
+            _client.SetGameObject(server.GetGameObject(Creature).AsNWSObject());
+            _client.m_oidPCObject = Creature;
             _client.m_bIsPrimaryPlayer = 1;
-            NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Add(_client);
+            _clientRegistrationAttempted = true;
+            server.GetPlayerList().Add(_client);
+            afterStage?.Invoke(this, IdentitySetupStage.ClientRegistered);
         }
 
-        public static async Task<PlayerAbilityFixture> CreateAsync(EngineTestContext context, float xOffset = 0f)
+        /// <summary>
+        /// Creates a persisted native player and enters the arena, rolling back identity
+        /// if any setup or arena-entry step fails.
+        /// </summary>
+        public static Task<PlayerAbilityFixture> CreateAsync(EngineTestContext context, float xOffset = 0f)
+            => CreateAsync(context, xOffset, null);
+
+        /// <summary>
+        /// Creates a fixture with interruption points for partial-setup cleanup checks.
+        /// </summary>
+        internal static async Task<PlayerAbilityFixture> CreateAsync(EngineTestContext context, float xOffset,
+            Action<PlayerAbilityFixture, IdentitySetupStage> afterStage)
         {
             var template = context.SpawnCreature("civilian", xOffset);
             // OnSpawn's delayed stat initialization must finish before PC state is installed.
@@ -80,15 +118,20 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             var fixture = new PlayerAbilityFixture(creature);
             try
             {
+                fixture.InstallIdentity(afterStage);
                 context.Assert(GetIsPC(creature), "fixture follows the native player branch");
                 await context.ExecuteInCreatureContextAsync(template, () => EnterArena(context, creature, template));
                 DestroyObject(template);
                 await context.WaitFrameAsync();
                 return fixture;
             }
-            catch
+            catch (Exception setupFailure)
             {
-                fixture.Dispose();
+                try { fixture.Dispose(); }
+                catch (Exception cleanupFailure)
+                {
+                    throw new AggregateException("Player fixture setup and identity cleanup both failed.", setupFailure, cleanupFailure);
+                }
                 throw;
             }
         }
@@ -127,14 +170,45 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             DB.Set(record);
         }
 
+        /// <summary>
+        /// Releases completed or partial identity setup once. Every cleanup stage is
+        /// attempted even if an earlier stage fails; the arena context owns the creature.
+        /// </summary>
         public unsafe void Dispose()
         {
-            NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Remove(_client);
-            _client.m_oidPCObject = OBJECT_INVALID;
-            _client.Dispose();
-            if (GetIsObjectValid(Creature))
-                NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(Creature).AsNWSCreature().m_bPlayerCharacter = _wasPlayer;
-            DB.Delete<Player>(Id);
+            if (_disposed)
+                return;
+            _disposed = true;
+            try
+            {
+                try
+                {
+                    if (_clientRegistrationAttempted)
+                        NWNXLib.g_pAppManager.m_pServerExoApp.GetPlayerList().Remove(_client);
+                }
+                finally
+                {
+                    if (_client != null)
+                    {
+                        _client.m_oidPCObject = OBJECT_INVALID;
+                        _client.Dispose();
+                        _client = null;
+                    }
+                }
+            }
+            finally
+            {
+                try
+                {
+                    if (GetIsObjectValid(Creature))
+                        NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(Creature).AsNWSCreature().m_bPlayerCharacter = _wasPlayer;
+                }
+                finally
+                {
+                    if (_recordWriteAttempted)
+                        DB.Delete<Player>(Id);
+                }
+            }
         }
     }
 }

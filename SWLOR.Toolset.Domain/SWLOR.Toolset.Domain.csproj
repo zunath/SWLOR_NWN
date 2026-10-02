@@ -12,15 +12,15 @@
     <Using Include="Nwn.Formats.Exceptions.NwnFormatException" Alias="NwnFormatException" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Authoring\Nwn.Authoring.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Authoring" Version="0.1.0-dev.28"
+    <PackageReference Include="Nwn.Authoring" Version="0.1.0-dev.29"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Formats\Nwn.Formats.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.25"
+    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.26"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Preview\Nwn.Preview.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Preview" Version="0.1.0-dev.33"
+    <PackageReference Include="Nwn.Preview" Version="0.1.0-dev.34"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj"

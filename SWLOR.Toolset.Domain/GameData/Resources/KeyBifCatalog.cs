@@ -151,8 +151,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         private static StockArchive CreateStockArchive(KeyFile key, string dataDirectory)
         {
-            StockArchive? archive = null;
-            archive = new StockArchive(key, bifFilename =>
+            return StockArchive.FromStreams(key, bifFilename =>
             {
                 var bifPath = ResolveBifPath(dataDirectory, bifFilename);
                 if (bifPath is null)
@@ -160,16 +159,12 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
                         $"KEY BIF path '{bifFilename}' is outside the selected install.",
                         bifFilename);
 
-                var remainingCacheBytes = ReadOptions.MaximumCachedBifBytes - archive!.CachedBifBytes;
-                if (remainingCacheBytes <= 0)
-                    throw new FormatException("The selected KEY archive exceeded its retained BIF byte limit.");
-
-                return ReadFileBounded(
-                    bifPath,
-                    Math.Min(ReadOptions.MaximumBifFileBytes, remainingCacheBytes),
-                    "BIF archive");
-            });
-            return archive;
+                var stream = File.OpenRead(bifPath);
+                if (stream.Length <= ReadOptions.MaximumBifFileBytes) return stream;
+                var length = stream.Length;
+                stream.Dispose();
+                throw new FormatException($"BIF archive '{bifPath}' is {length} bytes; configured limit is {ReadOptions.MaximumBifFileBytes}.");
+            }, ReadOptions.MaximumCachedBifBytes);
         }
 
         private static string? ResolveBifPath(string dataDirectory, string bifFilename)

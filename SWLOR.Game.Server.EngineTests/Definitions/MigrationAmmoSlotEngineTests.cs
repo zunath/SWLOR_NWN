@@ -84,9 +84,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ItemPlugin.SetBaseItemType(weapon, BaseItem.Pistol);
                 ItemPlugin.SetBaseItemType(ammo, BaseItem.Arrow);
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSCreature();
-                ctx.AssertEqual(1, native.m_bMagicalArrowsEquipped,
+                ctx.AssertEqual(1, native.m_bMagicalBulletsEquipped,
                     "Fixture weapon produces engine-owned ammunition");
-                ctx.Assert(GetItemInSlot(InventorySlot.Arrows, creature) != ammo,
+                ctx.Assert(GetItemInSlot(InventorySlot.Bullets, creature) != ammo,
                     "Engine-owned ammunition is distinct from the saved inventory stack");
                 var quantity = GetItemStackSize(ammo);
                 ctx.AssertEqual(true, (bool)Invoke("PistolBaseItemMigration", "MigrateStoredObject", creature),

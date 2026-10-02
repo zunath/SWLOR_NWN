@@ -846,7 +846,7 @@ namespace SWLOR.Toolset.Tests
             skin.Palette.Number = 12;
 
             store.GetInteger(
-                    SWLOR.Toolset.Domain.Editors.Behaviors.BehaviorFieldStorage.Field,
+                    Nwn.Authoring.Behaviors.BehaviorFieldStorage.Field,
                     "Color_Skin")
                 .Should().Be(12);
             store.Locals.GetInt(key).Should().BeNull(

@@ -45,7 +45,7 @@ namespace SWLOR.Toolset.Tests.Items
                 Directory.Delete(_scratchDirectory, recursive: true);
         }
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ReadFixture()
+        private IReadOnlyList<Nwn.Authoring.Behaviors.BehaviorChoice> ReadFixture()
         {
             var twoDa = new TwoDaService(_scratchDirectory);
             string? Tlk(int strref) => strref switch

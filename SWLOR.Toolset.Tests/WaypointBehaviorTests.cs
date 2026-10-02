@@ -39,7 +39,7 @@ namespace SWLOR.Toolset.Tests
 
         private static readonly Dictionary<string, int> ExpectedPlacementCounts = new()
         {
-            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2122,
+            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2123,
             [WaypointBehaviorCatalog.FishingPointId] = 431,
             [WaypointBehaviorCatalog.MapNoteId] = 379,
             [WaypointBehaviorCatalog.StuckRescuePointId] = 331,
@@ -92,12 +92,16 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PlacementBehaviorCountsMatchTheModuleCorpus()
         {
-            var counts = CorpusPlacements()
+            var placements = CorpusPlacements().ToArray();
+            var warlord = placements.Single(waypoint =>
+                waypoint.GetStringOrNull("Tag") == "TATOOINE_TUSKEN_WARLORD");
+            Catalog().Classify(warlord).Id.Should().Be(WaypointBehaviorCatalog.CreatureSpawnPointId);
+            var counts = placements
                 .GroupBy(waypoint => Catalog().Classify(waypoint).Id)
                 .ToDictionary(group => group.Key, group => group.Count());
 
             counts.Should().BeEquivalentTo(ExpectedPlacementCounts);
-            counts.Values.Sum().Should().Be(4213);
+            counts.Values.Sum().Should().Be(4214);
         }
 
         [Test]
@@ -621,9 +625,10 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AppearancesOfferMarkerModelsRatherThanNames()
         {
-            var sw2Da = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
-            if (!Directory.Exists(sw2Da))
-                Assert.Ignore("The haks submodule is not initialised in this checkout.");
+            var haksRoot = Support.ToolsetCorpusPaths.HaksRoot
+                ?? Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks");
+            var sw2Da = Path.Combine(haksRoot, "sw_2da");
+            Directory.Exists(sw2Da).Should().BeTrue("the selected HAK corpus is required; set SWLOR_TEST_HAKS_ROOT");
 
             var appearances = WaypointAppearanceCatalog.Read(
                 new Domain.GameData.Lookups.WaypointAppearanceService(

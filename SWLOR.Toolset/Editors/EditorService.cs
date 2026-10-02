@@ -3281,7 +3281,7 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<BehaviorChoice> ResolveDoorChoices(string key) =>
             Cached("door", key, BuildDoorChoices);
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> BuildDoorChoices(string key)
+        private IReadOnlyList<Nwn.Authoring.Behaviors.BehaviorChoice> BuildDoorChoices(string key)
         {
             if (key == Domain.Editors.Doors.DoorChoiceKeys.DoorPaletteCategories)
                 return ResolveDoorCategories();
@@ -3296,21 +3296,21 @@ namespace SWLOR.Toolset.Editors
                 return ResolvePortraitChoices();
 
             return _lookups.GetOptions(key)
-                .Select(option => new Domain.Editors.Behaviors.BehaviorChoice(option.Id, option.Display))
+                .Select(option => new Nwn.Authoring.Behaviors.BehaviorChoice(option.Id, option.Display))
                 .ToList();
         }
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveDoorCategories()
+        private IReadOnlyList<Nwn.Authoring.Behaviors.BehaviorChoice> ResolveDoorCategories()
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
-                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
             try
             {
                 var path = Path.Combine(workspace.ModuleRoot, "itp", "doorpalcus.itp.json");
                 if (!File.Exists(path))
-                    return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                    return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
                 return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
                     Domain.Documents.ItpDocument.Load(path),
@@ -3319,11 +3319,11 @@ namespace SWLOR.Toolset.Editors
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not read the door palette categories: {ex.Message}");
-                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
             }
         }
 
-        private string? ResolveDoorTag(Domain.Editors.Behaviors.BehaviorTagScope scope, string tag)
+        private string? ResolveDoorTag(Nwn.Authoring.Behaviors.BehaviorTagScope scope, string tag)
         {
             if (string.IsNullOrWhiteSpace(tag))
                 return null;
@@ -3332,19 +3332,19 @@ namespace SWLOR.Toolset.Editors
             if (workspace == null)
                 return null;
 
-            if (scope == Domain.Editors.Behaviors.BehaviorTagScope.Item)
+            if (scope == Nwn.Authoring.Behaviors.BehaviorTagScope.Item)
             {
                 var itemResRef = workspace.TagIndex.FindItemBlueprintDefiningTag(tag);
                 return itemResRef == null ? null : $"item blueprint {itemResRef}";
             }
 
-            if (scope == Domain.Editors.Behaviors.BehaviorTagScope.Waypoint)
+            if (scope == Nwn.Authoring.Behaviors.BehaviorTagScope.Waypoint)
             {
                 var area = workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utw);
                 return area == null ? null : $"waypoint in {area}";
             }
 
-            if (scope == Domain.Editors.Behaviors.BehaviorTagScope.Door)
+            if (scope == Nwn.Authoring.Behaviors.BehaviorTagScope.Door)
             {
                 var area = workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utd);
                 return area == null ? null : $"door in {area}";
@@ -3431,7 +3431,7 @@ namespace SWLOR.Toolset.Editors
         private IReadOnlyList<BehaviorChoice> ResolveTriggerChoices(string key) =>
             Cached("trigger", key, BuildTriggerChoices);
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> BuildTriggerChoices(string key)
+        private IReadOnlyList<Nwn.Authoring.Behaviors.BehaviorChoice> BuildTriggerChoices(string key)
         {
             if (key == Domain.Editors.Triggers.TriggerChoiceKeys.PaletteCategories)
                 return ResolveTriggerCategories();
@@ -3445,7 +3445,7 @@ namespace SWLOR.Toolset.Editors
                 return Domain.Editors.Triggers.TrapTypeCatalog.Read(_twoDaService);
 
             return _lookups.GetOptions(key)
-                .Select(option => new Domain.Editors.Behaviors.BehaviorChoice(option.Id, option.Display))
+                .Select(option => new Nwn.Authoring.Behaviors.BehaviorChoice(option.Id, option.Display))
                 .ToList();
         }
 
@@ -3453,17 +3453,17 @@ namespace SWLOR.Toolset.Editors
         /// The trigger palette's categories, named rather than numbered. A missing or unreadable
         /// palette yields an empty list, which shows as an empty picker instead of a bare id.
         /// </summary>
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveTriggerCategories()
+        private IReadOnlyList<Nwn.Authoring.Behaviors.BehaviorChoice> ResolveTriggerCategories()
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
-                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
             try
             {
                 var path = Path.Combine(workspace.ModuleRoot, "itp", "triggerpalcus.itp.json");
                 if (!File.Exists(path))
-                    return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                    return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
                 return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
                     Domain.Documents.ItpDocument.Load(path),
@@ -3472,14 +3472,14 @@ namespace SWLOR.Toolset.Editors
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not read the trigger palette categories: {ex.Message}");
-                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
             }
         }
 
         private IReadOnlyList<BehaviorChoice> ResolveWaypointChoices(string key) =>
             Cached("waypoint", key, BuildWaypointChoices);
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> BuildWaypointChoices(string key)
+        private IReadOnlyList<Nwn.Authoring.Behaviors.BehaviorChoice> BuildWaypointChoices(string key)
         {
             if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.PaletteCategories)
                 return ResolveWaypointCategories();
@@ -3489,20 +3489,20 @@ namespace SWLOR.Toolset.Editors
             if (key == Domain.Editors.Waypoints.WaypointChoiceKeys.Appearances)
                 return Domain.Editors.Waypoints.WaypointAppearanceCatalog.Read(_waypointAppearances);
 
-            return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+            return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
         }
 
-        private IReadOnlyList<Domain.Editors.Behaviors.BehaviorChoice> ResolveWaypointCategories()
+        private IReadOnlyList<Nwn.Authoring.Behaviors.BehaviorChoice> ResolveWaypointCategories()
         {
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
-                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
             try
             {
                 var path = Path.Combine(workspace.ModuleRoot, "itp", "waypointpalcus.itp.json");
                 if (!File.Exists(path))
-                    return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                    return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
                 return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
                     Domain.Documents.ItpDocument.Load(path),
@@ -3511,7 +3511,7 @@ namespace SWLOR.Toolset.Editors
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not read the waypoint palette categories: {ex.Message}");
-                return Array.Empty<Domain.Editors.Behaviors.BehaviorChoice>();
+                return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
             }
         }
 
@@ -3520,7 +3520,7 @@ namespace SWLOR.Toolset.Editors
         /// Stores and the other destination kind deliberately do not satisfy this lookup.
         /// </summary>
         private string? ResolveTriggerTagArea(
-            Domain.Editors.Behaviors.BehaviorTagScope scope,
+            Nwn.Authoring.Behaviors.BehaviorTagScope scope,
             string tag)
         {
             var workspace = _workspaceContext.Workspace;
@@ -3529,9 +3529,9 @@ namespace SWLOR.Toolset.Editors
 
             return scope switch
             {
-                Domain.Editors.Behaviors.BehaviorTagScope.Waypoint =>
+                Nwn.Authoring.Behaviors.BehaviorTagScope.Waypoint =>
                     workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utw),
-                Domain.Editors.Behaviors.BehaviorTagScope.Door =>
+                Nwn.Authoring.Behaviors.BehaviorTagScope.Door =>
                     workspace.TagIndex.FindAreaDefiningTag(tag, ResourceType.Utd),
                 _ => null
             };

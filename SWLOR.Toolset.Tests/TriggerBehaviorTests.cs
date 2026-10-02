@@ -155,9 +155,10 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void LoadScreensOfferPicturesRatherThanNames()
         {
-            var sw2Da = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
-            if (!Directory.Exists(sw2Da))
-                Assert.Ignore("The haks submodule is not initialised in this checkout.");
+            var haksRoot = Support.ToolsetCorpusPaths.HaksRoot
+                ?? Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks");
+            var sw2Da = Path.Combine(haksRoot, "sw_2da");
+            Directory.Exists(sw2Da).Should().BeTrue("the selected HAK corpus is required; set SWLOR_TEST_HAKS_ROOT");
 
             var screens = LoadScreenCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(sw2Da));
 

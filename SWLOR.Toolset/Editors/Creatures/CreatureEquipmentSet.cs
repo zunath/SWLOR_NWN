@@ -61,7 +61,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return existing;
 
             var creatureResRef = _creature.GetString(
-                Domain.Editors.Behaviors.BehaviorFieldStorage.Field,
+                Nwn.Authoring.Behaviors.BehaviorFieldStorage.Field,
                 "TemplateResRef");
             var resRef = UniqueResRef(creatureResRef, suffix);
             var path = Path.Combine(_itemDirectory, resRef + ".uti.json");

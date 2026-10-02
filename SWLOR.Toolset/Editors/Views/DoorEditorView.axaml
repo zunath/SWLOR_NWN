@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              x:Class="SWLOR.Toolset.Editors.Doors.DoorEditorView"
@@ -13,9 +14,9 @@
          because the trigger editor needs exactly the same thing for its load screens. -->
     <DataTemplate DataType="doors:DoorRowViewModel">
       <StackPanel Margin="6,1" IsVisible="{Binding IsVisible}">
-        <behaviors:BehaviorRowView />
+        <sharedBehaviors:BehaviorRowView />
 
-        <behaviors:LabeledFieldPanel IsVisible="{Binding IsMultiChoice}">
+        <sharedBehaviors:LabeledFieldPanel IsVisible="{Binding IsMultiChoice}">
           <Panel />
           <StackPanel Spacing="6">
             <ItemsControl ItemsSource="{Binding SelectedKeyItems}">
@@ -61,7 +62,7 @@
               </ScrollViewer>
             </Border>
           </StackPanel>
-        </behaviors:LabeledFieldPanel>
+        </sharedBehaviors:LabeledFieldPanel>
       </StackPanel>
     </DataTemplate>
   </UserControl.DataTemplates>

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              x:Class="SWLOR.Toolset.Editors.Sounds.SoundEditorView"
              x:DataType="sounds:SoundEditorViewModel">
 
@@ -9,11 +10,11 @@
     <!-- The shared row, plus the ordered Sounds list no other editor has. -->
     <DataTemplate DataType="sounds:SoundRowViewModel">
       <StackPanel Margin="16,1">
-        <behaviors:BehaviorRowView />
+        <sharedBehaviors:BehaviorRowView />
 
         <!-- Indented under its own row's label when there is room, and full width when there is
              not - the same rule the rows themselves follow, so the list never overflows the pane. -->
-        <behaviors:LabeledFieldPanel IsVisible="{Binding IsSoundList}">
+        <sharedBehaviors:LabeledFieldPanel IsVisible="{Binding IsSoundList}">
           <Panel />
           <StackPanel Spacing="6"
                       DataContext="{Binding SoundList}" x:DataType="sounds:SoundListEditorViewModel">
@@ -83,7 +84,7 @@
               </StackPanel>
             </Grid>
           </StackPanel>
-        </behaviors:LabeledFieldPanel>
+        </sharedBehaviors:LabeledFieldPanel>
       </StackPanel>
     </DataTemplate>
   </UserControl.DataTemplates>

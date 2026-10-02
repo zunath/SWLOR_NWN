@@ -375,12 +375,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void SearchableChoicePicker_LoadsMoreChoicesAsTheUserScrolls()
         {
-            var picker = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset", "Editors", "Behaviors", "SearchableChoicePickerView.axaml"));
-            var codeBehind = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset", "Editors", "Behaviors", "SearchableChoicePickerView.axaml.cs"));
+            var picker = Support.SharedToolsetSource.ReadBehaviorFile("SearchableChoicePickerView.axaml");
+            var codeBehind = Support.SharedToolsetSource.ReadBehaviorFile("SearchableChoicePickerView.axaml.cs");
 
             picker.Should().Contain("ScrollViewer.ScrollChanged=\"OnSearchResultsScrollChanged\"");
             picker.Should().NotContain("Content=\"Load more\"");

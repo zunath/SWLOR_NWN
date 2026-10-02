@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:creatures="using:SWLOR.Toolset.Editors.Creatures"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:items="using:SWLOR.Toolset.Editors.Items"
              xmlns:editors="using:SWLOR.Toolset.Editors"
@@ -26,8 +27,8 @@
   </UserControl.Resources>
 
   <UserControl.DataTemplates>
-    <DataTemplate DataType="behaviors:BehaviorRowViewModel">
-      <behaviors:BehaviorRowView />
+    <DataTemplate DataType="sharedBehaviors:BehaviorRowViewModel">
+      <sharedBehaviors:BehaviorRowView />
     </DataTemplate>
 
     <DataTemplate DataType="creatures:CreatureStatCellViewModel">
@@ -136,7 +137,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="creatures:CreatureEquipmentPickerViewModel">
-      <behaviors:BehaviorRowView />
+      <sharedBehaviors:BehaviorRowView />
     </DataTemplate>
   </UserControl.DataTemplates>
 
@@ -394,7 +395,7 @@
                     </Border>
                     <Border Classes="card" Padding="12">
                       <StackPanel Spacing="10">
-                        <behaviors:BehaviorRowView x:Name="CreatureEquipmentPicker"
+                        <sharedBehaviors:BehaviorRowView x:Name="CreatureEquipmentPicker"
                                                    ShowLabel="False"
                                                    DataContext="{Binding EquipmentSlots.SelectedSlot}" />
                         <Border x:Name="CreatureEquipmentStats" Padding="10"
@@ -691,7 +692,7 @@
                                     Command="{Binding RemoveCommand}" />
                           </Grid>
                           <TextBlock Text="Loot table" Classes="dim" />
-                          <behaviors:SearchableChoicePickerView DataContext="{Binding TablePicker}"
+                          <sharedBehaviors:SearchableChoicePickerView DataContext="{Binding TablePicker}"
                                                                 Compact="True" MinWidth="300"
                                                                 HorizontalAlignment="Stretch" />
                           <Grid ColumnDefinitions="*,*" ColumnSpacing="10">

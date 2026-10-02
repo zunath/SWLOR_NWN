@@ -487,12 +487,7 @@ namespace SWLOR.Toolset.Tests
         {
             // The row markup is shared by every behavior editor now, so the wrapping rule lives in
             // one place rather than in a waypoint-only template.
-            var view = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset",
-                "Editors",
-                "Behaviors",
-                "BehaviorRowView.axaml"));
+            var view = Support.SharedToolsetSource.ReadBehaviorFile("BehaviorRowView.axaml");
 
             view.Should().Contain(
                 "<TextBlock Text=\"{Binding Display}\" TextWrapping=\"Wrap\" MaxWidth=\"420\" />");
@@ -518,7 +513,7 @@ namespace SWLOR.Toolset.Tests
             {
                 File.ReadAllText(Path.Combine(
                         CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
-                    .Should().Contain("behaviors:LabeledFieldPanel", $"{view} follows the shared row");
+                    .Should().Contain("sharedBehaviors:LabeledFieldPanel", $"{view} follows the shared row");
             }
 
             foreach (var view in new[]
@@ -537,9 +532,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void APictureSetThatFitsThePageIsNotHiddenBehindAButton()
         {
-            var row = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset", "Editors", "Behaviors", "BehaviorRowView.axaml"));
+            var row = Support.SharedToolsetSource.ReadBehaviorFile("BehaviorRowView.axaml");
 
             // The inline grid is the whole point of a picture picker: names are what it replaces.
             row.Should().Contain("IsVisible=\"{Binding IsInlineGallery}\"");
@@ -559,14 +552,14 @@ namespace SWLOR.Toolset.Tests
             // carry their own copy, which is how three different label-column widths shipped.
             var app = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "App.axaml"));
-            app.Should().Contain("<DataTemplate DataType=\"behaviors:BehaviorRowViewModel\">");
+            app.Should().Contain("<DataTemplate DataType=\"sharedBehaviors:BehaviorRowViewModel\">");
             app.Should().NotContain("DataType=\"waypoints:WaypointRowViewModel\"");
 
             foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml" })
             {
                 var markup = File.ReadAllText(Path.Combine(
                     CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
-                markup.Should().Contain("<behaviors:BehaviorRowView />", $"{view} reuses the shared row");
+                markup.Should().Contain("<sharedBehaviors:BehaviorRowView />", $"{view} reuses the shared row");
             }
         }
 
@@ -730,14 +723,9 @@ namespace SWLOR.Toolset.Tests
         /// <summary>Every markup file that declares a field row's label column.</summary>
         private static IEnumerable<(string Path, string Markup)> SharedRowMarkup()
         {
-            var files = new[]
-            {
-                Path.Combine("SWLOR.Toolset", "Editors", "Behaviors", "BehaviorRowView.axaml"),
-                Path.Combine("SWLOR.Toolset", "App.axaml")
-            };
-
-            foreach (var file in files)
-                yield return (file, File.ReadAllText(Path.Combine(CorpusLocator.RepositoryRoot, file)));
+            yield return ("BehaviorRowView.axaml", Support.SharedToolsetSource.ReadBehaviorFile("BehaviorRowView.axaml"));
+            var app = Path.Combine("SWLOR.Toolset", "App.axaml");
+            yield return (app, File.ReadAllText(Path.Combine(CorpusLocator.RepositoryRoot, app)));
         }
 
         private static JsonGffStruct Waypoint(string tag, bool hasMapNote = false)

@@ -565,7 +565,7 @@ namespace SWLOR.Toolset.Tests
             doorView.Should().Contain("<appearance:AppearanceGalleryView");
             blueprintView.Should().Contain("appearance:AppearanceGallerySectionViewModel");
             creatureView.Should().Contain("<appearance:AppearanceGalleryView");
-            creatureView.Should().Contain("<behaviors:BehaviorRowView />",
+            creatureView.Should().Contain("<sharedBehaviors:BehaviorRowView />",
                 "creature equipment reuses the shared progressive choice control");
             var itemView = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,

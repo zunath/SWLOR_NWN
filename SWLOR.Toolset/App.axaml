@@ -6,6 +6,7 @@
              xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
              x:Class="SWLOR.Toolset.App"
              RequestedThemeVariant="Dark">
@@ -19,7 +20,7 @@
          text as wide as the box it explained, on every row, whether or not the box was blank. A
          description then got what was left, which was a couple of characters. -->
     <DataTemplate DataType="editors:LocStringFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,5,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <Panel>
@@ -43,17 +44,17 @@
                     ToolTip.Tip="Open this custom StrRef in the TLK Editor" />
           </Grid>
         </Panel>
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <!-- Every behavior editor's row, from one control. The trigger, waypoint, door and sound
          editors each used to carry their own copy of this markup. -->
-    <DataTemplate DataType="behaviors:BehaviorRowViewModel">
-      <behaviors:BehaviorRowView Margin="4,1" />
+    <DataTemplate DataType="sharedBehaviors:BehaviorRowViewModel">
+      <sharedBehaviors:BehaviorRowView Margin="4,1" />
     </DataTemplate>
 
     <DataTemplate DataType="editors:CheckFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,4,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <StackPanel>
@@ -62,31 +63,31 @@
                      FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
                      IsVisible="{Binding HasDescription}" />
         </StackPanel>
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:IntegerFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
                        HorizontalAlignment="Left"
                        FormatString="0" Increment="1" IsEnabled="{Binding !IsReadOnly}" />
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:FloatFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
                        HorizontalAlignment="Left"
                        Increment="0.5" IsEnabled="{Binding !IsReadOnly}" />
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:DropdownFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <StackPanel>
@@ -103,12 +104,12 @@
                      Text="{Binding LookupUnavailableMessage}"
                      Classes="dim" FontSize="11" TextWrapping="Wrap" Margin="0,3,0,0" />
         </StackPanel>
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:ScriptFieldViewModel">
       <StackPanel Margin="0,2">
-        <behaviors:LabeledFieldPanel>
+        <sharedBehaviors:LabeledFieldPanel>
           <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                      Classes="dim" TextWrapping="Wrap" />
           <Grid ColumnDefinitions="*,Auto,Auto">
@@ -121,7 +122,7 @@
                     Command="{Binding OpenScriptCommand}" IsVisible="{Binding CanBrowse}"
                     ToolTip.Tip="Open this script in an editor tab" />
           </Grid>
-        </behaviors:LabeledFieldPanel>
+        </sharedBehaviors:LabeledFieldPanel>
         <!-- A slot naming a script that does not exist is a live, otherwise invisible bug across the
              2,250 module resources that name one. -->
         <TextBlock Margin="0,2,0,0" FontSize="11" TextWrapping="Wrap"
@@ -133,7 +134,7 @@
     <!-- A resref that names another module resource. Editable text with the real list attached, so
          a value from a hak stays typeable and an unknown one says so rather than being rejected. -->
     <DataTemplate DataType="editors:ResourcePickerFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <StackPanel>
@@ -144,15 +145,15 @@
                      Foreground="{DynamicResource AmberBrush}" Margin="0,3,0,0"
                      IsVisible="{Binding IsUnknown}" TextWrapping="Wrap" />
         </StackPanel>
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <DataTemplate DataType="editors:TextFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <!-- One behavior field. Seven shapes over the same row so the label column stays aligned with
@@ -161,7 +162,7 @@
          A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
          five figures of options and a stored value the source does not know must stay visible. -->
     <DataTemplate DataType="placeables:BehaviorFieldViewModel">
-      <behaviors:LabeledFieldPanel Margin="0,2">
+      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
         <StackPanel VerticalAlignment="Top" Margin="0,7,0,0">
           <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
           <TextBlock Text="required" Classes="count" IsVisible="{Binding IsRequired}" />
@@ -293,7 +294,7 @@
                    FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
                    IsVisible="{Binding HasDescription}" />
         </StackPanel>
-      </behaviors:LabeledFieldPanel>
+      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <!-- Shared by the item and creature blueprint editors. Without an application-level mapping,

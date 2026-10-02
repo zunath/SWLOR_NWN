@@ -1,4 +1,5 @@
 using Avalonia.Media.Imaging;
+using Nwn.Toolset.Avalonia.Behaviors;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
@@ -31,7 +32,7 @@ namespace SWLOR.Toolset.Editors.Behaviors
     /// render queue and its caches, so this forwards to it rather than growing a second one.
     /// </para>
     /// </remarks>
-    public sealed class ChoicePreviewService
+    public sealed class ChoicePreviewService : IBehaviorChoicePreviewProvider
     {
         private enum ImageCropMode
         {
@@ -41,10 +42,10 @@ namespace SWLOR.Toolset.Editors.Behaviors
         }
 
         /// <summary>Gallery thumbnails. Small enough that twenty of them cost little memory.</summary>
-        public const int ThumbnailWidth = 192;
+        public const int ThumbnailWidth = BehaviorChoicePreviewDimensions.ThumbnailWidth;
 
         /// <summary>The chosen option, shown large enough to actually judge.</summary>
-        public const int PreviewWidth = 384;
+        public const int PreviewWidth = BehaviorChoicePreviewDimensions.PreviewWidth;
 
         /// <summary>
         /// Large enough that a full pass over the biggest gallery (portraits, at both widths) mostly

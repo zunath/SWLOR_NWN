@@ -1482,6 +1482,7 @@ namespace SWLOR.Game.Server.Service
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
             int evasionBonus;
+            var hasNpcStatBudget = false;
 
             // Base NWN applies an AC bonus based on the DEX stat. The Perception stat is based upon this.
             // Perception should not increase AC in SWLOR, so this is subtracted from the AC.
@@ -1504,13 +1505,14 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
                 evasionBonus = npcStats.Evasion;
+                hasNpcStatBudget = npcStats.Level > 0;
             }
 
             evasionBonus += CalculateEffectEvasion(creature);
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
-            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, evasionBonus, ac, hasNpcStatBudget);
             return ApplyPostEvasionStatusModifiers(creature, evasion, incomingSkillType);
         }
 
@@ -1613,6 +1615,7 @@ namespace SWLOR.Game.Server.Service
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
             var evasionBonus = 0;
+            var hasNpcStatBudget = false;
 
             // Note: The DEX offset is unnecessary for the native call.
             var ac = creature.m_pStats.m_nACArmorBase +
@@ -1646,11 +1649,12 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
                 evasionBonus = npcStats.Evasion;
+                hasNpcStatBudget = npcStats.Level > 0;
             }
 
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
 
-            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, evasionBonus, ac, hasNpcStatBudget);
             return ApplyPostEvasionStatusModifiers(creature.m_idSelf, evasion, incomingSkillType);
         }
 
@@ -2279,6 +2283,16 @@ namespace SWLOR.Game.Server.Service
         public static int GetEvasion(int level, int stat, int bonus)
         {
             return 8 + (2 * level) + stat + bonus;
+        }
+
+        /// <summary>
+        /// NPC stat skins carry the complete Evasion budget. Native armor must
+        /// not add another budget through inherited equipment, feats or effects.
+        /// Stat-based Evasion adjustments remain part of bonus for all creatures.
+        /// </summary>
+        public static int GetEvasion(int level, int stat, int bonus, int nativeArmorClass, bool hasNpcStatBudget)
+        {
+            return GetEvasion(level, stat, bonus + (hasNpcStatBudget ? 0 : nativeArmorClass * 5));
         }
 
         /// <summary>

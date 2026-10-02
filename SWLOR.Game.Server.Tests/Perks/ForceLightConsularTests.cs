@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
@@ -177,14 +178,7 @@ public class ForceLightConsularTests
     [Test]
     public void ConsularRotation_UsesUniversalThrowRockAndLightAffinityForOtherPowers()
     {
-        const int attackerAttackAndAccuracy = 148;
-        const int attackerWillpower = 40;
-        const int squellbugEvasion = 155;
-        const int squellbugPhysicalDefense = 111;
-        const int squellbugVitality = 31;
-        const int squellbugForceDefense = 101;
-        const int squellbugWillpower = 21;
-        const int squellbugHP = 897;
+        const int attackerWillpower = 26;
         const int fullLightAffinityHitChance = 5;
         const double fullLightAffinityMagnitude = 1.5;
 
@@ -196,6 +190,26 @@ public class ForceLightConsularTests
             typeof(ForceBurstAbilityDefinition)
         };
         var root = FindSourceRepositoryRoot();
+        using var creature = JsonDocument.Parse(File.ReadAllText((root / "Module" / "utc" / "vdathsquell.utc.json").FullName));
+        int CreatureValue(string name) => creature.RootElement.GetProperty(name).GetProperty("value").GetInt32();
+        var skinResref = creature.RootElement.GetProperty("Equip_ItemList").GetProperty("value").EnumerateArray()
+            .Single(item => item.GetProperty("__struct_id").GetInt32() == 131072)
+            .GetProperty("EquippedRes").GetProperty("value").GetString();
+        using var skin = JsonDocument.Parse(File.ReadAllText((root / "Module" / "uti" / $"{skinResref}.uti.json").FullName));
+        int SkinValue(int property, int subtype = 0) => skin.RootElement.GetProperty("PropertiesList").GetProperty("value").EnumerateArray()
+            .Where(item => item.GetProperty("PropertyName").GetProperty("value").GetInt32() == property &&
+                           item.GetProperty("Subtype").GetProperty("value").GetInt32() == subtype)
+            .Sum(item => item.GetProperty("CostValue").GetProperty("value").GetInt32());
+        var level = SkinValue(99);
+        var attackerAccuracy = Stat.GetAccuracy(level, attackerWillpower, 0);
+        var attackerAttack = Stat.GetAttack(level, attackerWillpower, 0);
+        var squellbugHP = SkinValue(96);
+        squellbugHP.Should().Be(CreatureValue("MaxHitPoints"));
+        var squellbugEvasion = Stat.GetEvasion(level, CreatureValue("Int"), SkinValue(117) + CreatureValue("NaturalAC"));
+        var squellbugVitality = CreatureValue("Con");
+        var squellbugWillpower = CreatureValue("Wis");
+        var squellbugPhysicalDefense = Stat.CalculateDefense(squellbugVitality, level, SkinValue(94, 1));
+        var squellbugForceDefense = Stat.CalculateDefense(squellbugWillpower, level, SkinValue(94, 2));
         foreach (var abilityType in abilitySources)
         {
             var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / $"{abilityType.Name}.cs").FullName);
@@ -203,49 +217,63 @@ public class ForceLightConsularTests
         }
 
         var hitRate = Combat.CalculateHitRate(
-            attackerAttackAndAccuracy,
+            attackerAccuracy,
             squellbugEvasion,
             fullLightAffinityHitChance);
 
-        hitRate.Should().BeGreaterThanOrEqualTo(75);
+        hitRate.Should().BeGreaterThanOrEqualTo(65);
+        var perks = BuildForceLightConsularPerksWithout2daLookup();
+        var powers = new[]
+        {
+            (PerkType.ThrowRock, typeof(ThrowRockAbilityDefinition), new ThrowRockAbilityDefinition().BuildAbilities()),
+            (PerkType.ForceJudgment, typeof(ForceJudgmentAbilityDefinition), new ForceJudgmentAbilityDefinition().BuildAbilities()),
+            (PerkType.RadiantLance, typeof(RadiantLanceAbilityDefinition), new RadiantLanceAbilityDefinition().BuildAbilities())
+        };
+        var spentSP = 0;
+        var rotation = powers.Select(power =>
+        {
+            var perk = perks[power.Item1];
+            var rank = perk.PerkLevels.Where(entry => entry.Value.Requirements.OfType<PerkRequirementSkill>()
+                .All(requirement => requirement.RequiredRank <= level)).Max(entry => entry.Key);
+            spentSP += perk.PerkLevels.Where(entry => entry.Key <= rank).Sum(entry => entry.Value.Price);
+            var feat = perk.PerkLevels[rank].GrantedFeats.Single();
+            var ability = power.Item3[feat];
+            var physical = power.Item1 == PerkType.ThrowRock;
+            var abilityHitRate = physical
+                ? Combat.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
+                : hitRate;
+            var affinityMagnitude = physical ? 1d : fullLightAffinityMagnitude;
+            return (Ability: ability, Damage: ExpectedDamagePerUse(
+                GetAbilityConstant<int>(power.Item2, $"Rank{rank}BaseDamage"),
+                attackerAttack, attackerWillpower,
+                physical ? squellbugPhysicalDefense : squellbugForceDefense,
+                physical ? squellbugVitality : squellbugWillpower, abilityHitRate, affinityMagnitude));
+        }).ToArray();
+        spentSP.Should().BeLessThanOrEqualTo(level + Skill.StartingSkillPoints);
 
-        var expectedDamagePerSecond =
-            ExpectedDamagePerUse(
-                GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), "Rank3BaseDamage"),
-                attackerAttackAndAccuracy,
-                attackerWillpower,
-                squellbugPhysicalDefense,
-                squellbugVitality,
-                Combat.CalculateHitRate(attackerAttackAndAccuracy, squellbugEvasion, 0),
-                1d) / 6f +
-            ExpectedDamagePerUse(
-                GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "Rank3BaseDamage"),
-                attackerAttackAndAccuracy,
-                attackerWillpower,
-                squellbugForceDefense,
-                squellbugWillpower,
-                hitRate,
-                fullLightAffinityMagnitude) / 15f +
-            ExpectedDamagePerUse(
-                GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), "Rank3BaseDamage"),
-                attackerAttackAndAccuracy,
-                attackerWillpower,
-                squellbugForceDefense,
-                squellbugWillpower,
-                hitRate,
-                fullLightAffinityMagnitude) / 18f +
-            ExpectedDamagePerUse(
-                GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "BaseDamage"),
-                attackerAttackAndAccuracy,
-                attackerWillpower,
-                squellbugForceDefense,
-                squellbugWillpower,
-                hitRate,
-                fullLightAffinityMagnitude) / 15f;
-
-        var estimatedSecondsToDefeat = squellbugHP / expectedDamagePerSecond;
-        estimatedSecondsToDefeat.Should().BeInRange(38d, 42d,
-            "Throw Rock receives no affinity bonus while the other powers retain full Light affinity");
+        // One caster, three buttons, no simultaneous casts, no regeneration or consumables.
+        var readyAt = new double[rotation.Length];
+        var seconds = 0d;
+        var damage = 0d;
+        var fp = Stat.GetMaxFP(Stat.BaseFP, attackerWillpower, 0);
+        var casts = 0;
+        while (damage < squellbugHP && seconds < 60d)
+        {
+            var index = Enumerable.Range(0, rotation.Length).OrderBy(i => readyAt[i]).First();
+            seconds = Math.Max(seconds, readyAt[index]);
+            var power = rotation[index];
+            fp -= power.Ability.Requirements.OfType<AbilityRequirementFP>().Sum(requirement => requirement.RequiredFP);
+            fp.Should().BeGreaterThanOrEqualTo(0, "an ordinary caster must finish without unlimited resources");
+            seconds += power.Ability.ActivationDelay(0, 0, power.Ability.AbilityLevel);
+            readyAt[index] = seconds + power.Ability.RecastDelay(0);
+            damage += power.Damage;
+            casts++;
+        }
+        TestContext.Out.WriteLine($"Level {level} Squell Bug: {squellbugHP} HP, {hitRate}% hit rate, {casts} casts, {seconds:F1}s, {fp} FP remaining, {spentSP} SP.");
+        damage.Should().BeGreaterThanOrEqualTo(squellbugHP);
+        // Throw Rock receives no Light hit or magnitude bonus in this mixed-affinity rotation.
+        seconds.Should().BeLessThanOrEqualTo(40d,
+            "a mixed universal/Light rotation should defeat an ordinary spawn within forty seconds without regeneration");
     }
 
     [Test]

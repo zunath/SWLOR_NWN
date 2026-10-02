@@ -392,7 +392,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 7
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",

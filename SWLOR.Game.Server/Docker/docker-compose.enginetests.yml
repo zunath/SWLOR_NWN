@@ -23,7 +23,7 @@
 services:
     redis:
         hostname: redis
-        image: redislabs/redismod:latest
+        image: redis/redis-stack-server:7.2.0-v20
         tmpfs:
             - /data
 

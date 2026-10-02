@@ -100,6 +100,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         var message = ex is EngineTestAssertionException
                             ? ex.Message
                             : $"{ex.GetType().Name}: {ex.Message}";
+                        if (ex is not EngineTestAssertionException)
+                            ctx.Log($"{behaviorCase.Feat} exception: {ex}");
                         failures.Add($"{behaviorCase.Feat}: {message}");
                         ctx.Log($"{progress} FAIL {behaviorCase.Feat} - {remaining}: {message}");
 
@@ -132,7 +134,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             var summary = $"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.";
             if (cases.Any(testCase => Ability.IsFeatRegistered(testCase.Feat) &&
                                       Ability.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
-                summary += " NPC fixtures bypass the player technique-loadout gate; player learning/equipment validation is not exercised.";
+                summary += " Techniques use persisted player loadouts; passive traits are checked while equipped and after removal.";
             if (abortedAsSystemic)
             {
                 var notRun = cases.Count - passed - failures.Count - skipped;
@@ -159,25 +161,60 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
         private static async Task RunCaseAsync(EngineTestContext ctx, AbilityBehaviorCase behaviorCase)
         {
+            if (behaviorCase.RequiresPlayerBeastFixture)
+            {
+                await PlayerBeastAbilityEngineTests.RunCaseAsync(ctx, behaviorCase.Feat);
+                return;
+            }
             ctx.Assert(Ability.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
             var ability = Ability.GetAbilityDetail(behaviorCase.Feat);
             var requiresPlayerTechniqueLoadout = ability.IsMimicryTechnique;
 
-            var caster = ctx.SpawnCreature(CasterResref, -0.5f, 0f);
+            using var playerFixture = requiresPlayerTechniqueLoadout
+                ? await PlayerAbilityFixture.CreateAsync(ctx, -0.5f)
+                : null;
+            var caster = playerFixture?.Creature ?? ctx.SpawnCreature(CasterResref, -0.5f, 0f);
+            // These actors are driven by the case. Autonomous NPC decisions can cast an
+            // added feat first, leaving the intended activation busy or already on recast.
+            if (playerFixture == null)
+                SetAILevel(caster, AILevel.VeryLow);
             var target = caster;
 
             try
             {
-                // A stock NPC cannot own a Player record/loadout. Temporarily bypass only
-                // that metadata gate for this serial engine case, restoring it in finally.
-                // Skill, technique potency, activation costs, recast and impacts stay intact.
-                ability.IsMimicryTechnique = false;
+                if (playerFixture != null)
+                {
+                    ctx.Assert(!Mimicry.CanEquip(caster, behaviorCase.Feat, out _), "unlearned techniques cannot be equipped");
+                    playerFixture.Update(record => record.LearnedTechniques[behaviorCase.Feat] = DateTime.UtcNow);
+                    ctx.Assert(!Ability.CanUseAbility(caster, caster, behaviorCase.Feat, ability.AbilityLevel, GetLocation(caster)),
+                        "learned but unequipped techniques cannot be activated");
+                    ctx.Assert(Mimicry.CanEquip(caster, behaviorCase.Feat, out var equipError), $"learned technique can equip: {equipError}");
+                    ctx.Assert(Mimicry.EquipTechnique(caster, behaviorCase.Feat), "learned technique equips through the player service");
+                    ctx.Assert(Mimicry.IsTechniqueEquipped(caster, behaviorCase.Feat), "loadout is persisted");
+                    if (ability.IsMimicryTrait)
+                    {
+                        ctx.Assert(!GetHasFeat(behaviorCase.Feat, caster), "passive traits are not granted as active feats");
+                        foreach (var stat in ability.MimicryTraitStats)
+                            ctx.AssertEqual(stat.Value, Mimicry.GetStatBonus(caster, stat.Key), $"equipped {stat.Key} bonus");
+                        foreach (var resistance in ability.MimicryTraitResistances)
+                            ctx.AssertEqual(resistance.Value, Mimicry.GetResistanceBonus(caster, resistance.Key), $"equipped {resistance.Key} resistance");
+                        ctx.Assert(Mimicry.UnequipTechnique(caster, behaviorCase.Feat), "passive trait unequips");
+                        foreach (var stat in ability.MimicryTraitStats)
+                            ctx.AssertEqual(0, Mimicry.GetStatBonus(caster, stat.Key), $"removed {stat.Key} bonus");
+                        foreach (var resistance in ability.MimicryTraitResistances)
+                            ctx.AssertEqual(0, Mimicry.GetResistanceBonus(caster, resistance.Key), $"removed {resistance.Key} resistance");
+                        return;
+                    }
+                }
                 if (behaviorCase.Target == AbilityTargetKind.HostileCreature)
                 {
                     // 2m separation: a +/-1.5 split put the pair at exactly 3.0m, the outer
                     // boundary of short-range melee abilities, which then failed range checks.
                     target = ctx.SpawnCreature(TargetResref, -0.5f + behaviorCase.TargetDistanceMeters, 0f);
+                    SetAILevel(target, AILevel.VeryLow);
                     ctx.MakeHostile(target);
+                    if (playerFixture != null)
+                        ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
                     ApplyEffectToObject(
                         DurationType.Temporary,
                         EffectTemporaryHitpoints(TargetTemporaryHP),
@@ -191,6 +228,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     // rat has only 1 HP, so a durable humanoid is required for ally-healing cases
                     // that deliberately wound the target before activation.
                     target = ctx.SpawnCreature(FriendlyTargetResref, -0.5f + behaviorCase.TargetDistanceMeters, 0f);
+                    SetAILevel(target, AILevel.VeryLow);
                 }
 
                 if (behaviorCase.TargetStartsDead)
@@ -239,7 +277,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 // Let spawn initialization scripts run before configuring resources - they
                 // reset the FP/STAMINA locals to the (unraised) max and would overwrite us.
                 await NwTask.NextFrame();
-                ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
+                ctx.SetResources(caster, ResourcePool, ResourcePool);
                 CreaturePlugin.AddFeat(caster, behaviorCase.Feat);
 
                 // Out-of-combat NPCs heal 10% HP and restore 1 FP/STM per heartbeat tick;
@@ -261,7 +299,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                 foreach (var (setupPerk, setupLevel) in behaviorCase.SetupNPCPerkLevels)
                 {
-                    ctx.SetNPCPerkLevel(caster, setupPerk, setupLevel);
+                    if (playerFixture == null)
+                        ctx.SetNPCPerkLevel(caster, setupPerk, setupLevel);
+                    else
+                        playerFixture.Update(record => record.Perks[setupPerk] = setupLevel);
                 }
 
                 if (!string.IsNullOrWhiteSpace(behaviorCase.EquipMainHandResref))
@@ -289,10 +330,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 if (behaviorCase.ExpectsActivatorHealing)
                 {
                     // A full-health activator cannot show healing; wound it first.
-                    ApplyEffectToObject(
-                        DurationType.Instant,
-                        EffectDamage(Math.Max(1, GetCurrentHitPoints(caster) / 2)),
-                        caster);
+                    var beforeWound = GetCurrentHitPoints(caster);
+                    if (playerFixture != null)
+                        ObjectPlugin.SetCurrentHitPoints(caster, Math.Max(1, beforeWound / 2));
+                    else
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(Math.Max(1, beforeWound / 2)), caster);
+                    await ctx.WaitUntilAsync(() => GetCurrentHitPoints(caster) < beforeWound, 5f,
+                        "the activator's healing fixture wound to apply");
                 }
 
                 if (behaviorCase.ExpectsTargetHealing)
@@ -448,6 +492,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     if (hitTarget == OBJECT_INVALID)
                     {
                         hitTarget = ctx.SpawnCreature(TargetResref, 1.0f, 0.5f);
+                        SetAILevel(hitTarget, AILevel.VeryLow);
                         ctx.MakeHostile(hitTarget);
                         ApplyEffectToObject(
                             DurationType.Temporary,
@@ -557,7 +602,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             }
             finally
             {
-                ability.IsMimicryTechnique = requiresPlayerTechniqueLoadout;
                 // Fresh actors per case: destroy immediately rather than letting hundreds
                 // accumulate until the tree test's cleanup.
                 if (target != caster)
@@ -575,7 +619,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             // Restore both pools so the second attempt can only fail because the shared
             // recast is still active, not because the first activation consumed a resource.
-            ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
+            ctx.SetResources(caster, ResourcePool, ResourcePool);
 
             var attempted = false;
             var used = false;

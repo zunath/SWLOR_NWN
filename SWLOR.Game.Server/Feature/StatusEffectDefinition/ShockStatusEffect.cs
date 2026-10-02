@@ -39,6 +39,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var agility = GetAbilityModifier(AbilityType.Agility, source);
             var amount = System.Math.Max(1, d4() + agility * 2 * _level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
+            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Electrical, out var targetStatusDamageAdjustment);
+            amount = Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Electrical,
+                deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (amount <= 0)
                 return;
 

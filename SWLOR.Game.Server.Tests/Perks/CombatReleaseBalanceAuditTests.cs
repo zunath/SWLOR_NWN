@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CombatReleaseBalanceAuditTests
 {
-    private const int SkillPointCap = 400;
+    private const int SkillPointCap = Skill.TotalSkillPointCap;
     private const int DefaultWeaponDeflectionCap = 50;
 
     private static readonly PerkCategoryType[] WeaponPackages =

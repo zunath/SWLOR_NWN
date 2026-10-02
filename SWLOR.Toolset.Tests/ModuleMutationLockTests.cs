@@ -504,11 +504,11 @@ namespace SWLOR.Toolset.Tests
             {
                 mutationLock.Set(true);
 
-                var write = () => SaveService.WriteAtomic(
+                var write = () => SwlorFileWriteAccess.Writer.WriteAtomic(
                     path, System.Text.Encoding.UTF8.GetBytes("{\"new\":true}"));
                 write.Should().Throw<ModuleLockedException>();
 
-                var create = () => SaveService.WriteNewAtomic(
+                var create = () => SwlorFileWriteAccess.Writer.WriteNewAtomic(
                     Path.Combine(directory, "fresh.utc.json"),
                     System.Text.Encoding.UTF8.GetBytes("{}"));
                 create.Should().Throw<ModuleLockedException>();
@@ -547,12 +547,12 @@ namespace SWLOR.Toolset.Tests
 
                 using (ModuleMutationLock.AllowModuleWrites())
                 {
-                    SaveService.WriteAtomic(
+                    SwlorFileWriteAccess.Writer.WriteAtomic(
                         path, System.Text.Encoding.UTF8.GetBytes("{\"saved\":true}"));
                 }
 
                 File.ReadAllText(path).Should().Be("{\"saved\":true}");
-                var unrelatedWrite = () => SaveService.WriteAtomic(
+                var unrelatedWrite = () => SwlorFileWriteAccess.Writer.WriteAtomic(
                     path, System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}"));
                 unrelatedWrite.Should().Throw<ModuleLockedException>(
                     "only the operation that reserved the lock may perform its prerequisite saves");
@@ -583,7 +583,7 @@ namespace SWLOR.Toolset.Tests
                     Task attemptedWrite;
                     using (ExecutionContext.SuppressFlow())
                     {
-                        attemptedWrite = Task.Run(() => SaveService.WriteAtomic(
+                        attemptedWrite = Task.Run(() => SwlorFileWriteAccess.Writer.WriteAtomic(
                             path,
                             System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}")));
                     }
@@ -627,7 +627,7 @@ namespace SWLOR.Toolset.Tests
                     Task attemptedSave;
                     using (ExecutionContext.SuppressFlow())
                     {
-                        attemptedSave = Task.Run(() => SaveService.WriteAtomic(
+                        attemptedSave = Task.Run(() => SwlorFileWriteAccess.Writer.WriteAtomic(
                             path,
                             System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}")));
                     }

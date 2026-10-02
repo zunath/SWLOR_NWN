@@ -902,7 +902,7 @@ namespace SWLOR.Toolset.Editors
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                SaveService.WriteNewAtomic(
+                SwlorFileWriteAccess.Writer.WriteNewAtomic(
                     path,
                     ModuleResourceTemplateFactory.CreateFileContent(ResourceType.Nss, resRef, name.Trim()));
                 _workspaceContext.RefreshCatalogEntry(ResourceType.Nss, resRef);
@@ -1214,7 +1214,7 @@ namespace SWLOR.Toolset.Editors
                 var content = BlueprintCopyFactory.CreateFileContent(type, source.Document, copyResRef);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(copyPath)!);
-                SaveService.WriteNewAtomic(copyPath, content);
+                SwlorFileWriteAccess.Writer.WriteNewAtomic(copyPath, content);
                 _workspaceContext.RefreshCatalogEntry(type, copyResRef);
 
                 var categoryNotificationRaised = false;

@@ -198,12 +198,12 @@ namespace SWLOR.Toolset.Services
                     originalContentHash!,
                     companions);
 
-                var staged = new List<SaveService.StagedWrite>();
+                var staged = new List<AtomicFileGroupWriter.StagedWrite>();
                 try
                 {
-                    staged.Add(SaveService.StageNew(newPath, blueprintBytes));
+                    staged.Add(SwlorFileWriteAccess.Writer.StageNew(newPath, blueprintBytes));
                     staged.AddRange(companionWrites.Select(write =>
-                        SaveService.Stage(write.Path, write.Content)));
+                        SwlorFileWriteAccess.Writer.Stage(write.Path, write.Content)));
 
                     // A case-insensitive filesystem exposes the old and new spellings as the same
                     // path, so the destination cannot become "new" until the old directory entry is
@@ -219,12 +219,12 @@ namespace SWLOR.Toolset.Services
                         File.Delete(oldPath);
                     }
 
-                    SaveService.CommitAll(staged);
+                    SwlorFileWriteAccess.Writer.CommitAll(staged);
                 }
                 catch
                 {
                     foreach (var write in staged)
-                        SaveService.Discard(write);
+                        SwlorFileWriteAccess.Writer.Discard(write);
                     throw;
                 }
 

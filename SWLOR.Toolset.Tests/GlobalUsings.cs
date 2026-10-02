@@ -5,3 +5,5 @@ global using AreaTilesetResolver = Nwn.Authoring.Areas.Creation.AreaTilesetResol
 global using AreaDocumentPopulator = Nwn.Authoring.Areas.Creation.AreaDocumentPopulator;
 global using Nwn.Preview.Areas;
 global using Nwn.Preview.Scene;
+global using AtomicFileGroupWriter = Nwn.Authoring.Editing.AtomicFileGroupWriter;
+global using SaveRecoveryException = Nwn.Authoring.Editing.SaveRecoveryException;

@@ -4,11 +4,11 @@
     "net10.0": {
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.22, )",
-        "resolved": "0.1.0-dev.22",
-        "contentHash": "ZyPLjTUrMHJivU/5B6evsPuA0avYldmG7IT8RqFs3kgCBVi5yGFuz9kzlhedxNtG8B50xhSLmAC7PsQeMWX5jg==",
+        "requested": "[0.1.0-dev.24, )",
+        "resolved": "0.1.0-dev.24",
+        "contentHash": "NYFvb8MYUvc9OqODEpP2mYpjRrh8ozvk+VtYP/lWaUso69K/X/Bc9OPH6HRd0UUV5EZ8RgkC85lZ9MIqh3qOOQ==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.23"
+          "Nwn.Formats": "0.1.0-dev.25"
         }
       },
       "Nwn.Formats": {
@@ -19,12 +19,12 @@
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.25, )",
-        "resolved": "0.1.0-dev.25",
-        "contentHash": "X0sSN4qzbUeg2FXhy2wSwCtDDRU00v/nWqGEn89qMLXFI01j53DFtvfjVQi58zLw3bKdCubZZE3nnFO2V7j4FA==",
+        "requested": "[0.1.0-dev.28, )",
+        "resolved": "0.1.0-dev.28",
+        "contentHash": "MDX7sSIRtdOd3fxOo2g4FNuouCWMfFuoKSwSKcs92cXP/7jxRf86YQJemB7OSAmGFV21qOEqiRf5nRZnNu0jCA==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.22",
-          "Nwn.Formats": "0.1.0-dev.23"
+          "Nwn.Authoring": "0.1.0-dev.24",
+          "Nwn.Formats": "0.1.0-dev.25"
         }
       },
       "Serilog": {

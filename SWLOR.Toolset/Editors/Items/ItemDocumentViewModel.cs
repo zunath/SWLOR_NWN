@@ -305,11 +305,11 @@ namespace SWLOR.Toolset.Editors.Items
                     // Remove the old spelling first, under the recovery transaction's module lock,
                     // then create the canonical lowercase path as a new directory entry.
                     File.Delete(oldPath);
-                    SaveService.WriteAtomicNew(newPath, saveBytes);
+                    SwlorFileWriteAccess.Writer.WriteAtomicNew(newPath, saveBytes);
                 }
                 else if (renaming &&
                          !string.Equals(_session.FilePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    SaveService.WriteAtomicNew(newPath, saveBytes);
+                    SwlorFileWriteAccess.Writer.WriteAtomicNew(newPath, saveBytes);
                 else if (!SaveService.TryWriteAtomicIfUnchanged(_session, saveBytes))
                 {
                     _log.AppendLine(

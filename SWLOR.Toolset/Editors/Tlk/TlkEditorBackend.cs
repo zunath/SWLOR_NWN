@@ -89,7 +89,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         _tlkService = tlkService;
         // CommitAll protects ordinary failures immediately; this closes the remaining process-kill
         // case before either half of a previously interrupted JSON/binary pair is read.
-        SaveService.RecoverInterruptedSaves(Path.GetDirectoryName(source.JsonPath)!);
+        SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(Path.GetDirectoryName(source.JsonPath)!);
         var snapshot = CaptureSnapshot();
         _document = snapshot.Document;
         _jsonFingerprint = snapshot.JsonFingerprint;
@@ -185,15 +185,15 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         var entries = _document.Entries.ToDictionary(entry => entry.Id, entry => entry.Text);
         var binaryBytes = TlkWriter.Write((uint)_document.Language, entries);
 
-        SaveService.StagedWrite jsonStage = default;
-        SaveService.StagedWrite binaryStage = default;
+        AtomicFileGroupWriter.StagedWrite jsonStage = default;
+        AtomicFileGroupWriter.StagedWrite binaryStage = default;
         var jsonStaged = false;
         var binaryStaged = false;
         try
         {
-            jsonStage = SaveService.Stage(JsonPath, jsonBytes);
+            jsonStage = SwlorFileWriteAccess.Writer.Stage(JsonPath, jsonBytes);
             jsonStaged = true;
-            binaryStage = SaveService.Stage(BinaryPath, binaryBytes);
+            binaryStage = SwlorFileWriteAccess.Writer.Stage(BinaryPath, binaryBytes);
             binaryStaged = true;
 
             var verifiedBinary = VerifyStagedPair(jsonStage.TemporaryPath, binaryStage.TemporaryPath);
@@ -205,7 +205,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
             {
                 if (HasExternalChange())
                     throw new TlkExternalChangeException(JsonPath);
-                SaveService.CommitAll(new[] { jsonStage, binaryStage });
+                SwlorFileWriteAccess.Writer.CommitAll(new[] { jsonStage, binaryStage });
                 // Retain the exact generation we wrote rather than accepting a path reread that a
                 // non-cooperating writer could replace immediately after the grouped commit.
                 _jsonFingerprint = FileFingerprint.FromContent(JsonPath, jsonBytes);
@@ -218,9 +218,9 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         finally
         {
             if (jsonStaged)
-                SaveService.Discard(jsonStage);
+                SwlorFileWriteAccess.Writer.Discard(jsonStage);
             if (binaryStaged)
-                SaveService.Discard(binaryStage);
+                SwlorFileWriteAccess.Writer.Discard(binaryStage);
         }
 
     }

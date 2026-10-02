@@ -783,7 +783,7 @@ namespace SWLOR.Toolset.Shell.Panels
                     copyResRef);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(copyPath)!);
-                SaveService.WriteNewAtomic(copyPath, content);
+                SwlorFileWriteAccess.Writer.WriteNewAtomic(copyPath, content);
             }
             catch (Exception ex)
             {
@@ -1123,7 +1123,7 @@ namespace SWLOR.Toolset.Shell.Panels
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                SaveService.WriteNewAtomic(
+                SwlorFileWriteAccess.Writer.WriteNewAtomic(
                     path, BlueprintTemplateFactory.CreateFileContent(SelectedType, resRef, name));
             }
             catch (Exception ex)

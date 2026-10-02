@@ -422,7 +422,7 @@ namespace SWLOR.Toolset.Shell.Panels
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                SaveService.WriteNewAtomic(
+                SwlorFileWriteAccess.Writer.WriteNewAtomic(
                     path,
                     SelectedType == ResourceType.Dlg
                         ? ConversationGraphTemplateFactory.CreateFileContent(resRef, name.Trim())

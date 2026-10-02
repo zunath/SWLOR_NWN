@@ -178,7 +178,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                         return false;
                 }
 
-                var staged = new List<SaveService.StagedWrite>();
+                var staged = new List<AtomicFileGroupWriter.StagedWrite>();
                 var saved = new List<(DocumentSession Session, byte[] Bytes)>();
                 using (ModuleWriteLock.AcquireForResourcePath(_session.FilePath))
                 {
@@ -191,24 +191,24 @@ namespace SWLOR.Toolset.Editors.Creatures
                     try
                     {
                         var creatureBytes = _session.ToBytes();
-                        staged.Add(SaveService.Stage(_session.FilePath, creatureBytes));
+                        staged.Add(SwlorFileWriteAccess.Writer.Stage(_session.FilePath, creatureBytes));
                         saved.Add((_session, creatureBytes));
 
                         foreach (var item in equipment)
                         {
                             var bytes = item.Session.ToBytes();
                             staged.Add(item.IsNew
-                                ? SaveService.StageNew(item.Session.FilePath, bytes)
-                                : SaveService.Stage(item.Session.FilePath, bytes));
+                                ? SwlorFileWriteAccess.Writer.StageNew(item.Session.FilePath, bytes)
+                                : SwlorFileWriteAccess.Writer.Stage(item.Session.FilePath, bytes));
                             saved.Add((item.Session, bytes));
                         }
 
-                        SaveService.CommitAll(staged);
+                        SwlorFileWriteAccess.Writer.CommitAll(staged);
                     }
                     catch
                     {
                         foreach (var write in staged)
-                            SaveService.Discard(write);
+                            SwlorFileWriteAccess.Writer.Discard(write);
                         throw;
                     }
                 }

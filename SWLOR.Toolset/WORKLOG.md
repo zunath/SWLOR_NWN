@@ -2805,3 +2805,36 @@ the explicit primary HAK roots. The locked Release app build completed with
 zero errors and the same eight existing nullable warnings listed above.
 Affected package locks were regenerated for both Debug and Release graphs
 (formats has only a Debug lock). Source-mode locks remain untouched.
+
+## Shared area editor and grouped file saves
+
+SWLOR's existing area editor now routes tile selection/placement/painting,
+instance transforms, and interleaved ARE/GIT/GIC edit history through the shared
+`Nwn.Authoring` and `Nwn.Preview` contracts. `AreaEditorSurface` hosts the shared
+viewport in the production area view. SWLOR retains module discovery, door-snap
+policy, selection, UI messaging, and resource/appearance resolution. Grouped file
+staging, commit, rollback and recovery now use `Nwn.Authoring.Editing.AtomicFileGroupWriter`;
+`SwlorFileWriteAccess` retains module-lock and mutation authorization.
+
+The shared source is `2aee6c30472caec66c408218fd890dc3bf993c17`. Final packages
+are Authoring 0.1.0-dev.24 (`1C4D16CA0168A927EA35BF1871BA3F1000698AEE91C987BF458FF4FC953F16BB`),
+Preview 0.1.0-dev.28 (`F46D1B8015FCA13C128A0935F1A62C36011A16B54D434AC973BA0C980B4F58ED`),
+and Avalonia 0.1.0-dev.14 (`40BDC8890AD544ACF051AC8447867622CE0C8C47F6CB17A77EFC840C2B24E1FB`).
+Their nuspecs identify that source commit and pin Formats dev.25, Authoring dev.24,
+and Preview dev.28 at the expected package boundaries. SWLOR package mode pins
+Authoring dev.24, Preview dev.28 and Avalonia dev.14; six Debug/Release lock files
+were regenerated. The source-mode area/save filter passed 71/71 with zero skips;
+the packaged locked-mode filter also passed 71/71 with zero skips. Shared-source
+tests passed Authoring area/save 12/12, Preview area composition 4/4 and Avalonia
+area viewport contracts 2/2, all with zero skips. Both SWLOR filters used explicit
+`SWLOR_TEST_REPOSITORY_ROOT`, `SWLOR_TEST_HAKS_ROOT` and `SWLOR_HAKS_ROOT` inputs.
+The source-mode TRX is `SWLOR.Toolset.Tests/TestResults/area-writer-final-elevated.trx`;
+the packaged-mode TRX is `SWLOR.Toolset.Tests/TestResults/area-writer-packaged-final.trx`.
+Shared-source TRX files are `NWN.Toolset/tests/Nwn.Authoring.Tests/TestResults/area-writer-final.trx`,
+`NWN.Toolset/tests/Nwn.Preview.Tests/TestResults/area-scene-editor-final-source.trx`,
+and `NWN.Toolset/tests/Nwn.Toolset.Avalonia.Tests/TestResults/area-surface-final-source.trx`.
+
+An initial Preview dev.26 archive was created with incorrect transitive package
+versions during source-mode packing and was not adopted. Preview dev.27 was
+correctly repacked in package mode but superseded by the final F25-aligned dev.28
+train; all archives remain immutable.

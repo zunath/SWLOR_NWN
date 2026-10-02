@@ -27,22 +27,12 @@
              offered lives on the right-click menu below instead. -->
         <Grid>
 
-          <viewport:AreaViewportControl Grid.Row="0" x:Name="AreaView" />
-
-          <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it.
-               This transparent overlay captures camera input and forwards it to the control; the HUD
-               overlays declared after it sit ABOVE it in z-order and keep receiving their own clicks. -->
-          <Border Grid.Row="0" x:Name="ViewportInput" Background="Transparent"
-                  PointerPressed="OnViewportPointerPressed"
-                  PointerMoved="OnViewportPointerMoved"
-                  PointerExited="OnViewportPointerExited"
-                  PointerReleased="OnViewportPointerReleased"
-                  PointerWheelChanged="OnViewportPointerWheel"
-                  ContextRequested="OnViewportContextRequested">
+          <viewport:AreaEditorSurface Grid.Row="0" x:Name="AreaView"
+                                      ContextRequested="OnViewportContextRequested">
             <!-- Right-click acts on whatever is under the cursor: the press handler picks it first,
                  so the menu always describes the thing that was clicked rather than the previous
                  selection. Suppressed entirely when the click lands on empty ground. -->
-            <Border.ContextMenu>
+            <viewport:AreaEditorSurface.ContextMenu>
               <ContextMenu>
                 <!-- The first two entries are the readout the docked bar used to carry: the name a
                      builder recognises, and the kind and resref underneath it for anyone scripting
@@ -67,8 +57,8 @@
                           Command="{Binding EditCopySelectedBlueprintCommand}"
                           ToolTip.Tip="Create and edit a new Custom blueprint from this object's source" />
               </ContextMenu>
-            </Border.ContextMenu>
-          </Border>
+            </viewport:AreaEditorSurface.ContextMenu>
+          </viewport:AreaEditorSurface>
 
           <Border Grid.Row="0" Background="#B0202020" CornerRadius="4" Padding="10,6"
                   HorizontalAlignment="Center" VerticalAlignment="Center"

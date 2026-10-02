@@ -52,7 +52,7 @@ namespace SWLOR.Toolset.Tests
         {
             var path = FileWith("area.are.json", "original");
 
-            SaveService.Stage(path, Encoding.UTF8.GetBytes("replacement"));
+            SwlorFileWriteAccess.Writer.Stage(path, Encoding.UTF8.GetBytes("replacement"));
 
             File.ReadAllText(path).Should().Be("original", "nothing is replaced until the commit");
         }
@@ -62,7 +62,7 @@ namespace SWLOR.Toolset.Tests
         {
             var path = FileWith("area.are.json", "original");
 
-            SaveService.Commit(SaveService.Stage(path, Encoding.UTF8.GetBytes("replacement")));
+            SwlorFileWriteAccess.Writer.Commit(SwlorFileWriteAccess.Writer.Stage(path, Encoding.UTF8.GetBytes("replacement")));
 
             File.ReadAllText(path).Should().Be("replacement");
         }
@@ -72,8 +72,8 @@ namespace SWLOR.Toolset.Tests
         {
             var path = FileWith("area.are.json", "original");
 
-            var staged = SaveService.Stage(path, Encoding.UTF8.GetBytes("replacement"));
-            SaveService.Discard(staged);
+            var staged = SwlorFileWriteAccess.Writer.Stage(path, Encoding.UTF8.GetBytes("replacement"));
+            SwlorFileWriteAccess.Writer.Discard(staged);
 
             File.ReadAllText(path).Should().Be("original");
             File.Exists(staged.TemporaryPath).Should().BeFalse();
@@ -84,10 +84,10 @@ namespace SWLOR.Toolset.Tests
         {
             // Discard runs on the failure path, where the temporary may already be gone. Throwing there
             // would mask the real failure that got us there.
-            var staged = SaveService.Stage(FileWith("area.git.json", "original"), Encoding.UTF8.GetBytes("x"));
-            SaveService.Discard(staged);
+            var staged = SwlorFileWriteAccess.Writer.Stage(FileWith("area.git.json", "original"), Encoding.UTF8.GetBytes("x"));
+            SwlorFileWriteAccess.Writer.Discard(staged);
 
-            var act = () => SaveService.Discard(staged);
+            var act = () => SwlorFileWriteAccess.Writer.Discard(staged);
 
             act.Should().NotThrow();
         }
@@ -97,8 +97,8 @@ namespace SWLOR.Toolset.Tests
         {
             var path = FileWith("area.are.json", "original");
 
-            var first = SaveService.Stage(path, Encoding.UTF8.GetBytes("first"));
-            var second = SaveService.Stage(path, Encoding.UTF8.GetBytes("second"));
+            var first = SwlorFileWriteAccess.Writer.Stage(path, Encoding.UTF8.GetBytes("first"));
+            var second = SwlorFileWriteAccess.Writer.Stage(path, Encoding.UTF8.GetBytes("second"));
 
             first.TemporaryPath.Should().NotBe(
                 second.TemporaryPath,
@@ -107,8 +107,8 @@ namespace SWLOR.Toolset.Tests
             File.ReadAllText(second.TemporaryPath).Should().Be("second");
             File.ReadAllText(path).Should().Be("original");
 
-            SaveService.Commit(first);
-            SaveService.Discard(second);
+            SwlorFileWriteAccess.Writer.Commit(first);
+            SwlorFileWriteAccess.Writer.Discard(second);
             File.ReadAllText(path).Should().Be("first");
         }
 
@@ -117,7 +117,7 @@ namespace SWLOR.Toolset.Tests
         {
             var path = FileWith("blueprint.utc.json", "original");
 
-            SaveService.WriteAtomic(path, Encoding.UTF8.GetBytes("replacement"));
+            SwlorFileWriteAccess.Writer.WriteAtomic(path, Encoding.UTF8.GetBytes("replacement"));
 
             File.ReadAllText(path).Should().Be("replacement");
             File.Exists(path + ".tmp").Should().BeFalse("the temporary is consumed by the move");
@@ -129,7 +129,7 @@ namespace SWLOR.Toolset.Tests
             var path = FileWith("locked.nss", "original");
             using var hold = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
 
-            var act = () => SaveService.WriteAtomic(path, Encoding.UTF8.GetBytes("replacement"));
+            var act = () => SwlorFileWriteAccess.Writer.WriteAtomic(path, Encoding.UTF8.GetBytes("replacement"));
 
             var failure = act.Should().Throw<Exception>().Which;
             (failure is IOException or UnauthorizedAccessException).Should().BeTrue();
@@ -142,8 +142,8 @@ namespace SWLOR.Toolset.Tests
         {
             var path = Path.Combine(_directory, "new.utc.json");
 
-            SaveService.WriteNewAtomic(path, Encoding.UTF8.GetBytes("complete"));
-            var overwrite = () => SaveService.WriteNewAtomic(path, Encoding.UTF8.GetBytes("replacement"));
+            SwlorFileWriteAccess.Writer.WriteNewAtomic(path, Encoding.UTF8.GetBytes("complete"));
+            var overwrite = () => SwlorFileWriteAccess.Writer.WriteNewAtomic(path, Encoding.UTF8.GetBytes("replacement"));
 
             File.ReadAllText(path).Should().Be("complete");
             overwrite.Should().Throw<IOException>();
@@ -159,7 +159,7 @@ namespace SWLOR.Toolset.Tests
             // the packer reads.
             var path = FileWith("area.are.json", "original");
 
-            SaveService.Commit(SaveService.Stage(path, Encoding.UTF8.GetBytes("replacement")));
+            SwlorFileWriteAccess.Writer.Commit(SwlorFileWriteAccess.Writer.Stage(path, Encoding.UTF8.GetBytes("replacement")));
 
             Directory.EnumerateFiles(_directory, "*.tmp").Should().BeEmpty();
         }
@@ -171,10 +171,10 @@ namespace SWLOR.Toolset.Tests
             var git = Path.Combine(_directory, "locked.git.json");
             Directory.CreateDirectory(git);
 
-            var areWrite = SaveService.Stage(are, Encoding.UTF8.GetBytes("are-new"));
-            var gitWrite = SaveService.Stage(git, Encoding.UTF8.GetBytes("git-new"));
+            var areWrite = SwlorFileWriteAccess.Writer.Stage(are, Encoding.UTF8.GetBytes("are-new"));
+            var gitWrite = SwlorFileWriteAccess.Writer.Stage(git, Encoding.UTF8.GetBytes("git-new"));
 
-            var act = () => SaveService.CommitAll(new[] { areWrite, gitWrite });
+            var act = () => SwlorFileWriteAccess.Writer.CommitAll(new[] { areWrite, gitWrite });
 
             var failure = act.Should().Throw<Exception>().Which;
             (failure is IOException || failure is UnauthorizedAccessException).Should().BeTrue(

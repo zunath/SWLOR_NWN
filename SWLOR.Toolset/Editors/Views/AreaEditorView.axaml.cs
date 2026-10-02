@@ -20,18 +20,18 @@ namespace SWLOR.Toolset.Editors
         public AreaEditorView()
         {
             InitializeComponent();
-            AreaView.RenderStatusChanged += OnGlRenderStatusChanged;
-            AreaView.InstancePicked += OnInstancePicked;
-            AreaView.InstanceMoved += OnInstanceMoved;
-            AreaView.InstanceRotated += OnInstanceRotated;
-            AreaView.ManipulationPreviewChanged += OnManipulationPreviewChanged;
-            AreaView.PlacementPointPicked += OnPlacementPointPicked;
-            AreaView.PlacementCancelled += OnPlacementCancelled;
-            AreaView.TileCellPicked += OnTileCellPicked;
-            AreaView.TileEdgePicked += OnTileEdgePicked;
-            AreaView.TileSelected += OnTileSelected;
-            AreaView.TilePlacementCancelled += OnTilePlacementCancelled;
-            AreaView.TileRotateRequested += OnTileRotateRequested;
+            AreaView.Viewport.RenderStatusChanged += OnGlRenderStatusChanged;
+            AreaView.Viewport.InstancePicked += OnInstancePicked;
+            AreaView.Viewport.InstanceMoved += OnInstanceMoved;
+            AreaView.Viewport.InstanceRotated += OnInstanceRotated;
+            AreaView.Viewport.ManipulationPreviewChanged += OnManipulationPreviewChanged;
+            AreaView.Viewport.PlacementPointPicked += OnPlacementPointPicked;
+            AreaView.Viewport.PlacementCancelled += OnPlacementCancelled;
+            AreaView.Viewport.TileCellPicked += OnTileCellPicked;
+            AreaView.Viewport.TileEdgePicked += OnTileEdgePicked;
+            AreaView.Viewport.TileSelected += OnTileSelected;
+            AreaView.Viewport.TilePlacementCancelled += OnTilePlacementCancelled;
+            AreaView.Viewport.TileRotateRequested += OnTileRotateRequested;
             DataContextChanged += (_, _) => AttachViewModel();
 
             // Display switches are global, not per-area (Aurora treats them the same way), so the
@@ -80,10 +80,10 @@ namespace SWLOR.Toolset.Editors
             if (_display == null)
                 return;
 
-            AreaView.ShowAreaLighting = _display.ShowAreaLighting;
-            AreaView.ShowFog = _display.ShowFog;
-            AreaView.ShowCeilings = _display.ShowCeilings;
-            AreaView.ShowMaterialMaps = _display.ShowMaterialMaps;
+            AreaView.Viewport.ShowAreaLighting = _display.ShowAreaLighting;
+            AreaView.Viewport.ShowFog = _display.ShowFog;
+            AreaView.Viewport.ShowCeilings = _display.ShowCeilings;
+            AreaView.Viewport.ShowMaterialMaps = _display.ShowMaterialMaps;
         }
 
         private void AttachViewModel()
@@ -110,22 +110,22 @@ namespace SWLOR.Toolset.Editors
             _materialProvider = _viewModel.ResourceIndex is { } resources
                 ? new Viewport.SwlorAreaViewportMaterialProvider(resources)
                 : null;
-            AreaView.MaterialProvider = _materialProvider;
-            AreaView.MeshMetadataProvider = _materialProvider;
-            AreaView.InvalidateGameResources();
-            AreaView.Scene = _viewModel.AreaScene;
+            AreaView.Viewport.MaterialProvider = _materialProvider;
+            AreaView.Viewport.MeshMetadataProvider = _materialProvider;
+            AreaView.Viewport.InvalidateGameResources();
+            AreaView.Viewport.Scene = _viewModel.AreaScene;
             RestoreViewportStateWhenReady();
-            AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
-            AreaView.PlacementGhost = _viewModel.PlacementGhost;
-            AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
-            AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
-            AreaView.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
-            AreaView.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
-            AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
-            AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
-            AreaView.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
-            AreaView.TilePlacementEdgeValidator = _viewModel.CanPlaceArmedCrosserAt;
-            AreaView.SelectedTileCell = _viewModel.SelectedTile;
+            AreaView.Viewport.SelectedInstance = _viewModel.SelectedSceneInstance;
+            AreaView.Viewport.PlacementGhost = _viewModel.PlacementGhost;
+            AreaView.Viewport.IsPlacementActive = _viewModel.IsPlacementPending;
+            AreaView.Viewport.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
+            AreaView.Viewport.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
+            AreaView.Viewport.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
+            AreaView.Viewport.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
+            AreaView.Viewport.TilePlacementModels = _viewModel.TilePlacementModels;
+            AreaView.Viewport.TilePlacementValidator = _viewModel.CanPlaceArmedTileAt;
+            AreaView.Viewport.TilePlacementEdgeValidator = _viewModel.CanPlaceArmedCrosserAt;
+            AreaView.Viewport.SelectedTileCell = _viewModel.SelectedTile;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             _viewModel.CameraFocusRequested += OnCameraFocusRequested;
             _viewModel.InstancePropertiesRequested += OnInstancePropertiesRequested;
@@ -152,7 +152,7 @@ namespace SWLOR.Toolset.Editors
 
         private void SaveViewState(AreaEditorViewModel viewModel)
         {
-            viewModel.ViewportState = AreaView.CaptureViewportState() ?? viewModel.ViewportState;
+            viewModel.ViewportState = AreaView.Viewport.CaptureViewportState() ?? viewModel.ViewportState;
             viewModel.PropertiesScrollOffset = new Vector2(
                 (float)PropertiesScroll.Offset.X,
                 (float)PropertiesScroll.Offset.Y);
@@ -179,7 +179,7 @@ namespace SWLOR.Toolset.Editors
                 _viewModel.ViewportState is not { } state)
                 return;
 
-            AreaView.RestoreViewportState(state);
+            AreaView.Viewport.RestoreViewportState(state);
             _viewportStateRestored = true;
         }
 
@@ -190,33 +190,33 @@ namespace SWLOR.Toolset.Editors
 
             if (e.PropertyName == nameof(AreaEditorViewModel.AreaScene))
             {
-                AreaView.Scene = _viewModel.AreaScene;
+                AreaView.Viewport.Scene = _viewModel.AreaScene;
                 RestoreViewportStateWhenReady();
                 ConsumePendingCameraFocus();
             }
             else if (e.PropertyName == nameof(AreaEditorViewModel.GameResourceRevision))
             {
                 _materialProvider?.Invalidate();
-                AreaView.InvalidateGameResources();
+                AreaView.Viewport.InvalidateGameResources();
             }
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
-                AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
+                AreaView.Viewport.SelectedInstance = _viewModel.SelectedSceneInstance;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsPlacementPending))
-                AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
+                AreaView.Viewport.IsPlacementActive = _viewModel.IsPlacementPending;
             else if (e.PropertyName == nameof(AreaEditorViewModel.PlacementGhost))
-                AreaView.PlacementGhost = _viewModel.PlacementGhost;
+                AreaView.Viewport.PlacementGhost = _viewModel.PlacementGhost;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsTilePlacementPending))
-                AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
+                AreaView.Viewport.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementTargetsVertex))
-                AreaView.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
+                AreaView.Viewport.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementTargetsEdge))
-                AreaView.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
+                AreaView.Viewport.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementFootprint))
-                AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
+                AreaView.Viewport.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementModels))
-                AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
+                AreaView.Viewport.TilePlacementModels = _viewModel.TilePlacementModels;
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedTile))
-                AreaView.SelectedTileCell = _viewModel.SelectedTile;
+                AreaView.Viewport.SelectedTileCell = _viewModel.SelectedTile;
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace SWLOR.Toolset.Editors
             // Leave the request on the document until a scene exists. That makes it survive a tab
             // swap while a large area is still loading; the next view consumes it only after it has
             // restored this area's retained camera.
-            if (AreaView.Scene == null ||
+            if (AreaView.Viewport.Scene == null ||
                 _viewModel?.TryTakePendingCameraFocus(out var position) != true)
                 return;
 
@@ -253,7 +253,7 @@ namespace SWLOR.Toolset.Editors
             if (_viewModel != null)
                 _viewModel.SelectedRootTabIndex = 0;
 
-            AreaView.FocusOn(position);
+            AreaView.Viewport.FocusOn(position);
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>
         /// A click in the 3D view selects the corresponding instance-list row (and vice
         /// versa - see AreaEditorViewModel.ApplySelection/OnSectionSelectionChanged). Routed through
-        /// the view model rather than setting AreaView.SelectedInstance directly here, so both
+        /// the view model rather than setting AreaView.Viewport.SelectedInstance directly here, so both
         /// selection directions funnel through the same re-entrancy-guarded code path.
         /// </summary>
         private void OnInstancePicked(InstanceMarker? instance) => _viewModel?.SelectSceneInstance(instance);
@@ -328,7 +328,7 @@ namespace SWLOR.Toolset.Editors
 
         private void RotateSelectionTick(float direction)
         {
-            AreaView.NudgeSelectedRotation(direction, isFirstStep: !_rotateHasRepeated);
+            AreaView.Viewport.NudgeSelectedRotation(direction, isFirstStep: !_rotateHasRepeated);
             _rotateHasRepeated = true;
         }
 
@@ -343,7 +343,7 @@ namespace SWLOR.Toolset.Editors
         private void EndRotateSelection()
         {
             _rotateHasRepeated = false;
-            AreaView.CommitSelectedRotation();
+            AreaView.Viewport.CommitSelectedRotation();
         }
 
         // ----- Camera pad. These drive the control's own camera, which the view model does not own. -----
@@ -351,27 +351,27 @@ namespace SWLOR.Toolset.Editors
         // The arrows move the camera, so the scene travels the other way - Aurora's left arrow sends
         // the scene right, its up arrow sends the scene down. Up and down travel forward and back
         // across the ground rather than changing altitude.
-        private void OnPanLeft(object? sender, RoutedEventArgs e) => AreaView.NudgePan(-1f, 0f);
+        private void OnPanLeft(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(-1f, 0f);
 
-        private void OnPanRight(object? sender, RoutedEventArgs e) => AreaView.NudgePan(1f, 0f);
+        private void OnPanRight(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(1f, 0f);
 
-        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, 1f);
+        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(0f, 1f);
 
-        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, -1f);
+        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(0f, -1f);
 
-        private void OnOrbitLeft(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(-1f, 0f);
+        private void OnOrbitLeft(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(-1f, 0f);
 
-        private void OnOrbitRight(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(1f, 0f);
+        private void OnOrbitRight(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(1f, 0f);
 
-        private void OnOrbitUp(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(0f, 1f);
+        private void OnOrbitUp(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(0f, 1f);
 
-        private void OnOrbitDown(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(0f, -1f);
+        private void OnOrbitDown(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(0f, -1f);
 
-        private void OnZoomIn(object? sender, RoutedEventArgs e) => AreaView.NudgeZoom(1);
+        private void OnZoomIn(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeZoom(1);
 
-        private void OnZoomOut(object? sender, RoutedEventArgs e) => AreaView.NudgeZoom(-1);
+        private void OnZoomOut(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeZoom(-1);
 
-        private void OnReorient(object? sender, RoutedEventArgs e) => AreaView.ReorientCamera();
+        private void OnReorient(object? sender, RoutedEventArgs e) => AreaView.Viewport.ReorientCamera();
 
         /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
         private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);
@@ -380,7 +380,7 @@ namespace SWLOR.Toolset.Editors
             _viewModel?.CommitCrosserPaint(column, row, vertical);
 
         /// <summary>A paint click the solver declined - answer it on the map, where the builder is looking.</summary>
-        private void OnPaintRejected() => AreaView.FlashPaintRejection();
+        private void OnPaintRejected() => AreaView.Viewport.FlashPaintRejection();
 
         /// <summary>A click on open ground selected a grid cell (or cleared the selection).</summary>
         private void OnTileSelected((int Column, int Row)? cell) => _viewModel?.SelectTile(cell);
@@ -396,26 +396,6 @@ namespace SWLOR.Toolset.Editors
             GlStatusBorder.IsVisible = !string.IsNullOrEmpty(message);
             GlStatusText.Text = message;
         }
-
-        // Camera input arrives via the transparent ViewportInput overlay (OpenGlControlBase is not
-        // hit-testable itself) and is forwarded to the GL control. After a press the control
-        // captures the pointer, so moves/releases route to its own handlers; the overlay only has
-        // to deliver the initial press, uncaptured moves, and wheel events.
-
-        private void OnViewportPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e) =>
-            AreaView.HandlePointerPressed(e);
-
-        private void OnViewportPointerMoved(object? sender, Avalonia.Input.PointerEventArgs e) =>
-            AreaView.HandlePointerMoved(e);
-
-        private void OnViewportPointerExited(object? sender, Avalonia.Input.PointerEventArgs e) =>
-            AreaView.HandlePointerExited(e);
-
-        private void OnViewportPointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e) =>
-            AreaView.HandlePointerReleased(e);
-
-        private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>
-            AreaView.HandlePointerWheel(e);
 
         /// <summary>
         /// Opens the viewport's context menu only when the right-click actually landed on something.

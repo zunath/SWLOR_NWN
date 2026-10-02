@@ -2879,3 +2879,27 @@ production Release app build succeeded with zero warnings and errors. TRX files 
 and `SWLOR.Toolset.Tests/TestResults/document-ownership-package-known-regressions.trx`.
 An exploratory broader source filter exceeded its seven-minute cap and was interrupted;
 it emitted no TRX and remains unqualified. That incomplete run is not counted as a pass.
+
+## Shared KEY/BIF reader adoption
+
+`KeyBifCatalog` now parses KEY and BIF data through the shared MIT
+`Nwn.Formats.Key.KeyReader`, `StockArchive` and its bounded BIF reader. SWLOR keeps
+the NWN:EE install archive list, ascending precedence, last-key override, data-directory
+fallback and its public `ResourceIdentity` catalog API. Stock resources with unrecognized
+type codes remain indexed through the shared KEY reader's raw code. The catalog limits KEY
+files, individual BIF files, retained BIF bytes per archive and selected resource payloads
+before their respective allocations.
+
+The focused source-mode filter passed 5/5 with zero skips in
+`SWLOR.Toolset.Tests/TestResults/key-bif-source-final.trx`. The same package-mode filter
+passed 5/5 with zero skips in
+`SWLOR.Toolset.Tests/TestResults/key-bif-package-final.trx`. Both runs used the explicit
+stock data directory `C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights/data`
+and the primary SWLOR repository/HAK roots. Tests cover synthetic cross-KEY precedence,
+lazy missing-BIF lookup, the data-directory path fallback, bounded extraction, unknown raw
+resource type preservation and actual stock model extraction. The first source run exposed an
+invalid cache expectation in the test and was corrected; an earlier run also recorded the
+Avalonia telemetry access denial before its elevated retry passed. The package-mode filter
+including the existing concurrent first-load stock test passed 6/6 with zero skips in
+`SWLOR.Toolset.Tests/TestResults/key-bif-package-concurrency.trx`. No package versions changed
+for this adapter.

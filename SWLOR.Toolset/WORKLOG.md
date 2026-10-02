@@ -2903,3 +2903,36 @@ Avalonia telemetry access denial before its elevated retry passed. The package-m
 including the existing concurrent first-load stock test passed 6/6 with zero skips in
 `SWLOR.Toolset.Tests/TestResults/key-bif-package-concurrency.trx`. No package versions changed
 for this adapter.
+
+## Shared area creation form
+
+The Module Explorer now hosts `Nwn.Toolset.Avalonia.Areas.AreaCreationForm`; the SW view model
+continues to own tileset discovery, validation, pack-write gating, area creation, and completion
+callbacks. The shared binding contract takes the host's field state, typed tileset options,
+seven localized labels, and create/cancel commands. `ResourceResolver.Resources` supplies a
+distinct, precedence-ordered inventory of configured resource identities without opening payloads,
+so both hosts can build a tileset picker from the same configured layers.
+
+The shared source commits are `b4df6cbb6ab133c55473554849a00a82c49b851a` (form),
+`d70aaad7a242d4bf518e90b050a46881058ec19a` (resource inventory and package graph), and
+`f1b62f6c5ff38009717fb0749aa12194a15f68af` (host-overridable panel/status brushes). Immutable
+packages are Authoring 0.1.0-dev.26 (SHA256
+`25E4CF91C90CF1FC1CA95AFA41F327994CD404C4D3544C316535A0CE7D7E2EA8`), Preview 0.1.0-dev.31
+(SHA256 `DDAE721731763DBEAC41F845D64E218655762B911AE0B62806A88947F329B3B1`), and Avalonia
+0.1.0-dev.19 (SHA256
+`3EC0E2B73081B0D6D6177B954F0ABBB16BC969F5B3B1E4C07639DB2B781CEC2E`). Authoring and Preview
+nuspecs record `d70aaad7a242d4bf518e90b050a46881058ec19a`; Avalonia records
+`f1b62f6c5ff38009717fb0749aa12194a15f68af`. Preview depends on Authoring dev.26, and Avalonia
+depends on Authoring dev.26 and Preview dev.31. SW package and transitive lockfiles were
+regenerated for Debug and Release.
+
+The shared Avalonia form test passed 1/1 in
+`NWN.Toolset/tests/Nwn.Toolset.Avalonia.Tests/TestResults/area-creation-form.trx`, and the
+shared resolver inventory suite passed 13/13 with zero skips in
+`NWN.Toolset/tests/Nwn.Authoring.Tests/TestResults/resolver-inventory-final.trx`. SW source mode
+and package mode each passed the bounded Module Explorer wizard and NewAreaWriter filter 18/18
+with zero skips, using explicit primary repository, HAK, and installed data roots. Reports are
+`SWLOR.Toolset.Tests/TestResults/area-creation-source-final.trx` and
+`SWLOR.Toolset.Tests/TestResults/area-creation-package-final.trx`. An initial package run lacked
+the explicit fixture roots and skipped one native tileset case; its report is preserved as
+incomplete at `SWLOR.Toolset.Tests/TestResults/area-creation-package.trx`.

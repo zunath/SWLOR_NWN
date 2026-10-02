@@ -3,6 +3,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             xmlns:areas="using:Nwn.Toolset.Avalonia.Areas"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="700"
              x:Class="SWLOR.Toolset.Shell.Views.ModuleExplorerView"
              x:DataType="panels:ModuleExplorerViewModel">
@@ -154,33 +155,11 @@
       </ListBox>
 
       <!-- New-area wizard, shown inline over the tree. -->
-      <Border ZIndex="1"
-              IsVisible="{Binding ActiveNewArea, Converter={x:Static ObjectConverters.IsNotNull}}"
-              Background="{DynamicResource PanelRaisedBrush}"
-              BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1"
-              Padding="12" CornerRadius="4" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-              Margin="8">
-        <StackPanel Spacing="7" DataContext="{Binding ActiveNewArea}"
-                    x:DataType="panels:NewAreaViewModel">
-          <TextBlock Text="New Area" FontWeight="SemiBold" />
-          <TextBox Text="{Binding ResRef, Mode=TwoWay}" Watermark="ResRef (lowercase, max 16)" />
-          <TextBox Text="{Binding DisplayName, Mode=TwoWay}" Watermark="Display name" />
-          <ComboBox ItemsSource="{Binding Tilesets}" SelectedItem="{Binding SelectedTileset, Mode=TwoWay}"
-                    HorizontalAlignment="Stretch" />
-          <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="6">
-            <TextBlock Grid.Column="0" Text="Width" Classes="dim" VerticalAlignment="Center" />
-            <NumericUpDown Grid.Column="1" Value="{Binding Width, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
-            <TextBlock Grid.Column="2" Text="Height" Classes="dim" VerticalAlignment="Center" />
-            <NumericUpDown Grid.Column="3" Value="{Binding Height, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
-          </Grid>
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <Button Content="Create" Classes="primary" Command="{Binding CreateCommand}" />
-            <Button Content="Cancel" Command="{Binding CancelCommand}" />
-          </StackPanel>
-          <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
-                     IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-        </StackPanel>
-      </Border>
+      <areas:AreaCreationForm ZIndex="1"
+                              Background="{DynamicResource PanelRaisedBrush}"
+                              BorderBrush="{DynamicResource RuleStrongBrush}"
+                              StatusForeground="{DynamicResource AmberBrush}"
+                              DataContext="{Binding ActiveNewArea}" />
     </Grid>
 
     <TextBlock Grid.Row="3" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"

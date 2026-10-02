@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -6,6 +7,7 @@ using SWLOR.Toolset.Domain.GameData.Tilesets;
 using Nwn.Formats.Tilesets;
 using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Workspace;
+using Nwn.Toolset.Avalonia.Areas;
 
 namespace SWLOR.Toolset.Shell.Panels
 {
@@ -21,21 +23,29 @@ namespace SWLOR.Toolset.Shell.Panels
     /// area of it is made of ([GENERAL] Floor/Default). Terrain selection lives solely in the area
     /// editor's paint palette.
     /// </remarks>
-    public partial class NewAreaViewModel : ObservableObject
+    public partial class NewAreaViewModel : ObservableObject, IAreaCreationFormState
     {
         private readonly ModuleWorkspace _workspace;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly Action<string> _onCreated;
         private readonly Action _onCancelled;
 
-        /// <summary>One tileset in the picker: the resref that gets written to the area, shown with its readable name.</summary>
-        public sealed record TilesetChoice(string ResRef, string Label)
-        {
-            public override string ToString() => Label;
-        }
-
         /// <summary>Every tileset the resource index can see, for the tileset picker.</summary>
-        public ObservableCollection<TilesetChoice> Tilesets { get; } = new();
+        public ObservableCollection<AreaTilesetChoice> Tilesets { get; } = new();
+
+        IEnumerable<AreaTilesetChoice> IAreaCreationFormState.Tilesets => Tilesets;
+
+        public AreaCreationFormLabels Labels { get; } = new(
+            "New Area",
+            "ResRef (lowercase, max 16)",
+            "Display name",
+            "Width",
+            "Height",
+            "Create",
+            "Cancel");
+
+        ICommand IAreaCreationFormState.CreateCommand => CreateCommand;
+        ICommand IAreaCreationFormState.CancelCommand => CancelCommand;
 
         [ObservableProperty]
         private string _resRef = string.Empty;
@@ -44,7 +54,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private string _displayName = string.Empty;
 
         [ObservableProperty]
-        private TilesetChoice? _selectedTileset;
+        private AreaTilesetChoice? _selectedTileset;
 
         [ObservableProperty]
         private double _width = 4;
@@ -75,7 +85,7 @@ namespace SWLOR.Toolset.Shell.Panels
             }
 
             foreach (var name in _tilesetCatalog.GetTilesetNames())
-                Tilesets.Add(new TilesetChoice(name, _tilesetCatalog.GetDisplayLabel(name)));
+                Tilesets.Add(new AreaTilesetChoice(name, _tilesetCatalog.GetDisplayLabel(name)));
 
             // Open on the same tileset the area template itself uses, so the default is one the
             // clone path is known to handle.

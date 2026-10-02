@@ -116,7 +116,7 @@ namespace SWLOR.Toolset.Tests
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot!, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepositoryRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepositoryRoot, "SWLOR_Haks"),
+                HaksRoot,
                 baseLayer);
 
             MdlModel? Load(string resRef, bool isSkeleton)

@@ -12,7 +12,12 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         private readonly string _dataDirectory;
         private readonly IReadOnlyList<StockArchive> _archives;
         private readonly Dictionary<ResourceIdentity, (int KeyIndex, KeyResourceEntry Entry)> _index;
-        private static readonly ResourceLayerReadOptions ReadOptions = new();
+        // NWN:EE's xp3.bif exceeds 512 MiB. Streaming reads retain the independently bounded
+        // metadata and requested payload, so the source-file limit covers that shipped archive.
+        private static readonly ResourceLayerReadOptions ReadOptions = new()
+        {
+            MaximumBifFileBytes = 1024L * 1024 * 1024,
+        };
 
         private KeyBifCatalog(
             string dataDirectory,

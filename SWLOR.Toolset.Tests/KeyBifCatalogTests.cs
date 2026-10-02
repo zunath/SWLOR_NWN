@@ -1,4 +1,5 @@
 using System.Text;
+using System.Security.Cryptography;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -7,6 +8,58 @@ namespace SWLOR.Toolset.Tests;
 
 public sealed class KeyBifCatalogTests
 {
+    [Test]
+    [Category("LicensedCorpus")]
+    public void InstalledXp3TilesetMatchesItsIndependentHashThroughBoundedStockReads()
+    {
+        var dataDirectory = Environment.GetEnvironmentVariable("SWLOR_TEST_NWN_DATA_ROOT");
+        dataDirectory.Should().NotBeNullOrWhiteSpace("the actual stock corpus must be selected explicitly");
+        new FileInfo(Path.Combine(dataDirectory!, "xp3.bif")).Length.Should().Be(683611953);
+        var catalog = KeyBifCatalog.Load(dataDirectory!);
+        var identity = ResourceIdentity.FromFileName("tbw01.set");
+        var before = GC.GetAllocatedBytesForCurrentThread();
+
+        ((Action)(() => catalog.TryGetBytes(identity, out _, maximumBytes: 62200))).Should()
+            .Throw<FormatException>().WithMessage("*configured limit*");
+        catalog.TryGetBytes(identity, out var bytes, maximumBytes: 62201).Should().BeTrue();
+
+        (GC.GetAllocatedBytesForCurrentThread() - before).Should().BeLessThan(4 * 1024 * 1024,
+            "the real 683 MiB archive retains only metadata and the requested tileset");
+        bytes.Should().HaveCount(62201);
+        Convert.ToHexStringLower(SHA256.HashData(bytes)).Should()
+            .Be("13499381c11c7fe3848e25c289da953e0d7a0209014ec2f99d6b087bb1faaada");
+    }
+
+    [Test]
+    public void LargeStockArchiveReadsOnlyItsPayloadAndStillRefusesTheSourceFileLimit()
+    {
+        var installRoot = Path.Combine(Path.GetTempPath(), "swlor-key-catalog", Guid.NewGuid().ToString("N"));
+        var dataDirectory = Path.Combine(installRoot, "data");
+        Directory.CreateDirectory(dataDirectory);
+        try
+        {
+            WriteArchive(dataDirectory, "nwn_base", [1, 2, 3, 4]);
+            var path = Path.Combine(dataDirectory, "nwn_base.bif");
+            using (var stream = File.OpenWrite(path)) stream.SetLength(683611953);
+            var catalog = KeyBifCatalog.Load(dataDirectory);
+            var identity = new ResourceIdentity("sample", ResourceIdentity.TypeFromExtension("mdl"));
+            var before = GC.GetAllocatedBytesForCurrentThread();
+
+            catalog.TryGetBytes(identity, out var bytes, maximumBytes: 4).Should().BeTrue();
+
+            (GC.GetAllocatedBytesForCurrentThread() - before).Should().BeLessThan(1024 * 1024,
+                "a shipped-size stock archive is streamed without loading its unused bytes");
+            bytes.Should().Equal(1, 2, 3, 4);
+            using (var stream = File.OpenWrite(path)) stream.SetLength(1024L * 1024 * 1024 + 1);
+            ((Action)(() => catalog.TryGetBytes(identity, out _, maximumBytes: 4))).Should()
+                .Throw<FormatException>().WithMessage("*configured limit*");
+        }
+        finally
+        {
+            Directory.Delete(installRoot, recursive: true);
+        }
+    }
+
     [Test]
     public void Load_UsesLaterSelectedKeyArchive()
     {

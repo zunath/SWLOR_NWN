@@ -259,34 +259,7 @@
                     </Border>
                     <!-- Every non-sound instance keeps the existing generic detail form. -->
                     <StackPanel IsVisible="{Binding !HasSoundBehaviorEditor}" Spacing="4">
-                    <Grid ColumnDefinitions="60,*" ColumnSpacing="6"
-                          IsVisible="{Binding UsesGenericDetailEditor}">
-                      <TextBlock Grid.Column="0" Text="Tag" VerticalAlignment="Center" />
-                      <TextBox Grid.Column="1" Text="{Binding DetailTag, Mode=TwoWay}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="60,*,60,*,60,*" ColumnSpacing="6">
-                      <TextBlock Grid.Column="0" Text="X" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
-                      <TextBlock Grid.Column="2" Text="Y" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
-                      <TextBlock Grid.Column="4" Text="Z" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
-                    </Grid>
-                    <Grid ColumnDefinitions="60,*,60,*" ColumnSpacing="6">
-                      <TextBlock Grid.Column="0" Text="Facing X" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Column="1" Value="{Binding DetailXOrientation, Mode=TwoWay}" Increment="0.1" />
-                      <TextBlock Grid.Column="2" Text="Facing Y" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Column="3" Value="{Binding DetailYOrientation, Mode=TwoWay}" Increment="0.1" />
-                    </Grid>
-                    <Grid ColumnDefinitions="60,*,60,*" ColumnSpacing="6"
-                          IsVisible="{Binding HasTriggerGeometry}">
-                      <TextBlock Grid.Column="0" Text="Width" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Column="1" Value="{Binding DetailTriggerWidth, Mode=TwoWay}"
-                                     Minimum="0.1" Increment="0.5" />
-                      <TextBlock Grid.Column="2" Text="Height" VerticalAlignment="Center" />
-                      <NumericUpDown Grid.Column="3" Value="{Binding DetailTriggerHeight, Mode=TwoWay}"
-                                     Minimum="0.1" Increment="0.5" />
-                    </Grid>
+                    <viewport:AreaInstanceDetailForm />
                     <Expander Header="Local Variables"
                               IsVisible="{Binding VarTableSection, Converter={x:Static ObjectConverters.IsNotNull}}"
                               HorizontalAlignment="Stretch" IsExpanded="False">

@@ -146,9 +146,9 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.20, )",
-        "resolved": "0.1.0-dev.20",
-        "contentHash": "RiHn8XjSSz+jr54iqWzQDUsAPNMAUBLc4Pp04M24Z2hKsjKVJTF2TnqiFmY3jli2EZRrjzvafBd+QcYnL2b8Yw==",
+        "requested": "[0.1.0-dev.21, )",
+        "resolved": "0.1.0-dev.21",
+        "contentHash": "hTnbWz2Ksk938nIrJFaergmRuq5GcEFUCRt1u6aDIaPQEoh4A5c7uO9yCUAteyDHBMcOlWhhvT6kuci3HJ0plA==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Nwn.Authoring": "0.1.0-dev.27",

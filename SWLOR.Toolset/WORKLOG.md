@@ -2848,3 +2848,34 @@ Shared source commit: `1e016953d34db71b646c2a7ed0a7467a54a76f3e`. Immutable loca
 The affected SWLOR consumers pin Preview29 and Avalonia15. All eight package lock files (four consumers, Debug and Release) were intentionally regenerated; source-mode lock state remains under each project's `obj` directory. Ordinary locked restores passed for all four consumers in both configurations. The SWLOR source-mode parser/composition/attachment/HAK-corpus filter passed 59/59, zero skips, in `SWLOR.Toolset.Tests/TestResults/shared-native-composition-source.trx`. The same package-mode filter passed 59/59, zero skips, in `artifacts/shared-native-composition-package/shared-native-composition-package.trx`. The production Release app build succeeded with zero warnings and zero errors.
 
 The new shared tests passed 6/6 on Windows and 6/6 in the fixed offline Linux SDK `10.0.401@sha256:35d40304542c8689331f8cab17c65926cdf48fe711e289321d71924b230a7d29`, with network disabled. Linux headless Avalonia area/graph contracts passed 8/8, zero skips. Linux logs and TRX files are under `C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/preview-composition-linux-1e01695/output/`. These checks qualify the shared composition and data contracts; they do not establish an official-client appearance result.
+
+## Shared document mutation ownership
+
+The shared JSON GFF document sessions now guard mutation entry points by document
+ownership. Related GIT/GIC sessions share explicit transaction authorization, and
+their registrations must remain alive while either session retains undo/redo history.
+Registration bookkeeping uses weak node references so discarded history does not
+keep removed graphs alive. The legacy mutable `Entries`, `Elements` and
+`LocStringEntries` collections remain trusted-only escape hatches; direct collection
+mutation bypasses both ownership checks and transaction history.
+
+Shared source commit `8299d754ca7dd226b724cdb332c0caffe2121aad` was qualified on
+Windows and in the fixed offline Linux SDK image. Authoring passed 61/61 and Preview
+58/58 with zero skips in both environments. Linux logs and TRX files are under
+`artifacts/linux-document-ownership/`; the focused Avalonia package test passed 8/8
+with zero skips in `NWN.Toolset/tests/Nwn.Toolset.Avalonia.Tests/TestResults/document-ownership-ui-package.trx`.
+Immutable local packages are Authoring dev.25
+(`E237A38E27C3C7E3973FDF868DAFB878D2A611D461B86AF738F86F5400B34F96`), Preview
+dev.30 (`6B20D9A23537AD0D2F42AC88AC10B25D2AE54001AD63EC904F3F08FF81436570`), and
+Avalonia dev.16 (`0F4F15D9467ABB87C9792D5DB23496B8B800561EF3B1E6790CFB2831C89A051F`).
+Their nuspecs identify that source commit and the expected dependency versions.
+
+SWLOR package mode pins Authoring dev.25, Preview dev.30 and Avalonia dev.16; all
+eight Debug/Release lock files for the four package consumers were regenerated.
+Ordinary locked restores passed for all eight graphs. The source-mode and package-mode
+known composition/area regression filters each passed 59/59 with zero skips; the
+production Release app build succeeded with zero warnings and errors. TRX files are
+`SWLOR.Toolset.Tests/TestResults/document-ownership-source-known-regressions.trx`
+and `SWLOR.Toolset.Tests/TestResults/document-ownership-package-known-regressions.trx`.
+An exploratory broader source filter exceeded its seven-minute cap and was interrupted;
+it emitted no TRX and remains unqualified. That incomplete run is not counted as a pass.

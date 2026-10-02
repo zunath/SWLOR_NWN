@@ -456,8 +456,8 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.24",
-        "contentHash": "NYFvb8MYUvc9OqODEpP2mYpjRrh8ozvk+VtYP/lWaUso69K/X/Bc9OPH6HRd0UUV5EZ8RgkC85lZ9MIqh3qOOQ==",
+        "resolved": "0.1.0-dev.25",
+        "contentHash": "kQUNnKN7sNSAW/vnnDyRKtOJYaoGaRquOB/9aIKdQ99ogWpBZU/+8DhngE0KLPuqOd7tUbmhsHuag9b652BbnA==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.25"
         }
@@ -485,21 +485,21 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.29",
-        "contentHash": "XM/8mtRtd54zDs7MNFbgGRP/fxT4SZJ4E39A0axD+mht0Zs+BMUlqO2eBpwvyxF67wNonsGc2A1GZFFdkn3LJw==",
+        "resolved": "0.1.0-dev.30",
+        "contentHash": "2lVKqOAJ3QoasByeEbkKcqDNWg5v/SBqPy22N4OjbebtFz0HZzDkBVgAqr7n+4TRZEvx98O2s/7pf2zZ4LXyJQ==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.24",
+          "Nwn.Authoring": "0.1.0-dev.25",
           "Nwn.Formats": "0.1.0-dev.25"
         }
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.15",
-        "contentHash": "FwfJyi7T/Q9tmniQlIjv1skEyHbP93kNFS74ld38bZmx7h4ERVs6JeVR5BYIs7mj21nt78ENiJr+9cYHMos0Ww==",
+        "resolved": "0.1.0-dev.16",
+        "contentHash": "WrFjhQ6DXPLJadjns7iCGg0Mwa6R20fblOd1ecQrM9vaxzvACnna7wiT1DlzlAUla6v+PbQs3eiJbGjsW6j+qg==",
         "dependencies": {
           "Avalonia": "11.3.17",
-          "Nwn.Authoring": "0.1.0-dev.24",
-          "Nwn.Preview": "0.1.0-dev.29",
+          "Nwn.Authoring": "0.1.0-dev.25",
+          "Nwn.Preview": "0.1.0-dev.30",
           "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
@@ -692,8 +692,8 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-dev.24, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-dev.15, )",
+          "Nwn.Authoring": "[0.1.0-dev.25, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-dev.16, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )"
@@ -702,9 +702,9 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.24, )",
+          "Nwn.Authoring": "[0.1.0-dev.25, )",
           "Nwn.Formats": "[0.1.0-dev.25, )",
-          "Nwn.Preview": "[0.1.0-dev.29, )",
+          "Nwn.Preview": "[0.1.0-dev.30, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

@@ -13,7 +13,7 @@ SWLOR's binary representation adapter connects its existing formats model to
 the shared document model; workspace conventions, catalogs and release policy
 remain here. Xenomech provides its own source representation and policies.
 
-Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.30`. These versions are recorded in the package lock files and consume the recovered shared packages.
+Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.31`. These versions are recorded in the package lock files and consume the recovered shared packages.
 The shared repository's `docs/area-builder-extraction.md` records provenance,
 package hashes and the source/package qualification boundary.
 
@@ -41,3 +41,22 @@ Scene, viewport and atomic creation moves are still required. The current
 checks establish the extracted document/tile responsibilities and the actual
 SWLOR package consumer, not a completed cross-game graphical area builder or
 official-client acceptance. Builds use `RunPostBuildEvent=Never`.
+
+## Responsive native fields qualification (2026-10-02)
+
+Both real hosts adopt Avalonia dev.31 from shared source
+`807835cd36e5d003d73c264ca6817f4769685e80`. Native variable inputs
+use two rows at narrow widths; placed-object coordinates wrap while retaining
+their existing controls and bindings. SWLOR keeps its known-key and gameplay
+hint policy in its integration. The package SHA-256 is
+`C983418C1EF0EB9E40063B36F6449148601E832CFB289A8CAD9FFC94DFD33092`.
+
+The affected SWLOR area lifecycle, instance editing and variable policy checks
+pass 19/19 with zero skips in
+`SWLOR.Toolset.Tests/TestResults/swlor-dev31-area-lifecycle.trx`.
+Post-build deployment is disabled. The build retains eight existing nullable
+warnings and has no errors. A broader large-area run timed out in
+`AreaContentsTests.BlueprintGrouping_CollapsesTheReusedBlueprintIntoOneRow`;
+its aborted `swlor-field-layout-dev31.trx` and hang dump remain retained.
+That large-corpus performance gate and native/official-client acceptance
+remain open.

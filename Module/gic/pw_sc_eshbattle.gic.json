@@ -232,7 +232,7 @@
         "__struct_id": 1,
         "Comment": {
           "type": "cexostring",
-          "value": "Mountain pass to the Driiquar Redoubt."
+          "value": "Mountain pass to the Ruined Garrison."
         }
       }
     ]
@@ -251,7 +251,7 @@
         "__struct_id": 5,
         "Comment": {
           "type": "cexostring",
-          "value": "Arrival from the Driiquar Redoubt."
+          "value": "Arrival from the Ruined Garrison."
         }
       }
     ]

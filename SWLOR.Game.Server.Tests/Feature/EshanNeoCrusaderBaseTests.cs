@@ -26,7 +26,7 @@ public class EshanNeoCrusaderBaseTests
     }
 
     [Test]
-    public void DriiquarRedoubt_IsRegisteredAndConfiguredAsAnEshanCombatArea()
+    public void RuinedGarrison_IsRegisteredAndConfiguredAsAnEshanCombatArea()
     {
         using var module = Load("ifo", "module.ifo.json");
         var areas = List(module.RootElement, "Mod_Area_list")
@@ -34,8 +34,8 @@ public class EshanNeoCrusaderBaseTests
         areas.Should().ContainSingle(area => area == AreaResref);
 
         using var area = Load("are", $"{AreaResref}.are.json");
-        Text(area.RootElement, "Name").Should().Be("Eshan - Driiquar Redoubt");
-        Text(area.RootElement, "Tag").Should().Be("EshanDriiquarRedoubt");
+        Text(area.RootElement, "Name").Should().Be("Eshan - Ruined Garrison");
+        Text(area.RootElement, "Tag").Should().Be("EshanRuinedGarrison");
         Text(area.RootElement, "Comments").Should().Be("Map Creator: scorchys");
 
         using var instances = Load("git", $"{AreaResref}.git.json");
@@ -45,7 +45,7 @@ public class EshanNeoCrusaderBaseTests
     }
 
     [Test]
-    public void DriiquarRedoubt_HasTwoWayTravelWithTheBattlegrounds()
+    public void RuinedGarrison_HasTwoWayTravelWithTheBattlegrounds()
     {
         using var battlegrounds = Load("git", "pw_sc_eshbattle.git.json");
         using var redoubt = Load("git", $"{AreaResref}.git.json");
@@ -64,7 +64,7 @@ public class EshanNeoCrusaderBaseTests
     }
 
     [Test]
-    public void DriiquarRedoubt_DoesNotRetainCopiedViscaraTeleporters()
+    public void RuinedGarrison_DoesNotRetainCopiedViscaraTeleporters()
     {
         using var redoubt = Load("git", $"{AreaResref}.git.json");
         var placeables = List(redoubt.RootElement, "Placeable List");
@@ -78,7 +78,7 @@ public class EshanNeoCrusaderBaseTests
     }
 
     [Test]
-    public void DriiquarRedoubt_SpawnsTheNeoCrusaderGarrison()
+    public void RuinedGarrison_SpawnsTheNeoCrusaderGarrison()
     {
         var spawns = new EshanSpawnDefinition().BuildSpawnTables()[SpawnTableId].Spawns;
 
@@ -90,7 +90,7 @@ public class EshanNeoCrusaderBaseTests
     }
 
     [Test]
-    public void DriiquarRedoubt_GicCommentsAlignWithPlacedInstances()
+    public void RuinedGarrison_GicCommentsAlignWithPlacedInstances()
     {
         using var git = Load("git", $"{AreaResref}.git.json");
         using var gic = Load("gic", $"{AreaResref}.gic.json");

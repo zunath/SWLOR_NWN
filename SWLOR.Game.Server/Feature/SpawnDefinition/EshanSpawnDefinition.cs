@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void EshanNeoCrusaderBase()
         {
-            _builder.Create("ESHAN_NEOCRUSADER_BASE", "Eshan - Driiquar Redoubt")
+            _builder.Create("ESHAN_NEOCRUSADER_BASE", "Eshan - Ruined Garrison")
                 .AddSpawn(ObjectType.Creature, "esh_nc_vanguard")
                 .WithFrequency(100)
                 .RandomlyWalks()

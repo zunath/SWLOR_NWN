@@ -4456,6 +4456,67 @@
           "type": "float",
           "value": 2.999990463256836
         }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Eshan Orbit"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "Eshan_Orbit"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.810041606426239
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 40.4878044128418
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.5863723754882813
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 26.04280281066895
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.999990463256836
+        }
       }
     ]
   }

@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
         public string ItemId { get; set; }
         public BaseItem ItemType { get; set; } = BaseItem.Invalid;
         public int ItemDMG { get; set; }
+        public bool HasItemDMG { get; set; }
 
         public ExamineItemPayload(uint item, bool trackLiveItem = false)
             : this(GetName(item), GetDescription(item), Service.Item.BuildItemPropertyString(item))
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
             }
             ItemType = GetBaseItemType(item);
             ItemDMG = Service.Item.GetDMG(item);
+            HasItemDMG = GetItemHasItemProperty(item, ItemPropertyType.DMG);
         }
 
         public ExamineItemPayload(string itemName, string description, string itemProperties)

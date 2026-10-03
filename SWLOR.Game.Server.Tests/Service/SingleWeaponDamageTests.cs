@@ -61,6 +61,16 @@ public class SingleWeaponDamageTests
     }
 
     [Test]
+    public void Description_OnlyEnhancesRealDamageProperties()
+    {
+        var fallback = WeaponDamage.BuildSingleWeaponDescription(1, 20, 40, hasItemDamage: false);
+        fallback.Should().Contain("Weapon DMG: 1 (fallback; no DMG property)");
+        fallback.Should().NotContain("DMG when wielded alone:").And.NotContain("Additional +40%");
+        WeaponDamage.BuildSingleWeaponDescription(1, 20, 40, hasItemDamage: true)
+            .Should().Contain("DMG when wielded alone: 2");
+    }
+
+    [Test]
     public void RatingFeedsTheDamageFormula_WithoutMultiplyingOtherDamageInputs()
     {
         var rating = WeaponDamage.CalculateEffectiveDMG(24, 60);

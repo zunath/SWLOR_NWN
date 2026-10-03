@@ -43,8 +43,10 @@ namespace SWLOR.Game.Server.Service.CombatService
             return (int)Math.Min(int.MaxValue, itemDamage + bonus);
         }
 
-        public static string BuildSingleWeaponDescription(int itemDamage, int naturalPercent, int perkPercent)
+        public static string BuildSingleWeaponDescription(int itemDamage, int naturalPercent, int perkPercent, bool hasItemDamage = true)
         {
+            if (!hasItemDamage)
+                return $"Weapon DMG: {itemDamage} (fallback; no DMG property).\nSingle Weapon bonuses require a weapon DMG property.";
             var text = $"Weapon DMG: {itemDamage}\nSingle Weapon: +{naturalPercent}% weapon DMG while wielded with an empty off hand.";
             if (perkPercent > 0)
                 text += $"\nDoublehand: Additional +{perkPercent}% weapon DMG.";

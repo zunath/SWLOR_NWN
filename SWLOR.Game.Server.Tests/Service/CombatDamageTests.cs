@@ -1187,6 +1187,12 @@ public class CombatDamageTests
         damageRollSource.Should().Contain("if (weapon != null && damageProfile.HasItemDamage)");
         var ratingSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "WeaponDamage.cs"));
         ratingSource.Should().Contain("if (!GetItemHasItemProperty(weapon, ItemPropertyType.DMG))");
+        var payloadSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "Payload", "ExamineItemPayload.cs"));
+        var previewSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ExamineItemViewModel.cs"));
+        payloadSource.Should().Contain("HasItemDMG = GetItemHasItemProperty(item, ItemPropertyType.DMG)");
+        previewSource.Should().Contain("var hasItemDMG = _payload.HasItemDMG;");
+        previewSource.Should().Contain("hasItemDMG = GetItemHasItemProperty(_payload.ItemObject, ItemPropertyType.DMG)");
+        previewSource.Should().Contain("StatType.SingleWeaponDamagePercentAdjustment), hasItemDMG)");
     }
 
     [Test]

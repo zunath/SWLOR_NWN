@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -53,10 +54,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_payload == null)
                 return;
             var itemDMG = _payload.ItemDMG;
+            var hasItemDMG = _payload.HasItemDMG;
             var hasLiveItem = GetIsObjectValid(_payload.ItemObject) && GetObjectUUID(_payload.ItemObject) == _payload.ItemId;
             if (hasLiveItem)
             {
                 itemDMG = Item.GetDMG(_payload.ItemObject);
+                hasItemDMG = GetItemHasItemProperty(_payload.ItemObject, ItemPropertyType.DMG);
                 ItemProperties = Item.BuildItemPropertyString(_payload.ItemObject);
             }
             Description = _payload.Description;
@@ -65,9 +68,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var preview = WeaponDamage.BuildSingleWeaponDescription(itemDMG,
                 WeaponDamage.GetNaturalSingleWeaponPercent(Player),
-                Stat.GetStatAdjustment(Player, StatType.SingleWeaponDamagePercentAdjustment));
+                Stat.GetStatAdjustment(Player, StatType.SingleWeaponDamagePercentAdjustment), hasItemDMG);
             Description = string.IsNullOrWhiteSpace(Description) ? preview : $"{Description.TrimEnd()}\n\n{preview}";
-            if (hasLiveItem && GetItemInSlot(InventorySlot.RightHand, Player) == _payload.ItemObject)
+            if (hasItemDMG && hasLiveItem && GetItemInSlot(InventorySlot.RightHand, Player) == _payload.ItemObject)
                 Description += EquipmentPredicates.HasSingleWeapon(Player)
                     ? "\nSingle Weapon is active."
                     : "\nSingle Weapon is inactive: your off hand must be empty.";

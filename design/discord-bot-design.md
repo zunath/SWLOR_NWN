@@ -19,30 +19,107 @@ The current request covers design and discovery. Runtime implementation, install
 | Hosting | Confirmed | Linux; Docker preferred. Existing database, capacity, backup location, and deployment access remain to be inspected. |
 | Existing ticket bot | Confirmed | Owner identified Ticket Tool. Use its canonical dashboard at https://tickettool.xyz/manage-servers. |
 | Discord guild, channels, roles, and permissions | Partially observed | Dyno identifies SWLOR as guild 484936923341651971. Dashboard counts were observed; individual channel/role IDs and permissions remain unverified. |
-| Ticket Tool panels and behavior | Not observed | Inspect every enabled panel and its open/closed permissions, messages, limits, and automation. |
-| Dyno configuration | Partially observed | Bot nickname Yoda; Custom Commands module enabled with 24/25 configured command slots. Three command names/descriptions observed. Exact responses, prefix, welcome configuration, and faction rules remain unverified. |
-| Live inspection access | Blocked after partial Chrome audit | Owner signed into both dashboards in Chrome. Read-only inspection reached SWLOR in Dyno and its Custom Commands page. Computer Use then explicitly stopped because it could not determine the current Chrome URL confidently enough to enforce policy. No bot settings were saved or changed, and no tickets or messages were created. Remaining configuration requires supported browser access or owner-provided configuration evidence. |
+| Ticket Tool panels and behavior | Access confirmed; panels not observed | Signed-in Manage Servers page lists SWLOR under Servers with Ticket Tool. Inspect every panel and its open/closed permissions, messages, limits, and automation. |
+| Dyno configuration | Partially observed | Bot nickname Yoda; Custom Commands module enabled with 24/25 configured command slots. Prefix ?, full 24-command name/description inventory, Announcements welcome text, and 12 joinable faction role names observed. Exact command responses, switch states, and stable role/channel IDs remain unverified. |
+| Live inspection access | Blocked after partial Chrome audit | Owner signed into both dashboards in Chrome. Read-only inspection reached the Dyno general dashboard, Welcome, Announcements, Autoroles, Joinable Ranks, the full custom-command listing, and Ticket Tool Manage Servers in a fresh chat. Computer Use then explicitly stopped because it could not determine the current Chrome URL confidently enough to enforce policy. No bot settings were saved or changed, and no tickets or messages were created. Remaining configuration requires supported browser access or owner-provided configuration evidence. |
 | Existing application connection | Unavailable locally | SWLOR.Admin appsettings and environment have no configured Discord bot token/guild; the declared application user-secrets file is absent. No credential values were printed or copied. |
 
 Documentation establishes possible options, not which options SWLOR currently uses. Keep every unobserved setting pending until there is evidence from the live configuration.
 
 ## Observed live configuration (2026-10-03)
 
-These values came from the authenticated Chrome dashboard, not documentation or assumed defaults. Inspection used visible accessibility text because screenshot capture failed. It stopped before opening custom-command details or Ticket Tool panel configuration.
+These values came from the authenticated Chrome dashboards. A fresh chat restored native accessibility reading and address-bar navigation. Screenshot capture still timed out, indexed clicks lacked coordinate geometry, and keyboard focus did not reliably expose detail controls. Computer Use subsequently ended when its URL safety check could not validate Chrome's current URL. No settings were saved, roles changed, bot commands sent, tickets created, or backup keys generated.
 
 | Setting | Observed value | Source |
 | --- | --- | --- |
 | Guild | SWLOR; `484936923341651971` | Dyno account server link and selected-server dashboard. |
-| Dyno nickname | `Yoda` | Dyno SWLOR general dashboard. |
-| Dashboard inventory snapshot | 1,515 members; 14 categories; 89 text channels; 4 voice channels; 26 roles | Dyno SWLOR general dashboard; counts can change and do not establish individual permissions. |
-| Custom Commands module | Enabled | Module heading offers Disable Module; no toggle was used. |
-| Configured command slots | 24 of 25 | Custom Commands page. Individual command enablement and aliases were not audited. |
-| `design` | Description: Links the design bible | Custom Commands listing; response and prefix not read. |
-| `weapon` | Description: Displays weapon stats | Custom Commands listing; response and prefix not read. |
-| `delete` | Description: Tells you how to delete a character | Custom Commands listing; response and prefix not read. This is an informational command, not evidence of a character-deletion action. |
-| Ticket Tool access | Manage Servers tab present | Chrome tab inventory; the owner reports being signed in. No selected-guild panel settings were read. |
+| Dyno nickname and prefix | `Yoda`; `?` | Dyno SWLOR general dashboard. |
+| General configuration | Updates channel `discord-logs`; timezone `America/New_York`; language English; Manager Roles field shows no selected role | Dyno general dashboard. Channel ID and effective manager permissions were not read. |
+| Dashboard inventory snapshot | 1,515 members; 14 categories; 89 text channels; 4 voice channels; 26 roles | Dyno general dashboard; counts are a snapshot, not proof of individual permissions. |
+| Custom Commands | Enabled; 24 of 25 command slots configured | Module heading offers Disable Module. Each command's enabled switch, response, and options remain unverified. |
+| Announcements | Enabled; announcement channel `welcome`; join-message text captured below | Announcements module. Join/leave/ban/DM and message/embed switches are not exposed by the accessibility text. |
+| Welcome | Disabled | Newer Welcome module heading offers Enable Module. Its welcome channel field also shows `welcome`; the message field exposes a placeholder, not a verified configured response. |
+| Auto Roles | Enabled; autorole table contains only its headers | Autoroles module. No automatic add/remove role rule was visible. |
+| Joinable Ranks | 12 configured faction role names; command `?rank` | Joinable Ranks page. Names captured below; stable role IDs and policy switches remain unread. |
+| Ticket Tool access | Authenticated Manage Servers page at `https://tickettool.xyz/dashboard` lists SWLOR under Servers with Ticket Tool, with a Manage button | Existing Chrome tab. Panel configuration is not yet observed. |
 
-Preserve the 24-command inventory as a parity requirement, then verify every trigger, response, macro, restriction, and role action before implementation. Do not infer that every configured command is enabled or that the observed descriptions are the responses players receive. Welcome settings, faction joins/leaves, ticket support roles, categories, close/rename behavior, transcripts, cleanup timing, and existing-ticket metadata remain pending.
+### Welcome text
+
+The enabled Announcements module's JOIN MESSAGE field contains:
+
+```text
+Welcome to the party, {user}! Please visit our wiki at https://wiki.starwarsnwn.com/ to learn more about the project. Staff is on hand to help with any of your questions, too! You will find all important links in {#information} Please keep {#general} chat to SWLOR/Star Wars, but feel free to talk about any topics you so choose in the {#off-topic} channel. May the force be with you!
+```
+
+Preserve this template and resolve its channel variables to verified IDs during import. The source of the configured welcome content is Announcements; do not enable a second welcome sender by assuming the separate Welcome module is active. The actual join switch, DM delivery switch, and selected message type still require verification. Leave and ban fields expose default placeholders but no configured values; their enabled states are unverified.
+
+### Joinable faction roles
+
+The live Joinable Ranks list contains exactly these role names, each with the `Faction - ` prefix:
+
+| Exact role name |
+| --- |
+| Faction - Cartel |
+| Faction - Free Fleet |
+| Faction - The Mandalorians |
+| Faction - The Republic |
+| Faction - Remnants |
+| Faction - Czerka |
+| Faction - Jedi Order |
+| Faction - The Legion |
+| Faction - Veles City Hall |
+| Faction - Republic Joint Comms |
+| Faction - The Underworld |
+| Faction - Sith Cultists |
+
+The page explicitly identifies `?rank` as the join command. LIMIT USERS TO ONE RANK, DELETE COMMAND AFTER USE, and AUTO DELETE RESPONSE controls exist, but their values are not exposed by the readable tree. Do not assume exclusivity, response deletion, or join/leave semantics. Resolve these exact names to role IDs and validate each mapping before accepting any faction-role changes; missing or ambiguous mappings must fail closed. Displayed member counts are not evidence of actual role membership.
+
+### Custom-command inventory
+
+All 24 configured names and listing descriptions were captured from the full page text. These are separate configured commands, even where descriptions match; `bible` is not yet a verified alias of `design`, and `ticket` is not yet a verified alias of `dm`.
+
+| Command (prefix `?`) | Listing description |
+| --- | --- |
+| design | Links the design bible |
+| weapon | Displays weapon stats |
+| delete | Tells you how to delete a character |
+| bug | What to do when you find a bug |
+| nui | Displays known issues with NUI |
+| dm | What to do if you need a DM |
+| faction | How to join factions |
+| wiki | Wiki info |
+| skills | Displays skill info |
+| damage | Displays damage info |
+| race | Race info |
+| based | BASED ON WHAT? |
+| patreon | Patreon info |
+| refund | Info about refunding perks |
+| rebuild | Rebuild info |
+| properties | Player property info |
+| dev | Development info |
+| bible | Links the design bible |
+| ticket | What to do if you need a DM |
+| spcap | No description shown |
+| rules | No description shown |
+| mastery | Displays mastery info |
+| remnant | No description shown |
+| jetpacks | No description shown |
+
+Capture each command's actual response, embeds, Additional Responses, macros, aliases, arguments, enabled status, restrictions, cooldowns, and deletion options before parity is accepted. Listing descriptions are not the messages users receive. The `delete` description is informational; it does not establish a character-deletion side effect.
+
+### Remaining live-audit gaps
+
+| Gap | What is still needed |
+| --- | --- |
+| Ticket panels | Panel/message IDs, button labels, opening content, prompts, categories, limits, and eligibility. |
+| Ticket access and operations | Stable staff/observer role IDs; opened/closed requester permissions; rename, close, claim, participant, reopen, and delete behavior. |
+| Ticket cleanup and archives | Cleanup timing, inactivity rules, export prerequisites, transcript/log destinations, retention and attachments, existing-ticket inventory. |
+| Dyno command details | Actual output and behavior for all 24 configured commands. |
+| Welcome delivery | Join/leave/ban/DM switches, selected message type, stable welcome and template channel IDs. |
+| Faction policy | All 12 stable role IDs, exclusivity/deletion switches, toggle/leave behavior, command restrictions and feedback. |
+| Other Dyno responsibilities | Enabled-module inventory and any additional used moderation/logging/automation behavior before Dyno removal. |
+
+These are evidence gaps, not requests for another Discord login approval. The remaining audit needs functional supported dashboard interaction. No parity or cutover claim should be made from names, placeholders, or documentation defaults.
 
 ## Published SWLOR workflow evidence
 
@@ -64,7 +141,7 @@ Dyno documents command inspection through `customs list` and `customs show`, but
 
 Ticket Tool's Config Backup & Restore transfers configuration between Ticket Tool servers using an owner-held backup key. It does not export a general replacement-bot configuration or transfer existing tickets. Do not generate or request a backup key for this audit; inspect panel settings directly. Existing-ticket drain/import and transcript preservation remain separate cutover decisions.
 
-Direct browser-tool recovery was attempted after the owner requested that the parent handle the audit. Both parent runtimes fail before JavaScript executes with `failed to write kernel assets: The system cannot find the path specified. (os error 3)`; their built-in resets did not restore execution. The restored original task workspace path still exists, so no further speculative filesystem or process changes were made. The earlier Chrome observation also stopped at URL-policy verification. Neither failure indicates missing owner login approval. A further direct check verified the configured runtime paths, temporary directories, native pipe, and restored task workspace path. Only the two helpers matched to this chat by startup logs, parent IDs, and creation timestamps were stopped. The current tool connections now return Transport closed and require a fresh supported session. No global runtime configuration, Chrome sessions, Codex host, or other chat helpers were changed. Resume through a renewed supported browser runtime; do not change browser security, extract session credentials, or use an alternate automation protocol to bypass these failures.
+The source chat had a missing-path runtime initialization failure. Only its two narrowly identified helpers were stopped; no global runtime/security configuration, browser sessions, Codex host, or unrelated helpers were changed. The owner authorized this fresh chat, where initialization and native Chrome accessibility reading succeeded. Chrome was unavailable to the browser-provider API; native screenshots and clicks remained unusable, and the native URL safety check eventually stopped Computer Use. Honor that stop: do not extract session credentials, change browser security, invent a helper protocol, or repeatedly fork tasks to evade the URL check. Further live inspection requires a functional supported browser connection.
 
 ## Existing repository integration points
 

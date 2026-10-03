@@ -59,17 +59,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         }
 
         /// <summary>
-        /// Formats a transit time in seconds as a minute count, trimming a trailing zero decimal.
-        /// </summary>
-        private static string FormatMinutes(int seconds)
-        {
-            var minutes = seconds / 60m;
-            return minutes == decimal.Truncate(minutes)
-                ? minutes.ToString("0")
-                : minutes.ToString("0.#");
-        }
-
-        /// <summary>
         /// Renders the main terminal page: pass gate, ticket purchase, or existing ticket status.
         /// </summary>
         private void MainPageInit(ConversationMenuPage page)
@@ -128,10 +117,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var fare = GalaxyMap.GetFare(origin, type);
                 var tax = (int)(model.Tax * fare);
                 var price = fare + tax;
-                var countdown = Time.GetTimeShortIntervals(Shuttle.GetNextDepartureUtc(origin, type) - DateTime.UtcNow, false);
-                var minutes = FormatMinutes(GalaxyMap.GetTransitSeconds(origin, type));
+                var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(origin, type) - DateTime.UtcNow, false);
+                var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(origin, type)), false);
 
-                var optionText = $"{planet.Name} [{price} cr] - departs in {countdown}, flight time {minutes} min";
+                var optionText = $"{planet.Name} [{price} cr] - departs in {countdown}, flight time {transit}";
                 page.AddResponse(optionText, () =>
                 {
                     model.Destination = type;
@@ -146,12 +135,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void BuildTicketedPage(ConversationMenuPage page, uint player, PlanetType terminalPlanet, ShuttleRide ride)
         {
             var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
-            var countdown = Time.GetTimeShortIntervals(Shuttle.GetNextDepartureUtc(ride.Origin, ride.Destination) - DateTime.UtcNow, false);
-            var minutes = FormatMinutes(GalaxyMap.GetTransitSeconds(ride.Origin, ride.Destination));
+            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(ride.Origin, ride.Destination) - DateTime.UtcNow, false);
+            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(ride.Origin, ride.Destination)), false);
 
             page.Header = "Ticketed Flight: " + destinationName + "\n" +
                           "Departs in: " + countdown + "\n" +
-                          "Flight time: " + minutes + " min\n\n" +
+                          "Flight time: " + transit + "\n\n" +
                           "Be within 15 meters of the flights terminal when boarding is called or you will miss this shuttle.";
 
             if (terminalPlanet == ride.Origin)
@@ -179,15 +168,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var fare = GalaxyMap.GetFare(model.Origin, model.Destination);
             var tax = (int)(model.Tax * fare);
             var price = fare + tax;
-            var countdown = Time.GetTimeShortIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
-            var minutes = FormatMinutes(GalaxyMap.GetTransitSeconds(model.Origin, model.Destination));
+            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
+            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(model.Origin, model.Destination)), false);
 
             page.Header = "Selected Destination: " + destinationName + "\n" +
                           "Fare: " + fare + " cr\n" +
                           "Tax: " + tax + " cr\n" +
                           "Total Price: " + price + " cr\n" +
                           "Departs in: " + countdown + "\n" +
-                          "Flight time: " + minutes + " min\n\n" +
+                          "Flight time: " + transit + "\n\n" +
                           "You may only hold one ticket at a time. You must be within 15 meters of this terminal " +
                           "when boarding is called or your ticket will roll over to the next shuttle. " +
                           "Tickets are refundable (fare only) before boarding.";
@@ -203,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     if (!Shuttle.TryPurchaseTicket(player, model.Origin, model.Destination, model.CityPropertyId, model.Tax))
                         return;
 
-                    var confirmedCountdown = Time.GetTimeShortIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
+                    var confirmedCountdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
                     SendMessageToPC(player, ColorToken.Green($"Ticket purchased! Your shuttle to {destinationName} departs in {confirmedCountdown}."));
 
                     Close();

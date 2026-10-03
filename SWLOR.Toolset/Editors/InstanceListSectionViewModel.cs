@@ -413,9 +413,9 @@ namespace SWLOR.Toolset.Editors
             }
 
             row.Tag = InstanceFieldMap.GetTag(instance) ?? string.Empty;
-            row.X = DetailX;
-            row.Y = DetailY;
-            row.Z = DetailZ;
+            row.X = (float)DetailX;
+            row.Y = (float)DetailY;
+            row.Z = (float)DetailZ;
         }
 
         [RelayCommand]

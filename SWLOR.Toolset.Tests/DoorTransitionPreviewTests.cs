@@ -91,7 +91,7 @@ namespace SWLOR.Toolset.Tests
             marker.Model.Should().BeNull();
             marker.IsDoorTransition.Should().BeTrue();
             editor.Appearance.Tiles.Should().ContainSingle()
-                .Which.Option.IsDoorTransition.Should().BeTrue();
+                .Which.Option.Id.Value.Should().Be($"{DoorAppearanceKind.Generic}:0");
 
             var (target, distance) = AreaCameraMath.ComputeSceneFraming(
                 editor.PreviewScene,

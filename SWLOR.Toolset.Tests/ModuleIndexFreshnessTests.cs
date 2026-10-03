@@ -231,8 +231,12 @@ namespace SWLOR.Toolset.Tests
             appearance.RefreshUsage();
 
             appearance.Gallery.MatchSummary.Should().Be("1 model");
-            appearance.Gallery.Tiles.Should().ContainSingle()
-                .Which.Option.ModelResRef.Should().Be("plc_used");
+            var selectedId = appearance.Gallery.Tiles.Should().ContainSingle()
+                .Which.Option.Id.Value;
+            selectedId.Should().Be("0");
+            int.TryParse(selectedId, out var selectedAppearanceId).Should().BeTrue();
+            catalog.TryGet(selectedAppearanceId, out var selectedRow).Should().BeTrue();
+            selectedRow.ModelName.Should().Be("plc_used");
         }
 
         [AvaloniaTest]

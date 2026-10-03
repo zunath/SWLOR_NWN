@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Editors.Creatures
     {
         private readonly CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<string, Action, DocumentSession, bool>? _runRelatedEdit;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
@@ -183,10 +184,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             OutputLogService? log = null,
             TintMapCatalog? tintMapCatalog = null,
             Func<IDocumentEdit?>? captureCoalesceOrigin = null,
-            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null,
+            Func<string, Action, DocumentSession, bool>? runRelatedEdit = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
+            _runRelatedEdit = runRelatedEdit;
             _gameCodeIndex = gameCodeIndex;
             _resolveChoices = resolveChoices;
             _resolveModel = resolveModel;
@@ -198,7 +201,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             ResourceIndex = resourceIndex;
 
             Equipment = new CreatureEquipmentSet(_store, filePath);
-            Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit);
+            Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit, RunEquipmentEdit);
             Abilities = new CreatureAbilitiesViewModel(
                 _store,
                 RunEdit,
@@ -229,6 +232,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _store,
                 Equipment,
                 RunEdit,
+                RunEquipmentEdit,
                 equipmentChoices ?? (() => Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(
                     Array.Empty<CreatureEquipmentChoice>())),
                 equipmentDetails ?? (_ => null),
@@ -365,6 +369,32 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (applied)
                 IsDirty = true;
             return applied;
+        }
+
+        private bool RunEquipmentEdit(
+            string description,
+            CreatureEquipmentDocument document,
+            Action mutation)
+        {
+            bool applied;
+            try
+            {
+                applied = _runRelatedEdit?.Invoke(description, mutation, document.Session) ?? false;
+            }
+            catch
+            {
+                Equipment.DiscardUnreferencedNew(document);
+                throw;
+            }
+
+            if (applied)
+            {
+                IsDirty = true;
+                return true;
+            }
+
+            Equipment.DiscardUnreferencedNew(document);
+            return false;
         }
 
         private void BuildRows(

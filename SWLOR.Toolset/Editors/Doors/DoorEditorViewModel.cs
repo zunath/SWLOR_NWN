@@ -13,6 +13,7 @@ using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Editors.Behaviors;
+using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Viewport;
 using SWLOR.Toolset.Workspace;
 
@@ -148,7 +149,7 @@ namespace SWLOR.Toolset.Editors.Doors
                     thumbnails,
                     id => appearanceOptions.FirstOrDefault(option => option.Key == id.Value));
             Appearance = new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel(
-                Appearance.AppearanceGalleryOptionAdapter.ToShared(appearanceOptions),
+                AppearanceGalleryOptionAdapter.ToShared(appearanceOptions),
                 previewProvider,
                 () => new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId(
                     _store.GetAppearance(_appearances) is { } current

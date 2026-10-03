@@ -108,7 +108,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 log,
                 tintMapCatalog,
                 captureCoalesceOrigin: () => _session.UndoStack.CurrentAppliedEntry,
-                runCoalescedEdit: RunCoalescedEdit);
+                runCoalescedEdit: RunCoalescedEdit,
+                runRelatedEdit: RunRelatedEdit);
             UpdateTitle();
         }
 
@@ -117,6 +118,24 @@ namespace SWLOR.Toolset.Editors.Creatures
             try
             {
                 _session.Execute(description, mutation);
+                AfterHistoryChange();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Edit failed ({description}): {ex.Message}");
+                return false;
+            }
+        }
+
+        private bool RunRelatedEdit(
+            string description,
+            Action mutation,
+            DocumentSession relatedSession)
+        {
+            try
+            {
+                _session.ExecuteRelated(description, mutation, relatedSession);
                 AfterHistoryChange();
                 return true;
             }

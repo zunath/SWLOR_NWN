@@ -5,10 +5,12 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -151,6 +153,86 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(creatureIdentity, GetObjectUUID(retriedOwner), "Retry preserves creature identity");
             AssertMigratedAccuracy(ctx, retriedWeapon, itemIdentity);
         });
+    }
+
+    [EngineTest("Chiro Electroblade preserves legacy accuracy and Ice through stored migration", Category = "LegacyItemProperties")]
+    public static async Task ChiroElectrobladeAccuracyAndRetry(EngineTestContext ctx)
+    {
+        var owner = ctx.SpawnCreature("nw_rat001");
+        await ctx.WaitFrameAsync();
+        var weapon = await CreateItemAsync(ctx, owner, "chi_electroblade", owner);
+        string savedData = null;
+        string migratedData = null;
+        string identity = null;
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var originalProperties = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            for (var property = GetFirstItemProperty(weapon); GetIsItemPropertyValid(property); property = GetNextItemProperty(weapon))
+                originalProperties.Add(property);
+
+            // Reproduce the live Crashing Wave profile before its first native load.
+            AddLegacyProperty(weapon, ItemPropertyType.DMG, (int)CombatDamageType.Physical, 34, 28);
+            AddLegacyProperty(weapon, ItemPropertyType.DMG, (int)CombatDamageType.Ice, 34, 2);
+            AddLegacyProperty(weapon, ItemPropertyType.AccuracyBonus, 0, 2, 5);
+            AddLegacyProperty(weapon, ItemPropertyType.UseLimitationPerk, 18, 33, 5);
+            foreach (var property in originalProperties)
+                Invoke("MigrationObject", "RemoveProperty", weapon, property);
+            AddItemProperty(DurationType.Permanent,
+                ItemPropertyOnHitCastSpell(OnHitCastSpellType.ONHIT_UNIQUEPOWER, 40), weapon);
+            SetName(weapon, "Crashing Wave - Chiro Electroblade");
+            SetLocalString(weapon, "CHIRO_ACCURACY_FIXTURE", "keep");
+            identity = GetObjectUUID(weapon);
+            ctx.Assert(!string.IsNullOrWhiteSpace(identity), "The original Electroblade has a saved identity");
+            savedData = ObjectPlugin.Serialize(weapon);
+            DestroyObject(weapon);
+        });
+        await ctx.DelaySecondsAsync(0.3f);
+        ctx.Assert(!GetIsObjectValid(weapon), "The original Electroblade releases its UUID before migration");
+
+        uint migrated = OBJECT_INVALID;
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var (changed, data) = MigrateStoredData(savedData);
+            ctx.Assert(changed, "The legacy Electroblade requires migration");
+            ctx.Assert(ContainsIdentity(data, identity), "Migration retains the serialized item identity");
+            migrated = Deserialize(ctx, data);
+            AssertChiroElectroblade(ctx, migrated, identity);
+        });
+        await ctx.DelaySecondsAsync(0.3f);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            AssertChiroElectroblade(ctx, migrated, identity);
+            migratedData = ObjectPlugin.Serialize(migrated);
+            DestroyObject(migrated);
+        });
+        await ctx.DelaySecondsAsync(0.3f);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            var (changed, data) = MigrateStoredData(migratedData);
+            ctx.Assert(!changed, "Retry does not migrate the Electroblade again");
+            ctx.AssertEqual(migratedData, data, "Retry leaves the saved Electroblade unchanged");
+            AssertChiroElectroblade(ctx, Deserialize(ctx, data), identity);
+        });
+    }
+
+    private static void AssertChiroElectroblade(EngineTestContext ctx, uint item, string identity)
+    {
+        ctx.AssertEqual(BaseItem.Electroblade, GetBaseItemType(item), "The original base item type remains Electroblade");
+        ctx.AssertEqual(5, MeleePropertyTotal(item, ItemPropertyType.Accuracy), "Native Accuracy Bonus +5 becomes custom Accuracy +5");
+        ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.AccuracyBonus), "The retired accuracy row is replaced");
+        ctx.AssertEqual(26, MeleePropertyTotal(item, ItemPropertyType.DMG), "Physical 28 plus Ice 2 follow the current balanced damage scale");
+        AssertDamageType(ctx, item, CombatDamageType.Ice);
+        ctx.AssertEqual(24, PropertyValue(item, ItemPropertyType.Delay), "The Electroblade uses Delay 240");
+        ctx.AssertEqual(50, PropertyValue(item, ItemPropertyType.RequiresSkill, (int)SkillType.Lightsaber), "The Chiro skill requirement is Lightsaber 50");
+        ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.UseLimitationPerk), "The retired proficiency requirement is replaced");
+        ctx.AssertEqual((int)OnHitCastSpellType.ONHIT_UNIQUEPOWER,
+            FindPropertySubtype(item, ItemPropertyType.OnHitCastSpell), "The unique on-hit power survives");
+        ctx.AssertEqual("Level40", Get2DAString("iprp_spellcstr", "Label", PropertyValue(item, ItemPropertyType.OnHitCastSpell)),
+            "The on-hit power retains caster level 40");
+        ctx.AssertEqual(identity, GetObjectUUID(item), "The saved item identity survives");
+        ctx.AssertEqual("Crashing Wave - Chiro Electroblade", GetName(item), "The custom name survives");
+        ctx.AssertEqual("keep", GetLocalString(item, "CHIRO_ACCURACY_FIXTURE"), "Unrelated local data survives");
+        ctx.AssertEqual(0, GetLocalInt(item, LegacyItemProperties.ConvertedVariable), "The existing migration consumes the native conversion marker");
     }
 
     private static void AssertLoadedLegacyAccuracy(EngineTestContext ctx, uint item, string identity)

@@ -1,6 +1,6 @@
 # SWLOR Discord Bot Design
 
-Status: draft; live-server parity audit pending. Updated 2026-10-03.
+Status: draft; live-server parity audit partially observed and blocked. Updated 2026-10-03.
 
 ## Confirmed scope
 
@@ -18,13 +18,31 @@ The current request covers design and discovery. Runtime implementation, install
 | --- | --- | --- |
 | Hosting | Confirmed | Linux; Docker preferred. Existing database, capacity, backup location, and deployment access remain to be inspected. |
 | Existing ticket bot | Confirmed | Owner identified Ticket Tool. Use its canonical dashboard at https://tickettool.xyz/manage-servers. |
-| Discord guild, channels, roles, and permissions | Not observed | Read from the authenticated Discord session when available. |
+| Discord guild, channels, roles, and permissions | Partially observed | Dyno identifies SWLOR as guild 484936923341651971. Dashboard counts were observed; individual channel/role IDs and permissions remain unverified. |
 | Ticket Tool panels and behavior | Not observed | Inspect every enabled panel and its open/closed permissions, messages, limits, and automation. |
-| Dyno configuration | Not observed | Inspect enabled modules, prefix, custom commands, joinable roles, and welcome settings. |
-| Live inspection access | Blocked | Owner reports Ticket Tool and Dyno are signed in through Firefox and authorizes Discord sign-in. A fresh automation session starts, but the tool stops on Firefox for Windows because browser URL-policy enforcement is unsupported. An initial unrelated-page capture was rejected; no live bot settings were read or changed. Continue through a supported browser session or configuration exports. |
+| Dyno configuration | Partially observed | Bot nickname Yoda; Custom Commands module enabled with 24/25 configured command slots. Three command names/descriptions observed. Exact responses, prefix, welcome configuration, and faction rules remain unverified. |
+| Live inspection access | Blocked after partial Chrome audit | Owner signed into both dashboards in Chrome. Read-only inspection reached SWLOR in Dyno and its Custom Commands page. Computer Use then explicitly stopped because it could not determine the current Chrome URL confidently enough to enforce policy. No bot settings were saved or changed, and no tickets or messages were created. Remaining configuration requires supported browser access or owner-provided configuration evidence. |
 | Existing application connection | Unavailable locally | SWLOR.Admin appsettings and environment have no configured Discord bot token/guild; the declared application user-secrets file is absent. No credential values were printed or copied. |
 
 Documentation establishes possible options, not which options SWLOR currently uses. Keep every unobserved setting pending until there is evidence from the live configuration.
+
+## Observed live configuration (2026-10-03)
+
+These values came from the authenticated Chrome dashboard, not documentation or assumed defaults. Inspection used visible accessibility text because screenshot capture failed. It stopped before opening custom-command details or Ticket Tool panel configuration.
+
+| Setting | Observed value | Source |
+| --- | --- | --- |
+| Guild | SWLOR; `484936923341651971` | Dyno account server link and selected-server dashboard. |
+| Dyno nickname | `Yoda` | Dyno SWLOR general dashboard. |
+| Dashboard inventory snapshot | 1,515 members; 14 categories; 89 text channels; 4 voice channels; 26 roles | Dyno SWLOR general dashboard; counts can change and do not establish individual permissions. |
+| Custom Commands module | Enabled | Module heading offers Disable Module; no toggle was used. |
+| Configured command slots | 24 of 25 | Custom Commands page. Individual command enablement and aliases were not audited. |
+| `design` | Description: Links the design bible | Custom Commands listing; response and prefix not read. |
+| `weapon` | Description: Displays weapon stats | Custom Commands listing; response and prefix not read. |
+| `delete` | Description: Tells you how to delete a character | Custom Commands listing; response and prefix not read. This is an informational command, not evidence of a character-deletion action. |
+| Ticket Tool access | Manage Servers tab present | Chrome tab inventory; the owner reports being signed in. No selected-guild panel settings were read. |
+
+Preserve the 24-command inventory as a parity requirement, then verify every trigger, response, macro, restriction, and role action before implementation. Do not infer that every configured command is enabled or that the observed descriptions are the responses players receive. Welcome settings, faction joins/leaves, ticket support roles, categories, close/rename behavior, transcripts, cleanup timing, and existing-ticket metadata remain pending.
 
 ## Existing repository integration points
 
@@ -139,7 +157,7 @@ Inspect Ticket Tool at https://tickettool.xyz/manage-servers, selecting SWLOR an
 
 ## Implementation and cutover sequence
 
-1. Obtain supported authenticated browser access (the owner currently uses Firefox), complete the parity inventory, and identify only decisions the configuration does not answer.
+1. Restore supported authenticated inspection or obtain dashboard configuration evidence, finish the partially observed parity inventory, and identify only decisions the configuration does not answer.
 2. Add the independent worker, PostgreSQL schema, configuration validation, and Linux Docker packaging. Keep a dedicated development application/guild configuration.
 3. Implement ticket creation/rename/close/recovery and scheduled cleanup with focused tests; include observed transcript and staff workflows.
 4. Implement welcomes, factions, and canned commands using the audited configuration and compatibility aliases.

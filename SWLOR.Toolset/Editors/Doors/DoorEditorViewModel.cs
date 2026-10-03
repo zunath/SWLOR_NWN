@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Doors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
@@ -152,9 +153,7 @@ namespace SWLOR.Toolset.Editors.Doors
                 AppearanceGalleryOptionAdapter.ToShared(appearanceOptions),
                 previewProvider,
                 () => new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId(
-                    _store.GetAppearance(_appearances) is { } current
-                        ? AppearanceKey(current)
-                        : Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId.Unknown.Value),
+                    CurrentAppearanceKey()),
                 option =>
                 {
                     var hostOption = appearanceOptions.FirstOrDefault(candidate => candidate.Key == option.Id.Value);
@@ -452,6 +451,16 @@ namespace SWLOR.Toolset.Editors.Doors
         private static string AppearanceKey(DoorAppearanceChoice choice) =>
             $"{choice.Kind}:{choice.Id}";
 
+        private string CurrentAppearanceKey()
+        {
+            var stored = DoorAppearanceValueStore.Read(_store);
+            var current = _appearances.FirstOrDefault(choice =>
+                choice.Kind == stored.Kind && choice.Id == stored.Id);
+            return current == null
+                ? Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId.Unknown.Value
+                : AppearanceKey(current);
+        }
+
         private bool ApplyAppearance(Appearance.AppearanceOption option)
         {
             var choice = _appearances.FirstOrDefault(
@@ -459,7 +468,10 @@ namespace SWLOR.Toolset.Editors.Doors
             if (choice == null)
                 return false;
 
-            if (!RunEdit($"Change appearance to {choice.Display}", () => _store.SetAppearance(choice)))
+            if (!RunEdit(
+                    $"Change appearance to {choice.Display}",
+                    () => DoorAppearanceValueStore.Write(
+                        _store, new DoorAppearanceSelection(choice.Kind, choice.Id))))
                 return false;
 
             OnAppearanceChanged();

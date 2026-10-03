@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Authoring.Doors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;

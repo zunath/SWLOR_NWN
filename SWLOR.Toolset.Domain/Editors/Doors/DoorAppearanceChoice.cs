@@ -1,3 +1,5 @@
+using Nwn.Authoring.Doors;
+
 namespace SWLOR.Toolset.Domain.Editors.Doors
 {
     /// <summary>One option of the combined genericdoors/doortypes appearance picker.</summary>

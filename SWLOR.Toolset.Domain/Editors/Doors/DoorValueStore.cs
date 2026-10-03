@@ -85,38 +85,6 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
         public static bool IsKnownCloser(string? script) =>
             !string.IsNullOrWhiteSpace(script) && KnownClosers.Contains(script);
 
-        public DoorAppearanceChoice? GetAppearance(IReadOnlyList<DoorAppearanceChoice> choices)
-        {
-            ArgumentNullException.ThrowIfNull(choices);
-
-            var specific = GetInteger(BehaviorFieldStorage.Field, "Appearance") ?? 0;
-            if (specific > 0)
-                return choices.FirstOrDefault(choice =>
-                    choice.Kind == DoorAppearanceKind.Specific && choice.Id == specific);
-
-            var generic = GetInteger(BehaviorFieldStorage.Field, "GenericType_New")
-                          ?? GetInteger(BehaviorFieldStorage.Field, "GenericType")
-                          ?? 0;
-            return choices.FirstOrDefault(choice =>
-                choice.Kind == DoorAppearanceKind.Generic && choice.Id == generic);
-        }
-
-        public void SetAppearance(DoorAppearanceChoice choice)
-        {
-            ArgumentNullException.ThrowIfNull(choice);
-
-            if (choice.Kind == DoorAppearanceKind.Generic)
-            {
-                SetInteger(BehaviorFieldStorage.Field, "Appearance", GffFieldType.Dword, 0);
-                SetInteger(BehaviorFieldStorage.Field, "GenericType_New", GffFieldType.Dword, choice.Id);
-            }
-            else
-            {
-                SetInteger(BehaviorFieldStorage.Field, "Appearance", GffFieldType.Dword, choice.Id);
-                SetInteger(BehaviorFieldStorage.Field, "GenericType_New", GffFieldType.Dword, 0);
-            }
-        }
-
         public void Apply(DoorBehavior behavior, bool isInstance)
         {
             ArgumentNullException.ThrowIfNull(behavior);

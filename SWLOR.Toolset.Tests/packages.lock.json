@@ -456,8 +456,8 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.32",
-        "contentHash": "PLbCGemnXr4hrlyIJ6xk4jDHMVb7RUfwNBRZFaoRupjoMFem4fge4hTyDR5wzdIzbnaVtarrdRcOCF4s7nPtYg==",
+        "resolved": "0.1.0-dev.33",
+        "contentHash": "Qx7aGMaG7/Y7Ys/Y0OWyV+82mY8ShUFO6oOF8D5GJ6uLahO+k0E7fy641IoC5xg05xHVGSXk5oll3+vA9yEOlg==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.26"
         }
@@ -494,8 +494,8 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.40",
-        "contentHash": "kMvD33v3h9rX9OUKmyw2fV8Ffxhi4OIjsmMo2Ymug0sIUAoVmjb6Mu9YW9nXYLEPxDpH66REIj2q31NpZTHmqg==",
+        "resolved": "0.1.0-dev.41",
+        "contentHash": "Km3vwGleH3RTZCC/c7o5u6FDFdZfbMKe4XMfZqwjTpiByiPEmi129GwDb6O9AgwKD/j5nbOhnh9ccjRlcjRBqQ==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",
@@ -503,7 +503,7 @@
           "Dock.Avalonia": "11.3.12.1",
           "Dock.Avalonia.Themes.Fluent": "11.3.12.1",
           "Dock.Model.Mvvm": "11.3.12.1",
-          "Nwn.Authoring": "0.1.0-dev.32",
+          "Nwn.Authoring": "0.1.0-dev.33",
           "Nwn.Preview": "0.1.0-dev.36",
           "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
@@ -697,8 +697,8 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-dev.32, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-dev.40, )",
+          "Nwn.Authoring": "[0.1.0-dev.33, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-dev.41, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )"
@@ -707,7 +707,7 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.32, )",
+          "Nwn.Authoring": "[0.1.0-dev.33, )",
           "Nwn.Formats": "[0.1.0-dev.26, )",
           "Nwn.Preview": "[0.1.0-dev.36, )",
           "SWLOR.Game.Server": "[1.0.0, )",

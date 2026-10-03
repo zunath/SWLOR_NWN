@@ -414,6 +414,8 @@ The example's seven-day closed-channel cleanup, five-minute polling, 90-day arch
 
 Configuration is loaded at startup; restart the worker after editing it. IDs may be numbers or quoted decimal strings. Unknown JSON fields are rejected so a misspelled security or retention option cannot silently fall back to a default.
 
+Disabling `Tickets.Enabled` stops new ticket interactions and panel operations but does not pause maintenance or retention for tickets the bot already owns. Discord-dependent reconciliation and channel cleanup wait until the Gateway is ready; validated local archive expiration continues while Discord is offline. Re-enabling ticketing requires valid panel configuration; missing or invalid panels must fail startup validation rather than falling back to inferred channels.
+
 ### Discord application and Linux startup
 
 Create a dedicated Discord application and bot, then install it with the bot and application-command scopes. Enable Server Members Intent for welcomes and Message Content Intent for prefix commands and ticket transcript content. Grant the required channel/message and role-management permissions, and place the bot role above the allowlisted faction roles. Startup verifies required access against the configured guild; Administrator is not required. Discord administrators and the guild owner retain their platform access to private tickets.

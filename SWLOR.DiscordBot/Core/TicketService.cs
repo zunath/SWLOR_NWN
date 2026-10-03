@@ -11,6 +11,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
 {
     // One worker owns the guild; in-flight exports protect only their ticket's archive from cleanup.
     private readonly ConcurrentDictionary<Guid, byte> _exports = new();
+    private Guid? _lastMaintenanceTicketId;
+    private static readonly TimeSpan TicketMaintenanceTimeout = TimeSpan.FromMinutes(4);
     private TicketOptions Options => configuration.Tickets;
     public bool CanSupport(Actor actor) => actor.IsGuildOwner || actor.RoleIds.Intersect(Options.SupportRoleIds).Any();
     private bool Bypasses(Actor actor, bool? scope) => scope == true && actor.RoleIds.Intersect(Options.BypassRoleIds).Any();
@@ -99,9 +101,11 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         if (ticket.State is not (TicketState.Closed or TicketState.Reopening)) return new(false, "This ticket cannot be reopened while an operation is in progress.");
         var tickets = (await session.GetTicketsAsync(ct)).Where(t => t.Id != ticket.Id && Active(t)).ToArray();
         var panel = Options.Panels.Single(p => p.Id == ticket.PanelId);
-        // Reopening must not exceed configured caps; a staff actor's bypass must not transfer to the requester.
-        if (tickets.Count(t => t.RequesterId == ticket.RequesterId) >= Options.MemberLimit ||
-            tickets.Count(t => t.PanelId == ticket.PanelId) >= panel.OpenLimit || tickets.Length >= Options.GuildLimit)
+        // Refresh the requester, so staff privileges and stale membership never grant a bypass.
+        var requester = await discord.ActorAsync(ticket.RequesterId, ct);
+        if ((!Bypasses(requester, Options.BypassMemberLimit) && tickets.Count(t => t.RequesterId == ticket.RequesterId) >= Options.MemberLimit) ||
+            (!Bypasses(requester, Options.BypassPanelLimit) && tickets.Count(t => t.PanelId == ticket.PanelId) >= panel.OpenLimit) ||
+            (!Bypasses(requester, Options.BypassGuildLimit) && tickets.Length >= Options.GuildLimit))
             return new(false, "Reopening would exceed an open-ticket limit.");
         ticket = ticket with { State = TicketState.Reopening, DeleteAfter = null, ClosedAt = null, ArchiveExpiresAt = null, LastError = null };
         await session.SaveAsync(ticket, "reopening", actor.UserId, ct);
@@ -114,7 +118,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     public Task<TicketResult> SetHoldAsync(ulong channelId, Actor actor, bool hold, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket) =>
     {
         if (!CanSupport(actor)) return new(false, "Only support staff can change archive holds.");
-        if (ticket.State is TicketState.Deleting or TicketState.Deleted) return new(false, "Cleanup has already started.");
+        if (ticket.State == TicketState.Deleted) return new(false, "The ticket channel has already been deleted.");
         ticket = ticket with { Hold = hold };
         await session.SaveAsync(ticket, hold ? "hold-set" : "hold-released", actor.UserId, ct);
         return new(true, hold ? "Cleanup and archive expiration are on hold." : "Hold released.", ticket);
@@ -170,24 +174,62 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
 
     public async Task MaintainAsync(CancellationToken ct = default)
     {
-        if (!Options.Enabled) return;
         Guid[] ticketIds;
         await using (var batch = await store.LockAsync(ct))
             ticketIds = (await batch.GetTicketsAsync(ct)).Select(ticket => ticket.Id).ToArray();
+        // Resume after the last attempted ticket if the overall sweep was interrupted.
+        var previousIndex = _lastMaintenanceTicketId is { } previous ? Array.IndexOf(ticketIds, previous) : -1;
+        var start = previousIndex + 1;
+        foreach (var id in ticketIds.Skip(start).Concat(ticketIds.Take(start)))
+        {
+            ct.ThrowIfCancellationRequested();
+            _lastMaintenanceTicketId = id;
+            using var timeout = new CancellationTokenSource(TicketMaintenanceTimeout, clock);
+            using var perTicket = CancellationTokenSource.CreateLinkedTokenSource(ct, timeout.Token);
+            try { await MaintainTicketAsync(id, perTicket.Token); }
+            catch (Exception ex) when (!ct.IsCancellationRequested)
+            {
+                await RecordMaintenanceFailureAsync(id, ex, ct);
+            }
+        }
+    }
+
+    public async Task ExpireArchivesAsync(CancellationToken ct = default)
+    {
+        Guid[] ticketIds;
+        await using (var batch = await store.LockAsync(ct))
+            ticketIds = (await batch.GetTicketsAsync(ct)).Where(ArchiveHasExpired).Select(ticket => ticket.Id).ToArray();
         foreach (var id in ticketIds)
         {
             ct.ThrowIfCancellationRequested();
-            try { await MaintainTicketAsync(id, ct); }
+            try
+            {
+                await using var session = await store.LockAsync(ct);
+                var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
+                if (ticket is null || _exports.ContainsKey(id) || !ArchiveHasExpired(ticket)) continue;
+                // FileTranscriptArchive validates ownership and links; no Discord access is required.
+                await archive.DeleteAsync(ticket.ArchivePath!, ct);
+                await session.SaveAsync(ticket with { ArchivePath = null, ArchiveComplete = false }, "archive-expired", null, ct);
+            }
             catch (Exception ex) when (!ct.IsCancellationRequested)
             {
-                logger?.LogWarning(ex, "Ticket {TicketId} maintenance failed; channel retained", id);
-                await using var session = await store.LockAsync(ct);
-                // Keep the last durable archive and state even when a later remote operation timed out.
-                var durable = (await session.GetTicketsAsync(ct)).SingleOrDefault(ticket => ticket.Id == id);
-                if (durable is not null)
-                    await session.SaveAsync(durable with { LastError = "Maintenance failed; retry scheduled. Check worker logs." }, "maintenance-failed", null, ct);
+                await RecordMaintenanceFailureAsync(id, ex, ct);
             }
         }
+    }
+
+    private bool ArchiveHasExpired(Ticket ticket) => !ticket.Hold && ticket.ArchivePath is not null &&
+        ticket.State is (TicketState.Closed or TicketState.Closing or TicketState.Deleting or TicketState.Deleted) &&
+        ticket.ArchiveExpiresAt <= clock.GetUtcNow();
+
+    private async Task RecordMaintenanceFailureAsync(Guid id, Exception ex, CancellationToken ct)
+    {
+        logger?.LogWarning(ex, "Ticket {TicketId} maintenance failed; retained for retry", id);
+        await using var session = await store.LockAsync(ct);
+        // Keep the last durable archive and state even when a later remote operation timed out.
+        var durable = (await session.GetTicketsAsync(ct)).SingleOrDefault(ticket => ticket.Id == id);
+        if (durable is not null)
+            await session.SaveAsync(durable with { LastError = "Maintenance failed; retry scheduled. Check worker logs." }, "maintenance-failed", null, ct);
     }
 
     private async Task MaintainTicketAsync(Guid id, CancellationToken ct)

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging.Abstractions;
+using SWLOR.DiscordBot.Hosting;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
 
@@ -16,7 +18,7 @@ public sealed class CommunityTests
         };
         var store = new FakeTicketStore();
         var discord = new FakeCommunityDiscord { ServerName = "SWLOR", Member = new CommunityMember(7, "A Player", []) };
-        var service = new CommunityService(config, store, discord);
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joinedAt = DateTimeOffset.Parse("2026-10-03T12:00:00Z");
 
         await service.WelcomeAsync(7, joinedAt, CancellationToken.None);
@@ -31,7 +33,7 @@ public sealed class CommunityTests
     {
         var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
         var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []), SendFailuresRemaining = 1 };
-        var service = new CommunityService(config, new FakeTicketStore(), discord);
+        var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore());
         var joinedAt = DateTimeOffset.Parse("2026-10-03T12:00:00Z");
 
         Assert.ThrowsAsync<InvalidOperationException>(async () => await service.WelcomeAsync(7, joinedAt, CancellationToken.None));
@@ -60,7 +62,7 @@ public sealed class CommunityTests
             Member = new CommunityMember(7, "A Player", [20]),
             Roles = [new CommunityRole(20, 1), new CommunityRole(21, 1)]
         };
-        var service = new CommunityService(config, new FakeTicketStore(), discord);
+        var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore());
 
         await service.ExecuteAsync(7, 100, 300, "?rank Republic Navy", CancellationToken.None);
         await service.ExecuteAsync(7, 100, 300, "?rank Republic Navy", CancellationToken.None);
@@ -90,7 +92,7 @@ public sealed class CommunityTests
             Roles = [new CommunityRole(20, 1), new CommunityRole(21, 1)],
             FailAfterNextRemove = true
         };
-        var service = new CommunityService(config, new FakeTicketStore(), discord);
+        var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore());
 
         Assert.ThrowsAsync<InvalidOperationException>(async () => await service.ExecuteAsync(7, 100, 301, "?rank Republic Navy", CancellationToken.None));
         await service.ExecuteAsync(7, 100, 301, "?rank Republic Navy", CancellationToken.None);
@@ -119,7 +121,7 @@ public sealed class CommunityTests
             Member = new CommunityMember(7, "A Player", []),
             Roles = [new CommunityRole(21, 1)]
         };
-        var service = new CommunityService(config, new FakeTicketStore(), discord);
+        var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore());
 
         await service.ExecuteAsync(7, 100, 302, "?rank Republic Navy", CancellationToken.None);
 
@@ -147,7 +149,7 @@ public sealed class CommunityTests
         };
         var store = new FakeTicketStore();
         var discord = new FakeCommunityDiscord { ServerName = "SWLOR", Member = new CommunityMember(7, "A Player", [9]) };
-        var service = new CommunityService(config, store, discord);
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
 
         await service.ExecuteAsync(7, 999, 300, "?guide alpha beta", CancellationToken.None);
         Assert.That(discord.Sent, Is.Empty, "a channel outside the allow list must receive no answer");
@@ -183,7 +185,7 @@ public sealed class CommunityTests
             }]
         };
         var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []) };
-        var service = new CommunityService(config, new FakeTicketStore(), discord);
+        var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore());
 
         await service.ExecuteAsync(7, 100, 301, "?guide " + rawArguments, CancellationToken.None);
 
@@ -204,7 +206,7 @@ public sealed class CommunityTests
         var config = new BotConfiguration { GuildId = 1, Prefix = "?", Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["guide"], Cooldown = TimeSpan.FromMinutes(1) }] };
         var time = new ManualTimeProvider(DateTimeOffset.Parse("2026-10-03T12:00:00Z"));
         var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []) };
-        var service = new CommunityService(config, new FakeTicketStore(), discord, time);
+        var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore(), time);
 
         await service.ExecuteAsync(7, 100, 401, "?guide", CancellationToken.None);
         time.Advance(TimeSpan.FromSeconds(59));
@@ -227,7 +229,7 @@ public sealed class CommunityTests
         };
         var store = new FakeTicketStore();
         var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []) };
-        var service = new CommunityService(config, store, discord);
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
 
         await service.ExecuteAsync(7, 100, 501, "?guide", CancellationToken.None);
         await service.ExecuteAsync(7, 100, 501, "?guide", CancellationToken.None);
@@ -255,7 +257,7 @@ public sealed class CommunityTests
             SendStarted = sendStarted,
             ReleaseSend = releaseSend
         };
-        var service = new CommunityService(config, store, discord);
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
 
         var communityOperation = service.ExecuteAsync(7, 100, 601, "?guide", CancellationToken.None);
         await sendStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
@@ -274,11 +276,175 @@ public sealed class CommunityTests
     {
         var config = new BotConfiguration { GuildId = 1, Prefix = "?", Answers = [new QuickAnswerOptions { Name = "hello", Responses = ["hello"] }] };
         var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Bot", [], IsBot: true) };
-        var service = new CommunityService(config, new FakeTicketStore(), discord);
+        var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore());
 
         await service.ExecuteAsync(7, 100, 300, "?hello", CancellationToken.None);
 
         Assert.That(discord.Sent, Is.Empty);
+    }
+
+    [Test]
+    public async Task EmptyAnswerDoesNotScheduleOrDeleteItsUnrepliedSourceCommand()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["{1}"], DeleteCommand = true }]
+        };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []) };
+        var service = new CommunityService(config, store, discord, deletions);
+        await service.ExecuteAsync(7, 100, 300, "?guide", default);
+        await service.ExecuteAsync(7, 100, 300, "?guide", default);
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CommandDeletionSurvivesShutdownAfterDeliveryWithoutReplayingSourceEvent(bool faction)
+    {
+        var (config, discord, command, key) = DeletionCase(faction);
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var time = new ManualTimeProvider(DateTimeOffset.Parse("2026-10-03T12:00:00Z"));
+        using var shutdown = new CancellationTokenSource();
+        store.BeforeComplete = completedKey =>
+        {
+            Assert.That(completedKey, Is.EqualTo(key));
+            Assert.That(discord.Sent, Has.Count.EqualTo(1));
+            Assert.That(deletions.Pending.Keys, Does.Contain((100UL, 300UL)));
+        };
+        store.AfterComplete = _ => shutdown.Cancel();
+        var service = new CommunityService(config, store, discord, deletions, time);
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            await service.ExecuteAsync(7, 100, 300, command, shutdown.Token));
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.Deleted, Is.Empty);
+
+        var restartedCleanup = new ResponseDeletionQueue(deletions, time, NullLogger<ResponseDeletionQueue>.Instance);
+        await restartedCleanup.DeleteDueAsync(discord, default);
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
+        Assert.That(deletions.Pending, Is.Empty);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CommandDeletionSchedulingFailureLeavesResponseIncompleteAndRetryUsesOriginalIntent(bool faction)
+    {
+        var (config, discord, command, key) = DeletionCase(faction);
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore { ScheduleFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, deletions);
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await service.ExecuteAsync(7, 100, 300, command, default));
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+
+        var restarted = new CommunityService(config, store, discord, deletions);
+        await restarted.ExecuteAsync(7, 100, 300, command, default);
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1), "the response retains its idempotent delivery key");
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
+        Assert.That(deletions.Pending, Is.Empty);
+        if (faction) Assert.That(discord.RoleMutations, Does.Not.Contain("remove:7:21"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CommandDeletionRemainsQueuedAfterGatewayRetriesAreExhausted(bool faction)
+    {
+        var (config, discord, command, key) = DeletionCase(faction);
+        discord.DeleteFailuresRemaining = 3;
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        for (var retry = 0; retry < 3; retry++)
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await service.ExecuteAsync(7, 100, 300, command, default));
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(deletions.Pending, Has.Count.EqualTo(1));
+        await new ResponseDeletionQueue(deletions, TimeProvider.System, NullLogger<ResponseDeletionQueue>.Instance)
+            .DeleteDueAsync(discord, default);
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
+        Assert.That(deletions.Pending, Is.Empty);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CommandDeletionIsNotScheduledWhenResponseSendFails(bool faction)
+    {
+        var (config, discord, command, key) = DeletionCase(faction);
+        discord.SendFailuresRemaining = 1;
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await service.ExecuteAsync(7, 100, 300, command, default));
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+    }
+
+    private static (BotConfiguration Config, FakeCommunityDiscord Discord, string Command, string Key) DeletionCase(bool faction)
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["guide"], DeleteCommand = true }],
+            Factions = new FactionOptions
+            {
+                Enabled = true, Behavior = "toggle", DeleteCommand = true,
+                Roles = [new FactionRole { Name = "Republic Navy", RoleId = 21 }]
+            }
+        };
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new CommunityMember(7, "A Player", []), Roles = [new CommunityRole(21, 1)]
+        };
+        return (config, discord, faction ? "?rank Republic Navy" : "?guide", faction ? "faction:100:300" : "answer:100:300");
+    }
+
+    private sealed class FakeDeletionStore : IResponseDeletionStore
+    {
+        public readonly Dictionary<(ulong, ulong), PendingResponseDeletion> Pending = new();
+        private readonly HashSet<(ulong, ulong)> completed = [];
+        public int ScheduleFailuresRemaining { get; set; }
+        public Task ScheduleDeletionAsync(ulong channelId, ulong messageId, DateTimeOffset dueAt, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (ScheduleFailuresRemaining > 0) { ScheduleFailuresRemaining--; throw new InvalidOperationException("simulated deletion queue failure"); }
+            if (!completed.Contains((channelId, messageId)))
+                Pending.TryAdd((channelId, messageId), new(channelId, messageId, dueAt));
+            return Task.CompletedTask;
+        }
+        public Task<IReadOnlyList<PendingResponseDeletion>> GetDueDeletionsAsync(DateTimeOffset now, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            return Task.FromResult<IReadOnlyList<PendingResponseDeletion>>(Pending.Values.Where(x => x.DueAt <= now).ToArray());
+        }
+        public Task CompleteDeletionAsync(ulong channelId, ulong messageId, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            completed.Add((channelId, messageId));
+            Pending.Remove((channelId, messageId));
+            return Task.CompletedTask;
+        }
+        public Task RetryDeletionAsync(PendingResponseDeletion deletion, DateTimeOffset dueAt, string error, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            Pending[(deletion.ChannelId, deletion.MessageId)] = deletion with { DueAt = dueAt, Attempts = deletion.Attempts + 1, LastError = error };
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class FakeTicketStore : ITicketStore
@@ -288,19 +454,22 @@ public sealed class CommunityTests
         private readonly Dictionary<string, DateTimeOffset> _cooldowns = new(StringComparer.Ordinal);
         private readonly SemaphoreSlim _ticketLock = new(1, 1);
         private readonly SemaphoreSlim _communityLock = new(1, 1);
+        public Action<string>? BeforeComplete { get; set; }
+        public Action<string>? AfterComplete { get; set; }
+        public bool IsCompleted(string key) => _states.TryGetValue(key, out var state) && state.Completed;
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
         public async Task<ITicketSession> LockAsync(CancellationToken ct)
         {
             await _ticketLock.WaitAsync(ct);
-            return new Session(_deliveries, _states, _cooldowns, _ticketLock);
+            return new Session(_deliveries, _states, _cooldowns, _ticketLock, this);
         }
         public async Task<ITicketSession> LockCommunityAsync(CancellationToken ct)
         {
             await _communityLock.WaitAsync(ct);
-            return new Session(_deliveries, _states, _cooldowns, _communityLock);
+            return new Session(_deliveries, _states, _cooldowns, _communityLock, this);
         }
 
-        private sealed class Session(HashSet<string> deliveries, Dictionary<string, DeliveryState> states, Dictionary<string, DateTimeOffset> cooldowns, SemaphoreSlim heldLock) : ITicketSession
+        private sealed class Session(HashSet<string> deliveries, Dictionary<string, DeliveryState> states, Dictionary<string, DateTimeOffset> cooldowns, SemaphoreSlim heldLock, FakeTicketStore owner) : ITicketSession
         {
             private int _disposed;
             public Task<IReadOnlyList<Ticket>> GetTicketsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<Ticket>>([]);
@@ -313,7 +482,14 @@ public sealed class CommunityTests
                 if (!states.TryGetValue(key, out var state)) states[key] = state = new DeliveryState(intent, false);
                 return Task.FromResult(state);
             }
-            public Task CompleteDeliveryAsync(string key, CancellationToken ct) { states[key] = states[key] with { Completed = true }; return Task.CompletedTask; }
+            public Task CompleteDeliveryAsync(string key, CancellationToken ct)
+            {
+                owner.BeforeComplete?.Invoke(key);
+                ct.ThrowIfCancellationRequested();
+                states[key] = states[key] with { Completed = true };
+                owner.AfterComplete?.Invoke(key);
+                return Task.CompletedTask;
+            }
             public Task<DateTimeOffset?> GetCooldownAsync(string key, CancellationToken ct) => Task.FromResult(cooldowns.TryGetValue(key, out var value) ? (DateTimeOffset?)value : null);
             public Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct) { cooldowns[key] = at; return Task.CompletedTask; }
             public ValueTask DisposeAsync()
@@ -333,6 +509,7 @@ public sealed class CommunityTests
         public List<string> RoleMutations { get; } = [];
         public List<(ulong ChannelId, ulong MessageId)> Deleted { get; } = [];
         public int SendFailuresRemaining { get; set; }
+        public int DeleteFailuresRemaining { get; set; }
         public bool FailAfterNextRemove { get; set; }
         public TaskCompletionSource<bool>? SendStarted { get; init; }
         public TaskCompletionSource<bool>? ReleaseSend { get; init; }
@@ -364,7 +541,13 @@ public sealed class CommunityTests
             return id;
         }
         public Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct) => Task.FromResult<ulong?>(null);
-        public Task DeleteMessageAsync(ulong channelId, ulong messageId, CancellationToken ct) { Deleted.Add((channelId, messageId)); return Task.CompletedTask; }
+        public Task DeleteMessageAsync(ulong channelId, ulong messageId, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (DeleteFailuresRemaining > 0) { DeleteFailuresRemaining--; throw new InvalidOperationException("simulated deletion failure"); }
+            Deleted.Add((channelId, messageId));
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class ManualTimeProvider(DateTimeOffset currentTime) : TimeProvider

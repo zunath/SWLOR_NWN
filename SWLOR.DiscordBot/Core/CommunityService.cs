@@ -21,7 +21,8 @@ public interface ICommunityDiscord
     Task DeleteMessageAsync(ulong channelId, ulong messageId, CancellationToken ct);
 }
 
-public sealed class CommunityService(BotConfiguration configuration, ITicketStore store, ICommunityDiscord discord, TimeProvider? timeProvider = null)
+public sealed class CommunityService(BotConfiguration configuration, ITicketStore store, ICommunityDiscord discord,
+    IResponseDeletionStore deletions, TimeProvider? timeProvider = null)
 {
     private TimeProvider Clock => timeProvider ?? TimeProvider.System;
 
@@ -95,20 +96,25 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             }
             var delivery = await session.GetOrCreateDeliveryAsync(deliveryKey, JsonSerializer.Serialize(candidate), ct);
             if (delivery.Intent == "suppressed") return;
+            var persistedMessage = JsonSerializer.Deserialize<CommunityMessage>(delivery.Intent)
+                                   ?? throw new InvalidDataException("The persisted quick answer delivery is invalid.");
+            if (!HasUsableContent(persistedMessage))
+            {
+                if (!delivery.Completed) await session.CompleteDeliveryAsync(deliveryKey, ct);
+                return;
+            }
             if (!delivery.Completed)
             {
-                var persistedMessage = JsonSerializer.Deserialize<CommunityMessage>(delivery.Intent)
-                                       ?? throw new InvalidDataException("The persisted quick answer delivery is invalid.");
-                if (HasUsableContent(persistedMessage))
-                {
-                    if (await discord.SendAsync(channelId, persistedMessage, ct) is null)
-                        throw new InvalidOperationException("The quick answer response was not delivered.");
-                    if (answer.Cooldown > TimeSpan.Zero) await session.SetCooldownAsync(cooldownKey, Clock.GetUtcNow(), ct);
-                }
+                if (await discord.SendAsync(channelId, persistedMessage, ct) is null)
+                    throw new InvalidOperationException("The quick answer response was not delivered.");
+                if (answer.Cooldown > TimeSpan.Zero) await session.SetCooldownAsync(cooldownKey, Clock.GetUtcNow(), ct);
+                // Commit cleanup ownership before acknowledging delivery so a shutdown after this point
+                // does not depend on Discord replaying the source Gateway event.
+                if (answer.DeleteCommand) await deletions.ScheduleDeletionAsync(channelId, messageId, Clock.GetUtcNow(), ct);
                 await session.CompleteDeliveryAsync(deliveryKey, ct);
             }
         }
-        if (answer.DeleteCommand) await CompleteCommandDeletionAsync(channelId, messageId, $"{deliveryKey}:delete", ct);
+        if (answer.DeleteCommand) await CompleteCommandDeletionAsync(channelId, messageId, ct);
     }
 
     private FactionRole? FindFaction(string command)
@@ -157,19 +163,19 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                     DeliveryKey: $"{deliveryKey}:response"));
                 if (await discord.SendAsync(channelId, response, ct) is null)
                     throw new InvalidOperationException("The faction response was not delivered.");
+                if (factions.DeleteCommand) await deletions.ScheduleDeletionAsync(channelId, messageId, Clock.GetUtcNow(), ct);
                 await session.CompleteDeliveryAsync(deliveryKey, ct);
             }
         }
-        if (factions.DeleteCommand) await CompleteCommandDeletionAsync(channelId, messageId, $"{deliveryKey}:delete", ct);
+        if (factions.DeleteCommand) await CompleteCommandDeletionAsync(channelId, messageId, ct);
     }
 
-    private async Task CompleteCommandDeletionAsync(ulong channelId, ulong messageId, string deliveryKey, CancellationToken ct)
+    private async Task CompleteCommandDeletionAsync(ulong channelId, ulong messageId, CancellationToken ct)
     {
-        await using var session = await store.LockCommunityAsync(ct);
-        var delivery = await session.GetOrCreateDeliveryAsync(deliveryKey, "delete-command", ct);
-        if (delivery.Completed) return;
+        // Preserve immediate cleanup. Any interruption leaves the durable queue record for the worker,
+        // independently of the completed response and the Gateway's bounded event retries.
         await discord.DeleteMessageAsync(channelId, messageId, ct);
-        await session.CompleteDeliveryAsync(deliveryKey, ct);
+        await deletions.CompleteDeletionAsync(channelId, messageId, ct);
     }
 
     private static bool HasUsableContent(CommunityMessage message) =>

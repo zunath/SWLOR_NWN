@@ -47,6 +47,7 @@ public interface IResponseDeletionStore
 }
 public interface IDiscordTickets
 {
+    Task<Actor> ActorAsync(ulong userId, CancellationToken ct);
     Task<ulong?> FindManagedChannelAsync(Guid ticketId, CancellationToken ct);
     Task<ulong> CreateAsync(Ticket ticket, CancellationToken ct);
     Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct);

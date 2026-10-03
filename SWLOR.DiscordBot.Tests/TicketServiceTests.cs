@@ -812,14 +812,394 @@ public sealed class TicketServiceTests
         Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
     }
 
+    [TestCase("member", true)]
+    [TestCase("member", false)]
+    [TestCase("member", null)]
+    [TestCase("panel", true)]
+    [TestCase("panel", false)]
+    [TestCase("panel", null)]
+    [TestCase("guild", true)]
+    [TestCase("guild", false)]
+    [TestCase("guild", null)]
+    public async Task ReopenUsesRequestersCurrentRoleAndExplicitBypassForEachLimit(string scope, bool? enabled)
+    {
+        await PrepareFullReopenLimit(scope);
+        _discord.CurrentActors[1] = new Actor(1, [901]);
+        SetBypassScope(scope, enabled);
+
+        var result = await _service.ReopenAsync(ChannelOne, Support);
+
+        Assert.That(result.Success, Is.EqualTo(enabled == true));
+        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { 1 }));
+        Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State,
+            Is.EqualTo(enabled == true ? TicketState.Open : TicketState.Closed));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ReopenRefreshesBypassRoleAddedOrRemovedSinceOpening(bool currentlyHasRole)
+    {
+        var openingActor = new Actor(1, currentlyHasRole ? [] : [901]);
+        _configuration.Tickets.BypassRoleIds = [901];
+        await Open("first", openingActor, "stale-requester");
+        await _service.CloseAsync(ChannelOne, Support);
+        await Open("second", new Actor(1, []), "active-requester");
+        _configuration.Tickets.MemberLimit = 1;
+        _configuration.Tickets.BypassMemberLimit = true;
+        _discord.CurrentActors[1] = new Actor(1, currentlyHasRole ? [901] : []);
+
+        var result = await _service.ReopenAsync(ChannelOne, Support);
+
+        Assert.That(result.Success, Is.EqualTo(currentlyHasRole));
+        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { 1 }));
+    }
+
+    [Test]
+    public async Task ReopeningStaffCannotTransferTheirBypassToTheRequester()
+    {
+        await PrepareFullReopenLimit("member");
+        _configuration.Tickets.BypassMemberLimit = true;
+        var privilegedStaff = new Actor(Support.UserId, [SupportRole, 901], IsGuildOwner: true);
+
+        var result = await _service.ReopenAsync(ChannelOne, privilegedStaff);
+
+        Assert.That(result.Success, Is.False);
+        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { 1 }));
+        Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Closed));
+    }
+
+    [Test]
+    public async Task ReopenFailsClosedWhenRequesterHasLeftTheGuild()
+    {
+        await PrepareFullReopenLimit("member");
+        _configuration.Tickets.BypassMemberLimit = true;
+        _discord.CurrentActors[1] = new Actor(1, [901]);
+        _discord.MissingMembers.Add(1);
+
+        Assert.ThrowsAsync<InvalidOperationException>(() => _service.ReopenAsync(ChannelOne, Support));
+
+        Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Closed));
+        Assert.That(_discord.OpenCalls, Is.EqualTo(2), "Only initial creation calls may have opened channels.");
+    }
+
+    private async Task PrepareFullReopenLimit(string scope)
+    {
+        await Open("first", new Actor(1, []), "reopen-limit-closed");
+        await _service.CloseAsync(ChannelOne, Support);
+        await Open("first", new Actor(1, []), "reopen-limit-active");
+        _configuration.Tickets.BypassRoleIds = [901];
+        switch (scope)
+        {
+            case "member": _configuration.Tickets.MemberLimit = 1; break;
+            case "panel": _configuration.Tickets.Panels[0].OpenLimit = 1; break;
+            case "guild": _configuration.Tickets.GuildLimit = 1; break;
+            default: throw new ArgumentOutOfRangeException(nameof(scope));
+        }
+    }
+
+    private void SetBypassScope(string scope, bool? value)
+    {
+        switch (scope)
+        {
+            case "member": _configuration.Tickets.BypassMemberLimit = value; break;
+            case "panel": _configuration.Tickets.BypassPanelLimit = value; break;
+            case "guild": _configuration.Tickets.BypassGuildLimit = value; break;
+            default: throw new ArgumentOutOfRangeException(nameof(scope));
+        }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task StaffCanHoldDeletingTicketDuringRemoteWorkAndReleaseForCleanup(bool blockArchive)
+    {
+        await Open("first", new Actor(1, []), "hold-deleting");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Block(Ticket ticket, CancellationToken ct)
+        {
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+        }
+        if (blockArchive) _archive.BeforeExportAsync = Block;
+        else _discord.BeforeTranscriptAsync = Block;
+        var cleanup = _service.MaintainAsync();
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleting));
+            var unauthorized = await _service.SetHoldAsync(ChannelOne, new Actor(2, []), true).WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(unauthorized.Success, Is.False);
+            Assert.That(_store.Tickets.Single().Hold, Is.False);
+            var held = await _service.SetHoldAsync(ChannelOne, Support, true).WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(held.Success, Is.True);
+            release.SetResult();
+            await cleanup.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_store.Tickets.Single().Hold, Is.True);
+            Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True);
+            Assert.That(_discord.DeleteCalls, Is.Zero);
+            Assert.That((await _service.SetHoldAsync(ChannelOne, Support, false)).Success, Is.True);
+            await _service.MaintainAsync();
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+            Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true)).Success, Is.False);
+            Assert.That(_discord.DeleteCalls, Is.EqualTo(1));
+        }
+        finally { release.TrySetResult(); await cleanup; }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task FourMinuteTicketTimeoutReconcilesLaterTicketsAndReleasesGuardForRetry(bool blockArchive)
+    {
+        await Open("first", new Actor(1, []), "bounded-first");
+        await Open("second", new Actor(2, []), "bounded-second");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _discord.MissingChannels.Add(ChannelOne + 1);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Block(Ticket ticket, CancellationToken ct)
+        {
+            if (ticket.ChannelId != ChannelOne) return;
+            started.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        }
+        if (blockArchive) _archive.BeforeExportAsync = Block;
+        else _discord.BeforeTranscriptAsync = Block;
+        using var safetyCancellation = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var maintenance = _service.MaintainAsync(safetyCancellation.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            _clock.Advance(TimeSpan.FromMinutes(4) - TimeSpan.FromSeconds(1));
+            Assert.That(maintenance.IsCompleted, Is.False, "The deadline must not expire early.");
+            _clock.Advance(TimeSpan.FromSeconds(1));
+            await maintenance.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Deleting));
+            Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).LastError, Does.Contain("Maintenance failed"));
+            Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne + 1).State, Is.EqualTo(TicketState.Deleted));
+            _archive.BeforeExportAsync = null;
+            _discord.BeforeTranscriptAsync = null;
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        }
+        finally
+        {
+            safetyCancellation.Cancel();
+            try { await maintenance; } catch (OperationCanceledException) { }
+        }
+    }
+
+    [Test]
+    public async Task InterruptedSweepResumesAtLaterTicketBeforeRetryingSlowTicket()
+    {
+        await Open("first", new Actor(1, []), "rotate-first");
+        await Open("second", new Actor(2, []), "rotate-second");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _discord.MissingChannels.Add(ChannelOne + 1);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeTranscriptAsync = async (_, ct) =>
+        {
+            started.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        };
+        using var cancellation = new CancellationTokenSource();
+        var interrupted = _service.MaintainAsync(cancellation.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            cancellation.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(async () => await interrupted);
+            Assert.That(_store.Tickets.All(t => t.LastError is null), Is.True, "Caller cancellation is not a maintenance failure.");
+            var lookups = new List<ulong>();
+            _discord.BeforeExistsAsync = ticket =>
+            {
+                lookups.Add(ticket.ChannelId!.Value);
+                return Task.CompletedTask;
+            };
+            _discord.BeforeTranscriptAsync = null;
+            await _service.MaintainAsync();
+            Assert.That(lookups, Is.EqualTo(new[] { ChannelOne + 1, ChannelOne }));
+            Assert.That(_store.Tickets.All(t => t.State == TicketState.Deleted), Is.True);
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        }
+        finally { cancellation.Cancel(); try { await interrupted; } catch (OperationCanceledException) { } }
+    }
+
+    [TestCase(TicketState.Closed, true)]
+    [TestCase(TicketState.Closing, true)]
+    [TestCase(TicketState.Deleting, true)]
+    [TestCase(TicketState.Deleted, true)]
+    [TestCase(TicketState.Open, false)]
+    [TestCase(TicketState.Reopening, false)]
+    [TestCase(TicketState.Creating, false)]
+    public async Task OfflineExpirationRemovesOnlyExpiredInactiveArchives(TicketState state, bool expires)
+    {
+        var opened = await Open("first", new Actor(1, []), "offline-expire");
+        var path = _archive.GetArchivePath(opened.Ticket!);
+        _store.Replace(opened.Ticket! with
+        {
+            State = state, ArchivePath = path, ArchiveComplete = true,
+            ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1)
+        });
+        _configuration.Tickets.Enabled = false;
+        _discord.BeforeExistsAsync = _ => throw new AssertionException("Offline expiration must not contact Discord.");
+
+        await _service.ExpireArchivesAsync();
+
+        Assert.That(_archive.DeletedPaths, expires ? Is.EqualTo(new[] { path }) : Is.Empty);
+        Assert.That(_store.Tickets.Single().ArchivePath, expires ? Is.Null : Is.EqualTo(path));
+        Assert.That(_discord.ExistsCalls, Is.Zero);
+    }
+
+    [Test]
+    public async Task OfflineExpirationHonorsHoldAndDeadlineThenExpiresReleasedArchive()
+    {
+        var opened = await Open("first", new Actor(1, []), "offline-held");
+        var path = _archive.GetArchivePath(opened.Ticket!);
+        var ticket = opened.Ticket! with
+        {
+            State = TicketState.Closed, Hold = true, ArchivePath = path,
+            ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1)
+        };
+        _store.Replace(ticket);
+        await _service.ExpireArchivesAsync();
+        Assert.That(_archive.DeletedPaths, Is.Empty);
+        _store.Replace(ticket with { Hold = false, ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(1) });
+        await _service.ExpireArchivesAsync();
+        Assert.That(_archive.DeletedPaths, Is.Empty);
+        _clock.Advance(TimeSpan.FromSeconds(1));
+        await _service.ExpireArchivesAsync();
+        Assert.That(_archive.DeletedPaths, Is.EqualTo(new[] { path }));
+    }
+
+    [Test]
+    public async Task OfflineExpirationProtectsActiveTranscriptDeliveryThenExpiresAfterRelease()
+    {
+        await Open("first", new Actor(1, []), "expiry-during-delivery");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(91));
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var export = _service.ExportAsync(ChannelOne, Support, deliver: async (_, ct) =>
+        {
+            started.SetResult();
+            await release.Task.WaitAsync(ct);
+        });
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await _service.ExpireArchivesAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_archive.DeletedPaths, Is.Empty);
+            Assert.That(_store.Tickets.Single().ArchivePath, Is.Not.Null);
+            release.SetResult();
+            Assert.That((await export).Success, Is.True);
+            await _service.ExpireArchivesAsync();
+            Assert.That(_archive.DeletedPaths, Has.Count.EqualTo(1));
+            Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
+        }
+        finally { release.TrySetResult(); await export; }
+    }
+
+    [Test]
+    public async Task DisabledTicketingRejectsNewTicketsButCleansExistingClosedTicket()
+    {
+        await Open("first", new Actor(1, []), "disable-existing");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _configuration.Tickets.Enabled = false;
+
+        Assert.That((await _service.OpenAsync("second", new Actor(2, []), "disable-new")).Success, Is.False);
+        await _service.MaintainAsync();
+
+        Assert.That(_discord.CreateCalls, Is.EqualTo(1));
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+    }
+
+    [Test]
+    public async Task DisabledOfflineExpirationDeletesExpiredFilesAndPreservesHeldFilesWithoutDiscord()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-offline-retention", Guid.NewGuid().ToString("N"));
+        try
+        {
+            _configuration.Tickets.ArchiveDirectory = root;
+            _configuration.Tickets.CopyAttachments = false;
+            using var http = new HttpClient();
+            var files = new FileTranscriptArchive(_configuration, http);
+            var expired = (await Open("first", new Actor(1, []), "files-expired")).Ticket!;
+            var held = (await Open("second", new Actor(2, []), "files-held")).Ticket!;
+            var expiredPath = await files.ExportAsync(expired, new TranscriptSnapshot([], null), default);
+            var heldPath = await files.ExportAsync(held, new TranscriptSnapshot([], null), default);
+            _store.Replace(expired with { State = TicketState.Closed, ArchivePath = expiredPath, ArchiveExpiresAt = _clock.GetUtcNow() });
+            _store.Replace(held with { State = TicketState.Deleting, Hold = true, ArchivePath = heldPath, ArchiveExpiresAt = _clock.GetUtcNow() });
+            _configuration.Tickets.Enabled = false;
+            _service = new TicketService(_configuration, _store, _discord, files, _clock);
+            _discord.BeforeExistsAsync = _ => throw new AssertionException("Offline expiration must not contact Discord.");
+
+            await _service.ExpireArchivesAsync();
+
+            Assert.That(Directory.Exists(expiredPath), Is.False);
+            Assert.That(File.Exists(Path.Combine(heldPath, "transcript.html")), Is.True);
+            Assert.That(_discord.ExistsCalls, Is.Zero);
+            Assert.That(_store.Tickets.Single(t => t.Id == expired.Id).ArchivePath, Is.Null);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
     private sealed class MutableTimeProvider(DateTimeOffset now) : TimeProvider
     {
+        private readonly object _gate = new();
+        private readonly List<ManualTimer> _timers = [];
         private DateTimeOffset _now = now;
-        public override DateTimeOffset GetUtcNow() => _now;
-        public void Advance(TimeSpan duration) => _now += duration;
+        public override DateTimeOffset GetUtcNow() { lock (_gate) return _now; }
+        public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
+        {
+            var timer = new ManualTimer(this, callback, state);
+            lock (_gate) _timers.Add(timer);
+            timer.Change(dueTime, period);
+            return timer;
+        }
+        public void Advance(TimeSpan duration)
+        {
+            ManualTimer[] timers;
+            lock (_gate) { _now += duration; timers = _timers.ToArray(); }
+            foreach (var timer in timers) timer.FireIfDue();
+        }
+
+        private sealed class ManualTimer(MutableTimeProvider owner, TimerCallback callback, object? state) : ITimer
+        {
+            private DateTimeOffset? _dueAt;
+            private TimeSpan _period;
+            private bool _disposed;
+            public bool Change(TimeSpan dueTime, TimeSpan period)
+            {
+                lock (owner._gate)
+                {
+                    if (_disposed) return false;
+                    _dueAt = dueTime == Timeout.InfiniteTimeSpan ? null : owner._now + dueTime;
+                    _period = period;
+                    return true;
+                }
+            }
+            public void FireIfDue()
+            {
+                lock (owner._gate)
+                {
+                    if (_disposed || _dueAt is null || _dueAt > owner._now) return;
+                    _dueAt = _period > TimeSpan.Zero ? owner._now + _period : null;
+                }
+                callback(state);
+            }
+            public void Dispose()
+            {
+                lock (owner._gate) { _disposed = true; owner._timers.Remove(this); }
+            }
+            public ValueTask DisposeAsync() { Dispose(); return ValueTask.CompletedTask; }
+        }
     }
 
     private sealed class MemoryTicketStore : ITicketStore
@@ -936,6 +1316,16 @@ public sealed class TicketServiceTests
         public TranscriptSnapshot Snapshot { get; set; } = new([], 101);
         public ulong? LastMessageIdAfterRead { get; set; }
 
+        public Dictionary<ulong, Actor> CurrentActors { get; } = [];
+        public HashSet<ulong> MissingMembers { get; } = [];
+        public List<ulong> ActorLookups { get; } = [];
+        public Task<Actor> ActorAsync(ulong userId, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            ActorLookups.Add(userId);
+            if (MissingMembers.Contains(userId)) throw new InvalidOperationException("Requester is no longer a guild member.");
+            return Task.FromResult(CurrentActors.GetValueOrDefault(userId) ?? new Actor(userId, []));
+        }
         public Task<ulong?> FindManagedChannelAsync(Guid ticketId, CancellationToken ct)
         {
             FindManagedCalls++;

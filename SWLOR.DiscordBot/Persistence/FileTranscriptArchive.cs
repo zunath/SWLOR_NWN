@@ -9,6 +9,8 @@ namespace SWLOR.DiscordBot.Persistence;
 
 public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpClient http) : ITranscriptArchive
 {
+    private const UnixFileMode PrivateDirectoryMode = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute;
+    private const UnixFileMode PrivateFileMode = UnixFileMode.UserRead | UnixFileMode.UserWrite;
     private string Root => Path.GetFullPath(configuration.Tickets.ArchiveDirectory);
     private static readonly HashSet<string> AttachmentHosts = new(StringComparer.OrdinalIgnoreCase)
         { "cdn.discordapp.com", "media.discordapp.net", "cdn.discordapp.net" };
@@ -17,14 +19,12 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
 
     public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct)
     {
-        Directory.CreateDirectory(Root);
-        RejectLink(Root);
+        EnsurePrivateDirectory(Root);
         var directory = TicketDirectory(ticket.Id);
-        Directory.CreateDirectory(directory);
-        RejectLink(directory);
+        EnsurePrivateDirectory(directory);
         var attachmentDirectory = Path.Combine(directory, "attachments");
-        Directory.CreateDirectory(attachmentDirectory);
-        RejectLink(attachmentDirectory);
+        EnsurePrivateDirectory(attachmentDirectory);
+        RepairExistingPermissions(directory);
         var files = new Dictionary<ulong, string>();
         if (configuration.Tickets.CopyAttachments)
         {
@@ -59,7 +59,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 RejectLink(temporary);
                 try
                 {
-                    await using (var output = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None, 81920, true))
+                    await using (var output = OpenPrivateWriteStream(temporary))
                     await using (var input = await response.Content.ReadAsStreamAsync(timeout.Token))
                     {
                         var buffer = new byte[81920];
@@ -122,12 +122,77 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         if ((File.Exists(path) || Directory.Exists(path)) && File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint))
             throw new InvalidOperationException("Links are not allowed in ticket archive paths.");
     }
+    private static void EnsurePrivateDirectory(string path)
+    {
+        RejectLink(path);
+        if (OperatingSystem.IsWindows()) Directory.CreateDirectory(path);
+        else
+        {
+            Directory.CreateDirectory(path, PrivateDirectoryMode);
+            RejectLink(path);
+            File.SetUnixFileMode(path, PrivateDirectoryMode);
+        }
+        RejectLink(path);
+    }
+
+    private static void RepairExistingPermissions(string directory)
+    {
+        // Repair old archives and cached attachments before reading or publishing ticket data.
+        foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
+        {
+            RejectLink(entry);
+            if (Directory.Exists(entry))
+            {
+                EnsurePrivateDirectory(entry);
+                RepairExistingPermissions(entry);
+            }
+            else RestrictFile(entry);
+        }
+    }
+
+    private static void RestrictFile(string path)
+    {
+        RejectLink(path);
+        if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(path, PrivateFileMode);
+    }
+
+    private static FileStream OpenPrivateWriteStream(string path)
+    {
+        RejectLink(path);
+        if (File.Exists(path)) RestrictFile(path);
+        var options = new FileStreamOptions
+        {
+            Mode = FileMode.Create,
+            Access = FileAccess.Write,
+            Share = FileShare.None,
+            BufferSize = 81920,
+            Options = FileOptions.Asynchronous
+        };
+        if (!OperatingSystem.IsWindows()) options.UnixCreateMode = PrivateFileMode;
+        var stream = new FileStream(path, options);
+        try
+        {
+            RestrictFile(path);
+            return stream;
+        }
+        catch
+        {
+            stream.Dispose();
+            throw;
+        }
+    }
     private static async Task AtomicWriteAsync(string path, string text, CancellationToken ct)
     {
         RejectLink(path);
         var temporary = path + ".part";
         RejectLink(temporary);
-        try { await File.WriteAllTextAsync(temporary, text, new UTF8Encoding(false), ct); File.Move(temporary, path, true); }
+        try
+        {
+            await using (var output = OpenPrivateWriteStream(temporary))
+            await using (var writer = new StreamWriter(output, new UTF8Encoding(false)))
+                await writer.WriteAsync(text.AsMemory(), ct);
+            File.Move(temporary, path, true);
+        }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
 }

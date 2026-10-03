@@ -22,6 +22,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         NpgsqlConnection? lease = null;
         Task[] consumers = [];
         Task? maintenance = null;
+        Task? archiveExpiration = null;
         Task? responseCleanup = null;
         var disposingLease = false;
         try
@@ -52,6 +53,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
                 async () => (await ((IDiscordClient)client.Rest).GetApplicationInfoAsync(DiscordOperations.Options(ct))).Flags,
                 () => client.StartAsync());
             maintenance = MaintainAsync(ct);
+            archiveExpiration = ExpireArchivesAsync(ct);
             responseCleanup = DeleteResponsesAsync(ct);
             using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15), clock);
             do
@@ -77,7 +79,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
             gateway.Detach();
             try { await client.StopAsync(); await client.LogoutAsync(); }
             catch (Exception ex) { logger.LogWarning("Discord shutdown failed: {ErrorKind}.", DiscordGateway.SafeError(ex)); }
-            try { await Task.WhenAll(consumers.Concat(new[] { maintenance, responseCleanup }.OfType<Task>())); }
+            try { await Task.WhenAll(consumers.Concat(new[] { maintenance, archiveExpiration, responseCleanup }.OfType<Task>())); }
             catch (OperationCanceledException) { }
             disposingLease = true;
             if (lease is not null) await lease.DisposeAsync();
@@ -99,23 +101,51 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
     }
     private async Task MaintainAsync(CancellationToken ct)
     {
-        var interval = configuration.Tickets.Enabled ? configuration.Tickets.CleanupInterval : TimeSpan.FromMinutes(5);
-        using var timer = new PeriodicTimer(interval, clock);
+        using var timer = new PeriodicTimer(MaintenanceInterval, clock);
         do
         {
-            if (!gateway.Ready || !configuration.Tickets.Enabled) continue;
-            for (var attempt = 0; attempt < 3; attempt++)
+            if (!gateway.Ready) continue;
+            try { await RetryMaintenanceAsync("Ticket maintenance", tickets.MaintainAsync, ct); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+            catch (Exception ex)
             {
-                using var operation = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                operation.CancelAfter(TimeSpan.FromMinutes(10));
-                try { await tickets.MaintainAsync(operation.Token); break; }
-                catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
-                catch (Exception ex)
-                {
-                    logger.LogWarning("Ticket maintenance attempt {Attempt} failed: {ErrorKind}.", attempt + 1, DiscordGateway.SafeError(ex));
-                    if (attempt < 2) await Task.Delay(TimeSpan.FromSeconds(5 * (attempt + 1)), clock, ct);
-                }
+                logger.LogWarning("Ticket maintenance failed after retries: {ErrorKind}.", DiscordGateway.SafeError(ex));
             }
         } while (await timer.WaitForNextTickAsync(ct));
+    }
+
+    private async Task ExpireArchivesAsync(CancellationToken ct)
+    {
+        using var timer = new PeriodicTimer(MaintenanceInterval, clock);
+        do
+        {
+            try { await RetryMaintenanceAsync("Archive expiration", tickets.ExpireArchivesAsync, ct); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+            catch (Exception ex)
+            {
+                logger.LogWarning("Archive expiration failed after retries: {ErrorKind}.", DiscordGateway.SafeError(ex));
+            }
+        } while (await timer.WaitForNextTickAsync(ct));
+    }
+
+    private TimeSpan MaintenanceInterval => configuration.Tickets.Enabled
+        ? configuration.Tickets.CleanupInterval
+        : TimeSpan.FromMinutes(5);
+
+    private async Task RetryMaintenanceAsync(string operationName, Func<CancellationToken, Task> operation, CancellationToken ct)
+    {
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            using var operationTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            operationTimeout.CancelAfter(TimeSpan.FromMinutes(10));
+            try { await operation(operationTimeout.Token); return; }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+            catch (Exception ex)
+            {
+                logger.LogWarning("{Operation} attempt {Attempt} failed: {ErrorKind}.",
+                    operationName, attempt + 1, DiscordGateway.SafeError(ex));
+                if (attempt < 2) await Task.Delay(TimeSpan.FromSeconds(5 * (attempt + 1)), clock, ct);
+            }
+        }
     }
 }

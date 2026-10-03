@@ -8,6 +8,18 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class SingleWeaponDamageTests
 {
+    [Test]
+    public void NativeFallback_IsNotAnItemDamageRating()
+    {
+        var extractor = typeof(SWLOR.Game.Server.Native.GetDamageRoll).GetMethod("ExtractWeaponDamageProfile",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!;
+        var profile = extractor.Invoke(null, new object[] { null })!;
+        var type = profile.GetType();
+        type.GetProperty("Damage")!.GetValue(profile).Should().Be(1);
+        type.GetProperty("HasItemDamage")!.GetValue(profile).Should().Be(false,
+            "the native one-point fallback must not become a weapon DMG property");
+    }
+
     [TestCase(24, 20, 29)]
     [TestCase(24, 30, 32)]
     [TestCase(24, 45, 35)]

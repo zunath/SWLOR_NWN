@@ -18,6 +18,9 @@ using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Shell.Views;
+using Nwn.Toolset.Avalonia.Areas.Contents;
+using SharedContentsModel = Nwn.Toolset.Avalonia.Areas.Contents.AreaContentsViewModel;
+using SharedContentsView = Nwn.Toolset.Avalonia.Areas.Contents.Views.AreaContentsView;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -81,16 +84,17 @@ namespace SWLOR.Toolset.Tests
                 mutationLock: mutationLock);
         }
 
-        private static AreaContentsViewModel CreatePanel(
+        private static SharedContentsModel CreatePanel(
             AreaEditorViewModel editor, AreaContentsGrouping grouping = AreaContentsGrouping.Name)
         {
-            var panel = new AreaContentsViewModel(new StubPrompts());
-            panel.SetEditor(editor);
+            var tool = new SWLOR.Toolset.Shell.Panels.AreaContentsViewModel(new StubPrompts());
+            tool.SetEditor(editor);
+            var panel = tool.Contents;
             panel.SelectedGrouping = panel.GroupingOptions.Single(option => option.Value == grouping);
             return panel;
         }
 
-        private static AreaContentsNodeViewModel KindNode(AreaContentsViewModel panel, string title) =>
+        private static AreaContentsNodeViewModel KindNode(SharedContentsModel panel, string title) =>
             panel.Rows.Single(row => row.Kind == AreaContentsNodeKind.Kind && row.Name == title);
 
         // ----- grouping -----
@@ -409,7 +413,7 @@ namespace SWLOR.Toolset.Tests
             var panel = CreatePanel(editor, AreaContentsGrouping.Blueprint);
             panel.Filter = "no-object-is-called-this-zzz";
 
-            var view = new AreaContentsView { DataContext = panel };
+            var view = new SharedContentsView { Contents = panel };
             var window = new Window { Content = view, Width = 360, Height = 180 };
             window.Show();
             Dispatcher.UIThread.RunJobs();
@@ -549,7 +553,7 @@ namespace SWLOR.Toolset.Tests
             var panel = CreatePanel(editor);
             panel.Rows.Should().NotBeEmpty();
 
-            panel.SetEditor(null);
+            panel.SetContents(null, null);
 
             panel.Rows.Should().BeEmpty();
             panel.HasArea.Should().BeFalse();

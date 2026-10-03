@@ -3,6 +3,7 @@ using Nwn.Toolset.Avalonia.Areas;
 using Avalonia.Interactivity;
 using System.ComponentModel;
 using System.Numerics;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -15,6 +16,7 @@ namespace SWLOR.Toolset.Editors
     {
         private AreaEditorViewModel? _viewModel;
         private Viewport.SwlorAreaViewportMaterialProvider? _materialProvider;
+        private SelectionContextMenuState? _selectionMenuState;
         private bool _viewportStateRestored;
         private AreaEditorSurface AreaView => SceneView.Surface;
 
@@ -68,6 +70,7 @@ namespace SWLOR.Toolset.Editors
                 _viewModel.InstancePropertiesRequested -= OnInstancePropertiesRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
+            DetachSelectionContextMenu();
 
             _viewModel = null;
 
@@ -102,13 +105,15 @@ namespace SWLOR.Toolset.Editors
                 _viewModel.InstancePropertiesRequested -= OnInstancePropertiesRequested;
                 _viewModel.PaintRejected -= OnPaintRejected;
             }
+            DetachSelectionContextMenu();
 
             _viewModel = next;
             UpdateSceneOverlay();
-            if (SceneView.SurfaceContextMenu != null) SceneView.SurfaceContextMenu.DataContext = _viewModel;
             if (_viewModel == null)
                 return;
 
+            _selectionMenuState = new SelectionContextMenuState(_viewModel);
+            SceneView.SurfaceContextMenu = new AreaSelectionContextMenu(_selectionMenuState);
             _viewportStateRestored = false;
 
             _materialProvider = _viewModel.ResourceIndex is { } resources
@@ -361,6 +366,63 @@ namespace SWLOR.Toolset.Editors
         {
             if (_viewModel?.HasSceneSelection != true)
                 e.Handled = true;
+        }
+
+        private void DetachSelectionContextMenu()
+        {
+            _selectionMenuState?.Dispose();
+            _selectionMenuState = null;
+            SceneView.SurfaceContextMenu = null;
+        }
+
+        private sealed class SelectionContextMenuState : IAreaSelectionContextMenuState, IDisposable
+        {
+            private readonly AreaEditorViewModel _viewModel;
+            public event PropertyChangedEventHandler? PropertyChanged;
+
+            public string SelectionName => _viewModel.SelectionName;
+            public string SelectionGlyph => _viewModel.SelectionGlyph;
+            public string SelectionKindLabel => _viewModel.SelectionKindLabel;
+            public string SelectionResRef => _viewModel.SelectionResRef;
+            public bool CanOpenProperties => OpenPropertiesCommand.CanExecute(null);
+            public bool CanEditBlueprint => EditBlueprintCommand.CanExecute(null);
+            public bool CanEditCopy => EditCopyCommand.CanExecute(null);
+            public ICommand OpenPropertiesCommand => _viewModel.OpenSelectedInstancePropertiesCommand;
+            public ICommand EditBlueprintCommand => _viewModel.EditSelectedBlueprintCommand;
+            public ICommand EditCopyCommand => _viewModel.EditCopySelectedBlueprintCommand;
+
+            public SelectionContextMenuState(AreaEditorViewModel viewModel)
+            {
+                _viewModel = viewModel;
+                _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+                OpenPropertiesCommand.CanExecuteChanged += OnCommandCanExecuteChanged;
+                EditBlueprintCommand.CanExecuteChanged += OnCommandCanExecuteChanged;
+                EditCopyCommand.CanExecuteChanged += OnCommandCanExecuteChanged;
+            }
+
+            public void Dispose()
+            {
+                _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+                OpenPropertiesCommand.CanExecuteChanged -= OnCommandCanExecuteChanged;
+                EditBlueprintCommand.CanExecuteChanged -= OnCommandCanExecuteChanged;
+                EditCopyCommand.CanExecuteChanged -= OnCommandCanExecuteChanged;
+            }
+
+            private void OnCommandCanExecuteChanged(object? sender, EventArgs args)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanOpenProperties)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanEditBlueprint)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanEditCopy)));
+            }
+
+            private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs args)
+            {
+                if (args.PropertyName is nameof(AreaEditorViewModel.SelectionName)
+                    or nameof(AreaEditorViewModel.SelectionGlyph)
+                    or nameof(AreaEditorViewModel.SelectionKindLabel)
+                    or nameof(AreaEditorViewModel.SelectionResRef))
+                    PropertyChanged?.Invoke(this, args);
+            }
         }
     }
 }

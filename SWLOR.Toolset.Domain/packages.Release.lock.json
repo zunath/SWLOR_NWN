@@ -4,9 +4,9 @@
     "net10.0": {
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.31, )",
-        "resolved": "0.1.0-dev.31",
-        "contentHash": "zfAS/RE8x8YWPD8dISSTAuYCNeviKY3IWyZi+KrYXY5gwJLXdunSs98tlltqivl2wMXMc+w99T33BczDdICjOg==",
+        "requested": "[0.1.0-dev.32, )",
+        "resolved": "0.1.0-dev.32",
+        "contentHash": "PLbCGemnXr4hrlyIJ6xk4jDHMVb7RUfwNBRZFaoRupjoMFem4fge4hTyDR5wzdIzbnaVtarrdRcOCF4s7nPtYg==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.26"
         }

@@ -438,8 +438,8 @@
       },
       "Nwn.Authoring": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.31",
-        "contentHash": "zfAS/RE8x8YWPD8dISSTAuYCNeviKY3IWyZi+KrYXY5gwJLXdunSs98tlltqivl2wMXMc+w99T33BczDdICjOg==",
+        "resolved": "0.1.0-dev.32",
+        "contentHash": "PLbCGemnXr4hrlyIJ6xk4jDHMVb7RUfwNBRZFaoRupjoMFem4fge4hTyDR5wzdIzbnaVtarrdRcOCF4s7nPtYg==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.26"
         }
@@ -476,8 +476,8 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.34",
-        "contentHash": "XCknU42hM3l1XH1mns6pvmzZ/koVOO2Lfe9ShguSJH4dhCgiu5VK008Cxp4CB8DGu/yzXmrahxaBegKwH9RFvg==",
+        "resolved": "0.1.0-dev.35",
+        "contentHash": "MsYS2oBo/fu5xNzj99uSPdqTzEj4LlYCM2NhhOxMS/AzSp4FyQ4E87aIq1EjFLgUrTDyFnAzq1V97rIjG1Bx5w==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",
@@ -675,8 +675,8 @@
           "Dock.Model.Mvvm": "[11.3.12.1, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
-          "Nwn.Authoring": "[0.1.0-dev.31, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-dev.34, )",
+          "Nwn.Authoring": "[0.1.0-dev.32, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-dev.35, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )"
@@ -685,7 +685,7 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.31, )",
+          "Nwn.Authoring": "[0.1.0-dev.32, )",
           "Nwn.Formats": "[0.1.0-dev.26, )",
           "Nwn.Preview": "[0.1.0-dev.35, )",
           "SWLOR.Game.Server": "[1.0.0, )",

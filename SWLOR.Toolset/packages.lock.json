@@ -148,18 +148,18 @@
       },
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.31, )",
-        "resolved": "0.1.0-dev.31",
-        "contentHash": "zfAS/RE8x8YWPD8dISSTAuYCNeviKY3IWyZi+KrYXY5gwJLXdunSs98tlltqivl2wMXMc+w99T33BczDdICjOg==",
+        "requested": "[0.1.0-dev.32, )",
+        "resolved": "0.1.0-dev.32",
+        "contentHash": "PLbCGemnXr4hrlyIJ6xk4jDHMVb7RUfwNBRZFaoRupjoMFem4fge4hTyDR5wzdIzbnaVtarrdRcOCF4s7nPtYg==",
         "dependencies": {
           "Nwn.Formats": "0.1.0-dev.26"
         }
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.34, )",
-        "resolved": "0.1.0-dev.34",
-        "contentHash": "XCknU42hM3l1XH1mns6pvmzZ/koVOO2Lfe9ShguSJH4dhCgiu5VK008Cxp4CB8DGu/yzXmrahxaBegKwH9RFvg==",
+        "requested": "[0.1.0-dev.35, )",
+        "resolved": "0.1.0-dev.35",
+        "contentHash": "MsYS2oBo/fu5xNzj99uSPdqTzEj4LlYCM2NhhOxMS/AzSp4FyQ4E87aIq1EjFLgUrTDyFnAzq1V97rIjG1Bx5w==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",
@@ -581,7 +581,7 @@
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.31, )",
+          "Nwn.Authoring": "[0.1.0-dev.32, )",
           "Nwn.Formats": "[0.1.0-dev.26, )",
           "Nwn.Preview": "[0.1.0-dev.35, )",
           "SWLOR.Game.Server": "[1.0.0, )",

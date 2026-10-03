@@ -27,32 +27,6 @@
              camera shifts, and whatever they were aiming at moves. What the old selection bar
              offered lives on the right-click menu below instead. -->
         <viewport:AreaSceneView x:Name="SceneView">
-          <viewport:AreaSceneView.SurfaceContextMenu>
-              <ContextMenu>
-                <!-- The first two entries are the readout the docked bar used to carry: the name a
-                     builder recognises, and the kind and resref underneath it for anyone scripting
-                     against it. Disabled because they are a caption, not an action. -->
-                <MenuItem Header="{Binding SelectionName}" IsEnabled="False">
-                  <MenuItem.Icon>
-                    <TextBlock Text="{Binding SelectionGlyph}"
-                               Foreground="{DynamicResource AccentBrush}"
-                               HorizontalAlignment="Center" VerticalAlignment="Center" />
-                  </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="{Binding SelectionKindLabel}" IsEnabled="False"
-                          ToolTip.Tip="{Binding SelectionResRef}" />
-                <Separator />
-                <MenuItem Header="Open properties..."
-                          Command="{Binding OpenSelectedInstancePropertiesCommand}"
-                          ToolTip.Tip="Edit this placed object's instance properties" />
-                <MenuItem Header="Edit blueprint..."
-                          Command="{Binding EditSelectedBlueprintCommand}"
-                          ToolTip.Tip="Open the blueprint this was placed from" />
-                <MenuItem Header="Edit Copy..."
-                          Command="{Binding EditCopySelectedBlueprintCommand}"
-                          ToolTip.Tip="Create and edit a new Custom blueprint from this object's source" />
-              </ContextMenu>
-          </viewport:AreaSceneView.SurfaceContextMenu>
         </viewport:AreaSceneView>
       </viewport:AreaEditorLayout.Scene>
       <viewport:AreaEditorLayout.Properties>

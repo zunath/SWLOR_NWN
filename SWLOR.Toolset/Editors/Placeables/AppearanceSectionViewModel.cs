@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,8 +11,6 @@ using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 using Nwn.Toolset.Avalonia.Appearances;
-using Nwn.Authoring.Behaviors;
-using Nwn.Authoring.Placeables;
 
 namespace SWLOR.Toolset.Editors.Placeables
 {
@@ -240,8 +238,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         public string? PreviewAnimationName => SelectedAnimation?.Name;
 
         /// <summary>The appearance row the placeable stores right now.</summary>
-        public int CurrentId => checked((int)PlaceableAppearanceValueStore.Read(
-            new BehaviorValueStore(_context.Document.Root)));
+        public int CurrentId => (int)(_context.Document.Root.GetOrNull("Appearance")?.GetInteger() ?? 0);
 
         public string CurrentDescription
         {
@@ -471,8 +468,18 @@ namespace SWLOR.Toolset.Editors.Placeables
             Gallery.SetOptions(Appearance.AppearanceGalleryOptionAdapter.ToShared(_galleryOptions));
         }
 
-        private void WriteAppearance(int id) =>
-            PlaceableAppearanceValueStore.Write(new BehaviorValueStore(_context.Document.Root), id);
+        private void WriteAppearance(int id)
+        {
+            var field = _context.Document.Root.GetOrNull("Appearance");
+            if (field == null)
+            {
+                var raw = Encoding.ASCII.GetBytes(id.ToString(CultureInfo.InvariantCulture));
+                _context.Document.Root.Add("Appearance", JsonGffField.CreateScalar(GffFieldType.Dword, raw));
+                return;
+            }
+
+            field.SetInteger(id);
+        }
 
         private void NotifyCurrentChanged()
         {

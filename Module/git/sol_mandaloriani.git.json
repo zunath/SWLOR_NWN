@@ -68731,7 +68731,7 @@
         },
         "ScriptHeartbeat": {
           "type": "resref",
-          "value": "x2_def_heartbeat"
+          "value": "crea_hb_aft"
         },
         "ScriptOnBlocked": {
           "type": "resref",

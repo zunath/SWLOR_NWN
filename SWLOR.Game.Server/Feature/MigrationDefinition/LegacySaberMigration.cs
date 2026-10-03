@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         private const string SaberTierVariable = "SABER_TIER";
         private const string LegacyUpgradeVariable = "LIGHTSABER_UPGRADE_COUNT";
         private const ItemPropertyAttackDelay LightsaberDelay = ItemPropertyAttackDelay.Delay240;
-        private const ItemPropertyAttackDelay SaberstaffDelay = ItemPropertyAttackDelay.Delay290;
+        private const ItemPropertyAttackDelay SaberstaffDelay = ItemPropertyAttackDelay.Delay240;
         private const int LightsaberSkillSubtype = 38;
         private const int SaberstaffSkillSubtype = 42;
 
@@ -98,6 +98,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (baseItemType != BaseItem.Lightsaber && baseItemType != BaseItem.Saberstaff)
                 return false;
 
+            if (Item.IsEconomyRestricted(item))
+                return false;
+
             if (CraftableSaberResrefs.Contains(GetResRef(item)))
                 return false;
 
@@ -137,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             // A previous sweep erased the original bonuses. Only the saved upgrade
             // marker can be recovered; add the current Chiro delta without inventing mods.
             if (GetLocalInt(item, SaberTierVariable) == 5 && upgraded)
-                damage += isSaberstaff ? 4 : 3;
+                damage += 3;
 
             var profile = SaberRecalibration.CalculateProfile(isSaberstaff, damage, accuracy, upgraded);
 

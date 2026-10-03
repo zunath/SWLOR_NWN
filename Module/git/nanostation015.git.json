@@ -244259,7 +244259,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 7
+                            "value": 5
                           },
                           "Param1": {
                             "type": "byte",
@@ -244321,7 +244321,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 29
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -244475,7 +244475,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 10
+                            "value": 7
                           },
                           "Param1": {
                             "type": "byte",
@@ -244537,7 +244537,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 29
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -247019,7 +247019,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 7
+                            "value": 5
                           },
                           "Param1": {
                             "type": "byte",
@@ -247112,7 +247112,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 29
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -247266,7 +247266,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 10
+                            "value": 7
                           },
                           "Param1": {
                             "type": "byte",
@@ -247359,7 +247359,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 29
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",

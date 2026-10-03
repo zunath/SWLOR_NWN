@@ -18,9 +18,9 @@ public class SaberRecalibrationTests
     }
 
     [TestCase(false, 0, 0, false, 5, 21, 0, 40)]
-    [TestCase(true, 0, 0, false, 5, 25, 0, 40)]
+    [TestCase(true, 0, 0, false, 5, 21, 0, 40)]
     [TestCase(false, 0, 0, true, 6, 24, 0, 50)]
-    [TestCase(true, 0, 0, true, 6, 29, 0, 50)]
+    [TestCase(true, 0, 0, true, 6, 24, 0, 50)]
     public void CalculateProfile_UsesTierDamageAndSkillBaselines(
         bool saberstaff,
         int currentDamage,
@@ -58,6 +58,6 @@ public class SaberRecalibrationTests
             .Should().Be((5, 21, 0, 40));
 
         SaberRecalibration.CalculateProfile(true, int.MaxValue, int.MaxValue, upgraded: true)
-            .Should().Be((6, 34, 10, 50));
+            .Should().Be((6, 29, 10, 50));
     }
 }

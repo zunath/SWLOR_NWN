@@ -21,7 +21,7 @@ public static partial class MigrationEngineTests
             (Resref: "b_knife", Skill: SkillType.Vibroknife, OldDamage: 22, NewDamage: 24, Delay: 22),
             (Resref: "b_greatsword", Skill: SkillType.HeavyVibroblade, OldDamage: 43, NewDamage: 47, Delay: 30),
             (Resref: "b_spear", Skill: SkillType.Spear, OldDamage: 43, NewDamage: 45, Delay: 28),
-            (Resref: "b_twinblade", Skill: SkillType.TwinBlade, OldDamage: 27, NewDamage: 32, Delay: 29),
+            (Resref: "b_twinblade", Skill: SkillType.TwinBlade, OldDamage: 27, NewDamage: 27, Delay: 23),
             (Resref: "b_katar", Skill: SkillType.Katar, OldDamage: 19, NewDamage: 21, Delay: 22),
             (Resref: "b_staff", Skill: SkillType.Staff, OldDamage: 24, NewDamage: 27, Delay: 27),
         };

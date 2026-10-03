@@ -12028,7 +12028,7 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateAttackDelay(uint attacker, int attackDelayReductionAdjustment)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
+            var leftHand = EquipmentPredicates.GetOffhandAttackWeapon(attacker);
 
             var rightHandDelay = GetWeaponDelay(rightHand);
             var leftHandDelay = ApplyOffhandAttackDelayReduction(attacker, GetWeaponDelay(leftHand));

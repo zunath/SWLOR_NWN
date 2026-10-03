@@ -34,9 +34,7 @@ public static class SaberRecalibration
         bool upgraded)
     {
         var tier = upgraded ? ChiroTier : TierFive;
-        var baselineDamage = saberstaff
-            ? upgraded ? 29 : 25
-            : upgraded ? 24 : 21;
+        var baselineDamage = upgraded ? 24 : 21;
         var requiredSkill = upgraded ? 50 : 40;
         var boundedAccuracy = Math.Clamp(accuracy, 0, MaximumAccuracy);
         var accuracySlots = boundedAccuracy == 0

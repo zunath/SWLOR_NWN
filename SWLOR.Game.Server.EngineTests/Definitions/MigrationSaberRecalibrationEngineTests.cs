@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 var migrated = MigrateSerialized(ctx, saber);
-                AssertSaberProfile(ctx, migrated, BaseItem.Saberstaff, tier: 6, damage: 38, accuracy: 5, skill: 50, delay: 29);
+                AssertSaberProfile(ctx, migrated, BaseItem.Saberstaff, tier: 6, damage: 33, accuracy: 5, skill: 50, delay: 24);
                 ctx.AssertEqual(-1, PropertyValue(migrated, ItemPropertyType.WeaponDamageType),
                     "Separate legacy damage types are removed in favor of the single saber profile");
             });

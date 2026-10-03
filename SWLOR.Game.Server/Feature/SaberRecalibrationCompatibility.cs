@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition;
 
 namespace SWLOR.Game.Server.Feature;
 
-/// <summary>Recalibrates legacy sabers acquired after the player's item migration.</summary>
+/// <summary>Recalibrates legacy sabers and double weapons acquired after the player's item migration.</summary>
 public static class SaberRecalibrationCompatibility
 {
     [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -11,7 +11,10 @@ public static class SaberRecalibrationCompatibility
     {
         var player = GetEnteringObject();
         if (GetIsPC(player) && !GetIsDM(player))
+        {
+            SerializedItemWeaponDamageTypeMigration.MigrateDoubleWeapons(player);
             LegacySaberMigration.MigratePlayer(player);
+        }
     }
 
     [NWNEventHandler(ScriptName.OnModuleAcquire)]
@@ -19,6 +22,10 @@ public static class SaberRecalibrationCompatibility
     {
         var owner = GetModuleItemAcquiredBy();
         if (GetIsPC(owner) && !GetIsDM(owner))
-            LegacySaberMigration.MigrateStoredObject(GetModuleItemAcquired(), out _);
+        {
+            var item = GetModuleItemAcquired();
+            SerializedItemWeaponDamageTypeMigration.MigrateDoubleWeapons(item);
+            LegacySaberMigration.MigrateStoredObject(item, out _);
+        }
     }
 }

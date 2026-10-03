@@ -113,6 +113,20 @@ public class WeaponAttackAnimationTests
         missing.Should().BeEmpty();
     }
 
+    [TestCase("doubleaxe_b", BaseItem.DoubleAxe)]
+    [TestCase("twinblade_b", BaseItem.TwoBladedSword)]
+    public void RetiredBasicTwinBladeTemplatesRestoreTierOneDamageDelayAndRequirement(
+        string resref,
+        BaseItem baseItem)
+    {
+        var missing = BasicVibrobladeCompatibility.GetMissingProperties(baseItem, resref, Enumerable.Empty<ItemPropertyType>());
+
+        missing.Should().Equal(
+            (ItemPropertyType.DMG, -1, 5),
+            (ItemPropertyType.Delay, -1, 23),
+            (ItemPropertyType.RequiresSkill, (int)SkillType.TwinBlade, 0));
+    }
+
     private static WeaponAttackAnimation.Roll[] Rolls(int count) =>
         Enumerable.Range(0, count).Select(i => new WeaponAttackAnimation.Roll(1, 1000, 123, 1000, 14,
             (byte)i, 0, 0, 0, (byte)(i < (count + 1) / 2 ? 1 : 2), new short[32])).ToArray();

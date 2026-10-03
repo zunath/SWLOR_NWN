@@ -29,6 +29,8 @@ public static class BasicVibrobladeCompatibility
         new(BaseItem.Longsword, "b_longsword", SkillType.Vibroblade, 5, 23),
         new(BaseItem.Dagger, "dagger_b", SkillType.Vibroknife, 5, 22),
         new(BaseItem.Dagger, "b_knife", SkillType.Vibroknife, 5, 22),
+        new(BaseItem.DoubleAxe, "doubleaxe_b", SkillType.TwinBlade, 5, 23),
+        new(BaseItem.TwoBladedSword, "twinblade_b", SkillType.TwinBlade, 5, 23),
     };
 
     [NWNEventHandler(ScriptName.OnModuleEnter)]

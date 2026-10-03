@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (!EquipmentPredicates.HasDualWield(attacker) || GetWeaponRanged(main))
                 return Combat.GetEquippedWeaponSkillType(attacker);
 
-            var off = GetItemInSlot(InventorySlot.LeftHand, attacker);
+            var off = EquipmentPredicates.GetOffhandAttackWeapon(attacker);
             return SelectTimingSkill(attacker, Skill.GetSkillTypeByBaseItem(GetBaseItemType(main)),
                 Skill.GetSkillTypeByBaseItem(GetBaseItemType(off)));
         }

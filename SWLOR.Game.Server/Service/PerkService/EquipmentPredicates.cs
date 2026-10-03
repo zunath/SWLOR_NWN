@@ -50,11 +50,19 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public static bool HasDualWield(uint creature)
         {
-            // Classify the weapons actually equipped in the hands, independently of skill families.
             var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
-            var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+            var offHand = GetOffhandAttackWeapon(creature);
             return GetIsObjectValid(mainHand) && Item.IsAttackWeaponType(GetBaseItemType(mainHand)) &&
                    GetIsObjectValid(offHand) && Item.IsAttackWeaponType(GetBaseItemType(offHand));
+        }
+
+        /// <summary>Returns the second striking end of a double weapon, or a separate left-hand item.</summary>
+        public static uint GetOffhandAttackWeapon(uint creature)
+        {
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            return GetIsObjectValid(mainHand) && Item.IsDoubleWeaponType(GetBaseItemType(mainHand))
+                ? mainHand
+                : GetItemInSlot(InventorySlot.LeftHand, creature);
         }
 
         public static bool HasMainHandVibroknife(uint creature)

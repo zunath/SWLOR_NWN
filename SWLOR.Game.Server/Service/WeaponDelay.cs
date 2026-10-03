@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         {
             {Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230},
             {Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220},
-            {Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay290},
+            {Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay230},
             {Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220},
             {Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270},
             {Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300},
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             {Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240},
             {Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280},
             {Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220},
-            {Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay290},
+            {Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay240},
             {Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240}
         };
 

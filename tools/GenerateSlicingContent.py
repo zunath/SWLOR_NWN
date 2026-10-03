@@ -257,7 +257,7 @@ def weapon_damage(template: str, tier: int) -> int:
         "fld_pistol": [7, 15, 27, 34, 40], "fld_knife": [6, 14, 25, 32, 38],
         "fld_spear": [8, 16, 28, 35, 41], "fld_rifle": [9, 17, 29, 36, 42],
         "fld_staff": [7, 15, 27, 34, 40], "fld_katar": [7, 15, 27, 34, 40],
-        "fld_twinblade": [8, 16, 28, 35, 41], "fld_shuriken": [6, 14, 25, 32, 38],
+        "fld_twinblade": [7, 10, 14, 18, 22], "fld_shuriken": [6, 14, 25, 32, 38],
         "fld_greatsword": [9, 16, 28, 35, 41],
     }
     return budgets[template][tier - 1]

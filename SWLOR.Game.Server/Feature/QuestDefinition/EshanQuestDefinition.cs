@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("eshan_hunter_trap", "Close the Hunter's Trail")
 
                 .AddState()
-                .SetStateJournalText("Eliminate six Neo-Crusader Hunters operating near the Veylan Groves, then report to Security Officer Talia Venn in the Silver Gate District.")
+                .SetStateJournalText("Eliminate six Neo-Crusader Hunters operating in the Winter Marches, then report to Security Officer Talia Venn in the Silver Gate District.")
                 .AddKillObjective(NPCGroupType.Eshan_NeoCrusaderHunter, 6)
 
                 .AddState()

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net;
 using System.Text.Json;
 using Discord;
+using Discord.Net;
 using NUnit.Framework;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
@@ -54,6 +55,87 @@ public sealed class DiscordAdapterTests
     {
         var inherited = Enumerable.Range(10, 100).Select(x => new Overwrite((ulong)x, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)));
         Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildOverwrites(1, 2, 3, new ulong[] { 4 }, inherited, true, true, true));
+    }
+
+    [TestCase(5UL)]
+    [TestCase(null)]
+    public async Task Close_FullArchiveCategoryCompletesWithPrivateUncategorizedChannel(ulong? currentCategory)
+    {
+        var events = new List<string>();
+        var overwrites = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], false, false, true);
+        await DiscordOperations.CloseChannelPlacementAsync(77, currentCategory,
+            () => Task.FromResult(50),
+            () =>
+            {
+                Assert.That(Find(overwrites, 3, PermissionTarget.User).SendMessages, Is.EqualTo(PermValue.Deny));
+                Assert.That(Find(overwrites, 3, PermissionTarget.User).ViewChannel, Is.EqualTo(PermValue.Deny));
+                Assert.That(Find(overwrites, 1, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+                events.Add("closed");
+                return Task.CompletedTask;
+            },
+            destination =>
+            {
+                Assert.That(destination, Is.Null);
+                Assert.That(events[0], Is.EqualTo("closed"));
+                events.Add("uncategorized");
+                return Task.CompletedTask;
+            });
+        Assert.That(events, Is.EqualTo(currentCategory.HasValue ? new[] { "closed", "uncategorized" } : new[] { "closed" }));
+    }
+
+    [Test]
+    public async Task Close_AlreadyInFullArchiveCategoryDoesNotCountOrMoveAgain()
+    {
+        var closed = false;
+        await DiscordOperations.CloseChannelPlacementAsync(77, 77,
+            () => throw new AssertionException("A repeated close must not allocate a new category slot."),
+            () => { closed = true; return Task.CompletedTask; },
+            _ => throw new AssertionException("A repeated close must not move the channel."));
+        Assert.That(closed, Is.True);
+    }
+
+    [Test]
+    public async Task Close_CategoryFillingDuringMoveFallsBackAfterAccessIsRestricted()
+    {
+        var counts = 0;
+        var destinations = new List<ulong?>();
+        var closed = false;
+        await DiscordOperations.CloseChannelPlacementAsync(77, 5,
+            () => Task.FromResult(++counts == 1 ? 49 : 50),
+            () => { closed = true; return Task.CompletedTask; },
+            destination =>
+            {
+                Assert.That(closed, Is.True);
+                destinations.Add(destination);
+                return destination.HasValue ? Task.FromException(PlacementError()) : Task.CompletedTask;
+            });
+        Assert.That(counts, Is.EqualTo(2));
+        Assert.That(destinations, Is.EqualTo(new ulong?[] { 77, null }));
+    }
+
+    [TestCase(HttpStatusCode.Forbidden, "parent_id", 50)]
+    [TestCase(HttpStatusCode.BadRequest, "permission_overwrites", 50)]
+    [TestCase(HttpStatusCode.BadRequest, "parent_id", 49)]
+    public void Close_UnrelatedApiFailuresPropagateWithoutFallback(HttpStatusCode status, string errorPath, int freshCount)
+    {
+        var counts = 0;
+        var destinations = new List<ulong?>();
+        var failure = PlacementError(status, errorPath);
+        var actual = Assert.ThrowsAsync<HttpException>(() => DiscordOperations.CloseChannelPlacementAsync(77, 5,
+            () => Task.FromResult(++counts == 1 ? 49 : freshCount),
+            () => Task.CompletedTask,
+            destination => { destinations.Add(destination); return Task.FromException(failure); }));
+        Assert.That(actual, Is.SameAs(failure));
+        Assert.That(destinations, Is.EqualTo(new ulong?[] { 77 }));
+    }
+
+    [Test]
+    public void Close_AccessFailurePreventsCategoryMovement()
+    {
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordOperations.CloseChannelPlacementAsync(77, 5,
+            () => throw new AssertionException("Capacity is checked only after access is restricted."),
+            () => Task.FromException(new InvalidOperationException("Permission update rejected.")),
+            _ => throw new AssertionException("Do not move while access remains open.")));
     }
 
     [TestCase(GuildPermission.Administrator)]
@@ -375,6 +457,15 @@ public sealed class DiscordAdapterTests
         Assert.That(state.ObserveHeartbeat(true), Is.Null);
         Assert.That(state.IsReady(true), Is.False);
     }
+    private static HttpException PlacementError(HttpStatusCode status = HttpStatusCode.BadRequest, string path = "parent_id")
+    {
+        // Discord.Net exposes structured errors read-only and constructs them internally.
+        var error = (DiscordJsonError)Activator.CreateInstance(typeof(DiscordJsonError),
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, null,
+            [path, Array.Empty<DiscordError>()], null)!;
+        return new HttpException(status, null!, DiscordErrorCode.InvalidFormBody, "Test placement failure.", [error]);
+    }
+
     private static OverwritePermissions Find(Overwrite[] overwrites, ulong id, PermissionTarget target) =>
         overwrites.Single(x => x.TargetId == id && x.TargetType == target).Permissions;
 

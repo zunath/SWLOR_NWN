@@ -35,6 +35,94 @@ public sealed class GatewayConfigurationTests
             Is.EqualTo(GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent));
     }
 
+    [TestCase(ApplicationFlags.GatewayGuildMembers)]
+    [TestCase(ApplicationFlags.GatewayGuildMembersLimited)]
+    public void WelcomePreflightAcceptsVerifiedAndLimitedMembersCapability(ApplicationFlags flags)
+    {
+        var config = new BotConfiguration { Welcome = new WelcomeOptions { Enabled = true } };
+        Assert.DoesNotThrow(() => Program.ValidateApplicationCapabilities(config, flags));
+        Assert.That(() => Program.ValidateApplicationCapabilities(config, 0),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("Enable Server Members Intent"));
+    }
+
+    [TestCase(true, false, ApplicationFlags.GatewayMessageContent)]
+    [TestCase(true, false, ApplicationFlags.GatewayMessageContentLimited)]
+    [TestCase(false, true, ApplicationFlags.GatewayMessageContent)]
+    [TestCase(false, true, ApplicationFlags.GatewayMessageContentLimited)]
+    public void PrefixPreflightAcceptsVerifiedAndLimitedContentCapability(bool factions, bool answers, ApplicationFlags flags)
+    {
+        var config = new BotConfiguration
+        {
+            Factions = new FactionOptions { Enabled = factions },
+            Answers = [new QuickAnswerOptions { Enabled = answers }]
+        };
+        Assert.DoesNotThrow(() => Program.ValidateApplicationCapabilities(config, flags));
+        Assert.That(() => Program.ValidateApplicationCapabilities(config, 0),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("Enable Message Content Intent"));
+    }
+
+    [Test]
+    public void CombinedFeaturesRequireBothPrivilegedCapabilities()
+    {
+        var config = new BotConfiguration
+        {
+            Welcome = new WelcomeOptions { Enabled = true },
+            Factions = new FactionOptions { Enabled = true }
+        };
+        Assert.That(() => Program.ValidateApplicationCapabilities(config, ApplicationFlags.GatewayMessageContentLimited),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("Server Members Intent"));
+        Assert.That(() => Program.ValidateApplicationCapabilities(config, ApplicationFlags.GatewayGuildMembersLimited),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("Message Content Intent"));
+        Assert.DoesNotThrow(() => Program.ValidateApplicationCapabilities(config,
+            ApplicationFlags.GatewayGuildMembersLimited | ApplicationFlags.GatewayMessageContentLimited));
+    }
+
+    [Test]
+    public void TicketOnlyPreflightChecksRestContentAccessWithoutRequestingGatewayContent()
+    {
+        var config = new BotConfiguration { Tickets = new TicketOptions { Enabled = true } };
+        Assert.That(Program.GatewayIntentsFor(config), Is.EqualTo(GatewayIntents.Guilds));
+        Assert.That(() => Program.ValidateApplicationCapabilities(config, 0),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("ticket transcripts"));
+        Assert.DoesNotThrow(() => Program.ValidateApplicationCapabilities(config, ApplicationFlags.GatewayMessageContentLimited));
+    }
+
+    [Test]
+    public async Task PreflightCompletesBeforeStartingGatewayAndDisabledFeaturesNeedNoPrivilegedCapabilities()
+    {
+        var config = new BotConfiguration { Answers = [new QuickAnswerOptions { Enabled = false }] };
+        var events = new List<string>();
+        await Program.StartGatewayAsync(config,
+            () => { events.Add("application"); return Task.FromResult((ApplicationFlags)0); },
+            () => { events.Add("gateway"); return Task.CompletedTask; });
+        Assert.That(events, Is.EqualTo(new[] { "application", "gateway" }));
+    }
+
+    [Test]
+    public void PreflightFailurePreventsGatewayIdentifyAndRetainsSafeActionableError()
+    {
+        var config = new BotConfiguration { Welcome = new WelcomeOptions { Enabled = true } };
+        var started = false;
+        var error = Assert.ThrowsAsync<DiscordValidationException>(() => Program.StartGatewayAsync(config,
+            () => Task.FromResult((ApplicationFlags)0),
+            () => { started = true; return Task.CompletedTask; }));
+        Assert.That(started, Is.False);
+        Assert.That(DiscordGateway.SafeError(error!), Does.Contain("Enable Server Members Intent"));
+    }
+
+    [Test]
+    public void PreflightApplicationLookupFailurePreventsGatewayIdentifyAndRemainsSanitized()
+    {
+        var started = false;
+        var failure = new System.Net.Http.HttpRequestException("sensitive credentials");
+        var error = Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => Program.StartGatewayAsync(new BotConfiguration(),
+            () => Task.FromException<ApplicationFlags>(failure),
+            () => { started = true; return Task.CompletedTask; }));
+        Assert.That(started, Is.False);
+        Assert.That(error, Is.SameAs(failure));
+        Assert.That(DiscordGateway.SafeError(error!), Is.EqualTo(nameof(System.Net.Http.HttpRequestException)));
+    }
+
     [Test]
     public async Task DisablingTicketsRemovesOnlyOwnedSlashCommandsAndIsRepeatable()
     {

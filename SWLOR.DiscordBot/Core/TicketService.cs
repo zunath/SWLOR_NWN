@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using SWLOR.DiscordBot.Configuration;
@@ -8,6 +9,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     IDiscordTickets discord, ITranscriptArchive archive, TimeProvider clock,
     ILogger<TicketService>? logger = null)
 {
+    // One worker owns the guild; in-flight exports protect only their ticket's archive from cleanup.
+    private readonly ConcurrentDictionary<Guid, byte> _exports = new();
     private TicketOptions Options => configuration.Tickets;
     public bool CanSupport(Actor actor) => actor.IsGuildOwner || actor.RoleIds.Intersect(Options.SupportRoleIds).Any();
     private bool Bypasses(Actor actor, bool? scope) => scope == true && actor.RoleIds.Intersect(Options.BypassRoleIds).Any();
@@ -117,16 +120,35 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         return new(true, hold ? "Cleanup and archive expiration are on hold." : "Hold released.", ticket);
     }, ct);
 
-    public Task<TicketResult> ExportAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket) =>
+    public async Task<TicketResult> ExportAsync(ulong channelId, Actor actor, CancellationToken ct = default)
     {
+        if (!Options.Enabled) return new(false, "Ticketing is disabled.");
         if (!CanSupport(actor)) return new(false, "Only support staff can export transcripts.");
-        if (ticket.State is not (TicketState.Open or TicketState.Closed)) return new(false, "This ticket is busy; try again shortly.");
-        var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
-        var path = await archive.ExportAsync(ticket, snapshot, ct);
-        ticket = ticket with { ArchivePath = path };
-        await session.SaveAsync(ticket, "exported", actor.UserId, ct);
-        return new(true, "Transcript archived.", ticket);
-    }, ct);
+        Guid? exportId = null;
+        try
+        {
+            Ticket ticket;
+            await using (var session = await store.LockAsync(ct))
+            {
+                var found = (await session.GetTicketsAsync(ct)).SingleOrDefault(t => t.ChannelId == channelId);
+                if (found is null) return new(false, "This channel is not a ticket managed by this bot.");
+                ticket = found;
+                if (ticket.State is not (TicketState.Open or TicketState.Closed)) return new(false, "This ticket is busy; try again shortly.");
+                if (!_exports.TryAdd(ticket.Id, 0)) return new(false, "A transcript export is already in progress for this ticket.");
+                exportId = ticket.Id;
+            }
+            // Discord pagination and attachment downloads must not hold the shared database lock.
+            var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
+            var path = await archive.ExportAsync(ticket, snapshot, ct);
+            await using var saveSession = await store.LockAsync(ct);
+            var current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == ticket.Id);
+            // Preserve closes, reopens, holds, and deadlines changed while the snapshot was written.
+            current = current with { ArchivePath = path };
+            await saveSession.SaveAsync(current, "exported", actor.UserId, ct);
+            return new(true, "Transcript archived.", current);
+        }
+        finally { if (exportId is { } id) _exports.TryRemove(id, out _); }
+    }
 
     private async Task<TicketResult> MutateAsync(ulong channelId, Actor actor,
         Func<ITicketSession, Ticket, Task<TicketResult>> mutation, CancellationToken ct)
@@ -149,6 +171,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             ct.ThrowIfCancellationRequested();
             // Keep a single ticket's mutations serialized, but let queued commands run between records.
             await using var session = await store.LockAsync(ct);
+            // Do not race an export's archive files or delete its source channel; other tickets can proceed.
+            if (_exports.ContainsKey(id)) continue;
             var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
             if (ticket is null) continue;
             try

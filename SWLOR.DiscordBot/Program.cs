@@ -23,6 +23,26 @@ public static class Program
         return intents;
     }
 
+    internal static void ValidateApplicationCapabilities(BotConfiguration config, ApplicationFlags flags)
+    {
+        var intents = GatewayIntentsFor(config);
+        if ((intents & GatewayIntents.GuildMembers) != 0 &&
+            (flags & (ApplicationFlags.GatewayGuildMembers | ApplicationFlags.GatewayGuildMembersLimited)) == 0)
+            throw new DiscordValidationException("Enable Server Members Intent for the Discord application to deliver welcome messages.");
+        if ((intents & GatewayIntents.MessageContent) != 0 &&
+            (flags & (ApplicationFlags.GatewayMessageContent | ApplicationFlags.GatewayMessageContentLimited)) == 0)
+            throw new DiscordValidationException("Enable Message Content Intent for the Discord application to run faction and quick-answer commands.");
+        if (config.Tickets.Enabled) DiscordOperations.ValidateTranscriptCapability(flags);
+    }
+
+    internal static async Task StartGatewayAsync(BotConfiguration config,
+        Func<Task<ApplicationFlags>> applicationFlags, Func<Task> start)
+    {
+        // Application flags are available after REST login, before an Identify with disallowed intents can be rejected.
+        ValidateApplicationCapabilities(config, await applicationFlags());
+        await start();
+    }
+
     public static async Task<int> Main(string[] args)
     {
         if (args.Contains("--health-check", StringComparer.Ordinal)) return ReadinessMarker.IsHealthy() ? 0 : 1;

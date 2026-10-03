@@ -193,14 +193,42 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             before = oldest;
         }
     }
+    internal static bool IsCategoryPlacementFailure(HttpException exception) =>
+        exception.HttpCode == HttpStatusCode.BadRequest && exception.DiscordCode == DiscordErrorCode.InvalidFormBody &&
+        exception.Errors.Count > 0 && exception.Errors.All(x => x.Path == "parent_id");
+
+    internal static async Task CloseChannelPlacementAsync(ulong closedCategoryId, ulong? currentCategoryId,
+        Func<Task<int>> closedCategoryChildren, Func<Task> restrictAccess, Func<ulong?, Task> moveChannel)
+    {
+        // Close access before relocation so a rejected category move cannot leave a writable ticket.
+        await restrictAccess();
+        if (currentCategoryId == closedCategoryId) return;
+        if (await closedCategoryChildren() >= 50)
+        {
+            if (currentCategoryId.HasValue) await moveChannel(null);
+            return;
+        }
+        try { await moveChannel(closedCategoryId); }
+        catch (HttpException ex) when (IsCategoryPlacementFailure(ex))
+        {
+            // Another channel can take the last slot after the initial count. Other placement errors still fail.
+            if (await closedCategoryChildren() < 50) throw;
+            await moveChannel(null);
+        }
+    }
+
     public async Task CloseAsync(Ticket ticket, CancellationToken ct)
     {
         var channel = await RequireManagedAsync(ticket, ct);
-        var category = (await (await GuildAsync(ct)).GetCategoryChannelsAsync(Options(ct)))
+        var guild = await GuildAsync(ct);
+        var category = (await guild.GetCategoryChannelsAsync(Options(ct)))
             .Single(x => x.Id == configuration.Tickets.ClosedCategoryId);
         var overwrites = BuildOverwrites(configuration.GuildId, client.CurrentUser.Id, ticket.RequesterId, configuration.Tickets.SupportRoleIds,
-            category.PermissionOverwrites, configuration.Tickets.ClosedRequesterCanRead, false, true);
-        await channel.ModifyAsync(x => { x.CategoryId = category.Id; x.PermissionOverwrites = overwrites; }, Options(ct));
+            category.PermissionOverwrites.Concat(channel.PermissionOverwrites), configuration.Tickets.ClosedRequesterCanRead, false, true);
+        await CloseChannelPlacementAsync(category.Id, channel.CategoryId,
+            async () => (await guild.GetChannelsAsync(Options(ct))).OfType<INestedChannel>().Count(x => x.CategoryId == category.Id && x.Id != channel.Id),
+            () => channel.ModifyAsync(x => x.PermissionOverwrites = overwrites, Options(ct)),
+            destination => channel.ModifyAsync(x => { x.CategoryId = destination; x.PermissionOverwrites = overwrites; }, Options(ct)));
         await VerifyPrivacyAsync(ticket, configuration.Tickets.ClosedRequesterCanRead, false, true, ct);
     }
 

@@ -48,7 +48,9 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
             gateway.Attach(ct);
             consumers = Enumerable.Range(0, 4).Select(_ => gateway.ProcessAsync(ct)).ToArray();
             await client.LoginAsync(TokenType.Bot, secrets.Token);
-            await client.StartAsync();
+            await Program.StartGatewayAsync(configuration,
+                async () => (await ((IDiscordClient)client.Rest).GetApplicationInfoAsync(DiscordOperations.Options(ct))).Flags,
+                () => client.StartAsync());
             maintenance = MaintainAsync(ct);
             responseCleanup = DeleteResponsesAsync(ct);
             using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15), clock);

@@ -435,6 +435,133 @@ public sealed class TicketServiceTests
         }
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ManualExportReleasesStoreLockDuringRemoteWorkAndPreservesStaffChanges(bool blockArchive)
+    {
+        await Open("first", new Actor(1, []), "manual-export");
+        var remoteStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseRemote = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Block(Ticket ticket, CancellationToken ct)
+        {
+            remoteStarted.TrySetResult();
+            await releaseRemote.Task.WaitAsync(ct);
+        }
+        if (blockArchive) _archive.BeforeExportAsync = Block;
+        else _discord.BeforeTranscriptAsync = Block;
+        var export = _service.ExportAsync(ChannelOne, Support);
+        try
+        {
+            await remoteStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            var duplicate = await _service.ExportAsync(ChannelOne, Support).WaitAsync(TimeSpan.FromSeconds(2));
+            var close = await _service.CloseAsync(ChannelOne, Support).WaitAsync(TimeSpan.FromSeconds(2));
+            var hold = await _service.SetHoldAsync(ChannelOne, Support, true).WaitAsync(TimeSpan.FromSeconds(2));
+            var other = await Open("second", new Actor(2, []), "other-during-export").WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.Multiple(() =>
+            {
+                Assert.That(duplicate.Success, Is.False);
+                Assert.That(duplicate.Message, Does.Contain("export is already in progress"));
+                Assert.That(close.Success, Is.True);
+                Assert.That(hold.Success, Is.True);
+                Assert.That(other.Success, Is.True);
+                Assert.That(export.IsCompleted, Is.False);
+            });
+            releaseRemote.SetResult();
+            var result = await export.WaitAsync(TimeSpan.FromSeconds(2));
+            var current = _store.Tickets.Single(t => t.ChannelId == ChannelOne);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Success, Is.True);
+                Assert.That(current.State, Is.EqualTo(TicketState.Closed));
+                Assert.That(current.Hold, Is.True);
+                Assert.That(current.DeleteAfter, Is.EqualTo(_clock.GetUtcNow().AddDays(7)));
+                Assert.That(current.ArchiveExpiresAt, Is.EqualTo(_clock.GetUtcNow().AddDays(90)));
+                Assert.That(current.ArchivePath, Is.Not.Null);
+                Assert.That(_archive.ExportCalls, Is.EqualTo(1));
+            });
+        }
+        finally { releaseRemote.TrySetResult(); await export; }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CleanupSkipsOnlyTheTicketBeingManuallyExported(bool blockArchive)
+    {
+        await Open("first", new Actor(1, []), "export-before-cleanup");
+        await Open("second", new Actor(2, []), "other-cleanup");
+        await _service.CloseAsync(ChannelOne, Support);
+        await _service.CloseAsync(ChannelOne + 1, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var remoteStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseRemote = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Block(Ticket ticket, CancellationToken ct)
+        {
+            if (ticket.ChannelId != ChannelOne) return;
+            remoteStarted.TrySetResult();
+            await releaseRemote.Task.WaitAsync(ct);
+        }
+        if (blockArchive) _archive.BeforeExportAsync = Block;
+        else _discord.BeforeTranscriptAsync = Block;
+        var export = _service.ExportAsync(ChannelOne, Support);
+        try
+        {
+            await remoteStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne + 1 }));
+            Assert.That(export.IsCompleted, Is.False);
+            releaseRemote.SetResult();
+            Assert.That((await export.WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeletedChannels, Is.EquivalentTo(new[] { ChannelOne, ChannelOne + 1 }));
+        }
+        finally { releaseRemote.TrySetResult(); await export; }
+    }
+
+    [Test]
+    public async Task FailedManualExportReleasesItsCleanupGuardForRetry()
+    {
+        await Open("first", new Actor(1, []), "failed-manual-export");
+        _archive.FailExports = true;
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.ExportAsync(ChannelOne, Support));
+        _archive.FailExports = false;
+        Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        await _service.MaintainAsync();
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+    }
+
+    [Test]
+    public async Task CancelledManualExportReleasesItsCleanupGuardForRetry()
+    {
+        await Open("first", new Actor(1, []), "cancelled-manual-export");
+        var remoteStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var cancellation = new CancellationTokenSource();
+        _discord.BeforeTranscriptAsync = async (_, ct) =>
+        {
+            remoteStarted.SetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        };
+        var export = _service.ExportAsync(ChannelOne, Support, cancellation.Token);
+        try
+        {
+            await remoteStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            cancellation.Cancel();
+            Assert.ThrowsAsync<TaskCanceledException>(async () => await export);
+            _discord.BeforeTranscriptAsync = null;
+            Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
+            await _service.CloseAsync(ChannelOne, Support);
+            _clock.Advance(TimeSpan.FromDays(8));
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        }
+        finally
+        {
+            cancellation.Cancel();
+            try { await export; } catch (OperationCanceledException) { }
+        }
+    }
+
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -553,6 +680,7 @@ public sealed class TicketServiceTests
         public List<ulong> DeletedChannels { get; } = [];
         public bool FailNextOpen { get; set; }
         public bool FailNextClose { get; set; }
+        public Func<Ticket, CancellationToken, Task>? BeforeTranscriptAsync { get; set; }
         public TranscriptSnapshot Snapshot { get; set; } = new([], 101);
         public ulong? LastMessageIdAfterRead { get; set; }
 
@@ -616,7 +744,11 @@ public sealed class TicketServiceTests
             return Task.CompletedTask;
         }
 
-        public Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct) => Task.FromResult(Snapshot);
+        public async Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct)
+        {
+            if (BeforeTranscriptAsync is not null) await BeforeTranscriptAsync(ticket, ct);
+            return Snapshot;
+        }
 
         public Task<ulong?> LastMessageIdAsync(Ticket ticket, CancellationToken ct) =>
             Task.FromResult(LastMessageIdAfterRead ?? Snapshot.LastMessageId);
@@ -635,13 +767,15 @@ public sealed class TicketServiceTests
     {
         public bool FailExports { get; set; }
         public int ExportCalls { get; private set; }
+        public Func<Ticket, CancellationToken, Task>? BeforeExportAsync { get; set; }
         public List<string> DeletedPaths { get; } = [];
 
-        public Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct)
+        public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct)
         {
             ExportCalls++;
+            if (BeforeExportAsync is not null) await BeforeExportAsync(ticket, ct);
             if (FailExports) throw new InvalidOperationException("Simulated archive storage failure.");
-            return Task.FromResult($"/archives/{ticket.Id:N}.json");
+            return $"/archives/{ticket.Id:N}.json";
         }
 
         public Task DeleteAsync(string path, CancellationToken ct)

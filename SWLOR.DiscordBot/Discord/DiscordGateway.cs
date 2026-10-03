@@ -111,7 +111,14 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
     }
     private async Task RegisterAsync(CancellationToken ct)
     {
-        if (!configuration.Tickets.Enabled) return;
+        if (!configuration.Tickets.Enabled)
+        {
+            var guild = await discord.GuildAsync(ct);
+            var commands = await guild.GetApplicationCommandsAsync(options: DiscordOperations.Options(ct));
+            await TicketCommandRegistration.RemoveDisabledAsync(commands.Select(command =>
+                (command.Name, command.Type, (Func<Task>)(() => command.DeleteAsync(DiscordOperations.Options(ct))))), ct);
+            return;
+        }
         var ticket = new SlashCommandBuilder().WithName("ticket").WithDescription("Manage this support ticket");
         foreach (var (name, description) in new[] { ("close", "Close this ticket"), ("reopen", "Reopen this ticket"),
             ("transcript", "Export a transcript (support only)"), ("hold", "Hold cleanup (support only)"), ("release", "Release cleanup hold (support only)") })
@@ -127,7 +134,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
     private Task OnMessageAsync(SocketMessage message)
     {
         if (!Ready || message.Author.IsBot || message.Author.IsWebhook || message.Channel is not SocketTextChannel channel ||
-            channel.Guild.Id != configuration.GuildId || !message.Content.StartsWith(configuration.Prefix, StringComparison.Ordinal)) return Task.CompletedTask;
+            channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId || !message.Content.StartsWith(configuration.Prefix, StringComparison.Ordinal)) return Task.CompletedTask;
         if (!jobs.Writer.TryWrite(ct => RetryCommunityAsync(token => community.ExecuteAsync(message.Author.Id, channel.Id, message.Id, message.Content, token), ct)))
             logger.LogWarning("Community event queue is full.");
         return Task.CompletedTask;

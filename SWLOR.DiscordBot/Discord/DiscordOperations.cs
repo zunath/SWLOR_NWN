@@ -264,9 +264,56 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         var role = (await GuildAsync(ct)).Roles.SingleOrDefault(x => x.Id == roleId);
         return role is null ? null : new(role.Id, role.Position, role.IsManaged);
     }
-    internal static bool HasStaffPermissions(GuildPermissions permissions) =>
-        permissions.Administrator || permissions.ManageGuild || permissions.ManageRoles || permissions.ManageChannels ||
-        permissions.KickMembers || permissions.BanMembers || permissions.ModerateMembers || permissions.ManageWebhooks;
+    internal static bool HasStaffPermissions(GuildPermissions permissions)
+    {
+        // Only ordinary member capabilities are safe for self-selection. Unknown/new bits fail closed.
+        const GuildPermission ordinaryPermissions =
+            GuildPermission.CreateInstantInvite | GuildPermission.AddReactions | GuildPermission.ViewChannel |
+            GuildPermission.SendMessages | GuildPermission.SendTTSMessages | GuildPermission.EmbedLinks |
+            GuildPermission.AttachFiles | GuildPermission.ReadMessageHistory | GuildPermission.UseExternalEmojis |
+            GuildPermission.Connect | GuildPermission.Speak | GuildPermission.UseVAD | GuildPermission.Stream |
+            GuildPermission.ChangeNickname | GuildPermission.UseApplicationCommands | GuildPermission.RequestToSpeak |
+            GuildPermission.CreatePublicThreads | GuildPermission.CreatePrivateThreads | GuildPermission.UseExternalStickers |
+            GuildPermission.SendMessagesInThreads | GuildPermission.StartEmbeddedActivities | GuildPermission.UseSoundboard |
+            GuildPermission.UseExternalSounds | GuildPermission.SendVoiceMessages | GuildPermission.SendPolls |
+            GuildPermission.UseExternalApps;
+        return (permissions.RawValue & ~(ulong)ordinaryPermissions) != 0;
+    }
+
+    internal static void ValidateTranscriptCapability(ApplicationFlags flags)
+    {
+        if ((flags & (ApplicationFlags.GatewayMessageContent | ApplicationFlags.GatewayMessageContentLimited)) == 0)
+            throw new InvalidOperationException("Enable Message Content Intent for the Discord application to preserve ticket transcripts.");
+    }
+
+    internal static void ValidateCommunityChannels(BotConfiguration configuration,
+        IReadOnlyCollection<(ulong Id, ChannelType Type, ChannelPermissions Permissions)> channels)
+    {
+        void RequireText(ulong id, bool deleteCommand = false, bool requireEmbeds = false)
+        {
+            var channel = channels.SingleOrDefault(x => x.Id == id && x.Type == ChannelType.Text);
+            if (channel.Id == 0) throw new InvalidOperationException($"Configured text channel {id} is unavailable.");
+            var permissions = channel.Permissions;
+            // Deleting our own response does not require Manage Messages.
+            if (!permissions.ViewChannel || !permissions.SendMessages || (requireEmbeds && !permissions.EmbedLinks) || (deleteCommand && !permissions.ManageMessages))
+                throw new InvalidOperationException($"The bot lacks required permissions in text channel {id}.");
+        }
+
+        if (configuration.Welcome.Enabled)
+        {
+            foreach (var id in configuration.Welcome.ChannelMentions.Values.Distinct())
+                if (channels.All(x => x.Id != id))
+                    throw new InvalidOperationException($"Welcome channel mention {id} is unavailable in the configured guild.");
+            if (!configuration.Welcome.DirectMessage) RequireText(configuration.Welcome.ChannelId);
+        }
+        foreach (var answer in configuration.Answers.Where(x => x.Enabled))
+        {
+            // Commands can complete only in ordinary text channels where the bot can read and reply.
+            var scope = answer.AllowedChannelIds.Length > 0 ? answer.AllowedChannelIds :
+                channels.Where(x => x.Type == ChannelType.Text && x.Permissions.ViewChannel && x.Permissions.SendMessages).Select(x => x.Id);
+            foreach (var id in scope) RequireText(id, answer.DeleteCommand, answer.Embeds.Length > 0);
+        }
+    }
 
     private async Task<RestGuildUser> RoleMemberAsync(ulong userId, ulong roleId, CancellationToken ct)
     {
@@ -309,16 +356,18 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             .Concat(configuration.Answers.Where(x => x.Enabled).SelectMany(x => x.AllowedRoleIds)).Distinct())
             if (id == guild.Id || guild.Roles.All(x => x.Id != id)) throw new InvalidOperationException($"Configured access role {id} is unavailable or is the everyone role.");
         var channels = await guild.GetChannelsAsync(Options(ct));
-        void RequireText(ulong id, bool delete = false)
+        void RequireText(ulong id)
         {
             var channel = channels.OfType<RestTextChannel>().SingleOrDefault(x => x.Id == id && x.ChannelType == ChannelType.Text)
                 ?? throw new InvalidOperationException($"Configured text channel {id} is unavailable.");
             var permissions = bot.GetPermissions(channel);
-            if (!permissions.ViewChannel || !permissions.SendMessages || !permissions.EmbedLinks || (delete && !permissions.ManageMessages))
+            if (!permissions.ViewChannel || !permissions.SendMessages || !permissions.EmbedLinks)
                 throw new InvalidOperationException($"The bot lacks required permissions in text channel {id}.");
         }
         if (configuration.Tickets.Enabled)
         {
+            var application = await ((IDiscordClient)client.Rest).GetApplicationInfoAsync(Options(ct));
+            ValidateTranscriptCapability(application.Flags);
             if (!bot.GuildPermissions.ManageChannels || !bot.GuildPermissions.ManageRoles)
                 throw new InvalidOperationException("Tickets require Manage Channels and Manage Roles permissions.");
             foreach (var id in configuration.Tickets.Panels.SelectMany(x => x.OpenCategoryIds).Append(configuration.Tickets.ClosedCategoryId).Distinct())
@@ -332,7 +381,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             foreach (var panel in configuration.Tickets.Panels) RequireText(panel.ChannelId);
             RequireText(configuration.Tickets.LogChannelId);
         }
-        if (configuration.Welcome.Enabled && !configuration.Welcome.DirectMessage) RequireText(configuration.Welcome.ChannelId);
+        ValidateCommunityChannels(configuration, channels.Select(x => (x.Id, x.ChannelType, bot.GetPermissions(x))).ToArray());
         if (configuration.Factions.Enabled)
         {
             foreach (var item in configuration.Factions.Roles)
@@ -342,7 +391,5 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
                     throw new InvalidOperationException($"The configured faction role {item.RoleId} cannot be managed by the bot.");
             }
         }
-        foreach (var answer in configuration.Answers.Where(x => x.Enabled))
-            foreach (var id in answer.AllowedChannelIds) RequireText(id, answer.DeleteCommand || answer.DeleteResponseAfter.HasValue);
     }
 }

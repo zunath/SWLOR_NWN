@@ -148,6 +148,15 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             var ticket = initial;
             try
             {
+                if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await discord.ExistsAsync(ticket, ct))
+                {
+                    var now = clock.GetUtcNow();
+                    ticket = ticket with { State = TicketState.Deleted, ClosedAt = ticket.ClosedAt ?? now, DeleteAfter = null,
+                        ArchiveExpiresAt = ticket.ArchiveExpiresAt ?? now.AddDays(Options.ArchiveRetentionDays),
+                        LastError = "Channel was removed externally; any previously saved archive is retained until its expiration." };
+                    await session.SaveAsync(ticket, "missing-channel-reconciled", null, ct);
+                    await NotifyAsync($"Ticket {ticket.Number} channel was removed externally; open-ticket capacity released.", ct);
+                }
                 if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct); continue; }
                 if (ticket.State == TicketState.Closing)
                 {
@@ -177,12 +186,6 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await session.SaveAsync(ticket, "deleting", null, ct);
                 }
                 if (ticket.State != TicketState.Deleting) continue;
-                if (!await discord.ExistsAsync(ticket, ct))
-                {
-                    await session.SaveAsync(ticket with { State = TicketState.Deleted,
-                        LastError = ticket.ArchivePath is null ? "Channel was removed externally before archival." : null }, "missing-channel-reconciled", null, ct);
-                    continue;
-                }
                 await discord.FreezeAsync(ticket, ct);
                 var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
                 var archivePath = await archive.ExportAsync(ticket, snapshot, ct);

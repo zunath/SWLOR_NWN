@@ -96,9 +96,12 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             {
                 var persistedMessage = JsonSerializer.Deserialize<CommunityMessage>(delivery.Intent)
                                        ?? throw new InvalidDataException("The persisted quick answer delivery is invalid.");
-                if (await discord.SendAsync(channelId, persistedMessage, ct) is null)
-                    throw new InvalidOperationException("The quick answer response was not delivered.");
-                if (answer.Cooldown > TimeSpan.Zero) await session.SetCooldownAsync(cooldownKey, Clock.GetUtcNow(), ct);
+                if (HasUsableContent(persistedMessage))
+                {
+                    if (await discord.SendAsync(channelId, persistedMessage, ct) is null)
+                        throw new InvalidOperationException("The quick answer response was not delivered.");
+                    if (answer.Cooldown > TimeSpan.Zero) await session.SetCooldownAsync(cooldownKey, Clock.GetUtcNow(), ct);
+                }
                 await session.CompleteDeliveryAsync(deliveryKey, ct);
             }
         }
@@ -144,7 +147,12 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                     if (operation.Add) await discord.AddRoleAsync(currentMember.UserId, operation.RoleId, ct);
                     else await discord.RemoveRoleAsync(currentMember.UserId, operation.RoleId, ct);
                 }
-                if (!factions.DeleteResponse && await discord.SendAsync(channelId, TemplateRenderer.EnforceMessageLimits(new CommunityMessage(intent.Response, [], DeliveryKey: $"{deliveryKey}:response")), ct) is null)
+                var response = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(
+                    intent.Response,
+                    [],
+                    DeleteAfter: intent.ResponseDeleteAfter ?? (factions.DeleteResponse ? TimeSpan.FromSeconds(5) : null),
+                    DeliveryKey: $"{deliveryKey}:response"));
+                if (await discord.SendAsync(channelId, response, ct) is null)
                     throw new InvalidOperationException("The faction response was not delivered.");
                 await session.CompleteDeliveryAsync(deliveryKey, ct);
             }
@@ -160,6 +168,13 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         await discord.DeleteMessageAsync(channelId, messageId, ct);
         await session.CompleteDeliveryAsync(deliveryKey, ct);
     }
+
+    private static bool HasUsableContent(CommunityMessage message) =>
+        !string.IsNullOrWhiteSpace(message.Content) ||
+        message.Embeds.Any(embed =>
+            !string.IsNullOrWhiteSpace(embed.Title) ||
+            !string.IsNullOrWhiteSpace(embed.Description) ||
+            embed.Fields.Any(field => !string.IsNullOrWhiteSpace(field.Name) && !string.IsNullOrWhiteSpace(field.Value)));
 
     private static FactionIntent CreateFactionIntent(FactionRole faction, CommunityMember member, FactionOptions options)
     {
@@ -183,9 +198,9 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             operations.Add(new FactionRoleOperation(faction.RoleId, Add: true));
             response = $"Added the {faction.Name} role.";
         }
-        return new FactionIntent(operations, response);
+        return new FactionIntent(operations, response, options.DeleteResponse ? TimeSpan.FromSeconds(5) : null);
     }
 
     private sealed record FactionRoleOperation(ulong RoleId, bool Add);
-    private sealed record FactionIntent(IReadOnlyList<FactionRoleOperation> RoleOperations, string Response);
+    private sealed record FactionIntent(IReadOnlyList<FactionRoleOperation> RoleOperations, string Response, TimeSpan? ResponseDeleteAfter = null);
 }

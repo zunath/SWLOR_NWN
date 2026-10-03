@@ -321,6 +321,74 @@ public sealed class TicketServiceTests
         Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
     }
 
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Creating)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Reopening)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Deleting)]
+    public async Task MissingBoundChannelIsTerminalAndReleasesAllTicketLimits(TicketState state)
+    {
+        _configuration.Tickets.MemberLimit = 1;
+        _configuration.Tickets.GuildLimit = 1;
+        _configuration.Tickets.Panels[0].OpenLimit = 1;
+        var requester = new Actor(1, []);
+        var opened = await Open("first", requester, "externally-removed");
+        _store.Replace(opened.Ticket! with { State = state });
+        _discord.MissingChannels.Add(ChannelOne);
+
+        await _service.MaintainAsync();
+        var removed = _store.Tickets.Single();
+        var replacement = await Open("first", requester, "replacement");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(removed.State, Is.EqualTo(TicketState.Deleted));
+            Assert.That(removed.LastError, Does.Contain("removed externally"));
+            Assert.That(removed.ClosedAt, Is.EqualTo(_clock.GetUtcNow()));
+            Assert.That(removed.ArchiveExpiresAt, Is.EqualTo(_clock.GetUtcNow().AddDays(90)));
+            Assert.That(replacement.Success, Is.True);
+            Assert.That(_discord.DeleteCalls, Is.Zero, "reconciliation must not delete any channel");
+            Assert.That(_archive.ExportCalls, Is.Zero, "a missing channel cannot be archived");
+        });
+    }
+
+    [Test]
+    public async Task ChannelLookupFailureRetainsActiveTicketAndItsCapacity()
+    {
+        _configuration.Tickets.MemberLimit = 1;
+        await Open("first", new Actor(1, []), "lookup-failure");
+        _discord.FailNextExists = true;
+
+        await _service.MaintainAsync();
+        var ticket = _store.Tickets.Single();
+        var replacement = await Open("first", new Actor(1, []), "must-not-replace");
+
+        Assert.That(ticket.State, Is.EqualTo(TicketState.Open));
+        Assert.That(ticket.LastError, Does.Contain("Maintenance failed"));
+        Assert.That(replacement.Success, Is.False);
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+    }
+
+    [Test]
+    public async Task HeldArchiveSurvivesReconciliationOfMissingOpenChannel()
+    {
+        await Open("first", new Actor(1, []), "held-missing");
+        await _service.ExportAsync(ChannelOne, Support);
+        await _service.SetHoldAsync(ChannelOne, Support, true);
+        _discord.MissingChannels.Add(ChannelOne);
+
+        await _service.MaintainAsync();
+        _clock.Advance(TimeSpan.FromDays(91));
+        await _service.MaintainAsync();
+
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+        Assert.That(_store.Tickets.Single().Hold, Is.True);
+        Assert.That(_store.Tickets.Single().ArchivePath, Is.Not.Null);
+        Assert.That(_archive.DeletedPaths, Is.Empty);
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+    }
+
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -431,6 +499,8 @@ public sealed class TicketServiceTests
         public int CloseCalls { get; private set; }
         public int RenameCalls { get; private set; }
         public int ExistsCalls { get; private set; }
+        public HashSet<ulong> MissingChannels { get; } = [];
+        public bool FailNextExists { get; set; }
         public int FreezeCalls { get; private set; }
         public int DeleteCalls { get; private set; }
         public List<ulong> DeletedChannels { get; } = [];
@@ -484,7 +554,12 @@ public sealed class TicketServiceTests
         public Task<bool> ExistsAsync(Ticket ticket, CancellationToken ct)
         {
             ExistsCalls++;
-            return Task.FromResult(true);
+            if (FailNextExists)
+            {
+                FailNextExists = false;
+                throw new InvalidOperationException("Simulated channel lookup failure; not a confirmed missing channel.");
+            }
+            return Task.FromResult(ticket.ChannelId.HasValue && !MissingChannels.Contains(ticket.ChannelId.Value));
         }
 
         public Task FreezeAsync(Ticket ticket, CancellationToken ct)

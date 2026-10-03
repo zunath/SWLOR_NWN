@@ -101,6 +101,34 @@ public sealed class CommunityTests
     }
 
     [Test]
+    public async Task ExecuteAsync_SendsFactionResponseBeforeSchedulingItsDeletion()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1,
+            Prefix = "?",
+            Factions = new FactionOptions
+            {
+                Enabled = true,
+                DeleteResponse = true,
+                Roles = [new FactionRole { Name = "Republic Navy", RoleId = 21 }]
+            }
+        };
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new CommunityMember(7, "A Player", []),
+            Roles = [new CommunityRole(21, 1)]
+        };
+        var service = new CommunityService(config, new FakeTicketStore(), discord);
+
+        await service.ExecuteAsync(7, 100, 302, "?rank Republic Navy", CancellationToken.None);
+
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(discord.Sent[0].Message.Content, Is.EqualTo("Added the Republic Navy role."));
+        Assert.That(discord.Sent[0].Message.DeleteAfter, Is.EqualTo(TimeSpan.FromSeconds(5)));
+    }
+
+    [Test]
     public async Task ExecuteAsync_EnforcesAnswerAllowListsAndCooldownAndRendersArguments()
     {
         var config = new BotConfiguration
@@ -147,6 +175,27 @@ public sealed class CommunityTests
         await service.ExecuteAsync(7, 100, 403, "?guide", CancellationToken.None);
 
         Assert.That(discord.Sent, Has.Count.EqualTo(2));
+    }
+
+    [Test]
+    public async Task ExecuteAsync_DoesNotSendOrConsumeCooldownForAnEmptyRenderedAnswer()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1,
+            Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["{1}"], Cooldown = TimeSpan.FromMinutes(1) }]
+        };
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []) };
+        var service = new CommunityService(config, store, discord);
+
+        await service.ExecuteAsync(7, 100, 501, "?guide", CancellationToken.None);
+        await service.ExecuteAsync(7, 100, 501, "?guide", CancellationToken.None);
+        await service.ExecuteAsync(7, 100, 502, "?guide alpha", CancellationToken.None);
+
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(discord.Sent[0].Message.Content, Is.EqualTo("alpha"));
     }
 
     [Test]

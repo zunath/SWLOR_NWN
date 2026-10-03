@@ -13,6 +13,16 @@ namespace SWLOR.DiscordBot;
 
 public static class Program
 {
+    internal static GatewayIntents GatewayIntentsFor(BotConfiguration config)
+    {
+        // Ticket transcripts use REST; their application-level content access is validated separately at startup.
+        var intents = GatewayIntents.Guilds;
+        if (config.Welcome.Enabled) intents |= GatewayIntents.GuildMembers;
+        if (config.Factions.Enabled || config.Answers.Any(x => x.Enabled))
+            intents |= GatewayIntents.GuildMessages | GatewayIntents.MessageContent;
+        return intents;
+    }
+
     public static async Task<int> Main(string[] args)
     {
         if (args.Contains("--health-check", StringComparer.Ordinal)) return ReadinessMarker.IsHealthy() ? 0 : 1;
@@ -46,9 +56,7 @@ public static class Program
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
         {
-            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages |
-                (config.Welcome.Enabled ? GatewayIntents.GuildMembers : GatewayIntents.None) |
-                (config.Tickets.Enabled || config.Factions.Enabled || config.Answers.Any(x => x.Enabled) ? GatewayIntents.MessageContent : GatewayIntents.None),
+            GatewayIntents = GatewayIntentsFor(config),
             AlwaysDownloadUsers = false, MessageCacheSize = 0, LogLevel = LogSeverity.Warning,
             DefaultRetryMode = RetryMode.RetryRatelimit | RetryMode.Retry502
         }));

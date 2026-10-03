@@ -3,6 +3,7 @@ using System.Net;
 using System.Text.Json;
 using Discord;
 using NUnit.Framework;
+using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
 using SWLOR.DiscordBot.Discord;
 using SWLOR.DiscordBot.Hosting;
@@ -55,18 +56,146 @@ public sealed class DiscordAdapterTests
         Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildOverwrites(1, 2, 3, new ulong[] { 4 }, inherited, true, true, true));
     }
 
-    [Test]
-    public void SelfSelectedFactionRoles_RejectNativeStaffPermissions()
+    [TestCase(GuildPermission.Administrator)]
+    [TestCase(GuildPermission.ManageGuild)]
+    [TestCase(GuildPermission.ManageRoles)]
+    [TestCase(GuildPermission.ManageChannels)]
+    [TestCase(GuildPermission.KickMembers)]
+    [TestCase(GuildPermission.BanMembers)]
+    [TestCase(GuildPermission.ModerateMembers)]
+    [TestCase(GuildPermission.ManageWebhooks)]
+    [TestCase(GuildPermission.ManageMessages)]
+    [TestCase(GuildPermission.ManageThreads)]
+    [TestCase(GuildPermission.ViewAuditLog)]
+    [TestCase(GuildPermission.MentionEveryone)]
+    [TestCase(GuildPermission.ManageNicknames)]
+    [TestCase(GuildPermission.ManageEmojisAndStickers)]
+    [TestCase(GuildPermission.ManageEvents)]
+    [TestCase(GuildPermission.ViewGuildInsights)]
+    [TestCase(GuildPermission.MuteMembers)]
+    [TestCase(GuildPermission.DeafenMembers)]
+    [TestCase(GuildPermission.MoveMembers)]
+    [TestCase(GuildPermission.PrioritySpeaker)]
+    public void SelfSelectedFactionRoles_RejectNativeStaffPermissions(GuildPermission permission)
     {
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(administrator: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(manageGuild: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(manageRoles: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(manageChannels: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(kickMembers: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(banMembers: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(moderateMembers: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(manageWebhooks: true)), Is.True);
-        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(viewChannel: true, sendMessages: true)), Is.False);
+        var ordinary = (ulong)(GuildPermission.ViewChannel | GuildPermission.SendMessages);
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(ordinary | (ulong)permission)), Is.True);
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_AllowOrdinaryCapabilitiesButRejectUnknownBits()
+    {
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(0)), Is.False);
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(
+            viewChannel: true, sendMessages: true, connect: true, speak: true, addReactions: true,
+            attachFiles: true, embedLinks: true, readMessageHistory: true, changeNickname: true)), Is.False);
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(1UL << 63)), Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Welcome_RejectsMissingOrForeignMentionChannelsEvenForDirectMessages(bool directMessage)
+    {
+        var configuration = new BotConfiguration
+        {
+            Welcome = new WelcomeOptions
+            {
+                Enabled = true, DirectMessage = directMessage, ChannelId = 10,
+                ChannelMentions = new() { ["rules"] = 99 }
+            }
+        };
+        var channels = new[] { (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true)) };
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration, channels),
+            Throws.InvalidOperationException.With.Message.Contains("99"));
+        configuration.Welcome.ChannelMentions["rules"] = 10;
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+    }
+
+    [Test]
+    public void Welcome_MentionsNeedGuildExistenceWithoutBotPostingPermissions()
+    {
+        var configuration = new BotConfiguration
+        {
+            Welcome = new WelcomeOptions
+            {
+                Enabled = true, DirectMessage = true,
+                ChannelMentions = new() { ["rules"] = 11 }
+            }
+        };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(11UL, ChannelType.Text, new ChannelPermissions(0))]));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Answers_CommandDeletionRequiresEffectivePermissionsThroughoutItsScope(bool restricted)
+    {
+        var answer = new QuickAnswerOptions { DeleteCommand = true, AllowedChannelIds = restricted ? [10, 11] : [] };
+        var configuration = new BotConfiguration { Answers = [answer] };
+        var ordinary = new ChannelPermissions(viewChannel: true, sendMessages: true);
+        var moderation = new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true);
+        var channels = new[] { (10UL, ChannelType.Text, moderation), (11UL, ChannelType.Text, ordinary) };
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration, channels),
+            Throws.InvalidOperationException.With.Message.Contains("11"));
+        channels[1] = (11UL, ChannelType.Text, moderation);
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Answers_OwnResponseDeletionDoesNotRequireModerationPermissions(bool restricted)
+    {
+        var configuration = new BotConfiguration
+        {
+            Answers = [new QuickAnswerOptions { DeleteResponseAfter = TimeSpan.FromSeconds(10), AllowedChannelIds = restricted ? [10] : [] }]
+        };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
+    }
+
+    [Test]
+    public void Answers_UnrestrictedScopeExcludesUnreadableReadOnlyAndUnsupportedChannels()
+    {
+        var configuration = new BotConfiguration { Answers = [new QuickAnswerOptions { DeleteCommand = true }] };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+        [
+            (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true)),
+            (11UL, ChannelType.Text, new ChannelPermissions(sendMessages: true)),
+            (12UL, ChannelType.Text, new ChannelPermissions(viewChannel: true)),
+            (13UL, ChannelType.PublicThread, new ChannelPermissions(viewChannel: true, sendMessagesInThreads: true))
+        ]));
+        configuration.Answers[0].AllowedChannelIds = [12];
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(12UL, ChannelType.Text, new ChannelPermissions(viewChannel: true))]), Throws.InvalidOperationException);
+    }
+
+    [Test]
+    public void Answers_EmbedPermissionsAreRequiredWhenResponseHasEmbeds()
+    {
+        var answer = new QuickAnswerOptions { Embeds = [new AnswerEmbed { Description = "Help" }] };
+        var configuration = new BotConfiguration { Answers = [answer] };
+        var channels = new[] { (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true)) };
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration, channels), Throws.InvalidOperationException);
+        channels[0] = (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true, embedLinks: true));
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+        answer.Enabled = false;
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
+    }
+
+    [TestCase(ApplicationFlags.GatewayMessageContent)]
+    [TestCase(ApplicationFlags.GatewayMessageContentLimited)]
+    public void TicketTranscripts_RequireApplicationMessageContentCapability(ApplicationFlags flags)
+    {
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTranscriptCapability(flags));
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTranscriptCapability(flags | ApplicationFlags.GatewayGuildMembersLimited));
+    }
+
+    [Test]
+    public void TicketTranscripts_RejectMissingApplicationMessageContentCapability()
+    {
+        Assert.That(() => DiscordOperations.ValidateTranscriptCapability(ApplicationFlags.GatewayGuildMembersLimited),
+            Throws.InvalidOperationException.With.Message.Contains("Message Content Intent"));
     }
 
     [Test]

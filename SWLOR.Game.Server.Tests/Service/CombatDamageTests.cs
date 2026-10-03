@@ -1185,6 +1185,8 @@ public class CombatDamageTests
         extractor.Should().Contain("if (!hasDamageProperty)");
         extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);");
         damageRollSource.Should().Contain("if (weapon != null && damageProfile.HasItemDamage)");
+        var ratingSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "WeaponDamage.cs"));
+        ratingSource.Should().Contain("if (!GetItemHasItemProperty(weapon, ItemPropertyType.DMG))");
     }
 
     [Test]

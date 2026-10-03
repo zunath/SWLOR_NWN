@@ -26,6 +26,10 @@ namespace SWLOR.Game.Server.Service.CombatService
         public static int GetEffectiveDMG(uint creature, uint weapon, int? itemDamage = null)
         {
             var damage = itemDamage ?? Item.GetDMG(weapon);
+            // GetDMG supplies a synthetic minimum when a real rating is absent.
+            // Abilities and previews must preserve that fallback just like native swings.
+            if (!GetItemHasItemProperty(weapon, ItemPropertyType.DMG))
+                return damage;
             var qualifies = EquipmentPredicates.HasSingleWeapon(creature) &&
                             GetItemInSlot(InventorySlot.RightHand, creature) == weapon;
             return CalculateEffectiveDMG(damage, qualifies ? GetSingleWeaponPercent(creature) : 0);

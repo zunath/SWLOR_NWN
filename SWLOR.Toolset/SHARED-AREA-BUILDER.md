@@ -13,8 +13,7 @@ SWLOR's binary representation adapter connects its existing formats model to
 the shared document model; workspace conventions, catalogs and release policy
 remain here. Xenomech provides its own source representation and policies.
 
-Package pins: `Nwn.Formats 0.1.0-dev.20`, `Nwn.Authoring 0.1.0-dev.18`.
-Preview and Avalonia pins remain `0.1.0-dev.16` and `0.1.0-dev.11`.
+Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.25`. These versions are recorded in the package lock files and consume the recovered shared packages.
 The shared repository's `docs/area-builder-extraction.md` records provenance,
 package hashes and the source/package qualification boundary.
 
@@ -24,6 +23,10 @@ Package report: `artifacts/test-results/area-extraction-package-session-tiles.tr
 The corpus is selected explicitly with `SWLOR_TEST_REPOSITORY_ROOT` and
 `SWLOR_TEST_HAKS_ROOT`; no HAK or module source is copied to a primary checkout.
 The first failed fixture attempts remain preserved alongside the passing reports.
+
+Recovered integration checkout regression: 62/62 focused shared area-builder,
+area-generation, walkmesh, door-anchor and area-writer tests passed with zero
+skips. TRX: `artifacts/shared-area-builder-recovery/shared-area-builder-recovery.trx`.
 
 Native placement mapping and GIC comment alignment also move into the shared
 library in `Nwn.Authoring 0.1.0-dev.19`; SWLOR retains module naming and palette

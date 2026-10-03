@@ -40,18 +40,18 @@ Note: most pre-existing stance status effects still carry the Beneficial green f
 
 ## Every Applied Status Effect Carries an Icon
 
-If an effect is applied to a creature, it **must** declare a real `EffectIconType` â€” never `EffectIconType.Invalid`. The apply path in `StatusEffect.BuildNativeStatusEffect` only links an `EffectIcon` when the icon is not `Invalid`, and there is no fallback: an `Invalid` icon means the effect changes the player's stats with nothing shown on the status bar. `Invalid` also collapses icon-keyed lookups (`GetStatusEffectsFromIcon`), so dispel/cleanse/query logic cannot tell those effects apart.
+If an effect is applied to a creature, it **must** declare a real `EffectIconType` — never `EffectIconType.Invalid`. The apply path in `StatusEffect.BuildNativeStatusEffect` only links an `EffectIcon` when the icon is not `Invalid`, and there is no fallback: an `Invalid` icon means the effect changes the player's stats with nothing shown on the status bar. `Invalid` also collapses icon-keyed lookups (`GetStatusEffectsFromIcon`), so dispel/cleanse/query logic cannot tell those effects apart.
 
-If an effect has nothing worth showing â€” because its magnitude never varies for as long as it is held, so there is no transient state to communicate â€” then it should not be a status effect at all. Model it as a static stat contribution read by the stat pipeline instead (as the Mimicry passive traits do via `MimicryTraitStat` / `MimicryTraitResistance`). Status effects are for state that starts, changes, or ends; static bonuses belong to whatever grants them.
+If an effect has nothing worth showing — because its magnitude never varies for as long as it is held, so there is no transient state to communicate — then it should not be a status effect at all. Model it as a static stat contribution read by the stat pipeline instead (as the Mimicry passive traits do via `MimicryTraitStat` / `MimicryTraitResistance`). Status effects are for state that starts, changes, or ends; static bonuses belong to whatever grants them.
 
 `tools/UpdateGameplayIconStandards.ps1` enforces this: status effect discovery does not skip `Invalid` declarations, so any new effect without an icon fails the audit until it has an `effecticons.2da` row, artwork, and a custom TLK entry.
 
 ## Stat-Configured Icons
 
 A shared status effect whose icon identity is supplied per application through a `StatType`
-adjustment â€” `MeleeRepeatedTargetDamageStatusEffect` reads
+adjustment — `MeleeRepeatedTargetDamageStatusEffect` reads
 `StatType.MeleeRepeatedTargetDamageStatusEffectIcon`, which Vibroblade's Rundown trait sets to
-`EffectIconType.RundownStatusEffect` â€” deliberately owns no icon identity of its own. The player
+`EffectIconType.RundownStatusEffect` — deliberately owns no icon identity of its own. The player
 always sees the *configuring perk's* icon, whose anchor class carries the enum member, manifest
 row, TLK entry, and artwork (`RundownStatusEffect` anchors `ief_rndwn`).
 
@@ -60,22 +60,22 @@ Such a class is exempted from the one-class-one-icon model **only** when it decl
 audit skips it entirely on that marker. The exemption does not weaken the rule above: the apply
 path must refuse to apply the effect when the configured icon resolves to
 `EffectIconType.Invalid`, so a mis-wired perk degrades to no visual rather than an invisible
-effect. Any icon value fed into the stat must be a real, anchored `EffectIconType` member â€”
+effect. Any icon value fed into the stat must be a real, anchored `EffectIconType` member —
 retire the anchor class only together with the icon identity itself.
 
 ## Force Alignment Marker
 
-Force power icons carry a **second, orthogonal axis** on top of the semantic frame: a small "gem" marker in the **top-left corner** that shows the power's Force alignment. The semantic frame still communicates effect role (Harmful, Beneficial, Control, â€¦); the corner gem communicates the side of the Force. This lets a player read both facts at once, and complements the Perks window, which groups Force powers by discipline (Alter / Control / Sense).
+Force power icons carry a **second, orthogonal axis** on top of the semantic frame: a small "gem" marker in the **top-left corner** that shows the power's Force alignment. The semantic frame still communicates effect role (Harmful, Beneficial, Control, …); the corner gem communicates the side of the Force. This lets a player read both facts at once, and complements the Perks window, which groups Force powers by discipline (Alter / Control / Sense).
 
 Marker rules:
 
-- **Scope:** only the Force-tree powers, stances, and passive traits (the five Force perk trees). No other icon carries the marker â€” including Force-*flavored* NPC, creature, or other-weapon icons.
+- **Scope:** only the Force-tree powers, stances, and passive traits (the five Force perk trees). No other icon carries the marker — including Force-*flavored* NPC, creature, or other-weapon icons.
 - **Colors:** `Dark = black (#17171B)`, `Light = light grey (#C4CAD3)`, `Universal/Neutral = yellow (#FFCC1A)`.
 - **Construction:** a dark outer ring, a mid-grey bevel ring, then the alignment-colored fill, with a small highlight. The two-tone bezel keeps every gem legible on any underlying art, and the mid-grey bevel gives all three fills (black, light grey, yellow) the same crisp rim.
 - **Placement:** top-left, so it never collides with the bottom-right status-effect rank-badge slot. The gem sits on top of the finished icon and never alters the central artwork or the semantic frame.
 - **Data source of truth:** the `Alignment` column in `GameplayIconManifest.csv` (`Light` / `Dark` / `Neutral`; blank = no marker).
 
-The marker is stamped and audited by `tools/UpdateFeatSpellIconBorders.ps1` (`-Apply` / `-AuditOnly`), which reads the `Alignment` column. Stamping is idempotent â€” re-running skips already-marked icons. Because the marker is composited onto the lossless flattened production source, changing the palette requires restoring pristine art first (`tools/RestoreAbilityIconArtwork.ps1`) and then re-stamping with `-Force`; do not paint a new marker over an old one.
+The marker is stamped and audited by `tools/UpdateFeatSpellIconBorders.ps1` (`-Apply` / `-AuditOnly`), which reads the `Alignment` column. Stamping is idempotent — re-running skips already-marked icons. Because the marker is composited onto the lossless flattened production source, changing the palette requires restoring pristine art first (`tools/RestoreAbilityIconArtwork.ps1`) and then re-stamping with `-Force`; do not paint a new marker over an old one.
 
 ## Uniqueness
 
@@ -155,7 +155,7 @@ Required treatment:
 The polished central subject is produced by the acting agent's native image pipeline. The frame, background, semantic color, and status-effect rank badge are always stamped by the project icon tools regardless of pipeline, so only the source of the central subject differs:
 
 - **Codex / GPT-driven requests**: generate the central subject with GPT Image 2 through Codex image generation. Do not require a separate OpenAI API account, `OPENAI_API_KEY`, or the local API/CLI fallback for ordinary icon production. Do not silently substitute a different raster image model for GPT Image 2.
-- **Claude-driven requests**: author the central subject as polished, fully illustrated SVG vector art, then rasterize it (via ImageMagick) into the source subject the icon tools composite. The SVG must meet the Artwork Quality bar in this document â€” layered forms, gradients, shading, highlights, and a recognizable illustrated silhouette â€” not flat pictograms or primitive geometry.
+- **Claude-driven requests**: author the central subject as polished, fully illustrated SVG vector art, then rasterize it (via ImageMagick) into the source subject the icon tools composite. The SVG must meet the Artwork Quality bar in this document — layered forms, gradients, shading, highlights, and a recognizable illustrated silhouette — not flat pictograms or primitive geometry.
 
 Both pipelines must satisfy identical Semantic Color, Uniqueness, Framing, Artwork Quality, and DDS export requirements; only the source of the central subject differs. The prohibition on primitive/vector stand-ins targets crude placeholder geometry (plain rectangles, single-line weapons, generic blobs, flat symbols); it does not forbid a fully illustrated SVG icon that meets the Artwork Quality bar.
 

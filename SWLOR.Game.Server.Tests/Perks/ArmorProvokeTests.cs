@@ -73,8 +73,8 @@ public class ArmorProvokeTests
         provoke2SpellIcon.Should().Be(provoke2FeatIcon);
         provoke2FeatIcon.Should().NotBe(provoke1FeatIcon);
 
-        File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{provoke1FeatIcon}.tga").FullName).Should().BeTrue();
-        File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{provoke2FeatIcon}.tga").FullName).Should().BeTrue();
+        File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{provoke1FeatIcon}.dds").FullName).Should().BeTrue();
+        File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{provoke2FeatIcon}.dds").FullName).Should().BeTrue();
     }
 
     [Test]

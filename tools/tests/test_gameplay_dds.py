@@ -1,10 +1,13 @@
 """DDS export regressions and decoded-pixel audit for the shipped icon corpus."""
 import csv
 import hashlib
+import os
 from pathlib import Path
 import shutil
 import struct
 import sys
+import subprocess
+from unittest.mock import patch
 import tempfile
 import unittest
 
@@ -12,7 +15,7 @@ from PIL import Image, ImageChops, ImageStat
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
-from ConvertGameplayIconsToDds import export
+from ConvertGameplayIconsToDds import export, main
 
 
 @unittest.skipUnless(shutil.which('magick'), 'Requires ImageMagick')
@@ -51,6 +54,54 @@ class ExportTests(unittest.TestCase):
                             self.assertLess(max(abs(a-b) for a,b in zip(image.getpixel(point),visible.getpixel(point))), 10)
                         self.assertEqual(visible.getpixel((31,0))[3], 0 if alpha else 255)
 
+    def test_case_only_rename_keeps_cached_runtime_pair(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'icons_source/production'
+            runtime = root / 'icons'
+            source.mkdir(parents=True)
+            Image.new('RGB', (32, 32), 'red').save(source / 'ife_case.tga')
+            manifest = source.parent / 'dds-conversions.csv'
+            args = ['--source', str(source), '--output', str(runtime), '--manifest', str(manifest)]
+            main(args)
+            before = (runtime / 'ife_case.dds').read_bytes()
+            (source / 'ife_case.tga').rename(source / 'IFE_CASE.tga')
+            with patch('ConvertGameplayIconsToDds.export', side_effect=AssertionError('cache was missed')):
+                main(args)
+            self.assertEqual((runtime / 'IFE_CASE.dds').read_bytes(), before)
+            self.assertEqual((runtime / 'IFE_CASE.txi').read_bytes(), b'mipmap 0\n')
+            with manifest.open(newline='', encoding='utf-8') as stream:
+                self.assertEqual(next(csv.DictReader(stream))['IconResRef'], 'IFE_CASE')
+            self.assertEqual(len(list(runtime.glob('*.dds'))), 1)
+            self.assertEqual(len(list(runtime.glob('*.txi'))), 1)
+
+    @unittest.skipUnless(shutil.which('powershell'), 'Requires PowerShell')
+    def test_required_audit_rejects_unmanifested_runtime_resources(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'icons_source/production'
+            runtime = root / 'icons'
+            source.mkdir(parents=True)
+            Image.new('RGB', (32, 32), 'red').save(source / 'ife_valid.tga')
+            main(['--source', str(source), '--output', str(runtime), '--manifest', str(source.parent / 'dds-conversions.csv')])
+            helper = str(ROOT / 'tools/GameplayIconAssets.ps1').replace("'", "''")
+            runtime_arg = str(runtime).replace("'", "''")
+            command = f"$ErrorActionPreference = 'Stop'; . '{helper}'; Test-GameplayIconDdsExports '{runtime_arg}'"
+            def audit():
+                # Do not inherit another PowerShell version's module search path.
+                environment = {key: value for key, value in os.environ.items() if key.upper() != 'PSMODULEPATH'}
+                return subprocess.run(['powershell', '-NoProfile', '-Command', command], capture_output=True, text=True, env=environment)
+            valid = audit()
+            self.assertEqual(valid.returncode, 0, valid.stderr)
+            for extension in ('.dds', '.txi'):
+                with self.subTest(extension=extension):
+                    orphan = runtime / ('ife_orphan' + extension)
+                    orphan.write_bytes((runtime / ('ife_valid' + extension)).read_bytes())
+                    invalid = audit()
+                    self.assertNotEqual(invalid.returncode, 0)
+                    self.assertIn('Unmanifested runtime icon', invalid.stderr)
+                    orphan.unlink()
+
 
 class CorpusTests(unittest.TestCase):
     def test_all_exported_assets_match_sources_and_preserve_decoded_orientation_alpha_and_size(self):
@@ -61,6 +112,8 @@ class CorpusTests(unittest.TestCase):
         with (assets / 'sw_ability_source/dds-conversions.csv').open(newline='', encoding='utf-8') as stream:
             rows = list(csv.DictReader(stream))
         self.assertEqual({r['IconResRef'] for r in rows}, {p.stem for p in source.glob('*.tga')})
+        for extension in ('.dds', '.txi'):
+            self.assertEqual({r['IconResRef'].casefold() for r in rows}, {p.stem.casefold() for p in runtime.glob('*' + extension)})
         self.assertGreater(len(rows), 12000)
         for row in rows:
             with self.subTest(icon=row['IconResRef']):

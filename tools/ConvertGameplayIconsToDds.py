@@ -66,14 +66,14 @@ def export(source, output, scratch, magick):
                 SourceBytes=len(raw), DdsBytes=len(data), Encoder='ImageMagick cluster-fit v1')
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--magick', default='magick')
     parser.add_argument('--force', action='store_true')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     files = sorted(args.source.glob('*.tga'))
     if not files:
         raise ValueError('No lossless icon sources found: ' + str(args.source))
@@ -88,12 +88,23 @@ def main():
     previous = {}
     if args.manifest.exists():
         with args.manifest.open(newline='', encoding='utf-8') as stream:
-            previous = {r['IconResRef']: r for r in csv.DictReader(stream)}
+            records = list(csv.DictReader(stream))
+            previous = {r['IconResRef'].casefold(): r for r in records}
+        if len(previous) != len(records):
+            raise ValueError('Duplicate case-insensitive resource names in DDS export manifest')
         if any(not re.fullmatch(r"[a-zA-Z0-9_&'-]{1,16}", name) for name in previous):
             raise ValueError('Unsafe resource name in DDS export manifest')
     rows, pending = [], []
     for source in files:
-        row = previous.get(source.stem)
+        row = previous.get(source.stem.casefold())
+        if row and row['IconResRef'] != source.stem:
+            # Windows/NWN resolves names without casing. Rename the existing pair
+            # together and retain the cache instead of retiring the same file.
+            for extension in ('.dds', '.txi'):
+                prior = args.output / (row['IconResRef'] + extension)
+                if prior.exists():
+                    prior.replace(args.output / (source.stem + extension))
+            row = dict(row, IconResRef=source.stem)
         target = args.output / (source.stem + '.dds')
         txi = target.with_suffix('.txi')
         if (not args.force and row and row.get('Encoder') == 'ImageMagick cluster-fit v1' and row['SourceSHA256'] == sha(source.read_bytes())
@@ -106,7 +117,8 @@ def main():
         with ThreadPoolExecutor(max_workers=8) as pool:
             rows.extend(pool.map(lambda p: export(p, args.output, Path(temporary), args.magick), pending))
     # Retired source artwork must also retire its deployed texture and TXI.
-    for name in set(previous) - {p.stem for p in files}:
+    for key in set(previous) - names:
+        name = previous[key]['IconResRef']
         for extension in ('.dds', '.txi'):
             (args.output / (name + extension)).unlink(missing_ok=True)
     args.manifest.parent.mkdir(parents=True, exist_ok=True)

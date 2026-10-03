@@ -496,7 +496,7 @@ public class LeadershipCombatUpgradeTests
 
             featRows.Values.Where(x => x.Icon == featIcon && !labels.Contains(x.Label)).Should().BeEmpty();
             spellRows.Values.Where(x => x.Icon == spellIcon && !labels.Contains(x.Label)).Should().BeEmpty();
-            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.dds").FullName).Should().BeTrue();
         }
 
         targetIcons.Should().OnlyHaveUniqueItems();

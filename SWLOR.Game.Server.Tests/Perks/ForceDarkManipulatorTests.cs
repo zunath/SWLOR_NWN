@@ -213,7 +213,7 @@ public class ForceDarkManipulatorTests
             }
 
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
-            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.dds").FullName).Should().BeTrue();
 
             abilityRow["Range"].Should().Be(range);
             abilityRow["TargetType"].Should().Be(targetType);

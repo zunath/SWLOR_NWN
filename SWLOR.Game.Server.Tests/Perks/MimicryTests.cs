@@ -783,7 +783,7 @@ public class MimicryTests
             featRow["LABEL"].Should().Be(feat.ToString(), $"{feat}'s feat.2da LABEL should match its enum name");
             featRow["ICON"].Should().NotBeNullOrWhiteSpace($"{feat} should have a feat.2da ICON");
             var iconResRef = featRow["ICON"];
-            File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{iconResRef}.tga"))
+            File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{iconResRef}.dds"))
                 .Should()
                 .BeTrue($"{feat}'s feat icon '{iconResRef}' should exist");
 

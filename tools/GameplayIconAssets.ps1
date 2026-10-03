@@ -65,5 +65,10 @@ function Test-GameplayIconDdsExports([string]$RuntimeDirectory) {
     foreach ($file in Get-ChildItem -LiteralPath $source -Filter '*.tga') {
         if (!$names.Contains($file.BaseName)) { throw "Unexported icon source: $($file.Name)" }
     }
+    foreach ($file in Get-ChildItem -LiteralPath $RuntimeDirectory -File) {
+        if ($file.Extension -in '.dds', '.txi' -and !$names.Contains($file.BaseName)) {
+            throw "Unmanifested runtime icon: $($file.Name)"
+        }
+    }
     Write-Host "Validated $($rows.Count) DDS exports against retained lossless artwork."
 }

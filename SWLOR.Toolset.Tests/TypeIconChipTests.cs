@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.Render.Icons;
-using SWLOR.Toolset.Domain.Workspace;
+using Nwn.Preview.Icons;
+using Nwn.Authoring.Resources;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -25,10 +25,10 @@ namespace SWLOR.Toolset.Tests
         /// </summary>
         private const byte SolidAlpha = 200;
 
-        private static readonly ResourceType[] PaletteTypes =
+        private static readonly ModuleResourceType[] PaletteTypes =
         {
-            ResourceType.Utc, ResourceType.Uti, ResourceType.Utp, ResourceType.Utd,
-            ResourceType.Utm, ResourceType.Utt, ResourceType.Uts, ResourceType.Utw
+            ModuleResourceType.Utc, ModuleResourceType.Uti, ModuleResourceType.Utp, ModuleResourceType.Utd,
+            ModuleResourceType.Utm, ModuleResourceType.Utt, ModuleResourceType.Uts, ModuleResourceType.Utw
         };
 
         private static readonly int[] ChipSizes = { 18, 20, 22 };
@@ -39,15 +39,15 @@ namespace SWLOR.Toolset.Tests
         /// tolerates the last bit of a trigonometric result differing between runtimes, which an exact
         /// digest of the speaker's arcs would not. Refresh these only when a tile symbol is meant to change.
         /// </remarks>
-        private static readonly (ResourceType Type, int Coverage)[] TileCoverage =
+        private static readonly (ModuleResourceType Type, int Coverage)[] TileCoverage =
         {
-            (ResourceType.Utp, 5984), (ResourceType.Utc, 4006), (ResourceType.Utd, 4901),
-            (ResourceType.Uti, 4430), (ResourceType.Utm, 6098), (ResourceType.Utt, 6382),
-            (ResourceType.Uts, 2382), (ResourceType.Utw, 1886)
+            (ModuleResourceType.Utp, 5984), (ModuleResourceType.Utc, 4006), (ModuleResourceType.Utd, 4901),
+            (ModuleResourceType.Uti, 4430), (ModuleResourceType.Utm, 6098), (ModuleResourceType.Utt, 6382),
+            (ModuleResourceType.Uts, 2382), (ModuleResourceType.Utw, 1886)
         };
 
         private static byte AlphaAt(IconImage image, int x, int y) =>
-            image.Bgra[y * image.Stride + x * IconImage.BytesPerPixel + 3];
+            image.Bgra[y * (image.Width * IconImage.BytesPerPixel) + x * IconImage.BytesPerPixel + 3];
 
         private static int CountPixels(IconImage image, byte minimumAlpha)
         {
@@ -95,7 +95,7 @@ namespace SWLOR.Toolset.Tests
             var inBand = false;
             for (var y = 0; y < image.Height; y++)
             {
-                var offset = y * image.Stride + x * IconImage.BytesPerPixel;
+                var offset = y * (image.Width * IconImage.BytesPerPixel) + x * IconImage.BytesPerPixel;
                 var matches =
                     image.Bgra[offset] == (byte)(color & 0xFF) &&
                     image.Bgra[offset + 1] == (byte)((color >> 8) & 0xFF) &&
@@ -161,7 +161,7 @@ namespace SWLOR.Toolset.Tests
 
         [Test]
         [TestCaseSource(nameof(PaletteTypes))]
-        public void Every_Palette_Type_Draws_A_Symbol_At_Every_Chip_Size(ResourceType type)
+        public void Every_Palette_Type_Draws_A_Symbol_At_Every_Chip_Size(ModuleResourceType type)
         {
             foreach (var size in ChipSizes)
             {
@@ -176,7 +176,7 @@ namespace SWLOR.Toolset.Tests
 
         [Test]
         [TestCaseSource(nameof(PaletteTypes))]
-        public void Chip_Symbols_Leave_The_Button_Surface_Showing(ResourceType type)
+        public void Chip_Symbols_Leave_The_Button_Surface_Showing(ModuleResourceType type)
         {
             var image = TypeIconRenderer.Render(type, ChipSize);
 
@@ -197,7 +197,7 @@ namespace SWLOR.Toolset.Tests
 
         [Test]
         [TestCaseSource(nameof(PaletteTypes))]
-        public void Chip_Symbols_Are_Drawn_In_Solid_Ink_Rather_Than_Ghost_Pixels(ResourceType type)
+        public void Chip_Symbols_Are_Drawn_In_Solid_Ink_Rather_Than_Ghost_Pixels(ModuleResourceType type)
         {
             foreach (var size in ChipSizes)
             {
@@ -215,7 +215,7 @@ namespace SWLOR.Toolset.Tests
             // so it is the honest place to check that the compact stroke width survived the size drop.
             foreach (var size in ChipSizes)
             {
-                var image = TypeIconRenderer.Render(ResourceType.Utw, size);
+                var image = TypeIconRenderer.Render(ModuleResourceType.Utw, size);
                 var row = (int)(size * 0.8f);
 
                 InkWeightInRow(image, row, 0, size - 1).Should().BeGreaterThan(1.4f,
@@ -226,8 +226,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void The_Trigger_Boundary_Turns_Solid_At_Chip_Size()
         {
-            var tile = TypeIconRenderer.Render(ResourceType.Utt, TileSize);
-            var chip = TypeIconRenderer.Render(ResourceType.Utt, ChipSize);
+            var tile = TypeIconRenderer.Render(ModuleResourceType.Utt, TileSize);
+            var chip = TypeIconRenderer.Render(ModuleResourceType.Utt, ChipSize);
 
             SolidMarks(tile).Should().BeGreaterThan(8,
                 because: "the tile keeps the dashes that say a trigger is not a solid object");
@@ -239,8 +239,8 @@ namespace SWLOR.Toolset.Tests
         public void The_Coin_Stack_Sheds_A_Coin_At_Chip_Size()
         {
             var centre = TileSize / 2;
-            var tile = TypeIconRenderer.Render(ResourceType.Utm, TileSize);
-            var chip = TypeIconRenderer.Render(ResourceType.Utm, ChipSize);
+            var tile = TypeIconRenderer.Render(ModuleResourceType.Utm, TileSize);
+            var chip = TypeIconRenderer.Render(ModuleResourceType.Utm, ChipSize);
 
             ToneBandsInColumn(tile, centre, TypeIconPalette.Default.Stroke).Should().Be(3);
             ToneBandsInColumn(chip, ChipSize / 2, TypeIconPalette.Default.Stroke).Should().Be(2,
@@ -251,14 +251,14 @@ namespace SWLOR.Toolset.Tests
         public void The_Speaker_Keeps_One_Wave_At_Chip_Size()
         {
             // A cut through the middle crosses the cone and then one mark per wave.
-            SolidRunsInRow(TypeIconRenderer.Render(ResourceType.Uts, TileSize), TileSize / 2).Should().Be(3);
-            SolidRunsInRow(TypeIconRenderer.Render(ResourceType.Uts, ChipSize), ChipSize / 2).Should().Be(2,
+            SolidRunsInRow(TypeIconRenderer.Render(ModuleResourceType.Uts, TileSize), TileSize / 2).Should().Be(3);
+            SolidRunsInRow(TypeIconRenderer.Render(ModuleResourceType.Uts, ChipSize), ChipSize / 2).Should().Be(2,
                 because: "two waves a pixel apart merge into a blob, so the chip draws one");
         }
 
         [Test]
         [TestCaseSource(nameof(TileCoverage))]
-        public void Tile_Symbols_Are_Untouched_By_The_Chip_Variants((ResourceType Type, int Coverage) expected)
+        public void Tile_Symbols_Are_Untouched_By_The_Chip_Variants((ModuleResourceType Type, int Coverage) expected)
         {
             var image = TypeIconRenderer.Render(expected.Type, TileSize);
 

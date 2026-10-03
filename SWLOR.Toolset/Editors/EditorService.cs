@@ -14,6 +14,7 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell;
+using ToolsetDockFactory = SWLOR.Toolset.Shell.ToolsetDockFactory;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 using GameItem = SWLOR.Game.Server.Service.Item;

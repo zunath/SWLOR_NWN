@@ -8,7 +8,9 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Thumbnails;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Viewport;
@@ -339,12 +341,12 @@ namespace SWLOR.Toolset.Workspace
 
             foreach (var stack in ItemIconResolver.Resolve(root, _baseItems.GetOrNull))
             {
-                var layers = new List<TextureImage>(stack.Layers.Count);
+                var layers = new List<ThumbnailTexture>(stack.Layers.Count);
                 foreach (var layer in stack.Layers)
                 {
                     var decoded = TextureLoader.Load(_resourceIndex, layer);
                     if (decoded != null)
-                        layers.Add(decoded);
+                        layers.Add(ToThumbnailTexture(decoded));
                 }
 
                 var composed = IconComposer.Compose(layers);
@@ -382,7 +384,7 @@ namespace SWLOR.Toolset.Workspace
                 if (decoded == null)
                     continue;
 
-                var composed = IconComposer.Compose(new[] { decoded });
+                var composed = IconComposer.Compose(new[] { ToThumbnailTexture(decoded) });
                 if (composed != null)
                     return composed;
             }
@@ -426,21 +428,23 @@ namespace SWLOR.Toolset.Workspace
             }
 
             var tintMapOverrides = TintMapOverrides.Read(new VarTable(root));
-            Func<RenderMesh, TextureImage?>? resolveMeshTexture =
+            Func<RenderMesh, ThumbnailTexture?>? resolveMeshTexture =
                 _textures == null
                     ? null
-                    : mesh => ResolveMeshTexture(
+                    : mesh => ToThumbnailTextureOrNull(ResolveMeshTexture(
                         mesh,
                         layerColors,
                         tintMapOverrides,
-                        useBlueprintOverridesForItemOwnedMeshes: type == ResourceType.Uti);
+                        useBlueprintOverridesForItemOwnedMeshes: type == ResourceType.Uti));
             var pixels = ThumbnailRenderer.Render(
-                model, ModelRenderSize, palette: null,
+                model,
+                ModelRenderSize,
+                palette: null,
                 resolveMeshTexture: resolveMeshTexture,
+                resolveCacheVariant: ResolveTextureCacheVariant,
                 renderDoorTransitionFallback: reference.IsDoorTransition);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
-
         /// <summary>
         /// Renders a model by resref, with no blueprint involved. This is how a tile gets a thumbnail:
         /// a tile is a row in a .set file, not a module resource, so there is nothing to load fields from
@@ -457,12 +461,12 @@ namespace SWLOR.Toolset.Workspace
                     : BuildRenderModel(modelResRef),
                 ModelRenderSize,
                 palette: null,
-                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh),
+                resolveMeshTexture: _textures == null ? null : mesh => ToThumbnailTextureOrNull(ResolveMeshTexture(mesh)),
+                resolveCacheVariant: ResolveTextureCacheVariant,
                 renderDoorTransitionFallback: renderDoorTransitionFallback);
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
-
         /// <summary>
         /// Renders a multi-tile palette group as one picture: every slot's model laid out on the
         /// grid, so the thumbnail shows the group's footprint instead of its first tile.
@@ -481,13 +485,14 @@ namespace SWLOR.Toolset.Workspace
             }
 
             var pixels = ThumbnailRenderer.Render(
-                TileGroupPreview.Compose(slots, columns, rows), ModelRenderSize,
+                TileGroupPreview.Compose(slots, columns, rows, copyMeshMetadata: SwlorRenderMeshMetadataStore.Copy),
+                ModelRenderSize,
                 palette: null,
-                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh));
+                resolveMeshTexture: _textures == null ? null : mesh => ToThumbnailTextureOrNull(ResolveMeshTexture(mesh)),
+                resolveCacheVariant: ResolveTextureCacheVariant);
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
-
         private TextureImage? ResolveMeshTexture(
             RenderMesh mesh,
             IReadOnlyDictionary<int, int>? fallbackLayerColors = null,
@@ -1243,5 +1248,13 @@ namespace SWLOR.Toolset.Workspace
                 ? moduleOrIndexed.Fields
                 : null;
         }
+        private static ThumbnailTexture ToThumbnailTexture(TextureImage image) =>
+            new(image.Width, image.Height, image.Pixels, image.AlphaCutoff);
+
+        private static ThumbnailTexture? ToThumbnailTextureOrNull(TextureImage? image) =>
+            image == null ? null : ToThumbnailTexture(image);
+
+        internal static ThumbnailTextureCacheVariant ResolveTextureCacheVariant(RenderMesh mesh) =>
+            new($"part:{(int)SwlorRenderMeshMetadataStore.GetArmorPart(mesh)}");
     }
 }

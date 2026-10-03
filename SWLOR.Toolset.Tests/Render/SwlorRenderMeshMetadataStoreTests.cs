@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Render;
+using Nwn.Preview.Thumbnails;
 
 namespace SWLOR.Toolset.Tests.Render;
 
@@ -24,7 +25,7 @@ public sealed class SwlorRenderMeshMetadataStoreTests
         SwlorRenderMeshMetadataStore.SetArmorPart(source, AppearanceArmor.Robe);
         var sourceModel = new RenderModel { Name = "source", Meshes = [source] };
 
-        var composed = TileGroupPreview.Compose([sourceModel], columns: 1, rows: 1);
+        var composed = TileGroupPreview.Compose([sourceModel], columns: 1, rows: 1, copyMeshMetadata: SwlorRenderMeshMetadataStore.Copy);
 
         composed.Should().NotBeNull();
         var composedMesh = composed!.Meshes.Single();

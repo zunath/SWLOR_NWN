@@ -281,9 +281,7 @@ namespace SWLOR.Toolset.Tests
                     SelectedType = ResourceType.Utp
                 };
 
-                var tile = new PaletteTileViewModel("testplc", "Test Placeable", categoryPath: null);
-
-                await palette.DeleteTileCommand.ExecuteAsync(tile);
+                await palette.DeleteAsync(FindPlaceableEntry(palette), CancellationToken.None);
 
                 File.Exists(blueprintPath).Should().BeTrue(
                     "the module locked before the deletion ran, so the file must survive");
@@ -329,14 +327,9 @@ namespace SWLOR.Toolset.Tests
                 {
                     SelectedType = ResourceType.Utp
                 };
-                var tile = new PaletteTileViewModel(
-                    "testplc",
-                    "Test Placeable",
-                    categoryPath: null);
-
                 try
                 {
-                    await palette.DeleteTileCommand.ExecuteAsync(tile);
+                    await palette.DeleteAsync(FindPlaceableEntry(palette), CancellationToken.None);
                 }
                 finally
                 {
@@ -395,12 +388,9 @@ namespace SWLOR.Toolset.Tests
                 {
                     SelectedType = ResourceType.Utp
                 };
-
-                var tile = new PaletteTileViewModel("testplc", "Test Placeable", categoryPath: null);
-
                 try
                 {
-                    await palette.DeleteTileCommand.ExecuteAsync(tile);
+                    await palette.DeleteAsync(FindPlaceableEntry(palette), CancellationToken.None);
                 }
                 finally
                 {
@@ -708,6 +698,16 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        private static Nwn.Toolset.Avalonia.Palettes.PaletteEntrySnapshot FindPlaceableEntry(
+            PaletteViewModel palette)
+        {
+            palette.Refresh();
+            var unsorted = palette.PresentationState.Rows.Single(row => row.Name == "Unsorted");
+            palette.PresentationState.SelectedRow = unsorted;
+            return palette.PresentationState.Tiles
+                .Single(tile => tile.ResRef == "testplc")
+                .Snapshot;
+        }
         private static async Task HoldLeaseAcrossAwait(
             string moduleRoot,
             TaskCompletionSource acquired,

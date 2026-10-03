@@ -312,7 +312,7 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="avares://Dock.Avalonia.Themes.Fluent/Presets/Ide/Default.axaml" />
         <!-- Last so the Toolset's icon aliases replace every close geometry consumed by Dock. -->
-        <ResourceInclude Source="avares://SWLOR.Toolset/Assets/Icons.axaml" />
+        <ResourceInclude Source="avares://Nwn.Toolset.Avalonia/Styles/ToolsetIcons.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
@@ -324,18 +324,7 @@
     <!-- AvaloniaEdit ships no default style: without this the script editor's TextEditor renders
          as an unstyled blank control. Must precede ToolsetTheme so our overrides still win. -->
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
-    <DockFluentTheme DensityStyle="Compact" />
-
-    <Style Selector="ToolControl">
-      <Setter Property="HeaderTemplate">
-        <DataTemplate DataType="core:IDockable">
-          <TextBlock Text="{Binding Title}" Padding="2" />
-        </DataTemplate>
-      </Setter>
-    </Style>
-
-    <!-- Last, so it wins over both Fluent and the Dock preset. -->
-    <StyleInclude Source="avares://SWLOR.Toolset/Styles/ToolsetTheme.axaml" />
+    <StyleInclude Source="avares://Nwn.Toolset.Avalonia/Styles/ToolsetStyles.axaml" />
   </Application.Styles>
 
 </Application>

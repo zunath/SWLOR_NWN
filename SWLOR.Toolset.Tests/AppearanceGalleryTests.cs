@@ -8,7 +8,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;

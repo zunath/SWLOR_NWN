@@ -51,11 +51,11 @@ namespace SWLOR.Toolset.Tests.Items
 
         private static BlueprintPreviewRenderer BuildRenderer(out ResourceIndex index)
         {
-            var twoDa = new TwoDaService(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_2da"));
-            var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
+            var twoDa = new TwoDaService(Path.Combine(SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_2da"));
+            var tlk = TlkService.Load(Path.Combine(SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_tlk", "sw_tlk.tlk.json"));
             var resourceIndex = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepoRoot, "SWLOR_Haks"));
+                (SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks")));
             resourceIndex.EnsureInitialized();
             index = resourceIndex;
 
@@ -147,7 +147,7 @@ namespace SWLOR.Toolset.Tests.Items
                 "the still thumbnail and bounds use the final animated pose");
 
             var source = new MdlReader().Parse(File.ReadAllBytes(
-                Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_robe", "pmh0_robe010.mdl")));
+                Path.Combine(SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_pt_robe", "pmh0_robe010.mdl")));
             var sourceRobe = source.GetMeshNodes()
                 .OfType<MdlSkinmeshNode>()
                 .Single(mesh => mesh.Name.Equals("Box01", StringComparison.OrdinalIgnoreCase));

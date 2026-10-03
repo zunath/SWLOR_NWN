@@ -8,9 +8,16 @@ internal static class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        var appBuilder = string.Equals(Environment.GetEnvironmentVariable("SWLOR_PREVIEW_RENDER_MODE"), "area-editor", StringComparison.Ordinal)
-            ? AppBuilder.Configure<FullAreaEditorCaptureApplication>()
-            : AppBuilder.Configure<NativeViewportApplication>();
+        var mode = Environment.GetEnvironmentVariable("SWLOR_PREVIEW_RENDER_MODE");
+        var appBuilder = mode switch
+        {
+            "area-editor" => AppBuilder.Configure<FullAreaEditorCaptureApplication>(),
+            "full-shell-area-palette" => AppBuilder.Configure<FullShellAreaPaletteCaptureApplication>()
+                .With(new Win32PlatformOptions { OverlayPopups = true })
+                .WithInterFont()
+                .LogToTrace(),
+            _ => AppBuilder.Configure<NativeViewportApplication>()
+        };
         return appBuilder.UsePlatformDetect().StartWithClassicDesktopLifetime(args);
     }
 }

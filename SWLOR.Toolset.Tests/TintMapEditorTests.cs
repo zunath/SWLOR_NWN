@@ -55,7 +55,7 @@ namespace SWLOR.Toolset.Tests
         private static ResourceIndex Resources() =>
             ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepoRoot, "SWLOR_Haks"));
+                (Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks")));
 
         private static RenderModel ModelWith(string material) =>
             new()

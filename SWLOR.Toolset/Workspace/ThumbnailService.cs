@@ -5,7 +5,7 @@ using Avalonia.Threading;
 using Serilog;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Workspace
@@ -171,7 +171,7 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         /// <remarks>
         /// The cache invalidation above only affects requests that have not happened yet: a
-        /// <see cref="Shell.Panels.PaletteTileViewModel"/> already showing the old picture keeps it,
+        /// A shared palette entry already showing the old picture keeps it,
         /// because nothing told it the picture is stale. <see cref="Shell.Panels.PaletteViewModel"/>
         /// subscribes to this so a currently visible tile drops its stale <c>Preview</c> and
         /// <c>PreviewRequested</c> flag and asks again immediately, instead of the tile only refreshing
@@ -372,7 +372,8 @@ namespace SWLOR.Toolset.Workspace
             IReadOnlyList<string>? footprintModelResRefs = null,
             int columns = 1,
             int rows = 1,
-            bool renderDoorTransitionFallback = false)
+            bool renderDoorTransitionFallback = false,
+            Action? onFailed = null)
         {
             ArgumentNullException.ThrowIfNull(onReady);
 
@@ -394,7 +395,7 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            if (!TryStartRender(key, onReady, null, out var operation))
+            if (!TryStartRender(key, onReady, null, out var operation, onFailed))
                 return;
 
             Task.Run(() =>
@@ -882,7 +883,7 @@ namespace SWLOR.Toolset.Workspace
         /// which is what a tile is.
         /// </summary>
         public Bitmap TileChipIcon() =>
-            _tileChipIcon ??= ToBitmap(TypeIconRenderer.Render(ResourceType.Area, TypeChipIconSize));
+            _tileChipIcon ??= ToBitmap(TypeIconRenderer.Render(Nwn.Authoring.Resources.ModuleResourceType.Area, TypeChipIconSize));
 
         /// <summary>
         /// Renders and stores every missing preview the palette can show, reporting progress as it goes.

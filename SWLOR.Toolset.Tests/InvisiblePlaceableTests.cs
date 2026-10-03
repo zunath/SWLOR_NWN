@@ -10,6 +10,7 @@ using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Render;
+using Nwn.Preview.Thumbnails;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests;

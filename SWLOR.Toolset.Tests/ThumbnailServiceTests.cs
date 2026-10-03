@@ -4,7 +4,7 @@ using System.Reflection;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 

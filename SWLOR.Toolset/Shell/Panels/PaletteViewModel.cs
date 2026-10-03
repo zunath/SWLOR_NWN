@@ -1,5 +1,22 @@
 using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Collections.ObjectModel;
+using Avalonia.Media.Imaging;
+using PalettePresentationState = Nwn.Toolset.Avalonia.Palettes.PalettePresentationState;
+using IPaletteActions = Nwn.Toolset.Avalonia.Palettes.IPaletteActions;
+using PaletteSnapshot = Nwn.Toolset.Avalonia.Palettes.PaletteSnapshot;
+using PaletteTypeOption = Nwn.Toolset.Avalonia.Palettes.PaletteTypeOption;
+using PaletteCategorySnapshot = Nwn.Toolset.Avalonia.Palettes.PaletteCategorySnapshot;
+using PaletteEntrySnapshot = Nwn.Toolset.Avalonia.Palettes.PaletteEntrySnapshot;
+using PaletteCategoryId = Nwn.Toolset.Avalonia.Palettes.PaletteCategoryId;
+using PaletteEntryId = Nwn.Toolset.Avalonia.Palettes.PaletteEntryId;
+using PaletteCategoryCapabilities = Nwn.Toolset.Avalonia.Palettes.PaletteCategoryCapabilities;
+using PaletteEntryCapabilities = Nwn.Toolset.Avalonia.Palettes.PaletteEntryCapabilities;
+using PaletteCapabilities = Nwn.Toolset.Avalonia.Palettes.PaletteCapabilities;
+using PaletteEntryKind = Nwn.Toolset.Avalonia.Palettes.PaletteEntryKind;
+using ModuleResourceType = Nwn.Authoring.Resources.ModuleResourceType;
+using SharedPaletteSource = Nwn.Toolset.Avalonia.Palettes.PaletteSource;
+using SharedPaletteMode = Nwn.Toolset.Avalonia.Palettes.PaletteMode;
+using SharedTilePaintMode = Nwn.Toolset.Avalonia.Palettes.PaletteTilePaintMode;
 using System.Security.Cryptography;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -32,12 +49,9 @@ namespace SWLOR.Toolset.Shell.Panels
     /// category hits come first as jump targets, then objects from every category, each labelled with
     /// where it lives.
     /// </para>
-    /// <para>
-    /// The category tree is a flattened, virtualized list rather than a TreeView; see
-    /// <see cref="CategoryRowViewModel"/> for why. Counts sit on categories, never on types.
-    /// </para>
+    /// <para>Counts sit on categories, never on types.</para>
     /// </remarks>
-    public partial class PaletteViewModel : Tool
+    public partial class PaletteViewModel : Tool, IPaletteActions
     {
         /// <summary>
         /// Types offered, in Aurora's palette order - see <see cref="ResourceTypeExtensions.PaletteOrder"/>,
@@ -45,7 +59,6 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         private static IReadOnlyList<ResourceType> OfferedTypes => ResourceTypeExtensions.PaletteOrder;
 
-        private const int MaxSearchResults = 200;
 
         private readonly WorkspaceContext _workspaceContext;
         private readonly CategoryService _categories;
@@ -66,20 +79,20 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         private bool _restoring;
 
-        /// <summary>Every row of the current type's tree, expanded or not, so collapsing need not re-derive counts.</summary>
-        private readonly List<CategoryRowViewModel> _allRows = new();
-
         private IReadOnlySet<string> _existing = new HashSet<string>();
+        private long _presentationRevision;
+        private readonly Dictionary<PaletteCategoryId, CategoryFolder?> _presentationCategoryTargets = new();
+        private readonly Dictionary<PaletteCategoryId, TilePaletteCategory> _presentationTileCategories = new();
+        private readonly Dictionary<PaletteEntryId, TilePaletteEntry> _presentationTileEntries = new();
+        private readonly Dictionary<PaletteEntryId, PaletteEntrySnapshot> _presentationEntries = new();
+        private CategoryFolder? _selectedFolder;
+        private PaletteCategoryId? _selectedCategoryId;
+
+        public PalettePresentationState PresentationState { get; }
 
         public ObservableCollection<PaletteTypeChipViewModel> Types { get; } = new();
 
-        /// <summary>The visible category rows - the flattened tree with collapsed branches omitted.</summary>
-        public ObservableCollection<CategoryRowViewModel> Rows { get; } = new();
 
-        /// <summary>Matching categories while searching; empty otherwise.</summary>
-        public ObservableCollection<CategoryMatchViewModel> CategoryMatches { get; } = new();
-
-        public ObservableCollection<PaletteTileViewModel> Tiles { get; } = new();
 
         [ObservableProperty]
         private ResourceType _selectedType = ResourceType.Utp;
@@ -109,20 +122,16 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private TilePaletteCategory? _selectedTileCategory;
 
-        [ObservableProperty]
-        private string _query = string.Empty;
 
-        [ObservableProperty]
-        private CategoryRowViewModel? _selectedRow;
-
-        [ObservableProperty]
-        private PaletteTileViewModel? _selectedTile;
-
-        [ObservableProperty]
-        private string _breadcrumb = string.Empty;
 
         [ObservableProperty]
         private string? _statusMessage;
+
+        partial void OnStatusMessageChanged(string? value)
+        {
+            if (PresentationState is not null)
+                PublishPresentationSnapshot();
+        }
 
         /// <summary>Tile width in pixels. Idle while tiles are glyphs; the control the grid needs the moment they become rendered models.</summary>
         [ObservableProperty]
@@ -154,7 +163,6 @@ namespace SWLOR.Toolset.Shell.Panels
         partial void OnTileSizeChanged(double value)
         {
             OnPropertyChanged(nameof(TileSizeLabel));
-            OnPropertyChanged(nameof(PreviewHeight));
 
             if (_settings != null && !_restoring)
                 _settings.PalettePreviewSize = value;
@@ -230,8 +238,9 @@ namespace SWLOR.Toolset.Shell.Panels
             if (_restoring)
                 return;
 
-            SelectedRow = null;
-            SelectedTile = null;
+            _selectedFolder = null;
+            _selectedCategoryId = null;
+            _selectedTileCategory = null;
             Refresh();
         }
 
@@ -276,6 +285,7 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(CanEditCopy));
             OnPropertyChanged(nameof(CanCreateBlueprint));
             OnPropertyChanged(nameof(HasBlueprintActions));
+            PublishPresentationSnapshot();
         }
 
         /// <summary>
@@ -301,10 +311,6 @@ namespace SWLOR.Toolset.Shell.Panels
 
         [RelayCommand]
         private void ShowStandard() => Source = PaletteSource.Standard;
-
-        public bool IsSearching => !string.IsNullOrWhiteSpace(Query);
-
-        public bool HasCategoryMatches => CategoryMatches.Count > 0;
 
         public PaletteViewModel(
             WorkspaceContext workspaceContext,
@@ -340,6 +346,7 @@ namespace SWLOR.Toolset.Shell.Panels
             _settings = settings;
             RestoreSettings();
             PublishTypeChips();
+            PresentationState = new PalettePresentationState(this);
 
             _categories.Changed += Refresh;
         }
@@ -350,6 +357,470 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         private CategorySection? CurrentSection() =>
             IsCustomSource ? _categories.Section(SelectedType) : _categories.StandardSection(SelectedType);
+
+        private bool TryGetCurrentEntry(
+            PaletteEntrySnapshot entry,
+            out PaletteEntrySnapshot current)
+        {
+            if (!_presentationEntries.TryGetValue(entry.Id, out current!) ||
+                !ReferenceEquals(current, entry))
+            {
+                return false;
+            }
+
+            if (current.Kind == PaletteEntryKind.Tile)
+                return IsTileMode && current.ResourceType == null &&
+                       current.Source == SharedPaletteSource.Custom;
+
+            var source = IsStandardSource ? SharedPaletteSource.Standard : SharedPaletteSource.Custom;
+            return !IsTileMode && current.ResourceType == SelectedType && current.Source == source;
+        }
+
+        private void PublishPresentationSnapshot()
+        {
+            _presentationCategoryTargets.Clear();
+            _presentationTileCategories.Clear();
+            _presentationTileEntries.Clear();
+            _presentationEntries.Clear();
+
+            var typeOptions = Types.Select(chip =>
+            {
+                ModuleResourceType? resourceType = chip.Type;
+                var newBlueprintLabel = chip.Type is { } type
+                    ? $"New {type.SingularDisplayName()}..."
+                    : "New";
+                return new PaletteTypeOption(resourceType, chip.Label, chip.Initial, newBlueprintLabel, chip.Icon);
+            }).ToArray();
+
+            var categories = new List<PaletteCategorySnapshot>();
+            var entries = new List<PaletteEntrySnapshot>();
+            PaletteCategoryId? initialSelectedCategory = null;
+
+            if (IsTileMode)
+            {
+                var offered = TilePaintModes.CategoriesFor(_tiles, TilePaintMode);
+
+                for (var categoryIndex = 0; categoryIndex < offered.Count; categoryIndex++)
+                {
+                    var category = offered[categoryIndex];
+                    var categoryId = new PaletteCategoryId($"tiles/{categoryIndex}/{category.Name}");
+                    var tileIds = new List<PaletteEntryId>();
+                    _presentationTileCategories[categoryId] = category;
+
+                    for (var entryIndex = 0; entryIndex < category.Entries.Count; entryIndex++)
+                    {
+                        var tile = category.Entries[entryIndex];
+                        var entryId = new PaletteEntryId(
+                            $"tile/{categoryIndex}/{entryIndex}/{tile.PreviewModelResRef}");
+                        tileIds.Add(entryId);
+                        _presentationTileEntries[entryId] = tile;
+                        var tileSnapshot = new PaletteEntrySnapshot(
+                            entryId,
+                            PaletteEntryKind.Tile,
+                            null,
+                            SharedPaletteSource.Custom,
+                            tile.PreviewModelResRef,
+                            tile.Label,
+                            string.Empty,
+                            new[] { categoryId },
+                            tile.Columns,
+                            tile.Rows,
+                            tile.FootprintModelResRefs ?? Array.Empty<string>(),
+                            new PaletteEntryCapabilities(
+                                !NeedsOpenArea,
+                                false,
+                                false,
+                                false,
+                                "Tileset content - read-only"));
+                        _presentationEntries[entryId] = tileSnapshot;
+                        entries.Add(tileSnapshot);
+                    }
+
+                    categories.Add(new PaletteCategorySnapshot(
+                        categoryId,
+                        category.Name,
+                        category.Entries.Count,
+                        false,
+                        categoryIndex,
+                        Array.Empty<PaletteCategorySnapshot>(),
+                        tileIds,
+                        new PaletteCategoryCapabilities(false, false, false, false, false, false,
+                            "Tileset content - read-only")));
+                }
+
+                initialSelectedCategory = _selectedTileCategory is null
+                    ? categories.FirstOrDefault()?.Id
+                    : categories.FirstOrDefault(category =>
+                        _presentationTileCategories.TryGetValue(category.Id, out var tileCategory) &&
+                        ReferenceEquals(tileCategory, _selectedTileCategory))?.Id;
+            }
+            else if (CurrentSection() is { } section)
+            {
+                foreach (var folder in section.Folders)
+                {
+                    categories.Add(BuildFolderSnapshot(folder, section));
+                }
+
+                var unsortedId = UnsortedCategoryId();
+                var unsortedEntryIds = section.UnsortedResRefs(_existing)
+                    .Select(resRef => BlueprintEntryId(resRef))
+                    .ToArray();
+                categories.Add(new PaletteCategorySnapshot(
+                    unsortedId,
+                    CategorySection.UnsortedFolderName,
+                    unsortedEntryIds.Length,
+                    false,
+                    int.MaxValue,
+                    Array.Empty<PaletteCategorySnapshot>(),
+                    unsortedEntryIds,
+                    CreateCategoryCapabilities(isFolder: false)));
+                _presentationCategoryTargets[unsortedId] = null;
+
+                foreach (var resRef in _existing)
+                {
+                    var entry = CreateBlueprintEntry(resRef, section);
+                    entries.Add(entry);
+                    _presentationEntries[entry.Id] = entry;
+                }
+
+                if (_selectedFolder is { } selectedFolder)
+                {
+                    initialSelectedCategory = FolderCategoryId(section, selectedFolder);
+                }
+                else if (_selectedCategoryId is { } selectedCategoryId &&
+                         _presentationCategoryTargets.ContainsKey(selectedCategoryId))
+                {
+                    initialSelectedCategory = selectedCategoryId;
+                }
+            }
+
+            var snapshot = new PaletteSnapshot(
+                Interlocked.Increment(ref _presentationRevision),
+                IsTileMode ? SharedPaletteMode.Tiles : SharedPaletteMode.Blueprints,
+                IsTileMode ? null : SelectedType,
+                IsStandardSource ? SharedPaletteSource.Standard : SharedPaletteSource.Custom,
+                typeOptions,
+                categories,
+                entries,
+                TilePaintMode == TilePaintMode.Auto ? SharedTilePaintMode.Auto : SharedTilePaintMode.Manual,
+                !NeedsOpenArea,
+                string.IsNullOrWhiteSpace(StatusMessage) ? null : StatusMessage,
+                new PaletteCapabilities(true, true, true, true),
+                TileSize,
+                CategoryProportion,
+                initialSelectedCategory);
+            PresentationState.SetSnapshot(snapshot);
+        }
+
+        private PaletteCategorySnapshot BuildFolderSnapshot(CategoryFolder folder, CategorySection section)
+        {
+            var categoryId = FolderCategoryId(section, folder);
+            var memberIds = folder.Members
+                .Where(_existing.Contains)
+                .Select(BlueprintEntryId)
+                .ToArray();
+            var children = folder.Children
+                .Select(child => BuildFolderSnapshot(child, section))
+                .ToArray();
+            var pathKey = section.PathKey(folder);
+            var pinOrder = section.Pinned.ToList().FindIndex(
+                pin => string.Equals(pin, pathKey, StringComparison.OrdinalIgnoreCase));
+            var isPinned = pinOrder >= 0;
+
+            _presentationCategoryTargets[categoryId] = folder;
+            return new PaletteCategorySnapshot(
+                categoryId,
+                folder.Name,
+                section.CountIn(folder, _existing),
+                isPinned,
+                isPinned ? pinOrder : int.MaxValue,
+                children,
+                memberIds,
+                CreateCategoryCapabilities(isFolder: true));
+        }
+
+        private PaletteCategoryCapabilities CreateCategoryCapabilities(bool isFolder)
+        {
+            return new PaletteCategoryCapabilities(
+                CanCreateBlueprint,
+                CanWrite,
+                isFolder && CanWrite,
+                isFolder && CanWrite,
+                isFolder && CanWrite,
+                isFolder && CanWrite,
+                ReadOnlyNotice);
+        }
+
+        private PaletteEntrySnapshot CreateBlueprintEntry(string resRef, CategorySection section)
+        {
+            var categoryIds = section.FoldersContaining(resRef)
+                .Select(folder => FolderCategoryId(section, folder))
+                .ToArray();
+            if (categoryIds.Length == 0)
+            {
+                categoryIds = new[] { UnsortedCategoryId() };
+            }
+
+            var source = IsStandardSource ? SharedPaletteSource.Standard : SharedPaletteSource.Custom;
+            return new PaletteEntrySnapshot(
+                BlueprintEntryId(resRef),
+                PaletteEntryKind.Blueprint,
+                SelectedType,
+                source,
+                resRef,
+                NameFor(resRef),
+                resRef,
+                categoryIds,
+                null,
+                null,
+                Array.Empty<string>(),
+                new PaletteEntryCapabilities(
+                    _placementTarget?.Invoke() is not null,
+                    CanWrite,
+                    CanEditCopy,
+                    CanWrite && _prompts is not null,
+                    IsStandardSource ? ReadOnlyNotice : null));
+        }
+
+        private PaletteCategoryId FolderCategoryId(CategorySection section, CategoryFolder folder) =>
+            new($"{SelectedType.Extension()}/{Source}/{section.PathKey(folder)}");
+
+        private PaletteCategoryId UnsortedCategoryId() => new($"{SelectedType.Extension()}/{Source}/unsorted");
+
+        private PaletteEntryId BlueprintEntryId(string resRef) =>
+            new($"{SelectedType.Extension()}/{Source}/{resRef.ToLowerInvariant()}");
+
+        public void SelectType(PaletteTypeOption type)
+        {
+            var chip = Types.FirstOrDefault(candidate =>
+                candidate.IsTiles == type.IsTiles && (candidate.IsTiles || candidate.Type == type.Type!.Value));
+            if (chip is not null)
+            {
+                SelectTypeCommand.Execute(chip);
+            }
+        }
+
+        public void SelectSource(SharedPaletteSource source)
+        {
+            Source = source == SharedPaletteSource.Standard ? PaletteSource.Standard : PaletteSource.Custom;
+        }
+
+        public void SelectMode(SharedPaletteMode mode)
+        {
+            IsTileMode = mode == SharedPaletteMode.Tiles;
+        }
+
+        public void SelectTilePaintMode(SharedTilePaintMode mode)
+        {
+            TilePaintMode = mode == SharedTilePaintMode.Auto ? TilePaintMode.Auto : TilePaintMode.Manual;
+        }
+
+        public void SelectCategory(PaletteCategoryId? categoryId)
+        {
+            _selectedCategoryId = categoryId;
+            _selectedFolder = categoryId is { } id && _presentationCategoryTargets.TryGetValue(id, out var folder)
+                ? folder
+                : null;
+            _selectedTileCategory = categoryId is { } tileId &&
+                                    _presentationTileCategories.TryGetValue(tileId, out var tileCategory)
+                ? tileCategory
+                : null;
+        }
+
+        public void SetTileSize(double tileSize) => TileSize = tileSize;
+
+        public void SetCategoryProportion(double categoryProportion) => CategoryProportion = categoryProportion;
+
+        public void Place(PaletteEntrySnapshot entry)
+        {
+            ArgumentNullException.ThrowIfNull(entry);
+            if (!TryGetCurrentEntry(entry, out var current) || !current.Capabilities.CanPlace)
+                return;
+
+            var target = _placementTarget?.Invoke();
+            if (target is null)
+            {
+                StatusMessage = "Open an area first, then place into it.";
+                PublishPresentationSnapshot();
+                return;
+            }
+
+            if (current.Kind == PaletteEntryKind.Tile)
+            {
+                if (_presentationTileEntries.TryGetValue(current.Id, out var tile))
+                {
+                    StatusMessage = target.ArmTilePlacement(tile)
+                        ? $"Click a cell to place {tile.Label}."
+                        : "This area has no tile grid to paint.";
+                }
+            }
+            else if (target.ArmPlacement(SelectedType, current.ResRef,
+                         current.Source == SharedPaletteSource.Standard ? PaletteSource.Standard : PaletteSource.Custom))
+            {
+                StatusMessage = $"Click the map to place {current.Name}.";
+            }
+            else
+            {
+                StatusMessage = $"{SelectedType.DisplayName()} cannot be placed in this area.";
+            }
+
+            PublishPresentationSnapshot();
+        }
+
+        public void Edit(PaletteEntrySnapshot entry)
+        {
+            ArgumentNullException.ThrowIfNull(entry);
+            if (TryGetCurrentEntry(entry, out var current) &&
+                current.Kind == PaletteEntryKind.Blueprint &&
+                current.Capabilities.CanEdit)
+            {
+                _editorService?.Invoke().TryOpenEditor(SelectedType, current.ResRef);
+            }
+        }
+
+        public void EditCopy(PaletteEntrySnapshot entry)
+        {
+            ArgumentNullException.ThrowIfNull(entry);
+            if (!TryGetCurrentEntry(entry, out var current) ||
+                current.Kind != PaletteEntryKind.Blueprint ||
+                !current.Capabilities.CanEditCopy ||
+                !CanEditCopy)
+            {
+                return;
+            }
+
+            EditCopyEntry(current);
+        }
+
+        public Task DeleteAsync(PaletteEntrySnapshot entry, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(entry);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!TryGetCurrentEntry(entry, out var current) ||
+                current.Kind != PaletteEntryKind.Blueprint ||
+                !current.Capabilities.CanDelete ||
+                !CanWrite)
+            {
+                return Task.CompletedTask;
+            }
+
+            var resourceType = SelectedType;
+            var source = Source;
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Task.CompletedTask;
+
+            return DeleteEntryAsync(current, resourceType, source, workspace);
+        }
+
+        public void NewBlueprint(PaletteCategoryId? categoryId)
+        {
+            SelectCategory(categoryId);
+            NewBlueprintCommand.Execute(null);
+        }
+
+        public async Task NewCategoryAsync(PaletteCategoryId? categoryId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            SelectCategory(categoryId);
+            await NewCategoryAsync().ConfigureAwait(true);
+        }
+
+        public async Task RenameCategoryAsync(PaletteCategoryId categoryId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            SelectCategory(categoryId);
+            await RenameCategoryAsync().ConfigureAwait(true);
+        }
+
+        public async Task DeleteCategoryAsync(PaletteCategoryId categoryId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            SelectCategory(categoryId);
+            await DeleteCategoryAsync().ConfigureAwait(true);
+        }
+
+        public Task TogglePinAsync(PaletteCategoryId categoryId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            SelectCategory(categoryId);
+            TogglePin();
+            return Task.CompletedTask;
+        }
+
+        public void FileSelectedEntry(PaletteCategoryId categoryId)
+        {
+            SelectCategory(categoryId);
+            if (!CanWrite)
+                return;
+
+            if (PresentationState.SelectedTile?.Snapshot is not { Kind: PaletteEntryKind.Blueprint } entry)
+            {
+                StatusMessage = "Select a blueprint first.";
+                PublishPresentationSnapshot();
+                return;
+            }
+
+            if (_selectedFolder is not { } folder)
+            {
+                StatusMessage = "Select the category to file it into.";
+                PublishPresentationSnapshot();
+                return;
+            }
+
+            var section = _categories.Section(SelectedType);
+            if (section is null)
+                return;
+
+            var resRef = entry.ResRef;
+            var label = entry.Name;
+            foreach (var previous in section.FoldersContaining(resRef).ToList())
+                previous.RemoveMember(resRef);
+
+            folder.AddMember(resRef);
+            if (!SaveCategories())
+            {
+                Refresh();
+                return;
+            }
+
+            Refresh();
+            StatusMessage = $"Filed {label} into '{folder.Name}'.";
+            PublishPresentationSnapshot();
+        }
+
+        public ValueTask<Bitmap?> LoadPreviewAsync(PaletteEntrySnapshot entry, CancellationToken cancellationToken)
+        {
+            if (_thumbnails is null || !_thumbnails.IsAvailable)
+            {
+                return ValueTask.FromResult<Bitmap?>(null);
+            }
+
+            var completion = new TaskCompletionSource<Bitmap?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            if (entry.Kind == PaletteEntryKind.Tile && _presentationTileEntries.TryGetValue(entry.Id, out var tile))
+            {
+                _thumbnails.RequestTileAsync(
+                    tile.PreviewModelResRef,
+                    bitmap => completion.TrySetResult(bitmap),
+                    tile.FootprintModelResRefs,
+                    tile.Columns,
+                    tile.Rows,
+                    onFailed: () => completion.TrySetResult(null));
+            }
+            else if (entry.ResourceType is { } resourceType)
+            {
+                _thumbnails.RequestAsync(resourceType, entry.ResRef,
+                    entry.Source == SharedPaletteSource.Standard,
+                    bitmap => completion.TrySetResult(bitmap));
+            }
+            else
+            {
+                return ValueTask.FromResult<Bitmap?>(null);
+            }
+
+            return new ValueTask<Bitmap?>(completion.Task.WaitAsync(cancellationToken));
+        }
+
 
         /// <summary>
         /// Whether the panel should show its "no area open" state: Tiles is the selected type, and
@@ -379,8 +850,7 @@ namespace SWLOR.Toolset.Shell.Panels
             _existing = IsCustomSource
                 ? _categories.ExistingResRefs(SelectedType)
                 : _categories.StandardResRefs(SelectedType);
-            RebuildTree();
-            RebuildTiles();
+            PublishPresentationSnapshot();
         }
 
         /// <summary>
@@ -406,20 +876,20 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </remarks>
         private void RefreshTiles()
         {
-            _allRows.Clear();
-            Rows.Clear();
-            CategoryMatches.Clear();
-            OnPropertyChanged(nameof(HasCategoryMatches));
-            Tiles.Clear();
+            _presentationCategoryTargets.Clear();
+            _presentationTileCategories.Clear();
+            _presentationTileEntries.Clear();
+            _selectedFolder = null;
+            _selectedCategoryId = null;
             _selectedTileCategory = null;
             _tiles = TilePalette.Empty;
-            Breadcrumb = string.Empty;
 
             var tilesetResRef = _placementTarget?.Invoke()?.TilesetResRef;
             NeedsOpenArea = string.IsNullOrWhiteSpace(tilesetResRef);
             if (NeedsOpenArea)
             {
                 StatusMessage = string.Empty;
+                PublishPresentationSnapshot();
                 return;
             }
 
@@ -427,6 +897,7 @@ namespace SWLOR.Toolset.Shell.Panels
             if (_tilesets == null || !_tilesets.TryGetTileset(activeTilesetResRef, out var tileset) || tileset == null)
             {
                 StatusMessage = $"Tileset '{tilesetResRef}' could not be loaded.";
+                PublishPresentationSnapshot();
                 return;
             }
 
@@ -434,81 +905,26 @@ namespace SWLOR.Toolset.Shell.Panels
             if (_tiles.IsEmpty)
             {
                 StatusMessage = $"Tileset '{tilesetResRef}' lists no tiles.";
+                PublishPresentationSnapshot();
                 return;
             }
 
-            // Only what this mode is for. The palette itself still describes the whole tileset - the
-            // mode decides which of its categories are a sensible thing to click right now.
             var offered = TilePaintModes.CategoriesFor(_tiles, TilePaintMode);
             if (offered.Count == 0)
             {
                 StatusMessage = IsAutoTilePaint
                     ? $"'{_tilesets.GetDisplayName(activeTilesetResRef)}' declares no terrain to paint - switch to Manual."
                     : $"'{_tilesets.GetDisplayName(activeTilesetResRef)}' lists no individual tiles.";
+                PublishPresentationSnapshot();
                 return;
             }
 
-            foreach (var category in offered)
-                _allRows.Add(new CategoryRowViewModel(folder: null, depth: 0, count: category.Entries.Count,
-                    hasChildren: false)
-                {
-                    SyntheticName = category.Name
-                });
-
-            PublishVisibleRows();
-            SelectedRow = _allRows[0];
-            RebuildTileGrid();
+            _selectedTileCategory = offered[0];
             StatusMessage = IsAutoTilePaint
                 ? $"{_tilesets.GetDisplayName(activeTilesetResRef)} - pick a terrain, then click a cell to paint it."
                 : $"{_tilesets.GetDisplayName(activeTilesetResRef)} - pick a tile, then click a cell to stamp it.";
+            PublishPresentationSnapshot();
         }
-
-        /// <summary>
-        /// Publishes the tile grid: the picked category, or every match in the tileset while searching.
-        /// </summary>
-        /// <remarks>
-        /// Search ignores which category is open, the same way blueprint search does. A builder looking
-        /// for "door" does not know whether the answer is a single tile or one of the tileset's groups,
-        /// and answering from only the open category would silently hide half the tileset. Matches carry
-        /// the category they came from so the two are still told apart.
-        /// </remarks>
-        private void RebuildTileGrid()
-        {
-            Tiles.Clear();
-            var query = Query.Trim();
-
-            if (query.Length > 0)
-            {
-                var matches = _tiles.Categories
-                    .SelectMany(category => category.Entries
-                        .Where(entry => entry.Label.Contains(query, StringComparison.OrdinalIgnoreCase))
-                        .Select(entry => (Category: category.Name, Entry: entry)))
-                    .OrderBy(match => match.Entry.Label, StringComparer.CurrentCultureIgnoreCase)
-                    .ToList();
-
-                foreach (var match in matches.Take(MaxSearchResults))
-                    AddTile(new PaletteTileViewModel(match.Entry, match.Category));
-
-                Breadcrumb = matches.Count > MaxSearchResults
-                    ? $"First {MaxSearchResults} of {matches.Count} matches"
-                    : $"{matches.Count} match{(matches.Count == 1 ? string.Empty : "es")} in this tileset";
-                return;
-            }
-
-            if (_selectedTileCategory is not { } category)
-            {
-                Breadcrumb = string.Empty;
-                return;
-            }
-
-            foreach (var entry in category.Entries.Take(MaxSearchResults))
-                AddTile(new PaletteTileViewModel(entry));
-
-            Breadcrumb = category.Entries.Count > MaxSearchResults
-                ? $"{category.Name} - first {MaxSearchResults} of {category.Entries.Count}"
-                : $"{category.Name} - {category.Entries.Count} tiles";
-        }
-
         [RelayCommand]
         private void SelectType(PaletteTypeChipViewModel chip)
         {
@@ -558,13 +974,17 @@ namespace SWLOR.Toolset.Shell.Panels
             if (_restoring)
                 return;
 
+            _selectedFolder = null;
+            _selectedCategoryId = null;
+
             if (_settings != null && !IsTileMode)
                 _settings.PaletteSelection = value.Extension();
 
             SyncChipSelection();
             OnPropertyChanged(nameof(NewBlueprintLabel));
             OnPropertyChanged(nameof(CanCreateBlueprint));
-            SelectedRow = null;
+            _selectedFolder = null;
+            _selectedCategoryId = null;
             Refresh();
         }
 
@@ -586,8 +1006,9 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
             OnPropertyChanged(nameof(HasBlueprintActions));
-            SelectedRow = null;
-            SelectedTile = null;
+            _selectedFolder = null;
+            _selectedCategoryId = null;
+            _selectedTileCategory = null;
             Refresh();
         }
 
@@ -646,120 +1067,24 @@ namespace SWLOR.Toolset.Shell.Panels
                 RefreshTiles();
         }
 
-        partial void OnQueryChanged(string value)
-        {
-            OnPropertyChanged(nameof(IsSearching));
-
-            // Tiles have no cross-category search: a tileset's two categories are already both visible,
-            // so the box narrows the open one rather than becoming a mode of its own.
-            if (IsTileMode)
-            {
-                RebuildTileGrid();
-                return;
-            }
-
-            RebuildSearch();
-            RebuildTiles();
-        }
-
-        partial void OnSelectedRowChanged(CategoryRowViewModel? value)
-        {
-            if (!IsTileMode)
-            {
-                RebuildTiles();
-                return;
-            }
-
-            _selectedTileCategory = value == null
-                ? null
-                : _tiles.Categories.FirstOrDefault(category => category.Name == value.Name);
-
-            RebuildTileGrid();
-        }
-
-        /// <summary>Expands or collapses a branch. Rebuilds the flat list rather than nesting containers.</summary>
-        [RelayCommand]
-        private void ToggleExpand(CategoryRowViewModel? row)
-        {
-            if (row is not { HasChildren: true })
-                return;
-
-            row.IsExpanded = !row.IsExpanded;
-            PublishVisibleRows();
-        }
-
-        /// <summary>
-        /// Jumps to a category found by search and clears the query - search is a way to travel, not a
-        /// mode to escape from, so landing in the folder with an empty box is the state you wanted.
-        /// </summary>
-        [RelayCommand]
-        private void GoToCategory(CategoryMatchViewModel? match)
-        {
-            if (match?.Folder == null)
-                return;
-
-            Query = string.Empty;
-            ExpandTo(match.Folder);
-            SelectedRow = _allRows.FirstOrDefault(row => ReferenceEquals(row.Folder, match.Folder));
-        }
-
-        /// <summary>Arms placement in the open area for the chosen blueprint; the next map click resolves it.</summary>
-        [RelayCommand]
-        private void Place(PaletteTileViewModel? tile)
-        {
-            if (tile == null)
-                return;
-
-            var target = _placementTarget?.Invoke();
-            if (target == null)
-            {
-                StatusMessage = "Open an area first, then place into it.";
-                return;
-            }
-
-            if (tile.Tile is { } entry)
-            {
-                StatusMessage = target.ArmTilePlacement(entry)
-                    ? $"Click a cell to place {entry.Label}."
-                    : "This area has no tile grid to paint.";
-                return;
-            }
-
-            if (target.ArmPlacement(SelectedType, tile.ResRef, tile.Source))
-                StatusMessage = $"Click the map to place {tile.Name}.";
-            else
-                StatusMessage = $"{SelectedType.DisplayName()} cannot be placed in this area.";
-        }
-
-        /// <summary>Opens the blueprint in its own editor tab.</summary>
-        [RelayCommand]
-        private void Edit(PaletteTileViewModel? tile)
-        {
-            // A tile is game data in a .set file, not a module resource - there is nothing to open.
-            if (tile == null || tile.IsTile)
-                return;
-
-            _editorService?.Invoke().TryOpenEditor(SelectedType, tile.ResRef);
-        }
-
         /// <summary>
         /// Creates an independent custom blueprint from the selected blueprint and opens that copy for
         /// editing. The source and all instances placed from it remain untouched.
         /// </summary>
-        [RelayCommand]
-        private void EditCopy(PaletteTileViewModel? tile)
+        private void EditCopyEntry(PaletteEntrySnapshot entry)
         {
-            if (tile == null || tile.IsTile || !CanEditCopy)
+            if (entry.Kind != PaletteEntryKind.Blueprint || !CanEditCopy)
                 return;
 
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return;
 
-            var sourceSection = tile.Source == PaletteSource.Standard
+            var isStandard = entry.Source == SharedPaletteSource.Standard;
+            var sourceSection = isStandard
                 ? _categories.StandardSection(SelectedType)
                 : _categories.Section(SelectedType);
-            var sourceFolder = SourceFolderForCopy(tile, sourceSection);
+            var sourceFolder = SourceFolderForCopy(entry, sourceSection);
             var sourcePath = sourceFolder == null || sourceSection == null
                 ? Array.Empty<string>()
                 : sourceSection.PathTo(sourceFolder).ToArray();
@@ -771,12 +1096,12 @@ namespace SWLOR.Toolset.Shell.Panels
                 copyResRef = BlueprintCopyFactory.NextResRef(
                     workspace,
                     SelectedType,
-                    tile.ResRef);
+                    entry.ResRef);
                 copyPath = workspace.GetResourcePath(SelectedType, copyResRef);
 
-                var source = tile.Source == PaletteSource.Standard
-                    ? workspace.LoadIndexedBlueprint(SelectedType, tile.ResRef)
-                    : workspace.LoadBlueprint(SelectedType, tile.ResRef);
+                var source = isStandard
+                    ? workspace.LoadIndexedBlueprint(SelectedType, entry.ResRef)
+                    : workspace.LoadBlueprint(SelectedType, entry.ResRef);
                 var content = BlueprintCopyFactory.CreateFileContent(
                     SelectedType,
                     source.Document,
@@ -787,9 +1112,9 @@ namespace SWLOR.Toolset.Shell.Panels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Could not copy {tile.Name}: {ex.Message}";
+                StatusMessage = $"Could not copy {entry.Name}: {ex.Message}";
                 _log.AppendLine(
-                    $"Edit Copy failed for {SelectedType.Extension()} blueprint '{tile.ResRef}': {ex.Message}");
+                    $"Edit Copy failed for {SelectedType.Extension()} blueprint '{entry.ResRef}': {ex.Message}");
                 return;
             }
 
@@ -817,18 +1142,18 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (filed)
             {
-                StatusMessage = $"Copied {tile.Name} as {copyResRef}.";
+                StatusMessage = $"Copied {entry.Name} as {copyResRef}.";
                 _log.AppendLine(
-                    $"Copied {SelectedType.Extension()} blueprint '{tile.ResRef}' to '{copyResRef}' ({copyPath}).");
+                    $"Copied {SelectedType.Extension()} blueprint '{entry.ResRef}' to '{copyResRef}' ({copyPath}).");
             }
             else
             {
                 var category = sourcePath.Length == 0 ? "its source category" : sourcePath[^1];
                 StatusMessage =
-                    $"Copied {tile.Name} as {copyResRef}, but it could not be filed under '{category}' - " +
+                    $"Copied {entry.Name} as {copyResRef}, but it could not be filed under '{category}' - " +
                     $"it is in Unsorted. {StatusMessage}";
                 _log.AppendLine(
-                    $"Copied {SelectedType.Extension()} blueprint '{tile.ResRef}' to '{copyResRef}', " +
+                    $"Copied {SelectedType.Extension()} blueprint '{entry.ResRef}' to '{copyResRef}', " +
                     $"but could not file the copy under '{category}'.");
             }
 
@@ -836,19 +1161,19 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         private CategoryFolder? SourceFolderForCopy(
-            PaletteTileViewModel tile,
+            PaletteEntrySnapshot entry,
             CategorySection? sourceSection)
         {
             if (sourceSection == null)
                 return null;
 
-            var containing = sourceSection.FoldersContaining(tile.ResRef).ToList();
+            var containing = sourceSection.FoldersContaining(entry.ResRef).ToList();
             if (containing.Count == 0)
                 return null;
 
             // A parent row includes all descendants. Prefer the leaf below the row whose tile menu was
             // used; search has no category context, so its stable first filing is the best answer.
-            if (!IsSearching && SelectedRow?.Folder is { } selectedFolder)
+            if (!PresentationState.IsSearching && _selectedFolder is { } selectedFolder)
             {
                 var selectedPath = sourceSection.PathTo(selectedFolder);
                 var beneathSelection = containing.FirstOrDefault(folder =>
@@ -889,24 +1214,19 @@ namespace SWLOR.Toolset.Shell.Panels
         private void RevealCustomCopy(string copyResRef, string? targetPathKey)
         {
             var section = _categories.Section(SelectedType);
-            var targetFolder = targetPathKey == null ? null : section?.FindByPathKey(targetPathKey);
-            var row = targetFolder == null
-                ? _allRows.FirstOrDefault(candidate => candidate.IsUnsorted)
-                : _allRows.FirstOrDefault(candidate => ReferenceEquals(candidate.Folder, targetFolder));
+            _selectedFolder = targetPathKey == null ? null : section?.FindByPathKey(targetPathKey);
+            _selectedCategoryId = _selectedFolder is { } folder
+                ? FolderCategoryId(section!, folder)
+                : UnsortedCategoryId();
+            Refresh();
 
-            if (targetFolder != null)
-                ExpandTo(targetFolder);
-
-            SelectedRow = row;
-            SelectedTile = Tiles.FirstOrDefault(tile =>
-                string.Equals(tile.ResRef, copyResRef, StringComparison.OrdinalIgnoreCase));
+            PresentationState.SelectedRow = PresentationState.Rows.FirstOrDefault(
+                row => row.Id == _selectedCategoryId);
+            var copyEntryId = BlueprintEntryId(copyResRef);
+            PresentationState.SelectedTile = PresentationState.Tiles.FirstOrDefault(
+                tile => tile.Id == copyEntryId);
         }
 
-        // ----- context-menu actions -----
-        //
-        // Right-clicking a tile or a category row selects it first (see PaletteView's ContextRequested
-        // handlers), so every command below acts on the selection and the menu items need no parameter
-        // plumbing of their own.
 
         /// <summary>
         /// Deletes the blueprint's file from the module.
@@ -916,41 +1236,37 @@ namespace SWLOR.Toolset.Shell.Panels
         /// action that destroys something outside the toolset's own sidecar: areas that placed this
         /// blueprint keep their instances, and those instances will no longer resolve.
         /// </remarks>
-        [RelayCommand]
-        private async Task DeleteTileAsync(PaletteTileViewModel? tile)
+        private async Task DeleteEntryAsync(
+            PaletteEntrySnapshot entry,
+            ResourceType resourceType,
+            PaletteSource source,
+            ModuleWorkspace workspace)
         {
-            tile ??= SelectedTile;
-
-            // A tile has no blueprint file behind it, so there is nothing here to delete.
-            if (tile == null || tile.IsTile || _prompts == null)
+            if (entry.Kind != PaletteEntryKind.Blueprint || _prompts == null)
                 return;
 
-            var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
-                return;
-
-            var path = workspace.GetResourcePath(SelectedType, tile.ResRef);
-            var kind = SelectedType.SingularDisplayName().ToLowerInvariant();
+            var path = workspace.GetResourcePath(resourceType, entry.ResRef);
+            var kind = resourceType.SingularDisplayName().ToLowerInvariant();
 
             // Refused rather than handled: an open editor holds a session on this file, and once the
             // file is gone that editor's next save either recreates the blueprint (Overwrite) or fails
             // outright (Reload). Closing it first is the builder's call, not something to do silently.
-            if (_editorService?.Invoke().IsOpen(SelectedType, tile.ResRef) == true)
+            if (_editorService?.Invoke().IsOpen(resourceType, entry.ResRef) == true)
             {
-                StatusMessage = $"'{tile.Name}' is open in an editor - close that tab first.";
+                StatusMessage = $"'{entry.Name}' is open in an editor - close that tab first.";
                 return;
             }
 
             // Asked before the delete, not after: removing the file is irreversible from here, and a
             // sidecar that cannot be written would leave the category pointing at a resource that no
             // longer exists with nothing the builder can do about it.
-            if (_categories.Section(SelectedType)?.FoldersContaining(tile.ResRef).Any() == true)
+            if (_categories.Section(resourceType)?.FoldersContaining(entry.ResRef).Any() == true)
             {
                 var preflight = _categories.CanSaveChanges();
                 if (!preflight.Saved)
                 {
-                    StatusMessage = $"'{tile.Name}' was not deleted: {preflight.Problem}";
-                    _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: {preflight.Problem}");
+                    StatusMessage = $"'{entry.Name}' was not deleted: {preflight.Problem}";
+                    _log.AppendLine($"Deleting blueprint '{entry.ResRef}' was refused: {preflight.Problem}");
                     return;
                 }
             }
@@ -962,13 +1278,13 @@ namespace SWLOR.Toolset.Shell.Panels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"'{tile.Name}' was not deleted: could not fingerprint its blueprint ({ex.Message}).";
-                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: {ex.Message}");
+                StatusMessage = $"'{entry.Name}' was not deleted: could not fingerprint its blueprint ({ex.Message}).";
+                _log.AppendLine($"Deleting blueprint '{entry.ResRef}' was refused: {ex.Message}");
                 return;
             }
 
             var confirmed = await _prompts.ConfirmDestructiveAsync(
-                $"Delete the {kind} '{tile.Name}'?",
+                $"Delete the {kind} '{entry.Name}'?",
                 $"This deletes {Path.GetFileName(path)} from the module. Any area that already placed " +
                 "it keeps its instances, and those will no longer resolve. This cannot be undone from " +
                 "the toolset.",
@@ -977,14 +1293,20 @@ namespace SWLOR.Toolset.Shell.Panels
             if (!confirmed)
                 return;
 
+            if (!ReferenceEquals(_workspaceContext.Workspace, workspace) ||
+                SelectedType != resourceType || Source != source || IsTileMode)
+            {
+                return;
+            }
+
             // Rechecked here, not just at the CanWrite gate that greys the menu item: a pack,
             // validation, or Build All can start while the confirmation dialog is on screen, and this
             // delete - unlike blueprint creation, which always goes through
             // SaveService.WriteNewAtomic - had no guarded write path of its own to catch that.
             if (_mutationLock?.IsLocked == true)
             {
-                StatusMessage = $"'{tile.Name}' was not deleted: the module is being packed, validated, or built.";
-                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: the module is locked.");
+                StatusMessage = $"'{entry.Name}' was not deleted: the module is being packed, validated, or built.";
+                _log.AppendLine($"Deleting blueprint '{entry.ResRef}' was refused: the module is locked.");
                 return;
             }
 
@@ -993,13 +1315,13 @@ namespace SWLOR.Toolset.Shell.Panels
             // SaveCategories below would be too late - the blueprint would already be gone while
             // the (externally updated) sidecar still lists it - so the last check runs here,
             // immediately before the irreversible delete.
-            if (_categories.Section(SelectedType)?.FoldersContaining(tile.ResRef).Any() == true)
+            if (_categories.Section(resourceType)?.FoldersContaining(entry.ResRef).Any() == true)
             {
                 var recheck = _categories.CanSaveChanges();
                 if (!recheck.Saved)
                 {
-                    StatusMessage = $"'{tile.Name}' was not deleted: {recheck.Problem}";
-                    _log.AppendLine($"Deleting blueprint '{tile.ResRef}' was refused: {recheck.Problem}");
+                    StatusMessage = $"'{entry.Name}' was not deleted: {recheck.Problem}";
+                    _log.AppendLine($"Deleting blueprint '{entry.ResRef}' was refused: {recheck.Problem}");
                     return;
                 }
             }
@@ -1015,8 +1337,8 @@ namespace SWLOR.Toolset.Shell.Panels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"'{tile.Name}' was not deleted: {ex.Message}";
-                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' failed: {ex.Message}");
+                StatusMessage = $"'{entry.Name}' was not deleted: {ex.Message}";
+                _log.AppendLine($"Deleting blueprint '{entry.ResRef}' failed: {ex.Message}");
                 return;
             }
 
@@ -1038,40 +1360,39 @@ namespace SWLOR.Toolset.Shell.Panels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"'{tile.Name}' was not deleted: {ex.Message}";
-                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' failed: {ex.Message}");
+                StatusMessage = $"'{entry.Name}' was not deleted: {ex.Message}";
+                _log.AppendLine($"Deleting blueprint '{entry.ResRef}' failed: {ex.Message}");
                 return;
             }
 
             // Out of the catalog, or Explorer and Search keep listing a resource whose file is gone and
             // opening that row fails against the missing file.
-            _workspaceContext.RemoveCatalogEntry(SelectedType, tile.ResRef);
+            _workspaceContext.RemoveCatalogEntry(resourceType, entry.ResRef);
 
             // Drop it from the sidecar too, or the category keeps a member that resolves to nothing.
             // Preflighted above, so a failure here means the sidecar changed underneath us while the
             // confirmation was on screen - rare, and still worth saying out loud.
             var unfiled = true;
-            if (_categories.Section(SelectedType) is { } section)
+            if (_categories.Section(resourceType) is { } section)
             {
-                foreach (var folder in section.FoldersContaining(tile.ResRef).ToList())
-                    folder.RemoveMember(tile.ResRef);
+                foreach (var folder in section.FoldersContaining(entry.ResRef).ToList())
+                    folder.RemoveMember(entry.ResRef);
 
                 unfiled = SaveCategories();
                 if (!unfiled)
                 {
                     StatusMessage =
-                        $"Deleted {tile.Name}, but its category still lists it. {StatusMessage}";
+                        $"Deleted {entry.Name}, but its category still lists it. {StatusMessage}";
                     _log.AppendLine(
-                        $"Deleted blueprint '{tile.ResRef}' but its category entry could not be removed.");
+                        $"Deleted blueprint '{entry.ResRef}' but its category entry could not be removed.");
                 }
             }
 
-            SelectedTile = null;
             Refresh();
             if (unfiled)
             {
-                StatusMessage = $"Deleted {tile.Name}.";
-                _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
+                StatusMessage = $"Deleted {entry.Name}.";
+                _log.AppendLine($"Deleted blueprint '{entry.ResRef}' ({path}).");
             }
         }
 
@@ -1141,7 +1462,7 @@ namespace SWLOR.Toolset.Shell.Panels
             // Filed where the builder asked for it, which is the whole reason this lives on the category's
             // menu rather than a global New button.
             var filed = true;
-            if (SelectedRow?.Folder is { } folder)
+            if (_selectedFolder is { } folder)
             {
                 folder.AddMember(resRef);
                 filed = SaveCategories();
@@ -1197,7 +1518,7 @@ namespace SWLOR.Toolset.Shell.Panels
             if (section == null || _prompts == null || !CanWrite)
                 return;
 
-            var parent = SelectedRow?.Folder;
+            var parent = _selectedFolder;
             var name = await _prompts.PromptForTextAsync(
                 parent == null ? "New category" : $"New category inside '{parent.Name}'",
                 "Categories are the toolset's own organisation - they are stored beside the module, not in it.",
@@ -1250,7 +1571,7 @@ namespace SWLOR.Toolset.Shell.Panels
         [RelayCommand]
         private async Task RenameCategoryAsync()
         {
-            if (SelectedRow?.Folder is not { } folder || _prompts == null)
+            if (_selectedFolder is not { } folder || _prompts == null)
                 return;
 
             var name = await _prompts.PromptForTextAsync(
@@ -1280,14 +1601,14 @@ namespace SWLOR.Toolset.Shell.Panels
             if (!SaveCategories())
             {
                 Refresh();
-                // Refresh() rebuilds every row, so the pre-rebuild SelectedRow is now orphaned. Rename
-                // mutates the CategoryFolder in place, so the same reference finds its rebuilt row.
-                SelectedRow = _allRows.FirstOrDefault(row => ReferenceEquals(row.Folder, folder));
+                _selectedFolder = folder;
+                _selectedCategoryId = FolderCategoryId(CurrentSection()!, folder);
                 return;
             }
 
             Refresh();
-            SelectedRow = _allRows.FirstOrDefault(row => ReferenceEquals(row.Folder, folder));
+            _selectedFolder = folder;
+            _selectedCategoryId = FolderCategoryId(CurrentSection()!, folder);
             StatusMessage = $"Renamed '{previous}' to '{folder.Name}'.";
         }
 
@@ -1300,7 +1621,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private async Task DeleteCategoryAsync()
         {
             var section = _categories.Section(SelectedType);
-            if (section == null || SelectedRow?.Folder is not { } folder || _prompts == null)
+            if (section == null || _selectedFolder is not { } folder || _prompts == null)
                 return;
 
             if (folder.MembersIncludingDescendants.Any())
@@ -1327,7 +1648,8 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
 
             section.RemoveFolder(folder);
-            SelectedRow = null;
+            _selectedFolder = null;
+            _selectedCategoryId = null;
             if (!SaveCategories())
             {
                 Refresh();
@@ -1337,51 +1659,6 @@ namespace SWLOR.Toolset.Shell.Panels
             Refresh();
             StatusMessage = $"Removed category '{folder.Name}'.";
         }
-
-        /// <summary>Files the selected blueprint into the selected category - the move half of organizing.</summary>
-        [RelayCommand]
-        private void FileSelectedTile()
-        {
-            if (!CanWrite)
-                return;
-
-            if (SelectedTile == null)
-            {
-                StatusMessage = "Select a blueprint first.";
-                return;
-            }
-
-            if (SelectedRow?.Folder is not { } folder)
-            {
-                StatusMessage = "Select the category to file it into.";
-                return;
-            }
-
-            var section = _categories.Section(SelectedType);
-            if (section == null)
-                return;
-
-            // Captured before saving. SaveChanges raises Changed, Refresh clears Tiles, and the bound
-            // ListBox nulls SelectedTile - so reading it after the save dereferences null.
-            var resRef = SelectedTile.ResRef;
-            var label = SelectedTile.Name;
-
-            // Filing is a move, not a copy: the same resref sitting in two folders is legal but is not
-            // what a drag onto a folder means.
-            foreach (var previous in section.FoldersContaining(resRef).ToList())
-                previous.RemoveMember(resRef);
-
-            folder.AddMember(resRef);
-            if (!SaveCategories())
-            {
-                Refresh();
-                return;
-            }
-
-            Refresh();
-            StatusMessage = $"Filed {label} into '{folder.Name}'.";
-        }
-
 
         /// <summary>
         /// Writes the category sidecar and reports a refusal in the status line.
@@ -1404,7 +1681,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private void TogglePin()
         {
             var section = _categories.Section(SelectedType);
-            if (section == null || SelectedRow?.Folder is not { } folder)
+            if (section == null || _selectedFolder is not { } folder)
                 return;
 
             // By path, not by name: two branches may hold folders of the same name, and pinning by name
@@ -1417,287 +1694,17 @@ namespace SWLOR.Toolset.Shell.Panels
 
             SaveCategories();
             Refresh();
-            // Refresh() rebuilds every row, so the pre-rebuild SelectedRow is now orphaned. Pinning
-            // does not replace the CategoryFolder, so the same reference finds its rebuilt row.
-            SelectedRow = _allRows.FirstOrDefault(row => ReferenceEquals(row.Folder, folder));
+            // The selected folder remains the identity source when the next snapshot is published.
+            _selectedFolder = folder;
+            _selectedCategoryId = FolderCategoryId(CurrentSection()!, folder);
         }
 
-        // ----- tree assembly -----
-
-        private void RebuildTree()
-        {
-            _allRows.Clear();
-            var section = CurrentSection();
-
-            if (section != null)
-            {
-                foreach (var pathKey in section.Pinned)
-                {
-                    var pinned = section.FindByPathKey(pathKey);
-                    if (pinned != null)
-                        _allRows.Add(new CategoryRowViewModel(pinned, 0, section.CountIn(pinned, _existing), false)
-                        {
-                            IsPinned = true
-                        });
-                }
-
-                foreach (var folder in section.Folders)
-                    AddRows(section, folder, 0);
-
-                // Unsorted is generated, always last, and always present - an unfiled blueprint must never
-                // be invisible just because no rule matched it.
-                _allRows.Add(new CategoryRowViewModel(null, 0, section.UnsortedResRefs(_existing).Count, false));
-            }
-
-            PublishVisibleRows();
-        }
-
-        private void AddRows(CategorySection section, CategoryFolder folder, int depth)
-        {
-            var row = new CategoryRowViewModel(
-                folder, depth, section.CountIn(folder, _existing), folder.Children.Count > 0);
-
-            _allRows.Add(row);
-            foreach (var child in folder.Children)
-                AddRows(section, child, depth + 1);
-        }
-
-        /// <summary>
-        /// Publishes the rows whose ancestors are all expanded. Walking the flat list and skipping
-        /// collapsed subtrees keeps this O(rows) with no nested containers to realise.
-        /// </summary>
-        private void PublishVisibleRows()
-        {
-            Rows.Clear();
-            var hiddenBelowDepth = int.MaxValue;
-
-            foreach (var row in _allRows)
-            {
-                if (row.Depth > hiddenBelowDepth)
-                    continue;
-
-                hiddenBelowDepth = int.MaxValue;
-                Rows.Add(row);
-
-                if (row.HasChildren && !row.IsExpanded)
-                    hiddenBelowDepth = row.Depth;
-            }
-        }
-
-        private void ExpandTo(CategoryFolder folder)
-        {
-            // The folder belongs to whichever side is showing. Asking the Custom section to path a
-            // Standard folder returned no ancestors, so clearing a Standard search left the matched
-            // category's parents collapsed and the selected row invisible.
-            var section = CurrentSection();
-            if (section == null)
-                return;
-
-            var path = section.PathTo(folder);
-            foreach (var row in _allRows.Where(candidate => candidate.HasChildren))
-            {
-                var rowPath = row.Folder == null ? Array.Empty<string>() : section.PathTo(row.Folder);
-                if (rowPath.Count > 0 && rowPath.Count < path.Count &&
-                    rowPath.SequenceEqual(path.Take(rowPath.Count), StringComparer.OrdinalIgnoreCase))
-                    row.IsExpanded = true;
-            }
-
-            PublishVisibleRows();
-        }
-
-        // ----- search -----
-
-        private void RebuildSearch()
-        {
-            CategoryMatches.Clear();
-
-            var section = CurrentSection();
-            if (section == null || !IsSearching)
-            {
-                OnPropertyChanged(nameof(HasCategoryMatches));
-                return;
-            }
-
-            var query = Query.Trim();
-            foreach (var folder in section.AllFolders())
-            {
-                if (!folder.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                var path = section.PathTo(folder);
-                var parentPath = path.Count > 1
-                    ? string.Join(" › ", path.Take(path.Count - 1)) + " ›"
-                    : string.Empty;
-
-                CategoryMatches.Add(new CategoryMatchViewModel(
-                    folder, parentPath, section.CountIn(folder, _existing)));
-
-                if (CategoryMatches.Count >= 40)
-                    break;
-            }
-
-            OnPropertyChanged(nameof(HasCategoryMatches));
-        }
-
-        // ----- grid assembly -----
-
-        private void RebuildTiles()
-        {
-            Tiles.Clear();
-            var section = CurrentSection();
-            if (section == null)
-            {
-                Breadcrumb = string.Empty;
-                return;
-            }
-
-            if (IsSearching)
-            {
-                RebuildSearchTiles(section);
-                return;
-            }
-
-            var resRefs = ResRefsForSelectedRow(section);
-            Breadcrumb = BreadcrumbFor(section);
-
-            foreach (var resRef in resRefs.OrderBy(NameFor, StringComparer.CurrentCultureIgnoreCase))
-                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), null, Source));
-        }
-
-        private void RebuildSearchTiles(CategorySection section)
-        {
-            var query = Query.Trim();
-            var matches = _existing
-                .Where(resRef =>
-                    resRef.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                    NameFor(resRef).Contains(query, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(NameFor, StringComparer.CurrentCultureIgnoreCase)
-                .Take(MaxSearchResults)
-                .ToList();
-
-            foreach (var resRef in matches)
-            {
-                var folder = section.FoldersContaining(resRef).FirstOrDefault();
-                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), folder?.Name, Source));
-            }
-
-            Breadcrumb = matches.Count >= MaxSearchResults
-                ? $"First {MaxSearchResults} of many matches"
-                : $"{matches.Count} match{(matches.Count == 1 ? string.Empty : "es")} across all categories";
-        }
-
-        /// <summary>
-        /// Publishes a tile, with its preview if that is already decoded and waiting.
-        /// </summary>
-        /// <remarks>
-        /// Only the free half of the work. A cell whose image is not already in memory is left to
-        /// <see cref="EnsurePreview"/>, which the view calls as the cell comes within reach of the
-        /// viewport - a category can hold a couple of thousand blueprints against the forty or so cells on
-        /// screen, and fetching every one of them the moment the category opens made opening it cost
-        /// seconds of work for images nobody had scrolled to yet.
-        /// </remarks>
-        private void AddTile(PaletteTileViewModel tile)
-        {
-            Tiles.Add(tile);
-
-            tile.Preview = tile.IsTile
-                ? _thumbnails?.CachedTile(
-                    tile.ResRef, tile.Tile?.FootprintModelResRefs, tile.Tile?.Columns ?? 1, tile.Tile?.Rows ?? 1)
-                : _thumbnails?.Cached(SelectedType, tile.ResRef, tile.Source == PaletteSource.Standard);
-
-            if (tile.Preview != null)
-                tile.PreviewRequested = true;
-        }
-
-        /// <summary>
-        /// Fetches a cell's preview unless it already has one or has already asked. Called by the view
-        /// when the cell comes within reach of the viewport; safe to call as often as it likes.
-        /// </summary>
-        public void EnsurePreview(PaletteTileViewModel? tile)
-        {
-            if (tile == null || tile.PreviewRequested)
-                return;
-
-            tile.PreviewRequested = true;
-
-            if (tile.IsTile)
-            {
-                _thumbnails?.RequestTileAsync(
-                    tile.ResRef,
-                    bitmap => tile.Preview = bitmap,
-                    tile.Tile?.FootprintModelResRefs,
-                    tile.Tile?.Columns ?? 1,
-                    tile.Tile?.Rows ?? 1);
-                return;
-            }
-
-            _thumbnails?.RequestAsync(
-                SelectedType,
-                tile.ResRef,
-                tile.Source == PaletteSource.Standard,
-                bitmap => tile.Preview = bitmap);
-        }
-
-        /// <summary>
-        /// Drops a visible tile's stale preview when its blueprint is saved - from its own editor tab,
-        /// or as a dependent of an edited item another creature equips - and asks for a fresh one right
-        /// away.
-        /// </summary>
-        /// <remarks>
-        /// Without this, appearance and icon edits stayed invisible until the category was closed and
-        /// reopened: <see cref="ThumbnailService.Invalidate"/> only clears its own memory/disk caches
-        /// and drops an in-flight render, and a tile that already had a delivered preview - or was
-        /// mid-render when the invalidation landed - had nothing telling it to ask again.
-        /// </remarks>
         private void OnThumbnailInvalidated(ResourceType type, string resRef)
         {
             if (IsTileMode || type != SelectedType)
                 return;
 
-            foreach (var tile in Tiles)
-            {
-                if (tile.IsTile || !string.Equals(tile.ResRef, resRef, StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                tile.Preview = null;
-                tile.PreviewRequested = false;
-                EnsurePreview(tile);
-            }
-        }
-
-        /// <summary>
-        /// The preview box scales with the tile, keeping every tile the same proportions. Close to square
-        /// on purpose: model thumbnails are rendered square and inventory icons are as tall as the
-        /// inventory slot they were drawn for (a rifle is 32x96), so a wide letterbox wasted most of the
-        /// tile on both.
-        /// </summary>
-        public double PreviewHeight => Math.Round(TileSize * 0.72);
-
-        private IEnumerable<string> ResRefsForSelectedRow(CategorySection section)
-        {
-            if (SelectedRow == null)
-                return Array.Empty<string>();
-
-            if (SelectedRow.IsUnsorted)
-                return section.UnsortedResRefs(_existing);
-
-            // Descendants included, always. The count on a category row has always counted them, so
-            // showing only direct members made a parent read "NPCs 368" over an empty grid - which is
-            // what selecting a parent category did after the incl. sub toggle was removed. Including them
-            // is also the answer the toggle was left on for.
-            return SelectedRow.Folder!.MembersIncludingDescendants.Where(_existing.Contains);
-        }
-
-        private string BreadcrumbFor(CategorySection section)
-        {
-            if (SelectedRow == null)
-                return "Select a category";
-
-            if (SelectedRow.IsUnsorted)
-                return CategorySection.UnsortedFolderName;
-
-            var path = section.PathTo(SelectedRow.Folder!);
-            return path.Count == 0 ? SelectedRow.Name : string.Join(" › ", path);
+            PresentationState.InvalidatePreview(BlueprintEntryId(resRef));
         }
 
         /// <summary>Resref to display name for the current type, rebuilt when the catalog changes.</summary>
@@ -1713,10 +1720,9 @@ namespace SWLOR.Toolset.Shell.Panels
         /// for blueprints the module does not index.
         /// </summary>
         /// <remarks>
-        /// Backed by a per-type dictionary rather than a scan of the whole catalog. Search calls this for
-        /// every candidate resref and again while sorting, so against ~17,900 catalog entries and 8,355
-        /// placeables a linear scan meant tens of millions of comparisons on the UI thread per keystroke.
-        /// The dictionary is rebuilt only when the catalog publishes a new snapshot or the type changes.
+        /// Backed by a per-type dictionary so publishing a snapshot can resolve every blueprint name
+        /// without scanning the catalog once per resource. The dictionary is rebuilt only when the
+        /// catalog publishes a new snapshot or the type changes.
         /// </remarks>
         private string NameFor(string resRef)
         {

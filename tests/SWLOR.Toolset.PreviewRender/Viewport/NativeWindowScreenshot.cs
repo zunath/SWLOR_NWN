@@ -10,7 +10,7 @@ internal static class NativeWindowScreenshot
     private const uint DibRgbColors = 0;
     private const uint RenderFullContent = 2;
 
-    public static (int Width, int Height, long BytesWritten) Capture(Window window, string path)
+    public static (int Width, int Height, long BytesWritten, nint Hwnd) Capture(Window window, string path)
     {
         ArgumentNullException.ThrowIfNull(window);
         if (!OperatingSystem.IsWindows())
@@ -85,7 +85,7 @@ internal static class NativeWindowScreenshot
             }
 
             FramebufferImage.Save(path, width, height, bottomUpRgba);
-            return (width, height, new FileInfo(path).Length);
+            return (width, height, new FileInfo(path).Length, handle);
         }
         finally
         {

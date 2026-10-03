@@ -11,7 +11,7 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;

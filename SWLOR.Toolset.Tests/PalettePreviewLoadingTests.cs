@@ -1,8 +1,6 @@
-using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
-using Avalonia.Interactivity;
-using FluentAssertions;
+using Avalonia.Threading;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell.Panels;
@@ -17,27 +15,28 @@ namespace SWLOR.Toolset.Tests
     public class PalettePreviewLoadingTests
     {
         [AvaloniaTest]
-        public void ARealizedTileRequestsItsPreviewImmediately()
+        public void HostPaletteEmbedsTheSharedPalettePresentation()
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
             var palette = new PaletteViewModel(workspace, new CategoryService(workspace, log), log);
-            var tile = new PaletteTileViewModel("test_item", "Test Item", null);
             var view = new PaletteView { DataContext = palette };
-            var realizedCell = new Border { DataContext = tile };
+            var window = new Window { Width = 1100, Height = 700, Content = view };
 
-            // Invoke the XAML event handler directly so the assertion does not depend on a later
-            // EffectiveViewportChanged notification. That notification may follow initial layout and
-            // wheel scrolling, but is the event scrollbar-thumb jumps can outrun.
-            var loaded = typeof(PaletteView).GetMethod(
-                "OnTileLoaded",
-                BindingFlags.Instance | BindingFlags.NonPublic);
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+                window.UpdateLayout();
 
-            loaded.Should().NotBeNull("the tile template must keep its Loaded handler");
-            loaded!.Invoke(view, new object?[] { realizedCell, new RoutedEventArgs() });
-
-            tile.PreviewRequested.Should().BeTrue(
-                "realization itself must request the preview for every scrolling input path");
+                Assert.That(view.Content, Is.TypeOf<Nwn.Toolset.Avalonia.Palettes.Views.PaletteView>());
+                var sharedView = (Nwn.Toolset.Avalonia.Palettes.Views.PaletteView)view.Content!;
+                Assert.That(sharedView.DataContext, Is.SameAs(palette.PresentationState));
+            }
+            finally
+            {
+                window.Close();
+            }
         }
     }
 }

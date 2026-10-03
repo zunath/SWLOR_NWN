@@ -61,15 +61,16 @@ namespace SWLOR.Toolset.Tests
                         "No NWN:EE install was found; the base tilesets and dialog.tlk only exist there.");
 
                 var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+                var haksRoot = Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks");
                 var index = ResourceIndex.FromHakBuilderConfig(
                     Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                    Path.Combine(RepoRoot, "SWLOR_Haks"),
+                    haksRoot,
                     baseLayer);
                 index.EnsureInitialized();
 
                 // Tileset group strrefs in this corpus are base dialog.tlk refs (ttd01's are 8xxx and
                 // 63xxx), so an empty custom TLK stands in when the haks submodule has no sw_tlk.
-                var swTlkPath = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");
+                var swTlkPath = Path.Combine(haksRoot, "sw_tlk", "sw_tlk.tlk.json");
                 var baseTlkPath = Path.Combine(installPath, "lang", "en", "data", "dialog.tlk");
                 var tlk = File.Exists(swTlkPath)
                     ? TlkService.Load(swTlkPath, baseTlkPath)

@@ -64,13 +64,13 @@ namespace SWLOR.Toolset.Tests
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepoRoot, "SWLOR_Haks"),
+                (Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks")),
                 baseLayer);
             index.EnsureInitialized();
             _resources = index;
 
             var twoDa = new TwoDaService(index);
-            var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
+            var tlk = TlkService.Load(Path.Combine(Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_tlk", "sw_tlk.tlk.json"));
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path, index), log);
             context.Open(CorpusLocator.ModuleDirectory);
@@ -446,7 +446,7 @@ namespace SWLOR.Toolset.Tests
                 () => KeyBifCatalog.Load(Path.Combine(installRoot, "data")));
             resources.EnsureInitialized();
             var twoDa = new TwoDaService(resources);
-            var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
+            var tlk = TlkService.Load(Path.Combine(Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_tlk", "sw_tlk.tlk.json"));
             var context = new WorkspaceContext(
                 path => new ModuleWorkspace(path, resources),
                 new OutputLogService());

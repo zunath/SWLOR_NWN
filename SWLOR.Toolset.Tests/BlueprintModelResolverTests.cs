@@ -44,8 +44,8 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        private static string Sw2DaDirectory => Path.Combine(RepoRoot, "SWLOR_Haks", "sw_2da");
-        private static string SwTlkJsonPath => Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");
+        private static string Sw2DaDirectory => Path.Combine(Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_2da");
+        private static string SwTlkJsonPath => Path.Combine(Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_tlk", "sw_tlk.tlk.json");
 
         private static AppearanceService Appearances()
         {

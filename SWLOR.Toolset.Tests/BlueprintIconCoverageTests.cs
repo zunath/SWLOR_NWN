@@ -9,6 +9,7 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 

@@ -153,7 +153,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static bool MigrateItem(uint item)
         {
-            var wasMigrated = ConvertLegacyAccuracyProperties(item);
+            // Native loading converts retired rows before the engine can discard them.
+            // Include that conversion in the existing migration's persistence decision.
+            var wasMigrated = GetLocalInt(item, Native.LegacyItemProperties.ConvertedVariable) > 0;
+            if (wasMigrated)
+                DeleteLocalInt(item, Native.LegacyItemProperties.ConvertedVariable);
+            wasMigrated |= ConvertLegacyAccuracyProperties(item);
             wasMigrated |= MigrateConstructedDroidLocalVariable(item);
 
             return wasMigrated;

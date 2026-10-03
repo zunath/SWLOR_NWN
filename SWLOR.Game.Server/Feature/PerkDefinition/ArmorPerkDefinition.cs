@@ -46,19 +46,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DualWieldTrait)
-                .Description("Off-hand attack delay is reduced by 10% when making off-hand attacks.")
+                .Description("Off-hand attack delay is reduced by 10% when wielding two weapons or a double weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 5)
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 10 : 0)
 
                 .AddPerkLevel()
-                .Description("Off-hand attack delay is reduced by 20% total when making off-hand attacks.")
+                .Description("Off-hand attack delay is reduced by 20% total when wielding two weapons or a double weapon.")
                 .Price(3)
                 .RequirementSkill(SkillType.Armor, 25)
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 20 : 0)
 
                 .AddPerkLevel()
-                .Description("Off-hand attack delay is reduced by 30% total when making off-hand attacks.")
+                .Description("Off-hand attack delay is reduced by 30% total when wielding two weapons or a double weapon.")
                 .Price(4)
                 .RequirementSkill(SkillType.Armor, 40)
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 30 : 0);

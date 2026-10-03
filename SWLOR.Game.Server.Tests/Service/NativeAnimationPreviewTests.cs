@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Armor;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AnimationService;
@@ -10,6 +11,33 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class NativeAnimationPreviewTests
 {
+    [Test]
+    public void FragGrenadeRanksThrowDuringActivationAndPreviewTheNativeGesture()
+    {
+        var abilities = new FragGrenadeAbilityDefinition().BuildAbilities();
+        var entry = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == "FragGrenade");
+        abilities.Should().HaveCount(3);
+        AbilityAnimationBinding.Apply(abilities, new[] { entry });
+        foreach (var ability in abilities.Values)
+        {
+            ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(1f);
+            ability.ImpactDelay.Should().Be(0f);
+            ability.ImpactAnimationType.Should().Be(Animation.Invalid, "the throw must precede the explosion, without replaying at impact");
+            ability.PreservesNativeAnimationChoreography.Should().BeTrue();
+            ability.UsesAuthoredImpactAnimation.Should().BeFalse();
+            ability.AuthoredAnimation.Should().BeNull();
+            ability.AuthoredImpactAnimation.Should().BeNull();
+            AbilityAnimationBinding.ActivationType(ability, true, .8f).Should().Be(Animation.ThrowGrenade);
+            AbilityAnimationBinding.ActivationType(ability, false, .8f).Should().Be(Animation.ThrowGrenade);
+            ability.NativeAnimationPreview.Should().Be(Animation.ThrowGrenade);
+        }
+
+        var preview = AnimationPreviewCatalog.CreateEntries(abilities.Values).Single(item => item.Id == entry.Id);
+        preview.NativeAnimation.Should().Be(Animation.ThrowGrenade);
+        preview.NativeAnimationSpeed.Should().Be(1f);
+        preview.PreviewDuration.Should().Be(1f);
+    }
+
     [Test]
     public void ThrowLightsaberRanksAndTesterRetainMastersNativeThrowAtDoubleSpeed()
     {

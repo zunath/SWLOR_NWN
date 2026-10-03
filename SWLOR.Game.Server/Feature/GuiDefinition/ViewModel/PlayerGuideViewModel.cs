@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static IReadOnlyList<PlayerGuideTopic> BuildTopics()
         {
-            return new List<PlayerGuideTopic>
+            var topics = new List<PlayerGuideTopic>
             {
                 new(
                     "Common Questions",
@@ -457,12 +457,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("When can I buy?", "When the next rank exists, requirements pass, and you have enough SP."),
                         new QuestionAnswer("What are beast perks?", "A Perks window mode that uses the active beast's SP and level.")
                     },
-                    new[] { "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay", "Lightsaber Combat Styles", "Pistol Combat Styles" }),
 
                 new(
                     "Force Affinity",
                     "Combat",
-                    "How Light, Dark, and Universal Force powers change—and are changed by—your affinity.",
+                    "How Light, Dark, and Universal Force powers change - and are changed by - your affinity.",
                     "Light, Dark, and Universal powers",
                     new[]
                     {
@@ -564,7 +564,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What is Recast?", "The cooldown seconds shown in the ability description."),
                         new QuestionAnswer("Why can't I use it yet?", "Its cooldown or shared cooldown group still has time remaining.")
                     },
-                    new[] { "Perks", "Attributes", "Combat Basics", "Mimicry & Techniques", "Useful Windows", "Common Questions" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Perks", "Attributes", "Combat Basics", "Mimicry & Techniques", "Useful Windows", "Common Questions" }),
 
                 new(
                     "Mimicry & Techniques",
@@ -708,7 +708,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage, healing, and temporary HP.")
                     },
-                    new[] { "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Useful Windows" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Lightsaber Combat Styles", "Force Combat Styles", "Useful Windows" }),
 
                 new(
                     "Espionage",
@@ -720,13 +720,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Character Requirement",
                             "Espionage perks are for Standard characters and use the Espionage skill. Their branches cover infiltration and back attacks, slicing and poisoncraft, traps, disguises, and utility."),
                         new ArticleBlock("Starting at Rank 0",
-                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops or the Veles Trade Concourse."),
+                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new ArticleBlock("Stealth and Back Attacks",
                             "Stealth is activated out of combat and drains STM while maintained. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
-                        new ArticleBlock("Slicing Lockboxes and Terminals",
-                            "Right-click a lockbox and choose Activate Item, or use a world terminal. Rotate or swap circuit tiles to connect the entry to the core before trace runs out. Lockpicking and Perception add trace. Tier 1 terminals can be found in the Viscaran Wildlands, CZ-220 maintenance level, and Abandoned Nano Station. Slicing II-V unlock at Espionage ranks 22, 30, 42, and 48. Each tier awards XP until the next unlock; tier 5 trains to 50."),
+                        new ArticleBlock("Slicing Lockboxes and Sealed Crates",
+                            "Right-click a lockbox and choose Activate Item, or use a Sealed Field Crate to slice its electronic lock. Rotate or swap circuit tiles to connect the entry to the core before trace runs out. Lockpicking and Perception add trace. Tier 1 crates can be found in the Viscaran Wildlands, CZ-220 maintenance level, and Abandoned Nano Station. Slicing II-V unlock at Espionage ranks 22, 30, 42, and 48. Each tier awards XP until the next unlock; tier 5 trains to 50."),
                         new ArticleBlock("Slicing Supplies and Failure",
-                            "Consumables are optional. The Veles General Store sells tier 1 Copper Trace Fuses, Ratchet Bypass Pins, and Continuity Samplers. Select supplies inside the slicing window. Advanced tools come from slicing rewards; higher-tier trace fuses are crafted by engineers. Cancelling before commitment is free. After a move or information-tool use, aborting counts as failure. The first lockbox failure cannot destroy it; later failures can. Terminals are shared and respawn after 45-75 minutes."),
+                            "Consumables are optional. The Veles General Store sells tier 1 Copper Trace Fuses, Ratchet Bypass Pins, and Continuity Samplers. Select supplies inside the slicing window. Advanced tools come from slicing rewards; higher-tier trace fuses are crafted by engineers. Cancelling before commitment is free. After a move or information-tool use, aborting counts as failure. The first lockbox failure cannot destroy it; later failures can. Field crates are shared and respawn after 45-75 minutes."),
                         new ArticleBlock("Poisoncraft",
                             "Start with Venom Coating I: 3 Kath Hound Blood and 2 Viscaran Rosemary. Recipe level 3 means crafting difficulty; its required Espionage rank is 0. Poisoncraft II-V unlock at ranks 15, 28, 40, and 48. Each coating recipe trains to the next unlock, with tier 5 training to 50. Right-click a vial, choose Activate Item, and select a melee or thrown weapon in your inventory. Anyone can apply coatings; energy blades cannot be coated."),
                         new ArticleBlock("Trapcraft",
@@ -741,7 +741,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Who can use espionage perks?", "Standard characters who meet the relevant Espionage skill and perk requirements."),
                         new QuestionAnswer("Do I need stealth to learn poisons or slicing?", "No. Poisoncraft I, Slicing I, and Trapcraft I each start at rank 0 and can train independently."),
                         new QuestionAnswer("Why did my recipe or slicing tier stop giving XP?", "You reached the next tier's unlock rank. Purchase that tier's perk and use its recipes or targets to continue training."),
-                        new QuestionAnswer("Where do I craft poisons and snares?", "At a marked Espionage Workbench beside a market terminal in Veles Shops or the Veles Trade Concourse."),
+                        new QuestionAnswer("Where do I craft poisons and snares?", "At a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new QuestionAnswer("How many traps can I place?", "One by default; Trap Management increases your active-trap limit."),
                         new QuestionAnswer("What breaks stealth?", "Hostile actions break stealth, and maintaining it continuously drains STM.")
                     },
@@ -1158,9 +1158,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[] { "Common Questions", "Skills", "Perks", "Mimicry & Techniques", "Training Store", "Quests & Key Items", "Communication", "Disguises" })
             };
+
+            topics.Add(StatusEffectGuideTopics.Create());
+            topics.AddRange(CombatStyleGuideTopics.Create());
+            return topics;
         }
 
-        private sealed class PlayerGuideTopic
+        internal sealed class PlayerGuideTopic
         {
             public string Name { get; }
             public string Category { get; }
@@ -1189,7 +1193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private sealed class ArticleBlock
+        internal sealed class ArticleBlock
         {
             public string Title { get; }
             public string Body { get; }
@@ -1201,7 +1205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private sealed class QuestionAnswer
+        internal sealed class QuestionAnswer
         {
             public string Question { get; }
             public string Answer { get; }

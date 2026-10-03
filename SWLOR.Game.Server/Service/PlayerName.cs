@@ -90,6 +90,16 @@ namespace SWLOR.Game.Server.Service
             return ResolveChatDisplayName(observer, target, out _);
         }
 
+        /// <summary>Canonical name and current public descriptor for server audit records.</summary>
+        public static string GetAuditName(uint target)
+        {
+            var canonicalName = GetName(target);
+            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                return canonicalName;
+
+            return $"{canonicalName} [{Disguise.GetDisplayDescriptor(target)}]";
+        }
+
         public static void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)
         {
             ApplyChatNameOverride(observer, target);

@@ -25,6 +25,30 @@ namespace SWLOR.Game.Server.Service.WeatherService
             int heatModifier, int humidityModifier, int windModifier, bool isNatural,
             WeatherStorm previousStorm, Func<int, int> random)
         {
+            var conditions = CreateForArea(heat, humidity, wind, climate,
+                heatModifier, humidityModifier, windModifier, isNatural, WeatherStorm.None);
+            heat = conditions.Heat;
+            wind = conditions.Wind;
+
+            var storm = WeatherStorm.None;
+            if (conditions.Precipitation == Precipitation.Rain && heat > 4 &&
+                (previousStorm == WeatherStorm.Thunder ? random(3) == 0 : random(20) < wind))
+            {
+                storm = WeatherStorm.Thunder;
+            }
+            else if (wind >= 9 && (climate.HasSandStorms || climate.HasSnowStorms) && random(3) == 0)
+            {
+                storm = climate.HasSandStorms ? WeatherStorm.Sand : WeatherStorm.Snow;
+            }
+
+            return conditions with { Storm = storm };
+        }
+
+        public static WeatherConditions CreateForArea(
+            int heat, int humidity, int wind, WeatherClimate climate,
+            int heatModifier, int humidityModifier, int windModifier, bool isNatural,
+            WeatherStorm regionalStorm)
+        {
             heat = Math.Clamp(heat + climate.HeatModifier + heatModifier, climate.MinimumHeat, climate.MaximumHeat);
             humidity = Math.Clamp(humidity + climate.HumidityModifier + humidityModifier, 1, 10);
             wind = Math.Clamp(wind + climate.WindModifier + windModifier - (isNatural ? 0 : 1), 1, 10);
@@ -36,16 +60,15 @@ namespace SWLOR.Game.Server.Service.WeatherService
                     heat < 6 && wind < 3 ? Precipitation.Foggy : Precipitation.Rain;
             }
 
-            var storm = WeatherStorm.None;
-            if (precipitation == Precipitation.Rain && heat > 4 &&
-                (previousStorm == WeatherStorm.Thunder ? random(3) == 0 : random(20) < wind))
+            // Share the climate's storm without independently rolling at map boundaries.
+            // Local modifiers can still make a map unsuitable for that storm.
+            var storm = regionalStorm switch
             {
-                storm = WeatherStorm.Thunder;
-            }
-            else if (wind >= 9 && (climate.HasSandStorms || climate.HasSnowStorms) && random(3) == 0)
-            {
-                storm = climate.HasSandStorms ? WeatherStorm.Sand : WeatherStorm.Snow;
-            }
+                WeatherStorm.Thunder when precipitation == Precipitation.Rain && heat > 4 => regionalStorm,
+                WeatherStorm.Sand when climate.HasSandStorms && wind >= 9 => regionalStorm,
+                WeatherStorm.Snow when climate.HasSnowStorms && wind >= 9 => regionalStorm,
+                _ => WeatherStorm.None
+            };
 
             return new WeatherConditions(heat, humidity, wind, precipitation, storm);
         }
@@ -58,13 +81,23 @@ namespace SWLOR.Game.Server.Service.WeatherService
             return WeatherHazard.None;
         }
 
-        public string GetFeedback(WeatherClimate climate, bool isNight, bool acidRain, Precipitation? actualPrecipitation = null)
+        public string GetFeedback(WeatherClimate climate, bool isNight, bool acidRain,
+            Precipitation? actualPrecipitation = null, bool hazardsEnabled = true)
         {
-            switch (GetHazard(acidRain, actualPrecipitation))
+            switch (hazardsEnabled ? GetHazard(acidRain, actualPrecipitation) : WeatherHazard.None)
             {
                 case WeatherHazard.Acid: return WeatherFeedbackText.AcidRain;
                 case WeatherHazard.Sand: return WeatherFeedbackText.SandStorm;
                 case WeatherHazard.Snow: return WeatherFeedbackText.SnowStorm;
+            }
+
+            if (!hazardsEnabled)
+            {
+                if (Storm == WeatherStorm.Sand) return WeatherFeedbackText.ShelteredSandStorm;
+                if (Storm == WeatherStorm.Snow) return WeatherFeedbackText.ShelteredSnowStorm;
+                if (Storm == WeatherStorm.Thunder) return WeatherFeedbackText.ShelteredThunderstorm;
+                if (acidRain && (actualPrecipitation ?? Precipitation) == Precipitation.Rain)
+                    return WeatherFeedbackText.ShelteredAcidRain;
             }
 
             if (Storm == WeatherStorm.Thunder) return climate.StormText;

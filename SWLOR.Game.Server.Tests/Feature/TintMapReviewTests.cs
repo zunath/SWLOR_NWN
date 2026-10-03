@@ -493,6 +493,8 @@ public class TintMapReviewTests
         FindMethod(service, nameof(TintMapService.OnModuleUnacquire))
             .ToString().Should().Contain("QueueItemRefresh(GetModuleItemLost())");
         var areaEnter = FindMethod(service, nameof(TintMapService.OnAreaEnter)).ToString();
+        areaEnter.Should().Contain("QueueRefresh(creature, resetShaderOverrides: !GetIsPC(creature))",
+            "player area entry must retain unrelated material settings while refreshing tint rows");
         areaEnter.Should().Contain("QueueOtherCreaturesInArea(area, creature)",
             "placed NPCs may have spawned before the managed tint hooks were registered");
         areaEnter.Should().Contain("QueueWorldItemsInArea(area)");
@@ -501,7 +503,8 @@ public class TintMapReviewTests
             "NPC and summon entries must not rescan every ground item in the area");
         var creatureRefresh = FindMethod(service, "QueueOtherCreaturesInArea").ToString();
         creatureRefresh.Should().Contain("GetFirstObjectInArea(area, ObjectType.Creature)");
-        creatureRefresh.Should().Contain("QueueRefresh(creature)");
+        creatureRefresh.Should().Contain("QueueRefresh(creature, resetShaderOverrides: !GetIsPC(creature))",
+            "another player's entry must preserve material settings on players already in the area");
         creatureRefresh.Should().Contain("creature != enteringCreature",
             "the entering player is already queued before the area scan");
         FindMethod(service, nameof(TintMapService.ApplyCurrentItemColors))
@@ -1246,13 +1249,15 @@ public class TintMapReviewTests
         var setColorInPlace = FindMethod(viewModelSource, "SetItemColorInPlace");
         setColorInPlace.ToString().Should().Contain("EquippedItemAppearance.Set(",
             "color-only edits must mutate the equipped item instead of creating a replacement");
-        setColorInPlace.ToString().Should().Contain("EquippedItemAppearance.Refresh(_target, item)",
-            "the shared cosmetic refresh must update the wearer without equipment events");
+        setColorInPlace.ToString().Should().Contain(
+            "EquippedItemAppearance.Refresh(_target, item, resetShaderOverrides: false)",
+            "a color-only refresh must preserve unrelated material shader overrides");
         var equippedSource = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition",
             "ItemAppearance", "EquippedItemAppearance.cs");
         FindMethod(equippedSource, "Refresh").ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot",
             "in-place changes must persist for constructed droids");
-        FindMethod(equippedSource, "Refresh").ToString().Should().Contain("TintMapService.ApplyCurrentColors",
+        FindMethod(equippedSource, "Refresh").ToString().Should().Contain(
+            "TintMapService.ApplyCurrentColors(creature, resetShaderOverrides)",
             "in-place changes need an explicit shader refresh because no equip event fires");
         setColorInPlace.ToString().Should().NotContain("CopyItemAndModify");
         setColorInPlace.ToString().Should().NotContain("DestroyObject");
@@ -1438,7 +1443,7 @@ public class TintMapReviewTests
         var refreshBody = refreshMethod.ToString();
         refreshBody.Should().Contain("CarryStoredEquipmentCustomColors(creature)");
         refreshBody.IndexOf("CarryStoredEquipmentCustomColors(creature)", StringComparison.Ordinal)
-            .Should().BeLessThan(refreshBody.IndexOf("ApplyCurrentColors(creature)", StringComparison.Ordinal),
+            .Should().BeLessThan(refreshBody.IndexOf("ApplyCurrentColors(creature, resetShaderOverrides)", StringComparison.Ordinal),
                 "wearer-specific material locals must exist before shader uniforms are applied");
 
         var carryMethod = FindMethod(serviceSource, "CarryStoredEquipmentCustomColors");
@@ -2406,9 +2411,20 @@ public class TintMapReviewTests
         reset.Method.Should().BeSameAs(refresh);
         reset.Call.ArgumentList.Arguments.Should().ContainSingle(
             "one complete reset removes legacy rows and custom-color transports before the new state is written");
-        reset.Call.Parent.Should().BeOfType<ExpressionStatementSyntax>()
-            .Which.Parent.Should().BeSameAs(refresh.Body,
-                "the reset must execute once outside the material and layer loops");
+        if (refreshMethodName is nameof(TintMapService.ApplyCurrentColors) or "ApplyEquippedHelmetColors")
+        {
+            var resetGuard = reset.Call.Ancestors().OfType<IfStatementSyntax>().Single();
+            resetGuard.Condition.ToString().Should().Be("resetShaderOverrides",
+                "only full refreshes may clear unrelated shader state");
+            resetGuard.Parent.Should().BeSameAs(refresh.Body,
+                "the reset guard must execute once outside the material and layer loops");
+        }
+        else
+        {
+            reset.Call.Parent.Should().BeOfType<ExpressionStatementSyntax>()
+                .Which.Parent.Should().BeSameAs(refresh.Body,
+                    "the reset must execute once outside the material and layer loops");
+        }
         writes.Should().ContainSingle("all rendered rows must use the same write-only native setter");
 
         var firstRowCall = refresh.DescendantNodes().OfType<InvocationExpressionSyntax>()

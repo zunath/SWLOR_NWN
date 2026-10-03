@@ -714,7 +714,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                    nextUpgrade.Description + "\n\n";
             }
 
+            selectedDetails += BuildStatusEffectPerkDetailText(detail, currentUpgrade, nextUpgrade);
             return selectedDetails;
+        }
+
+        private static string BuildStatusEffectPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
+        {
+            var descriptions = string.Join(" ", detail.Description, currentUpgrade?.Description, nextUpgrade?.Description);
+            var refersToControl = descriptions.Contains("control effect", StringComparison.OrdinalIgnoreCase) ||
+                                  descriptions.Contains("controlled", StringComparison.OrdinalIgnoreCase);
+            var refersToHarmful = descriptions.Contains("harmful effect", StringComparison.OrdinalIgnoreCase) ||
+                                  descriptions.Contains("harmful status", StringComparison.OrdinalIgnoreCase);
+            if (!refersToControl && !refersToHarmful)
+                return string.Empty;
+
+            var text = string.Empty;
+            if (refersToControl)
+            {
+                text += "Control effects: " + StatusEffectGuideTopics.ControlEffects.Replace(";", ",") + ".\n" +
+                        "All control effects also count as harmful effects. Conditions saying 'you applied' require your own effect.\n";
+            }
+            if (refersToHarmful)
+            {
+                text += "Harmful effects include control effects, damage over time, and other debuffs. A specific cleanse may only remove the effects it names.\n";
+            }
+            return text + "Full definitions in Player Guide: " + StatusEffectGuideTopics.TopicName + ".\n";
         }
 
         private string BuildForceAffinityPerkDetailText(PerkDetail detail)

@@ -23,7 +23,8 @@
 services:
     redis:
         hostname: redis
-        image: redis/redis-stack-server:7.2.0-v20
+        # Exercise the same Redis/module versions used by persistent deployments.
+        image: redislabs/redismod:latest
         tmpfs:
             - /data
 

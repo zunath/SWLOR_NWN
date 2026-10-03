@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -85,7 +86,11 @@ public static class NamedAnimation
             AssignCommand(creature, () =>
             {
                 if (!Playback.IsCurrent(creature, token)) return;
-                try { PlayAnimation(animation, speed); }
+                try
+                {
+                    PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                        creature, animation, speed, 0f, immediate: true, releaseAuthoredPose: false);
+                }
                 catch
                 {
                     if (Playback.IsCurrent(creature, token)) Playback.ReleaseForNativePlayback(creature);

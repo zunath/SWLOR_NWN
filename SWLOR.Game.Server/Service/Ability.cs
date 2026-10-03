@@ -119,8 +119,8 @@ namespace SWLOR.Game.Server.Service
                 activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
-                ? Item.GetDMG(triggeringWeapon)
-                : null;
+                ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
+                : trackedImpact.TriggeringWeaponDamage;
             trackedImpact.ResolveDamageBonuses = () =>
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
@@ -191,7 +191,9 @@ namespace SWLOR.Game.Server.Service
                 sequence)
             {
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
-                TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage
+                TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
+                    activator, Combat.GetAbilitySkillType(activator, ability),
+                    ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery)
             };
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
             {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -6,6 +7,13 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public static class EquipmentPredicates
     {
+        public static bool HasSingleWeapon(uint creature)
+        {
+            var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
+            return GetIsObjectValid(weapon) && WeaponDamage.IsSingleWeaponType(GetBaseItemType(weapon)) &&
+                   !GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, creature));
+        }
+
         public static bool HasMainHandLightsaber(uint creature)
         {
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.LightsaberBaseItemTypes);

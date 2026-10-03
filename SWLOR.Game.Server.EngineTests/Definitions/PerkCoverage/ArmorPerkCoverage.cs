@@ -26,6 +26,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 },
                 new()
                 {
+                    Perk = PerkType.Doublehand,
+                    MaxLevel = 3,
+                    Prices = new[] { 2, 3, 4 },
+                    GrantedFeats = new[] { FeatType.DoublehandTrait },
+                },
+                new()
+                {
                     Perk = PerkType.Alertness,
                     MaxLevel = 3,
                     Prices = new[] { 2, 3, 4 },

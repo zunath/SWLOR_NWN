@@ -737,6 +737,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         FalseIdentities = 801,
         CoverStory = 802,
 
-        // IDs 650 and 803+ are free.
+        Doublehand = 803,
+
+        // IDs 650 and 804+ are free.
     }
 }

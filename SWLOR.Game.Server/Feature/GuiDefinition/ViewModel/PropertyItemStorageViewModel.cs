@@ -570,7 +570,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var dbItem = category.Items[itemId];
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
+            var payload = new ExamineItemPayload(item);
             Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };

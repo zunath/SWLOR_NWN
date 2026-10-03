@@ -121,6 +121,9 @@ namespace SWLOR.Game.Server.Native
                 LogDamageCalculation(attackerStat, damageProfile);
 
                 // Apply combat mode bonuses
+                if (weapon != null)
+                    damageProfile = new WeaponDamageProfile(damageProfile.DamageType,
+                        WeaponDamage.GetEffectiveDMG(attacker.m_idSelf, weapon.m_idSelf, damageProfile.Damage));
                 damageProfile = ApplyCombatModeBonus(attacker, damageProfile);
                 damageProfile = ApplyMightModifierDamageBonus(attacker, weapon, damageProfile);
 

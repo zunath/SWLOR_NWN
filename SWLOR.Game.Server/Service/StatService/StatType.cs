@@ -6143,6 +6143,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum, deflectionSource: DeflectionSource.Shield)]
         DeflectionRecastReductionCooldownSeconds = 1086,
 
+        /// <summary>Percent added to an eligible single weapon's item DMG before formula and proc bonuses.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SingleWeaponDamagePercentAdjustment = 1087,
+
     }
 
     public class StatTypeAttribute : Attribute

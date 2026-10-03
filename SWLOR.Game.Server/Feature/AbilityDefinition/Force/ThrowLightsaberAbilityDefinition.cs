@@ -100,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             PlayThrowLightsaberAnimation(activator, target, targetLocation);
 
+            var weaponDamageAdjustment = GetEquippedWeaponDamageAdjustment(activator);
             var foundTarget = false;
             foreach (var hitTarget in GetPathTargets(activator, target, targetLocation, maxTargets))
             {
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Array.Empty<Type>(),
                     damageType: CombatDamageType.Physical,
                     targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                    baseDamageAdjustment: GetEquippedWeaponDamageAdjustment(activator),
+                    baseDamageAdjustment: weaponDamageAdjustment,
                     playImpactAnimation: false);
             }
 
@@ -198,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var weapon = GetEquippedWeapon(activator);
             var damage = GetIsObjectValid(weapon)
-                ? Item.GetDMG(weapon)
+                ? WeaponDamage.GetEffectiveDMG(activator, weapon)
                 : 0;
 
             return damage <= 0

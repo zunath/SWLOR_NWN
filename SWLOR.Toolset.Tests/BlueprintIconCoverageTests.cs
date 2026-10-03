@@ -39,6 +39,9 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot)
+                    return configuredRoot;
+
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -77,7 +80,7 @@ namespace SWLOR.Toolset.Tests
                 var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
 
                 KeyBifCatalog? baseLayer = null;
-                var install = NwnInstallLocator.Locate(null);
+                var install = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
                 if (install != null)
                     baseLayer = KeyBifCatalog.Load(Path.Combine(install, "data"));
 
@@ -278,9 +281,34 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Door_Model_Coverage_Does_Not_Regress()
         {
-            var resolved = Data.Workspace.EnumerateResRefs(ResourceType.Utd)
-                .Count(resRef => ResolvesModel(
-                    ResourceType.Utd, Data.Workspace.LoadBlueprint(ResourceType.Utd, resRef).Fields));
+            var doors = Data.Workspace.EnumerateResRefs(ResourceType.Utd)
+                .Select(resRef =>
+                {
+                    var root = Data.Workspace.LoadBlueprint(ResourceType.Utd, resRef).Fields;
+                    var model = BlueprintModelResolver.Resolve(
+                        ResourceType.Utd, root, Data.Appearances, Data.Placeables, Data.Doors);
+                    return (ResRef: resRef, Root: root, Model: model);
+                })
+                .ToArray();
+            var unresolved = doors
+                .Where(door => door.Model.Kind == BlueprintModelKind.Simple
+                    ? !Data.HasModel(door.Model.ModelResRef)
+                    : door.Model.Kind != BlueprintModelKind.Segmented ||
+                      !door.Model.Parts.Any(part => Data.HasModel(part.ModelResRef)))
+                .ToArray();
+            var resolved = doors.Length - unresolved.Length;
+
+            if (resolved < 115)
+            {
+                foreach (var door in unresolved)
+                {
+                    TestContext.Out.WriteLine(
+                        $"unresolved door {door.ResRef}: Appearance={door.Root.GetIntOrNull("Appearance")}, " +
+                        $"GenericType_New={door.Root.GetIntOrNull("GenericType_New")}, " +
+                        $"GenericType={door.Root.GetIntOrNull("GenericType")}, " +
+                        $"kind={door.Model.Kind}, model={door.Model.ModelResRef}, status={door.Model.Status}");
+                }
+            }
 
             resolved.Should().BeGreaterThanOrEqualTo(115,
                 because: "121 of the 129 doors resolved a model when this was measured");

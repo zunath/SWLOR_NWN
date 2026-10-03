@@ -46,8 +46,14 @@ namespace SWLOR.Toolset.Tests
         private static string HaksDirectory => Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks");
         private static string ModuleDirectory => CorpusLocator.ModuleDirectory;
 
-        private static ResourceIndex BuildHakOnlyIndex() =>
-            ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
+        private static ResourceIndex BuildAreaResourceIndex()
+        {
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"))
+                ?? throw new DirectoryNotFoundException(
+                    "Set NWN_INSTALL_PATH to the licensed NWN:EE installation used by the area tileset tests.");
+            var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+            return ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory, baseLayer);
+        }
 
         private static (AreDocument Are, GitDocument Git) LoadArea(string resRef)
         {
@@ -71,7 +77,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Build_EveryTilePlacement_CoversExactlyItsOwnGridCell()
         {
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
             var workspace = new ModuleWorkspace(ModuleDirectory);
@@ -131,7 +137,7 @@ namespace SWLOR.Toolset.Tests
         public void Build_BankArea_TileCountMatchesWidthTimesHeight()
         {
             var (are, git) = LoadArea("bank");
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
 
@@ -147,7 +153,7 @@ namespace SWLOR.Toolset.Tests
         public void Build_BankArea_KnownTileResolvesExpectedModelAndGridPosition()
         {
             var (are, git) = LoadArea("bank");
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
 
@@ -183,7 +189,7 @@ namespace SWLOR.Toolset.Tests
         public void Build_AnchorEntreenorArea_HeightOffsetUsesTilesetTransitionHeight()
         {
             var (are, git) = LoadArea("anchor_entreenor");
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
 
@@ -203,7 +209,7 @@ namespace SWLOR.Toolset.Tests
         public void Build_CoxxianHqArea_InstanceMarkersMatchRawGitCountsAndValues()
         {
             var (are, git) = LoadArea("coxxian_hq");
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
 
@@ -248,7 +254,7 @@ namespace SWLOR.Toolset.Tests
             var instance = git.Creatures[0];
             var instanceVariables = new VarTable(instance);
             instanceVariables.SetInt("TM_instance_2", 77);
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
 
             var scene = AreaSceneBuilder.Build(
                 are,
@@ -267,7 +273,7 @@ namespace SWLOR.Toolset.Tests
         public void Build_InstancesWithoutEmbeddedTintOverridesRemainUntinted()
         {
             var (are, git) = LoadArea("coxxian_hq");
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
 
             var scene = AreaSceneBuilder.Build(
                 are,
@@ -285,7 +291,7 @@ namespace SWLOR.Toolset.Tests
         public void Build_AnchorEntreenorArea_TriggerMarkerCarriesGeometryPolygon()
         {
             var (are, git) = LoadArea("anchor_entreenor");
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
 
@@ -378,7 +384,7 @@ namespace SWLOR.Toolset.Tests
                     "door-editor previews and placement ghosts consume the same 2DA metadata");
                 previewReference.ModelResRef.Should().Be("missing_transition_model");
 
-                var index = BuildHakOnlyIndex();
+                var index = BuildAreaResourceIndex();
                 var scene = AreaSceneBuilder.Build(
                     are,
                     git,
@@ -425,7 +431,7 @@ namespace SWLOR.Toolset.Tests
             // Corrupt tile #0's Tile_ID to a value far beyond tfb01's tile count.
             are.Tiles[0].Get("Tile_ID").SetInteger(999_999);
 
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
 
@@ -447,7 +453,7 @@ namespace SWLOR.Toolset.Tests
             var (are, git) = LoadArea("bank");
             are.Tileset = "missing_tileset";
 
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var tilesetCatalog = new TilesetCatalog(index);
             var modelCache = new TileModelCache(index);
 
@@ -468,7 +474,7 @@ namespace SWLOR.Toolset.Tests
             var embedded = git.Creatures[0];
             embedded.Remove("TemplateResRef");
 
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
             var calls = new List<JsonGffStruct>();
 
             var act = () => AreaSceneBuilder.Build(
@@ -497,7 +503,7 @@ namespace SWLOR.Toolset.Tests
                     StringComparison.OrdinalIgnoreCase) &&
                 creature.Get("Appearance_Type").GetInteger() == 10039);
             var appearances = new List<long>();
-            var index = BuildHakOnlyIndex();
+            var index = BuildAreaResourceIndex();
 
             AreaSceneBuilder.Build(
                 are,

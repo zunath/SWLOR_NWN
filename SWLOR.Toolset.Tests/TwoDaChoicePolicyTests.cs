@@ -113,12 +113,13 @@ namespace SWLOR.Toolset.Tests
                 File.WriteAllText(
                     Path.Combine(scratch, "doortypes.2da"),
                     "2DA V2.0\r\n\r\nLabel Model TileSet TemplateResRef StringRefGame BlockSight VisibleModel SoundAppType\r\n" +
-                    "0 RealDoor real_model TST01 real_template 123 1 1 1\r\n" +
-                    "1 Reserved47 **** **** **** **** **** **** ****\r\n" +
-                    "2 User002 **** **** **** **** **** **** ****\r\n" +
-                    "3 MissingModel **** TST01 missing_model 123 1 1 1\r\n" +
-                    "4 MissingStringRef another_model TST01 missing_strref **** 1 1 1\r\n" +
-                    "5 MissingVisibility another_model TST01 missing_visibility 124 1 **** 1\r\n");
+                    "0 BaseDefault ignored_model TST01 ignored_template 123 1 1 1\r\n" +
+                    "1 RealDoor real_model TST01 real_template 123 1 1 1\r\n" +
+                    "2 Reserved47 **** **** **** **** **** **** ****\r\n" +
+                    "3 User002 **** **** **** **** **** **** ****\r\n" +
+                    "4 MissingModel **** TST01 missing_model 123 1 1 1\r\n" +
+                    "5 MissingStringRef another_model TST01 missing_strref **** 1 1 1\r\n" +
+                    "6 MissingVisibility another_model TST01 missing_visibility 124 1 **** 1\r\n");
                 File.WriteAllText(
                     Path.Combine(scratch, "genericdoors.2da"),
                     "2DA V2.0\r\n\r\nLabel StrRef ModelName BlockSight VisibleModel SoundAppType Name\r\n" +
@@ -131,8 +132,9 @@ namespace SWLOR.Toolset.Tests
                     new TwoDaService(scratch),
                     new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
 
-                service.GetAll().Should().ContainSingle()
-                    .Which.Should().Be(new DoorTypeRow(0, "RealDoor", "RealDoor", "real_model"));
+                service.GetAll().Should().HaveCount(2);
+                service.Get(0).Should().Be(new DoorTypeRow(0, "BaseDefault", "BaseDefault", "ignored_model"));
+                service.Get(1).Should().Be(new DoorTypeRow(1, "RealDoor", "RealDoor", "real_model"));
                 service.GetGenericAll().Should().HaveCount(2);
                 service.GetGeneric(0).Should().Match<GenericDoorRow>(row =>
                     row.Label == "GenericDoor" && row.Model == "generic_model" && row.VisibleModel);

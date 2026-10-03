@@ -1,32 +1,15 @@
+using System.Globalization;
+using Nwn.Authoring.Doors;
+using Nwn.Formats.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using FormatTwoDaTable = Nwn.Formats.TwoDa.TwoDaTable;
 
 namespace SWLOR.Toolset.Domain.GameData.Lookups
 {
     /// <summary>
-    /// One row of doortypes.2da. Column layout confirmed against the SWLOR_Haks/sw_2da/
-    /// doortypes.2da corpus: Label, Model, TileSet, TemplateResRef, StringRefGame, BlockSight,
-    /// VisibleModel, SoundAppType. "Label" here is an internal code (e.g. "Wall1Door"), not
-    /// display text; "StringRefGame" is the strref that resolves to the real in-game door name.
-    /// </summary>
-    public sealed record DoorTypeRow(
-        int Id,
-        string Label,
-        string DisplayName,
-        string? Model)
-    {
-        /// <summary>
-        /// Whether the door's model is visible in game. A false value identifies Aurora's
-        /// toolset-only transition planes: the engine hides their model, but an editor must still
-        /// draw their authored selection geometry so a builder can see and select them.
-        /// </summary>
-        public bool VisibleModel { get; init; } = true;
-    }
-
-    /// <summary>
     /// Editor lookup over doortypes.2da and genericdoors.2da. Results are built once on first use
-    /// and cached. Placeholder labels and rows without the model/string metadata required by the
-    /// builder-facing choices are skipped.
+    /// and cached; shared Authoring owns native row eligibility while this service owns TLK display.
     /// </summary>
     public sealed class DoorTypeService
     {
@@ -37,10 +20,10 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         public DoorTypeService(TwoDaService twoDa, TlkService tlk)
         {
-            if (twoDa is null) throw new ArgumentNullException(nameof(twoDa));
-            if (tlk is null) throw new ArgumentNullException(nameof(tlk));
+            ArgumentNullException.ThrowIfNull(twoDa);
+            ArgumentNullException.ThrowIfNull(tlk);
 
-            _rows = new ReloadableLazy<IReadOnlyList<DoorTypeRow>>(() => Build(twoDa, tlk));
+            _rows = new ReloadableLazy<IReadOnlyList<DoorTypeRow>>(() => BuildSpecific(twoDa, tlk));
             _byId = new ReloadableLazy<IReadOnlyDictionary<int, DoorTypeRow>>(
                 () => _rows.Value.ToDictionary(row => row.Id));
             _genericRows = new ReloadableLazy<IReadOnlyList<GenericDoorRow>>(() => BuildGeneric(twoDa, tlk));
@@ -58,13 +41,13 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             _byId.Reset();
         }
 
-        /// <summary>All non-reserved doortypes.2da rows, in row order.</summary>
+        /// <summary>All selectable doortypes.2da rows, in physical row order.</summary>
         public IReadOnlyList<DoorTypeRow> GetAll() => _rows.Value;
 
-        /// <summary>All non-reserved genericdoors.2da rows.</summary>
+        /// <summary>All selectable genericdoors.2da rows, in physical row order.</summary>
         public IReadOnlyList<GenericDoorRow> GetGenericAll() => _genericRows.Value;
 
-        /// <summary>Looks up a single specific model row by its Appearance id.</summary>
+        /// <summary>Looks up a specific model row by its physical doortypes.2da row index.</summary>
         public DoorTypeRow Get(int id)
         {
             if (!_byId.Value.TryGetValue(id, out var row))
@@ -73,6 +56,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             return row;
         }
 
+        /// <summary>Looks up a generic model row by its physical genericdoors.2da row index.</summary>
         public GenericDoorRow GetGeneric(int id)
         {
             if (!_genericById.Value.TryGetValue(id, out var row))
@@ -81,120 +65,62 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             return row;
         }
 
-        private static IReadOnlyList<DoorTypeRow> Build(TwoDaService twoDa, TlkService tlk)
+        private static IReadOnlyList<DoorTypeRow> BuildSpecific(TwoDaService twoDa, TlkService tlk)
         {
-            var definition = TwoDaLookupTables.DoorType;
-            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
-                table == null ||
-                !table.HasColumn(definition.LabelColumn) ||
-                !table.HasColumn(definition.StrRefColumn!) ||
-                definition.RequiredColumns!.Any(column => !table.HasColumn(column)))
-            {
-                return Array.Empty<DoorTypeRow>();
-            }
-
-            var results = new List<DoorTypeRow>();
-
-            for (var row = 0; row < table.RowCount; row++)
-            {
-                var label = table.GetString(row, definition.LabelColumn);
-                var model = table.GetString(row, "Model");
-                var stringRefGame = table.GetString(row, definition.StrRefColumn!);
-                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
-                    !TwoDaChoicePolicy.IsSelectableLabel(model) ||
-                    !TwoDaChoicePolicy.IsSelectableLabel(stringRefGame))
+            var options = DoorAppearanceCatalogReader.Read(
+                GetSnapshot(twoDa, TwoDaLookupTables.DoorType.TableName),
+                null);
+            return options
+                .Where(option => option.Kind == DoorAppearanceKind.Specific)
+                .Select(option => new DoorTypeRow(
+                    checked((int)option.Id),
+                    option.InternalLabel,
+                    DisplayNameResolver.Resolve(tlk, option.StringRef, option.InternalLabel),
+                    option.Model)
                 {
-                    continue;
-                }
-
-                var visibleModel = TryGetInt(table, row, "VisibleModel");
-                if (visibleModel is null)
-                {
-                    continue;
-                }
-
-                int? strref = null;
-                try
-                {
-                    strref = table.GetInt(row, "StringRefGame");
-                }
-                catch (FormatException)
-                {
-                    // A non-numeric cell in the strref column just means no localized text here.
-                }
-
-                var displayName = DisplayNameResolver.Resolve(tlk, strref, label!);
-
-                results.Add(new DoorTypeRow(
-                    row,
-                    label!,
-                    displayName,
-                    model)
-                {
-                    VisibleModel = visibleModel != 0
-                });
-            }
-
-            return results;
+                    VisibleModel = option.VisibleModel
+                })
+                .ToArray();
         }
 
         private static IReadOnlyList<GenericDoorRow> BuildGeneric(TwoDaService twoDa, TlkService tlk)
         {
-            var definition = TwoDaLookupTables.GenericDoor;
-            if (!twoDa.TryGetTable(definition.TableName, out var table) ||
-                table == null ||
-                !table.HasColumn(definition.LabelColumn) ||
-                definition.RequiredColumns!.Any(column => !table.HasColumn(column)))
-            {
-                return Array.Empty<GenericDoorRow>();
-            }
-
-            var results = new List<GenericDoorRow>();
-
-            for (var row = 0; row < table.RowCount; row++)
-            {
-                var label = table.GetString(row, definition.LabelColumn);
-                var model = table.GetString(row, "ModelName");
-                if (!TwoDaChoicePolicy.IsSelectableLabel(label) ||
-                    !TwoDaChoicePolicy.IsSelectableLabel(model))
+            var options = DoorAppearanceCatalogReader.Read(
+                null,
+                GetSnapshot(twoDa, TwoDaLookupTables.GenericDoor.TableName));
+            return options
+                .Where(option => option.Kind == DoorAppearanceKind.Generic)
+                .Select(option => new GenericDoorRow(
+                    checked((int)option.Id),
+                    option.InternalLabel,
+                    DisplayNameResolver.Resolve(
+                        tlk,
+                        option.StringRef,
+                        option.InternalLabel.Replace('_', ' ')),
+                    option.Model)
                 {
-                    continue;
-                }
-
-                var visibleModel = TryGetInt(table, row, "VisibleModel");
-                if (visibleModel is null)
-                {
-                    continue;
-                }
-
-                var nameStrRef = TryGetInt(table, row, "Name") ?? TryGetInt(table, row, "StrRef");
-                results.Add(new GenericDoorRow(
-                    row,
-                    label!,
-                    DisplayNameResolver.Resolve(tlk, nameStrRef, label!.Replace('_', ' ')),
-                    model)
-                {
-                    VisibleModel = visibleModel != 0
-                });
-            }
-
-            return results;
+                    VisibleModel = option.VisibleModel
+                })
+                .ToArray();
         }
 
-        /// <summary>
-        /// Reads a cell as an integer, treating a non-numeric cell as "no value" rather than
-        /// letting <see cref="FormatException"/> propagate and poison the caller's cached lookup.
-        /// </summary>
-        private static int? TryGetInt(TwoDaTable table, int row, string column)
+        private static FormatTwoDaTable? GetSnapshot(TwoDaService twoDa, string tableName)
         {
-            try
-            {
-                return table.GetInt(row, column);
-            }
-            catch (FormatException)
-            {
+            if (!twoDa.TryGetTable(tableName, out var table) || table is null)
                 return null;
+
+            var snapshot = new FormatTwoDaTable(table.ColumnNames);
+            for (var row = 0; row < table.RowCount; row++)
+            {
+                var values = table.ColumnNames.ToDictionary(
+                    column => column,
+                    column => table.GetString(row, column),
+                    StringComparer.OrdinalIgnoreCase);
+                var label = table.GetRowLabel(row) ?? row.ToString(CultureInfo.InvariantCulture);
+                snapshot.AddRow(label, values);
             }
+
+            return snapshot;
         }
     }
 }

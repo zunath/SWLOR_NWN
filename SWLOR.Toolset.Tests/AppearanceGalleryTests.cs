@@ -32,6 +32,30 @@ namespace SWLOR.Toolset.Tests
     [TestFixture]
     public class AppearanceGalleryTests
     {
+        private static string ToolsetSourceRoot
+        {
+            get
+            {
+                var current = new DirectoryInfo(AppContext.BaseDirectory);
+                while (current != null)
+                {
+                    var viewPath = Path.Combine(
+                        current.FullName,
+                        "SWLOR.Toolset",
+                        "Editors",
+                        "Views",
+                        "CreatureEditorView.axaml");
+                    if (File.Exists(viewPath))
+                        return current.FullName;
+
+                    current = current.Parent;
+                }
+
+                throw new DirectoryNotFoundException(
+                    "Could not locate the toolset source views from the test execution context.");
+            }
+        }
+
         [Test]
         public void OnlyTheFirstPageIsPublishedUntilSomethingAsksForMore()
         {
@@ -560,22 +584,24 @@ namespace SWLOR.Toolset.Tests
             // The door editor and the creature editor draw the same control. They had arrived at
             // the same design separately, and the creature editor had not arrived at it at all.
             var doorView = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
+                ToolsetSourceRoot,
                 "SWLOR.Toolset", "Editors", "Views", "DoorEditorView.axaml"));
             var blueprintView = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
+                ToolsetSourceRoot,
                 "SWLOR.Toolset", "Editors", "Views", "BlueprintEditorView.axaml"));
             var creatureView = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
+                ToolsetSourceRoot,
                 "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
 
             doorView.Should().Contain("<appearance:AppearanceGalleryView");
-            blueprintView.Should().Contain("gallery:AppearanceGalleryViewModel");
+            blueprintView.Should().Contain("xmlns:gallery=\"using:Nwn.Toolset.Avalonia.Appearances\"");
+            blueprintView.Should().Contain("<DataTemplate DataType=\"gallery:AppearanceGalleryViewModel\">");
+            blueprintView.Should().Contain("<appearance:AppearanceGalleryView />");
             creatureView.Should().Contain("<appearance:AppearanceGalleryView");
             creatureView.Should().Contain("<sharedBehaviors:BehaviorRowView />",
                 "creature equipment reuses the shared progressive choice control");
             var itemView = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
+                ToolsetSourceRoot,
                 "SWLOR.Toolset", "Editors", "Views", "ItemEditorView.axaml"));
             itemView.Should().Contain("<items:PaletteColorPickerView");
             creatureView.Should().Contain("<items:PaletteColorPickerView",
@@ -593,7 +619,7 @@ namespace SWLOR.Toolset.Tests
             creatureView.Should().NotContain("<TabItem Header=\"Tints\"",
                 "tints must not duplicate the Body appearance surface");
             var palettePickerView = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
+                ToolsetSourceRoot,
                 "SWLOR.Toolset", "Editors", "Items", "PaletteColorPickerView.axaml"));
             palettePickerView.Should().Contain("IsVisible=\"{Binding HasCustomOption}\"",
                 "the custom RGB editor must stay visible inside the existing preset popup");
@@ -618,8 +644,9 @@ namespace SWLOR.Toolset.Tests
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");
-            var sharedRoot = Environment.GetEnvironmentVariable("NwnToolsetSourceRoot")
-                ?? throw new InvalidOperationException("NwnToolsetSourceRoot must identify the shared source checkout.");
+            var sharedRoot = Environment.GetEnvironmentVariable("SWLOR_TEST_SHARED_SOURCE_ROOT")
+                ?? Environment.GetEnvironmentVariable("NwnToolsetSourceRoot")
+                ?? throw new InvalidOperationException("Set SWLOR_TEST_SHARED_SOURCE_ROOT to the shared source checkout.");
             var appearanceView = File.ReadAllText(Path.Combine(
                 sharedRoot, "src", "Nwn.Toolset.Avalonia", "Appearances", "Views", "AppearanceGalleryView.axaml"));
             appearanceView.Should().Contain("<controls:VirtualizingWrapPanel />");
@@ -631,10 +658,10 @@ namespace SWLOR.Toolset.Tests
                 "the rendered model replaces rather than overlays the fallback letter");
 
             Directory.Exists(Path.Combine(
-                    CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Appearance"))
+                    ToolsetSourceRoot, "SWLOR.Toolset", "Editors", "Appearance"))
                 .Should().BeTrue();
             File.Exists(Path.Combine(
-                    CorpusLocator.RepositoryRoot,
+                    ToolsetSourceRoot,
                     "SWLOR.Toolset", "Editors", "Doors", "DoorAppearanceSectionViewModel.cs"))
                 .Should().BeFalse("the door editor uses the shared grid now");
         }

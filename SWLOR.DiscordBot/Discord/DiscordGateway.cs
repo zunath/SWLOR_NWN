@@ -1,0 +1,292 @@
+using System.Collections.Concurrent;
+using System.Threading.Channels;
+using Discord;
+using Discord.Net;
+using Discord.WebSocket;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using SWLOR.DiscordBot.Configuration;
+using SWLOR.DiscordBot.Core;
+using SWLOR.DiscordBot.Hosting;
+
+namespace SWLOR.DiscordBot.Discord;
+
+public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration configuration, DiscordOperations discord,
+    TicketService tickets, ITicketStore store, CommunityService community, TimeProvider clock,
+    IHostApplicationLifetime lifetime, ReadinessMarker marker, ILogger<DiscordGateway> logger)
+{
+    private readonly Channel<Func<CancellationToken, Task>> jobs = Channel.CreateBounded<Func<CancellationToken, Task>>(new BoundedChannelOptions(128)
+    { FullMode = BoundedChannelFullMode.Wait, SingleWriter = false, SingleReader = false });
+    private readonly ConcurrentDictionary<string, CloseConfirmation> confirmations = new();
+    private CancellationToken stoppingToken;
+    private readonly GatewaySessionState sessionState = new();
+    public bool Ready => sessionState.IsReady(client.ConnectionState == ConnectionState.Connected);
+    private sealed record CloseConfirmation(ulong UserId, ulong ChannelId, Guid TicketId, DateTimeOffset ExpiresAt);
+
+    public void Suspend() { sessionState.Disconnect(); marker.Clear(); }
+    public void Attach(CancellationToken ct)
+    {
+        stoppingToken = ct;
+        client.Ready += OnReadyAsync;
+        client.LatencyUpdated += OnLatencyUpdatedAsync;
+        client.Disconnected += OnDisconnectedAsync;
+        client.SlashCommandExecuted += OnSlashAsync;
+        client.ButtonExecuted += OnButtonAsync;
+        client.MessageReceived += OnMessageAsync;
+        client.UserJoined += OnJoinedAsync;
+        client.Log += OnLogAsync;
+    }
+    public void Detach()
+    {
+        sessionState.Stop();
+        client.Ready -= OnReadyAsync;
+        client.LatencyUpdated -= OnLatencyUpdatedAsync;
+        client.Disconnected -= OnDisconnectedAsync;
+        client.SlashCommandExecuted -= OnSlashAsync;
+        client.ButtonExecuted -= OnButtonAsync;
+        client.MessageReceived -= OnMessageAsync;
+        client.UserJoined -= OnJoinedAsync;
+        client.Log -= OnLogAsync;
+        jobs.Writer.TryComplete();
+    }
+    public async Task ProcessAsync(CancellationToken ct)
+    {
+        await foreach (var job in jobs.Reader.ReadAllAsync(ct))
+        {
+            using var operation = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            operation.CancelAfter(TimeSpan.FromMinutes(10));
+            try { await job(operation.Token); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; }
+            catch (Exception ex) { logger.LogError("Discord event failed: {ErrorKind}.", SafeError(ex)); }
+        }
+    }
+    public static string SafeError(Exception ex) => ex switch
+    {
+        DiscordValidationException validation => validation.Message,
+        HttpException http => $"Discord HTTP {(int)http.HttpCode}",
+        _ => ex.GetType().Name
+    };
+    private Task OnLogAsync(LogMessage message)
+    {
+        // SDK messages can contain request bodies or exception details; retain only severity/source.
+        if (message.Severity <= LogSeverity.Warning) logger.LogWarning("Discord SDK {Severity} from {Source}.", message.Severity, message.Source);
+        return Task.CompletedTask;
+    }
+    private Task OnDisconnectedAsync(Exception _) { Suspend(); return Task.CompletedTask; }
+    private Task OnReadyAsync()
+    {
+        if (stoppingToken.IsCancellationRequested) return Task.CompletedTask;
+        marker.Clear();
+        QueueValidation(sessionState.BeginValidation());
+        return Task.CompletedTask;
+    }
+    private Task OnLatencyUpdatedAsync(int previous, int current)
+    {
+        if (stoppingToken.IsCancellationRequested) return Task.CompletedTask;
+        // Heartbeat ACKs also arrive after a successful RESUMED dispatch, which does not raise Ready again.
+        var connected = client.ConnectionState == ConnectionState.Connected && client.CurrentUser is not null &&
+            client.GetGuild(configuration.GuildId) is { IsConnected: true };
+        if (sessionState.ObserveHeartbeat(connected) is { } generation) QueueValidation(generation);
+        return Task.CompletedTask;
+    }
+    private void QueueValidation(int generation)
+    {
+        if (!jobs.Writer.TryWrite(async ct =>
+        {
+            if (!sessionState.IsCurrent(generation)) return;
+            try
+            {
+                await discord.ValidateDiscordAsync(ct);
+                if (!sessionState.IsCurrent(generation)) return;
+                await RegisterAsync(ct);
+                if (sessionState.CompleteValidation(generation, client.ConnectionState == ConnectionState.Connected))
+                    logger.LogInformation("Discord gateway is ready for guild {GuildId}.", configuration.GuildId);
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { sessionState.AbandonValidation(generation); }
+            catch (Exception ex)
+            {
+                // A disconnect can finish an old REST request after its gateway session has already changed.
+                if (!sessionState.IsCurrent(generation) || client.ConnectionState != ConnectionState.Connected)
+                { sessionState.AbandonValidation(generation); return; }
+                logger.LogCritical("Discord startup validation failed: {ErrorKind}.", SafeError(ex));
+                Environment.ExitCode = 1;
+                lifetime.StopApplication();
+            }
+        })) { Environment.ExitCode = 1; lifetime.StopApplication(); }
+    }
+    private async Task RegisterAsync(CancellationToken ct)
+    {
+        if (!configuration.Tickets.Enabled)
+        {
+            var guild = await discord.GuildAsync(ct);
+            var commands = await guild.GetApplicationCommandsAsync(options: DiscordOperations.Options(ct));
+            await TicketCommandRegistration.RemoveDisabledAsync(commands.Select(command =>
+                (command.Name, command.Type, (Func<Task>)(() => command.DeleteAsync(DiscordOperations.Options(ct))))), ct);
+            return;
+        }
+        var ticket = new SlashCommandBuilder().WithName("ticket").WithDescription("Manage this support ticket");
+        foreach (var (name, description) in new[] { ("close", "Close this ticket"), ("reopen", "Reopen this ticket"),
+            ("transcript", "Export a transcript (support only)"), ("hold", "Hold cleanup (support only)"), ("release", "Release cleanup hold (support only)") })
+            ticket.AddOption(new SlashCommandOptionBuilder().WithName(name).WithDescription(description).WithType(ApplicationCommandOptionType.SubCommand));
+        ticket.AddOption(new SlashCommandOptionBuilder().WithName("rename").WithDescription("Rename this ticket (support only)")
+            .WithType(ApplicationCommandOptionType.SubCommand).AddOption("name", ApplicationCommandOptionType.String, "New channel name", isRequired: true));
+        var publish = new SlashCommandBuilder().WithName("ticket-panel").WithDescription("Publish a configured ticket panel (bot administrators only)")
+            .AddOption(new SlashCommandOptionBuilder().WithName("publish").WithDescription("Publish an open-ticket button in its configured channel")
+                .WithType(ApplicationCommandOptionType.SubCommand).AddOption("panel", ApplicationCommandOptionType.String, "Configured panel ID", isRequired: true));
+        await client.Rest.CreateGuildCommand(ticket.Build(), configuration.GuildId, DiscordOperations.Options(ct));
+        await client.Rest.CreateGuildCommand(publish.Build(), configuration.GuildId, DiscordOperations.Options(ct));
+    }
+    private Task OnMessageAsync(SocketMessage message)
+    {
+        if (!Ready || message.Author.IsBot || message.Author.IsWebhook || message.Channel is not SocketTextChannel channel ||
+            channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId || !message.Content.StartsWith(configuration.Prefix, StringComparison.Ordinal)) return Task.CompletedTask;
+        if (!jobs.Writer.TryWrite(ct => RetryCommunityAsync(token => community.ExecuteAsync(message.Author.Id, channel.Id, message.Id, message.Content, token), ct)))
+            logger.LogWarning("Community event queue is full.");
+        return Task.CompletedTask;
+    }
+    private Task OnJoinedAsync(SocketGuildUser member)
+    {
+        if (!Ready || !configuration.Welcome.Enabled || member.Guild.Id != configuration.GuildId || member.IsBot || member.IsWebhook || !member.JoinedAt.HasValue) return Task.CompletedTask;
+        if (!jobs.Writer.TryWrite(ct => RetryCommunityAsync(token => community.WelcomeAsync(member.Id, member.JoinedAt.Value, token), ct))) logger.LogWarning("Welcome event queue is full.");
+        return Task.CompletedTask;
+    }
+    private async Task RetryCommunityAsync(Func<CancellationToken, Task> job, CancellationToken ct)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            try { await job(ct); return; }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+            catch (Exception ex) when (attempt < 2)
+            {
+                logger.LogWarning("Community delivery attempt {Attempt} failed: {ErrorKind}.", attempt + 1, SafeError(ex));
+                await Task.Delay(TimeSpan.FromSeconds(5 * (attempt + 1)), clock, ct);
+            }
+        }
+    }
+    private async Task QueueInteractionAsync(SocketInteraction interaction, Func<CancellationToken, Task> job)
+    {
+        if (interaction is SocketMessageComponent component) await component.DeferLoadingAsync(ephemeral: true);
+        else await interaction.DeferAsync(ephemeral: true);
+        if (!Ready || !jobs.Writer.TryWrite(async ct =>
+        {
+            using var operation = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            operation.CancelAfter(TimeSpan.FromMinutes(10));
+            try { await job(operation.Token); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { }
+            catch (Exception ex)
+            {
+                logger.LogWarning("Interaction {InteractionId} failed: {ErrorKind}.", interaction.Id, SafeError(ex));
+                await ReplyAsync(interaction, "The operation could not be completed. Staff can check the bot status.", ct);
+            }
+        })) await ReplyAsync(interaction, "The bot is temporarily unavailable. Please try again shortly.", stoppingToken);
+    }
+    private Task OnSlashAsync(SocketSlashCommand command)
+    {
+        if (command.Data.Name is not ("ticket" or "ticket-panel")) return Task.CompletedTask;
+        return QueueInteractionAsync(command, ct => HandleSlashAsync(command, ct));
+    }
+    private Task OnButtonAsync(SocketMessageComponent component)
+    {
+        if (!component.Data.CustomId.StartsWith("v1:", StringComparison.Ordinal)) return Task.CompletedTask;
+        return QueueInteractionAsync(component, ct => HandleButtonAsync(component, ct));
+    }
+    private static Task ReplyAsync(SocketInteraction interaction, string content, CancellationToken ct) =>
+        interaction.ModifyOriginalResponseAsync(x => { x.Content = content; x.Components = new ComponentBuilder().Build(); x.AllowedMentions = AllowedMentions.None; }, DiscordOperations.Options(ct));
+    private async Task<bool> GuildGuardAsync(SocketInteraction interaction, CancellationToken ct)
+    {
+        if (interaction.GuildId == configuration.GuildId && configuration.Tickets.Enabled) return true;
+        await ReplyAsync(interaction, "Ticket actions are available only in the configured server.", ct);
+        return false;
+    }
+    private async Task HandleSlashAsync(SocketSlashCommand command, CancellationToken ct)
+    {
+        if (!await GuildGuardAsync(command, ct)) return;
+        var actor = await discord.ActorAsync(command.User.Id, ct);
+        var option = command.Data.Options.Single();
+        if (command.Data.Name == "ticket-panel")
+        {
+            if (!actor.IsGuildOwner && !configuration.AdministratorRoleIds.Any(actor.RoleIds.Contains))
+            { await ReplyAsync(command, "Only configured bot administrators can publish a ticket panel.", ct); return; }
+            var panelId = (string)option.Options.Single(x => x.Name == "panel").Value;
+            var panel = configuration.Tickets.Panels.SingleOrDefault(x => x.Id == panelId);
+            if (panel is null) { await ReplyAsync(command, "That panel is not configured.", ct); return; }
+            var channel = await discord.TextChannelAsync(panel.ChannelId, ct);
+            await channel.SendMessageAsync(TemplateRenderer.RenderTicket(panel.PanelMessage, actor.UserId, discord.ServerName), allowedMentions: AllowedMentions.None,
+                components: new ComponentBuilder().WithButton(panel.Label, $"v1:open:{panel.Id}", ButtonStyle.Primary).Build(), options: DiscordOperations.PostingOptions(ct));
+            await ReplyAsync(command, $"Published the {panel.Id} panel in <#{panel.ChannelId}>.", ct);
+            return;
+        }
+        var channelId = command.Channel.Id;
+        if (option.Name == "close" && configuration.Tickets.CloseConfirmation)
+        { await ConfirmCloseAsync(command, actor, channelId, null, ct); return; }
+        var result = option.Name switch
+        {
+            "close" => await tickets.CloseAsync(channelId, actor, ct),
+            "reopen" => await tickets.ReopenAsync(channelId, actor, ct),
+            "rename" => await tickets.RenameAsync(channelId, actor, (string)option.Options.Single(x => x.Name == "name").Value, ct),
+            "transcript" => await tickets.ExportAsync(channelId, actor, ct),
+            "hold" => await tickets.SetHoldAsync(channelId, actor, true, ct),
+            "release" => await tickets.SetHoldAsync(channelId, actor, false, ct),
+            _ => new TicketResult(false, "Unknown ticket action.")
+        };
+        await ReplyAsync(command, result.Message, ct);
+        if (option.Name == "transcript" && result.Success && result.Ticket?.ArchivePath is { } archive)
+        {
+            var path = Path.Combine(archive, "transcript.html");
+            if (File.Exists(path)) await command.FollowupWithFileAsync(path, text: "Ticket transcript", ephemeral: true, allowedMentions: AllowedMentions.None, options: DiscordOperations.Options(ct));
+        }
+    }
+    private async Task<Ticket?> AuthorizedCloseTicketAsync(ulong channelId, Actor actor, Guid? ticketId, CancellationToken ct)
+    {
+        await using var session = await store.LockAsync(ct);
+        var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(x => x.ChannelId == channelId && (!ticketId.HasValue || x.Id == ticketId));
+        return ticket is not null && (ticket.RequesterId == actor.UserId || tickets.CanSupport(actor)) ? ticket : null;
+    }
+    private async Task ConfirmCloseAsync(SocketInteraction interaction, Actor actor, ulong channelId, Guid? ticketId, CancellationToken ct)
+    {
+        var ticket = await AuthorizedCloseTicketAsync(channelId, actor, ticketId, ct);
+        if (ticket is null) { await ReplyAsync(interaction, "You cannot close this channel as a managed ticket.", ct); return; }
+        foreach (var entry in confirmations.Where(x => x.Value.ExpiresAt <= clock.GetUtcNow())) confirmations.TryRemove(entry.Key, out _);
+        var nonce = Guid.NewGuid().ToString("N");
+        confirmations[nonce] = new(actor.UserId, channelId, ticket.Id, clock.GetUtcNow() + TimeSpan.FromMinutes(5));
+        await interaction.ModifyOriginalResponseAsync(x =>
+        {
+            x.Content = "Close this ticket? The channel will become read-only for the requester.";
+            x.Components = new ComponentBuilder().WithButton("Confirm close", $"v1:confirm:{nonce}", ButtonStyle.Danger).Build();
+            x.AllowedMentions = AllowedMentions.None;
+        }, DiscordOperations.Options(ct));
+    }
+    private async Task HandleButtonAsync(SocketMessageComponent component, CancellationToken ct)
+    {
+        if (!await GuildGuardAsync(component, ct)) return;
+        if (component.Message.Author.Id != client.CurrentUser.Id)
+        { await ReplyAsync(component, "This is not a bot-issued ticket control.", ct); return; }
+        var parts = component.Data.CustomId.Split(':');
+        if (parts.Length != 3) { await ReplyAsync(component, "Invalid ticket control.", ct); return; }
+        var actor = await discord.ActorAsync(component.User.Id, ct);
+        if (parts[1] == "open")
+        {
+            var panel = configuration.Tickets.Panels.SingleOrDefault(x => x.Id == parts[2] && x.ChannelId == component.Channel.Id);
+            if (panel is null) { await ReplyAsync(component, "This ticket panel is unavailable in this channel.", ct); return; }
+            var result = await tickets.OpenAsync(panel.Id, actor, component.Id.ToString(System.Globalization.CultureInfo.InvariantCulture), ct);
+            await ReplyAsync(component, result.Success && result.Ticket?.ChannelId is { } id ? $"Your ticket is ready: <#{id}>." : result.Message, ct);
+        }
+        else if (parts[1] == "close" && Guid.TryParseExact(parts[2], "D", out var ticketId))
+        {
+            if (configuration.Tickets.CloseConfirmation) await ConfirmCloseAsync(component, actor, component.Channel.Id, ticketId, ct);
+            else if (await AuthorizedCloseTicketAsync(component.Channel.Id, actor, ticketId, ct) is not null)
+                await ReplyAsync(component, (await tickets.CloseAsync(component.Channel.Id, actor, ct)).Message, ct);
+            else await ReplyAsync(component, "You cannot close this channel as a managed ticket.", ct);
+        }
+        else if (parts[1] == "confirm")
+        {
+            if (!confirmations.TryGetValue(parts[2], out var confirmation) || confirmation.UserId != actor.UserId ||
+                confirmation.ChannelId != component.Channel.Id || confirmation.ExpiresAt <= clock.GetUtcNow())
+            { await ReplyAsync(component, "This confirmation is expired or belongs to another member.", ct); return; }
+            if (!confirmations.TryRemove(parts[2], out _) || await AuthorizedCloseTicketAsync(confirmation.ChannelId, actor, confirmation.TicketId, ct) is null)
+            { await ReplyAsync(component, "This ticket can no longer be closed by you.", ct); return; }
+            await ReplyAsync(component, (await tickets.CloseAsync(confirmation.ChannelId, actor, ct)).Message, ct);
+        }
+        else await ReplyAsync(component, "Invalid ticket control.", ct);
+    }
+}

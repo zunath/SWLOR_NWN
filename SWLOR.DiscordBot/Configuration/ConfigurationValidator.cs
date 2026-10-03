@@ -1,0 +1,219 @@
+using System.Text.RegularExpressions;
+
+namespace SWLOR.DiscordBot.Configuration;
+
+public static partial class ConfigurationValidator
+{
+    private static readonly TimeSpan MaximumQuickAnswerCooldown = TimeSpan.FromDays(30);
+    private const int MaximumMessageLength = 2000;
+    private const int MaximumEmbedFields = 25;
+    private const int MaximumEmbedTextLength = 6000;
+
+    public static IReadOnlyList<string> Validate(BotConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var errors = new List<string>();
+        if (configuration.GuildId == 0) errors.Add("guildId must be a positive Discord ID.");
+        if (string.IsNullOrWhiteSpace(configuration.Prefix) || configuration.Prefix.Length > 8 || configuration.Prefix.Any(char.IsWhiteSpace) || configuration.Prefix.Any(char.IsControl))
+            errors.Add("prefix must contain 1 to 8 non-whitespace, printable characters.");
+
+        if (configuration.Tickets is null) errors.Add("tickets must not be null.");
+        if (configuration.Welcome is null) errors.Add("welcome must not be null.");
+        if (configuration.Factions is null) errors.Add("factions must not be null.");
+        if (configuration.Answers is null) errors.Add("answers must not be null.");
+
+        ValidateUniqueIds(configuration.AdministratorRoleIds, "administratorRoleIds", errors);
+
+        if (configuration.Tickets?.Enabled == true) ValidateTickets(configuration.Tickets, errors);
+        if (configuration.Welcome?.Enabled == true) ValidateWelcome(configuration.Welcome, errors);
+        if (configuration.Factions?.Enabled == true) ValidateFactions(configuration, errors);
+        if (configuration.Answers is not null)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < configuration.Answers.Length; i++)
+            {
+                var answer = configuration.Answers[i];
+                if (answer is null) { errors.Add($"answers[{i}] must not be null."); continue; }
+                if (!answer.Enabled) continue;
+                var name = answer.Name?.Trim() ?? "";
+                if (!IsSafeCommandName(name)) errors.Add($"answers[{i}].name must be a safe command name (letters, digits, underscore, or hyphen; 1 to 32 characters).");
+                else if (!seen.Add(name)) errors.Add($"Duplicate quick answer command '{name}'.");
+                if (configuration.Factions?.Enabled == true && string.Equals(name, "rank", StringComparison.OrdinalIgnoreCase)) errors.Add("The quick answer command 'rank' is reserved for faction role selection.");
+                if (answer.Cooldown < TimeSpan.Zero || answer.Cooldown > MaximumQuickAnswerCooldown) errors.Add($"answers[{i}].cooldown must be between zero and 30 days.");
+                if (answer.DeleteResponseAfter is { } deleteAfter && deleteAfter <= TimeSpan.Zero) errors.Add($"answers[{i}].deleteResponseAfter must be positive when set.");
+                if (answer.DeleteResponseAfter is { } responseDeleteAfter && responseDeleteAfter > TimeSpan.FromDays(7)) errors.Add($"answers[{i}].deleteResponseAfter must not exceed 7 days.");
+                if ((answer.Responses?.Length ?? 0) == 0 && (answer.Embeds?.Length ?? 0) == 0) errors.Add($"answers[{i}] must have at least one response or embed.");
+                if (answer.Responses is not null)
+                    for (var j = 0; j < answer.Responses.Length; j++)
+                    {
+                        if (string.IsNullOrWhiteSpace(answer.Responses[j])) errors.Add($"answers[{i}].responses[{j}] must not be empty.");
+                        if (answer.Responses[j]?.Length > MaximumMessageLength) errors.Add($"answers[{i}].responses[{j}] exceeds the 2000 character message limit.");
+                        ValidateTemplate(answer.Responses[j], TemplateKind.Answer, $"answers[{i}].responses[{j}]", errors);
+                    }
+                if (answer.Embeds is not null)
+                {
+                    if (answer.Embeds.Length > 10) errors.Add($"answers[{i}].embeds exceeds the 10 embed limit.");
+                    var combinedEmbedText = 0;
+                    for (var j = 0; j < answer.Embeds.Length; j++)
+                    {
+                        var embed = answer.Embeds[j];
+                        if (embed is null) { errors.Add($"answers[{i}].embeds[{j}] must not be null."); continue; }
+                        if (embed.Url is { Length: > 0 } url && (!Uri.TryCreate(url, UriKind.Absolute, out var parsed) || parsed.Scheme is not ("http" or "https") || !string.IsNullOrEmpty(parsed.UserInfo) || url.Length > 2048)) errors.Add($"answers[{i}].embeds[{j}].url must be a safe absolute HTTP or HTTPS URL without credentials and at most 2048 characters.");
+                        if (string.IsNullOrWhiteSpace(embed.Title) && string.IsNullOrWhiteSpace(embed.Description) && (embed.Fields?.Length ?? 0) == 0)
+                            errors.Add($"answers[{i}].embeds[{j}] must contain a title, description, or field.");
+                        if (embed.Title?.Length > 256) errors.Add($"answers[{i}].embeds[{j}].title exceeds the 256 character embed title limit.");
+                        if (embed.Description?.Length > 4096) errors.Add($"answers[{i}].embeds[{j}].description exceeds the 4096 character embed description limit.");
+                        if (embed.Color > 0xFFFFFF) errors.Add($"answers[{i}].embeds[{j}].color must be a 24-bit RGB value.");
+                        combinedEmbedText += (embed.Title?.Length ?? 0) + (embed.Description?.Length ?? 0);
+                        ValidateTemplate(embed.Title, TemplateKind.Answer, $"answers[{i}].embeds[{j}].title", errors);
+                        ValidateTemplate(embed.Description, TemplateKind.Answer, $"answers[{i}].embeds[{j}].description", errors);
+                        if (embed.Fields is not null)
+                        {
+                            if (embed.Fields.Length > MaximumEmbedFields) errors.Add($"answers[{i}].embeds[{j}] exceeds the 25 field limit.");
+                            var totalTextLength = (embed.Title?.Length ?? 0) + (embed.Description?.Length ?? 0);
+                            for (var k = 0; k < embed.Fields.Length; k++)
+                            {
+                                var field = embed.Fields[k];
+                                if (field is null) { errors.Add($"answers[{i}].embeds[{j}].fields[{k}] must not be null."); continue; }
+                                if (string.IsNullOrWhiteSpace(field.Name) || string.IsNullOrWhiteSpace(field.Value)) errors.Add($"answers[{i}].embeds[{j}].fields[{k}] needs a name and value.");
+                                if (field.Name?.Length > 256) errors.Add($"answers[{i}].embeds[{j}].fields[{k}].name exceeds the 256 character limit.");
+                                if (field.Value?.Length > 1024) errors.Add($"answers[{i}].embeds[{j}].fields[{k}].value exceeds the 1024 character limit.");
+                                totalTextLength += (field.Name?.Length ?? 0) + (field.Value?.Length ?? 0);
+                                ValidateTemplate(field.Name, TemplateKind.Answer, $"answers[{i}].embeds[{j}].fields[{k}].name", errors);
+                                ValidateTemplate(field.Value, TemplateKind.Answer, $"answers[{i}].embeds[{j}].fields[{k}].value", errors);
+                            }
+                            if (totalTextLength > MaximumEmbedTextLength) errors.Add($"answers[{i}].embeds[{j}] exceeds the combined 6000 character text limit.");
+                            combinedEmbedText += embed.Fields.Where(x => x is not null).Sum(x => (x.Name?.Length ?? 0) + (x.Value?.Length ?? 0));
+                        }
+                    }
+                    if (combinedEmbedText > MaximumEmbedTextLength) errors.Add($"answers[{i}] exceeds the combined 6000 character text limit across embeds.");
+                }
+                ValidateUniqueIds(answer.AllowedRoleIds, $"answers[{i}].allowedRoleIds", errors);
+                ValidateUniqueIds(answer.AllowedChannelIds, $"answers[{i}].allowedChannelIds", errors);
+            }
+            if (configuration.Factions?.Enabled == true)
+                foreach (var answer in configuration.Answers.Where(x => x is not null && x.Enabled))
+                    if (configuration.Factions.Roles?.Any(x => x is not null && string.Equals(x.Name, answer.Name, StringComparison.OrdinalIgnoreCase)) == true)
+                        errors.Add($"Command '{answer.Name}' is configured as both a faction and a quick answer.");
+        }
+        return errors;
+    }
+
+    private static void ValidateTickets(TicketOptions tickets, List<string> errors)
+    {
+        if (tickets.Panels is null || tickets.Panels.Length == 0) errors.Add("tickets.panels must contain at least one panel when tickets are enabled.");
+        if (tickets.SupportRoleIds is null || tickets.SupportRoleIds.Length == 0) errors.Add("tickets.supportRoleIds must contain at least one role when tickets are enabled.");
+        if ((tickets.BypassRoleIds?.Length ?? 0) > 0 && (tickets.BypassMemberLimit is null || tickets.BypassPanelLimit is null || tickets.BypassGuildLimit is null))
+            errors.Add("tickets.bypassMemberLimit, bypassPanelLimit, and bypassGuildLimit must all be explicitly set when bypassRoleIds are configured.");
+        var panelIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (tickets.Panels is not null)
+            for (var i = 0; i < tickets.Panels.Length; i++)
+            {
+                var panel = tickets.Panels[i];
+                if (panel is null) { errors.Add($"tickets.panels[{i}] must not be null."); continue; }
+                if (!IsSafeIdentifier(panel.Id)) errors.Add($"tickets.panels[{i}].id must be a safe identifier (letters, digits, underscore, or hyphen; 1 to 32 characters).");
+                else if (!panelIds.Add(panel.Id)) errors.Add($"Duplicate ticket panel id '{panel.Id}'.");
+                RequireId(panel.ChannelId, $"tickets.panels[{i}].channelId", errors);
+                if (panel.OpenLimit <= 0) errors.Add($"tickets.panels[{i}].openLimit must be positive.");
+                if (string.IsNullOrWhiteSpace(panel.Label) || panel.Label.Length > 80) errors.Add($"tickets.panels[{i}].label must contain 1 to 80 characters.");
+                ValidateTemplate(panel.OpeningMessage, TemplateKind.Ticket, $"tickets.panels[{i}].openingMessage", errors);
+                ValidateTemplate(panel.PanelMessage, TemplateKind.Ticket, $"tickets.panels[{i}].panelMessage", errors);
+                if (panel.OpeningMessage?.Length > MaximumMessageLength) errors.Add($"tickets.panels[{i}].openingMessage exceeds the 2000 character message limit.");
+                if (panel.PanelMessage?.Length > MaximumMessageLength) errors.Add($"tickets.panels[{i}].panelMessage exceeds the 2000 character message limit.");
+                if (string.IsNullOrWhiteSpace(panel.PanelMessage)) errors.Add($"tickets.panels[{i}].panelMessage must not be empty.");
+                ValidateUniqueIds(panel.OpenCategoryIds, $"tickets.panels[{i}].openCategoryIds", errors);
+                if (panel.OpenCategoryIds is null || panel.OpenCategoryIds.Length == 0) errors.Add($"tickets.panels[{i}].openCategoryIds must contain at least one category.");
+            }
+        ValidateUniqueIds(tickets.SupportRoleIds, "tickets.supportRoleIds", errors);
+        ValidateUniqueIds(tickets.BypassRoleIds, "tickets.bypassRoleIds", errors);
+        RequireId(tickets.ClosedCategoryId, "tickets.closedCategoryId", errors);
+        RequireId(tickets.LogChannelId, "tickets.logChannelId", errors);
+        if (tickets.MemberLimit <= 0) errors.Add("tickets.memberLimit must be positive.");
+        if (tickets.GuildLimit <= 0) errors.Add("tickets.guildLimit must be positive.");
+        if (tickets.CleanupDelay <= TimeSpan.Zero) errors.Add("tickets.cleanupDelay must be positive.");
+        if (tickets.CleanupInterval <= TimeSpan.Zero) errors.Add("tickets.cleanupInterval must be positive.");
+        if (tickets.CleanupInterval > TimeSpan.FromDays(30)) errors.Add("tickets.cleanupInterval must not exceed 30 days.");
+        if (tickets.ArchiveRetentionDays <= 0 || tickets.ArchiveRetentionDays <= tickets.CleanupDelay.TotalDays) errors.Add("tickets.archiveRetentionDays must be positive and longer than cleanupDelay.");
+        if (tickets.ArchiveRetentionDays > 3650) errors.Add("tickets.archiveRetentionDays must not exceed 3650 days.");
+        if (string.IsNullOrWhiteSpace(tickets.ArchiveDirectory) || !Path.IsPathRooted(tickets.ArchiveDirectory)) errors.Add("tickets.archiveDirectory must be an absolute path.");
+        if (tickets.MaxAttachmentBytes <= 0) errors.Add("tickets.maxAttachmentBytes must be positive.");
+        if (tickets.MaxAttachmentBytes > 10737418240L) errors.Add("tickets.maxAttachmentBytes must not exceed 10 GiB.");
+    }
+
+    private static void ValidateWelcome(WelcomeOptions welcome, List<string> errors)
+    {
+        if (!welcome.DirectMessage) RequireId(welcome.ChannelId, "welcome.channelId", errors);
+        ValidateTemplate(welcome.Template, TemplateKind.Welcome, "welcome.template", errors, welcome.ChannelMentions);
+        if (string.IsNullOrWhiteSpace(welcome.Template)) errors.Add("welcome.template must not be empty when welcome messages are enabled.");
+        if (welcome.Template?.Length > MaximumMessageLength) errors.Add("welcome.template exceeds the 2000 character message limit.");
+        foreach (var pair in welcome.ChannelMentions ?? [])
+        {
+            if (!IsSafeIdentifier(pair.Key)) errors.Add($"welcome.channelMentions key '{pair.Key}' must be a safe channel name.");
+            RequireId(pair.Value, $"welcome.channelMentions['{pair.Key}']", errors);
+        }
+    }
+
+    private static void ValidateFactions(BotConfiguration config, List<string> errors)
+    {
+        var factions = config.Factions;
+        if (factions.Roles is null || factions.Roles.Length == 0) errors.Add("factions.roles must contain at least one role when factions are enabled.");
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var ids = new HashSet<ulong>();
+        var staff = (config.AdministratorRoleIds ?? []).Concat(config.Tickets?.SupportRoleIds ?? []).ToHashSet();
+        if (factions.Roles is not null)
+            for (var i = 0; i < factions.Roles.Length; i++)
+            {
+                var role = factions.Roles[i];
+                if (role is null) { errors.Add($"factions.roles[{i}] must not be null."); continue; }
+                if (!IsSafeFactionName(role.Name)) errors.Add($"factions.roles[{i}].name must be a safe faction name (letters, digits, spaces, underscore, or hyphen; 1 to 64 characters).");
+                else if (!names.Add(role.Name.Trim())) errors.Add($"Duplicate faction command '{role.Name}'.");
+                RequireId(role.RoleId, $"factions.roles[{i}].roleId", errors);
+                if (role.RoleId != 0 && !ids.Add(role.RoleId)) errors.Add($"Duplicate faction role ID {role.RoleId}.");
+                if (role.RoleId != 0 && staff.Contains(role.RoleId)) errors.Add($"Faction role '{role.Name}' overlaps an administrator or ticket support role.");
+            }
+        if (factions.Exclusive is null) errors.Add("factions.exclusive must be set when factions are enabled.");
+        if (factions.Behavior is null || !(factions.Behavior.Equals("toggle", StringComparison.OrdinalIgnoreCase) || factions.Behavior.Equals("join", StringComparison.OrdinalIgnoreCase))) errors.Add("factions.behavior must be 'toggle' or 'join'.");
+    }
+
+    private enum TemplateKind { Welcome, Answer, Ticket }
+    private static void ValidateTemplate(string? template, TemplateKind kind, string path, List<string> errors, IReadOnlyDictionary<string, ulong>? channelMentions = null)
+    {
+        if (template is null) { errors.Add($"{path} must not be null."); return; }
+        var pattern = new Regex(@"\{([^{}]*)\}", RegexOptions.CultureInvariant);
+        var matches = pattern.Matches(template);
+        foreach (Match match in matches)
+        {
+            var macro = match.Groups[1].Value;
+            var valid = kind switch
+            {
+                TemplateKind.Welcome => macro is "user" or "server" || macro.StartsWith('#') && IsSafeIdentifier(macro[1..]),
+                TemplateKind.Answer => macro is "user" or "server" or "args" || macro.Length == 1 && macro[0] is >= '1' and <= '9',
+                _ => macro is "user" or "server"
+            };
+            if (!valid) errors.Add($"{path} contains unknown macro '{{{macro}}}'.");
+            else if (kind == TemplateKind.Welcome && macro.StartsWith('#') &&
+                     (channelMentions is null || !channelMentions.TryGetValue(macro[1..], out var channelId) || channelId == 0))
+                errors.Add($"{path} references channel macro '{{{macro}}}' without a valid channelMentions mapping.");
+        }
+        var stripped = pattern.Replace(template, "");
+        if (stripped.Contains('{') || stripped.Contains('}')) errors.Add($"{path} contains malformed template braces.");
+    }
+
+    private static bool IsSafeIdentifier(string? value) => !string.IsNullOrEmpty(value) && value.Length <= 32 && SafeIdentifierRegex().IsMatch(value);
+    private static bool IsSafeCommandName(string? value) => IsSafeIdentifier(value);
+    private static bool IsSafeFactionName(string? value) => !string.IsNullOrWhiteSpace(value) && value.Length <= 64 && value == value.Trim() && SafeFactionRegex().IsMatch(value);
+    private static void RequireId(ulong id, string path, List<string> errors) { if (id == 0) errors.Add($"{path} must be a positive Discord ID."); }
+    private static void ValidateUniqueIds(IEnumerable<ulong>? ids, string path, List<string> errors)
+    {
+        if (ids is null) { errors.Add($"{path} must not be null."); return; }
+        var values = ids.ToArray();
+        if (values.Any(x => x == 0)) errors.Add($"{path} must contain only positive Discord IDs.");
+        if (values.Distinct().Count() != values.Length) errors.Add($"{path} contains duplicate IDs.");
+    }
+
+    [GeneratedRegex("^[A-Za-z0-9_-]+$", RegexOptions.CultureInvariant)]
+    private static partial Regex SafeIdentifierRegex();
+
+    [GeneratedRegex("^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$", RegexOptions.CultureInvariant)]
+    private static partial Regex SafeFactionRegex();
+}

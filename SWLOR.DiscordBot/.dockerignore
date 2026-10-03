@@ -1,0 +1,19 @@
+**/bin/
+**/obj/
+.git/
+.vs/
+.vscode/
+.idea/
+
+# Deployment configuration and credentials stay outside the image build context.
+bot.json
+.env
+.env.*
+secrets/
+
+# Persisted runtime state must live in the mounted /data volume.
+data/
+archives/
+*.db
+*.sqlite*
+*.ready

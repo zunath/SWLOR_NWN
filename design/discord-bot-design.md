@@ -1,6 +1,6 @@
 # SWLOR Discord Bot Design
 
-Status: architecture and implementation contract specified; live-server parity audit remains incomplete because supported browser inspection stopped. Updated 2026-10-03.
+Status: initial bot implemented in the independent Discord bot worktree; local verification completed. Live-server parity import and deployment remain pending. Updated 2026-10-03.
 
 ## Confirmed scope
 
@@ -10,7 +10,7 @@ Status: architecture and implementation contract specified; live-server parity a
 - Leave room for conversation summaries, staff searches using AI, and game integration.
 - Inspect the existing Discord server and bot dashboards to discover configuration rather than asking the owner to transcribe every setting.
 
-The current request covers design and discovery. Runtime implementation, installation of a new Discord application, and production cutover are subsequent work. Existing bots remain operational during discovery.
+The owner authorized implementation with "Ok put the bot together." The worker, persistence, workflows, tests, and Docker packaging are now implemented. Creating/installing the Discord application, supplying its token, importing the remaining verified settings, and production cutover remain deployment work. Existing bots remain operational.
 
 ## Discovery status and evidence
 
@@ -345,13 +345,13 @@ These are design recommendations for behavior the existing audit did not establi
 | Setting | Proposed value | Reason |
 | --- | --- | --- |
 | Cleanup eligibility | Seven days after explicit closure; never delete an open ticket for inactivity | Provides a staff review window and meets the requested periodic cleanup |
-| Cleanup polling | Every five minutes, with a persisted due time and bounded batch | Restarts do not reset the delay or lose work |
+| Cleanup polling | Every five minutes, with a persisted due time and a bounded maintenance pass | Restarts do not reset the delay or lose work |
 | Close confirmation | One confirmation; no mandatory reason | Avoids accidental closure without adding a required form |
 | Requester after closure | Read-only until deletion | Allows reviewing the outcome during the cleanup window |
 | Archive before deletion | Required JSON and escaped HTML export, including messages, embeds, timestamps, author IDs, and attachment metadata | Preserves a usable record independently of the deleted channel |
 | Attachment handling | Copy available ticket attachments into protected archive storage; failed required copies block cleanup | Discord URLs alone do not provide a durable archive |
 | Archive retention | 90 days after closure, configurable; any extended hold must be explicitly recorded | Provides a bounded support-history window for future querying |
-| Reopening | Staff-only initially; clear deletion due time and restore permissions atomically | Prevents cleanup racing with an active support conversation |
+| Reopening | Staff-only initially; persist a reopening state, clear deletion due time, and restore permissions before marking open | Prevents cleanup racing with an active support conversation |
 | Open category selection | First configured category with capacity; fail with an actionable response when both are full | Supports the two observed categories without creating unapproved categories |
 | Existing Ticket Tool channels | Let Ticket Tool finish them; new bot starts with new tickets | Avoids claiming old channels or deleting them based on names |
 | Future AI | Disabled; archive tickets only, with no general-chat indexing | Keeps launch focused on replacement features |
@@ -381,6 +381,83 @@ A reopened ticket's later closure starts a new deletion and archive-retention wi
 
 Do not test against the production guild by posting tickets or commands during discovery. Domain/adapter tests can use fixtures independently; a dedicated development guild supplies the final permission and interaction checks. Exact parity is accepted only after the missing live responses, switches, IDs, and deployed controls have been read and compared.
 
+## Implemented bot and deployment inputs
+
+`SWLOR.DiscordBot/` is an independent .NET 10 worker; it does not depend on the NWN game server or its post-build deployment. It uses Discord.Net 3.20.1 and Npgsql 10.0.3. `SWLOR.DiscordBot.Tests/` exercises the domain services, Discord request/permission helpers, configuration, archives, and PostgreSQL persistence.
+
+Implemented behavior:
+
+- Persistent private ticket creation, member/panel/guild caps with explicit bypass scopes, staff rename, requester/staff close confirmation, staff reopen, transcript export, cleanup holds, and scheduled cleanup.
+- A persisted Creating/Closing/Reopening/Deleting state reconciles interrupted ticket operations. Channel identity combines the database record with an exact ticket GUID in its topic; names alone never establish ownership. The bot does not import or delete Ticket Tool channels.
+- JSON and escaped HTML transcripts, paginated message history, copied CDN attachments with size checks, archive expiration, and a final-message check before channel deletion. Export failures retain the channel. Archives live on the protected data volume; `/ticket transcript` returns the HTML to authorized support staff. Copied attachments and JSON remain in the archive directory and are not embedded into that uploaded HTML.
+- Configurable channel or DM welcomes; exact `?rank <full faction role name>` joins/toggles and optional exclusivity; canned `?` answers with text, embeds, role/channel restrictions, cooldowns, and command/response deletion options. Unsupported macros fail configuration validation.
+- Current REST member/role authorization, guild/category/channel checks, faction role hierarchy checks, bounded queues/retries, rate-limit handling, a single active-worker database lease, and readiness health checks.
+- Independent Docker Compose packaging with pinned .NET/PostgreSQL images, a non-root worker, mounted secret files, read-only worker filesystem, persistent PostgreSQL/archive volumes, bounded logs, and no published database port.
+
+### Fill the runtime configuration
+
+Copy `SWLOR.DiscordBot/bot.example.json` to `SWLOR.DiscordBot/bot.json`. The example includes the observed SWLOR guild ID and prefix, the welcome template, 12 faction role names, and 24 answer command names. Unverified IDs, answers, and behavior switches remain unset; all features start disabled. `design/discord-bot-parity.json` remains a separate audit inventory and cannot be used as runtime configuration.
+
+Before enabling a feature, supply these verified values:
+
+| Feature | Inputs |
+| --- | --- |
+| Configuration administration | Administrator role IDs, or leave the list empty for guild-owner-only panel publication |
+| Tickets | Panel text channel, open categories, closed category, log channel, support roles, optional bypass roles and each bypass scope, panel/opening messages |
+| Welcomes | Destination and delivery type, channel IDs for the template's information/general/off-topic variables |
+| Factions | Every allowlisted role ID, `Behavior` (`join` or `toggle`), and explicit `Exclusive` boolean |
+| Answers | Exact verified response text/embeds, any restrictions, arguments/macros, cooldowns, and deletion behavior for each enabled command |
+
+The example's seven-day closed-channel cleanup, five-minute polling, 90-day archive retention, requester read-only access after closing, and 100 MiB attachment limit are proposed replacement defaults, not claims about unread Ticket Tool settings. Review these explicit values before activation. A failed required attachment copy, including an oversized attachment, suspends cleanup for that ticket until staff resolves the archive issue.
+
+Configuration is loaded at startup; restart the worker after editing it. IDs may be numbers or quoted decimal strings. Unknown JSON fields are rejected so a misspelled security or retention option cannot silently fall back to a default.
+
+### Discord application and Linux startup
+
+Create a dedicated Discord application and bot, then install it with the bot and application-command scopes. Enable Server Members Intent for welcomes and Message Content Intent for prefix commands and ticket transcript content. Grant the required channel/message and role-management permissions, and place the bot role above the allowlisted faction roles. Startup verifies required access against the configured guild; Administrator is not required. Discord administrators and the guild owner retain their platform access to private tickets.
+
+Store the new application's bot token in `SWLOR.DiscordBot/secrets/discord-token.txt` and a strong, separate database password in `SWLOR.DiscordBot/secrets/database-password.txt`. These actual files and `bot.json` are ignored by Git and excluded from the image. The `.example` files describe the expected file contents without supplying credentials. On Linux, protect the host secrets directory and make each mounted file readable by its container user; the worker runs as UID/GID 1654. Do not assume a host file with mode 0600 owned by another UID is readable inside the worker container.
+
+Run from `SWLOR.DiscordBot/` on the Linux host:
+
+```sh
+docker compose config --quiet
+docker compose build bot
+# Local configuration validation runs without secrets, database access, or Discord login.
+docker compose run --rm --no-deps bot --validate --config /config/bot.json
+docker compose up -d
+docker compose ps
+docker compose logs --tail 100 bot
+```
+
+Once the worker passes startup validation, a configured bot administrator can explicitly publish the new button with `/ticket-panel publish panel:support`. Panels are not posted automatically. Staff use `/ticket rename`, `/ticket reopen`, `/ticket transcript`, `/ticket hold`, and `/ticket release` in managed tickets. The requester can use the close button or `/ticket close` in their own ticket.
+
+Use `docker compose down` to stop the deployment while retaining its named volumes. Preserve and back up both volumes before replacing the host. A normal restart preserves ticket state, due times, holds, audit records, and archived transcripts. Do not run a second worker against a copied database while the first is still active. The worker lease coordinates instances sharing the same database, not separate restored copies.
+
+### Limits and remaining acceptance work
+
+The initial worker provides ports between domain services, persistence, and Discord; no AI provider, general-chat index, or game account linking is enabled. Those remain future upgrades. Full claims/participant-management workflows and arbitrary Dyno macros are outside the initial requested workflows unless the remaining parity audit establishes a requirement.
+
+Ticket reconciliation and scheduled channel/archive cleanup are durable. Community event retries are bounded and use persisted intents plus Discord's recent-message nonce deduplication; this does not guarantee exactly-once message delivery after an arbitrary long crash. Discord may not replay join or command events lost during an outage. Optional quick-answer timed response deletion currently uses an in-memory queue, so restarting the worker loses pending response-deletion timers. These limits do not affect persisted ticket cleanup.
+
+No live Discord token was available during implementation. Permission/interaction acceptance, exact legacy response comparison, application installation, Linux-host backup restoration, and per-feature production cutover still require the deployment configuration and a dedicated test guild. Leave existing Ticket Tool tickets with Ticket Tool and disable old handlers only after verifying their configured replacements.
+
+### Local verification (2026-10-03)
+
+- Release build completed with zero warnings and errors.
+- All 53 focused bot tests passed, including tests against an isolated PostgreSQL 17.11 instance; no game-server tests or deployment were run.
+- The disabled sample validates successfully; enabling its unresolved features rejects all missing inputs before credential loading.
+- Linux container publication and credential-free validation passed; the runtime image runs as UID 1654. Compose configuration validation passed.
+- This Windows machine's normal Docker NuGet restore failed with an SSL PartialChain error. Linux publication was verified with an ignored, temporary offline feed containing the packages already restored successfully on Windows. TLS validation remains enabled; the tracked Dockerfile retains its normal NuGet restore. Verify the normal network build on the actual Linux host.
+
+Build once, then run the focused tests with a disposable PostgreSQL database configured through `SWLOR_BOT_TEST_DATABASE`:
+
+```sh
+dotnet build SWLOR.DiscordBot.Tests/SWLOR.DiscordBot.Tests.csproj --configuration Release -p:RunPostBuildEvent=Never
+dotnet test SWLOR.DiscordBot.Tests/SWLOR.DiscordBot.Tests.csproj --configuration Release --no-build --filter 'FullyQualifiedName~SWLOR.DiscordBot.Tests'
+```
+
+The PostgreSQL tests require this explicitly supplied test connection; they never discover or use the game database. Stop and remove any disposable test container when verification is complete. The local verification container was stopped and removed after the final tests.
 ## Reference documentation
 
 - [Discord Gateway and intents](https://docs.discord.com/developers/events/gateway)

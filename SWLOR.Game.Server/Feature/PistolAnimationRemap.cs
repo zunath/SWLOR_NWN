@@ -157,9 +157,11 @@ namespace SWLOR.Game.Server.Feature
             Animation animation,
             float speed,
             float durationSeconds,
-            bool immediate = false)
+            bool immediate = false,
+            bool releaseAuthoredPose = true)
         {
-            if (immediate) NamedAnimation.ReleaseForNativePlayback(creature);
+            // Native previews have already claimed playback ownership and released old mappings.
+            if (immediate && releaseAuthoredPose) NamedAnimation.ReleaseForNativePlayback(creature);
             var suspendedRemap = SuspendForExplicitThrow(creature, animation);
             if (immediate) PlayAnimation(animation, speed, durationSeconds);
             else ActionPlayAnimation(animation, speed, durationSeconds);

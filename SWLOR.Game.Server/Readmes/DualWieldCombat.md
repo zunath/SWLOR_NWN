@@ -1,6 +1,6 @@
 # Dual-wield combat
 
-Two equipped melee weapons share one attack-delay gate. Each ordinary cycle resolves a
+Two equipped melee weapons, or the two ends of a double weapon, share one attack-delay gate. Each ordinary cycle resolves a
 main-hand roll and an off-hand roll. Each roll uses its own weapon's accuracy, damage type,
 damage amount, skill, critical roll, and on-hit effects. The existing combined weapon delay
 and off-hand delay reduction still determine the cycle interval.
@@ -51,8 +51,13 @@ off hand finishes or is cancelled, so they cannot be spent by an already-budgete
 Keep the attack data alive until the native damage/animation phase finishes; do not call
 `RecomputeRound` or clear attacks between the two hands.
 
-Single weapons, shields, ranged attacks, natural weapons, and double weapons without a
-separate left-hand weapon keep their existing scheduling paths.
+Single weapons, shields, ranged attacks, and natural weapons keep their existing scheduling paths.
+Twinblades and saberstaves use the main-hand item for both native weapon selections, so
+both ends receive its properties and skill. Dual Wield reduces only the second end's delay.
+Player double weapons use the corresponding one-handed weapon's per-end damage and delay;
+upgrade kits, palette items, and existing item migrations follow the same budgets. NPC double
+weapons retain their explicit ratings and Delay 290: resolving twice the hits over twice
+the previous interval preserves their damage per second.
 
 ## Animation playback
 

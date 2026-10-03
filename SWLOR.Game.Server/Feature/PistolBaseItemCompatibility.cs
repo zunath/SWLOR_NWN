@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using ItemPropertyType = SWLOR.NWN.API.NWScript.Enum.Item.ItemPropertyType;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -18,6 +19,8 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public static class PistolBaseItemCompatibility
     {
+        private const string RepairedGeneratedAmmoVariable = "PISTOL_REPAIRED_GENERATED_AMMO";
+
         private static readonly HashSet<string> LegacySmallArmsResrefs =
             new(StringComparer.OrdinalIgnoreCase)
             {
@@ -35,6 +38,38 @@ namespace SWLOR.Game.Server.Feature
             Normalize(GetModuleItemAcquired());
         }
 
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        public static void OnItemEquip()
+        {
+            Normalize(GetItemInSlot(InventorySlot.RightHand, OBJECT_SELF));
+        }
+
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void OnItemUnequip()
+        {
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            if (!GetIsObjectValid(item) || GetItemInSlot(InventorySlot.RightHand, OBJECT_SELF) == item)
+                return;
+
+            var generatedAmmoId = GetLocalObject(item, RepairedGeneratedAmmoVariable);
+            if (!GetIsObjectValid(generatedAmmoId))
+                return;
+
+            DeleteLocalObject(item, RepairedGeneratedAmmoVariable);
+            var nativeCreature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(OBJECT_SELF)?.AsNWSCreature();
+            var generatedAmmo = nativeCreature?.m_pInventory.GetItemInSlot(1u << (int)InventorySlot.Bullets);
+            if (nativeCreature == null || nativeCreature.m_bMagicalBulletsEquipped == 0 ||
+                generatedAmmo?.m_idSelf != generatedAmmoId)
+                return;
+
+            // Saved legacy weapons can leave the moved stack behind during native cleanup.
+            // Release only the engine-owned stack moved by this weapon's repair.
+            if (nativeCreature.m_pInventory.RemoveItem(generatedAmmo) == 0)
+                throw new InvalidOperationException("Unable to release repaired pistol ammunition on unequip.");
+            nativeCreature.m_bMagicalBulletsEquipped = 0;
+            DestroyObject(generatedAmmoId);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()
         {
@@ -42,7 +77,12 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
-            var equippedLegacyAmmo = GetItemInSlot(InventorySlot.Arrows, creature);
+            var nativeCreature = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature)?.AsNWSCreature();
+            // Generated stacks are moved by Normalize; the queued slot migration below
+            // handles only real saved ammunition that must remain in the player's inventory.
+            var equippedLegacyAmmo = (nativeCreature?.m_bMagicalArrowsEquipped ?? 0) != 0
+                ? OBJECT_INVALID
+                : GetItemInSlot(InventorySlot.Arrows, creature);
             var equippedItemChanged = false;
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
@@ -119,6 +159,21 @@ namespace SWLOR.Game.Server.Feature
                 : requestedSlot;
         }
 
+        public static bool ShouldRepairGeneratedPistolAmmunition(
+            BaseItem currentBaseItem,
+            BaseItem canonicalBaseItem,
+            bool isEquipped,
+            bool hasUnlimitedAmmunition,
+            bool generatedArrows,
+            bool generatedBullets)
+        {
+            return isEquipped && hasUnlimitedAmmunition && generatedArrows && !generatedBullets &&
+                   canonicalBaseItem == BaseItem.Sling &&
+                   (currentBaseItem == BaseItem.Pistol ||
+                    currentBaseItem == BaseItem.LegacyPistol ||
+                    currentBaseItem == BaseItem.Sling);
+        }
+
         public static bool Normalize(uint item)
         {
             if (!GetIsObjectValid(item))
@@ -126,11 +181,91 @@ namespace SWLOR.Game.Server.Feature
 
             var currentBaseItem = GetBaseItemType(item);
             var canonicalBaseItem = GetCanonicalBaseItem(currentBaseItem, GetResRef(item));
+
+            var shouldCheckGeneratedAmmo = canonicalBaseItem == BaseItem.Sling &&
+                                           (currentBaseItem == BaseItem.Pistol ||
+                                            currentBaseItem == BaseItem.LegacyPistol ||
+                                            currentBaseItem == BaseItem.Sling);
+            if (shouldCheckGeneratedAmmo && HasUnlimitedAmmunition(item))
+            {
+                var nativeItem = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(item)?.AsNWSItem();
+                var possessor = nativeItem?.m_oidPossessor ?? OBJECT_INVALID;
+                var nativeCreature = GetIsObjectValid(possessor)
+                    ? NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(possessor)?.AsNWSCreature()
+                    : null;
+                var equippedSlot = nativeCreature != null && nativeItem != null
+                    ? nativeCreature.m_pInventory.GetSlotFromItem(nativeItem)
+                    : 0;
+                var rightHandMask = 1u << (int)InventorySlot.RightHand;
+                var isEquippedRightHand = nativeCreature != null && nativeItem != null &&
+                                          equippedSlot == rightHandMask &&
+                                          nativeCreature.m_pInventory.GetItemInSlot(equippedSlot)?.m_idSelf == item;
+
+                if (nativeCreature != null && nativeItem != null && isEquippedRightHand)
+                {
+                    if (ShouldRepairGeneratedPistolAmmunition(
+                            currentBaseItem,
+                            canonicalBaseItem,
+                            true,
+                            true,
+                            nativeCreature.m_bMagicalArrowsEquipped != 0,
+                            nativeCreature.m_bMagicalBulletsEquipped != 0))
+                    {
+                        var arrowSlot = 1u << (int)InventorySlot.Arrows;
+                        var generatedAmmo = nativeCreature.m_pInventory.GetItemInSlot(arrowSlot);
+                        if (generatedAmmo == null || generatedAmmo.m_oidPossessor != possessor ||
+                            generatedAmmo.m_nBaseItem != (int)BaseItem.Arrow &&
+                            generatedAmmo.m_nBaseItem != (int)BaseItem.Bullet)
+                            throw new InvalidOperationException("Unable to identify generated legacy pistol ammunition.");
+
+                        var bulletSlot = 1u << (int)InventorySlot.Bullets;
+                        var realAmmo = nativeCreature.m_pInventory.GetItemInSlot(bulletSlot);
+                        if (realAmmo != null)
+                        {
+                            var ammoId = realAmmo.m_idSelf;
+                            var quantity = GetItemStackSize(ammoId);
+                            CreaturePlugin.RunUnequip(possessor, ammoId);
+                            if (nativeCreature.m_pInventory.GetItemInSlot(bulletSlot)?.m_idSelf == ammoId ||
+                                GetItemPossessor(ammoId) != possessor || GetItemStackSize(ammoId) != quantity ||
+                                nativeCreature.m_pcItemRepository.GetItemInRepository(realAmmo) == 0)
+                                throw new InvalidOperationException("Unable to preserve real bullets while repairing pistol ammunition.");
+                        }
+
+                        // Load can generate arrows before acquire handling changes the pistol's base.
+                        // Move that engine-owned stack and its ownership flag together; cycling
+                        // a saved legacy weapon alone can regenerate ammunition in the old slot.
+                        if (nativeCreature.m_pInventory.RemoveItem(generatedAmmo) == 0)
+                            throw new InvalidOperationException("Unable to release generated legacy pistol ammunition.");
+                        ItemPlugin.SetBaseItemType(item, canonicalBaseItem);
+                        ItemPlugin.SetBaseItemType(generatedAmmo.m_idSelf, BaseItem.Bullet);
+                        nativeCreature.m_pInventory.PutItemInSlot(bulletSlot, generatedAmmo);
+                        nativeCreature.m_bMagicalArrowsEquipped = 0;
+                        nativeCreature.m_bMagicalBulletsEquipped = 1;
+                        SetLocalObject(item, RepairedGeneratedAmmoVariable, generatedAmmo.m_idSelf);
+                        nativeCreature.UpdateAppearanceForEquippedItems();
+                        return true;
+                    }
+                }
+            }
+
             if (canonicalBaseItem == currentBaseItem)
                 return false;
 
             ItemPlugin.SetBaseItemType(item, canonicalBaseItem);
             return true;
+        }
+
+        private static bool HasUnlimitedAmmunition(uint item)
+        {
+            for (var property = GetFirstItemProperty(item);
+                 GetIsItemPropertyValid(property);
+                 property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == ItemPropertyType.UnlimitedAmmunition)
+                    return true;
+            }
+
+            return false;
         }
 
         private static void RefreshEquippedItemAppearance(uint creature)

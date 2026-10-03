@@ -7,23 +7,23 @@
       "__struct_id": 100,
       "AmbientSndDay": {
         "type": "int",
-        "value": 0
+        "value": 13
       },
       "AmbientSndDayVol": {
         "type": "int",
-        "value": 0
+        "value": 34
       },
       "AmbientSndNight": {
         "type": "int",
-        "value": 0
+        "value": 13
       },
       "AmbientSndNitVol": {
         "type": "int",
-        "value": 0
+        "value": 14
       },
       "EnvAudio": {
         "type": "int",
-        "value": 0
+        "value": 16
       },
       "MusicBattle": {
         "type": "int",
@@ -31,7 +31,7 @@
       },
       "MusicDay": {
         "type": "int",
-        "value": 0
+        "value": 366
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 366
       }
     }
   },
@@ -106952,6 +106952,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "WEATHER_HAZARD_SAFE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

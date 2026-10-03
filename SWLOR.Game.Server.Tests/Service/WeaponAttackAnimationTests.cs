@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -70,13 +71,60 @@ public class WeaponAttackAnimationTests
         WeaponAttackAnimation.VariantReplacement(source, existing, variant).Should().Be(expected);
     }
 
-    [TestCase("longsword_b", BaseItem.Longsword, true)]
-    [TestCase("b_longsword", BaseItem.Longsword, true)]
-    [TestCase("tit_longsword", BaseItem.Longsword, false)]
-    [TestCase("longsword_b", BaseItem.Dagger, false)]
-    public void LegacyRepairIsLimitedToTheTwoBasicVibrobladeTemplates(string resref, BaseItem baseItem, bool expected)
+    [TestCase("longsword_b", BaseItem.Longsword, true, false)]
+    [TestCase("b_longsword", BaseItem.Longsword, true, false)]
+    [TestCase("dagger_b", BaseItem.Dagger, false, true)]
+    [TestCase("b_knife", BaseItem.Dagger, false, true)]
+    [TestCase("tit_longsword", BaseItem.Longsword, false, false)]
+    [TestCase("longsword_b", BaseItem.Dagger, false, false)]
+    public void LegacyRepairIsLimitedToTheBasicWeaponTemplates(
+        string resref,
+        BaseItem baseItem,
+        bool expectedVibroblade,
+        bool expectedVibroknife)
     {
-        BasicVibrobladeCompatibility.IsBasicVibroblade(baseItem, resref).Should().Be(expected);
+        BasicVibrobladeCompatibility.IsBasicVibroblade(baseItem, resref).Should().Be(expectedVibroblade);
+        BasicVibrobladeCompatibility.IsBasicVibroknife(baseItem, resref).Should().Be(expectedVibroknife);
+    }
+
+    [Test]
+    public void QysRetiredBasicDagger_RepairsOnlyTheMissingDamageAndVibroknifeRequirement()
+    {
+        // Qy's saved dagger_b has Delay 22, CUSTOM_ITEM_PROPERTY_TYPE=4 and
+        // DURABILITY_MAX=5. Its damage and skill properties are absent.
+        var missing = BasicVibrobladeCompatibility.GetMissingProperties(
+            BaseItem.Dagger,
+            "dagger_b",
+            new[] { ItemPropertyType.Delay });
+
+        missing.Should().Equal(
+            (ItemPropertyType.DMG, -1, 5),
+            (ItemPropertyType.RequiresSkill, (int)SkillType.Vibroknife, 0));
+    }
+
+    [Test]
+    public void ExistingBasicWeaponPropertiesArePreservedDuringRepair()
+    {
+        var missing = BasicVibrobladeCompatibility.GetMissingProperties(
+            BaseItem.Dagger,
+            "dagger_b",
+            new[] { ItemPropertyType.DMG, ItemPropertyType.Delay, ItemPropertyType.RequiresSkill });
+
+        missing.Should().BeEmpty();
+    }
+
+    [TestCase("doubleaxe_b", BaseItem.DoubleAxe)]
+    [TestCase("twinblade_b", BaseItem.TwoBladedSword)]
+    public void RetiredBasicTwinBladeTemplatesRestoreTierOneDamageDelayAndRequirement(
+        string resref,
+        BaseItem baseItem)
+    {
+        var missing = BasicVibrobladeCompatibility.GetMissingProperties(baseItem, resref, Enumerable.Empty<ItemPropertyType>());
+
+        missing.Should().Equal(
+            (ItemPropertyType.DMG, -1, 5),
+            (ItemPropertyType.Delay, -1, 23),
+            (ItemPropertyType.RequiresSkill, (int)SkillType.TwinBlade, 0));
     }
 
     private static WeaponAttackAnimation.Roll[] Rolls(int count) =>

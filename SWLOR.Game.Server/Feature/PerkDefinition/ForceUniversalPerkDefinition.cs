@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Precognition()
         {
             _builder.Create(PerkCategoryType.ForceSense, PerkType.Precognition)
-                .Name("Precognition")
+                .Name("Danger Sense")
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PrecognitionTrait)

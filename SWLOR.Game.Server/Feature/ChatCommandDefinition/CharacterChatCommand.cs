@@ -582,14 +582,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var name = PlayerName.SanitizeKnownName(rawName);
                     if (target == user)
                     {
+                        var previousDescriptor = PlayerDescriptor.GetUnknownDisplayName(user);
                         PlayerDescriptor.SetUnknownDisplayName(user, name);
 
                         Log.WriteStructured(
                             LogGroup.PlayerName,
-                            "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                            "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                             "unknown-name-set",
                             GetObjectUUID(user),
+                            PlayerName.GetAuditName(user),
                             GetObjectUUID(target),
+                            PlayerName.GetAuditName(target),
+                            GetObjectUUID(target),
+                            previousDescriptor,
                             name);
                         SendMessageToPC(user, ColorToken.Green($"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray."));
                         return;
@@ -602,14 +607,22 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    var previousName = PlayerName.TryGetKnownName(user, target, out var knownName)
+                        ? knownName
+                        : string.Empty;
+                    var identityKey = Disguise.GetIdentityKey(target);
                     PlayerName.SetKnownName(user, target, name);
 
                     Log.WriteStructured(
                         LogGroup.PlayerName,
-                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                         "name-set",
                         GetObjectUUID(user),
+                        PlayerName.GetAuditName(user),
                         GetObjectUUID(target),
+                        PlayerName.GetAuditName(target),
+                        identityKey,
+                        previousName,
                         name);
                     SendMessageToPC(user, ColorToken.Green($"Private label saved as '{name}'. Only you can see this label."));
                 });
@@ -649,13 +662,22 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    var previousName = PlayerName.TryGetKnownName(user, target, out var knownName)
+                        ? knownName
+                        : string.Empty;
+                    var identityKey = Disguise.GetIdentityKey(target);
                     PlayerName.ForgetKnownName(user, target);
                     Log.WriteStructured(
                         LogGroup.PlayerName,
-                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId}",
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                         "name-forget",
                         GetObjectUUID(user),
-                        GetObjectUUID(target));
+                        PlayerName.GetAuditName(user),
+                        GetObjectUUID(target),
+                        PlayerName.GetAuditName(target),
+                        identityKey,
+                        previousName,
+                        string.Empty);
                     SendMessageToPC(user, ColorToken.Green("Private label removed. This changes only what you see."));
                 });
         }

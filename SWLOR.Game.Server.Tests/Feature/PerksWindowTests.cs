@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -86,7 +87,10 @@ public class PerksWindowTests
         viewModelSource.Should().Contain("Recast.GetRecastGroupDisplayName(recastGroup)");
         viewModelSource.Should().Contain("recastGroup == RecastGroup.Invalid");
         viewModelSource.Should().NotContain("Recast Groups");
-        viewModelSource.Should().NotContain("string.Join");
+        var recastMethodStart = viewModelSource.IndexOf("private static string BuildRecastGroupText(", StringComparison.Ordinal);
+        var recastMethodEnd = viewModelSource.IndexOf("private (bool meetsRequirements,", recastMethodStart, StringComparison.Ordinal);
+        viewModelSource[recastMethodStart..recastMethodEnd].Should().NotContain("string.Join",
+            "the recast display must use one active ability group rather than joining every granted feat");
         perkSource.Should().Contain("private static readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
         perkSource.Should().Contain("public static RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
         recastSource.Should().Contain("private static readonly Dictionary<RecastGroup, string> _recastNames");
@@ -233,6 +237,53 @@ public class PerksWindowTests
                 "legacy ranks are fully upgraded under the current definition");
             GetRequiredSkillLevelSortOrder(detail, savedRank).Should().Be(maximumRank * 10);
         }
+    }
+
+    [TestCase(PerkType.HeavyHands)]
+    [TestCase(PerkType.FractureStrike)]
+    public void ControlSynergyDetails_ShowDefinitionsBeforePurchaseAndWhenMaxed(PerkType perk)
+    {
+        object definition = perk == PerkType.HeavyHands ? new StaffPerkDefinition() : new SpearPerkDefinition();
+        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+        var definitionType = definition.GetType();
+        definitionType.GetMethod(perk.ToString(), flags)!.Invoke(definition, null);
+        // Read the authored definition without PerkBuilder.Build's native feat-icon lookup.
+        var builder = definitionType.GetField("_builder", flags)!.GetValue(definition)!;
+        var definitions = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
+            .GetField("_perks", flags)!.GetValue(builder)!;
+        var detail = definitions[perk];
+        var firstLevel = detail.PerkLevels[1];
+        var maximumLevel = detail.PerkLevels[detail.PerkLevels.Keys.Max()];
+        foreach (var (current, next) in new[] { ((PerkLevel)null, firstLevel), (maximumLevel, (PerkLevel)null) })
+        {
+            var text = BuildStatusEffectDetail(detail, current, next);
+            text.Should().Contain("Foggy Mind").And.Contain("Force Disruption").And.Contain("Hamstring");
+            text.Should().Contain("All control effects also count as harmful effects");
+            text.Should().Contain("'you applied' require your own effect");
+            text.Should().Contain("Player Guide: Control & Harmful Effects");
+        }
+    }
+
+    [Test]
+    public void HarmfulEffectDetails_ExplainBroaderCategoryWithoutAdvertisingControlSynergy()
+    {
+        var detail = new PerkDetail();
+        var next = new PerkLevel { Description = "Removes one harmful effect." };
+        var text = BuildStatusEffectDetail(detail, null, next);
+
+        text.Should().Contain("control effects, damage over time, and other debuffs");
+        text.Should().Contain("specific cleanse may only remove the effects it names");
+        text.Should().Contain("Player Guide: Control & Harmful Effects");
+        text.Should().NotContain("Control effects:");
+        BuildStatusEffectDetail(detail, null, new PerkLevel { Description = "Deals weapon damage." })
+            .Should().BeEmpty();
+    }
+
+    private static string BuildStatusEffectDetail(PerkDetail detail, PerkLevel current, PerkLevel next)
+    {
+        return (string)typeof(PerksViewModel)
+            .GetMethod("BuildStatusEffectPerkDetailText", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { detail, current, next })!;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

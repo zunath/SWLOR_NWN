@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -60,6 +61,42 @@ public class ForceLightConsularTests
     }
 
     [Test]
+    [NonParallelizable]
+    public void ThrowRock_IsUniversalInAffinityScalingAndPerkDetails()
+    {
+        var perk = BuildForceLightConsularPerksWithout2daLookup()[PerkType.ThrowRock];
+        AssertUniversalForcePower(perk);
+        perk.PerkLevels.Values.SelectMany(level => level.StatBonuses)
+            .Should().NotContain(bonus => bonus.Stat == StatType.ForceAffinity);
+
+        var cache = (Dictionary<PerkType, PerkDetail>)typeof(Perk)
+            .GetField("_allPerks", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var hadPrevious = cache.TryGetValue(PerkType.ThrowRock, out var previous);
+        cache[PerkType.ThrowRock] = perk;
+        try
+        {
+            Perk.TryGetForceSideAffinity(0, PerkType.ThrowRock, out var affinity).Should().BeFalse();
+            affinity.Should().Be(0);
+            Perk.GetForceAffinityMagnitudeMultiplier(0, PerkType.ThrowRock).Should().Be(1f);
+            Perk.GetForceAffinityHitChanceAdjustment(0, PerkType.ThrowRock).Should().Be(0);
+            foreach (var damage in new[] { 22, 40, 60 })
+                Perk.ApplyForceAffinityMagnitude(0, PerkType.ThrowRock, damage).Should().Be(damage);
+
+            var details = (string)typeof(PerksViewModel)
+                .GetMethod("BuildForceAffinityPerkDetailText", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(new PerksViewModel(), new object[] { perk })!;
+            details.Should().Contain("UNIVERSAL FORCE POWER")
+                .And.Contain("Does not change Force Affinity")
+                .And.NotContain("LIGHT-ALIGNED");
+        }
+        finally
+        {
+            if (hadPrevious) cache[PerkType.ThrowRock] = previous!;
+            else cache.Remove(PerkType.ThrowRock);
+        }
+    }
+
+    [Test]
     public void ThrowRockAbilities_MatchCombatBible()
     {
         var throwRock = new ThrowRockAbilityDefinition().BuildAbilities();
@@ -91,6 +128,31 @@ public class ForceLightConsularTests
         targeting.SizeX.Should().Be(5f);
         targeting.SizeY.Should().Be(0f);
         targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies);
+    }
+
+    [TestCase(FeatType.RadiantLance1)]
+    [TestCase(FeatType.RadiantLance2)]
+    [TestCase(FeatType.RadiantLance3)]
+    public void RadiantLance_CursorAndLocationRangeMatchTheDamageLine(FeatType feat)
+    {
+        var ability = new RadiantLanceAbilityDefinition().BuildAbilities()[feat];
+        var targeting = ability.Targeting!;
+        var root = FindRepositoryRoot();
+        var spellRow = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da")[(int)targeting.Spell];
+        var shortRange = Read2da(root / "SWLOR_Haks" / "sw_2da" / "ranges.2da")[2];
+
+        ability.RequiresLocationTarget.Should().BeTrue();
+        ability.RequiresTarget.Should().BeFalse("the line can be aimed at empty ground");
+        ability.HasExplicitMaxRange.Should().BeTrue("far ground must not imply a longer damage line");
+        targeting.Shape.Should().Be(AbilityTargetingShapeType.Rect);
+        targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+        targeting.SizeX.Should().Be(8f);
+        targeting.SizeY.Should().Be(2.5f);
+        ability.MaxRange.Should().Be(targeting.SizeX);
+        spellRow["Range"].Should().Be("S");
+        shortRange["Label"].Should().Be("SpellRngShrt");
+        float.Parse(shortRange["PrimaryRange"], System.Globalization.CultureInfo.InvariantCulture)
+            .Should().Be(ability.MaxRange);
     }
 
     [Test]
@@ -139,7 +201,7 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void OffensiveLightConsularPowers_UseSharedForceAccuracyAndMeetOrdinaryDathomirSoloTargets()
+    public void ConsularRotation_UsesUniversalThrowRockAndLightAffinityForOtherPowers()
     {
         const int attackerWillpower = 26;
         const int fullLightAffinityHitChance = 5;
@@ -202,11 +264,15 @@ public class ForceLightConsularTests
             var feat = perk.PerkLevels[rank].GrantedFeats.Single();
             var ability = power.Item3[feat];
             var physical = power.Item1 == PerkType.ThrowRock;
+            var abilityHitRate = physical
+                ? Combat.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
+                : hitRate;
+            var affinityMagnitude = physical ? 1d : fullLightAffinityMagnitude;
             return (Ability: ability, Damage: ExpectedDamagePerUse(
                 GetAbilityConstant<int>(power.Item2, $"Rank{rank}BaseDamage"),
                 attackerAttack, attackerWillpower,
                 physical ? squellbugPhysicalDefense : squellbugForceDefense,
-                physical ? squellbugVitality : squellbugWillpower, hitRate, fullLightAffinityMagnitude));
+                physical ? squellbugVitality : squellbugWillpower, abilityHitRate, affinityMagnitude));
         }).ToArray();
         spentSP.Should().BeLessThanOrEqualTo(level + Skill.StartingSkillPoints);
 
@@ -230,7 +296,9 @@ public class ForceLightConsularTests
         }
         TestContext.Out.WriteLine($"Level {level} Squell Bug: {squellbugHP} HP, {hitRate}% hit rate, {casts} casts, {seconds:F1}s, {fp} FP remaining, {spentSP} SP.");
         damage.Should().BeGreaterThanOrEqualTo(squellbugHP);
-        seconds.Should().BeLessThanOrEqualTo(35d, "ordinary normal spawns should require a simple, short rotation");
+        // Throw Rock receives no Light hit or magnitude bonus in this mixed-affinity rotation.
+        seconds.Should().BeLessThanOrEqualTo(40d,
+            "a mixed universal/Light rotation should defeat an ordinary spawn within forty seconds without regeneration");
     }
 
     [Test]
@@ -326,9 +394,9 @@ public class ForceLightConsularTests
             (FeatType.Renewal3, "ife_rnwl3", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ThrowRock3, "ife_throwrock3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceJudgment3, "ife_forcejdg3", "M", "0x02", "1", "sphere", "5", "****", "1"),
-            (FeatType.RadiantLance1, "ife_radlance1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.RadiantLance2, "ife_radlance2", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.RadiantLance3, "ife_radlance3", "M", "0x3E", "1", "rectangle", "8", "2.5", "17")
+            (FeatType.RadiantLance1, "ife_radlance1", "S", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.RadiantLance2, "ife_radlance2", "S", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.RadiantLance3, "ife_radlance3", "S", "0x3E", "1", "rectangle", "8", "2.5", "17")
         };
         var seenIcons = new HashSet<string>();
 

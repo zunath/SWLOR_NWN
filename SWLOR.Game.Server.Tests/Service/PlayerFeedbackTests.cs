@@ -30,6 +30,19 @@ public class PlayerFeedbackTests
         PlayerFeedback.BuildResourceRestoredMessage(restored, resource).Should().Be(expected);
     }
 
+    [Test]
+    public void CooldownFloatingText_UsesPrivateDeliveryWithoutASecondChatEntry()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "PlayerFeedback.cs"));
+        source.Should().Contain("PlayerPlugin.FloatingTextStringOnCreature(player, player, ColorToken.Yellow($\"{abilityName}: {timeToWait}\"), false)",
+            "only the activating player should receive the notice, with its automatic chat copy disabled");
+    }
+
+    [TestCase(2)]
     [TestCase(5)]
     [TestCase(60)]
     public void AutomaticWarnings_SendImmediatelyThenWaitForTheInterval(int intervalSeconds)

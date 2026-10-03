@@ -121,6 +121,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Keeps a warned impact on its displayed footprint even after its target or caster moves.
+        /// Other areas, shapes and sizes can belong to separate payloads and retain their own geometry.
+        /// </summary>
+        public static TelegraphGeometry ResolveImpactGeometry(
+            TelegraphGeometry impact,
+            IReadOnlyList<TelegraphGeometry> activationTelegraphs)
+        {
+            if (activationTelegraphs != null)
+            {
+                foreach (var warning in activationTelegraphs)
+                    if (warning.Area == impact.Area && warning.Shape == impact.Shape &&
+                        Vector2.DistanceSquared(warning.Size, impact.Size) <= 0.0001f)
+                        return warning;
+            }
+
+            return impact;
+        }
+
+        /// <summary>
         /// Checks if a creature is within a telegraph's area of effect.
         /// </summary>
         /// <param name="creature">Creature to check</param>

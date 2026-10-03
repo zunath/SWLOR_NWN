@@ -4,7 +4,11 @@ namespace SWLOR.Game.Server.Service.WeatherService
     {
 
         public const string Lightning = "You were hit by the bolt of lightning!";
-        public const string AcidRain = "Acid rain is causing damage. Enter an interior or underground area for shelter; Poison resistance reduces the damage.";
+        public const string AcidRain = "Acid rain is causing damage. Enter a settlement, interior, or underground area for shelter; Poison resistance reduces the damage.";
+        public const string ShelteredAcidRain = "Acid rain falls here, but the settlement protects you from its harmful effects.";
+        public const string ShelteredSandStorm = "A sand storm sweeps through the settlement, reducing visibility. You are protected from weather damage here.";
+        public const string ShelteredSnowStorm = "A blizzard sweeps through the settlement. You are protected from weather damage here.";
+        public const string ShelteredThunderstorm = "Thunder rolls overhead and lightning flashes. You are protected from weather damage here.";
         public const string Cloudy = "Clouds move across the sky at a brisk pace, driven by strong wind.";
         public const string ColdCloudy = "Cold air is punctuated by an overcast sky, the clouds thick and dark.";
         public const string ColdWindy = "A chill wind is in the air, cutting like a knife.";
@@ -20,12 +24,12 @@ namespace SWLOR.Game.Server.Service.WeatherService
         public const string RainWarm = "It is raining, and the air is warm and humid.";
         public const string Scorching = "The heat is blazing here, and a haze shimmers in the distance.";
         public const string Snow = "Snowflakes drift through the air.";
-        public const string Storm = "Lightning threatens this area. Enter an interior or underground area for shelter; Electrical resistance reduces lightning damage.";
+        public const string Storm = "Lightning threatens this area. Enter a settlement, interior, or underground area for shelter; Electrical resistance reduces lightning damage.";
         public const string Windy = "The wind is very strong, and there are many clouds in the sky.";
 
         public const string DustStorm = "There is a dust storm!  Visibility is drastically reduced.";
-        public const string SandStorm = "A sand storm is causing physical damage! Enter an interior or underground area for shelter.";
-        public const string SnowStorm = "A blizzard is causing cold damage! Enter an interior or underground area for shelter; Ice resistance reduces the damage.";
+        public const string SandStorm = "A sand storm is causing physical damage! Enter a settlement, interior, or underground area for shelter.";
+        public const string SnowStorm = "A blizzard is causing cold damage! Enter a settlement, interior, or underground area for shelter; Ice resistance reduces the damage.";
 
     }
 }

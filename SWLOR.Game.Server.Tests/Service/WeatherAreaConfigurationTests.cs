@@ -28,7 +28,7 @@ public class WeatherAreaConfigurationTests
     };
 
     private sealed record Area(string Resource, string Name, string Tileset, int Flags, PlanetType Planet,
-        string Override, bool Space, int HumidityModifier);
+        string Override, bool Space, int HeatModifier, int HumidityModifier, int WindModifier);
 
     [Test]
     public void ModuleCorpus_InteriorTilesetsProvideShelter_WhileReviewedOutdoorLayoutsRemainOpen()
@@ -56,6 +56,70 @@ public class WeatherAreaConfigurationTests
             climate.Should().NotBeNull($"{area.Name} ({area.Resource}) needs an authored weather profile");
             climate!.IsSheltered.Should().BeFalse($"{area.Name} is an outdoor planet area");
         }
+    }
+
+    [Test]
+    public void ModuleCorpus_AreasWithTheSameClimateAndModifiersShareOneWeatherSnapshotPerFront()
+    {
+        var planets = WeatherPlanetDefinitions.GetPlanetClimates();
+        var named = WeatherPlanetDefinitions.GetNamedClimates(planets);
+        var areas = ReadAreas().Where(area => (area.Flags & 3) == 0 && !area.Space &&
+            !area.Name.StartsWith("[") && !area.Name.StartsWith("*") && area.Resource != "area_template").ToArray();
+        var pattern = new WeatherPattern();
+        pattern.TryAdvance(new DateTime(2026, 9, 12, 0, 0, 0, DateTimeKind.Utc), 6, false, _ => 0)
+            .Should().BeTrue();
+        var regions = new WeatherRegionCache();
+        var snapshots = new List<(WeatherClimate Climate, int Heat, int Humidity, int Wind, WeatherConditions Conditions)>();
+
+        foreach (var area in areas)
+        {
+            var climate = WeatherPlanetDefinitions.ResolveClimate(area.Planet, area.Override, planets, named);
+            climate.Should().NotBeNull($"{area.Name} ({area.Resource}) must resolve before entering a weather region");
+            var conditions = regions.GetConditions(pattern, climate!, area.HeatModifier, area.HumidityModifier,
+                area.WindModifier, max => max - 1);
+            var existing = snapshots.FirstOrDefault(snapshot => ReferenceEquals(snapshot.Climate, climate) &&
+                snapshot.Heat == area.HeatModifier && snapshot.Humidity == area.HumidityModifier &&
+                snapshot.Wind == area.WindModifier);
+            if (existing.Conditions != null)
+            {
+                regions.GetConditions(pattern, climate!, area.HeatModifier, area.HumidityModifier,
+                    area.WindModifier, _ => throw new AssertionException(
+                    $"{area.Name} ({area.Resource}) rerolled a region which should already exist"));
+                conditions.Should().BeSameAs(existing.Conditions,
+                    $"{area.Name} ({area.Resource}) must join its existing climate region without rerolling");
+            }
+            else
+                snapshots.Add((climate!, area.HeatModifier, area.HumidityModifier, area.WindModifier, conditions));
+        }
+
+        // A map first entered after the weather front changes must use the new shared
+        // snapshot and must not independently roll weather on map entry.
+        pattern.TryAdvance(pattern.NextChangeUtc, 6, false, _ => 0).Should().BeTrue();
+        var updatedByRegion = new List<(WeatherClimate Climate, int Heat, int Humidity, int Wind, WeatherConditions Conditions)>();
+        foreach (var area in areas)
+        {
+            var climate = WeatherPlanetDefinitions.ResolveClimate(area.Planet, area.Override, planets, named)!;
+            var conditions = regions.GetConditions(pattern, climate, area.HeatModifier, area.HumidityModifier,
+                area.WindModifier, max => max - 1);
+            var existing = updatedByRegion.FirstOrDefault(snapshot => ReferenceEquals(snapshot.Climate, climate) &&
+                snapshot.Heat == area.HeatModifier && snapshot.Humidity == area.HumidityModifier &&
+                snapshot.Wind == area.WindModifier);
+            if (existing.Conditions != null)
+            {
+                regions.GetConditions(pattern, climate, area.HeatModifier, area.HumidityModifier,
+                    area.WindModifier, _ => throw new AssertionException(
+                    $"{area.Name} ({area.Resource}) rerolled a region after the front changed"));
+                conditions.Should().BeSameAs(existing.Conditions,
+                    $"{area.Name} ({area.Resource}) must join the updated shared climate region");
+            }
+            else
+                updatedByRegion.Add((climate, area.HeatModifier, area.HumidityModifier, area.WindModifier, conditions));
+        }
+        foreach (var previous in snapshots)
+            updatedByRegion.Should().Contain(snapshot => ReferenceEquals(snapshot.Climate, previous.Climate) &&
+                snapshot.Heat == previous.Heat && snapshot.Humidity == previous.Humidity &&
+                snapshot.Wind == previous.Wind && !ReferenceEquals(snapshot.Conditions, previous.Conditions),
+                "each shared region should replace its weather snapshot exactly once per front");
     }
 
     [Test]
@@ -110,7 +174,9 @@ public class WeatherAreaConfigurationTests
             areas.Add(new Area(resource, name, data.GetProperty("Tileset").GetProperty("value").GetString()!,
                 data.GetProperty("Flags").GetProperty("value").GetInt32(), planet,
                 locals.TryGetValue("VAR_WEATHER_CLIMATE", out var custom) ? custom.GetString()! : "", space,
-                locals.TryGetValue("VAR_WEATHER_HUMIDITY", out var humidity) ? humidity.GetInt32() : 0));
+                locals.TryGetValue("VAR_WEATHER_HEAT", out var heat) ? heat.GetInt32() : 0,
+                locals.TryGetValue("VAR_WEATHER_HUMIDITY", out var humidity) ? humidity.GetInt32() : 0,
+                locals.TryGetValue("VAR_WEATHER_WIND", out var wind) ? wind.GetInt32() : 0));
         }
         areas.Should().HaveCountGreaterThan(450, "the audit must cover the complete module, including prefabs");
         return areas;

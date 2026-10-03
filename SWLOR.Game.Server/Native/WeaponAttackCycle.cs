@@ -2,6 +2,7 @@ using NWN.Native.API;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.PerkService;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Native
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Native
                 WeaponAttackAnimation.Capture(creature, firstAttack, cycleDuration, pendingOffHand: true);
                 var pending = new PendingHand(target,
                     GetItemInSlot(InventorySlot.RightHand, attacker),
-                    GetItemInSlot(InventorySlot.LeftHand, attacker),
+                    EquipmentPredicates.GetOffhandAttackWeapon(attacker),
                     round.m_nCurrentAttack, attacks / 2, duration);
                 _pendingHands[attacker] = pending;
                 // Module ownership lets this callback release the cycle even if the attacker
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.Native
                 !WeaponAttackAnimation.HasQueuedAttack(creature, pending.Target) ||
                 !WeaponAttackAnimation.IsPlaying(creature) ||
                 GetItemInSlot(InventorySlot.RightHand, creature.m_idSelf) != pending.MainWeapon ||
-                GetItemInSlot(InventorySlot.LeftHand, creature.m_idSelf) != pending.OffWeapon)
+                EquipmentPredicates.GetOffhandAttackWeapon(creature.m_idSelf) != pending.OffWeapon)
                 return false;
 
             var area = creature.GetArea();

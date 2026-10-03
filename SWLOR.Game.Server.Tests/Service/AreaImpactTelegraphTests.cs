@@ -15,13 +15,15 @@ public class AreaImpactTelegraphTests
     /// </summary>
     [TestCase(TelegraphType.Cone)]
     [TestCase(TelegraphType.Line)]
-    public void TargetMovesSidewaysDuringCast_ShowsTheNewImpactDirection(TelegraphType shape)
+    public void TargetMovesSidewaysDuringCast_ImpactKeepsTheWarnedDirection(TelegraphType shape)
     {
         var activation = DirectionalGeometry(shape, Vector3.Zero, new Vector3(4f, 0f, 0f));
         var impact = DirectionalGeometry(shape, Vector3.Zero, new Vector3(0f, 4f, 0f));
 
-        Telegraph.ShouldShowImpactFlash(impact, new[] { activation }).Should().BeTrue(
-            "the old warning faced east, but this cast now strikes north");
+        var resolved = Telegraph.ResolveImpactGeometry(impact, new[] { activation });
+
+        resolved.Should().Be(activation, "the player must be able to dodge the warned footprint");
+        Telegraph.ShouldShowImpactFlash(resolved, new[] { activation }).Should().BeFalse();
     }
 
     /// <summary>
@@ -34,20 +36,22 @@ public class AreaImpactTelegraphTests
         var activation = DirectionalGeometry(shape, Vector3.Zero, new Vector3(4f, 0f, 0f));
         var impact = DirectionalGeometry(shape, Vector3.Zero, new Vector3(6f, 0f, 0f));
 
-        Telegraph.ShouldShowImpactFlash(impact, new[] { activation }).Should().BeFalse();
+        var resolved = Telegraph.ResolveImpactGeometry(impact, new[] { activation });
+        resolved.Should().Be(activation);
+        Telegraph.ShouldShowImpactFlash(resolved, new[] { activation }).Should().BeFalse();
     }
 
     /// <summary>
-    /// Distinguishes a sphere's changed center from rotation that leaves its footprint unchanged.
+    /// A placed sphere stays at its warned center rather than following its target.
     /// </summary>
     [Test]
-    public void TargetCenteredSphereMoves_ShowsItsNewCenter()
+    public void TargetCenteredSphereMoves_ImpactKeepsTheWarnedCenter()
     {
         var activation = new TelegraphGeometry(1, TelegraphType.Sphere, Vector3.Zero, new Vector2(5f), 0f);
 
-        Telegraph.ShouldShowImpactFlash(
+        Telegraph.ResolveImpactGeometry(
                 activation with { Position = new Vector3(2f, 0f, 0f) }, new[] { activation })
-            .Should().BeTrue();
+            .Should().Be(activation);
         Telegraph.ShouldShowImpactFlash(activation with { Rotation = MathF.PI }, new[] { activation })
             .Should().BeFalse("rotating a sphere does not change its area");
     }
@@ -124,12 +128,47 @@ public class AreaImpactTelegraphTests
 
             snapshots.Should().Equal(original);
             Telegraph.ShouldShowImpactFlash(original, snapshots).Should().BeFalse();
-            Telegraph.ShouldShowImpactFlash(original with { Position = data.Position }, snapshots).Should().BeTrue();
+            Telegraph.ResolveImpactGeometry(original with { Position = data.Position }, snapshots).Should().Be(original);
         }
         finally
         {
             telegraphs.Remove(id);
         }
+    }
+
+    [TestCase(TelegraphType.Sphere)]
+    [TestCase(TelegraphType.Cone)]
+    [TestCase(TelegraphType.Line)]
+    public void CasterMovesOrTurns_ImpactKeepsTheWholeWarnedFootprint(TelegraphType shape)
+    {
+        var activation = new TelegraphGeometry(1, shape, Vector3.Zero, new Vector2(8f, 5f), 0f);
+        var impact = activation with { Position = new Vector3(3f, 2f, 0f), Rotation = MathF.PI / 2f };
+
+        Telegraph.ResolveImpactGeometry(impact, new[] { activation }).Should().Be(activation);
+    }
+
+    [Test]
+    public void SeparatePayloads_OnlyReuseTheWarningWithMatchingShapeAndDimensions()
+    {
+        var warning = DirectionalGeometry(TelegraphType.Cone, Vector3.Zero, Vector3.UnitX);
+        var otherShape = warning with { Shape = TelegraphType.Line };
+        var otherSize = warning with { Size = new Vector2(12f, 5f) };
+        var otherArea = warning with { Area = 2 };
+        var movedImpact = warning with { Position = Vector3.One, Rotation = MathF.PI / 2f };
+
+        Telegraph.ResolveImpactGeometry(otherShape, new[] { warning }).Should().Be(otherShape);
+        Telegraph.ResolveImpactGeometry(otherSize, new[] { warning }).Should().Be(otherSize);
+        Telegraph.ResolveImpactGeometry(otherArea, new[] { warning }).Should().Be(otherArea);
+        Telegraph.ResolveImpactGeometry(movedImpact, new[] { otherShape, otherSize, otherArea, warning }).Should().Be(warning);
+    }
+
+    [Test]
+    public void ImpactWithoutAnActivationWarning_UsesItsCurrentGeometry()
+    {
+        var impact = DirectionalGeometry(TelegraphType.Line, Vector3.One, Vector3.UnitX);
+
+        Telegraph.ResolveImpactGeometry(impact, null).Should().Be(impact);
+        Telegraph.ResolveImpactGeometry(impact, Array.Empty<TelegraphGeometry>()).Should().Be(impact);
     }
 
     /// <summary>

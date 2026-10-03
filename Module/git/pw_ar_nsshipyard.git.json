@@ -365365,7 +365365,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This deed can be used to register a starship in your name at any starport."
                       }
                     },
                     "Identified": {
@@ -365506,7 +365506,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This deed can be used to register a starship in your name at any starport."
                       }
                     },
                     "Identified": {
@@ -367143,6 +367143,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "WEATHER_HAZARD_SAFE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

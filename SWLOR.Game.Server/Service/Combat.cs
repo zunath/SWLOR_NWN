@@ -5730,7 +5730,8 @@ namespace SWLOR.Game.Server.Service
             Type primaryStatusEffect,
             IEnumerable<Type> additionalStatusEffects,
             bool firstHostileAbilityHitDamageBonusApplied,
-            bool isFirstSuccessfulTarget)
+            bool isFirstSuccessfulTarget,
+            StatusEffectCategory appliedStatusCategories)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
@@ -5757,9 +5758,7 @@ namespace SWLOR.Game.Server.Service
             ApplyStatusAppliedEffects(
                 activator,
                 target,
-                statusApplied,
-                primaryStatusEffect,
-                additionalStatusEffects);
+                appliedStatusCategories);
             ApplyAbilityTargetStatusEffects(activator, target, ability);
             ApplyRangedAbilityHitNearTargetEffects(activator, target, ability, skillType);
             ApplyCostlyAbilityHitEffects(activator, target, ability, skillType);
@@ -7381,18 +7380,13 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyStatusAppliedEffects(
             uint activator,
             uint target,
-            bool statusApplied,
-            Type primaryStatusEffect,
-            IEnumerable<Type> additionalStatusEffects)
+            StatusEffectCategory appliedStatusCategories)
         {
-            if (!statusApplied)
-                return;
-
             var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.StatusAppliedRequiredCategory));
             if (requiredCategory == 0 ||
-                !AbilityAppliedAnyStatusCategory(primaryStatusEffect, additionalStatusEffects, requiredCategory))
+                (appliedStatusCategories & requiredCategory) == 0)
             {
                 return;
             }
@@ -8219,7 +8213,7 @@ namespace SWLOR.Game.Server.Service
             if (Stat.GetStatAdjustment(activator, StatType.ForcePrecognition) > 0 &&
                 TryUseStatTrigger(activator, StatType.ForcePrecognition, 12))
             {
-                StatusEffect.ApplyStatusEffect(activator, activator, typeof(PrecognitionStatusEffect), 30f);
+                StatusEffect.ApplyStatusEffect(activator, activator, typeof(DangerSenseStatusEffect), 30f);
             }
 
             if (Stat.GetStatAdjustment(activator, StatType.ForceConvergence) > 0 &&
@@ -12028,7 +12022,7 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateAttackDelay(uint attacker, int attackDelayReductionAdjustment)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
+            var leftHand = EquipmentPredicates.GetOffhandAttackWeapon(attacker);
 
             var rightHandDelay = GetWeaponDelay(rightHand);
             var leftHandDelay = ApplyOffhandAttackDelayReduction(attacker, GetWeaponDelay(leftHand));

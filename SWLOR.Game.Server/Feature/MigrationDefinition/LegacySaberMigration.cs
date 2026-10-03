@@ -14,36 +14,25 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     /// <summary>
-    /// Normalizes DM-built lightsabers and saberstaffs (any Lightsaber/Saberstaff
-    /// base item that is not part of the craftable training saber lines or the
-    /// workbench-built sabers) to the tier 5 baseline: DMG, attack delay, and the
-    /// skill requirement are set to the tier 5 values, while off-tier modifiers
-    /// (weapon damage type, enhancement/damage/accuracy bonuses) are deliberately
-    /// removed because the tier baseline carries none - that removal is the point
-    /// of normalization. The weapon is stamped with the saber tier variable so the
-    /// tiered upgrade kits recognize it. Owners keep their weapons; nothing is
-    /// removed from their inventories.
+    /// Recalibrates custom legacy sabers to current tier and crafting budgets,
+    /// retaining bounded damage and accuracy bonuses and evidenced Chiro upgrades.
+    /// Names, appearances, and unrelated properties remain intact.
     /// </summary>
     internal static class LegacySaberMigration
     {
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string SaberTierVariable = "SABER_TIER";
-        private const int NormalizedTier = 5;
-
-        private const int LightsaberTierDamage = 21;
-        private const int SaberstaffTierDamage = 25;
+        private const string LegacyUpgradeVariable = "LIGHTSABER_UPGRADE_COUNT";
         private const ItemPropertyAttackDelay LightsaberDelay = ItemPropertyAttackDelay.Delay240;
-        private const ItemPropertyAttackDelay SaberstaffDelay = ItemPropertyAttackDelay.Delay290;
-        private const int TierRequiredSkill = 40;
+        private const ItemPropertyAttackDelay SaberstaffDelay = ItemPropertyAttackDelay.Delay240;
         private const int LightsaberSkillSubtype = 38;
         private const int SaberstaffSkillSubtype = 42;
 
         /// <summary>
         /// Property types that make up a saber's damage profile and attack math.
-        /// All of these are stripped during normalization; only DMG, Delay, and
-        /// RequiresSkill get tier 5 replacements - the tier baseline intentionally
-        /// has no damage type, enhancement, damage, or accuracy bonuses. Everything
-        /// else on the weapon (VFX, cast spell, etc.) is kept.
+        /// These are collected before replacement so compatible damage and accuracy
+        /// survive within current crafting limits. Separate elemental damage effects
+        /// are replaced by the saber's single damage profile.
         /// </summary>
         private static readonly HashSet<ItemPropertyType> NormalizedPropertyTypes = new()
         {
@@ -97,7 +86,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         /// <summary>
         /// Determines whether an item is a DM-built saber that must be normalized.
-        /// Already-normalized sabers (tier variable set) are skipped.
+        /// Tiered sabers are skipped except previously recalibrated tier 5 weapons
+        /// whose historical upgrade marker proves that their Chiro step was lost.
         /// </summary>
         public static bool IsLegacySaber(uint item)
         {
@@ -108,38 +98,65 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (baseItemType != BaseItem.Lightsaber && baseItemType != BaseItem.Saberstaff)
                 return false;
 
-            if (GetLocalInt(item, SaberTierVariable) > 0)
+            if (Item.IsEconomyRestricted(item))
                 return false;
 
-            return !CraftableSaberResrefs.Contains(GetResRef(item));
+            if (CraftableSaberResrefs.Contains(GetResRef(item)))
+                return false;
+
+            var tier = GetLocalInt(item, SaberTierVariable);
+            return tier <= 0 || (tier == 5 && GetLocalInt(item, LegacyUpgradeVariable) > 0);
         }
 
         /// <summary>
-        /// Replaces a saber's damage profile and attack modifiers with the tier 5
-        /// baseline and stamps the saber tier variable. The weapon's name,
-        /// appearance, and remaining properties are preserved.
+        /// Replaces obsolete damage properties with a bounded current profile.
         /// </summary>
         private static void NormalizeSaber(uint item)
         {
             var isSaberstaff = GetBaseItemType(item) == BaseItem.Saberstaff;
+            var damage = 0;
+            var accuracy = 0;
 
             var propertiesToRemove = new List<SWLOR.NWN.API.Engine.ItemProperty>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                if (NormalizedPropertyTypes.Contains(GetItemPropertyType(ip)))
+            {
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.DMG)
+                    damage += GetItemPropertyCostTableValue(ip);
+                else if (type == ItemPropertyType.DamageBonus)
+                {
+                    var row = GetItemPropertyCostTableValue(ip);
+                    if (int.TryParse(Get2DAString("iprp_damagecost", "NumDice", row), out var dice) &&
+                        int.TryParse(Get2DAString("iprp_damagecost", "Die", row), out var die))
+                        damage += SaberRecalibration.CalculateLegacyDamageBonus(dice, die);
+                }
+                else if (type == ItemPropertyType.Accuracy || AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(type))
+                    accuracy += GetItemPropertyCostTableValue(ip);
+                if (NormalizedPropertyTypes.Contains(type))
                     propertiesToRemove.Add(ip);
+            }
+
+            var upgraded = GetLocalInt(item, LegacyUpgradeVariable) > 0;
+            // A previous sweep erased the original bonuses. Only the saved upgrade
+            // marker can be recovered; add the current Chiro delta without inventing mods.
+            if (GetLocalInt(item, SaberTierVariable) == 5 && upgraded)
+                damage += 3;
+
+            var profile = SaberRecalibration.CalculateProfile(isSaberstaff, damage, accuracy, upgraded);
 
             foreach (var property in propertiesToRemove)
                 MigrationObject.RemoveProperty(item, property);
 
-            var damage = isSaberstaff ? SaberstaffTierDamage : LightsaberTierDamage;
             var delay = isSaberstaff ? SaberstaffDelay : LightsaberDelay;
             var skillSubtype = isSaberstaff ? SaberstaffSkillSubtype : LightsaberSkillSubtype;
 
-            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.DMG, -1, damage), AddItemPropertyPolicy.ReplaceExisting);
+            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.DMG, -1, profile.Damage), AddItemPropertyPolicy.ReplaceExisting);
             MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)delay), AddItemPropertyPolicy.ReplaceExisting);
-            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.RequiresSkill, skillSubtype, TierRequiredSkill), AddItemPropertyPolicy.ReplaceExisting);
+            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.RequiresSkill, skillSubtype, profile.RequiredSkill), AddItemPropertyPolicy.ReplaceExisting);
+            if (profile.Accuracy > 0)
+                MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, profile.Accuracy), AddItemPropertyPolicy.ReplaceExisting);
 
-            SetLocalInt(item, SaberTierVariable, NormalizedTier);
+            SetLocalInt(item, SaberTierVariable, profile.Tier);
         }
 
         /// <summary>
@@ -154,9 +171,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 return;
 
             var saberText = normalized == 1 ? "lightsaber has" : "lightsabers have";
-            SendMessageToPC(player, $"Your {saberText} been recalibrated to tier 5 as part of the combat overhaul. Tier 5.5 upgrade kits can be crafted through Engineering once their blueprint is recovered.");
+            SendMessageToPC(player, $"Your {saberText} been recalibrated to current crafting limits, retaining supported bonuses and previously applied Chiro upgrades.");
 
-            Log.Write(LogGroup.Migration, $"Normalized {normalized} legacy saber(s) to tier {NormalizedTier} for {GetName(player)} ({GetObjectUUID(player)}).");
+            Log.Write(LogGroup.Migration, $"Recalibrated {normalized} legacy saber(s) to current crafting limits for {GetName(player)} ({GetObjectUUID(player)}).");
         }
 
         private static int NormalizeSabersOnObject(uint obj)
@@ -171,6 +188,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             {
                 if (IsLegacySaber(obj))
                 {
+                    EquipmentRequirementMigration.MigrateObject(obj);
+                    SerializedItemWeaponDamageTypeMigration.MigrateObject(obj);
                     NormalizeSaber(obj);
                     return 1;
                 }

@@ -835,9 +835,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 MainHandTooltip = "Est. Damage: N/A";
             }
 
-            if (GetIsObjectValid(offHand))
+            var offhandAttackWeapon = EquipmentPredicates.GetOffhandAttackWeapon(_target);
+            if (GetIsObjectValid(offhandAttackWeapon))
             {
-                var dmgInfo = GetCombatInfo(offHand);
+                var dmgInfo = GetCombatInfo(offhandAttackWeapon);
                 OffHandDMG = dmgInfo.Item1;
                 OffHandTooltip = dmgInfo.Item2;
             }

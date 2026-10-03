@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -46,6 +47,80 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var hit = 0; hit < 100; hit++)
                 Combat.ApplyDamageDealtEffects(beast, target, 10, SkillType.BeastMastery);
             ctx.AssertEqual(0, Stat.GetCurrentStamina(beast), "Non-bleeding targets never restore STM");
+        }
+
+        [EngineTest("Control application riders require an applied Control status", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task ControlApplicationRidersRequireAppliedControl(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var immuneTarget = ctx.SpawnCreature("nw_rat001", 2f);
+            var controlTarget = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, caster);
+            foreach (var target in new[] { immuneTarget, controlTarget })
+                Prepare(ctx, target);
+
+            // NPC perks feed the same stat aggregation as player perks. Clear unrelated NPC-default
+            // perks so the assertions isolate Charged Blows and Skull Rattle.
+            foreach (var perk in Enum.GetValues<PerkType>().Distinct().Where(perk => perk != PerkType.Invalid))
+                ctx.SetNPCPerkLevel(caster, perk, 0);
+            ctx.SetNPCPerkLevel(caster, PerkType.ChargedBlows, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.SkullRattle, 1);
+            ctx.AssertEqual((int)StatusEffectCategory.Control,
+                Stat.GetStatAdjustment(caster, StatType.StatusAppliedRequiredCategory),
+                "the selected NPC perks declare the Control rider category");
+            ctx.AssertEqual(10, Stat.GetStatAdjustment(caster, StatType.StatusAppliedNextAttackDamageBonus),
+                "Charged Blows supplies its rank-one next-attack bonus through perk stats");
+
+            var epicenter = Ability.GetAbilityDetail(FeatType.Epicenter1);
+            var immuneTargetAccuracy = Stat.GetStatAdjustment(immuneTarget, StatType.AccuracyPercentAdjustment);
+            TemporaryStatModifier.Add(immuneTarget, StatType.KnockdownImmunity, 1, 120f, "ENGINE_TEST_KNOCKDOWN_IMMUNITY");
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                async Task ApplyEpicenter(uint target)
+                {
+                    Ability.BeginAbilityImpact(caster, epicenter);
+                    try
+                    {
+                        await ctx.ExecuteInCreatureContextAsync(caster,
+                            () => epicenter.ImpactAction(caster, caster, 1, GetLocation(caster)));
+                    }
+                    finally
+                    {
+                        Ability.EndAbilityImpact(caster);
+                    }
+                }
+
+                ctx.MakeHostile(immuneTarget);
+                await ApplyEpicenter(immuneTarget);
+                ctx.Assert(StatusEffect.HasStatusEffect<SunderStatusEffect>(immuneTarget),
+                    "Epicenter's non-Control additional status applies despite Knockdown immunity");
+                ctx.Assert(!StatusEffect.HasStatusEffect<KnockdownStatusEffect>(immuneTarget),
+                    "the target's Knockdown immunity rejects Epicenter's Control status");
+                ctx.AssertEqual(0, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                    "Sunder alone must not trigger Charged Blows");
+                ctx.AssertEqual(immuneTargetAccuracy,
+                    Stat.GetStatAdjustment(immuneTarget, StatType.AccuracyPercentAdjustment),
+                    "Sunder alone must not trigger Skull Rattle");
+                ChangeToStandardFaction(immuneTarget, StandardFaction.Defender);
+
+                ctx.MakeHostile(controlTarget);
+                var controlTargetAccuracy = Stat.GetStatAdjustment(controlTarget, StatType.AccuracyPercentAdjustment);
+                await ApplyEpicenter(controlTarget);
+                ctx.Assert(StatusEffect.HasStatusEffect<SunderStatusEffect>(controlTarget), "Epicenter applies Sunder");
+                ctx.Assert(StatusEffect.HasStatusEffect<KnockdownStatusEffect>(controlTarget),
+                    "a fresh target accepts Epicenter's Control status");
+                ctx.AssertEqual(10, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                    "successfully applied Control triggers Charged Blows");
+                ctx.AssertEqual(controlTargetAccuracy - 10,
+                    Stat.GetStatAdjustment(controlTarget, StatType.AccuracyPercentAdjustment),
+                    "successfully applied Control triggers Skull Rattle");
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+            }
         }
 
         [EngineTest("Beast areas select a single enemy and self-centered impacts select the beast", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]

@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 // Three bars, so this is taller than the on-foot overlay; height must fit all three
                 // rows plus NUI's inter-row margins or the bottom row clips (see the definition).
-                const float WidgetWidth = 72f;
-                const float WidgetHeight = 74f;
-
                 // Anchored top-right and scaled by GUI scale, same convention as the on-foot overlay.
                 // YOffset is smaller than the 2-bar overlay so the taller stack still sits over the
                 // portrait with its bottom clear of the button row beneath it.
                 const float XOffset = 64f;
-                const float YOffset = 31f;
+                // Eight more units of layout room, lifted by eight to retain the bottom edge.
+                const float YOffset = 23f;
 
                 var scale = screenScale / 100f;
                 var x = screenWidth - XOffset * scale;
                 var y = YOffset * scale;
 
-                Geometry = new GuiRectangle(x, y, WidgetWidth, WidgetHeight);
+                Geometry = new GuiRectangle(x, y,
+                    PlayerStatusPortraitSpaceDefinition.WidgetWidth,
+                    PlayerStatusPortraitSpaceDefinition.WidgetHeight);
 
                 _screenHeight = screenHeight;
                 _screenWidth = screenWidth;

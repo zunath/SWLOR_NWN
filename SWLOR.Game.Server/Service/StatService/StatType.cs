@@ -2538,7 +2538,7 @@ namespace SWLOR.Game.Server.Service.StatService
         ForceConvergence = 454,
 
         /// <summary>
-        /// Enables FP-spend Defense and Evasion from Precognition.
+        /// Enables FP-spend Defense and Evasion from Danger Sense.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         ForcePrecognition = 455,

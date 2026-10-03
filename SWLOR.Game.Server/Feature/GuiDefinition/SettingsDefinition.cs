@@ -91,6 +91,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddSpacer()
                                 .SetWidth(28f);
 
+                            row.AddCheckBox()
+                                .SetText("Cooldown Floating Text")
+                                .SetTooltip("When enabled, your failed ability attempts show the ability name and remaining time above your head, at most once every two seconds. Off by default.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.DisplayCooldownFloatingText);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
                             row.AddButton()
                                 .SetText("Change Description")
                                 .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")

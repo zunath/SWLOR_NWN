@@ -33,7 +33,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceAlter, PerkType.ThrowRock)
                 .Name("Throw Rock")
-                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Hurls stone or loose debris with the Force up to 30m, dealing 22 physical DMG plus WIL/PER scaling to one target.")

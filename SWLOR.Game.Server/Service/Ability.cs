@@ -173,7 +173,8 @@ namespace SWLOR.Game.Server.Service
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
             AbilityImpactSequence sequence = null,
             TrackedAbilityImpact sequenceOwner = null,
-            bool resolveDamageBonusesFromOwner = false)
+            bool resolveDamageBonusesFromOwner = false,
+            int? triggeringWeaponDamage = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -191,7 +192,7 @@ namespace SWLOR.Game.Server.Service
                 sequence)
             {
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
-                TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
+                TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
                     activator, Combat.GetAbilitySkillType(activator, ability),
                     ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery)
             };
@@ -265,8 +266,8 @@ namespace SWLOR.Game.Server.Service
                     return;
 
                 var previousImpact = GetTrackedAbilityImpact(activator);
-                BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence);
-                GetTrackedAbilityImpact(activator).TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage;
+                BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
+                    triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
                 GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
@@ -314,9 +315,9 @@ namespace SWLOR.Game.Server.Service
                         if (batchImpact == null)
                         {
                             BeginAbilityImpact(activator, originatingImpact.Ability, 0, 0,
-                                countsAsAttackAttempt: false, sequence: originatingImpact.Sequence);
+                                countsAsAttackAttempt: false, sequence: originatingImpact.Sequence,
+                                triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
                             batchImpact = GetTrackedAbilityImpact(activator);
-                            batchImpact.TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage;
                             batchImpact.CopyRepeatedDamageBonusesFrom(originatingImpact);
                         }
                         else

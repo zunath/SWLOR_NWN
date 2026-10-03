@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -120,10 +121,15 @@ public static class SingleWeaponEngineTests
             var impact = getImpact.Invoke(null, new object[] { player.Creature });
             var capturedDamage = (int?)impact.GetType().GetProperty("TriggeringWeaponDamage").GetValue(impact);
             ctx.AssertEqual(39, capturedDamage.Value, "Weapon ability captures combined rating at impact start");
+            var getThrowDamage = typeof(ThrowLightsaberAbilityDefinition).GetMethod("GetEquippedWeaponDamageAdjustment",
+                BindingFlags.NonPublic | BindingFlags.Static);
+            var capturedThrowDamage = (Func<uint, int>)getThrowDamage.Invoke(null, new object[] { player.Creature });
+            ctx.AssertEqual(39, capturedThrowDamage(player.Creature), "Throw Lightsaber's explicit weapon component receives the same rating");
             var shield = await ctx.EquipItemAsync(player.Creature, "ec_shield", InventorySlot.LeftHand);
             ctx.AssertEqual(24, WeaponDamage.GetEffectiveDMG(player.Creature, weapon), "Live equipment no longer qualifies");
             ctx.AssertEqual(39, Combat.GetCombatImpactWeaponDamage(player.Creature, SkillType.Vibroblade,
                 triggeringWeaponDamage: capturedDamage), "Later targets use the captured rating without applying the percentage twice");
+            ctx.AssertEqual(39, capturedThrowDamage(player.Creature), "Throw Lightsaber captures its weapon component once for all path targets");
             DestroyObject(shield);
         }
         finally { Ability.EndAbilityImpact(player.Creature); }

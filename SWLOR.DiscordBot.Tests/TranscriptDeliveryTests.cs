@@ -1,0 +1,152 @@
+using System.IO.Compression;
+using System.Text;
+using NUnit.Framework;
+using SWLOR.DiscordBot.Discord;
+
+namespace SWLOR.DiscordBot.Tests;
+
+[TestFixture]
+public sealed class TranscriptDeliveryTests
+{
+    private string sourcePath = null!;
+
+    [SetUp]
+    public void SetUp() => sourcePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
+
+    [TearDown]
+    public void TearDown() { if (File.Exists(sourcePath)) File.Delete(sourcePath); }
+
+    [TestCase(2048UL)]
+    [TestCase(2049UL)]
+    public async Task HtmlWithinInteractionLimitIsDeliveredWithoutChangingBytes(ulong limit)
+    {
+        var bytes = RandomBytes(2048);
+        await File.WriteAllBytesAsync(sourcePath, bytes);
+        var uploads = await DeliverAsync(limit);
+        Assert.That(uploads, Has.Count.EqualTo(1));
+        Assert.That(uploads[0].Name, Is.EqualTo("transcript.html"));
+        Assert.That(uploads[0].Bytes, Is.EqualTo(bytes));
+        Assert.That(await File.ReadAllBytesAsync(sourcePath), Is.EqualTo(bytes));
+    }
+
+    [Test]
+    public async Task OversizedHtmlCompressesToOneValidAttachmentAndDecompressesExactly()
+    {
+        var bytes = Encoding.UTF8.GetBytes("<html>" + new string('z', 50000) + "Ω</html>");
+        await File.WriteAllBytesAsync(sourcePath, bytes);
+        var uploads = await DeliverAsync(1024);
+        Assert.That(uploads, Has.Count.EqualTo(1));
+        Assert.That(uploads[0].Name, Is.EqualTo("transcript.html.gz"));
+        Assert.That(uploads[0].Text, Does.Contain("Decompress transcript.html.gz to transcript.html"));
+        Assert.That(await DecompressAsync(uploads[0].Bytes), Is.EqualTo(bytes));
+    }
+
+    [Test]
+    public async Task IncompressibleTranscriptSplitsUnderActualLimitAndReassemblesExactly()
+    {
+        var bytes = RandomBytes(4096);
+        await File.WriteAllBytesAsync(sourcePath, bytes);
+        var uploads = await DeliverAsync(256);
+        Assert.That(uploads.Count, Is.GreaterThan(1));
+        Assert.That(uploads.Select(x => x.Name), Is.Ordered);
+        Assert.That(uploads.Select(x => x.Name).Distinct().Count(), Is.EqualTo(uploads.Count));
+        foreach (var upload in uploads)
+        {
+            Assert.That(upload.Name, Does.StartWith("transcript.html.gz.part"));
+            Assert.That(upload.Text, Does.Contain("of " + uploads.Count));
+            Assert.That(upload.Text, Does.Contain("binary bytes in filename order"));
+            Assert.That(upload.Text, Does.Contain("gzip -d transcript.html.gz"));
+            Assert.That(upload.Text, Does.Contain("Windows PowerShell"));
+            Assert.That(upload.Text.Length, Is.LessThanOrEqualTo(2000));
+        }
+        Assert.That(await DecompressAsync(uploads.SelectMany(x => x.Bytes).ToArray()), Is.EqualTo(bytes));
+        Assert.That(await File.ReadAllBytesAsync(sourcePath), Is.EqualTo(bytes));
+    }
+
+    [Test]
+    public void MissingInteractionLimitFailsBeforeOpeningOrLeakingPaths()
+    {
+        var error = Assert.ThrowsAsync<DiscordValidationException>(() => TranscriptDelivery.SendAsync(
+            "private-server-path-not-to-be-disclosed", 0,
+            (_, _, _, _) => throw new AssertionException("No upload is possible without a valid limit."), CancellationToken.None));
+        Assert.That(error!.Message, Does.Contain("attachment size limit"));
+        Assert.That(error.Message, Does.Not.Contain("private-server"));
+    }
+
+    [Test]
+    public async Task FailedUploadDisposesStreamsAndDeletesTemporaryFiles()
+    {
+        await File.WriteAllBytesAsync(sourcePath, RandomBytes(4096));
+        var before = TemporaryPaths();
+        Stream? uploaded = null;
+        Assert.ThrowsAsync<IOException>(() => TranscriptDelivery.SendAsync(sourcePath, 256,
+            (stream, _, _, _) =>
+            {
+                uploaded = stream;
+                return Task.FromException(new IOException("Upload failed."));
+            }, CancellationToken.None));
+        Assert.That(uploaded!.CanRead, Is.False);
+        Assert.That(TemporaryPaths().Except(before), Is.Empty);
+        Assert.That(File.Exists(sourcePath), Is.True);
+    }
+
+    [Test]
+    public async Task CancellationStopsRemainingPartsAndDeletesTemporaryFiles()
+    {
+        await File.WriteAllBytesAsync(sourcePath, RandomBytes(4096));
+        var before = TemporaryPaths();
+        using var cancellation = new CancellationTokenSource();
+        var count = 0;
+        Assert.ThrowsAsync<OperationCanceledException>(() => TranscriptDelivery.SendAsync(sourcePath, 256,
+            (_, _, _, token) =>
+            {
+                Assert.That(token, Is.EqualTo(cancellation.Token));
+                count++;
+                cancellation.Cancel();
+                return Task.CompletedTask;
+            }, cancellation.Token));
+        Assert.That(count, Is.EqualTo(1));
+        Assert.That(TemporaryPaths().Except(before), Is.Empty);
+    }
+
+    private async Task<List<(string Name, string Text, byte[] Bytes)>> DeliverAsync(ulong limit)
+    {
+        var before = TemporaryPaths();
+        var uploads = new List<(string Name, string Text, byte[] Bytes)>();
+        var streams = new List<Stream>();
+        await TranscriptDelivery.SendAsync(sourcePath, limit, async (stream, name, text, token) =>
+        {
+            streams.Add(stream);
+            Assert.That(stream.CanSeek, Is.True);
+            Assert.That(stream.Position, Is.Zero);
+            Assert.That((ulong)stream.Length, Is.LessThanOrEqualTo(limit));
+            Assert.That(name, Does.Not.Contain(Path.DirectorySeparatorChar.ToString()));
+            Assert.That(text, Does.Not.Contain(sourcePath));
+            using var received = new MemoryStream();
+            await stream.CopyToAsync(received, token);
+            uploads.Add((name, text, received.ToArray()));
+        }, CancellationToken.None);
+        Assert.That(streams.All(x => !x.CanRead), Is.True);
+        Assert.That(TemporaryPaths().Except(before), Is.Empty);
+        return uploads;
+    }
+
+    private static HashSet<string> TemporaryPaths() =>
+        Directory.GetFiles(Path.GetTempPath(), "swlor-transcript-*.tmp").ToHashSet(StringComparer.Ordinal);
+
+    private static byte[] RandomBytes(int length)
+    {
+        var bytes = new byte[length];
+        new Random(37).NextBytes(bytes);
+        return bytes;
+    }
+
+    private static async Task<byte[]> DecompressAsync(byte[] bytes)
+    {
+        using var source = new MemoryStream(bytes);
+        using var gzip = new GZipStream(source, CompressionMode.Decompress);
+        using var output = new MemoryStream();
+        await gzip.CopyToAsync(output);
+        return output.ToArray();
+    }
+}

@@ -8,6 +8,80 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class GatewayConfigurationTests
 {
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public void PrefixCommandsCannotEnterReadOnlyOrHiddenChannels(bool view, bool send)
+    {
+        var config = new BotConfiguration
+        {
+            Factions = new FactionOptions { Enabled = true },
+            Answers = [new QuickAnswerOptions { Name = "help", Responses = ["ok"] }]
+        };
+        var permissions = new ChannelPermissions(viewChannel: view, sendMessages: send);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, permissions, 10, "?rank Jedi"), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, permissions, 10, "?help"), Is.False);
+    }
+
+    [Test]
+    public void RuntimePermissionChangesBlockFactionMutationAndCommandDeletion()
+    {
+        var config = new BotConfiguration { Factions = new FactionOptions { Enabled = true, DeleteCommand = true } };
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config,
+            new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true), 10, "?rank Jedi"), Is.True);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config,
+            new ChannelPermissions(viewChannel: true, sendMessages: true), 10, "?rank Jedi"), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config,
+            new ChannelPermissions(viewChannel: true, manageMessages: true), 10, "?rank Jedi"), Is.False);
+    }
+
+    [Test]
+    public void PrefixGateChecksOnlyTheSelectedAnswersScopeAndCapabilities()
+    {
+        var config = new BotConfiguration
+        {
+            Answers =
+            [
+                new QuickAnswerOptions { Name = "plain", DeleteResponseAfter = TimeSpan.FromSeconds(5) },
+                new QuickAnswerOptions { Name = "embed", Embeds = [new AnswerEmbed { Title = "Help" }] },
+                new QuickAnswerOptions { Name = "delete", DeleteCommand = true },
+                new QuickAnswerOptions { Name = "scoped", AllowedChannelIds = [11] },
+                new QuickAnswerOptions { Name = "disabled", Enabled = false }
+            ]
+        };
+        var ordinary = new ChannelPermissions(viewChannel: true, sendMessages: true);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?plain any arguments"), Is.True);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?embed"), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?delete"), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?scoped"), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 11, "?scoped"), Is.True);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?disabled"), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?missing"), Is.False);
+        var privileged = new ChannelPermissions(viewChannel: true, sendMessages: true, embedLinks: true, manageMessages: true);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, privileged, 10, "?EMBED"), Is.True);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, privileged, 10, "?delete"), Is.True);
+    }
+
+    [Test]
+    public void ResponseOnlyFactionDeletionNeedsNoModerationPermissionAndDisabledFactionRankCanBeAnAnswer()
+    {
+        var config = new BotConfiguration
+        {
+            Factions = new FactionOptions { Enabled = true, DeleteResponse = true },
+            Answers = [new QuickAnswerOptions { Name = "rank" }]
+        };
+        var ordinary = new ChannelPermissions(viewChannel: true, sendMessages: true);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?rank Jedi"), Is.True);
+        config.Factions.Enabled = false;
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, ordinary, 10, "?rank arguments"), Is.True);
+    }
+
+    [TestCase(true, "Close this ticket? The channel will become read-only for the requester.")]
+    [TestCase(false, "Close this ticket? The channel will be hidden from the requester.")]
+    public void CloseConfirmationDescribesConfiguredRequesterVisibility(bool requesterCanRead, string expected)
+    {
+        Assert.That(DiscordGateway.CloseConfirmationText(requesterCanRead), Is.EqualTo(expected));
+    }
+
     [Test]
     public void TicketOnlyDeploymentDoesNotSubscribeToMessageContentOrMessageEvents()
     {

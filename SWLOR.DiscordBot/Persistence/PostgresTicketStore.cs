@@ -5,9 +5,10 @@ using SWLOR.DiscordBot.Core;
 
 namespace SWLOR.DiscordBot.Persistence;
 
-public sealed class PostgresTicketStore(string connectionString) : ITicketStore, IAsyncDisposable
+public sealed class PostgresTicketStore(string connectionString) : ITicketStore, IResponseDeletionStore, IAsyncDisposable
 {
     private const long MutationLock = 7821653091;
+    private const long CommunityLock = 7821653092;
     private readonly NpgsqlDataSource _source = NpgsqlDataSource.Create(connectionString);
 
     public async Task InitializeAsync(CancellationToken ct)
@@ -36,26 +37,97 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
         await using var command = new NpgsqlCommand(schema, session.Connection);
         await command.ExecuteNonQueryAsync(ct);
         await using var versionCommand = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", session.Connection);
-        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) != 1)
+        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 2)
             throw new InvalidOperationException("The bot database schema is newer than this application.");
+        await using var transaction = await session.Connection.BeginTransactionAsync(ct);
+        const string upgrade = """
+            CREATE TABLE IF NOT EXISTS swlor_bot_response_deletions (
+                channel_id text NOT NULL, message_id text NOT NULL, due_at timestamptz NOT NULL,
+                attempts integer NOT NULL DEFAULT 0, last_error text, completed boolean NOT NULL DEFAULT false,
+                PRIMARY KEY(channel_id, message_id));
+            CREATE INDEX IF NOT EXISTS swlor_bot_response_deletions_due
+                ON swlor_bot_response_deletions(due_at) WHERE NOT completed;
+            INSERT INTO swlor_bot_schema(version) VALUES (2) ON CONFLICT DO NOTHING;
+            """;
+        await using var upgradeCommand = new NpgsqlCommand(upgrade, session.Connection, transaction);
+        await upgradeCommand.ExecuteNonQueryAsync(ct);
+        await transaction.CommitAsync(ct);
     }
 
-    public async Task<ITicketSession> LockAsync(CancellationToken ct)
+    public Task<ITicketSession> LockAsync(CancellationToken ct) => AcquireLockAsync(MutationLock, ct);
+    public Task<ITicketSession> LockCommunityAsync(CancellationToken ct) => AcquireLockAsync(CommunityLock, ct);
+
+    private async Task<ITicketSession> AcquireLockAsync(long key, CancellationToken ct)
     {
         var connection = await _source.OpenConnectionAsync(ct);
         try
         {
             await using var command = new NpgsqlCommand("SELECT pg_advisory_lock(@key)", connection) { CommandTimeout = 60 };
-            command.Parameters.AddWithValue("key", MutationLock);
+            command.Parameters.AddWithValue("key", key);
             await command.ExecuteNonQueryAsync(ct);
-            return new Session(connection);
+            return new Session(connection, key, _source);
         }
-        catch { await connection.DisposeAsync(); throw; }
+        catch
+        {
+            // Cancellation can arrive after PostgreSQL acquired the session lock. Pool reset is deferred,
+            // so an unconfirmed session must be physically discarded before returning it to the pool.
+            // Clear this explicit data source; NpgsqlConnection.ClearPool only clears implicit pools.
+            _source.Clear();
+            await connection.DisposeAsync();
+            throw;
+        }
+    }
+
+    private static string Snowflake(ulong id) => id.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    public async Task ScheduleDeletionAsync(ulong channelId, ulong messageId, DateTimeOffset dueAt, CancellationToken ct)
+    {
+        await using var connection = await _source.OpenConnectionAsync(ct);
+        await using var command = new NpgsqlCommand("INSERT INTO swlor_bot_response_deletions(channel_id,message_id,due_at) VALUES (@channel,@message,@due) ON CONFLICT DO NOTHING", connection);
+        command.Parameters.AddWithValue("channel", Snowflake(channelId));
+        command.Parameters.AddWithValue("message", Snowflake(messageId));
+        command.Parameters.AddWithValue("due", dueAt.ToUniversalTime());
+        await command.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<PendingResponseDeletion>> GetDueDeletionsAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        await using var connection = await _source.OpenConnectionAsync(ct);
+        await using var command = new NpgsqlCommand("SELECT channel_id,message_id,due_at,attempts,last_error FROM swlor_bot_response_deletions WHERE NOT completed AND due_at<=@now ORDER BY due_at LIMIT 100", connection);
+        command.Parameters.AddWithValue("now", now.ToUniversalTime());
+        await using var reader = await command.ExecuteReaderAsync(ct);
+        var result = new List<PendingResponseDeletion>();
+        while (await reader.ReadAsync(ct))
+            result.Add(new(ulong.Parse(reader.GetString(0), System.Globalization.CultureInfo.InvariantCulture),
+                ulong.Parse(reader.GetString(1), System.Globalization.CultureInfo.InvariantCulture),
+                new DateTimeOffset(reader.GetDateTime(2), TimeSpan.Zero), reader.GetInt32(3),
+                reader.IsDBNull(4) ? null : reader.GetString(4)));
+        return result;
+    }
+
+    public async Task CompleteDeletionAsync(ulong channelId, ulong messageId, CancellationToken ct)
+    {
+        await using var connection = await _source.OpenConnectionAsync(ct);
+        await using var command = new NpgsqlCommand("UPDATE swlor_bot_response_deletions SET completed=true,last_error=NULL WHERE channel_id=@channel AND message_id=@message", connection);
+        command.Parameters.AddWithValue("channel", Snowflake(channelId));
+        command.Parameters.AddWithValue("message", Snowflake(messageId));
+        await command.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task RetryDeletionAsync(PendingResponseDeletion deletion, DateTimeOffset dueAt, string error, CancellationToken ct)
+    {
+        await using var connection = await _source.OpenConnectionAsync(ct);
+        await using var command = new NpgsqlCommand("UPDATE swlor_bot_response_deletions SET due_at=@due,attempts=LEAST(attempts::bigint+1,2147483647)::integer,last_error=@error WHERE NOT completed AND channel_id=@channel AND message_id=@message", connection);
+        command.Parameters.AddWithValue("channel", Snowflake(deletion.ChannelId));
+        command.Parameters.AddWithValue("message", Snowflake(deletion.MessageId));
+        command.Parameters.AddWithValue("due", dueAt.ToUniversalTime());
+        command.Parameters.AddWithValue("error", error);
+        await command.ExecuteNonQueryAsync(ct);
     }
 
     public ValueTask DisposeAsync() => _source.DisposeAsync();
 
-    private sealed class Session(NpgsqlConnection connection) : ITicketSession
+    internal sealed class Session(NpgsqlConnection connection, long lockKey, NpgsqlDataSource source) : ITicketSession
     {
         internal NpgsqlConnection Connection => connection;
         private bool _disposed;
@@ -164,13 +236,19 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
         {
             if (_disposed) return;
             _disposed = true;
+            var released = false;
             try
             {
                 await using var command = new NpgsqlCommand("SELECT pg_advisory_unlock(@key)", connection) { CommandTimeout = 5 };
-                command.Parameters.AddWithValue("key", MutationLock);
-                await command.ExecuteNonQueryAsync(CancellationToken.None);
+                command.Parameters.AddWithValue("key", lockKey);
+                released = await command.ExecuteScalarAsync(CancellationToken.None) is true;
+                if (!released) throw new InvalidOperationException("The database session did not confirm advisory lock release.");
             }
-            finally { await connection.DisposeAsync(); }
+            finally
+            {
+                if (!released) source.Clear();
+                await connection.DisposeAsync();
+            }
         }
     }
 }

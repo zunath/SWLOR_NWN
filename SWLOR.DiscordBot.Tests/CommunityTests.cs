@@ -238,6 +238,38 @@ public sealed class CommunityTests
     }
 
     [Test]
+    public async Task ExecuteAsync_HoldsCommunityLockWithoutBlockingTicketOperations()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1,
+            Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["guide"], Cooldown = TimeSpan.FromMinutes(1) }]
+        };
+        var store = new FakeTicketStore();
+        var sendStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseSend = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new CommunityMember(7, "A Player", []),
+            SendStarted = sendStarted,
+            ReleaseSend = releaseSend
+        };
+        var service = new CommunityService(config, store, discord);
+
+        var communityOperation = service.ExecuteAsync(7, 100, 601, "?guide", CancellationToken.None);
+        await sendStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        await using (await store.LockAsync(CancellationToken.None).WaitAsync(TimeSpan.FromSeconds(2))) { }
+
+        releaseSend.TrySetResult(true);
+        await communityOperation;
+        await service.ExecuteAsync(7, 100, 602, "?guide", CancellationToken.None);
+
+        Assert.That(discord.Sent, Has.Count.EqualTo(1), "the serialized community session must still persist the cooldown");
+    }
+
+    [Test]
     public async Task ExecuteAsync_IgnoresBotsAndWebhooks()
     {
         var config = new BotConfiguration { GuildId = 1, Prefix = "?", Answers = [new QuickAnswerOptions { Name = "hello", Responses = ["hello"] }] };
@@ -254,11 +286,23 @@ public sealed class CommunityTests
         private readonly HashSet<string> _deliveries = new(StringComparer.Ordinal);
         private readonly Dictionary<string, DeliveryState> _states = new(StringComparer.Ordinal);
         private readonly Dictionary<string, DateTimeOffset> _cooldowns = new(StringComparer.Ordinal);
+        private readonly SemaphoreSlim _ticketLock = new(1, 1);
+        private readonly SemaphoreSlim _communityLock = new(1, 1);
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
-        public Task<ITicketSession> LockAsync(CancellationToken ct) => Task.FromResult<ITicketSession>(new Session(_deliveries, _states, _cooldowns));
-
-        private sealed class Session(HashSet<string> deliveries, Dictionary<string, DeliveryState> states, Dictionary<string, DateTimeOffset> cooldowns) : ITicketSession
+        public async Task<ITicketSession> LockAsync(CancellationToken ct)
         {
+            await _ticketLock.WaitAsync(ct);
+            return new Session(_deliveries, _states, _cooldowns, _ticketLock);
+        }
+        public async Task<ITicketSession> LockCommunityAsync(CancellationToken ct)
+        {
+            await _communityLock.WaitAsync(ct);
+            return new Session(_deliveries, _states, _cooldowns, _communityLock);
+        }
+
+        private sealed class Session(HashSet<string> deliveries, Dictionary<string, DeliveryState> states, Dictionary<string, DateTimeOffset> cooldowns, SemaphoreSlim heldLock) : ITicketSession
+        {
+            private int _disposed;
             public Task<IReadOnlyList<Ticket>> GetTicketsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<Ticket>>([]);
             public Task<Ticket> ReserveAsync(string panelId, ulong requesterId, string interactionId, DateTimeOffset now, CancellationToken ct) => throw new NotSupportedException();
             public Task<Ticket?> FindInteractionAsync(string interactionId, CancellationToken ct) => Task.FromResult<Ticket?>(null);
@@ -272,7 +316,11 @@ public sealed class CommunityTests
             public Task CompleteDeliveryAsync(string key, CancellationToken ct) { states[key] = states[key] with { Completed = true }; return Task.CompletedTask; }
             public Task<DateTimeOffset?> GetCooldownAsync(string key, CancellationToken ct) => Task.FromResult(cooldowns.TryGetValue(key, out var value) ? (DateTimeOffset?)value : null);
             public Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct) { cooldowns[key] = at; return Task.CompletedTask; }
-            public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+            public ValueTask DisposeAsync()
+            {
+                if (Interlocked.Exchange(ref _disposed, 1) == 0) heldLock.Release();
+                return ValueTask.CompletedTask;
+            }
         }
     }
 
@@ -286,6 +334,8 @@ public sealed class CommunityTests
         public List<(ulong ChannelId, ulong MessageId)> Deleted { get; } = [];
         public int SendFailuresRemaining { get; set; }
         public bool FailAfterNextRemove { get; set; }
+        public TaskCompletionSource<bool>? SendStarted { get; init; }
+        public TaskCompletionSource<bool>? ReleaseSend { get; init; }
         private readonly Dictionary<string, ulong> _sentKeys = new(StringComparer.Ordinal);
         public Task<CommunityMember?> GetMemberAsync(ulong userId, CancellationToken ct) => Task.FromResult(Member?.UserId == userId ? Member : null);
         public Task<CommunityRole?> GetRoleAsync(ulong roleId, CancellationToken ct) => Task.FromResult(Roles.FirstOrDefault(x => x.RoleId == roleId));
@@ -302,14 +352,16 @@ public sealed class CommunityTests
             if (FailAfterNextRemove) { FailAfterNextRemove = false; throw new InvalidOperationException("simulated role removal failure after mutation"); }
             return Task.CompletedTask;
         }
-        public Task<ulong?> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct)
+        public async Task<ulong?> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct)
         {
+            SendStarted?.TrySetResult(true);
+            if (ReleaseSend is { } release) await release.Task.WaitAsync(ct);
             if (SendFailuresRemaining > 0) { SendFailuresRemaining--; throw new InvalidOperationException("simulated send failure"); }
-            if (message.DeliveryKey is { } key && _sentKeys.TryGetValue(key, out var existing)) return Task.FromResult<ulong?>(existing);
+            if (message.DeliveryKey is { } key && _sentKeys.TryGetValue(key, out var existing)) return existing;
             Sent.Add((channelId, message));
             var id = 500 + (ulong)Sent.Count;
             if (message.DeliveryKey is { } deliveryKey) _sentKeys[deliveryKey] = id;
-            return Task.FromResult<ulong?>(id);
+            return id;
         }
         public Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct) => Task.FromResult<ulong?>(null);
         public Task DeleteMessageAsync(ulong channelId, ulong messageId, CancellationToken ct) { Deleted.Add((channelId, messageId)); return Task.CompletedTask; }

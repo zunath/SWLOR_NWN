@@ -372,7 +372,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
     {
         var channel = await TextChannelAsync(channelId, ct);
         var messageId = await poster.SendAsync(channel.Id, message, ct);
-        if (message.DeleteAfter.HasValue) responseDeletions.Schedule(channelId, messageId, message.DeleteAfter.Value);
+        if (message.DeleteAfter.HasValue) await responseDeletions.ScheduleAsync(channelId, messageId, message.DeleteAfter.Value, ct);
         return messageId;
     }
     public async Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct)

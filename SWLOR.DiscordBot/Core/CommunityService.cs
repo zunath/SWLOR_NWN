@@ -32,7 +32,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         var member = await discord.GetMemberAsync(userId, ct);
         if (member is null || member.IsBot || member.IsWebhook) return;
         var key = $"welcome:{userId}:{joinedAt.UtcTicks}";
-        await using var session = await store.LockAsync(ct);
+        await using var session = await store.LockCommunityAsync(ct);
         var message = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(
             TemplateRenderer.RenderWelcome(welcome.Template, userId, discord.ServerName, welcome.ChannelMentions),
             [], DeliveryKey: key));
@@ -80,7 +80,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         var response = texts.Length == 0 ? "" : TemplateRenderer.RenderAnswer(texts[Random.Shared.Next(texts.Length)], userId, discord.ServerName, arguments, rawArguments);
         var embeds = (answer.Embeds ?? []).Select(embed => TemplateRenderer.RenderEmbed(embed, userId, discord.ServerName, arguments, rawArguments)).ToArray();
         var candidate = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(response, embeds, answer.DeleteResponseAfter, deliveryKey));
-        await using (var session = await store.LockAsync(ct))
+        await using (var session = await store.LockCommunityAsync(ct))
         {
             var now = Clock.GetUtcNow();
             var lastDelivered = answer.Cooldown > TimeSpan.Zero ? await session.GetCooldownAsync(cooldownKey, ct) : null;
@@ -129,7 +129,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         if (roleInfo is null || roleInfo.IsManaged) return;
         // The adapter checks the bot's current permissions and hierarchy again before each role mutation.
         var deliveryKey = $"faction:{channelId}:{messageId}";
-        await using (var session = await store.LockAsync(ct))
+        await using (var session = await store.LockCommunityAsync(ct))
         {
             var currentMember = await discord.GetMemberAsync(member.UserId, ct);
             if (currentMember is null || currentMember.IsBot || currentMember.IsWebhook) return;
@@ -165,7 +165,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
 
     private async Task CompleteCommandDeletionAsync(ulong channelId, ulong messageId, string deliveryKey, CancellationToken ct)
     {
-        await using var session = await store.LockAsync(ct);
+        await using var session = await store.LockCommunityAsync(ct);
         var delivery = await session.GetOrCreateDeliveryAsync(deliveryKey, "delete-command", ct);
         if (delivery.Completed) return;
         await discord.DeleteMessageAsync(channelId, messageId, ct);

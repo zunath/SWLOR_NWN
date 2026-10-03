@@ -88,7 +88,13 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15), clock);
         do
         {
-            if (gateway.Ready) await deletions.DeleteDueAsync(community, ct);
+            if (!gateway.Ready) continue;
+            try { await deletions.DeleteDueAsync(community, ct); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+            catch (Exception ex)
+            {
+                logger.LogWarning("Response cleanup failed; pending deletions will retry: {ErrorKind}.", DiscordGateway.SafeError(ex));
+            }
         } while (await timer.WaitForNextTickAsync(ct));
     }
     private async Task MaintainAsync(CancellationToken ct)

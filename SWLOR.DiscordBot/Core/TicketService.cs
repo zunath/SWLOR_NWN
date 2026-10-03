@@ -57,7 +57,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             await NotifyAsync($"Ticket {ticket.Number} opened.", ct);
             return new(true, $"Your ticket is ready: <#{channel}>.", ticket);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (Exception ex) when (!ct.IsCancellationRequested)
         {
             logger?.LogWarning(ex, "Ticket {TicketId} creation will be reconciled", ticket.Id);
             await session.SaveAsync(ticket with { LastError = "Channel creation or opening failed; reconciliation pending." }, "creation-failed", null, ct);
@@ -169,14 +169,32 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         foreach (var id in ticketIds)
         {
             ct.ThrowIfCancellationRequested();
-            // Keep a single ticket's mutations serialized, but let queued commands run between records.
-            await using var session = await store.LockAsync(ct);
-            // Do not race an export's archive files or delete its source channel; other tickets can proceed.
-            if (_exports.ContainsKey(id)) continue;
-            var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
-            if (ticket is null) continue;
-            try
+            try { await MaintainTicketAsync(id, ct); }
+            catch (Exception ex) when (!ct.IsCancellationRequested)
             {
+                logger?.LogWarning(ex, "Ticket {TicketId} maintenance failed; channel retained", id);
+                await using var session = await store.LockAsync(ct);
+                // Keep the last durable archive and state even when a later remote operation timed out.
+                var durable = (await session.GetTicketsAsync(ct)).SingleOrDefault(ticket => ticket.Id == id);
+                if (durable is not null)
+                    await session.SaveAsync(durable with { LastError = "Maintenance failed; retry scheduled. Check worker logs." }, "maintenance-failed", null, ct);
+            }
+        }
+    }
+
+    private async Task MaintainTicketAsync(Guid id, CancellationToken ct)
+    {
+        var exporting = false;
+        try
+        {
+            Ticket ticket;
+            await using (var session = await store.LockAsync(ct))
+            {
+                // Export guards cover one ticket, allowing unrelated commands and cleanup to proceed.
+                if (_exports.ContainsKey(id)) return;
+                var found = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
+                if (found is null) return;
+                ticket = found;
                 if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await discord.ExistsAsync(ticket, ct))
                 {
                     var now = clock.GetUtcNow();
@@ -186,7 +204,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await session.SaveAsync(ticket, "missing-channel-reconciled", null, ct);
                     await NotifyAsync($"Ticket {ticket.Number} channel was removed externally; open-ticket capacity released.", ct);
                 }
-                if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct); continue; }
+                if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct); return; }
                 if (ticket.State == TicketState.Closing)
                 {
                     await discord.CloseAsync(ticket, ct);
@@ -199,7 +217,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     ticket = ticket with { State = TicketState.Open, LastError = null };
                     await session.SaveAsync(ticket, "reopen-reconciled", null, ct);
                 }
-                if (ticket.Hold) continue;
+                if (ticket.Hold) return;
                 if (ticket.State == TicketState.Deleted)
                 {
                     if (ticket.ArchivePath is not null && ticket.ArchiveExpiresAt <= clock.GetUtcNow())
@@ -207,38 +225,64 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                         await archive.DeleteAsync(ticket.ArchivePath, ct);
                         await session.SaveAsync(ticket with { ArchivePath = null }, "archive-expired", null, ct);
                     }
-                    continue;
+                    return;
                 }
                 if (ticket.State == TicketState.Closed && ticket.DeleteAfter <= clock.GetUtcNow())
                 {
                     ticket = ticket with { State = TicketState.Deleting };
                     await session.SaveAsync(ticket, "deleting", null, ct);
                 }
-                if (ticket.State != TicketState.Deleting) continue;
+                if (ticket.State != TicketState.Deleting) return;
                 await discord.FreezeAsync(ticket, ct);
-                var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
-                var archivePath = await archive.ExportAsync(ticket, snapshot, ct);
-                ticket = ticket with { ArchivePath = archivePath, LastError = null };
-                await session.SaveAsync(ticket, "cleanup-exported", null, ct);
-                if (await discord.LastMessageIdAsync(ticket, ct) != snapshot.LastMessageId)
-                    throw new InvalidOperationException("Ticket received new messages during archival; retrying before deletion.");
-                await discord.DeleteAsync(ticket, ct);
-                await session.SaveAsync(ticket with { State = TicketState.Deleted }, "deleted", null, ct);
-                await NotifyAsync($"Ticket {ticket.Number} archived and deleted.", ct);
+                if (!_exports.TryAdd(id, 0)) return;
+                exporting = true;
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            // Pagination and attachment downloads can take minutes; do not hold the guild ticket lock.
+            var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
+            var archivePath = await archive.ExportAsync(ticket, snapshot, ct);
+            await using (var saveSession = await store.LockAsync(ct))
             {
-                logger?.LogWarning(ex, "Ticket {TicketId} maintenance failed; channel retained", ticket.Id);
-                // Read the last durable state: an export may have succeeded before a later API failure.
-                var durable = (await session.GetTicketsAsync(ct)).Single(t => t.Id == ticket.Id);
-                await session.SaveAsync(durable with { LastError = "Maintenance failed; retry scheduled. Check worker logs." }, "maintenance-failed", null, ct);
+                var current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == id);
+                await saveSession.SaveAsync(current with { ArchivePath = archivePath, LastError = null }, "cleanup-exported", null, ct);
             }
+            // A stable head alone misses edits/deletions of older messages during pagination or downloads.
+            var verified = await discord.ReadTranscriptAsync(ticket, ct);
+            if (!SameTranscript(snapshot, verified))
+                throw new InvalidOperationException("Ticket transcript changed during archival; retrying before deletion.");
+            await using var deleteSession = await store.LockAsync(ct);
+            var latest = (await deleteSession.GetTicketsAsync(ct)).Single(t => t.Id == id);
+            if (latest.State != TicketState.Deleting || latest.Hold) return;
+            if (await discord.LastMessageIdAsync(latest, ct) != verified.LastMessageId)
+                throw new InvalidOperationException("Ticket received new messages during archival; retrying before deletion.");
+            await discord.DeleteAsync(latest, ct);
+            await deleteSession.SaveAsync(latest with { State = TicketState.Deleted }, "deleted", null, ct);
+            await NotifyAsync($"Ticket {latest.Number} archived and deleted.", ct);
         }
+        finally { if (exporting) _exports.TryRemove(id, out _); }
+    }
+
+    private static bool SameTranscript(TranscriptSnapshot archived, TranscriptSnapshot current)
+    {
+        if (archived.LastMessageId != current.LastMessageId || archived.Messages.Count != current.Messages.Count) return false;
+        return archived.Messages.OrderBy(message => message.Id).Zip(current.Messages.OrderBy(message => message.Id))
+            .All(pair => pair.First.Id == pair.Second.Id && pair.First.AuthorId == pair.Second.AuthorId &&
+                pair.First.AuthorName == pair.Second.AuthorName && pair.First.Content == pair.Second.Content &&
+                pair.First.Timestamp == pair.Second.Timestamp && pair.First.EmbedsJson == pair.Second.EmbedsJson &&
+                pair.First.Attachments.OrderBy(attachment => attachment.Id).Select(AttachmentIdentity)
+                    .SequenceEqual(pair.Second.Attachments.OrderBy(attachment => attachment.Id).Select(AttachmentIdentity)));
+    }
+
+    private static (ulong Id, string FileName, long Size, string Resource) AttachmentIdentity(TranscriptAttachment attachment)
+    {
+        // Discord refreshes signed CDN URL query parameters; those are not attachment edits.
+        var resource = Uri.TryCreate(attachment.Url, UriKind.Absolute, out var uri)
+            ? uri.GetLeftPart(UriPartial.Path) : attachment.Url;
+        return (attachment.Id, attachment.FileName, attachment.Size, resource);
     }
 
     private async Task NotifyAsync(string message, CancellationToken ct)
     {
         try { await discord.LogAsync(message, ct); }
-        catch (Exception ex) when (ex is not OperationCanceledException) { logger?.LogWarning(ex, "Ticket log delivery failed"); }
+        catch (Exception ex) when (!ct.IsCancellationRequested) { logger?.LogWarning(ex, "Ticket log delivery failed"); }
     }
 }

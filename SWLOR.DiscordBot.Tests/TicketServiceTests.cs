@@ -146,10 +146,12 @@ public sealed class TicketServiceTests
         _store.FailNextSaveAction = "channel-bound";
         _store.FailNextSaveWithCancellation = true;
         var requester = new Actor(1, []);
+        using var cancellation = new CancellationTokenSource();
+        _store.BeforeSaveCancellation = cancellation.Cancel;
 
         Assert.ThrowsAsync<OperationCanceledException>(async () =>
         {
-            await _service.OpenAsync("first", requester, "interrupted-create");
+            await _service.OpenAsync("first", requester, "interrupted-create", cancellation.Token);
         });
         var recovered = await _service.OpenAsync("first", requester, "interrupted-create");
 
@@ -562,6 +564,159 @@ public sealed class TicketServiceTests
         }
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CleanupReleasesStoreLockDuringTranscriptAndAttachmentWork(bool blockArchive)
+    {
+        await Open("first", new Actor(1, []), "cleanup-unlocked");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Block(Ticket _, CancellationToken ct)
+        {
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+        }
+        if (blockArchive) _archive.BeforeExportAsync = Block;
+        else _discord.BeforeTranscriptAsync = Block;
+        var maintenance = _service.MaintainAsync();
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            var other = await Open("second", new Actor(2, []), "other-during-cleanup").WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(other.Success, Is.True);
+            Assert.That((await _service.CloseAsync(ChannelOne + 1, Support).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.SetHoldAsync(ChannelOne + 1, Support, true).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            // Another sweep must skip the claimed cleanup rather than overwrite its archive or deadlock.
+            await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.DeleteCalls, Is.Zero);
+            release.SetResult();
+            await maintenance.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+            Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne + 1).Hold, Is.True);
+        }
+        finally { release.TrySetResult(); await maintenance; }
+    }
+
+    [TestCase("edit")]
+    [TestCase("delete")]
+    [TestCase("embed")]
+    [TestCase("attachment")]
+    public async Task CleanupRejectsOlderMessageChangesEvenWhenNewestIdIsUnchanged(string change)
+    {
+        await Open("first", new Actor(1, []), "old-message-change");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var old = new TranscriptMessage(100, 1, "Requester", "original", _clock.GetUtcNow(),
+            [new TranscriptAttachment(5, "evidence.txt", "https://cdn.discordapp.com/attachments/5?ex=old", 10)], "[]");
+        var newest = old with { Id = 101, Content = "newest", Attachments = [] };
+        _discord.Snapshot = new([old, newest], 101);
+        _archive.BeforeExportAsync = (_, _) =>
+        {
+            var edited = change switch
+            {
+                "edit" => old with { Content = "edited" },
+                "embed" => old with { EmbedsJson = "[{modified:true}]" },
+                "attachment" => old with { Attachments = [] },
+                _ => old
+            };
+            _discord.Snapshot = change == "delete" ? new([newest], 101) : new([edited, newest], 101);
+            return Task.CompletedTask;
+        };
+        await _service.MaintainAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(_discord.DeleteCalls, Is.Zero);
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleting));
+            Assert.That(_store.Tickets.Single().ArchivePath, Is.Not.Null);
+            Assert.That(_store.Tickets.Single().LastError, Is.Not.Null);
+        });
+        _archive.BeforeExportAsync = null;
+        await _service.MaintainAsync();
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }), "retry must archive the current complete transcript");
+    }
+
+    [Test]
+    public async Task CleanupAcceptsRefreshedAttachmentSignaturesAndMessageOrder()
+    {
+        await Open("first", new Actor(1, []), "signed-attachment");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var attachment = new TranscriptAttachment(5, "evidence.txt", "https://cdn.discordapp.com/attachments/5?ex=old", 10);
+        var old = new TranscriptMessage(100, 1, "Requester", "unchanged", _clock.GetUtcNow(), [attachment]);
+        var newest = old with { Id = 101, Attachments = [] };
+        _discord.Snapshot = new([old, newest], 101);
+        _archive.BeforeExportAsync = (_, _) =>
+        {
+            _discord.Snapshot = new([newest, old with { Attachments = [attachment with { Url = "https://cdn.discordapp.com/attachments/5?ex=refreshed&hm=new" }] }], 101);
+            return Task.CompletedTask;
+        };
+        await _service.MaintainAsync();
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+    }
+
+    [Test]
+    public async Task AttachmentTimeoutRetainsFailedTicketAndContinuesCleaningLaterTickets()
+    {
+        await Open("first", new Actor(1, []), "timeout-first");
+        await Open("second", new Actor(2, []), "timeout-second");
+        await _service.CloseAsync(ChannelOne, Support);
+        await _service.CloseAsync(ChannelOne + 1, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _archive.BeforeExportAsync = (ticket, _) => ticket.ChannelId == ChannelOne
+            ? Task.FromException(new TaskCanceledException("Simulated CDN request timeout.")) : Task.CompletedTask;
+        await _service.MaintainAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Deleting));
+            Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).LastError, Is.Not.Null);
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne + 1 }));
+        });
+        _archive.BeforeExportAsync = null;
+        await _service.MaintainAsync();
+        Assert.That(_discord.DeletedChannels, Is.EquivalentTo(new[] { ChannelOne, ChannelOne + 1 }));
+    }
+
+    [Test]
+    public async Task CallerCancellationStopsCleanupAndReleasesExportGuard()
+    {
+        await Open("first", new Actor(1, []), "cancel-cleanup");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var cancellation = new CancellationTokenSource();
+        _archive.BeforeExportAsync = async (_, ct) =>
+        {
+            started.SetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        };
+        var maintenance = _service.MaintainAsync(cancellation.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            cancellation.Cancel();
+            Assert.ThrowsAsync<TaskCanceledException>(async () => await maintenance);
+            Assert.That(_store.Tickets.Single().LastError, Is.Null);
+            _archive.BeforeExportAsync = null;
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        }
+        finally { cancellation.Cancel(); try { await maintenance; } catch (OperationCanceledException) { } }
+    }
+
+    [Test]
+    public async Task InternalCreationCancellationIsRecoverableWithoutCancellingCaller()
+    {
+        _store.FailNextSaveAction = "channel-bound";
+        _store.FailNextSaveWithCancellation = true;
+        var result = await _service.OpenAsync("first", new Actor(1, []), "internal-create-timeout");
+        Assert.That(result.Success, Is.False);
+        Assert.That(_store.Tickets.Single().LastError, Is.Not.Null);
+        Assert.That((await _service.OpenAsync("first", new Actor(1, []), "internal-create-timeout")).Success, Is.True);
+        Assert.That(_discord.CreateCalls, Is.EqualTo(1));
+    }
+
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -581,6 +736,7 @@ public sealed class TicketServiceTests
         public IReadOnlyList<Ticket> Tickets => _tickets.ToArray();
         public string? FailNextSaveAction { get; set; }
         public bool FailNextSaveWithCancellation { get; set; }
+        public Action? BeforeSaveCancellation { get; set; }
 
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
 
@@ -628,6 +784,7 @@ public sealed class TicketServiceTests
                     if (store.FailNextSaveWithCancellation)
                     {
                         store.FailNextSaveWithCancellation = false;
+                        store.BeforeSaveCancellation?.Invoke();
                         throw new OperationCanceledException("Simulated interruption before the channel binding committed.");
                     }
                     throw new InvalidOperationException("Simulated persistence failure.");

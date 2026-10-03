@@ -31,6 +31,19 @@ public interface ITicketStore
     Task InitializeAsync(CancellationToken ct);
     // The database lock spans Discord mutations so two processes cannot mutate a ticket concurrently.
     Task<ITicketSession> LockAsync(CancellationToken ct);
+    // Community posts serialize independently of ticket exports and channel mutations.
+    Task<ITicketSession> LockCommunityAsync(CancellationToken ct) => LockAsync(ct);
+}
+
+public sealed record PendingResponseDeletion(ulong ChannelId, ulong MessageId, DateTimeOffset DueAt,
+    int Attempts = 0, string? LastError = null);
+
+public interface IResponseDeletionStore
+{
+    Task ScheduleDeletionAsync(ulong channelId, ulong messageId, DateTimeOffset dueAt, CancellationToken ct);
+    Task<IReadOnlyList<PendingResponseDeletion>> GetDueDeletionsAsync(DateTimeOffset now, CancellationToken ct);
+    Task CompleteDeletionAsync(ulong channelId, ulong messageId, CancellationToken ct);
+    Task RetryDeletionAsync(PendingResponseDeletion deletion, DateTimeOffset dueAt, string error, CancellationToken ct);
 }
 public interface IDiscordTickets
 {

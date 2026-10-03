@@ -1,4 +1,5 @@
 using SWLOR.DiscordBot.Configuration;
+using SWLOR.DiscordBot.Core;
 
 namespace SWLOR.DiscordBot.Tests;
 
@@ -15,6 +16,30 @@ public sealed class ConfigurationTests
         Assert.That(configuration.GuildId, Is.EqualTo(123456789012345678UL));
         Assert.That(configuration.AdministratorRoleIds, Is.EqualTo(new[] { 234567890123456789UL }));
         Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+    }
+
+    [Test]
+    public void Parse_NormalizesWelcomeMentionKeysBeforeValidationAndRendering()
+    {
+        var configuration = ConfigurationLoader.Parse("""
+            {
+                "GuildId": 1,
+                "Welcome": {
+                    "Enabled": true,
+                    "ChannelId": 2,
+                    "Template": "Visit {#RULES}.",
+                    "ChannelMentions": { "rules": 3 }
+                }
+            }
+            """);
+
+        Assert.That(configuration.Welcome.ChannelMentions.Comparer, Is.EqualTo(StringComparer.OrdinalIgnoreCase));
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+        Assert.That(TemplateRenderer.RenderWelcome(
+            configuration.Welcome.Template,
+            7,
+            "SWLOR",
+            configuration.Welcome.ChannelMentions), Is.EqualTo("Visit <#3>."));
     }
 
     [Test]

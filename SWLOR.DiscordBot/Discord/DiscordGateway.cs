@@ -136,11 +136,35 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         await client.Rest.CreateGuildCommand(ticket.Build(), configuration.GuildId, DiscordOperations.Options(ct));
         await client.Rest.CreateGuildCommand(publish.Build(), configuration.GuildId, DiscordOperations.Options(ct));
     }
+    internal static bool CanExecuteCommunityCommand(BotConfiguration config, ChannelPermissions permissions, ulong channelId, string content)
+    {
+        if (!permissions.ViewChannel || !permissions.SendMessages) return false;
+        var body = content.TrimStart();
+        if (!body.StartsWith(config.Prefix, StringComparison.Ordinal)) return false;
+        var command = body[config.Prefix.Length..].TrimStart();
+        var length = 0;
+        while (length < command.Length && !char.IsWhiteSpace(command[length])) length++;
+        var name = command[..length];
+        if (config.Factions.Enabled && name.Equals("rank", StringComparison.OrdinalIgnoreCase))
+            return !config.Factions.DeleteCommand || permissions.ManageMessages;
+        var answer = config.Answers.FirstOrDefault(x => x.Enabled && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        return answer is not null && (answer.AllowedChannelIds.Length == 0 || answer.AllowedChannelIds.Contains(channelId)) &&
+            (!answer.DeleteCommand || permissions.ManageMessages) && (answer.Embeds.Length == 0 || permissions.EmbedLinks);
+    }
+
+    internal static string CloseConfirmationText(bool requesterCanRead) => requesterCanRead
+        ? "Close this ticket? The channel will become read-only for the requester."
+        : "Close this ticket? The channel will be hidden from the requester.";
+
     private Task OnMessageAsync(SocketMessage message)
     {
         if (!Ready || message.Author.IsBot || message.Author.IsWebhook || message.Channel is not SocketTextChannel channel ||
             channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId || !message.Content.StartsWith(configuration.Prefix, StringComparison.Ordinal)) return Task.CompletedTask;
-        if (!jobs.Writer.TryWrite(ct => RetryCommunityAsync(token => community.ExecuteAsync(message.Author.Id, channel.Id, message.Id, message.Content, token), ct)))
+        bool CanExecute() => channel.Guild.CurrentUser is { } bot &&
+            CanExecuteCommunityCommand(configuration, bot.GetPermissions(channel), channel.Id, message.Content);
+        if (!CanExecute()) return Task.CompletedTask;
+        if (!jobs.Writer.TryWrite(ct => RetryCommunityAsync(token => CanExecute()
+            ? community.ExecuteAsync(message.Author.Id, channel.Id, message.Id, message.Content, token) : Task.CompletedTask, ct)))
             logger.LogWarning("Community event queue is full.");
         return Task.CompletedTask;
     }
@@ -233,7 +257,12 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         if (option.Name == "transcript" && result.Success && result.Ticket?.ArchivePath is { } archive)
         {
             var path = Path.Combine(archive, "transcript.html");
-            if (File.Exists(path)) await command.FollowupWithFileAsync(path, text: "Ticket transcript", ephemeral: true, allowedMentions: AllowedMentions.None, options: DiscordOperations.Options(ct));
+            await TranscriptDelivery.SendAsync(path, command.AttachmentSizeLimit,
+                async (stream, name, text, token) =>
+                {
+                    await command.FollowupWithFileAsync(stream, name, text: text,
+                        ephemeral: true, allowedMentions: AllowedMentions.None, options: DiscordOperations.Options(token));
+                }, ct);
         }
     }
     private async Task<Ticket?> AuthorizedCloseTicketAsync(ulong channelId, Actor actor, Guid? ticketId, CancellationToken ct)
@@ -251,7 +280,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         confirmations[nonce] = new(actor.UserId, channelId, ticket.Id, clock.GetUtcNow() + TimeSpan.FromMinutes(5));
         await interaction.ModifyOriginalResponseAsync(x =>
         {
-            x.Content = "Close this ticket? The channel will become read-only for the requester.";
+            x.Content = CloseConfirmationText(configuration.Tickets.ClosedRequesterCanRead);
             x.Components = new ComponentBuilder().WithButton("Confirm close", $"v1:confirm:{nonce}", ButtonStyle.Danger).Build();
             x.AllowedMentions = AllowedMentions.None;
         }, DiscordOperations.Options(ct));

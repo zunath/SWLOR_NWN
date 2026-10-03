@@ -1,4 +1,3 @@
-// Sample configuration. Replace zero IDs after verifying Discord and keep unverified features disabled.
 {
   "GuildId": 484936923341651971,
   "Prefix": "?",

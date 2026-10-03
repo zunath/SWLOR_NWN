@@ -1,4 +1,4 @@
-"Type","Key","DisplayName","SemanticCategory","Rank","IconResRef","SourcePath","Alignment"
+﻿"Type","Key","DisplayName","SemanticCategory","Rank","IconResRef","SourcePath","Alignment"
 "Ability","AbsoluteDefense1","AbsoluteDefense1","Beneficial","1","ife_absdefense1","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","AbsoluteImmortality1","AbsoluteImmortality1","Harmful","1","ife_absimmort1","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","AdamantineGuard1","AdamantineGuard1","Self","1","ife_adamguard1","SWLOR_Haks\sw_2da\feat.2da",""

@@ -25,6 +25,9 @@ public sealed class AreaEditorSharedLayoutTests
             var layout = view.FindControl<AreaEditorLayout>("RootTabs")!;
             var surface = view.FindControl<AreaEditorSurface>("AreaView")!;
             var properties = view.FindControl<ScrollViewer>("PropertiesScroll")!;
+            var camera = view.FindControl<AreaCameraControls>("CameraControls")!;
+            camera.Viewport.Should().BeSameAs(surface.Viewport);
+            camera.GetVisualDescendants().OfType<Button>().Should().HaveCount(11);
             layout.Scene!.GetVisualDescendants().Should().Contain(surface);
             surface.Bounds.Height.Should().BeGreaterThan(650);
             layout.SelectedIndex = 1;

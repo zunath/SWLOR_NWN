@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Editors
         public AreaEditorView()
         {
             InitializeComponent();
+            CameraControls.Viewport = AreaView.Viewport;
             AreaView.Viewport.RenderStatusChanged += OnGlRenderStatusChanged;
             AreaView.Viewport.InstancePicked += OnInstancePicked;
             AreaView.Viewport.InstanceMoved += OnInstanceMoved;
@@ -345,33 +346,6 @@ namespace SWLOR.Toolset.Editors
             _rotateHasRepeated = false;
             AreaView.Viewport.CommitSelectedRotation();
         }
-
-        // ----- Camera pad. These drive the control's own camera, which the view model does not own. -----
-
-        // The arrows move the camera, so the scene travels the other way - Aurora's left arrow sends
-        // the scene right, its up arrow sends the scene down. Up and down travel forward and back
-        // across the ground rather than changing altitude.
-        private void OnPanLeft(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(-1f, 0f);
-
-        private void OnPanRight(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(1f, 0f);
-
-        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(0f, 1f);
-
-        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgePan(0f, -1f);
-
-        private void OnOrbitLeft(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(-1f, 0f);
-
-        private void OnOrbitRight(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(1f, 0f);
-
-        private void OnOrbitUp(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(0f, 1f);
-
-        private void OnOrbitDown(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeOrbit(0f, -1f);
-
-        private void OnZoomIn(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeZoom(1);
-
-        private void OnZoomOut(object? sender, RoutedEventArgs e) => AreaView.Viewport.NudgeZoom(-1);
-
-        private void OnReorient(object? sender, RoutedEventArgs e) => AreaView.Viewport.ReorientCamera();
 
         /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
         private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);

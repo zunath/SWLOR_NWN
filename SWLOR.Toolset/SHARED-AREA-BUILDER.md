@@ -13,7 +13,7 @@ SWLOR's binary representation adapter connects its existing formats model to
 the shared document model; workspace conventions, catalogs and release policy
 remain here. Xenomech provides its own source representation and policies.
 
-Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.32`. These versions are recorded in the package lock files and consume the recovered shared packages.
+Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.33`. These versions are recorded in the package lock files and consume the recovered shared packages.
 The shared repository's `docs/area-builder-extraction.md` records provenance,
 package hashes and the source/package qualification boundary.
 
@@ -83,3 +83,23 @@ there are no build errors and deployment hooks are disabled.
 Xenomech supplies its own shell and database integration. These tests qualify
 shared layout consumption, not complete pixel parity or official-client behavior.
 The large-area performance gate above remains open.
+
+## Shared camera controls (2026-10-03)
+
+The eleven existing pan/orbit/zoom/reorient controls and handlers are removed
+from the area view and supplied by shared `AreaCameraControls`. It operates
+the view's original `AreaView.Viewport`; no second camera is created.
+Object-rotation and tile-height controls retain their existing host commands.
+Directions, glyphs, square button sizing and 16ms repeat cadence are retained;
+the shared pad wraps in narrow host panes.
+
+Both applications pin Avalonia dev.33, produced once from shared source
+`f475101`. Package SHA-256 is
+`C14DF8662019E0FFB2941C0E2EB384FCD38DEE0C4B25BF5646F8A6C13F1201F2`.
+Shared controls pass 19/19 and actual SWLOR view/lifecycle/instance/policy checks
+pass 20/20, zero skips, in
+`SWLOR.Toolset.Tests/TestResults/swlor-shared-camera-layout-qualified-dev33.trx`.
+The actual view test confirms the shared pad targets its original viewport and
+contains all eleven actions. Xenomech's actual GL/database placement fixture
+also exercises pan, orbit, zoom and reset, reporting a 730×683 viewport and
+no document edits. This does not replace both-host official-client acceptance.

@@ -21,7 +21,7 @@ The current request covers design and discovery. Runtime implementation, install
 | Discord guild, channels, roles, and permissions | Not observed | Read from the authenticated Discord session when available. |
 | Ticket Tool panels and behavior | Not observed | Inspect every enabled panel and its open/closed permissions, messages, limits, and automation. |
 | Dyno configuration | Not observed | Inspect enabled modules, prefix, custom commands, joinable roles, and welcome settings. |
-| Live inspection access | Blocked | Browser inventory failed twice, including after a session reset: `failed to write kernel assets: The system cannot find the path specified. (os error 3)`. No live Discord settings were read. |
+| Live inspection access | Blocked | Owner reports Ticket Tool and Dyno are signed in through Firefox and authorizes Discord sign-in. A fresh automation session starts, but the tool stops on Firefox for Windows because browser URL-policy enforcement is unsupported. An initial unrelated-page capture was rejected; no live bot settings were read or changed. Continue through a supported browser session or configuration exports. |
 | Existing application connection | Unavailable locally | SWLOR.Admin appsettings and environment have no configured Discord bot token/guild; the declared application user-secrets file is absent. No credential values were printed or copied. |
 
 Documentation establishes possible options, not which options SWLOR currently uses. Keep every unobserved setting pending until there is evidence from the live configuration.
@@ -139,7 +139,7 @@ Inspect Ticket Tool at https://tickettool.xyz/manage-servers, selecting SWLOR an
 
 ## Implementation and cutover sequence
 
-1. Restore authenticated inspection access, complete the parity inventory, and identify only decisions the configuration does not answer.
+1. Obtain supported authenticated browser access (the owner currently uses Firefox), complete the parity inventory, and identify only decisions the configuration does not answer.
 2. Add the independent worker, PostgreSQL schema, configuration validation, and Linux Docker packaging. Keep a dedicated development application/guild configuration.
 3. Implement ticket creation/rename/close/recovery and scheduled cleanup with focused tests; include observed transcript and staff workflows.
 4. Implement welcomes, factions, and canned commands using the audited configuration and compatibility aliases.

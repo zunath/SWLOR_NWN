@@ -1,4 +1,5 @@
 using NAudio.Wave;
+using Nwn.Toolset.Avalonia.Sounds;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Services
@@ -18,7 +19,7 @@ namespace SWLOR.Toolset.Services
     /// ambiences at once answers nothing. Starting a new one stops the old.
     /// </para>
     /// </remarks>
-    public sealed class SoundPreviewService : IDisposable
+    public sealed class SoundPreviewService : IDisposable, ISoundListPreview
     {
         /// <summary>The four bytes a RIFF WAV opens with.</summary>
         private static readonly byte[] RiffMagic = "RIFF"u8.ToArray();

@@ -157,9 +157,9 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.38, )",
-        "resolved": "0.1.0-dev.38",
-        "contentHash": "5ap5SYZmbWeq1aVWBe5lg0AfYfHJFyFOnAgXb54zQFVBi18cZb6v20gR9te0qz7YSmnFopstoPtesdvsUMnrSw==",
+        "requested": "[0.1.0-dev.39, )",
+        "resolved": "0.1.0-dev.39",
+        "contentHash": "a06ocitNsCc+dOxMrQfWmYFRrevCCW7Rj+VIF5q+2bJHNIppZLRZ+1BFrU/CjhNLFsSm/osVl3/oAiaRonc0+w==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",

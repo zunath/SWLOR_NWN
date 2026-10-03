@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using Nwn.Toolset.Avalonia.Sounds;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Editors.Behaviors;
 
@@ -37,7 +38,8 @@ namespace SWLOR.Toolset.Editors.Sounds
             if (IsSoundList)
             {
                 SoundList = new SoundListEditorViewModel(
-                    store, runEdit, audioResources, definition.MaxItems, OnListChanged, preview);
+                    store, new SoundListSchema(SoundValueStore.SoundsField, SoundValueStore.SoundEntryField),
+                    audioResources, definition.MaxItems, runEdit, OnListChanged, preview: preview);
             }
 
             Reload();

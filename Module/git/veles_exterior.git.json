@@ -26397,7 +26397,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -30005,7 +30005,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Restaurant"
           }
         },
         "OnClick": {
@@ -30359,7 +30359,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Cantina"
           }
         },
         "OnClick": {
@@ -30713,7 +30713,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Starport"
           }
         },
         "OnClick": {
@@ -35538,7 +35538,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Cantina Roof"
           }
         },
         "OnClick": {
@@ -35892,7 +35892,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Starport Roof"
           }
         },
         "OnClick": {
@@ -45061,7 +45061,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Czerka Tower"
           }
         },
         "OnClick": {
@@ -52972,7 +52972,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -67066,7 +67066,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -67293,7 +67293,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -98912,7 +98912,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] General Store"
           }
         },
         "OnClick": {
@@ -100170,7 +100170,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Orion's Armament - Engineering"
           }
         },
         "OnClick": {
@@ -100726,7 +100726,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Jal Shey Branchhouse - Smithy"
           }
         },
         "OnClick": {
@@ -101080,7 +101080,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] HNN News"
           }
         },
         "OnClick": {
@@ -197504,7 +197504,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Builder's Union - Fabrication"
           }
         },
         "OnClick": {
@@ -304137,7 +304137,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[SWLOR] Banner, Viscara"
+            "0": "City Hall"
           }
         },
         "OnClick": {
@@ -304206,7 +304206,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -304218,7 +304218,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -304258,7 +304258,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -304364,7 +304364,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[SWLOR] Banner, Viscara"
+            "0": "City Hall"
           }
         },
         "OnClick": {
@@ -304433,7 +304433,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -304445,7 +304445,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -304485,7 +304485,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -342234,7 +342234,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Cantina Roof"
           }
         },
         "OnClick": {
@@ -342588,7 +342588,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Exit] Cantina Roof"
           }
         },
         "OnClick": {
@@ -342942,7 +342942,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Sheriff's Office"
           }
         },
         "OnClick": {
@@ -343281,7 +343281,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Clinic"
           }
         },
         "OnClick": {
@@ -371007,7 +371007,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Exit to the roof]"
+            "0": "[Enter] Czerka Tower Roof"
           }
         },
         "OnClick": {
@@ -392053,7 +392053,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Exit]"
+            "0": "[Enter] Bank"
           }
         },
         "OnClick": {

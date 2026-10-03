@@ -44,6 +44,28 @@ These values came from the authenticated Chrome dashboard, not documentation or 
 
 Preserve the 24-command inventory as a parity requirement, then verify every trigger, response, macro, restriction, and role action before implementation. Do not infer that every configured command is enabled or that the observed descriptions are the responses players receive. Welcome settings, faction joins/leaves, ticket support roles, categories, close/rename behavior, transcripts, cleanup timing, and existing-ticket metadata remain pending.
 
+## Published SWLOR workflow evidence
+
+The Wiki supplies these baseline requirements. They are published player instructions, not a substitute for reading current Discord role IDs or bot settings.
+
+| Requirement | Published evidence | Design consequence |
+| --- | --- | --- |
+| Faction-channel command | `SWLOR_Wiki/Lore/Factions.html` documents `?rank Faction - <exact faction name>`. Its Faction Listing link identifies channel `484945166960951297`, message `799456335058042950`, in the same observed SWLOR guild. | Preserve the documented prefix command and multiword faction argument alongside any new slash command. Verify actual joinable role IDs, aliases, toggle/leave behavior, and restrictions before enabling it. |
+| Faction eligibility guidance | Faction-channel members should already have a faction character or intend in good faith to create/join one. In-game joining is described separately as roleplay with a faction member. | Discord role changes grant faction-channel access only; they do not enroll a character in an in-game faction. Use an explicit allowlist and do not infer current joinable roles from Wiki faction names. |
+| Ticket destination | Both `SWLOR_Wiki/Lore/Factions.html` and `SWLOR_Wiki/Tickets_and_DM_Requests.html` link guild `484936923341651971`, channel `930228689000603708` for ticket requests. | Preserve the published ticket-entry channel during cutover, subject to confirming its current panel message and permissions. |
+| Ticket request content | The ticket guide covers custom items, events, portraits, skill masteries, and rule reports. The faction guide also routes player-faction applications and faction conflicts through tickets. | Keep a general support/request workflow capable of handling these cases. Request types are content conventions; they do not prove that separate Ticket Tool panels or categories exist. |
+| Custom-item request format | The guide requests Character Name, Faction & Rank, Item Name, Type, Enhancements, Description, and Appearance. | Preserve this guidance in the ticket opening/help content if the current panel includes it. Add forms only after confirming existing usage or receiving a separate request. |
+
+The Wiki does not identify the current Dyno welcome template, the full 24-command inventory, their exact responses, or Ticket Tool support-role/cleanup configuration.
+
+## Audit and import boundaries
+
+Dyno documents command inspection through `customs list` and `customs show`, but command inspection omits embeds and Additional Responses. Dashboard inspection is still required for complete response parity. No documented general Dyno configuration export was established. No bot commands were sent during discovery.
+
+Ticket Tool's Config Backup & Restore transfers configuration between Ticket Tool servers using an owner-held backup key. It does not export a general replacement-bot configuration or transfer existing tickets. Do not generate or request a backup key for this audit; inspect panel settings directly. Existing-ticket drain/import and transcript preservation remain separate cutover decisions.
+
+Direct browser-tool recovery was attempted after the owner requested that the parent handle the audit. Both parent runtimes fail before JavaScript executes with `failed to write kernel assets: The system cannot find the path specified. (os error 3)`; their built-in resets did not restore execution. The restored original task workspace path still exists, so no further speculative filesystem or process changes were made. The earlier Chrome observation also stopped at URL-policy verification. Neither failure indicates missing owner login approval. Resume through a renewed supported browser runtime; do not change browser security, extract session credentials, or use an alternate automation protocol to bypass these failures.
+
 ## Existing repository integration points
 
 - `SWLOR.BackgroundServices` is a separate .NET 10 executable. Its DiscordWebhookJobHandler delivers queued messages using HTTP and handles rate limiting.
@@ -157,7 +179,7 @@ Inspect Ticket Tool at https://tickettool.xyz/manage-servers, selecting SWLOR an
 
 ## Implementation and cutover sequence
 
-1. Restore supported authenticated inspection or obtain dashboard configuration evidence, finish the partially observed parity inventory, and identify only decisions the configuration does not answer.
+1. Renew the failed browser-tool runtime, finish the partially observed parity inventory using the existing authenticated Chrome session and published Wiki baseline, and identify only decisions the configuration does not answer.
 2. Add the independent worker, PostgreSQL schema, configuration validation, and Linux Docker packaging. Keep a dedicated development application/guild configuration.
 3. Implement ticket creation/rename/close/recovery and scheduled cleanup with focused tests; include observed transcript and staff workflows.
 4. Implement welcomes, factions, and canned commands using the audited configuration and compatibility aliases.
@@ -191,3 +213,5 @@ Inspect Ticket Tool at https://tickettool.xyz/manage-servers, selecting SWLOR an
 - [Dyno welcome configuration](https://docs.dyno.gg/en/modules/welcome)
 - [Dyno joinable roles](https://docs.dyno.gg/en/modules/autoroles)
 - [Dyno custom commands](https://docs.dyno.gg/en/modules/customcommands)
+- [Dyno custom-command inspection](https://docs.dyno.gg/en/commands/customs)
+- [Ticket Tool configuration backup boundaries](https://docs.tickettool.xyz/dashboard/server-configs.md)

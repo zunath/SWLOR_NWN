@@ -137,6 +137,54 @@ public sealed class ConfigurationTests
         Assert.That(errors, Has.Some.Contains("must contain a title, description, or field"));
     }
 
+    [TestCase("""{"GuildId":1,"Answers":[{"Name":"help","Responses":["ok"],"Embeds":null}]}""", "answers[0].embeds must not be null.")]
+    [TestCase("""{"GuildId":1,"Welcome":{"Enabled":true,"DirectMessage":true,"Template":"Welcome {user}","ChannelMentions":null}}""", "welcome.channelMentions must not be null.")]
+    public async Task Validate_RejectsEnabledNullCollectionsBeforeCredentialsOrDiscordStartup(string json, string expectedError)
+    {
+        var configuration = ConfigurationLoader.Parse(json);
+        Assert.That(ConfigurationValidator.Validate(configuration), Does.Contain(expectedError));
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
+        try
+        {
+            File.WriteAllText(path, json);
+            Assert.That(ConfigurationValidator.Validate(ConfigurationLoader.Load(path)), Does.Contain(expectedError));
+            Assert.That(await Program.Main(["--config", path, "--validate"]), Is.EqualTo(2));
+        }
+        finally { if (File.Exists(path)) File.Delete(path); }
+    }
+
+    [TestCase(" help")]
+    [TestCase("help ")]
+    [TestCase(" help ")]
+    [TestCase("\thelp")]
+    [TestCase("help\n")]
+    public async Task Validate_RejectsSurroundingWhitespaceInStoredEnabledAnswerNames(string name)
+    {
+        var source = new BotConfiguration { GuildId = 1, Answers = [new QuickAnswerOptions { Name = name, Responses = ["ok"] }] };
+        var json = System.Text.Json.JsonSerializer.Serialize(source);
+        var configuration = ConfigurationLoader.Parse(json);
+        Assert.That(configuration.Answers[0].Name, Is.EqualTo(name));
+        Assert.That(ConfigurationValidator.Validate(configuration), Has.Some.Contains("answers[0].name"));
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
+        try
+        {
+            File.WriteAllText(path, json);
+            Assert.That(await Program.Main(["--config", path, "--validate"]), Is.EqualTo(2));
+        }
+        finally { if (File.Exists(path)) File.Delete(path); }
+        configuration.Answers[0].Name = "help";
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+    }
+
+    [Test]
+    public void Validate_AllowsDisabledNullCollectionsAndInvalidCommandNames()
+    {
+        var configuration = ConfigurationLoader.Parse("""
+            {"GuildId":1,"Welcome":{"Enabled":false,"ChannelMentions":null},"Answers":[{"Enabled":false,"Name":" help ","Embeds":null}]}
+            """);
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+    }
+
     [Test]
     public void Validate_RejectsUnknownJsonProperties()
     {

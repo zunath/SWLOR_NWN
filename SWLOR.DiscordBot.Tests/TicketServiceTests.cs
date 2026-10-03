@@ -389,6 +389,52 @@ public sealed class TicketServiceTests
         Assert.That(_discord.DeleteCalls, Is.Zero);
     }
 
+    [Test]
+    public async Task MaintenanceReleasesItsLockBetweenTicketsAndReadsUpdatedState()
+    {
+        await Open("first", new Actor(1, []), "batch-first");
+        await Open("first", new Actor(2, []), "batch-second");
+        await _service.CloseAsync(ChannelOne + 1, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var firstLookup = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseLookup = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task<TicketResult>? hold = null;
+        var mutationCompletedBetweenRecords = false;
+        _discord.BeforeExistsAsync = async ticket =>
+        {
+            if (ticket.ChannelId == ChannelOne)
+            {
+                firstLookup.SetResult();
+                await releaseLookup.Task;
+            }
+            else
+            {
+                // The queued mutation must finish before maintenance performs another remote operation.
+                Assert.That((await hold!.WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+                mutationCompletedBetweenRecords = true;
+            }
+        };
+        var maintenance = _service.MaintainAsync();
+        try
+        {
+            await firstLookup.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            hold = _service.SetHoldAsync(ChannelOne + 1, Support, true);
+            releaseLookup.SetResult();
+            await maintenance.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(mutationCompletedBetweenRecords, Is.True, "queued commands must run during the batch, not only when the batch ends");
+            Assert.That(_store.Tickets.All(ticket => ticket.LastError is null), Is.True);
+            Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne + 1).Hold, Is.True);
+            Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne + 1).State, Is.EqualTo(TicketState.Closed));
+            Assert.That(_discord.DeleteCalls, Is.Zero);
+        }
+        finally
+        {
+            releaseLookup.TrySetResult();
+            await maintenance;
+        }
+    }
+
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -501,6 +547,7 @@ public sealed class TicketServiceTests
         public int ExistsCalls { get; private set; }
         public HashSet<ulong> MissingChannels { get; } = [];
         public bool FailNextExists { get; set; }
+        public Func<Ticket, Task>? BeforeExistsAsync { get; set; }
         public int FreezeCalls { get; private set; }
         public int DeleteCalls { get; private set; }
         public List<ulong> DeletedChannels { get; } = [];
@@ -551,15 +598,16 @@ public sealed class TicketServiceTests
             return Task.CompletedTask;
         }
 
-        public Task<bool> ExistsAsync(Ticket ticket, CancellationToken ct)
+        public async Task<bool> ExistsAsync(Ticket ticket, CancellationToken ct)
         {
             ExistsCalls++;
+            if (BeforeExistsAsync is not null) await BeforeExistsAsync(ticket);
             if (FailNextExists)
             {
                 FailNextExists = false;
                 throw new InvalidOperationException("Simulated channel lookup failure; not a confirmed missing channel.");
             }
-            return Task.FromResult(ticket.ChannelId.HasValue && !MissingChannels.Contains(ticket.ChannelId.Value));
+            return ticket.ChannelId.HasValue && !MissingChannels.Contains(ticket.ChannelId.Value);
         }
 
         public Task FreezeAsync(Ticket ticket, CancellationToken ct)

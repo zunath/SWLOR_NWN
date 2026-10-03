@@ -60,6 +60,17 @@ public sealed class GatewayConfigurationTests
     }
 
     [Test]
+    public void SafeErrorsRetainLocallyAuthoredValidationDetailsWithoutExposingForeignExceptions()
+    {
+        var validation = new DiscordValidationException("Configured text channel 123 is unavailable.");
+        Assert.That(DiscordGateway.SafeError(validation), Is.EqualTo(validation.Message));
+        Assert.That(DiscordGateway.SafeError(new InvalidOperationException("sensitive request payload or credentials")),
+            Is.EqualTo(nameof(InvalidOperationException)));
+        Assert.That(DiscordGateway.SafeError(new System.Net.Http.HttpRequestException("sensitive signed URL")),
+            Is.EqualTo(nameof(System.Net.Http.HttpRequestException)));
+    }
+
+    [Test]
     public void CommandRemovalFailureDoesNotReportSuccessfulStartup()
     {
         var commands = new[] { ("ticket", ApplicationCommandType.Slash,

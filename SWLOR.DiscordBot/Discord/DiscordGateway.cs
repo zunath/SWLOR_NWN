@@ -60,7 +60,12 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             catch (Exception ex) { logger.LogError("Discord event failed: {ErrorKind}.", SafeError(ex)); }
         }
     }
-    public static string SafeError(Exception ex) => ex is HttpException http ? $"Discord HTTP {(int)http.HttpCode}" : ex.GetType().Name;
+    public static string SafeError(Exception ex) => ex switch
+    {
+        DiscordValidationException validation => validation.Message,
+        HttpException http => $"Discord HTTP {(int)http.HttpCode}",
+        _ => ex.GetType().Name
+    };
     private Task OnLogAsync(LogMessage message)
     {
         // SDK messages can contain request bodies or exception details; retain only severity/source.

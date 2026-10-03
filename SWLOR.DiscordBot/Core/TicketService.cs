@@ -141,11 +141,16 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     public async Task MaintainAsync(CancellationToken ct = default)
     {
         if (!Options.Enabled) return;
-        await using var session = await store.LockAsync(ct);
-        foreach (var initial in await session.GetTicketsAsync(ct))
+        Guid[] ticketIds;
+        await using (var batch = await store.LockAsync(ct))
+            ticketIds = (await batch.GetTicketsAsync(ct)).Select(ticket => ticket.Id).ToArray();
+        foreach (var id in ticketIds)
         {
             ct.ThrowIfCancellationRequested();
-            var ticket = initial;
+            // Keep a single ticket's mutations serialized, but let queued commands run between records.
+            await using var session = await store.LockAsync(ct);
+            var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
+            if (ticket is null) continue;
             try
             {
                 if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await discord.ExistsAsync(ticket, ct))

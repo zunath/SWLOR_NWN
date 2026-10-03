@@ -283,7 +283,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
     internal static void ValidateTranscriptCapability(ApplicationFlags flags)
     {
         if ((flags & (ApplicationFlags.GatewayMessageContent | ApplicationFlags.GatewayMessageContentLimited)) == 0)
-            throw new InvalidOperationException("Enable Message Content Intent for the Discord application to preserve ticket transcripts.");
+            throw new DiscordValidationException("Enable Message Content Intent for the Discord application to preserve ticket transcripts.");
     }
 
     internal static void ValidateCommunityChannels(BotConfiguration configuration,
@@ -292,25 +292,31 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         void RequireText(ulong id, bool deleteCommand = false, bool requireEmbeds = false)
         {
             var channel = channels.SingleOrDefault(x => x.Id == id && x.Type == ChannelType.Text);
-            if (channel.Id == 0) throw new InvalidOperationException($"Configured text channel {id} is unavailable.");
+            if (channel.Id == 0) throw new DiscordValidationException($"Configured text channel {id} is unavailable.");
             var permissions = channel.Permissions;
             // Deleting our own response does not require Manage Messages.
-            if (!permissions.ViewChannel || !permissions.SendMessages || (requireEmbeds && !permissions.EmbedLinks) || (deleteCommand && !permissions.ManageMessages))
-                throw new InvalidOperationException($"The bot lacks required permissions in text channel {id}.");
+            if (!permissions.ViewChannel || !permissions.SendMessages)
+                throw new DiscordValidationException($"The bot requires View Channel and Send Messages in text channel {id}.");
+            if (requireEmbeds && !permissions.EmbedLinks)
+                throw new DiscordValidationException($"The bot requires Embed Links in text channel {id}.");
+            if (deleteCommand && !permissions.ManageMessages)
+                throw new DiscordValidationException($"Command deletion requires Manage Messages in text channel {id}.");
         }
 
         if (configuration.Welcome.Enabled)
         {
             foreach (var id in configuration.Welcome.ChannelMentions.Values.Distinct())
                 if (channels.All(x => x.Id != id))
-                    throw new InvalidOperationException($"Welcome channel mention {id} is unavailable in the configured guild.");
+                    throw new DiscordValidationException($"Welcome channel mention {id} is unavailable in the configured guild.");
             if (!configuration.Welcome.DirectMessage) RequireText(configuration.Welcome.ChannelId);
         }
+        // Unrestricted prefix commands can complete only where the bot can read and reply.
+        var unrestrictedScope = channels.Where(x => x.Type == ChannelType.Text && x.Permissions.ViewChannel && x.Permissions.SendMessages).Select(x => x.Id).ToArray();
+        if (configuration.Factions.Enabled && configuration.Factions.DeleteCommand)
+            foreach (var id in unrestrictedScope) RequireText(id, deleteCommand: true);
         foreach (var answer in configuration.Answers.Where(x => x.Enabled))
         {
-            // Commands can complete only in ordinary text channels where the bot can read and reply.
-            var scope = answer.AllowedChannelIds.Length > 0 ? answer.AllowedChannelIds :
-                channels.Where(x => x.Type == ChannelType.Text && x.Permissions.ViewChannel && x.Permissions.SendMessages).Select(x => x.Id);
+            var scope = answer.AllowedChannelIds.Length > 0 ? answer.AllowedChannelIds : unrestrictedScope;
             foreach (var id in scope) RequireText(id, answer.DeleteCommand, answer.Embeds.Length > 0);
         }
     }
@@ -351,32 +357,32 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
     public async Task ValidateDiscordAsync(CancellationToken ct)
     {
         var guild = await GuildAsync(ct);
-        var bot = await guild.GetUserAsync(client.CurrentUser.Id, Options(ct)) ?? throw new InvalidOperationException("The bot is not a member of the configured guild.");
+        var bot = await guild.GetUserAsync(client.CurrentUser.Id, Options(ct)) ?? throw new DiscordValidationException("The bot is not a member of the configured guild.");
         foreach (var id in configuration.AdministratorRoleIds.Concat(configuration.Tickets.Enabled ? configuration.Tickets.SupportRoleIds.Concat(configuration.Tickets.BypassRoleIds) : [])
             .Concat(configuration.Answers.Where(x => x.Enabled).SelectMany(x => x.AllowedRoleIds)).Distinct())
-            if (id == guild.Id || guild.Roles.All(x => x.Id != id)) throw new InvalidOperationException($"Configured access role {id} is unavailable or is the everyone role.");
+            if (id == guild.Id || guild.Roles.All(x => x.Id != id)) throw new DiscordValidationException($"Configured access role {id} is unavailable or is the everyone role.");
         var channels = await guild.GetChannelsAsync(Options(ct));
         void RequireText(ulong id)
         {
             var channel = channels.OfType<RestTextChannel>().SingleOrDefault(x => x.Id == id && x.ChannelType == ChannelType.Text)
-                ?? throw new InvalidOperationException($"Configured text channel {id} is unavailable.");
+                ?? throw new DiscordValidationException($"Configured text channel {id} is unavailable.");
             var permissions = bot.GetPermissions(channel);
             if (!permissions.ViewChannel || !permissions.SendMessages || !permissions.EmbedLinks)
-                throw new InvalidOperationException($"The bot lacks required permissions in text channel {id}.");
+                throw new DiscordValidationException($"The bot lacks required permissions in text channel {id}.");
         }
         if (configuration.Tickets.Enabled)
         {
             var application = await ((IDiscordClient)client.Rest).GetApplicationInfoAsync(Options(ct));
             ValidateTranscriptCapability(application.Flags);
             if (!bot.GuildPermissions.ManageChannels || !bot.GuildPermissions.ManageRoles)
-                throw new InvalidOperationException("Tickets require Manage Channels and Manage Roles permissions.");
+                throw new DiscordValidationException("Tickets require Manage Channels and Manage Roles permissions.");
             foreach (var id in configuration.Tickets.Panels.SelectMany(x => x.OpenCategoryIds).Append(configuration.Tickets.ClosedCategoryId).Distinct())
             {
                 var category = channels.OfType<RestCategoryChannel>().SingleOrDefault(x => x.Id == id)
-                    ?? throw new InvalidOperationException($"Configured category {id} is unavailable.");
+                    ?? throw new DiscordValidationException($"Configured category {id} is unavailable.");
                 var permissions = bot.GetPermissions(category);
                 if (!permissions.ViewChannel || !permissions.ManageChannel || !permissions.ManageRoles || !permissions.ReadMessageHistory || !permissions.AttachFiles)
-                    throw new InvalidOperationException($"The bot cannot manage ticket channels in category {id}.");
+                    throw new DiscordValidationException($"The bot cannot manage ticket channels in category {id}.");
             }
             foreach (var panel in configuration.Tickets.Panels) RequireText(panel.ChannelId);
             RequireText(configuration.Tickets.LogChannelId);
@@ -388,7 +394,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             {
                 var role = guild.Roles.SingleOrDefault(x => x.Id == item.RoleId);
                 if (role is null || role.IsManaged || HasStaffPermissions(role.Permissions) || role.Id == guild.Id || role.Position >= bot.Hierarchy || !bot.GuildPermissions.ManageRoles)
-                    throw new InvalidOperationException($"The configured faction role {item.RoleId} cannot be managed by the bot.");
+                    throw new DiscordValidationException($"The configured faction role {item.RoleId} cannot be managed by the bot.");
             }
         }
     }

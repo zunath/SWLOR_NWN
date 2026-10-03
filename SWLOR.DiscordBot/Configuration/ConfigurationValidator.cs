@@ -35,13 +35,14 @@ public static partial class ConfigurationValidator
                 var answer = configuration.Answers[i];
                 if (answer is null) { errors.Add($"answers[{i}] must not be null."); continue; }
                 if (!answer.Enabled) continue;
-                var name = answer.Name?.Trim() ?? "";
-                if (!IsSafeCommandName(name)) errors.Add($"answers[{i}].name must be a safe command name (letters, digits, underscore, or hyphen; 1 to 32 characters).");
+                var name = answer.Name ?? "";
+                if (!IsSafeCommandName(name)) errors.Add($"answers[{i}].name must be a safe command name without surrounding whitespace (letters, digits, underscore, or hyphen; 1 to 32 characters).");
                 else if (!seen.Add(name)) errors.Add($"Duplicate quick answer command '{name}'.");
                 if (configuration.Factions?.Enabled == true && string.Equals(name, "rank", StringComparison.OrdinalIgnoreCase)) errors.Add("The quick answer command 'rank' is reserved for faction role selection.");
                 if (answer.Cooldown < TimeSpan.Zero || answer.Cooldown > MaximumQuickAnswerCooldown) errors.Add($"answers[{i}].cooldown must be between zero and 30 days.");
                 if (answer.DeleteResponseAfter is { } deleteAfter && deleteAfter <= TimeSpan.Zero) errors.Add($"answers[{i}].deleteResponseAfter must be positive when set.");
                 if (answer.DeleteResponseAfter is { } responseDeleteAfter && responseDeleteAfter > TimeSpan.FromDays(7)) errors.Add($"answers[{i}].deleteResponseAfter must not exceed 7 days.");
+                if (answer.Embeds is null) errors.Add($"answers[{i}].embeds must not be null.");
                 if ((answer.Responses?.Length ?? 0) == 0 && (answer.Embeds?.Length ?? 0) == 0) errors.Add($"answers[{i}] must have at least one response or embed.");
                 if (answer.Responses is not null)
                     for (var j = 0; j < answer.Responses.Length; j++)
@@ -142,6 +143,7 @@ public static partial class ConfigurationValidator
 
     private static void ValidateWelcome(WelcomeOptions welcome, List<string> errors)
     {
+        if (welcome.ChannelMentions is null) errors.Add("welcome.channelMentions must not be null.");
         if (!welcome.DirectMessage) RequireId(welcome.ChannelId, "welcome.channelId", errors);
         ValidateTemplate(welcome.Template, TemplateKind.Welcome, "welcome.template", errors, welcome.ChannelMentions);
         if (string.IsNullOrWhiteSpace(welcome.Template)) errors.Add("welcome.template must not be empty when welcome messages are enabled.");
@@ -200,7 +202,7 @@ public static partial class ConfigurationValidator
     }
 
     private static bool IsSafeIdentifier(string? value) => !string.IsNullOrEmpty(value) && value.Length <= 32 && SafeIdentifierRegex().IsMatch(value);
-    private static bool IsSafeCommandName(string? value) => IsSafeIdentifier(value);
+    private static bool IsSafeCommandName(string? value) => IsSafeIdentifier(value) && value == value!.Trim();
     private static bool IsSafeFactionName(string? value) => !string.IsNullOrWhiteSpace(value) && value.Length <= 64 && value == value.Trim() && SafeFactionRegex().IsMatch(value);
     private static void RequireId(ulong id, string path, List<string> errors) { if (id == 0) errors.Add($"{path} must be a positive Discord ID."); }
     private static void ValidateUniqueIds(IEnumerable<ulong>? ids, string path, List<string> errors)

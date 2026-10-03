@@ -767,6 +767,7 @@ namespace SWLOR.Game.Server.Service
             var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
             if (isOnRecast)
             {
+                PlayerFeedback.ShowCooldownFloatingText(activator, ability.Name, timeToWait);
                 return Deny($"This ability can be used in {timeToWait}.");
             }
 

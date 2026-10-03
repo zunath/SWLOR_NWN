@@ -127,17 +127,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         Style("Spear - Vigor", "Vigor pairs attacks with evasion and includes a sweep that gains damage when you are beside or behind a target."),
-                        Style("Spear - Disabler", "Disabler attacks can increase an enemy's ability costs or drain resources when interrupting an active ability.")
+                        Style("Spear - Disabler", "Disabler attacks can increase an enemy's ability costs or drain resources when interrupting an active ability. Fracture Strike benefits from control effects you applied, including Foggy Mind and Force Disruption.")
                     },
-                    "Perks", "Combat Basics", "Staff Combat Styles", "Katar Combat Styles"),
+                    "Perks", "Combat Basics", StatusEffectGuideTopics.TopicName, "Staff Combat Styles", "Katar Combat Styles"),
 
                 Topic("Staff", "Choose Staff for extra pressure on controlled targets or for attacks that disorient and knock down.",
                     new[]
                     {
-                        Style("Staff - Crusher", "Crusher gains extra damage against controlled targets and includes attacks that can daze."),
+                        Style("Staff - Crusher", "Crusher gains extra damage against targets with control effects, including those applied by allies, and includes attacks that can daze. Charged Blows and Skull Rattle require you to apply the control effect yourself."),
                         Style("Staff - Sentinel", "Sentinel includes a line attack and strikes that can knock targets down or disorient them.")
                     },
-                    "Perks", "Combat Basics", "Spear Combat Styles", "Twin Blade Combat Styles"),
+                    "Perks", "Combat Basics", StatusEffectGuideTopics.TopicName, "Spear Combat Styles", "Twin Blade Combat Styles"),
 
                 Topic("Throwing", "Choose Throwing for hindering attacks or explosive area damage.",
                     new[]

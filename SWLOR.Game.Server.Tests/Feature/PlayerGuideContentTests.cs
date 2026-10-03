@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -30,6 +31,7 @@ public class PlayerGuideContentTests
         "Rebuilds",
         "Death & Recovery",
         "Combat Basics",
+        "Control & Harmful Effects",
         "Espionage",
         "Disguises",
         "Crafting",
@@ -144,6 +146,63 @@ public class PlayerGuideContentTests
                 GetString(block, "Title").Equals(tree, StringComparison.Ordinal) ||
                 GetString(block, "Body").Contains(tree, StringComparison.Ordinal),
                 $"the searchable family topic should state the exact current category label '{tree}'");
+        }
+    }
+
+    [Test]
+    public void StatusEffectReference_ClassifiesEveryDefinedControlAndHarmfulStatus()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Control & Harmful Effects");
+        var blocks = GetItems(topic, "Blocks");
+        var statuses = typeof(StatusEffectBase).Assembly.GetTypes()
+            .Where(type => typeof(StatusEffectBase).IsAssignableFrom(type) && !type.IsAbstract)
+            .Select(type => (StatusEffectBase)Activator.CreateInstance(type)!)
+            .ToArray();
+        var controlNames = statuses
+            .Where(effect => effect.Categories.HasFlag(StatusEffectCategory.Control))
+            .Select(effect => effect.Name)
+            .Distinct()
+            .ToArray();
+        var otherHarmfulNames = statuses
+            .Where(effect => !effect.Categories.HasFlag(StatusEffectCategory.Control))
+            .Where(effect => (effect.Categories &
+                (StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.Bleeding)) != 0)
+            .Select(effect => effect.Name)
+            .Distinct()
+            .ToArray();
+
+        var controlList = GetString(blocks.Single(block =>
+            GetString(block, "Title") == "Complete Control Effect List"), "Body")
+            .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var otherHarmfulList = blocks
+            .Where(block => GetString(block, "Title").StartsWith("Other Harmful Effects", StringComparison.Ordinal))
+            .SelectMany(block => GetString(block, "Body")
+                .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            .ToArray();
+
+        controlList.Should().BeEquivalentTo(controlNames,
+            "the complete control list must agree with the flags used by combat, including soft control");
+        otherHarmfulList.Should().BeEquivalentTo(otherHarmfulNames,
+            "harmful-only entries must cover every defined debuff without misclassifying it as control");
+        controlList.Should().OnlyHaveUniqueItems();
+        otherHarmfulList.Should().OnlyHaveUniqueItems();
+        controlList.Intersect(otherHarmfulList).Should().BeEmpty();
+
+        var text = string.Join("\n", GetAllText(topic));
+        text.Should().Contain("All control effects also count as harmful effects");
+        var hardControlList = GetString(blocks.Single(block => GetString(block, "Title") == "Hard Crowd Control"), "Body")
+            .Split(" are hard crowd control.", StringSplitOptions.None)[0]
+            .Replace(", and ", ", ", StringComparison.Ordinal)
+            .Replace(" and ", ", ", StringComparison.Ordinal)
+            .Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        hardControlList.Should().BeEquivalentTo(statuses
+            .Where(effect => effect.Categories.HasFlag(StatusEffectCategory.HardCrowdControl))
+            .Select(effect => effect.Name).Distinct(),
+            "the guide must distinguish the narrower hard crowd-control group exactly");
+        foreach (var family in new[] { "Staff Combat Styles", "Spear Combat Styles", "Combat Basics", "Perks", "Abilities" })
+        {
+            GetItems(GetTopics().Single(item => GetString(item, "Name") == family), "RelatedTopics")
+                .Should().Contain("Control & Harmful Effects");
         }
     }
 

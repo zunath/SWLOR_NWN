@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("When can I buy?", "When the next rank exists, requirements pass, and you have enough SP."),
                         new QuestionAnswer("What are beast perks?", "A Perks window mode that uses the active beast's SP and level.")
                     },
-                    new[] { "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay", "Lightsaber Combat Styles", "Pistol Combat Styles" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay", "Lightsaber Combat Styles", "Pistol Combat Styles" }),
 
                 new(
                     "Force Affinity",
@@ -564,7 +564,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What is Recast?", "The cooldown seconds shown in the ability description."),
                         new QuestionAnswer("Why can't I use it yet?", "Its cooldown or shared cooldown group still has time remaining.")
                     },
-                    new[] { "Perks", "Attributes", "Combat Basics", "Mimicry & Techniques", "Useful Windows", "Common Questions" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Perks", "Attributes", "Combat Basics", "Mimicry & Techniques", "Useful Windows", "Common Questions" }),
 
                 new(
                     "Mimicry & Techniques",
@@ -708,7 +708,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage, healing, and temporary HP.")
                     },
-                    new[] { "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Lightsaber Combat Styles", "Force Combat Styles", "Useful Windows" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Lightsaber Combat Styles", "Force Combat Styles", "Useful Windows" }),
 
                 new(
                     "Espionage",
@@ -1159,6 +1159,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[] { "Common Questions", "Skills", "Perks", "Mimicry & Techniques", "Training Store", "Quests & Key Items", "Communication", "Disguises" })
             };
 
+            topics.Add(StatusEffectGuideTopics.Create());
             topics.AddRange(CombatStyleGuideTopics.Create());
             return topics;
         }

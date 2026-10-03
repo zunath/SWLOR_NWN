@@ -2413,7 +2413,8 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffects,
                 statusEffectFactory,
                 statusResistanceType,
-                damageType);
+                damageType,
+                out var appliedStatusCategories);
             if (statusApplied)
             {
                 ApplyDarkForceCastConversion(activator, target);
@@ -2432,7 +2433,8 @@ namespace SWLOR.Game.Server.Service
                 statusEffect,
                 additionalStatusEffects,
                 firstHostileAbilityHitDamageBonusApplied,
-                trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0);
+                trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
+                appliedStatusCategories);
 
             if (damage > 0 || statusApplied)
             {
@@ -3228,8 +3230,10 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory,
             ResistanceType statusResistanceType,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            out StatusEffectCategory appliedStatusCategories)
         {
+            appliedStatusCategories = StatusEffectCategory.None;
             var hasAdditionalStatusEffects = additionalStatusEffects?.Any(x => x != null) ?? false;
             if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
                 return false;
@@ -3244,15 +3248,31 @@ namespace SWLOR.Game.Server.Service
 
             var statusApplied = false;
             if (statusEffectFactory != null)
-                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffectFactory, duration, statusResistanceType, sourceDamageType);
+            {
+                var applied = ApplyCombatImpactTrackedStatusEffect(
+                    activator, target, statusEffectFactory, duration, statusResistanceType, sourceDamageType, out var categories);
+                statusApplied |= applied;
+                if (applied)
+                    appliedStatusCategories |= categories;
+            }
             else if (statusEffect != null)
-                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffect, duration, statusResistanceType, sourceDamageType);
+            {
+                var applied = ApplyCombatImpactTrackedStatusEffect(
+                    activator, target, statusEffect, duration, statusResistanceType, sourceDamageType, out var categories);
+                statusApplied |= applied;
+                if (applied)
+                    appliedStatusCategories |= categories;
+            }
 
             if (additionalStatusEffects != null)
             {
                 foreach (var additionalStatusEffect in additionalStatusEffects.Where(x => x != null && x != statusEffect).Distinct())
                 {
-                    statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration, statusResistanceType, sourceDamageType);
+                    var applied = ApplyCombatImpactTrackedStatusEffect(
+                        activator, target, additionalStatusEffect, duration, statusResistanceType, sourceDamageType, out var categories);
+                    statusApplied |= applied;
+                    if (applied)
+                        appliedStatusCategories |= categories;
                 }
             }
 
@@ -3291,11 +3311,16 @@ namespace SWLOR.Game.Server.Service
             Type type,
             float duration,
             ResistanceType statusResistanceType,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            out StatusEffectCategory appliedCategories)
         {
-            return Resistance.IsValidResistanceType(statusResistanceType)
+            var applied = Resistance.IsValidResistanceType(statusResistanceType)
                 ? StatusEffect.ApplyStatusEffect(activator, target, type, duration, statusResistanceType)
                 : StatusEffect.ApplyStatusEffect(activator, target, type, duration, sourceDamageType);
+            appliedCategories = applied
+                ? StatusEffect.GetStatusEffect(target, type, activator)?.Categories ?? StatusEffectCategory.None
+                : StatusEffectCategory.None;
+            return applied;
         }
 
         private static bool ApplyCombatImpactTrackedStatusEffect(
@@ -3304,15 +3329,21 @@ namespace SWLOR.Game.Server.Service
             Func<IStatusEffect> statusEffectFactory,
             float duration,
             ResistanceType statusResistanceType,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            out StatusEffectCategory appliedCategories)
         {
             var statusEffect = statusEffectFactory?.Invoke();
             if (statusEffect == null)
+            {
+                appliedCategories = StatusEffectCategory.None;
                 return false;
+            }
 
-            return Resistance.IsValidResistanceType(statusResistanceType)
+            var applied = Resistance.IsValidResistanceType(statusResistanceType)
                 ? StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, statusResistanceType)
                 : StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, sourceDamageType);
+            appliedCategories = applied ? statusEffect.Categories : StatusEffectCategory.None;
+            return applied;
         }
 
         private static AbilityType GetCombatImpactDamageAbility(

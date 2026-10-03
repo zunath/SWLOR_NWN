@@ -5730,7 +5730,8 @@ namespace SWLOR.Game.Server.Service
             Type primaryStatusEffect,
             IEnumerable<Type> additionalStatusEffects,
             bool firstHostileAbilityHitDamageBonusApplied,
-            bool isFirstSuccessfulTarget)
+            bool isFirstSuccessfulTarget,
+            StatusEffectCategory appliedStatusCategories)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
@@ -5757,9 +5758,7 @@ namespace SWLOR.Game.Server.Service
             ApplyStatusAppliedEffects(
                 activator,
                 target,
-                statusApplied,
-                primaryStatusEffect,
-                additionalStatusEffects);
+                appliedStatusCategories);
             ApplyAbilityTargetStatusEffects(activator, target, ability);
             ApplyRangedAbilityHitNearTargetEffects(activator, target, ability, skillType);
             ApplyCostlyAbilityHitEffects(activator, target, ability, skillType);
@@ -7381,18 +7380,13 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyStatusAppliedEffects(
             uint activator,
             uint target,
-            bool statusApplied,
-            Type primaryStatusEffect,
-            IEnumerable<Type> additionalStatusEffects)
+            StatusEffectCategory appliedStatusCategories)
         {
-            if (!statusApplied)
-                return;
-
             var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.StatusAppliedRequiredCategory));
             if (requiredCategory == 0 ||
-                !AbilityAppliedAnyStatusCategory(primaryStatusEffect, additionalStatusEffects, requiredCategory))
+                (appliedStatusCategories & requiredCategory) == 0)
             {
                 return;
             }

@@ -301,57 +301,6 @@ namespace SWLOR.Toolset.Editors
             ? $"x {instance.Position.X:0.00}  y {instance.Position.Y:0.00}  z {instance.Position.Z:0.00}"
             : string.Empty;
 
-        // ----- drag readout -----
-        //
-        // The numbers appear beside the map while a drag is in flight and disappear when it ends. Showing
-        // the delta as well as the absolute is the point: "how far have I moved this" is the question a
-        // builder is actually asking mid-drag, and it is the one a static coordinate box cannot answer.
-
-        [ObservableProperty]
-        private bool _isDragging;
-
-        [ObservableProperty]
-        private string _dragPosition = string.Empty;
-
-        [ObservableProperty]
-        private string _dragFacing = string.Empty;
-
-        [ObservableProperty]
-        private string _dragDelta = string.Empty;
-
-        /// <summary>
-        /// Called by the view as a manipulation drag updates. Both null ends the readout.
-        /// </summary>
-        public void ShowDragReadout(InstanceMarker? original, InstanceMarker? preview)
-        {
-            if (original == null || preview == null)
-            {
-                IsDragging = false;
-                return;
-            }
-
-            DragPosition =
-                $"x {preview.Position.X:0.00}   y {preview.Position.Y:0.00}   z {preview.Position.Z:0.00}";
-
-            var headingDegrees = MathF.Atan2(preview.Orientation.Y, preview.Orientation.X) * 180f / MathF.PI;
-            if (headingDegrees < 0)
-                headingDegrees += 360f;
-            DragFacing = $"facing {headingDegrees:0}°";
-
-            var moved = Vector3.Distance(preview.Position, original.Position);
-            var turned = MathF.Abs(
-                MathF.Atan2(preview.Orientation.Y, preview.Orientation.X) -
-                MathF.Atan2(original.Orientation.Y, original.Orientation.X)) * 180f / MathF.PI;
-
-            DragDelta = moved > 1e-4f
-                ? $"moved {moved:0.00} m"
-                : turned > 1e-4f
-                    ? $"turned {turned:0}°"
-                    : string.Empty;
-
-            IsDragging = true;
-        }
-
         /// <summary>A one-letter stand-in for the selection's icon until blueprint thumbnails exist.</summary>
         public string SelectionGlyph
         {
@@ -1340,29 +1289,6 @@ namespace SWLOR.Toolset.Editors
             instance.Kind != InstanceMarkerKind.Sound &&
             instance.Kind != InstanceMarkerKind.Door &&
             SectionForKind(instance.Kind) != null;
-
-        /// <summary>
-        /// Turns the selection to a random heading. Aurora has this because a row of identically
-        /// angled crates reads as placed by a machine; one press per object breaks that up.
-        /// </summary>
-        [RelayCommand]
-        private void RotateSelectionRandomly()
-        {
-            if (SelectedSceneInstance is not { } instance)
-                return;
-
-            var current = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
-            RotateSelectionBy(Random.Shared.NextSingle() * MathF.Tau - current);
-        }
-
-        private void RotateSelectionBy(float deltaRadians)
-        {
-            if (SelectedSceneInstance is not { } instance)
-                return;
-
-            var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X) + deltaRadians;
-            RotateSelectedInstance(instance, new Vector2(MathF.Cos(heading), MathF.Sin(heading)));
-        }
 
         // ----- Terrain paint / rotate / raise-lower tools -----
 

@@ -16,16 +16,17 @@ namespace SWLOR.Toolset.Editors
         private AreaEditorViewModel? _viewModel;
         private Viewport.SwlorAreaViewportMaterialProvider? _materialProvider;
         private bool _viewportStateRestored;
+        private AreaEditorSurface AreaView => SceneView.Surface;
 
         public AreaEditorView()
         {
             InitializeComponent();
-            CameraControls.Viewport = AreaView.Viewport;
-            AreaView.Viewport.RenderStatusChanged += OnGlRenderStatusChanged;
+            AreaView.ContextRequested += OnViewportContextRequested;
+            SceneView.RaiseTileRequested += (sender, args) => _viewModel?.RaiseTileCommand.Execute(null);
+            SceneView.LowerTileRequested += (sender, args) => _viewModel?.LowerTileCommand.Execute(null);
             AreaView.Viewport.InstancePicked += OnInstancePicked;
             AreaView.Viewport.InstanceMoved += OnInstanceMoved;
             AreaView.Viewport.InstanceRotated += OnInstanceRotated;
-            AreaView.Viewport.ManipulationPreviewChanged += OnManipulationPreviewChanged;
             AreaView.Viewport.PlacementPointPicked += OnPlacementPointPicked;
             AreaView.Viewport.PlacementCancelled += OnPlacementCancelled;
             AreaView.Viewport.TileCellPicked += OnTileCellPicked;
@@ -103,6 +104,8 @@ namespace SWLOR.Toolset.Editors
             }
 
             _viewModel = next;
+            UpdateSceneOverlay();
+            if (SceneView.SurfaceContextMenu != null) SceneView.SurfaceContextMenu.DataContext = _viewModel;
             if (_viewModel == null)
                 return;
 
@@ -188,6 +191,8 @@ namespace SWLOR.Toolset.Editors
         {
             if (_viewModel == null)
                 return;
+
+            UpdateSceneOverlay();
 
             if (e.PropertyName == nameof(AreaEditorViewModel.AreaScene))
             {
@@ -297,10 +302,6 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         private void OnInstancePicked(InstanceMarker? instance) => _viewModel?.SelectSceneInstance(instance);
 
-        /// <summary>Feeds the drag readout beside the map; both null when the drag ends.</summary>
-        private void OnManipulationPreviewChanged(InstanceMarker? original, InstanceMarker? preview) =>
-            _viewModel?.ShowDragReadout(original, preview);
-
         /// <summary>The move gizmo released with a net change - commit it through the view model's InstanceFieldMap-based path.</summary>
         private void OnInstanceMoved(InstanceMarker instance, Vector3 newPosition) =>
             _viewModel?.MoveSelectedInstance(instance, newPosition);
@@ -315,37 +316,6 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
-
-        // ----- Object rotate. Held, these spin the selection continuously; a tap turns one step.
-        // Both go through the viewport's live preview, so the scene is not rebuilt per tick and the
-        // whole turn is a single undo entry - see AreaViewportControl.NudgeSelectedRotation. -----
-
-        /// <summary>Whether this press has repeated yet - the first tick is the tap step, the rest are the glide.</summary>
-        private bool _rotateHasRepeated;
-
-        private void OnRotateSelectionClockwise(object? sender, RoutedEventArgs e) => RotateSelectionTick(-1f);
-
-        private void OnRotateSelectionAnticlockwise(object? sender, RoutedEventArgs e) => RotateSelectionTick(1f);
-
-        private void RotateSelectionTick(float direction)
-        {
-            AreaView.Viewport.NudgeSelectedRotation(direction, isFirstStep: !_rotateHasRepeated);
-            _rotateHasRepeated = true;
-        }
-
-        private void OnRotateSelectionReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e) => EndRotateSelection();
-
-        /// <summary>
-        /// Losing the pointer capture ends the rotation too. Without it a press dragged off the button
-        /// never releases on it, and the turn would sit uncommitted until something else flushed it.
-        /// </summary>
-        private void OnRotateSelectionCaptureLost(object? sender, Avalonia.Input.PointerCaptureLostEventArgs e) => EndRotateSelection();
-
-        private void EndRotateSelection()
-        {
-            _rotateHasRepeated = false;
-            AreaView.Viewport.CommitSelectedRotation();
-        }
 
         /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
         private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);
@@ -365,10 +335,18 @@ namespace SWLOR.Toolset.Editors
         /// <summary>R was pressed with a tile armed - turn it before it is stamped.</summary>
         private void OnTileRotateRequested() => _viewModel?.RotatePendingTile();
 
-        private void OnGlRenderStatusChanged(object? sender, string message)
+        private void UpdateSceneOverlay()
         {
-            GlStatusBorder.IsVisible = !string.IsNullOrEmpty(message);
-            GlStatusText.Text = message;
+            SceneView.Overlay = _viewModel is { } model ? new AreaSceneOverlay
+            {
+                IsBuildingScene = model.IsBuildingScene,
+                SceneStatus = model.SceneStatus,
+                HasSceneSelection = model.HasSceneSelection,
+                HasTileSelection = model.HasTileSelection,
+                TileSelectionStatus = model.TileSelectionStatus,
+                PlacementStatus = model.PlacementStatus,
+                CanRotateSelection = model.CanRotateSelection,
+            } : new();
         }
 
         /// <summary>

@@ -26,14 +26,8 @@
              something is selected resizes the viewport out from under the builder mid-edit - the
              camera shifts, and whatever they were aiming at moves. What the old selection bar
              offered lives on the right-click menu below instead. -->
-        <Grid>
-
-          <viewport:AreaEditorSurface Grid.Row="0" x:Name="AreaView"
-                                      ContextRequested="OnViewportContextRequested">
-            <!-- Right-click acts on whatever is under the cursor: the press handler picks it first,
-                 so the menu always describes the thing that was clicked rather than the previous
-                 selection. Suppressed entirely when the click lands on empty ground. -->
-            <viewport:AreaEditorSurface.ContextMenu>
+        <viewport:AreaSceneView x:Name="SceneView">
+          <viewport:AreaSceneView.SurfaceContextMenu>
               <ContextMenu>
                 <!-- The first two entries are the readout the docked bar used to carry: the name a
                      builder recognises, and the kind and resref underneath it for anyone scripting
@@ -58,106 +52,8 @@
                           Command="{Binding EditCopySelectedBlueprintCommand}"
                           ToolTip.Tip="Create and edit a new Custom blueprint from this object's source" />
               </ContextMenu>
-            </viewport:AreaEditorSurface.ContextMenu>
-          </viewport:AreaEditorSurface>
-
-          <Border Grid.Row="0" Background="#B0202020" CornerRadius="4" Padding="10,6"
-                  HorizontalAlignment="Center" VerticalAlignment="Center"
-                  IsVisible="{Binding IsBuildingScene}">
-            <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
-          </Border>
-
-          <!-- Viewport HUD. Only present when it has something to say: a failure, a drag hint while
-               something is selected, or a placement prompt. There is deliberately no standing caption
-               describing the area - what the area is belongs on the Properties tab, and an overlay that
-               is always there is an overlay permanently covering part of the map. -->
-          <Border Grid.Row="0" Background="#D00C1017" CornerRadius="3" Padding="9,5"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
-                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
-                  IsVisible="{Binding HasViewportHud}">
-            <StackPanel Spacing="3">
-              <TextBlock Text="{Binding SceneStatus}" Classes="mono" FontSize="10.5"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480"
-                         IsVisible="{Binding HasSceneStatus}" />
-              <TextBlock Text="Drag to move &#x00B7; Alt+drag to turn &#x00B7; Ctrl snaps 0.5 m"
-                         Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource InkTertiaryBrush}"
-                         IsVisible="{Binding HasSceneSelection}" />
-              <TextBlock Text="{Binding TileSelectionStatus}" Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource AmberBrush}"
-                         IsVisible="{Binding HasTileSelection}" />
-              <TextBlock Text="Raise and lower move this tile one height level"
-                         Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource InkTertiaryBrush}"
-                         IsVisible="{Binding HasTileSelection}" />
-              <TextBlock Text="{Binding PlacementStatus}" Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource AccentBrush}"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480"
-                         IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            </StackPanel>
-          </Border>
-
-          <!-- Drag readout. Present only while a drag is in flight, showing where the thing is now and
-               how far it has come - the second half being what a static coordinate box cannot tell you. -->
-          <Border Grid.Row="0" Background="#F00C1017" CornerRadius="3" Padding="10,7"
-                  BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
-                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="18"
-                  IsVisible="{Binding IsDragging}">
-            <StackPanel Spacing="3">
-              <TextBlock Text="{Binding DragPosition}" Classes="mono" FontSize="11.5"
-                         Foreground="{DynamicResource AccentInkBrush}" />
-              <TextBlock Text="{Binding DragFacing}" Classes="mono" FontSize="11.5"
-                         Foreground="{DynamicResource AccentInkBrush}" />
-              <TextBlock Text="{Binding DragDelta}" Classes="mono" FontSize="11"
-                         Foreground="{DynamicResource AmberBrush}"
-                         IsVisible="{Binding DragDelta, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            </StackPanel>
-          </Border>
-
-          <!-- Camera and rotate pad. A pointing device is the fast way to fly the view, but not
-               everyone has three buttons and nothing about a drag is repeatable - "nudge it one more
-               step" is a button. Floated over the map rather than given its own row so it costs no
-               height when a builder is not using it. -->
-          <Border Grid.Row="0" Background="#D00C1017" CornerRadius="4" Padding="6,4"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
-                  HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
-            <StackPanel Orientation="Horizontal" Spacing="3">
-              <viewport:AreaCameraControls x:Name="CameraControls" />
-              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
-
-              <!-- Rotate repeats and previews while held (see RotateSelectionTick); the document edit
-                   lands once, on release. -->
-              <RepeatButton Classes="pad" Content="&#x27F2;" ToolTip.Tip="Turn the selection anticlockwise"
-                            Click="OnRotateSelectionAnticlockwise"
-                            PointerReleased="OnRotateSelectionReleased"
-                            PointerCaptureLost="OnRotateSelectionCaptureLost"
-                            IsEnabled="{Binding CanRotateSelection}" />
-              <RepeatButton Classes="pad" Content="&#x27F3;" ToolTip.Tip="Turn the selection clockwise"
-                            Click="OnRotateSelectionClockwise"
-                            PointerReleased="OnRotateSelectionReleased"
-                            PointerCaptureLost="OnRotateSelectionCaptureLost"
-                            IsEnabled="{Binding CanRotateSelection}" />
-              <Button Classes="pad" Content="&#x21AF;" ToolTip.Tip="Turn the selection to a random angle"
-                      Command="{Binding RotateSelectionRandomlyCommand}"
-                      IsEnabled="{Binding CanRotateSelection}" />
-
-              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
-
-              <!-- These act on the selected tile, immediately and once per press, so a RepeatButton
-                   would step it several levels from one held click. Click a cell to select it. -->
-              <Button Classes="pad" Content="&#x21E7;" Command="{Binding RaiseTileCommand}"
-                      ToolTip.Tip="Raise the selected tile one height level - click a grid cell to select one" />
-              <Button Classes="pad" Content="&#x21E9;" Command="{Binding LowerTileCommand}"
-                      ToolTip.Tip="Lower the selected tile one height level (minimum level 0)" />
-            </StackPanel>
-          </Border>
-
-          <Border Grid.Row="0" x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
-                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
-            <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
-          </Border>
-
-        </Grid>
+          </viewport:AreaSceneView.SurfaceContextMenu>
+        </viewport:AreaSceneView>
       </viewport:AreaEditorLayout.Scene>
       <viewport:AreaEditorLayout.Properties>
     <ScrollViewer x:Name="PropertiesScroll">

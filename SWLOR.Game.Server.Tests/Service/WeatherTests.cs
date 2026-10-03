@@ -139,6 +139,7 @@ public class WeatherTests
         resolve.Invoke(null, new object[] { "Mon Cala - Coral Isles - Inner" }).Should().Be(PlanetType.MonCala);
         resolve.Invoke(null, new object[] { "CZ-220 - Main Deck" }).Should().Be(PlanetType.CZ220);
         resolve.Invoke(null, new object[] { "Smuggler's Moon Station - Corridors" }).Should().Be(PlanetType.SmugglersMoonStation);
+        resolve.Invoke(null, new object[] { "Eshan City - The Silver Gate District" }).Should().Be(PlanetType.Eshan);
         Planet.GetPlanetTypeByAreaResref("canyon_001").Should().Be(PlanetType.Tatooine);
         Method("GetAreaClimate").Should().Contain("Planet.GetPlanetType(area)").And.Contain("ResolveClimate");
     }

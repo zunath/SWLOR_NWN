@@ -268,13 +268,13 @@ public class CombatDamageTests
 
         usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item)");
         abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)");
-        abilitySource.Should().Contain("? Item.GetDMG(triggeringWeapon)");
+        abilitySource.Should().Contain("? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)");
         abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Force, triggeringWeaponDamage: 23).Should().Be(0);
-        abilitySource.Should().Contain("TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage");
-        abilitySource.Should().Contain("TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage");
         combatSource.Should().Contain("GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true)");
         var selection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
         selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType");
@@ -1183,7 +1183,10 @@ public class CombatDamageTests
         var extractor = ExtractMethod(damageRollSource, "private static WeaponDamageProfile ExtractWeaponDamageProfile(");
         extractor.Should().Contain("var hasDamageProperty = false;");
         extractor.Should().Contain("if (!hasDamageProperty)");
-        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);");
+        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);");
+        damageRollSource.Should().Contain("if (weapon != null && damageProfile.HasItemDamage)");
+        var ratingSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "WeaponDamage.cs"));
+        ratingSource.Should().Contain("if (!GetItemHasItemProperty(weapon, ItemPropertyType.DMG))");
     }
 
     [Test]

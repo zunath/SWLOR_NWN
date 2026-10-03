@@ -805,12 +805,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var damageAbility = Combat.GetWeaponDamageAbilityType(_target, itemType);
                 var damageStat = GetAbilityScore(_target, damageAbility);
-                var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(_target, itemType);
+                var itemDamage = Item.GetDMG(item);
+                var effectiveDamage = WeaponDamage.GetEffectiveDMG(_target, item, itemDamage);
+                var dmg = effectiveDamage + Combat.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
                 var attack = Stat.GetAttack(_target, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
                 var (min, max) = Combat.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
                 var tooltip = $"Est. Damage: {min} - {max}";
+                if (effectiveDamage != itemDamage)
+                {
+                    tooltip += $"\nWeapon DMG: {itemDamage}\nSingle Weapon: +{WeaponDamage.GetNaturalSingleWeaponPercent(_target)}%" +
+                               $"\nDoublehand: +{Stat.GetStatAdjustment(_target, StatType.SingleWeaponDamagePercentAdjustment)}%" +
+                               $"\nEffective weapon DMG: {effectiveDamage}";
+                }
 
                 return (dmgText, tooltip);
             }
@@ -966,6 +974,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("STM Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment)), "Adjusts the Stamina cost of abilities. Lower is better.");
             AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
             AddStat("Off-Hand Haste", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
+            AddStat("Single Weapon DMG", FormatPercent(EquipmentPredicates.HasSingleWeapon(_target) ? WeaponDamage.GetSingleWeaponPercent(_target) : 0),
+                "Bonus to the item's weapon DMG with one eligible one-handed melee or throwing weapon and an empty off hand. Includes the natural bonus and Doublehand; already included in equipped DMG.");
             AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
             AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
             AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");

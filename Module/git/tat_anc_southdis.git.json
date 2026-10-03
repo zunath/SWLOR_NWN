@@ -26475,7 +26475,7 @@
         },
         "Appearance_Type": {
           "type": "word",
-          "value": 3
+          "value": 2155
         },
         "ArmorPart_RFoot": {
           "type": "byte",

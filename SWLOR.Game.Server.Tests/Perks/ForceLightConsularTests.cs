@@ -130,6 +130,31 @@ public class ForceLightConsularTests
         targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies);
     }
 
+    [TestCase(FeatType.RadiantLance1)]
+    [TestCase(FeatType.RadiantLance2)]
+    [TestCase(FeatType.RadiantLance3)]
+    public void RadiantLance_CursorAndLocationRangeMatchTheDamageLine(FeatType feat)
+    {
+        var ability = new RadiantLanceAbilityDefinition().BuildAbilities()[feat];
+        var targeting = ability.Targeting!;
+        var root = FindRepositoryRoot();
+        var spellRow = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da")[(int)targeting.Spell];
+        var shortRange = Read2da(root / "SWLOR_Haks" / "sw_2da" / "ranges.2da")[2];
+
+        ability.RequiresLocationTarget.Should().BeTrue();
+        ability.RequiresTarget.Should().BeFalse("the line can be aimed at empty ground");
+        ability.HasExplicitMaxRange.Should().BeTrue("far ground must not imply a longer damage line");
+        targeting.Shape.Should().Be(AbilityTargetingShapeType.Rect);
+        targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+        targeting.SizeX.Should().Be(8f);
+        targeting.SizeY.Should().Be(2.5f);
+        ability.MaxRange.Should().Be(targeting.SizeX);
+        spellRow["Range"].Should().Be("S");
+        shortRange["Label"].Should().Be("SpellRngShrt");
+        float.Parse(shortRange["PrimaryRange"], System.Globalization.CultureInfo.InvariantCulture)
+            .Should().Be(ability.MaxRange);
+    }
+
     [Test]
     public void ForceBurst_UsesOneFourPointPerkLevelAtForceThirtyTwo()
     {
@@ -369,9 +394,9 @@ public class ForceLightConsularTests
             (FeatType.Renewal3, "ife_rnwl3", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ThrowRock3, "ife_throwrock3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceJudgment3, "ife_forcejdg3", "M", "0x02", "1", "sphere", "5", "****", "1"),
-            (FeatType.RadiantLance1, "ife_radlance1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.RadiantLance2, "ife_radlance2", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.RadiantLance3, "ife_radlance3", "M", "0x3E", "1", "rectangle", "8", "2.5", "17")
+            (FeatType.RadiantLance1, "ife_radlance1", "S", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.RadiantLance2, "ife_radlance2", "S", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.RadiantLance3, "ife_radlance3", "S", "0x3E", "1", "rectangle", "8", "2.5", "17")
         };
         var seenIcons = new HashSet<string>();
 

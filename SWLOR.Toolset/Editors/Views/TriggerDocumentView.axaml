@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:triggers="using:SWLOR.Toolset.Editors.Triggers"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              x:Class="SWLOR.Toolset.Editors.Triggers.TriggerDocumentView"
              x:DataType="triggers:TriggerDocumentViewModel">
@@ -60,7 +61,7 @@
 
       <!-- Variables exist only under Custom. -->
       <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
-        <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+        <variables:VarTableSectionView DataContext="{Binding Variables}" />
       </TabItem>
 
       <TabItem Header="Source"

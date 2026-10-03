@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
@@ -133,32 +134,8 @@
     </DataTemplate>
 
     <!-- The Variables tab: the raw grid, present only when the behavior leaves something to edit. -->
-    <DataTemplate DataType="editors:VarTableSectionViewModel">
-      <StackPanel Margin="10" Spacing="6">
-        <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
-                  AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="320"
-                  GridLinesVisibility="Horizontal">
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
-            <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
-            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
-          </DataGrid.Columns>
-        </DataGrid>
-        <!-- Type sizes to its content: as a star column it shrank with the pane until the
-             drop-down was narrower than the word inside it. -->
-        <Grid ColumnDefinitions="2*,Auto,Auto,2*,Auto,Auto" ColumnSpacing="6">
-          <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
-                           ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
-          <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
-          <ComboBox Grid.Column="2" MinWidth="96" ItemsSource="{Binding TypeChoices}"
-                    SelectedItem="{Binding NewType, Mode=TwoWay}" />
-          <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
-          <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
-          <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
-        </Grid>
-        <TextBlock Text="{Binding ValidationHint}" Foreground="Orange"
-                   IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-      </StackPanel>
+    <DataTemplate DataType="variables:VarTableSectionViewModel">
+      <variables:VarTableSectionView DataContext="{Binding}" />
     </DataTemplate>
   </UserControl.DataTemplates>
 

@@ -356,7 +356,7 @@ namespace SWLOR.Toolset.Editors
             }
             else
             {
-                VarTableSection = new VarTableSectionViewModel(
+                VarTableSection = SwlorVarTablePolicy.Create(
                     (description, mutation) => _runEdit(description, mutation),
                     new VarTable(element),
                     _gameCodeIndex);

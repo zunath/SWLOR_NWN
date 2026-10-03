@@ -234,7 +234,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 OnEquipmentChanged,
                 _choicePreviews,
                 equipmentSearch);
-            Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
+            Variables = SwlorVarTablePolicy.Create(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
             if (appearanceOptions != null || appearanceOptionsLoader != null)
             {
                 AppearanceGallery = new AppearanceGallerySectionViewModel(

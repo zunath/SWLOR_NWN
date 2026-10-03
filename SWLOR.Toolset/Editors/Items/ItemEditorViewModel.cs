@@ -622,7 +622,7 @@ namespace SWLOR.Toolset.Editors.Items
         private void RebuildVariablesSection()
         {
             Variables = ShowsVariablesTab
-                ? new VarTableSectionViewModel(RunEdit, _store.Locals, _gameCodeIndex)
+                ? SwlorVarTablePolicy.Create(RunEdit, _store.Locals, _gameCodeIndex)
                 : null;
             OnPropertyChanged(nameof(ShowsVariablesTab));
         }

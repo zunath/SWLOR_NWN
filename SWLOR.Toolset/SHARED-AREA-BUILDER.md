@@ -13,7 +13,7 @@ SWLOR's binary representation adapter connects its existing formats model to
 the shared document model; workspace conventions, catalogs and release policy
 remain here. Xenomech provides its own source representation and policies.
 
-Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.25`. These versions are recorded in the package lock files and consume the recovered shared packages.
+Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.30`. These versions are recorded in the package lock files and consume the recovered shared packages.
 The shared repository's `docs/area-builder-extraction.md` records provenance,
 package hashes and the source/package qualification boundary.
 

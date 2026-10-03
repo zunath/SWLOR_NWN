@@ -3,6 +3,7 @@
              xmlns:items="using:SWLOR.Toolset.Editors.Items"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
              xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:dworkspace="using:SWLOR.Toolset.Domain.Workspace"
              x:Class="SWLOR.Toolset.Editors.Items.ItemEditorView"
@@ -659,7 +660,7 @@
         </TabItem>
 
         <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
-          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+          <variables:VarTableSectionView DataContext="{Binding Variables}" />
         </TabItem>
       </TabControl>
     </Grid>

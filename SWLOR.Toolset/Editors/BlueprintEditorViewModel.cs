@@ -174,7 +174,7 @@ namespace SWLOR.Toolset.Editors
 
             if (schema.HasVarTable)
             {
-                VarTableSection = new VarTableSectionViewModel(
+                VarTableSection = SwlorVarTablePolicy.Create(
                     _context.RunEdit, new VarTable(_session.Document.Root), gameCodeIndex);
             }
 
@@ -586,7 +586,7 @@ namespace SWLOR.Toolset.Editors
             if (VarTableSection == null)
                 return;
 
-            VarTableSection = new VarTableSectionViewModel(
+            VarTableSection = SwlorVarTablePolicy.Create(
                 _context.RunEdit, new VarTable(_session.Document.Root), _gameCodeIndex);
             OnPropertyChanged(nameof(VarTableSection));
             RebuildVariablesTab();

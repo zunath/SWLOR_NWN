@@ -1282,7 +1282,7 @@ namespace SWLOR.Toolset.Tests
 
                 tabs.SelectedItem = variablesTab;
                 Dispatcher.UIThread.RunJobs();
-                variablesTab.Content.Should().BeOfType<VariablesSectionView>(
+                variablesTab.Content.Should().BeOfType<VarTableSectionView>(
                     "Custom variables use the shared editor on their own tab");
 
                 tabs.SelectedItem = tabItems.Single(tab => tab.Header?.ToString() == "Appearance");

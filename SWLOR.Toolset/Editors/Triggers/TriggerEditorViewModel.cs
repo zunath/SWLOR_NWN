@@ -327,7 +327,7 @@ namespace SWLOR.Toolset.Editors.Triggers
                 BehaviorRows.Add(CreateRow(definition));
 
             Variables = Behavior.AllowsVariables
-                ? new VarTableSectionViewModel(_runEdit, _store.Locals, _gameCodeIndex)
+                ? SwlorVarTablePolicy.Create(_runEdit, _store.Locals, _gameCodeIndex)
                 : null;
 
             BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);

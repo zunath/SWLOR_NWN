@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
              xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
              xmlns:editors="using:SWLOR.Toolset.Editors"
@@ -125,7 +126,7 @@
         </TabItem>
 
         <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
-          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+          <variables:VarTableSectionView DataContext="{Binding Variables}" />
         </TabItem>
 
       </TabControl>

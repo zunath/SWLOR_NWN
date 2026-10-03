@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ExamineItemViewModel : GuiViewModelBase<ExamineItemViewModel, ExamineItemPayload>,
+    public class ExamineItemViewModel: GuiViewModelBase<ExamineItemViewModel, ExamineItemPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>, IGuiRefreshable<UnequipItemRefreshEvent>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>, IGuiRefreshable<PerkRefundedRefreshEvent>,
         IGuiRefreshable<StatAdjustmentRefreshEvent>
@@ -21,9 +21,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ContentPartial = "EXAMINE_ITEM_BODY";
         private ExamineItemPayload _payload;
 
-        public string WindowTitle { get => Get<string>(); set => Set(value); }
-        public string Description { get => Get<string>(); set => Set(value); }
-        public string ItemProperties { get => Get<string>(); set => Set(value); }
+        public string WindowTitle
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Description
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ItemProperties
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
 
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineWeapon()

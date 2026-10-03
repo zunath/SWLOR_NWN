@@ -14,6 +14,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "GameplayIconAssets.ps1")
 
 $MaximumStage = 5
 $MaxResourceNameLength = 16
@@ -170,6 +171,8 @@ function New-CooldownOverlay {
 $script:MagickExecutable = Resolve-MagickPath $MagickPath
 $featPath = (Resolve-Path -Path $Feat2daPath).Path
 $iconDirectory = (Resolve-Path -Path $IconPath).Path
+$runtimeDirectory = $iconDirectory
+$iconDirectory = Get-GameplayIconSourceDirectory $runtimeDirectory
 $icons = if ($IconResRefs.Count -gt 0) {
     $set = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     foreach ($iconValue in $IconResRefs) {
@@ -253,3 +256,5 @@ foreach ($icon in $icons) {
 
 $iconCount = @($icons).Count
 Write-Host "Generated $generated cooldown icon textures for $iconCount source feat icons with ImageMagick."
+
+Publish-GameplayIconDds $runtimeDirectory $script:MagickExecutable

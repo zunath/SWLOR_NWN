@@ -40,18 +40,18 @@ Note: most pre-existing stance status effects still carry the Beneficial green f
 
 ## Every Applied Status Effect Carries an Icon
 
-If an effect is applied to a creature, it **must** declare a real `EffectIconType` — never `EffectIconType.Invalid`. The apply path in `StatusEffect.BuildNativeStatusEffect` only links an `EffectIcon` when the icon is not `Invalid`, and there is no fallback: an `Invalid` icon means the effect changes the player's stats with nothing shown on the status bar. `Invalid` also collapses icon-keyed lookups (`GetStatusEffectsFromIcon`), so dispel/cleanse/query logic cannot tell those effects apart.
+If an effect is applied to a creature, it **must** declare a real `EffectIconType` â€” never `EffectIconType.Invalid`. The apply path in `StatusEffect.BuildNativeStatusEffect` only links an `EffectIcon` when the icon is not `Invalid`, and there is no fallback: an `Invalid` icon means the effect changes the player's stats with nothing shown on the status bar. `Invalid` also collapses icon-keyed lookups (`GetStatusEffectsFromIcon`), so dispel/cleanse/query logic cannot tell those effects apart.
 
-If an effect has nothing worth showing — because its magnitude never varies for as long as it is held, so there is no transient state to communicate — then it should not be a status effect at all. Model it as a static stat contribution read by the stat pipeline instead (as the Mimicry passive traits do via `MimicryTraitStat` / `MimicryTraitResistance`). Status effects are for state that starts, changes, or ends; static bonuses belong to whatever grants them.
+If an effect has nothing worth showing â€” because its magnitude never varies for as long as it is held, so there is no transient state to communicate â€” then it should not be a status effect at all. Model it as a static stat contribution read by the stat pipeline instead (as the Mimicry passive traits do via `MimicryTraitStat` / `MimicryTraitResistance`). Status effects are for state that starts, changes, or ends; static bonuses belong to whatever grants them.
 
 `tools/UpdateGameplayIconStandards.ps1` enforces this: status effect discovery does not skip `Invalid` declarations, so any new effect without an icon fails the audit until it has an `effecticons.2da` row, artwork, and a custom TLK entry.
 
 ## Stat-Configured Icons
 
 A shared status effect whose icon identity is supplied per application through a `StatType`
-adjustment — `MeleeRepeatedTargetDamageStatusEffect` reads
+adjustment â€” `MeleeRepeatedTargetDamageStatusEffect` reads
 `StatType.MeleeRepeatedTargetDamageStatusEffectIcon`, which Vibroblade's Rundown trait sets to
-`EffectIconType.RundownStatusEffect` — deliberately owns no icon identity of its own. The player
+`EffectIconType.RundownStatusEffect` â€” deliberately owns no icon identity of its own. The player
 always sees the *configuring perk's* icon, whose anchor class carries the enum member, manifest
 row, TLK entry, and artwork (`RundownStatusEffect` anchors `ief_rndwn`).
 
@@ -60,22 +60,22 @@ Such a class is exempted from the one-class-one-icon model **only** when it decl
 audit skips it entirely on that marker. The exemption does not weaken the rule above: the apply
 path must refuse to apply the effect when the configured icon resolves to
 `EffectIconType.Invalid`, so a mis-wired perk degrades to no visual rather than an invisible
-effect. Any icon value fed into the stat must be a real, anchored `EffectIconType` member —
+effect. Any icon value fed into the stat must be a real, anchored `EffectIconType` member â€”
 retire the anchor class only together with the icon identity itself.
 
 ## Force Alignment Marker
 
-Force power icons carry a **second, orthogonal axis** on top of the semantic frame: a small "gem" marker in the **top-left corner** that shows the power's Force alignment. The semantic frame still communicates effect role (Harmful, Beneficial, Control, …); the corner gem communicates the side of the Force. This lets a player read both facts at once, and complements the Perks window, which groups Force powers by discipline (Alter / Control / Sense).
+Force power icons carry a **second, orthogonal axis** on top of the semantic frame: a small "gem" marker in the **top-left corner** that shows the power's Force alignment. The semantic frame still communicates effect role (Harmful, Beneficial, Control, â€¦); the corner gem communicates the side of the Force. This lets a player read both facts at once, and complements the Perks window, which groups Force powers by discipline (Alter / Control / Sense).
 
 Marker rules:
 
-- **Scope:** only the Force-tree powers, stances, and passive traits (the five Force perk trees). No other icon carries the marker — including Force-*flavored* NPC, creature, or other-weapon icons.
+- **Scope:** only the Force-tree powers, stances, and passive traits (the five Force perk trees). No other icon carries the marker â€” including Force-*flavored* NPC, creature, or other-weapon icons.
 - **Colors:** `Dark = black (#17171B)`, `Light = light grey (#C4CAD3)`, `Universal/Neutral = yellow (#FFCC1A)`.
 - **Construction:** a dark outer ring, a mid-grey bevel ring, then the alignment-colored fill, with a small highlight. The two-tone bezel keeps every gem legible on any underlying art, and the mid-grey bevel gives all three fills (black, light grey, yellow) the same crisp rim.
 - **Placement:** top-left, so it never collides with the bottom-right status-effect rank-badge slot. The gem sits on top of the finished icon and never alters the central artwork or the semantic frame.
 - **Data source of truth:** the `Alignment` column in `GameplayIconManifest.csv` (`Light` / `Dark` / `Neutral`; blank = no marker).
 
-The marker is stamped and audited by `tools/UpdateFeatSpellIconBorders.ps1` (`-Apply` / `-AuditOnly`), which reads the `Alignment` column. Stamping is idempotent — re-running skips already-marked icons. Because the marker is composited onto the flattened production TGA, changing the palette requires restoring pristine art first (`tools/RestoreAbilityIconArtwork.ps1`) and then re-stamping with `-Force`; do not paint a new marker over an old one.
+The marker is stamped and audited by `tools/UpdateFeatSpellIconBorders.ps1` (`-Apply` / `-AuditOnly`), which reads the `Alignment` column. Stamping is idempotent â€” re-running skips already-marked icons. Because the marker is composited onto the lossless flattened production source, changing the palette requires restoring pristine art first (`tools/RestoreAbilityIconArtwork.ps1`) and then re-stamping with `-Force`; do not paint a new marker over an old one.
 
 ## Uniqueness
 
@@ -116,9 +116,19 @@ Icon artwork must stay inside the icon frame. Main symbols, glows, arcs, project
 
 Final exported icons must not include contact-sheet gutters, stray outer margins, or extra black bands from source-sheet layout. Crop and square-pad each source tile to the actual icon frame before resizing to 32x32.
 
-Production gameplay TGA files must use bottom-left TGA origin (`image descriptor` bit 5 clear, descriptor `8` for 32-bit alpha TGAs). NUI rendering honors TGA origin metadata, while the classic NWN hotbar and feat icon paths render these gameplay resources upright when they match the legacy bottom-left icon layout. ImageMagick previews can make this look inverted unless the export flips the pixel rows while writing the bottom-left origin metadata.
+Production gameplay textures in `SWLOR_Haks/sw_ability` use standard DDS with a 128-byte header: DXT1 for opaque icons and DXT5 for legacy icons with transparency. Export one mip level, store rows bottom-up for NWN, and include a same-name TXI containing `mipmap 0`. Do not use an uncompressed RGBA DDS or a DX10 header. Preserve the resource name and dimensions when converting existing textures.
 
-Production gameplay TGA files must be fully opaque. Do not leave transparent or partially transparent edge pixels in feat, spell, ability, or status-effect icons.
+Manifest-managed feat, spell, ability, and status-effect icons remain fully opaque at 32x32. Legacy icons outside the manifest retain their original size and alpha. DDS uses block compression, so audits check decoded semantic frame colors with the existing color tolerance; stamp the exact category color on the lossless source before export.
+
+Lossless flattened production artwork lives in `SWLOR_Haks/sw_ability_source/production/*.tga`, outside the HAK input directory. Original larger PNG artwork remains in `sw_ability_source` and the established authoring locations. Always edit or regenerate the lossless source, then export DDS; never stamp or regenerate cooldowns from an already compressed DDS. Do not leave a same-name runtime TGA that can shadow DDS.
+
+The icon tools export through `tools/ConvertGameplayIconsToDds.py`, using ImageMagick DXT compression with cluster fitting and Pillow for explicit origin/alpha handling. Set `SWLOR_PYTHON` to a Python executable with Pillow if the default `python` lacks it. The source/DDS hashes in `sw_ability_source/dds-conversions.csv` let the audit reject stale exports. A manual export is:
+
+```powershell
+python tools/ConvertGameplayIconsToDds.py --source SWLOR_Haks/sw_ability_source/production --output SWLOR_Haks/sw_ability --manifest SWLOR_Haks/sw_ability_source/dds-conversions.csv
+```
+
+Use a current NWN:EE client (8193.36 or newer) for DDS in NUI. Gameplay icons use the normal GUI texture path; the separate item inventory composite-icon lookup limitation documented in `BlasterModelImport.md` is outside this conversion.
 
 ## Artwork Quality
 
@@ -145,9 +155,9 @@ Required treatment:
 The polished central subject is produced by the acting agent's native image pipeline. The frame, background, semantic color, and status-effect rank badge are always stamped by the project icon tools regardless of pipeline, so only the source of the central subject differs:
 
 - **Codex / GPT-driven requests**: generate the central subject with GPT Image 2 through Codex image generation. Do not require a separate OpenAI API account, `OPENAI_API_KEY`, or the local API/CLI fallback for ordinary icon production. Do not silently substitute a different raster image model for GPT Image 2.
-- **Claude-driven requests**: author the central subject as polished, fully illustrated SVG vector art, then rasterize it (via ImageMagick) into the source subject the icon tools composite. The SVG must meet the Artwork Quality bar in this document — layered forms, gradients, shading, highlights, and a recognizable illustrated silhouette — not flat pictograms or primitive geometry.
+- **Claude-driven requests**: author the central subject as polished, fully illustrated SVG vector art, then rasterize it (via ImageMagick) into the source subject the icon tools composite. The SVG must meet the Artwork Quality bar in this document â€” layered forms, gradients, shading, highlights, and a recognizable illustrated silhouette â€” not flat pictograms or primitive geometry.
 
-Both pipelines must satisfy identical Semantic Color, Uniqueness, Framing, Artwork Quality, and TGA-format requirements; only the source of the central subject differs. The prohibition on primitive/vector stand-ins targets crude placeholder geometry (plain rectangles, single-line weapons, generic blobs, flat symbols); it does not forbid a fully illustrated SVG icon that meets the Artwork Quality bar.
+Both pipelines must satisfy identical Semantic Color, Uniqueness, Framing, Artwork Quality, and DDS export requirements; only the source of the central subject differs. The prohibition on primitive/vector stand-ins targets crude placeholder geometry (plain rectangles, single-line weapons, generic blobs, flat symbols); it does not forbid a fully illustrated SVG icon that meets the Artwork Quality bar.
 
 The standard pipeline is:
 
@@ -158,8 +168,8 @@ The standard pipeline is:
 - Stamp semantic frame color after resizing to the final 32x32 icon size. Do not trust image generation or source-image downscaling to preserve the approved category color.
 - Stamp rank badges after resizing to the final 32x32 icon size only for status-effect families with multiple levels. Do not trust image generation or source-image downscaling to preserve readable numeric text.
 - Do not stamp ability, feat, or spell rank badges.
-- Export production TGA files at 32x32. Source generation may happen at a larger size, but acceptance is based on the final 32x32 TGA.
-- Export production TGA files with bottom-left origin. When using ImageMagick, add a final `-flip -orient BottomLeft` so the visible icon remains upright in NWN's classic gameplay icon paths.
+- Retain lossless production sources at 32x32 and export DDS for deployment. Source generation may happen at a larger size, but acceptance is based on the final 32x32 DDS.
+- Keep authoring TGAs in bottom-left layout. The DDS exporter resolves the source origin explicitly and flips once into NWN DDS row order.
 - Review generated source sheets and final enlarged 32x32 previews for malformed anatomy before importing to production. Regenerate or edit any icon with incorrect fingers, claws, limbs, wings, tails, or other appendages.
 - Review samples before bulk-regenerating production icon files.
 
@@ -199,14 +209,14 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 - Generated `effecticons.2da` label with underscores or non-identifier characters.
 - Primitive, placeholder-quality, debug, or otherwise Artwork-Quality-failing central art, regardless of which pipeline produced it.
 
-The pipeline requirement itself (GPT Image 2 for Codex requests, polished illustrated SVG for Claude requests) is enforced at authoring and code review, not by the automated icon audit: source-model provenance is not recoverable from a final flattened TGA, so the audit validates the observable properties above (semantic frame color, resource presence, uniqueness, TGA origin/opacity, rank-badge rules, and artwork quality) rather than the generation tool.
+The pipeline requirement itself (GPT Image 2 for Codex requests, polished illustrated SVG for Claude requests) is enforced at authoring and code review, not by the automated icon audit: source-model provenance is not recoverable from a final flattened texture, so the audit validates the observable properties above (semantic frame color, resource presence, uniqueness, DDS format/opacity, rank-badge rules, and artwork quality) rather than the generation tool.
 - Icon artwork extending outside the frame or overlapping the outer border.
-- Final TGA using top-left origin, which makes classic NWN gameplay icon paths display the icon upside down.
-- Final TGA with transparent or partially transparent pixels.
+- DDS exported with the wrong row order, which displays the icon upside down.
+- Manifest-managed DDS with transparent or partially transparent pixels.
 - Primitive, placeholder-quality, or unclear central artwork.
 - Incorrect anatomy, including extra or missing fingers, malformed hands, incoherent claws, or broken creature/humanoid appendages.
 - Ability icon with a numeric rank badge or a painted-over badge patch.
-- Status-effect multi-rank icon without a numeric badge readable in the final 32x32 TGA.
+- Status-effect multi-rank icon without a numeric badge readable in the final 32x32 DDS.
 - Status-effect single-level rank-1 icon with an unnecessary numeric badge.
 - Generated cooldown icon name longer than NWN's 16-character resource limit.
 - Recast group or resource generators silently truncating player-facing labels or icon names.
@@ -237,7 +247,7 @@ powershell -ExecutionPolicy Bypass -File tools/RestoreAbilityIconArtwork.ps1
 powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force
 ```
 
-If any generated TGAs were written with top-left origin, normalize them before building haks:
+If lossless authoring TGAs were written with top-left origin, normalize them and re-export before building haks:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools/NormalizeGameplayTgaOrigin.ps1

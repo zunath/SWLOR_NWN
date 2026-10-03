@@ -7,6 +7,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "GameplayIconAssets.ps1")
 
 function Resolve-MagickPath([string]$requestedPath) {
     if (Test-Path -LiteralPath $requestedPath) {
@@ -55,6 +56,8 @@ function Test-TopLeftOrigin([string]$path) {
 
 $manifestResolved = (Resolve-Path -LiteralPath $ManifestPath).Path
 $iconDirectory = (Resolve-Path -LiteralPath $IconPath).Path
+$runtimeDirectory = $iconDirectory
+$iconDirectory = Get-GameplayIconSourceDirectory $runtimeDirectory
 $workDirectory = if ([System.IO.Path]::IsPathRooted($WorkPath)) { $WorkPath } else { Join-Path (Get-Location).Path $WorkPath }
 New-Item -ItemType Directory -Path $workDirectory -Force | Out-Null
 
@@ -108,3 +111,5 @@ foreach ($path in ($paths | Sort-Object -Unique)) {
 }
 
 Write-Host "Normalized $normalized gameplay TGA files to bottom-left origin."
+
+Publish-GameplayIconDds $runtimeDirectory $script:MagickExecutable

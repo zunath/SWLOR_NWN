@@ -11,6 +11,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "GameplayIconAssets.ps1")
 
 Add-Type -AssemblyName System.Drawing
 
@@ -406,6 +407,10 @@ foreach ($resrefValue in $IconResRefs) {
     }
 }
 
+$runtimeDirectory = $outputDirectory
+$outputDirectory = Get-GameplayIconSourceDirectory $runtimeDirectory
+New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
+
 $rows = @(Import-Csv -Path $manifestResolved | Where-Object {
     $_.Type -eq "Ability" -or
     ($_.Type -eq "Feat" -and $_.SemanticCategory -eq "Passive")
@@ -506,6 +511,8 @@ finally {
 if ($missing.Count -gt 0) {
     throw "Missing reference artwork for ability icon resrefs:`n$($missing -join "`n")"
 }
+
+Publish-GameplayIconDds $runtimeDirectory
 
 $reportRows | Export-Csv -Path $MatchReportPath -NoTypeInformation
 Write-Host "Restored $restored ability icons from clean generated source artwork ($fromGeneratedSource matched source tiles, $fromOverride overrides)."

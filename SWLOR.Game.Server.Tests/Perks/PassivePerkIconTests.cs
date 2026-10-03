@@ -35,9 +35,9 @@ public class PassivePerkIconTests
                     continue;
                 }
 
-                var explicitIconPath = Path.Combine(iconRoot, $"{perk.Detail.IconResref}.tga");
+                var explicitIconPath = Path.Combine(iconRoot, $"{perk.Detail.IconResref}.dds");
                 if (!File.Exists(explicitIconPath))
-                    failures.Add($"{perk.Type} explicit icon should have a TGA at {explicitIconPath}.");
+                    failures.Add($"{perk.Type} explicit icon should have a DDS at {explicitIconPath}.");
 
                 continue;
             }
@@ -61,9 +61,9 @@ public class PassivePerkIconTests
                 continue;
             }
 
-            var iconPath = Path.Combine(iconRoot, $"{icon}.tga");
+            var iconPath = Path.Combine(iconRoot, $"{icon}.dds");
             if (!File.Exists(iconPath))
-                failures.Add($"{perk.Type} icon feat {iconFeat.Feat} should have a TGA at {iconPath}.");
+                failures.Add($"{perk.Type} icon feat {iconFeat.Feat} should have a DDS at {iconPath}.");
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
@@ -125,7 +125,7 @@ public class PassivePerkIconTests
             if (icon.Length > 16)
                 failures.Add($"{label} icon '{icon}' exceeds NWN's 16-character resref limit.");
 
-            AssertGameplayIconTga(Path.Combine(iconRoot, $"{icon}.tga"), $"{label} icon", failures);
+            AssertGameplayIconDds(Path.Combine(iconRoot, $"{icon}.dds"), $"{label} icon", failures);
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
@@ -209,29 +209,27 @@ public class PassivePerkIconTests
             failures.Add($"{label} should be a custom TLK strref, found '{value}'.");
     }
 
-    private static void AssertGameplayIconTga(string path, string label, ICollection<string> failures)
+    private static void AssertGameplayIconDds(string path, string label, ICollection<string> failures)
     {
         if (!File.Exists(path))
         {
-            failures.Add($"{label} should have a generated TGA at {path}.");
+            failures.Add($"{label} should have a generated DDS at {path}.");
             return;
         }
 
-        var bytes = File.ReadAllBytes(path);
+        var bytes = GameplayIconTexture.ReadBottomLeftTga(path);
         if (bytes.Length < 18)
         {
-            failures.Add($"{label} TGA should have a header.");
+            failures.Add($"{label} DDS should have a header.");
             return;
         }
 
         var width = bytes[12] + (bytes[13] << 8);
         var height = bytes[14] + (bytes[15] << 8);
         if (width != 32)
-            failures.Add($"{label} TGA width is {width}, expected 32.");
+            failures.Add($"{label} DDS width is {width}, expected 32.");
         if (height != 32)
-            failures.Add($"{label} TGA height is {height}, expected 32.");
-        if ((bytes[17] & 32) != 0)
-            failures.Add($"{label} TGA should use bottom-left origin.");
+            failures.Add($"{label} DDS height is {height}, expected 32.");
 
         if (bytes[16] != 32)
             return;
@@ -241,7 +239,7 @@ public class PassivePerkIconTests
             if (bytes[offset + 3] == 255)
                 continue;
 
-            failures.Add($"{label} TGA should be fully opaque.");
+            failures.Add($"{label} DDS should be fully opaque.");
             return;
         }
     }

@@ -974,7 +974,7 @@ foreach ($row in $manifest) {
 
 $iconRoot = Resolve-RepoPath "SWLOR_Haks\sw_ability"
 $iconNames = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::OrdinalIgnoreCase)
-Get-ChildItem $iconRoot -Filter "*.tga" | ForEach-Object {
+Get-ChildItem $iconRoot -Filter "*.dds" | ForEach-Object {
     $iconNames.Add([System.IO.Path]::GetFileNameWithoutExtension($_.Name)) | Out-Null
 }
 

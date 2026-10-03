@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\tools\GameplayIconTexture.cs" Link="Tools\GameplayIconTexture.cs" />
     <Compile Include="..\tools\PlayerMessagePolicy.cs" Link="Tools\PlayerMessagePolicy.cs" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />

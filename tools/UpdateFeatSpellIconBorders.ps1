@@ -10,6 +10,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "GameplayIconAssets.ps1")
 
 Add-Type -AssemblyName System.Drawing
 
@@ -25,7 +26,7 @@ public static class FeatSpellIconBorderTool
 {
     public static Bitmap ReadTga(string path)
     {
-        var bytes = File.ReadAllBytes(path);
+        var bytes = GameplayIconTexture.ReadBottomLeftTga(path);
         if (bytes.Length < 18)
             throw new InvalidOperationException(path + " is too small to be a TGA.");
 
@@ -428,7 +429,7 @@ public static class FeatSpellIconBorderTool
 }
 "@
 
-Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies System.Drawing
+Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies @("System.Drawing", [GameplayIconTexture].Assembly.Location)
 
 function Get-OptionalProperty([object]$row, [string]$name) {
     $property = $row.PSObject.Properties[$name]
@@ -475,7 +476,8 @@ foreach ($row in $rows) {
     $icon = (Get-OptionalProperty $row "IconResRef").Trim()
     $category = (Get-OptionalProperty $row "SemanticCategory").Trim()
     $alignment = (Get-OptionalProperty $row "Alignment").Trim()
-    $path = Join-Path $iconDirectory "$icon.tga"
+    $sourcePath = Join-Path (Get-GameplayIconSourceDirectory $iconDirectory) "$icon.tga"
+    $path = if ($Apply) { $sourcePath } else { Join-Path $iconDirectory "$icon.dds" }
 
     if (!(Test-Path -LiteralPath $path)) {
         $errors.Add("$($row.Type) '$($row.Key)' is missing icon file '$path'.") | Out-Null
@@ -523,7 +525,7 @@ foreach ($row in $rows) {
         }
 
         $before = (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash
-        [FeatSpellIconBorderTool]::StampSemanticFrame($path, $category, $alignment, $path, $IconSize)
+        [FeatSpellIconBorderTool]::StampSemanticFrame($sourcePath, $category, $alignment, $sourcePath, $IconSize)
         $after = (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash
         if ($before -ne $after) {
             $stamped++
@@ -549,6 +551,7 @@ if ($errors.Count -gt 0) {
 }
 
 if ($Apply) {
+    Publish-GameplayIconDds $iconDirectory
     Write-Host "Stamped semantic frames on $stamped gameplay icons; $alreadyCompliant were already compliant."
     if ($changedIcons.Count -gt 0) {
         Write-Host "Changed icons: $($changedIcons -join ',')"

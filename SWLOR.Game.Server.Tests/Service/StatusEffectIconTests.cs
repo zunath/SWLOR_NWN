@@ -67,8 +67,8 @@ public class StatusEffectIconTests
             effectIconRow["Icon"].Should().Be(row.IconResRef);
             effectIconRow["StrRef"].Should().MatchRegex(@"^\d+$");
 
-            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.tga");
-            AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
+            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.dds");
+            AssertGameplayIconDds(iconPath, $"{row.Type} {row.Key}");
             AssertUniqueIconPixels(iconPath, $"{row.Type} {row.Key}", iconHashes);
         }
     }
@@ -106,8 +106,8 @@ public class StatusEffectIconTests
             if (spellRows.TryGetValue(row.Key, out var spellRow))
                 spellRow["IconResRef"].Should().Be(row.IconResRef);
 
-            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.tga");
-            AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
+            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.dds");
+            AssertGameplayIconDds(iconPath, $"{row.Type} {row.Key}");
             AssertSemanticFrame(iconPath, row.SemanticCategory, $"{row.Type} {row.Key}");
             AssertUniqueIconPixels(iconPath, $"{row.Type} {row.Key}", iconHashes);
 
@@ -117,8 +117,8 @@ public class StatusEffectIconTests
             var suffix = row.IconResRef[4..];
             for (var stage = 0; stage <= 5; stage++)
             {
-                var cooldownPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"pr{stage}_{suffix}.tga");
-                AssertGameplayIconTga(cooldownPath, $"{row.Type} {row.Key} cooldown pr{stage}");
+                var cooldownPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"pr{stage}_{suffix}.dds");
+                AssertGameplayIconDds(cooldownPath, $"{row.Type} {row.Key} cooldown pr{stage}");
             }
         }
     }
@@ -152,7 +152,7 @@ public class StatusEffectIconTests
         customIconRefs
             .Where(icon => !manifestIcons.Contains(icon))
             .Should()
-            .BeEmpty("every custom feat/spell icon with a SWLOR TGA should be covered by the gameplay icon manifest");
+            .BeEmpty("every custom feat/spell icon with a SWLOR DDS should be covered by the gameplay icon manifest");
         manifestIcons
             .Should()
             .NotContain(icon => IsDynamicShipModulePlaceholderIcon(icon), "ship module feat icons are runtime texture override anchors");
@@ -169,8 +169,8 @@ public class StatusEffectIconTests
 
         foreach (var row in manifestRows)
         {
-            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.tga");
-            AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
+            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.dds");
+            AssertGameplayIconDds(iconPath, $"{row.Type} {row.Key}");
             AssertSemanticFrame(iconPath, row.SemanticCategory, $"{row.Type} {row.Key}");
         }
     }
@@ -293,34 +293,34 @@ public class StatusEffectIconTests
         var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability");
         var obsoleteFiles = new[]
         {
-            "ief_forcerage1.tga",
-            "ief_forcerage2.tga",
-            "ife_forcerg1.tga",
-            "ife_forcerg2.tga",
-            "ife_grn_ion1.tga",
-            "ife_grn_ion2.tga",
-            "ife_grn_ion3.tga",
-            "ife_cast_light.tga",
-            "ife_snarl.tga",
-            "ife_growl.tga",
-            "pr0_forcerg1.tga",
-            "pr5_forcerg2.tga",
-            "pr0_grn_ion1.tga",
-            "pr5_grn_ion3.tga",
-            "pr0_cast_light.tga",
-            "pr5_cast_light.tga",
-            "pr0_snarl.tga",
-            "pr1_snarl.tga",
-            "pr2_snarl.tga",
-            "pr3_snarl.tga",
-            "pr4_snarl.tga",
-            "pr5_snarl.tga",
-            "pr0_growl.tga",
-            "pr1_growl.tga",
-            "pr2_growl.tga",
-            "pr3_growl.tga",
-            "pr4_growl.tga",
-            "pr5_growl.tga"
+            "ief_forcerage1.dds",
+            "ief_forcerage2.dds",
+            "ife_forcerg1.dds",
+            "ife_forcerg2.dds",
+            "ife_grn_ion1.dds",
+            "ife_grn_ion2.dds",
+            "ife_grn_ion3.dds",
+            "ife_cast_light.dds",
+            "ife_snarl.dds",
+            "ife_growl.dds",
+            "pr0_forcerg1.dds",
+            "pr5_forcerg2.dds",
+            "pr0_grn_ion1.dds",
+            "pr5_grn_ion3.dds",
+            "pr0_cast_light.dds",
+            "pr5_cast_light.dds",
+            "pr0_snarl.dds",
+            "pr1_snarl.dds",
+            "pr2_snarl.dds",
+            "pr3_snarl.dds",
+            "pr4_snarl.dds",
+            "pr5_snarl.dds",
+            "pr0_growl.dds",
+            "pr1_growl.dds",
+            "pr2_growl.dds",
+            "pr3_growl.dds",
+            "pr4_growl.dds",
+            "pr5_growl.dds"
         };
 
         foreach (var file in obsoleteFiles)
@@ -442,7 +442,7 @@ public class StatusEffectIconTests
                 GetLabel(row) is "****" or "DELETED" ||
                 !row.TryGetValue("ICON", out var icon) ||
                 icon == "****" ||
-                !File.Exists(Path.Combine(iconRoot, $"{icon}.tga")))
+                !File.Exists(Path.Combine(iconRoot, $"{icon}.dds")))
                 continue;
 
             var customRow =
@@ -465,7 +465,7 @@ public class StatusEffectIconTests
                 GetLabel(row) is "****" or "DELETED" ||
                 !row.TryGetValue("IconResRef", out var icon) ||
                 icon == "****" ||
-                !File.Exists(Path.Combine(iconRoot, $"{icon}.tga")))
+                !File.Exists(Path.Combine(iconRoot, $"{icon}.dds")))
                 continue;
 
             var customRow =
@@ -506,37 +506,36 @@ public class StatusEffectIconTests
             : row["Label"];
     }
 
-    private static void AssertGameplayIconTga(string path, string label)
+    private static void AssertGameplayIconDds(string path, string label)
     {
-        File.Exists(path).Should().BeTrue($"{label} should have a generated TGA");
-        var bytes = File.ReadAllBytes(path);
-        bytes.Length.Should().BeGreaterThanOrEqualTo(18, $"{label} TGA should have a header");
+        File.Exists(path).Should().BeTrue($"{label} should have a generated DDS");
+        var bytes = GameplayIconTexture.ReadBottomLeftTga(path);
+        bytes.Length.Should().BeGreaterThanOrEqualTo(18, $"{label} DDS should have a header");
         var width = bytes[12] + (bytes[13] << 8);
         var height = bytes[14] + (bytes[15] << 8);
 
-        width.Should().Be(32, $"{label} TGA width should match NWN gameplay icon size");
-        height.Should().Be(32, $"{label} TGA height should match NWN gameplay icon size");
-        (bytes[17] & 32).Should().Be(0, $"{label} TGA should use bottom-left origin");
+        width.Should().Be(32, $"{label} DDS width should match NWN gameplay icon size");
+        height.Should().Be(32, $"{label} DDS height should match NWN gameplay icon size");
 
         if (bytes[16] != 32)
             return;
 
         for (var offset = 18; offset < bytes.Length; offset += 4)
         {
-            bytes[offset + 3].Should().Be(255, $"{label} TGA should be fully opaque");
+            bytes[offset + 3].Should().Be(255, $"{label} DDS should be fully opaque");
         }
     }
 
     private static void AssertSemanticFrame(string path, string category, string label)
     {
-        var bytes = File.ReadAllBytes(path);
+        var bytes = GameplayIconTexture.ReadBottomLeftTga(path);
         var width = bytes[12] + (bytes[13] << 8);
         var height = bytes[14] + (bytes[15] << 8);
         var bits = bytes[16];
         var type = bytes[2];
 
-        type.Should().Be(2, $"{label} TGA should be an uncompressed final gameplay icon");
-        (bits is 24 or 32).Should().BeTrue($"{label} TGA should be 24-bit or 32-bit");
+        type.Should().Be(2, $"{label} DDS should be an uncompressed final gameplay icon");
+        (bits is 24 or 32).Should().BeTrue($"{label} DDS should be 24-bit or 32-bit");
 
         var expected = GetSemanticColor(category);
         var bytesPerPixel = bits / 8;
@@ -593,7 +592,7 @@ public class StatusEffectIconTests
         string label,
         IDictionary<string, string> iconHashes)
     {
-        var hash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+        var hash = Convert.ToHexString(SHA256.HashData(GameplayIconTexture.ReadBottomLeftTga(path)));
         iconHashes.Should().NotContainKey(hash, $"{label} should not reuse another gameplay icon's pixels");
         iconHashes[hash] = label;
     }

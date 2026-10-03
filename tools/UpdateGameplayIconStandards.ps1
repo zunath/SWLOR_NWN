@@ -24,6 +24,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "GameplayIconAssets.ps1")
 
 Add-Type -AssemblyName System.Drawing
 
@@ -417,7 +418,7 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
         }
 
         $isPassiveTrait = $label.EndsWith("Trait", [System.StringComparison]::Ordinal)
-        $iconFile = Join-Path $iconDirectory "$icon.tga"
+        $iconFile = Join-Path $iconDirectory "$icon.dds"
         if (!(Test-Path -LiteralPath $iconFile) -and !$isPassiveTrait) {
             continue
         }
@@ -458,7 +459,7 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
             continue
         }
 
-        $iconFile = Join-Path $iconDirectory "$icon.tga"
+        $iconFile = Join-Path $iconDirectory "$icon.dds"
         if (!(Test-Path -LiteralPath $iconFile)) {
             continue
         }
@@ -1664,6 +1665,8 @@ function Update-StatusEffectCode([object[]]$statusRows) {
 }
 
 function Generate-StatusIcons([object[]]$statusRows, [string]$iconDirectory) {
+    $runtimeDirectory = $iconDirectory
+    $iconDirectory = Get-GameplayIconSourceDirectory $runtimeDirectory
     $expected = @{}
     foreach ($entry in $statusRows) {
         $expected[$entry.IconResRef.ToLowerInvariant()] = $true
@@ -1678,6 +1681,7 @@ function Generate-StatusIcons([object[]]$statusRows, [string]$iconDirectory) {
     foreach ($entry in $statusRows) {
         New-StatusIcon $entry (Join-Path $iconDirectory "$($entry.IconResRef).tga")
     }
+    Publish-GameplayIconDds $runtimeDirectory
 }
 
 function Export-StatusIconSamples([object[]]$statusRows, [string]$outputDirectory, [string[]]$iconResRefs) {
@@ -1713,21 +1717,17 @@ function Export-StatusIconSamples([object[]]$statusRows, [string]$outputDirector
     Write-Host "Generated $generated status effect icon samples in $resolvedOutput."
 }
 
-function Add-TgaValidationErrors([System.Collections.Generic.List[string]]$errors, [string]$path, [string]$label) {
-    $bytes = [System.IO.File]::ReadAllBytes($path)
+function Add-IconValidationErrors([System.Collections.Generic.List[string]]$errors, [string]$path, [string]$label) {
+    $bytes = [GameplayIconTexture]::ReadBottomLeftTga($path)
     if ($bytes.Length -lt 18) {
-        $errors.Add("$label TGA '$path' is too small to contain a valid header.") | Out-Null
+        $errors.Add("$label decoded DDS '$path' is too small to contain a valid header.") | Out-Null
         return
     }
 
     $width = $bytes[12] + ($bytes[13] -shl 8)
     $height = $bytes[14] + ($bytes[15] -shl 8)
     if ($width -ne $IconSize -or $height -ne $IconSize) {
-        $errors.Add("$label TGA '$path' is $($width)x$height; expected $($IconSize)x$IconSize.") | Out-Null
-    }
-
-    if (($bytes[17] -band 32) -ne 0) {
-        $errors.Add("$label TGA '$path' uses top-left origin; NWN gameplay icons must use bottom-left origin.") | Out-Null
+        $errors.Add("$label decoded DDS '$path' is $($width)x$height; expected $($IconSize)x$IconSize.") | Out-Null
     }
 
     if ($bytes[16] -eq 32) {
@@ -1735,7 +1735,7 @@ function Add-TgaValidationErrors([System.Collections.Generic.List[string]]$error
         for ($i = 0; $i -lt ($width * $height); $i++) {
             $alpha = $bytes[$offset + 3]
             if ($alpha -ne 255) {
-                $errors.Add("$label TGA '$path' contains non-opaque alpha at pixel $i; gameplay icons must be fully opaque.") | Out-Null
+                $errors.Add("$label decoded DDS '$path' contains non-opaque alpha at pixel $i; gameplay icons must be fully opaque.") | Out-Null
                 break
             }
 
@@ -1749,7 +1749,7 @@ function Add-SemanticFrameValidationErrors(
     [string]$path,
     [string]$label,
     [string]$category) {
-    $bytes = [System.IO.File]::ReadAllBytes($path)
+    $bytes = [GameplayIconTexture]::ReadBottomLeftTga($path)
     if ($bytes.Length -lt 18) {
         return
     }
@@ -1761,7 +1761,7 @@ function Add-SemanticFrameValidationErrors(
     }
 
     if ($bytes[2] -ne 2 -or ($bytes[16] -ne 24 -and $bytes[16] -ne 32)) {
-        $errors.Add("$label TGA '$path' must be an uncompressed 24-bit or 32-bit final gameplay icon to verify semantic frame color.") | Out-Null
+        $errors.Add("$label decoded DDS '$path' must be an uncompressed 24-bit or 32-bit final gameplay icon to verify semantic frame color.") | Out-Null
         return
     }
 
@@ -1798,7 +1798,7 @@ function Add-SemanticFrameValidationErrors(
     }
 
     if ($matches -lt 16) {
-        $errors.Add("$label TGA '$path' is missing the $category semantic frame color.") | Out-Null
+        $errors.Add("$label decoded DDS '$path' is missing the $category semantic frame color.") | Out-Null
     }
 }
 
@@ -1980,12 +1980,12 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
             $errors.Add("Ability '$($entry.Key)' manifest icon '$($entry.IconResRef)' does not match any $Spells2daPath icon for that label: $expectedIcons.") | Out-Null
         }
 
-        $iconFile = Join-Path $iconDirectory "$($entry.IconResRef).tga"
+        $iconFile = Join-Path $iconDirectory "$($entry.IconResRef).dds"
         if (!(Test-Path -LiteralPath $iconFile)) {
             $errors.Add("$($entry.Type) '$($entry.Key)' is missing icon file '$iconFile'.") | Out-Null
         }
         else {
-            Add-TgaValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'"
+            Add-IconValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'"
             if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell") {
                 Add-SemanticFrameValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'" $entry.SemanticCategory
             }
@@ -2083,12 +2083,12 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
     foreach ($entry in ($rows | Where-Object { $_.Type -eq "Ability" -and $_.IconResRef.StartsWith("ife_", [System.StringComparison]::OrdinalIgnoreCase) })) {
         $suffix = $entry.IconResRef.Substring(4)
         foreach ($stage in 0..5) {
-            $cooldownFile = Join-Path $iconDirectory "pr$($stage)_$suffix.tga"
+            $cooldownFile = Join-Path $iconDirectory "pr$($stage)_$suffix.dds"
             if (!(Test-Path -LiteralPath $cooldownFile)) {
                 $errors.Add("Ability '$($entry.Key)' is missing cooldown icon '$cooldownFile'.") | Out-Null
             }
             else {
-                Add-TgaValidationErrors $errors $cooldownFile "Ability '$($entry.Key)' cooldown pr$stage"
+                Add-IconValidationErrors $errors $cooldownFile "Ability '$($entry.Key)' cooldown pr$stage"
             }
         }
     }
@@ -2184,4 +2184,5 @@ $statusRows = @($rows | Where-Object { $_.Type -eq "StatusEffect" } | Sort-Objec
 $tlkTextToStrRef = Get-CustomTlkTextToStrRef (Resolve-RepoPath $TlkJsonPath)
 $statusEffectStrRefsByKey = Get-StatusEffectStrRefsByKey $statusRows $tlkTextToStrRef
 
+Test-GameplayIconDdsExports (Resolve-RepoPath $IconPath)
 Test-GameplayIconStandards $rows $statusEffectStrRefsByKey

@@ -3,7 +3,8 @@
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
-             xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
+             xmlns:appearance="using:Nwn.Toolset.Avalonia.Appearances.Views"
+             xmlns:gallery="using:Nwn.Toolset.Avalonia.Appearances"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
              xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
              x:Class="SWLOR.Toolset.Editors.BlueprintEditorView"
@@ -43,7 +44,7 @@
          paged rather than virtualized, matching the palette: a WrapPanel in a ListBox holds
          everything it is given, so it is only ever given a page. -->
     <!-- The creature Appearance tab: the same searchable picture grid the door editor uses. -->
-    <DataTemplate DataType="appearance:AppearanceGallerySectionViewModel">
+    <DataTemplate DataType="gallery:AppearanceGalleryViewModel">
       <appearance:AppearanceGalleryView />
     </DataTemplate>
 

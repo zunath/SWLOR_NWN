@@ -97,7 +97,7 @@ namespace SWLOR.Toolset.Editors
         /// The searchable appearance grid, for blueprint types that have one. Null leaves the
         /// schema's own appearance field as the only way to set it.
         /// </summary>
-        public Appearance.AppearanceGallerySectionViewModel? AppearanceGallery { get; }
+        public Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel? AppearanceGallery { get; }
 
         public Sources.ObjectSourceSectionViewModel? Source { get; }
         public TintMaps.TintMapEditorViewModel? TintMapEditor { get; }
@@ -139,7 +139,7 @@ namespace SWLOR.Toolset.Editors
                 Func<string?, IReadOnlyList<string>>, Placeables.PlaceableEditorSections?>? placeableSections = null,
             Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null,
             Func<EditorFieldContext, Func<string, Action, bool>,
-                Appearance.AppearanceGallerySectionViewModel?>? appearanceGallery = null,
+                Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel?>? appearanceGallery = null,
             Func<EditorFieldContext, Func<string, Action, bool>,
                 TintMaps.TintMapEditorViewModel?>? tintMapEditor = null,
             BlueprintSaveCoordinator? saveCoordinator = null,

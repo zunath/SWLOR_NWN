@@ -10,6 +10,7 @@ using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
+using Nwn.Toolset.Avalonia.Appearances;
 
 namespace SWLOR.Toolset.Editors.Placeables
 {
@@ -48,6 +49,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         private readonly ThumbnailService? _thumbnails;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<PlaceableAppearanceUsageIndex> _usage;
+        private IReadOnlyList<Appearance.AppearanceOption> _galleryOptions = Array.Empty<Appearance.AppearanceOption>();
 
         /// <summary>Builds the render geometry for a model resref; null leaves the 3D view empty.</summary>
         private readonly Func<string, RenderModel?>? _resolveModel;
@@ -60,7 +62,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// keeps only what is genuinely a placeable's: the retained 3D view, the animation states
         /// its model declares, and the two filters that narrow which models are offered at all.
         /// </summary>
-        public Appearance.AppearanceGallerySectionViewModel Gallery { get; }
+        public AppearanceGalleryViewModel Gallery { get; }
 
         [ObservableProperty]
         private bool _usedInModuleOnly = true;
@@ -98,10 +100,15 @@ namespace SWLOR.Toolset.Editors.Placeables
             _resolveModel = resolveModel;
             ResourceIndex = resourceIndex;
 
-            Gallery = new Appearance.AppearanceGallerySectionViewModel(
-                Array.Empty<Appearance.AppearanceOption>(),
-                thumbnails,
-                () => CurrentId.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            var previewProvider = thumbnails == null
+                ? null
+                : new Appearance.AppearanceGalleryPreviewProvider(
+                    thumbnails,
+                    id => _galleryOptions.FirstOrDefault(option => option.Key == id.Value));
+            Gallery = new AppearanceGalleryViewModel(
+                Array.Empty<AppearanceGalleryOption>(),
+                previewProvider,
+                () => new AppearanceGalleryOptionId(CurrentId.ToString(CultureInfo.InvariantCulture)),
                 Apply,
                 noun: "model",
                 // 24,304 rows: the grid earns its density here in a way the door and creature
@@ -251,7 +258,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         public bool HasHighlight => Gallery.Highlighted != null;
 
         /// <summary>The highlighted model's own name, for the panel beside the 3D view.</summary>
-        public string? HighlightedModelName => Gallery.Highlighted?.Option.ModelResRef;
+        public string? HighlightedModelName => Gallery.Highlighted == null
+            ? null
+            : _galleryOptions.FirstOrDefault(option => option.Key == Gallery.Highlighted.Option.Id.Value)?.ModelResRef;
 
         public string? HighlightedCaption => Gallery.Highlighted?.Caption;
 
@@ -320,9 +329,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// Picking a model IS the edit. A confirm button in between only asks a builder to say twice
         /// what they already said once, and undo is the real safety net either way.
         /// </summary>
-        private bool Apply(Appearance.AppearanceOption option)
+        private bool Apply(AppearanceGalleryOption option)
         {
-            if (!int.TryParse(option.Key, out var id) || id == CurrentId)
+            if (!int.TryParse(option.Id.Value, out var id) || id == CurrentId)
                 return false;
 
             if (!_runEdit($"Change appearance to {option.Caption}", () => WriteAppearance(id)))
@@ -339,7 +348,9 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (_disposed)
                 return;
 
-            var modelName = Gallery.Highlighted?.Option.ModelResRef;
+            var modelName = Gallery.Highlighted == null
+                ? null
+                : _galleryOptions.FirstOrDefault(option => option.Key == Gallery.Highlighted.Option.Id.Value)?.ModelResRef;
             if (modelName == null && _catalog.TryGet(CurrentId, out var currentRow))
                 modelName = currentRow.ModelName;
 
@@ -447,13 +458,14 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (UsedInModuleOnly && usage.IsBuilt)
                 rows = rows.Where(row => usage.CountFor(row.Id) > 0);
 
-            Gallery.SetOptions(rows
+            _galleryOptions = rows
                 .Select(row => new Appearance.AppearanceOption(
-                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    row.Id.ToString(CultureInfo.InvariantCulture),
                     row.DisplayName,
                     row.ModelName,
                     ModelResRef: row.ModelName))
-                .ToList());
+                .ToArray();
+            Gallery.SetOptions(Appearance.AppearanceGalleryOptionAdapter.ToShared(_galleryOptions));
         }
 
         private void WriteAppearance(int id)

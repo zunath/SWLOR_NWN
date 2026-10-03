@@ -39,7 +39,7 @@ namespace SWLOR.Toolset.Editors.Doors
 
         public ObservableCollection<DoorRowViewModel> BehaviorRows { get; } = new();
 
-        public Appearance.AppearanceGallerySectionViewModel Appearance { get; }
+        public Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel Appearance { get; }
 
         [ObservableProperty]
         private VarTableSectionViewModel? _variables;
@@ -134,20 +134,31 @@ namespace SWLOR.Toolset.Editors.Doors
             // The same grid the creature editor picks its appearance from. Doors and creatures
             // want exactly the same thing - search a table, look at the pictures, click one - and
             // the two had arrived at it separately.
-            Appearance = new Appearance.AppearanceGallerySectionViewModel(
-                _appearances
-                    .Select(choice => new Appearance.AppearanceOption(
-                        AppearanceKey(choice),
-                        choice.Display,
-                        choice.Model,
-                        ModelResRef: choice.Model,
-                        IsDoorTransition: choice.IsDoorTransition))
-                    .ToList(),
-                thumbnails,
-                () => _store.GetAppearance(_appearances) is { } current
-                    ? AppearanceKey(current)
-                    : string.Empty,
-                option => ApplyAppearance(option));
+            var appearanceOptions = _appearances
+                .Select(choice => new Appearance.AppearanceOption(
+                    AppearanceKey(choice),
+                    choice.Display,
+                    choice.Model,
+                    ModelResRef: choice.Model,
+                    IsDoorTransition: choice.IsDoorTransition))
+                .ToList();
+            var previewProvider = thumbnails == null
+                ? null
+                : new Appearance.AppearanceGalleryPreviewProvider(
+                    thumbnails,
+                    id => appearanceOptions.FirstOrDefault(option => option.Key == id.Value));
+            Appearance = new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel(
+                Appearance.AppearanceGalleryOptionAdapter.ToShared(appearanceOptions),
+                previewProvider,
+                () => new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId(
+                    _store.GetAppearance(_appearances) is { } current
+                        ? AppearanceKey(current)
+                        : Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId.Unknown.Value),
+                option =>
+                {
+                    var hostOption = appearanceOptions.FirstOrDefault(candidate => candidate.Key == option.Id.Value);
+                    return hostOption != null && ApplyAppearance(hostOption);
+                });
 
             BehaviorListItemViewModel.Build(BehaviorList, DoorBehaviorCatalog.All);
             Behavior = DoorBehaviorCatalog.Classify(door);

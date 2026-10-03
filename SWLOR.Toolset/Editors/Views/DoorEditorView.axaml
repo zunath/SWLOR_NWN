@@ -4,7 +4,7 @@
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
              xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
-             xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
+             xmlns:appearance="using:Nwn.Toolset.Avalonia.Appearances.Views"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              x:Class="SWLOR.Toolset.Editors.Doors.DoorEditorView"
              x:DataType="doors:DoorEditorViewModel">

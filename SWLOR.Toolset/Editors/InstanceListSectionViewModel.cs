@@ -29,9 +29,8 @@ namespace SWLOR.Toolset.Editors
     /// Duplicate, and Delete - all through DocumentTransactions on the shared .git
     /// DocumentSession supplied by the owning AreaEditorViewModel.
     /// </summary>
-    public partial class InstanceListSectionViewModel : ObservableObject, IDisposable, IAreaInstanceDetailFormState
+    public partial class InstanceListSectionViewModel : AreaInstanceDetailState, IDisposable
     {
-        public AreaInstanceDetailLabels InstanceLabels { get; } = new("Tag", "X", "Y", "Z", "Facing X", "Facing Y", "Width", "Height");
         private readonly DocumentSession _gitSession;
         private readonly DocumentSession _gicSession;
         private readonly ModuleWorkspace _workspace;
@@ -50,7 +49,6 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Resolves the STRREF labels the module's palettes use instead of inline names.</summary>
         private readonly Func<uint, string?>? _resolveStrRef;
-        private bool _isLoadingDetail;
 
         public string Title { get; }
 
@@ -72,35 +70,9 @@ namespace SWLOR.Toolset.Editors
         [ObservableProperty]
         private bool _isExpanded;
 
-        [ObservableProperty]
-        private string _detailTag = string.Empty;
-
-        [ObservableProperty]
-        private double _detailX;
-
-        [ObservableProperty]
-        private double _detailY;
-
-        [ObservableProperty]
-        private double _detailZ;
-
-        [ObservableProperty]
-        private double _detailXOrientation;
-
-        [ObservableProperty]
-        private double _detailYOrientation;
-
-        [ObservableProperty]
-        private double _detailTriggerWidth;
-
-        [ObservableProperty]
-        private double _detailTriggerHeight;
-
-        public bool HasTriggerGeometry => _blueprintType == ResourceType.Utt;
-
         public bool UsesDoorEditor => _blueprintType == ResourceType.Utd;
 
-        public bool UsesGenericDetailEditor =>
+        public override bool UsesGenericDetailEditor =>
             !UsesDoorEditor && !HasWaypointBehaviorEditor && !HasSoundBehaviorEditor;
 
         [ObservableProperty]
@@ -144,6 +116,15 @@ namespace SWLOR.Toolset.Editors
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
             IReadOnlyList<string>? audioResources = null,
             Services.SoundPreviewService? soundPreview = null)
+            : base(
+                blueprintType,
+                runEdit,
+                new AreaInstanceDetailLabels("Tag", "X", "Y", "Z", "Facing X", "Facing Y", "Width", "Height"),
+                new AreaInstanceDetailEditDescriptions(
+                    $"Change {title} tag",
+                    $"Move {title} instance",
+                    $"Rotate {title} instance",
+                    $"Resize {title} geometry"))
         {
             Title = title;
             _listFieldName = listFieldName;
@@ -162,6 +143,7 @@ namespace SWLOR.Toolset.Editors
             _resolveSoundChoices = resolveSoundChoices;
             _audioResources = audioResources ?? Array.Empty<string>();
             _soundPreview = soundPreview;
+            EditApplied += OnInstanceDetailEditApplied;
 
             RefreshFromDocument();
         }
@@ -279,6 +261,7 @@ namespace SWLOR.Toolset.Editors
             var element = value != null ? GetElement(value.Index) : null;
             if (element == null)
             {
+                SetInstance(null);
                 DoorEditor?.Dispose();
                 DoorEditor = null;
                 WaypointEditor?.Dispose();
@@ -289,7 +272,7 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            LoadDetailFromElement(element);
+            SetInstance(element);
 
             DoorEditor?.Dispose();
             DoorEditor = null;
@@ -415,123 +398,24 @@ namespace SWLOR.Toolset.Editors
                 row.Tag = InstanceFieldMap.GetTag(element) ?? string.Empty;
                 row.TemplateResRef =
                     InstanceFieldMap.GetTemplateResRef(_blueprintType, element) ?? string.Empty;
-                LoadDetailFromElement(element);
+                SetInstance(element);
             }
 
             return true;
         }
 
-        partial void OnDetailTagChanged(string value)
+        private void OnInstanceDetailEditApplied()
         {
-            if (_isLoadingDetail || SelectedRow is not { } row)
-                return;
-
-            var element = GetElement(row.Index);
-            if (element == null)
-                return;
-
-            if (_runEdit($"Change {Title} tag", () => InstanceFieldMap.SetTag(element, value)))
-                row.Tag = value;
-            else
-                LoadDetailFromElement(element);
-        }
-
-        partial void OnDetailXChanged(double value) => ApplyPositionEdit();
-        partial void OnDetailYChanged(double value) => ApplyPositionEdit();
-        partial void OnDetailZChanged(double value) => ApplyPositionEdit();
-        partial void OnDetailXOrientationChanged(double value) => ApplyOrientationEdit();
-        partial void OnDetailYOrientationChanged(double value) => ApplyOrientationEdit();
-        partial void OnDetailTriggerWidthChanged(double value) => ApplyTriggerGeometryEdit();
-        partial void OnDetailTriggerHeightChanged(double value) => ApplyTriggerGeometryEdit();
-
-        private void ApplyPositionEdit()
-        {
-            if (_isLoadingDetail || SelectedRow is not { } row)
-                return;
-
-            var element = GetElement(row.Index);
-            if (element == null)
-                return;
-
-            var x = (float)DetailX;
-            var y = (float)DetailY;
-            var z = (float)DetailZ;
-            if (_runEdit(
-                    $"Move {Title} instance",
-                    () => InstanceFieldMap.SetPosition(_blueprintType, element, x, y, z)))
+            if (SelectedRow is not { } row || CurrentInstance is not { } instance ||
+                !ReferenceEquals(GetElement(row.Index), instance))
             {
-                row.X = x;
-                row.Y = y;
-                row.Z = z;
-            }
-            else
-            {
-                LoadDetailFromElement(element);
-            }
-        }
-
-        private void ApplyOrientationEdit()
-        {
-            if (_isLoadingDetail || SelectedRow is not { } row)
                 return;
-
-            var element = GetElement(row.Index);
-            if (element == null)
-                return;
-
-            var xOrientation = (float)DetailXOrientation;
-            var yOrientation = (float)DetailYOrientation;
-            if (!_runEdit(
-                    $"Rotate {Title} instance",
-                    () => InstanceFieldMap.SetOrientation(_blueprintType, element, xOrientation, yOrientation)))
-            {
-                LoadDetailFromElement(element);
             }
-        }
 
-        private void ApplyTriggerGeometryEdit()
-        {
-            if (_isLoadingDetail || !HasTriggerGeometry || SelectedRow is not { } row ||
-                DetailTriggerWidth <= 0 || DetailTriggerHeight <= 0)
-                return;
-
-            var element = GetElement(row.Index);
-            if (element == null)
-                return;
-
-            if (!_runEdit(
-                    $"Resize {Title} geometry",
-                    () => InstanceFieldMap.SetTriggerGeometrySize(
-                        element, (float)DetailTriggerWidth, (float)DetailTriggerHeight)))
-            {
-                LoadDetailFromElement(element);
-            }
-        }
-
-        private void LoadDetailFromElement(JsonGffStruct element)
-        {
-            _isLoadingDetail = true;
-            try
-            {
-                DetailTag = InstanceFieldMap.GetTag(element) ?? string.Empty;
-                var (x, y, z) = InstanceFieldMap.GetPosition(_blueprintType, element);
-                DetailX = x;
-                DetailY = y;
-                DetailZ = z;
-                var (xOrientation, yOrientation) = InstanceFieldMap.GetOrientation(_blueprintType, element);
-                DetailXOrientation = xOrientation;
-                DetailYOrientation = yOrientation;
-                if (HasTriggerGeometry)
-                {
-                    var (width, height) = InstanceFieldMap.GetTriggerGeometrySize(element);
-                    DetailTriggerWidth = width;
-                    DetailTriggerHeight = height;
-                }
-            }
-            finally
-            {
-                _isLoadingDetail = false;
-            }
+            row.Tag = InstanceFieldMap.GetTag(instance) ?? string.Empty;
+            row.X = DetailX;
+            row.Y = DetailY;
+            row.Z = DetailZ;
         }
 
         [RelayCommand]
@@ -584,6 +468,8 @@ namespace SWLOR.Toolset.Editors
 
         public void Dispose()
         {
+            SetInstance(null);
+            EditApplied -= OnInstanceDetailEditApplied;
             DoorEditor?.Dispose();
             DoorEditor = null;
             WaypointEditor?.Dispose();

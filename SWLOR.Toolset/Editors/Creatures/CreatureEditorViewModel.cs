@@ -32,6 +32,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly ChoicePreviewService? _choicePreviews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
         private readonly Func<IReadOnlyList<AppearanceOption>>? _appearanceOptionsLoader;
+        private IReadOnlyList<AppearanceOption> _activeAppearanceOptions = Array.Empty<AppearanceOption>();
         private readonly OutputLogService? _log;
         private readonly Dictionary<string, IReadOnlyList<BehaviorRowViewModel>> _roleRowCache =
             new(StringComparer.Ordinal);
@@ -70,7 +71,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public bool HasTintMapEditor => TintMapEditor != null;
         public VarTableSectionViewModel Variables { get; }
-        public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
+        public Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel? AppearanceGallery { get; }
         public bool HasAppearanceGallery => AppearanceGallery != null;
         public bool ShowsVariablesTab => SelectedRole.AllowsVariables;
 
@@ -237,11 +238,21 @@ namespace SWLOR.Toolset.Editors.Creatures
             Variables = SwlorVarTablePolicy.Create(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
             if (appearanceOptions != null || appearanceOptionsLoader != null)
             {
-                AppearanceGallery = new AppearanceGallerySectionViewModel(
-                    appearanceOptions ?? Array.Empty<AppearanceOption>(),
-                    appearanceThumbnails,
-                    CurrentAppearanceKey,
-                    ApplyAppearance,
+                _activeAppearanceOptions = appearanceOptions ?? Array.Empty<AppearanceOption>();
+                var previewProvider = appearanceThumbnails == null
+                    ? null
+                    : new AppearanceGalleryPreviewProvider(
+                        appearanceThumbnails,
+                        id => _activeAppearanceOptions.FirstOrDefault(option => option.Key == id.Value));
+                AppearanceGallery = new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel(
+                    AppearanceGalleryOptionAdapter.ToShared(_activeAppearanceOptions),
+                    previewProvider,
+                    () => new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId(CurrentAppearanceKey()),
+                    option =>
+                    {
+                        var hostOption = _activeAppearanceOptions.FirstOrDefault(candidate => candidate.Key == option.Id.Value);
+                        return hostOption != null && ApplyAppearance(hostOption);
+                    },
                     noun: "appearance");
                 _appearanceCatalogLoaded = appearanceOptions != null;
             }
@@ -968,7 +979,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 if (_disposed)
                     return;
 
-                AppearanceGallery?.SetOptions(options);
+                _activeAppearanceOptions = options;
+                AppearanceGallery?.SetOptions(AppearanceGalleryOptionAdapter.ToShared(options));
                 _appearanceCatalogLoaded = true;
                 AppearanceCatalogLoadError = string.Empty;
             }

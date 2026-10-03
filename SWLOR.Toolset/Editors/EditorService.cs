@@ -1491,21 +1491,32 @@ namespace SWLOR.Toolset.Editors
         /// schema's own appearance field as the only way to set it - the same degradation every
         /// other game-data-backed control makes.
         /// </summary>
-        private Appearance.AppearanceGallerySectionViewModel? CreateCreatureAppearanceGallery(
+        private Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel? CreateCreatureAppearanceGallery(
             EditorFieldContext context,
             Func<string, Action, bool> runEdit)
         {
             if (_appearances == null)
                 return null;
 
-            return new Appearance.AppearanceGallerySectionViewModel(
-                CreatureAppearanceOptions(),
-                _thumbnails,
-                () => (context.Document.Root.GetOrNull("Appearance_Type")?.GetInteger() ?? 0)
-                    .ToString(System.Globalization.CultureInfo.InvariantCulture),
-                option => runEdit(
-                    $"Change appearance to {option.Caption}",
-                    () => WriteCreatureAppearance(context, option)),
+            var options = CreatureAppearanceOptions();
+            var previewProvider = _thumbnails == null
+                ? null
+                : new Appearance.AppearanceGalleryPreviewProvider(
+                    _thumbnails,
+                    id => options.FirstOrDefault(option => option.Key == id.Value));
+            return new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel(
+                Appearance.AppearanceGalleryOptionAdapter.ToShared(options),
+                previewProvider,
+                () => new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId(
+                    (context.Document.Root.GetOrNull("Appearance_Type")?.GetInteger() ?? 0)
+                    .ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                option =>
+                {
+                    var hostOption = options.FirstOrDefault(candidate => candidate.Key == option.Id.Value);
+                    return hostOption != null && runEdit(
+                        $"Change appearance to {hostOption.Caption}",
+                        () => WriteCreatureAppearance(context, hostOption));
+                },
                 noun: "appearance");
         }
 

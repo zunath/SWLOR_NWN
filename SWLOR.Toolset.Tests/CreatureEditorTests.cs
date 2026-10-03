@@ -23,6 +23,7 @@ using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Appearance;
+using Nwn.Toolset.Avalonia.Appearances;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Items;
@@ -1555,7 +1556,7 @@ namespace SWLOR.Toolset.Tests
             editor.SelectedAppearanceSectionIndex.Should().Be(2);
 
             editor.AppearanceGallery!.Highlighted = editor.AppearanceGallery.Tiles.Single(tile =>
-                tile.Option.CreatureAppearanceId == 7);
+                tile.Option.Id.Value == "7");
             Dispatcher.UIThread.RunJobs();
 
             bodyTab.IsVisible.Should().BeFalse(

@@ -16,6 +16,8 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Workspace;
+using Nwn.Toolset.Avalonia.Appearances;
+using Nwn.Toolset.Avalonia.Appearances.Views;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -70,7 +72,7 @@ namespace SWLOR.Toolset.Tests
             var target = section.Tiles[7];
             section.Highlighted = target;
 
-            applied.Should().ContainSingle().Which.Key.Should().Be(target.Option.Key);
+            applied.Should().ContainSingle().Which.Key.Should().Be(target.Option.Id.Value);
             target.IsCurrent.Should().BeTrue();
             section.Tiles.Where(tile => tile.IsCurrent).Should().ContainSingle();
         }
@@ -79,7 +81,7 @@ namespace SWLOR.Toolset.Tests
         public void ARefusedPickPutsTheGridBackWhereItWas()
         {
             var options = Options(100);
-            var section = new AppearanceGallerySectionViewModel(
+            var section = Gallery(
                 options,
                 thumbnails: null,
                 currentKey: () => "0",
@@ -88,7 +90,7 @@ namespace SWLOR.Toolset.Tests
 
             section.Highlighted = section.Tiles[9];
 
-            section.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("0");
+            section.Tiles.Single(tile => tile.IsCurrent).Option.Id.Value.Should().Be("0");
             section.Highlighted.Should().BeNull("a refused edit clears the highlight it came from");
         }
 
@@ -97,7 +99,7 @@ namespace SWLOR.Toolset.Tests
         {
             var section = Section(Options(20), out var applied);
 
-            section.Highlighted = section.Tiles.Single(tile => tile.Option.Key == "0");
+            section.Highlighted = section.Tiles.Single(tile => tile.Option.Id.Value == "0");
 
             applied.Should().BeEmpty();
         }
@@ -105,7 +107,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AStoredRowTheTableDoesNotHaveIsReportedRatherThanHidden()
         {
-            var unknown = new AppearanceGallerySectionViewModel(
+            var unknown = Gallery(
                 Options(10),
                 thumbnails: null,
                 currentKey: () => "9999",
@@ -137,7 +139,7 @@ namespace SWLOR.Toolset.Tests
             var previous = Logger.Sink;
             var sink = new BindingLogSink();
             Logger.Sink = sink;
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 Options(100), null, () => "0", _ => true, noun: "appearance", tileSize: 92);
             var window = new Window
             {
@@ -156,9 +158,9 @@ namespace SWLOR.Toolset.Tests
 
                 // Replacing the page recycles realized cells. Their sizing values must stay on the
                 // item instead of walking through the ListBox data context while it is being cleared.
-                section.SetOptions(Options(12));
+                section.SetOptions(AppearanceGalleryOptionAdapter.ToShared(Options(12)));
                 Dispatcher.UIThread.RunJobs();
-                section.SetOptions(Options(100));
+                section.SetOptions(AppearanceGalleryOptionAdapter.ToShared(Options(100)));
                 Dispatcher.UIThread.RunJobs();
             }
             finally
@@ -178,7 +180,7 @@ namespace SWLOR.Toolset.Tests
             var thumbnails = new ThumbnailService(
                 new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
                 source);
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 Options(3), thumbnails, () => "0", _ => true, noun: "appearance");
 
             foreach (var tile in section.Tiles)
@@ -221,7 +223,7 @@ namespace SWLOR.Toolset.Tests
             ordinary.Should().NotBeNull();
             transition.Should().NotBeNull().And.NotBeSameAs(ordinary);
 
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 [
                     new AppearanceOption(
                         "transition",
@@ -254,7 +256,7 @@ namespace SWLOR.Toolset.Tests
             var thumbnails = new ThumbnailService(
                 new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
                 source);
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 Options(100), thumbnails, () => "0", _ => true, noun: "appearance");
 
             DrainDispatcher();
@@ -279,7 +281,7 @@ namespace SWLOR.Toolset.Tests
             var thumbnails = new ThumbnailService(
                 new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
                 source);
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 Options(500), thumbnails, () => "0", _ => true, noun: "appearance");
             var view = new AppearanceGalleryView { DataContext = section };
             var window = new Window { Width = 760, Height = 560, Content = view };
@@ -311,7 +313,7 @@ namespace SWLOR.Toolset.Tests
             var thumbnails = new ThumbnailService(
                 new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
                 source);
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 Array.Empty<AppearanceOption>(), thumbnails, () => "0", _ => true, noun: "appearance");
             var window = new Window
             {
@@ -325,7 +327,7 @@ namespace SWLOR.Toolset.Tests
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
 
-                section.SetOptions(Options(500));
+                section.SetOptions(AppearanceGalleryOptionAdapter.ToShared(Options(500)));
                 DrainDispatcher();
 
                 source.AppearanceCalls.Should().BeGreaterThan(0,
@@ -376,7 +378,7 @@ namespace SWLOR.Toolset.Tests
                 twoDa: twoDa,
                 tlk: tlk);
             var thumbnails = new ThumbnailService(context, renderer);
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 Array.Empty<AppearanceOption>(), thumbnails, () => "7", _ => true, noun: "appearance");
             var window = new Window
             {
@@ -389,14 +391,14 @@ namespace SWLOR.Toolset.Tests
             {
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
-                section.SetOptions(appearances.GetAll()
+                section.SetOptions(AppearanceGalleryOptionAdapter.ToShared(appearances.GetAll()
                     .Take(96)
                     .Select(row => new AppearanceOption(
                         row.Id.ToString(), row.DisplayName, $"row {row.Id} · {row.Label}",
                         CreatureAppearanceId: row.Id,
                         IsSegmentedCreatureAppearance:
                             string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)))
-                    .ToList());
+                    .ToList()));
 
                 var deadline = DateTime.UtcNow.AddSeconds(20);
                 while (DateTime.UtcNow < deadline && section.Tiles.All(tile => tile.Preview == null))
@@ -463,7 +465,7 @@ namespace SWLOR.Toolset.Tests
                     appearances: appearances,
                     twoDa: twoDa,
                     tlk: tlk));
-            using var section = new AppearanceGallerySectionViewModel(
+            using var section = Gallery(
                 Array.Empty<AppearanceOption>(), thumbnails, () => "2039", _ => true, noun: "appearance");
             var window = new Window
             {
@@ -477,22 +479,27 @@ namespace SWLOR.Toolset.Tests
                 thumbnails.WarmGenericSegmentedCreaturePreviews();
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
-                section.SetOptions(appearances.GetAll()
+                section.SetOptions(AppearanceGalleryOptionAdapter.ToShared(appearances.GetAll()
                     .Take(96)
                     .Select(row => new AppearanceOption(
                         row.Id.ToString(), row.DisplayName, $"row {row.Id} - {row.Label}",
                         CreatureAppearanceId: row.Id,
                         IsSegmentedCreatureAppearance:
                             string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase)))
-                    .ToList());
+                    .ToList()));
 
-                var dynamicTiles = section.Tiles
-                    .Where(tile => tile.Option.IsSegmentedCreatureAppearance)
+                var dynamicIds = appearances.GetAll()
+                    .Take(96)
+                    .Where(row => string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase))
                     .Take(7)
+                    .Select(row => row.Id.ToString())
+                    .ToHashSet(StringComparer.Ordinal);
+                var dynamicTiles = section.Tiles
+                    .Where(tile => dynamicIds.Contains(tile.Option.Id.Value))
                     .ToList();
                 dynamicTiles.Should().HaveCount(7,
                     "the cold-gallery regression covers Dwarf through Human");
-                var currentTile = section.Tiles.Single(tile => tile.Option.Key == "7");
+                var currentTile = section.Tiles.Single(tile => tile.Option.Id.Value == "7");
                 var deadline = DateTime.UtcNow.AddSeconds(10);
                 while (DateTime.UtcNow < deadline &&
                        (currentTile.Preview == null || dynamicTiles.Any(tile => tile.Preview == null)))
@@ -526,7 +533,7 @@ namespace SWLOR.Toolset.Tests
                     tilePropertyChanges++;
             };
 
-            section.SetOptions(Options(2_000));
+            section.SetOptions(AppearanceGalleryOptionAdapter.ToShared(Options(2_000)));
 
             tilePropertyChanges.Should().Be(1,
                 "catalog loading must not make Avalonia lay out the tab once per published tile");
@@ -563,7 +570,7 @@ namespace SWLOR.Toolset.Tests
                 "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
 
             doorView.Should().Contain("<appearance:AppearanceGalleryView");
-            blueprintView.Should().Contain("appearance:AppearanceGallerySectionViewModel");
+            blueprintView.Should().Contain("gallery:AppearanceGalleryViewModel");
             creatureView.Should().Contain("<appearance:AppearanceGalleryView");
             creatureView.Should().Contain("<sharedBehaviors:BehaviorRowView />",
                 "creature equipment reuses the shared progressive choice control");
@@ -611,9 +618,10 @@ namespace SWLOR.Toolset.Tests
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");
+            var sharedRoot = Environment.GetEnvironmentVariable("NwnToolsetSourceRoot")
+                ?? throw new InvalidOperationException("NwnToolsetSourceRoot must identify the shared source checkout.");
             var appearanceView = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset", "Editors", "Appearance", "AppearanceGalleryView.axaml"));
+                sharedRoot, "src", "Nwn.Toolset.Avalonia", "Appearances", "Views", "AppearanceGalleryView.axaml"));
             appearanceView.Should().Contain("<controls:VirtualizingWrapPanel />");
             appearanceView.Should().Contain("Loaded=\"OnTileLoaded\"",
                 "appearance previews must follow the palette's viewport-driven loading pattern");
@@ -631,13 +639,13 @@ namespace SWLOR.Toolset.Tests
                 .Should().BeFalse("the door editor uses the shared grid now");
         }
 
-        private static AppearanceGallerySectionViewModel Section(
+        private static AppearanceGalleryViewModel Section(
             IReadOnlyList<AppearanceOption> options,
             out List<AppearanceOption> applied)
         {
             var picks = new List<AppearanceOption>();
             var current = "0";
-            var section = new AppearanceGallerySectionViewModel(
+            var section = Gallery(
                 options,
                 thumbnails: null,
                 currentKey: () => current,
@@ -651,6 +659,35 @@ namespace SWLOR.Toolset.Tests
 
             applied = picks;
             return section;
+        }
+
+        private static AppearanceGalleryViewModel Gallery(
+            IReadOnlyList<AppearanceOption> options,
+            ThumbnailService? thumbnails,
+            Func<string> currentKey,
+            Func<AppearanceOption, bool> apply,
+            string noun = "model",
+            double tileSize = 112)
+        {
+            var provider = thumbnails == null
+                ? null
+                : new AppearanceGalleryPreviewProvider(
+                    thumbnails,
+                    id => options.FirstOrDefault(option => option.Key == id.Value) ??
+                        (int.TryParse(id.Value, out var appearanceId)
+                            ? new AppearanceOption(id.Value, id.Value, null, CreatureAppearanceId: appearanceId)
+                            : null));
+            return new AppearanceGalleryViewModel(
+                AppearanceGalleryOptionAdapter.ToShared(options),
+                provider,
+                () => new AppearanceGalleryOptionId(currentKey()),
+                option =>
+                {
+                    var hostOption = options.FirstOrDefault(candidate => candidate.Key == option.Id.Value);
+                    return hostOption != null && apply(hostOption);
+                },
+                noun: noun,
+                tileSize: tileSize);
         }
 
         private static IReadOnlyList<AppearanceOption> Options(int count) =>

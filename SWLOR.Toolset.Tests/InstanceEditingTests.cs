@@ -277,6 +277,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void DetailStateEditsUseOneUndoableAreaTransactionAndReloadAfterUndo()
+        {
+            var original = File.ReadAllBytes(GitPath);
+            var gitDocument = JsonGffDocument.Parse(original);
+            using var gitSession = new DocumentSession(GitPath, gitDocument);
+            using var gicSession = new DocumentSession(
+                "unused.gic.json",
+                new JsonGffDocument("GIC ", new JsonGffStruct()));
+            using var section = new InstanceListSectionViewModel(
+                "Creatures",
+                "Creature List",
+                ResourceType.Utc,
+                gitSession,
+                gicSession,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                (description, edit) =>
+                {
+                    using (gitSession.Begin(description))
+                        edit();
+                    return true;
+                },
+                null,
+                new OutputLogService(),
+                new StubPrompts());
+            var row = section.Rows.Single(candidate =>
+                candidate.TemplateResRef == "vnpcsofficer");
+            section.SelectedRow = row;
+            var originalPosition = InstanceFieldMap.GetPosition(
+                ResourceType.Utc,
+                gitDocument.Root.Get("Creature List").Elements![row.Index]);
+            var originalBytes = gitDocument.ToBytes();
+
+            section.DetailX = originalPosition.X + 4f;
+
+            row.X.Should().Be(originalPosition.X + 4f);
+            gitSession.UndoStack.IsDirty.Should().BeTrue();
+            gitSession.UndoStack.Undo();
+            section.RefreshFromDocument();
+
+            gitDocument.ToBytes().Should().Equal(originalBytes);
+            section.DetailX.Should().Be(originalPosition.X);
+            section.SelectedRow!.X.Should().Be(originalPosition.X);
+        }
+
+        [Test]
         public void GetVisualTransform_ReadsScaleDegreeRotationAndTranslation()
         {
             var instance = new JsonGffStruct();

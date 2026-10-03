@@ -196,7 +196,10 @@ public class ForceLightConsularTests
         foreach (var script in scripts)
         {
             var source = File.ReadAllText((root / "tools" / script).FullName);
-            source.Should().Contain("[int]$GeneratedFeatEnd = 2899", $"{script} must include Force Burst feat 2899");
+            var end = System.Text.RegularExpressions.Regex.Match(source, @"\[int\]\$GeneratedFeatEnd\s*=\s*(\d+)");
+            end.Success.Should().BeTrue($"{script} must declare its generated feat bound");
+            int.Parse(end.Groups[1].Value).Should().BeGreaterThanOrEqualTo(2899,
+                $"{script} must include Force Burst feat 2899 even when later feats are added");
         }
     }
 

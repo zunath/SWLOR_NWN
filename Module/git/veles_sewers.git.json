@@ -128275,7 +128275,7 @@
         },
         "HasMapNote": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "LinkedTo": {
           "type": "cexostring",
@@ -128288,13 +128288,11 @@
         },
         "MapNote": {
           "type": "cexolocstring",
-          "value": {
-            "0": "To the Industrial District"
-          }
+          "value": {}
         },
         "MapNoteEnabled": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -128463,7 +128461,7 @@
         },
         "HasMapNote": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "LinkedTo": {
           "type": "cexostring",
@@ -128478,13 +128476,11 @@
         },
         "MapNote": {
           "type": "cexolocstring",
-          "value": {
-            "0": "To the Slums"
-          }
+          "value": {}
         },
         "MapNoteEnabled": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -128540,9 +128536,7 @@
         },
         "MapNote": {
           "type": "cexolocstring",
-          "value": {
-            "0": "To Starchaser Homes"
-          }
+          "value": {}
         },
         "MapNoteEnabled": {
           "type": "byte",

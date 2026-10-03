@@ -104,6 +104,14 @@ class ExportTests(unittest.TestCase):
 
 
 class CorpusTests(unittest.TestCase):
+    def test_registered_dds_names_do_not_collide_with_builtin_nui_tgas(self):
+        catalog = ROOT / 'tools/tests/fixtures/builtin_gameplay_tga_resrefs.txt'
+        builtin = {line.strip() for line in catalog.read_text(encoding='ascii').splitlines()
+                   if line.strip() and not line.startswith('#')}
+        with (ROOT / 'SWLOR.Game.Server/Readmes/GameplayIconManifest.csv').open(newline='', encoding='utf-8-sig') as stream:
+            registered = {row['IconResRef'].casefold() for row in csv.DictReader(stream)}
+        self.assertEqual(registered & builtin, set(), 'NUI loads built-in TGAs before same-named DDS exports')
+
     def test_all_exported_assets_match_sources_and_preserve_decoded_orientation_alpha_and_size(self):
         assets = ROOT / 'SWLOR_Haks'
         source = assets / 'sw_ability_source/production'

@@ -128,7 +128,7 @@ The icon tools export through `tools/ConvertGameplayIconsToDds.py`, using ImageM
 python tools/ConvertGameplayIconsToDds.py --source SWLOR_Haks/sw_ability_source/production --output SWLOR_Haks/sw_ability --manifest SWLOR_Haks/sw_ability_source/dds-conversions.csv
 ```
 
-Use a current NWN:EE client (8193.36 or newer) for DDS in NUI. Gameplay icons use the normal GUI texture path; the separate item inventory composite-icon lookup limitation documented in `BlasterModelImport.md` is outside this conversion.
+Use a current NWN:EE client (8193.36 or newer) for DDS in NUI. NUI tries other image formats before DDS, including TGAs in the base game. Custom DDS icons must use resrefs that do not collide with built-in gameplay TGAs; the regression catalog in `tools/tests/fixtures/builtin_gameplay_tga_resrefs.txt` records the installed client names. Gameplay icons use the normal GUI texture path; the separate item inventory composite-icon lookup limitation documented in `BlasterModelImport.md` is outside this conversion.
 
 ## Artwork Quality
 

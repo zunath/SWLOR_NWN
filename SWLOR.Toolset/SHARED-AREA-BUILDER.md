@@ -13,7 +13,7 @@ SWLOR's binary representation adapter connects its existing formats model to
 the shared document model; workspace conventions, catalogs and release policy
 remain here. Xenomech provides its own source representation and policies.
 
-Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.31`. These versions are recorded in the package lock files and consume the recovered shared packages.
+Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.32`. These versions are recorded in the package lock files and consume the recovered shared packages.
 The shared repository's `docs/area-builder-extraction.md` records provenance,
 package hashes and the source/package qualification boundary.
 
@@ -37,10 +37,11 @@ The initial source run skipped a palette check against the empty worktree HAK
 folder; correcting its explicit corpus selection passes all 12 palette checks.
 That report remains preserved.
 
-Scene, viewport and atomic creation moves are still required. The current
-checks establish the extracted document/tile responsibilities and the actual
-SWLOR package consumer, not a completed cross-game graphical area builder or
-official-client acceptance. Builds use `RunPostBuildEvent=Never`.
+At that initial document/tile extraction stage, scene, viewport and atomic
+creation moves were still required. Those reports establish the responsibilities
+tested at that stage. Subsequent shared scene/viewport adoption is recorded in
+the shared provenance document. Official-client acceptance remains open.
+Builds use `RunPostBuildEvent=Never`.
 
 ## Responsive native fields qualification (2026-10-02)
 
@@ -60,3 +61,25 @@ warnings and has no errors. A broader large-area run timed out in
 its aborted `swlor-field-layout-dev31.trx` and hang dump remain retained.
 That large-corpus performance gate and native/official-client acceptance
 remain open.
+
+## Shared Scene/Properties layout qualification (2026-10-03)
+
+The existing area view now uses `AreaEditorLayout` from the same local
+Avalonia dev.32 package as Xenomech. It keeps the original scene, properties,
+context menus, camera pad, HUD and selected-tab binding. The neutral
+Scene/Properties split comes from this view and does not replace its editing
+or resource policies.
+
+The package's production source is
+`d97cb90f35b4597db42a0a773046ec07e97e773a`; SHA-256 is
+`F5AE982E326559DB356E1CBDA587561A44CC3CE8811508902163BE7794E649A5`.
+Debug and Release locks record the same package train. The actual area view
+and affected lifecycle/instance/variable workflows pass 20/20, zero skips, in
+`SWLOR.Toolset.Tests/TestResults/swlor-shared-scene-properties-dev32.trx`.
+The view test switches both tabs, retains the original controls and checks the
+scene keeps its full tab height. Existing eight nullable warnings remain;
+there are no build errors and deployment hooks are disabled.
+
+Xenomech supplies its own shell and database integration. These tests qualify
+shared layout consumption, not complete pixel parity or official-client behavior.
+The large-area performance gate above remains open.

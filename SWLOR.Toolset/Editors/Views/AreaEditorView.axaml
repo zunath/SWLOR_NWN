@@ -16,8 +16,8 @@
        Undo prefers whichever of this editor's two histories (.git instances / .are properties) was
        touched most recently, falling back to the other. -->
   <DockPanel>
-    <TabControl x:Name="RootTabs" SelectedIndex="{Binding SelectedRootTabIndex, Mode=TwoWay}">
-      <TabItem Header="Scene" x:Name="ViewTab3D">
+    <viewport:AreaEditorLayout x:Name="RootTabs" SelectedIndex="{Binding SelectedRootTabIndex, Mode=TwoWay}">
+      <viewport:AreaEditorLayout.Scene>
         <!-- No toolbar at all now. Placement comes from the Palette panel, the scene rebuilds itself
              after every edit, and the view options that were here either had no audience or are simply
              the right default (ceilings hidden, placeables drawn as their models). The map gets the
@@ -179,8 +179,8 @@
           </Border>
 
         </Grid>
-      </TabItem>
-      <TabItem Header="Properties">
+      </viewport:AreaEditorLayout.Scene>
+      <viewport:AreaEditorLayout.Properties>
     <ScrollViewer x:Name="PropertiesScroll">
       <StackPanel Margin="8" Spacing="6">
         <Expander Header="Area Properties"
@@ -296,8 +296,8 @@
         </ItemsControl>
       </StackPanel>
     </ScrollViewer>
-      </TabItem>
+      </viewport:AreaEditorLayout.Properties>
 
-    </TabControl>
+    </viewport:AreaEditorLayout>
   </DockPanel>
 </UserControl>

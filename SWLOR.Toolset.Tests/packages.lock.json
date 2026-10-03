@@ -494,8 +494,8 @@
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.31",
-        "contentHash": "pSOzFUjzxaprnPX1FTsLeFkoTDvEmrdFTiauYSnzntDiBrh64DRh46se7vLffWLzf3QtKphlmnQMYAf8sbGd8w==",
+        "resolved": "0.1.0-dev.32",
+        "contentHash": "0p1tI30KH9825ZT24nyAcVOUv3t6/5YxtVIfguj+/iIAnxd77Lr1FYXEdZbdS/cPYvE1D0UM91pXmMWeYh2+QQ==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",
@@ -695,7 +695,7 @@
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
           "Nwn.Authoring": "[0.1.0-dev.30, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-dev.31, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-dev.32, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )"

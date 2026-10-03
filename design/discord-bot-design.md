@@ -19,9 +19,9 @@ The current request covers design and discovery. Runtime implementation, install
 | Hosting | Confirmed | Linux; Docker preferred. Existing database, capacity, backup location, and deployment access remain to be inspected. |
 | Existing ticket bot | Confirmed | Owner identified Ticket Tool. Use its canonical dashboard at https://tickettool.xyz/manage-servers. |
 | Discord guild, channels, roles, and permissions | Partially observed | Dyno identifies SWLOR as guild 484936923341651971. Dashboard counts were observed; individual channel/role IDs and permissions remain unverified. |
-| Ticket Tool panels and behavior | Access confirmed; panels not observed | Signed-in Manage Servers page lists SWLOR under Servers with Ticket Tool. Inspect every panel and its open/closed permissions, messages, limits, and automation. |
+| Ticket Tool panels and behavior | Partially observed | Selected panel 1, SWLOR Tickets: support roles, open/closed category names, limits, logging destination, and displayed naming fields captured. Permission and message dialogs, checkbox states, IDs, and full panel inventory remain unverified. |
 | Dyno configuration | Partially observed | Bot nickname Yoda; Custom Commands module enabled with 24/25 configured command slots. Prefix ?, full 24-command name/description inventory, Announcements welcome text, and 12 joinable faction role names observed. Exact command responses, switch states, and stable role/channel IDs remain unverified. |
-| Live inspection access | Blocked after partial Chrome audit | Owner signed into both dashboards in Chrome. Read-only inspection reached the Dyno general dashboard, Welcome, Announcements, Autoroles, Joinable Ranks, the full custom-command listing, and Ticket Tool Manage Servers in a fresh chat. Computer Use then explicitly stopped because it could not determine the current Chrome URL confidently enough to enforce policy. No bot settings were saved or changed, and no tickets or messages were created. Remaining configuration requires supported browser access or owner-provided configuration evidence. |
+| Live inspection access | Blocked after partial Chrome audit | Owner signed into both dashboards in Chrome. Read-only inspection reached the Dyno general dashboard, Welcome, Announcements, Autoroles, Joinable Ranks, the full custom-command listing, and Ticket Tool Manage Servers in a fresh chat. The owner-supplied panel URL subsequently enabled direct navigation through the Ticket Tool settings sections. Computer Use then explicitly stopped because it could not determine the current Chrome URL confidently enough to enforce policy. No bot settings were saved or changed, and no tickets or messages were created. Remaining configuration requires supported browser access or owner-provided configuration evidence. |
 | Existing application connection | Unavailable locally | SWLOR.Admin appsettings and environment have no configured Discord bot token/guild; the declared application user-secrets file is absent. No credential values were printed or copied. |
 
 Documentation establishes possible options, not which options SWLOR currently uses. Keep every unobserved setting pending until there is evidence from the live configuration.
@@ -41,7 +41,7 @@ These values came from the authenticated Chrome dashboards. A fresh chat restore
 | Welcome | Disabled | Newer Welcome module heading offers Enable Module. Its welcome channel field also shows `welcome`; the message field exposes a placeholder, not a verified configured response. |
 | Auto Roles | Enabled; autorole table contains only its headers | Autoroles module. No automatic add/remove role rule was visible. |
 | Joinable Ranks | 12 configured faction role names; command `?rank` | Joinable Ranks page. Names captured below; stable role IDs and policy switches remain unread. |
-| Ticket Tool access | Authenticated Manage Servers page at `https://tickettool.xyz/dashboard` lists SWLOR under Servers with Ticket Tool, with a Manage button | Existing Chrome tab. Panel configuration is not yet observed. |
+| Ticket Tool access | Authenticated Manage Servers page at `https://tickettool.xyz/dashboard` lists SWLOR under Servers with Ticket Tool, with a Manage button | Existing Chrome tab. The owner subsequently supplied the authenticated panel URL; selected-panel findings are recorded below. |
 
 ### Welcome text
 
@@ -107,13 +107,51 @@ All 24 configured names and listing descriptions were captured from the full pag
 
 Capture each command's actual response, embeds, Additional Responses, macros, aliases, arguments, enabled status, restrictions, cooldowns, and deletion options before parity is accepted. Listing descriptions are not the messages users receive. The `delete` description is informational; it does not establish a character-deletion side effect.
 
+### Ticket Tool panel and server settings
+
+The owner supplied `https://tickettool.xyz/dashboard/484936923341651971/configs#pc-menu`. That exact page was already open in Chrome and readable. Its section navigation IDs allowed direct address-bar navigation through the General, Category, Ticket, Permissions, Buttons, Messages, Moderator, Panel, Transcript, Logging, Automation, Limits, Claiming, Escalate, Command Style, Select Style, Thread Style, Forms, and Integrations sections. Server Info, Server Configs, and the command-config menu were also read. No configuration was saved or changed.
+
+The selected panel is `1 | SWLOR Tickets`. This establishes one panel, not that it is the only configured or deployed panel. The account's sidebar shows Free.
+
+| Setting | Observed value | Source |
+| --- | --- | --- |
+| Support Team Roles | Admin; Dungeon Master; Head DM; Quest Master | Panel menu and General. Stable IDs not exposed. |
+| Additional Roles | No selected role; selector shows its placeholder | General. |
+| Created/open categories | `tickets - open 1`; `Tickets - Open 2` | Panel menu and Category. Selection order/fallback behavior and IDs need verification. |
+| Closed category | `tickets - closed` | Category. ID needs verification. |
+| Per-user open-ticket limit | `1` | Limits, TicketLimit field. |
+| Panel-wide open-ticket limit | `500` | Limits, limitsOpenAll field. |
+| Server-wide open-ticket limit | `100`, across panels | Server Configs, server_globalLimit field. Preserve both scopes rather than using the larger panel cap alone. |
+| Open-limit bypass roles | Admin; Dungeon Master; Patreon Supporter; Head DM; Quest Master; one `~ Deleted ~` entry | Limits. The deleted entry is stale configuration, not a role to recreate or grant. IDs and which limit scopes are bypassed require verification. |
+| Naming fields displayed | Open `Ticket-{count}`; closed `Closed-{count}`; padding `4` | Ticket and General. These fields are disabled in the Free dashboard; verify actual naming behavior before treating their display as an active customization. |
+| Logging channel | `discord-logs` | Logging. Enabled event switches and channel ID are unread. |
+| Transcript channel | No selected channel; `Select one...` | Transcript. |
+| Transcript timing fields | Send when Closed; save when Closed | Transcript. Associated DM/auto-save controls are disabled, and checkbox states are unread. This does not establish an active export policy. |
+| Attached panels | None selected | Panel. Other independently deployed panels remain possible. |
+| Server command prefix | `$` | Server Configs. Preserve only commands actually used and approved for replacement; this differs from Dyno's `?`. |
+| Dashboard roles and blacklist roles | Neither selector has a selected role | Server Configs. This does not define administrator/owner access. |
+| Storage categories | None selected | Server Configs. Storage Mode checkbox state is unread; do not assume channel recycling is enabled. |
+| Role changes on create/open/close/delete | No selected add/remove role in the displayed fields | Ticket. Fields are disabled; no active role-transition behavior established. |
+| Form | Title field `Please fill this out`; one collapsed Question Editor shown | Forms. Enabled state, question content, and whether results are attached are unread. |
+| Escalation destinations | None selected | Escalate. Other related checkbox states are unread. |
+| Command-style monitored channels | None selected | Command Style. Enable/watch-all/delete switches are unread. |
+| Thread parent and claimed category | Neither has a selected channel/category; thread/claim enable controls are disabled | Thread Style and Claiming. No enabled thread/claim workflow established. |
+
+Two-step close, two-step ticket creation, auto-pin, permission overrides, logging event switches, forms, storage, and other switches do not expose checked values in the native accessibility output. Disabled is a UI state, not proof of an unchecked or inactive setting. Preserve these gaps explicitly rather than assigning defaults.
+
+The Permissions section exposes eight Edit buttons for opened/closed support-team, owner, additional-role, and everyone permissions. Their dialogs have not been opened. Messages and Buttons expose editors for creation, close/cancel/confirm, reopen, delete, transcript, and claim controls; these menu entries do not prove which buttons appear in deployed messages or who can use them. Actual labels, role restrictions, message/embed content, and close/rename/reopen/delete authorization remain pending.
+
+No configured automation item or cleanup delay was visible on the Automation page. Its Add Automation control is disabled. The page's generic descriptions of minimum intervals and watcher duration are product help, not SWLOR's policy. Periodic cleanup remains an explicit requested feature whose delay and transcript prerequisite must be supplied by verified configuration or an owner decision. Do not claim existing cleanup was discovered or that its absence proves no external cleanup exists.
+
+Design consequences: support both open categories and the closed category; keep the per-user, panel, and guild limits distinct; represent the observed staff/Patreon exemption policy using verified role IDs; exclude the stale deleted-role entry; record the logging destination; and keep export-before-delete explicit since no transcript destination was selected. Reusing legacy channel names alone must never establish ownership for cleanup or archival.
+
 ### Remaining live-audit gaps
 
 | Gap | What is still needed |
 | --- | --- |
-| Ticket panels | Panel/message IDs, button labels, opening content, prompts, categories, limits, and eligibility. |
+| Ticket panels | Full panel inventory and deployed message IDs; exact labels, opening content, form prompts, eligibility, and stable category IDs. Panel 1 names and numeric limits are captured. |
 | Ticket access and operations | Stable staff/observer role IDs; opened/closed requester permissions; rename, close, claim, participant, reopen, and delete behavior. |
-| Ticket cleanup and archives | Cleanup timing, inactivity rules, export prerequisites, transcript/log destinations, retention and attachments, existing-ticket inventory. |
+| Ticket cleanup and archives | Cleanup timing, inactivity rules, export prerequisites, retention and attachments, existing-ticket inventory. Logging channel name is captured; no transcript channel is selected. Event/export/storage switches and destination IDs remain unread. |
 | Dyno command details | Actual output and behavior for all 24 configured commands. |
 | Welcome delivery | Join/leave/ban/DM switches, selected message type, stable welcome and template channel IDs. |
 | Faction policy | All 12 stable role IDs, exclusivity/deletion switches, toggle/leave behavior, command restrictions and feedback. |
@@ -141,7 +179,7 @@ Dyno documents command inspection through `customs list` and `customs show`, but
 
 Ticket Tool's Config Backup & Restore transfers configuration between Ticket Tool servers using an owner-held backup key. It does not export a general replacement-bot configuration or transfer existing tickets. Do not generate or request a backup key for this audit; inspect panel settings directly. Existing-ticket drain/import and transcript preservation remain separate cutover decisions.
 
-The source chat had a missing-path runtime initialization failure. Only its two narrowly identified helpers were stopped; no global runtime/security configuration, browser sessions, Codex host, or unrelated helpers were changed. The owner authorized this fresh chat, where initialization and native Chrome accessibility reading succeeded. Chrome was unavailable to the browser-provider API; native screenshots and clicks remained unusable, and the native URL safety check eventually stopped Computer Use. Honor that stop: do not extract session credentials, change browser security, invent a helper protocol, or repeatedly fork tasks to evade the URL check. Further live inspection requires a functional supported browser connection.
+The source chat had a missing-path runtime initialization failure. Only its two narrowly identified helpers were stopped; no global runtime/security configuration, browser sessions, Codex host, or unrelated helpers were changed. The owner authorized this fresh chat, where initialization and native Chrome accessibility reading succeeded. Chrome was unavailable to the browser-provider API; native screenshots and clicks remained unusable, and the native URL safety check eventually stopped Computer Use. Honor that stop: do not extract session credentials, change browser security, invent a helper protocol, or repeatedly fork tasks to evade the URL check. The owner-supplied Ticket Tool panel URL then made direct section navigation possible. Screenshots still timed out, and keyboard search to reach a message editor triggered the same explicit URL-policy stop. Further modal/switch inspection requires functional supported interaction; an additional login approval is not the missing requirement.
 
 ## Existing repository integration points
 

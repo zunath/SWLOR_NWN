@@ -286,6 +286,41 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PlaceableAppearancePreservesUnknownUnsignedRowAsRawInt()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "swlor-placeable-appearance-raw-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                var catalog = CreateFixturePlaceableModelCatalog(directory);
+                _ = catalog.GetAll();
+                var document = JsonGffDocument.Parse(System.Text.Encoding.UTF8.GetBytes(
+                    "{\"__data_type\":\"UTP \",\"Appearance\":{\"type\":\"dword\",\"value\":4294967295}}"));
+                using var appearance = new AppearanceSectionViewModel(
+                    new EditorFieldContext(document, (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
+                    catalog,
+                    thumbnails: null,
+                    () => PlaceableAppearanceUsageIndex.Empty,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    });
+
+                appearance.CurrentId.Should().Be(-1,
+                    "the original editor exposed an unknown unsigned DWORD through an unchecked raw Int32 cast");
+                appearance.CurrentDescription.Should().Contain("-1");
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+        [Test]
         public async Task BlueprintSave_CompletesNamedBehaviorWiring()
         {
             var directory = Path.Combine(

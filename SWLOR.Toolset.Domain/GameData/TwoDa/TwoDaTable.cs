@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Nwn.Formats.TwoDa;
 using SWLOR.NWN.Formats;
 
@@ -33,6 +33,8 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
                 throw new NwnFormatException(exception.Message, exception);
             }
         }
+
+        internal Nwn.Formats.TwoDa.TwoDaTable NativeTable => _file;
 
         public string Name { get; }
 

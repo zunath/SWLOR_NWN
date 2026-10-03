@@ -46,6 +46,12 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
                     throw new InvalidOperationException("An active worker already owns this guild.");
             }
             await store.InitializeAsync(ct);
+            var maintenanceErrors = await ValidatePersistedConfigurationAsync(configuration, store, ct);
+            if (maintenanceErrors.Count > 0)
+            {
+                foreach (var error in maintenanceErrors) logger.LogCritical("Ticket maintenance configuration invalid: {ConfigurationError}", error);
+                throw new InvalidOperationException("Persisted ticket maintenance requires retained configuration.");
+            }
             gateway.Attach(ct);
             consumers = Enumerable.Range(0, 4).Select(_ => gateway.ProcessAsync(ct)).ToArray();
             await client.LoginAsync(TokenType.Bot, secrets.Token);
@@ -85,6 +91,12 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
             if (lease is not null) await lease.DisposeAsync();
         }
     }
+    internal static async Task<IReadOnlyList<string>> ValidatePersistedConfigurationAsync(BotConfiguration config, ITicketStore store, CancellationToken ct)
+    {
+        await using var session = await store.LockAsync(ct);
+        return ConfigurationValidator.ValidatePersistedTickets(config, await session.GetTicketsAsync(ct));
+    }
+
     private async Task DeleteResponsesAsync(CancellationToken ct)
     {
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15), clock);

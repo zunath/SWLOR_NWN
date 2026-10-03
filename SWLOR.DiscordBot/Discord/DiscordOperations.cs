@@ -10,7 +10,7 @@ using SWLOR.DiscordBot.Hosting;
 
 namespace SWLOR.DiscordBot.Discord;
 
-public sealed class DiscordOperations(DiscordSocketClient client, BotConfiguration configuration, ResponseDeletionQueue responseDeletions, DiscordCommunityPoster poster) : IDiscordTickets, ICommunityDiscord
+public sealed class DiscordOperations(DiscordSocketClient client, BotConfiguration configuration, ResponseDeletionQueue responseDeletions, DiscordCommunityPoster poster, ITicketStore store) : IDiscordTickets, ICommunityDiscord
 {
     public string ServerName => client.GetGuild(configuration.GuildId)?.Name ?? "SWLOR";
     private static string Topic(Guid id) => $"swlor-ticket:{id:D}";
@@ -308,6 +308,17 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         return (permissions.RawValue & ~(ulong)ordinaryPermissions) != 0;
     }
 
+    internal static void ValidateFactionRoleOverwrites(ulong roleId,
+        IEnumerable<(ulong ChannelId, Overwrite Overwrite)> overwrites)
+    {
+        foreach (var item in overwrites)
+        {
+            var overwrite = item.Overwrite;
+            if (overwrite.TargetType == PermissionTarget.Role && overwrite.TargetId == roleId &&
+                HasStaffPermissions(new GuildPermissions(overwrite.Permissions.AllowValue)))
+                throw new DiscordValidationException($"Faction role {roleId} grants privileged permissions in channel or category {item.ChannelId}.");
+        }
+    }
     internal static void ValidateTranscriptCapability(ApplicationFlags flags)
     {
         if ((flags & (ApplicationFlags.GatewayMessageContent | ApplicationFlags.GatewayMessageContentLimited)) == 0)
@@ -361,6 +372,11 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         var role = guild.Roles.SingleOrDefault(x => x.Id == roleId);
         if (bot is null || role is null || role.IsManaged || HasStaffPermissions(role.Permissions) || role.Id == guild.Id || role.Position >= bot.Hierarchy || !bot.GuildPermissions.ManageRoles)
             throw new InvalidOperationException("The configured faction role cannot be managed by this bot.");
+        // Role overwrites can grant moderation capabilities independently of guild permissions.
+        // Refresh all channels before every mutation, since staff can change grants after startup.
+        var channels = await guild.GetChannelsAsync(Options(ct));
+        ValidateFactionRoleOverwrites(roleId, channels.SelectMany(channel =>
+            channel.PermissionOverwrites.Select(overwrite => (channel.Id, overwrite))));
         var member = await guild.GetUserAsync(userId, Options(ct)) ?? throw new InvalidOperationException("The member is unavailable.");
         if (member.Id == guild.OwnerId || member.Hierarchy >= bot.Hierarchy)
             throw new InvalidOperationException("The bot cannot manage roles for this member.");
@@ -387,11 +403,19 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         catch (HttpException ex) when (ex.HttpCode == HttpStatusCode.NotFound) { }
     }
 
+    internal static bool RequiresTicketCapabilities(BotConfiguration configuration, IReadOnlyList<Ticket> persistedTickets) =>
+        configuration.Tickets.Enabled || persistedTickets.Any(ticket => ticket.State != TicketState.Deleted);
     public async Task ValidateDiscordAsync(CancellationToken ct)
     {
+        IReadOnlyList<Ticket> persistedTickets;
+        await using (var session = await store.LockAsync(ct))
+            persistedTickets = await session.GetTicketsAsync(ct);
+        if (ConfigurationValidator.ValidatePersistedTickets(configuration, persistedTickets).Count > 0)
+            throw new DiscordValidationException("Retained ticket maintenance configuration is invalid; restore its required panels, roles, and archive ownership before startup.");
+        var requiresTicketCapabilities = RequiresTicketCapabilities(configuration, persistedTickets);
         var guild = await GuildAsync(ct);
         var bot = await guild.GetUserAsync(client.CurrentUser.Id, Options(ct)) ?? throw new DiscordValidationException("The bot is not a member of the configured guild.");
-        foreach (var id in configuration.AdministratorRoleIds.Concat(configuration.Tickets.Enabled ? configuration.Tickets.SupportRoleIds.Concat(configuration.Tickets.BypassRoleIds) : [])
+        foreach (var id in configuration.AdministratorRoleIds.Concat(requiresTicketCapabilities ? configuration.Tickets.SupportRoleIds.Concat(configuration.Tickets.BypassRoleIds) : [])
             .Concat(configuration.Answers.Where(x => x.Enabled).SelectMany(x => x.AllowedRoleIds)).Distinct())
             if (id == guild.Id || guild.Roles.All(x => x.Id != id)) throw new DiscordValidationException($"Configured access role {id} is unavailable or is the everyone role.");
         var channels = await guild.GetChannelsAsync(Options(ct));
@@ -401,7 +425,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
                 ?? throw new DiscordValidationException($"Configured text channel {id} is unavailable.");
             ValidateTextChannelPermissions(id, bot.GetPermissions(channel));
         }
-        if (configuration.Tickets.Enabled)
+        if (requiresTicketCapabilities)
         {
             var application = await ((IDiscordClient)client.Rest).GetApplicationInfoAsync(Options(ct));
             ValidateTranscriptCapability(application.Flags);
@@ -426,6 +450,8 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
                 var role = guild.Roles.SingleOrDefault(x => x.Id == item.RoleId);
                 if (role is null || role.IsManaged || HasStaffPermissions(role.Permissions) || role.Id == guild.Id || role.Position >= bot.Hierarchy || !bot.GuildPermissions.ManageRoles)
                     throw new DiscordValidationException($"The configured faction role {item.RoleId} cannot be managed by the bot.");
+                ValidateFactionRoleOverwrites(item.RoleId, channels.SelectMany(channel =>
+                    channel.PermissionOverwrites.Select(overwrite => (channel.Id, overwrite))));
             }
         }
     }

@@ -1,3 +1,4 @@
+using SWLOR.DiscordBot.Hosting;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
 
@@ -282,5 +283,123 @@ public sealed class ConfigurationTests
     public void Validate_RejectsUnknownJsonProperties()
     {
         Assert.Throws<System.Text.Json.JsonException>(() => ConfigurationLoader.Parse("""{"GuildId":1,"TypoField":true}"""));
+    }
+
+    [TestCase(TicketState.Creating)]
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Reopening)]
+    [TestCase(TicketState.Deleting)]
+    public void PersistedChannelsRequireRetainedTicketSettingsEvenWhenNewTicketingIsDisabled(TicketState state)
+    {
+        var config = new BotConfiguration { GuildId = 1, Tickets = new TicketOptions { Enabled = false, ArchiveDirectory = "" } };
+        Assert.That(ConfigurationValidator.Validate(config), Is.Empty, "the config-only check cannot know persisted state");
+        var errors = ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]);
+        Assert.That(errors, Has.Some.Contains("tickets.panels"));
+        Assert.That(errors, Has.Some.Contains("tickets.supportRoleIds"));
+        Assert.That(errors, Has.Some.Contains("tickets.archiveDirectory"));
+    }
+
+    [Test]
+    public void DisabledTicketingWithNoRetainedRecordsStillAllowsInitialConfiguration()
+    {
+        var config = new BotConfiguration { GuildId = 1, Tickets = new TicketOptions { Enabled = false, Panels = null!, SupportRoleIds = null!, ArchiveDirectory = "" } };
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, []), Is.Empty);
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(TicketState.Deleted)]), Is.Empty);
+    }
+
+    [TestCase(TicketState.Creating)]
+    [TestCase(TicketState.Reopening)]
+    public void PendingChannelOperationsRequireTheirOriginalPanel(TicketState state)
+    {
+        var config = RetainedTicketConfiguration();
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]), Is.Empty);
+        config.Tickets.Panels[0].Id = "replacement";
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]), Has.Some.Contains("retain panel 'support'"));
+    }
+
+    [Test]
+    public void DeletedArchiveRetentionRequiresOnlyTheOriginalArchiveDirectory()
+    {
+        var config = new BotConfiguration { GuildId = 1, Tickets = new TicketOptions { Enabled = false, ArchiveDirectory = Path.GetTempPath() } };
+        var deleted = StoredTicket(TicketState.Deleted);
+        deleted = deleted with
+        {
+            ArchivePath = Path.Combine(config.Tickets.ArchiveDirectory, deleted.Id.ToString("N")),
+            ArchiveExpiresAt = DateTimeOffset.UtcNow.AddDays(-1)
+        };
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [deleted]), Is.Empty);
+        config.Tickets.ArchiveDirectory = "";
+        var errors = ConfigurationValidator.ValidatePersistedTickets(config, [deleted]);
+        Assert.That(errors, Has.Count.EqualTo(1));
+        Assert.That(errors.Single(), Does.Contain("tickets.archiveDirectory"));
+    }
+
+    [Test]
+    public void ChangingAnArchiveRootFailsBeforeRetentionCanAbandonTheOldDirectory()
+    {
+        var config = RetainedTicketConfiguration();
+        var ticket = StoredTicket(TicketState.Deleted);
+        ticket = ticket with { ArchivePath = Path.Combine(config.Tickets.ArchiveDirectory, ticket.Id.ToString("N")) };
+        config.Tickets.ArchiveDirectory = Path.Combine(Path.GetTempPath(), "replacement-archive-root");
+        Assert.That(ConfigurationValidator.Validate(config), Is.Empty);
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [ticket]), Has.Some.Contains("retain ownership of the persisted archive"));
+    }
+
+    [Test]
+    public void HeldChannelsStillRequireRetainedPolicyAndCannotExposeSupportRolesAsSelfSelectableFactions()
+    {
+        var config = RetainedTicketConfiguration();
+        config.Factions = new FactionOptions
+        {
+            Enabled = true, Exclusive = false, Behavior = "join", Roles = [new FactionRole { Name = "Support", RoleId = 6 }]
+        };
+        Assert.That(ConfigurationValidator.Validate(config), Is.Empty);
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(TicketState.Closed) with { Hold = true }]),
+            Has.Some.Contains("retained for persisted maintenance"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task WorkerStartupValidationReadsDurableRecordsBeforeDiscordInitialization(bool existing)
+    {
+        var config = new BotConfiguration { GuildId = 1 };
+        var store = new StoredTicketFixture(existing ? [StoredTicket(TicketState.Creating)] : []);
+        var errors = await BotWorker.ValidatePersistedConfigurationAsync(config, store, default);
+        Assert.That(store.Read, Is.True);
+        Assert.That(store.Disposed, Is.True);
+        Assert.That(errors.Count > 0, Is.EqualTo(existing));
+    }
+
+    private static Ticket StoredTicket(TicketState state) => new(Guid.NewGuid(), "support", 7, 20, state, 1, DateTimeOffset.UtcNow);
+
+    private static BotConfiguration RetainedTicketConfiguration() => new()
+    {
+        GuildId = 1,
+        Tickets = new TicketOptions
+        {
+            Enabled = false,
+            Panels = [new TicketPanelOptions { Id = "support", ChannelId = 2, OpenCategoryIds = [3], PanelMessage = "Open ticket" }],
+            ClosedCategoryId = 4, LogChannelId = 5, SupportRoleIds = [6], ArchiveDirectory = Path.GetTempPath()
+        }
+    };
+
+    private sealed class StoredTicketFixture(IReadOnlyList<Ticket> tickets) : ITicketStore, ITicketSession
+    {
+        internal bool Read;
+        internal bool Disposed;
+        public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
+        public Task<ITicketSession> LockAsync(CancellationToken ct) => Task.FromResult<ITicketSession>(this);
+        public Task<IReadOnlyList<Ticket>> GetTicketsAsync(CancellationToken ct) { Read = true; return Task.FromResult(tickets); }
+        public ValueTask DisposeAsync() { Disposed = true; return ValueTask.CompletedTask; }
+        public Task<Ticket> ReserveAsync(string panelId, ulong requesterId, string interactionId, DateTimeOffset now, CancellationToken ct) => throw new NotSupportedException();
+        public Task<Ticket?> FindInteractionAsync(string interactionId, CancellationToken ct) => throw new NotSupportedException();
+        public Task SaveAsync(Ticket ticket, string action, ulong? actorId, CancellationToken ct) => throw new NotSupportedException();
+        public Task<bool> TryRecordDeliveryAsync(string key, CancellationToken ct) => throw new NotSupportedException();
+        public Task<DeliveryState> GetOrCreateDeliveryAsync(string key, string intent, CancellationToken ct) => throw new NotSupportedException();
+        public Task CompleteDeliveryAsync(string key, CancellationToken ct) => throw new NotSupportedException();
+        public Task<DateTimeOffset?> GetCooldownAsync(string key, CancellationToken ct) => throw new NotSupportedException();
+        public Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct) => throw new NotSupportedException();
     }
 }

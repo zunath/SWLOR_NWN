@@ -174,6 +174,72 @@ public sealed class DiscordAdapterTests
         Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(1UL << 63)), Is.True);
     }
 
+    [TestCase(GuildPermission.ManageMessages)]
+    [TestCase(GuildPermission.ManageThreads)]
+    [TestCase(GuildPermission.ManageChannels)]
+    [TestCase(GuildPermission.ManageRoles)]
+    [TestCase(GuildPermission.ManageWebhooks)]
+    [TestCase(GuildPermission.MentionEveryone)]
+    [TestCase(GuildPermission.MuteMembers)]
+    [TestCase(GuildPermission.MoveMembers)]
+    public void SelfSelectedFactionRoles_RejectPrivilegedChannelOrCategoryOverwriteGrants(GuildPermission permission)
+    {
+        var ordinary = new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow);
+        var privileged = new OverwritePermissions((ulong)permission | ordinary.AllowValue, 0);
+        var overwrites = new (ulong, Overwrite)[]
+        {
+            (101, new Overwrite(42, PermissionTarget.Role, ordinary)),
+            (102, new Overwrite(42, PermissionTarget.Role, privileged))
+        };
+
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42, overwrites),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("42").And.Message.Contains("102"));
+        // A grant on the category itself remains unsafe even before any child inherits it.
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42, [(101UL, overwrites[1].Item2)]),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("101"));
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_OverwriteValidationPreservesOrdinaryAccessAndIgnoresUnrelatedTargets()
+    {
+        var ordinary = new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow,
+            readMessageHistory: PermValue.Allow, attachFiles: PermValue.Allow,
+            createPublicThreads: PermValue.Allow, sendMessagesInThreads: PermValue.Allow,
+            manageMessages: PermValue.Deny, manageThreads: PermValue.Deny);
+        var privileged = new OverwritePermissions(manageMessages: PermValue.Allow, manageThreads: PermValue.Allow);
+
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42,
+        [
+            (101UL, new Overwrite(42, PermissionTarget.Role, ordinary)),
+            (102UL, new Overwrite(43, PermissionTarget.Role, privileged)),
+            (103UL, new Overwrite(42, PermissionTarget.User, privileged))
+        ]));
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_OverwriteValidationRejectsUnknownAllowBitsButNotDenials()
+    {
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42,
+            [(101UL, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(1UL << 63, 0)))]),
+            Throws.TypeOf<DiscordValidationException>());
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42,
+            [(101UL, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(0, 1UL << 63)))]));
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_FreshOverwriteValidationRejectsGrantsAddedAfterStartup()
+    {
+        var current = new List<(ulong, Overwrite)>
+        {
+            (101, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)))
+        };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42, current));
+        current.Add((102, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(manageThreads: PermValue.Allow))));
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42, current),
+            Throws.TypeOf<DiscordValidationException>());
+        current.RemoveAt(1);
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42, current));
+    }
     [TestCase(false)]
     [TestCase(true)]
     public void Welcome_RejectsMissingOrForeignMentionChannelsEvenForDirectMessages(bool directMessage)
@@ -310,6 +376,41 @@ public sealed class DiscordAdapterTests
             Throws.TypeOf<DiscordValidationException>().With.Message.Contains("View Channel and Send Messages"));
     }
 
+    [TestCase(TicketState.Creating)]
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Reopening)]
+    [TestCase(TicketState.Deleting)]
+    public void DisabledTicketing_RetainedChannelStatesStillRequireDiscordTicketCapabilities(TicketState state)
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var retained = new Ticket(Guid.NewGuid(), "retained", 42, 123, state, 1, DateTimeOffset.UnixEpoch);
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, [retained]), Is.True);
+    }
+
+    [Test]
+    public void DisabledTicketing_DeletedArchiveOnlyRecordsAndEmptyStoreNeedNoTicketCapabilities()
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var retained = new Ticket(Guid.NewGuid(), "old-panel", 42, 123, TicketState.Deleted, 1, DateTimeOffset.UnixEpoch,
+            ArchivePath: "/archives/retained/transcript.html");
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, [retained]), Is.False);
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, []), Is.False);
+        configuration.Tickets.Enabled = true;
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, []), Is.True, "New ticketing requires capabilities before any ticket exists.");
+    }
+
+    [Test]
+    public void DisabledTicketing_CapabilityPolicyUsesCurrentSnapshotAfterRetainedTicketDeletion()
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var ticket = new Ticket(Guid.NewGuid(), "retained", 42, 123, TicketState.Closed, 1, DateTimeOffset.UnixEpoch);
+        var snapshot = new List<Ticket> { ticket };
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, snapshot), Is.True);
+        snapshot[0] = ticket with { State = TicketState.Deleted, ArchivePath = "/archives/retained/transcript.html" };
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, snapshot), Is.False);
+    }
     [TestCase(ApplicationFlags.GatewayMessageContent)]
     [TestCase(ApplicationFlags.GatewayMessageContentLimited)]
     public void TicketTranscripts_RequireApplicationMessageContentCapability(ApplicationFlags flags)

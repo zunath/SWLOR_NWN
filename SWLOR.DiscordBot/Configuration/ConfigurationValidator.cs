@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using SWLOR.DiscordBot.Core;
 
 namespace SWLOR.DiscordBot.Configuration;
 
@@ -96,10 +97,60 @@ public static partial class ConfigurationValidator
         return errors;
     }
 
+    public static IReadOnlyList<string> ValidatePersistedTickets(BotConfiguration configuration, IReadOnlyList<Ticket> persistedTickets)
+    {
+        ArgumentNullException.ThrowIfNull(persistedTickets);
+        var errors = Validate(configuration).ToList();
+        if (configuration.Tickets is not { } options) return errors;
+        var retained = persistedTickets.Where(ticket => ticket.State != TicketState.Deleted || ticket.ArchivePath is not null).ToArray();
+        if (retained.Length == 0) return errors;
+        var channelMaintenance = retained.Any(ticket => ticket.State != TicketState.Deleted);
+        // Enabled controls accepting new tickets, not ownership of existing channel mutations.
+        if (channelMaintenance && !options.Enabled)
+        {
+            ValidateTickets(options, errors);
+            if (configuration.Factions?.Enabled == true)
+            {
+                var retainedRoles = (options.SupportRoleIds ?? []).Concat(options.BypassRoleIds ?? []).ToHashSet();
+                foreach (var role in configuration.Factions.Roles ?? [])
+                    if (role is not null && retainedRoles.Contains(role.RoleId))
+                        errors.Add($"Faction role '{role.Name}' overlaps a ticket support or bypass role retained for persisted maintenance.");
+            }
+        }
+        foreach (var ticket in retained.Where(ticket => ticket.State is TicketState.Creating or TicketState.Reopening))
+            if (!(options.Panels ?? []).Any(panel => panel is not null && panel.Id == ticket.PanelId))
+                errors.Add($"tickets.panels must retain panel '{ticket.PanelId}' required by persisted ticket {ticket.Id}.");
+
+        // Deleted tickets only need archive ownership; expired archives must not depend on panel/role configuration.
+        if (!channelMaintenance && !options.Enabled) ValidateArchiveDirectory(options.ArchiveDirectory, errors);
+        if (TryArchiveRoot(options.ArchiveDirectory, out var root))
+            foreach (var ticket in retained.Where(ticket => ticket.ArchivePath is not null))
+            {
+                var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                var expected = Path.Combine(root!, ticket.Id.ToString("N"));
+                if (!TryArchiveRoot(ticket.ArchivePath!, out var archivePath) || !string.Equals(archivePath, expected, comparison))
+                    errors.Add($"tickets.archiveDirectory must retain ownership of the persisted archive for ticket {ticket.Id}; restore its original archive root before startup.");
+            }
+        return errors;
+    }
+
+    private static void ValidateArchiveDirectory(string? directory, List<string> errors)
+    {
+        if (!TryArchiveRoot(directory, out _)) errors.Add("tickets.archiveDirectory must be an absolute path.");
+    }
+
+    private static bool TryArchiveRoot(string? path, out string? root)
+    {
+        root = null;
+        if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path)) return false;
+        try { root = Path.GetFullPath(path); return true; }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException) { return false; }
+    }
+
     private static void ValidateTickets(TicketOptions tickets, List<string> errors)
     {
-        if (tickets.Panels is null || tickets.Panels.Length == 0) errors.Add("tickets.panels must contain at least one panel when tickets are enabled.");
-        if (tickets.SupportRoleIds is null || tickets.SupportRoleIds.Length == 0) errors.Add("tickets.supportRoleIds must contain at least one role when tickets are enabled.");
+        if (tickets.Panels is null || tickets.Panels.Length == 0) errors.Add("tickets.panels must contain at least one panel when tickets are enabled or persisted channels require maintenance.");
+        if (tickets.SupportRoleIds is null || tickets.SupportRoleIds.Length == 0) errors.Add("tickets.supportRoleIds must contain at least one role when tickets are enabled or persisted channels require maintenance.");
         if ((tickets.BypassRoleIds?.Length ?? 0) > 0 && (tickets.BypassMemberLimit is null || tickets.BypassPanelLimit is null || tickets.BypassGuildLimit is null))
             errors.Add("tickets.bypassMemberLimit, bypassPanelLimit, and bypassGuildLimit must all be explicitly set when bypassRoleIds are configured.");
         var panelIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -132,7 +183,7 @@ public static partial class ConfigurationValidator
         if (tickets.CleanupInterval > TimeSpan.FromDays(30)) errors.Add("tickets.cleanupInterval must not exceed 30 days.");
         if (tickets.ArchiveRetentionDays <= 0 || tickets.ArchiveRetentionDays <= tickets.CleanupDelay.TotalDays) errors.Add("tickets.archiveRetentionDays must be positive and longer than cleanupDelay.");
         if (tickets.ArchiveRetentionDays > 3650) errors.Add("tickets.archiveRetentionDays must not exceed 3650 days.");
-        if (string.IsNullOrWhiteSpace(tickets.ArchiveDirectory) || !Path.IsPathRooted(tickets.ArchiveDirectory)) errors.Add("tickets.archiveDirectory must be an absolute path.");
+        ValidateArchiveDirectory(tickets.ArchiveDirectory, errors);
         if (tickets.MaxAttachmentBytes <= 0) errors.Add("tickets.maxAttachmentBytes must be positive.");
         if (tickets.MaxAttachmentBytes > 10737418240L) errors.Add("tickets.maxAttachmentBytes must not exceed 10 GiB.");
     }

@@ -31,6 +31,63 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static readonly List<(uint Weapon, CombatDamageType Type, DateTime Time)> _hits = new();
         private static readonly List<uint> _itemHits = new();
 
+        [EngineTest("Twinblade commanded attacks use one roll per ordinary delay cycle", Category = "DoubleWeapon", TimeoutSeconds = 30f)]
+        public static Task TwinbladeAttackCadence(EngineTestContext ctx) => AssertDoubleWeaponAttackCadence(ctx, "b_twinblade");
+
+        [EngineTest("Saberstaff commanded attacks use one roll per ordinary delay cycle", Category = "DoubleWeapon", TimeoutSeconds = 30f)]
+        public static Task SaberstaffAttackCadence(EngineTestContext ctx) => AssertDoubleWeaponAttackCadence(ctx, "trn_saberstaff_1");
+
+        private static async Task AssertDoubleWeaponAttackCadence(EngineTestContext ctx, string resref)
+        {
+            var attacker = ctx.SpawnCreature("nw_bandit001", -0.5f);
+            var target = ctx.SpawnCreature("nw_rat001", 1f);
+            await ctx.WaitFrameAsync();
+            var weapon = await ctx.EquipItemAsync(attacker, resref, InventorySlot.RightHand);
+            var rawDelay = 0;
+            var effectiveDelay = 0;
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    ConfigureWeapon(weapon, CombatDamageType.Ice);
+                    ctx.SuppressNPCNaturalRegen(target);
+                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
+                    TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
+                    ctx.MakeHostile(target);
+                    ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, attacker)), "A double weapon has no separately equipped left-hand weapon");
+                    ctx.Assert(!EquipmentPredicates.HasDualWield(attacker), "The current two-weapon predicate excludes double weapons");
+                    rawDelay = Combat.CalculateAttackDelay(attacker);
+                    effectiveDelay = Combat.CalculateEffectiveAttackDelay(rawDelay);
+                    ctx.Assert(effectiveDelay > Combat.BaseAttackDelayMilliseconds, "The ordinary fixture does not batch hasted rolls");
+                    ctx.SetNPCPerkLevel(attacker, PerkType.DualWield, 3);
+                    ctx.AssertEqual(0, Combat.CalculateOffhandAttackDelayReduction(attacker), "Dual Wield III currently grants no bonus to a double weapon");
+                    TemporaryStatModifier.Add(attacker, StatType.OffhandAttackDelayReductionPercent, 30, 60f);
+                    ctx.AssertEqual(30, Combat.CalculateOffhandAttackDelayReduction(attacker), "The fixture can grant the off-hand stat independently of perk eligibility");
+                    ctx.AssertEqual(rawDelay, Combat.CalculateAttackDelay(attacker), "Granting the off-hand stat alone does not change an empty left hand's delay");
+                });
+                await ctx.WaitFrameAsync();
+                _observedAttacker = attacker;
+                _hits.Clear();
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                AssignCommand(attacker, () => ActionAttack(target));
+                await ctx.WaitUntilAsync(() => _hits.Count > 0, 5f, "the first double-weapon attack");
+                var firstHit = _hits[0].Time;
+                await ctx.DelaySecondsAsync(effectiveDelay / 1000f - 0.25f);
+                ctx.AssertEqual(1, _hits.Count, "Only one damage roll occurs inside the first ordinary delay cycle");
+                await ctx.WaitUntilAsync(() => _hits.Count >= 2, 5f, "the next double-weapon cycle");
+                ctx.AssertEqual(weapon, _hits[0].Weapon, "The first roll uses the equipped double weapon");
+                ctx.AssertEqual(weapon, _hits[1].Weapon, "The next cycle uses the same equipped double weapon");
+                var gap = (_hits[1].Time - firstHit).TotalMilliseconds;
+                ctx.Assert(gap >= effectiveDelay - 100, "The second roll waits for the next cycle, rather than a staggered off-hand swing");
+                ctx.Log($"{resref}: one roll per cycle; raw delay {rawDelay}ms, effective delay {effectiveDelay}ms, observed gap {gap:0}ms.");
+            }
+            finally
+            {
+                AssignCommand(attacker, () => ClearAllActions());
+                ResetObservation();
+            }
+        }
         [EngineTest("Dual wield commanded animation sequence delivers main then off before the next cycle", Category = "DualWield", TimeoutSeconds = 60f)]
         public static Task CommandedAnimationSequence(EngineTestContext ctx) => AssertCommandedAnimationSequence(ctx, 23);
 

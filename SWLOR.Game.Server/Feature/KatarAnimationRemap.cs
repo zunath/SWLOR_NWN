@@ -107,6 +107,7 @@ namespace SWLOR.Game.Server.Feature
         // Determines whether remaps should be active right now and applies/restores exactly once per state change.
         private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
         {
+            DoublehandStance.Refresh(creature, forceRefresh);
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             BaseItem? rightHandBaseItem = GetIsObjectValid(rightHand) ? GetBaseItemType(rightHand) : null;

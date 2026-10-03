@@ -1,6 +1,6 @@
 # SWLOR Discord Bot Design
 
-Status: draft; live-server parity audit partially observed and blocked. Updated 2026-10-03.
+Status: architecture and implementation contract specified; live-server parity audit remains incomplete because supported browser inspection stopped. Updated 2026-10-03.
 
 ## Confirmed scope
 
@@ -294,7 +294,7 @@ Inspect Ticket Tool at https://tickettool.xyz/manage-servers, selecting SWLOR an
 
 ## Implementation and cutover sequence
 
-1. Renew the failed browser-tool runtime, finish the partially observed parity inventory using the existing authenticated Chrome session and published Wiki baseline, and identify only decisions the configuration does not answer.
+1. Implement against the contract below while completing the remaining configuration evidence through supported access. Import verified IDs and command content before enabling each production feature; unresolved audit fields do not block independent development.
 2. Add the independent worker, PostgreSQL schema, configuration validation, and Linux Docker packaging. Keep a dedicated development application/guild configuration.
 3. Implement ticket creation/rename/close/recovery and scheduled cleanup with focused tests; include observed transcript and staff workflows.
 4. Implement welcomes, factions, and canned commands using the audited configuration and compatibility aliases.
@@ -313,6 +313,73 @@ Inspect Ticket Tool at https://tickettool.xyz/manage-servers, selecting SWLOR an
 - Welcome output and timing match without duplicate posts; faction joins/leaves/exclusivity and restrictions match; all audited canned commands retain their output and restrictions.
 - Backups restore ticket/configuration data; the bot reconnects and remains usable when the game is unavailable.
 - No old bot feature is disabled until its replacement passes the parity check and cutover is authorized.
+
+## Implementation contract
+
+Independent implementation can proceed against this contract. The remaining live-audit fields gate configuration import and production activation, not independent development. `design/discord-bot-parity.json` records the verified observations in structured form. It is an audit inventory, not a runnable configuration: unresolved IDs, responses, and switches are intentionally null. Proposed behavior below is distinct from observed Ticket Tool or Dyno settings.
+
+### Initial interfaces and authorization
+
+| Interface | Behavior | Authorized actor |
+| --- | --- | --- |
+| Ticket panel button | Opens the configured private ticket; reports an existing ticket when the member limit is reached | Eligible guild member |
+| Close button and `/ticket close` | Closes the current managed ticket after confirmation | Its requester or a configured support role |
+| `/ticket rename name` | Renames the current managed ticket after validating and normalizing the name | Configured support role |
+| `/ticket reopen` | Cancels scheduled deletion and restores the open permission profile | Configured support role; requester access remains a parity setting |
+| `/ticket transcript` | Exports a managed ticket under its archive access policy | Configured support role with access to that ticket |
+| `?rank <exact faction role name>` | Applies the audited join/leave policy for an allowlisted role | Eligible guild member |
+| Existing 24 `?` answer commands | Produces the imported response with its original restrictions | As configured for each command |
+| Member join event | Sends the imported welcome to the configured destination | Automatic handler |
+| Configuration import/panel publication | Validates an explicit configuration revision; publication is separate from validation | Explicit bot configuration administrators |
+
+Staff support and bot configuration administration are separate permissions. A support role does not automatically grant configuration access. Legacy `$` commands enter the compatibility layer only where their actual use and behavior are verified. Initial slash commands supplement the requested button workflow and existing Dyno prefix; they do not establish parity with uninspected Ticket Tool commands.
+
+The Discord adapter defers channel-creation/export interactions before slow work, then reports the result privately. Buttons carry a versioned operation and stable ticket/panel ID; handlers look up the authoritative record and verify guild, channel, requester, and current actor roles. Reject unknown, stale, or cross-guild controls. Normalize channel names within Discord limits and preserve the ticket ID regardless of renames.
+
+Parse prefix commands as a command token followed by an untouched argument string so faction names containing spaces remain usable. Ignore bot/webhook messages. The template renderer supports only imported, explicitly implemented variables; it never executes script text. Reject unsupported Dyno macros during import and show the affected command instead of silently changing its meaning. Resolve channel mentions to IDs and restrict allowed mentions on output.
+
+### Proposed defaults for new behavior
+
+These are design recommendations for behavior the existing audit did not establish. They must be visible in the deployment configuration review before activation; no existing bot setting has been changed.
+
+| Setting | Proposed value | Reason |
+| --- | --- | --- |
+| Cleanup eligibility | Seven days after explicit closure; never delete an open ticket for inactivity | Provides a staff review window and meets the requested periodic cleanup |
+| Cleanup polling | Every five minutes, with a persisted due time and bounded batch | Restarts do not reset the delay or lose work |
+| Close confirmation | One confirmation; no mandatory reason | Avoids accidental closure without adding a required form |
+| Requester after closure | Read-only until deletion | Allows reviewing the outcome during the cleanup window |
+| Archive before deletion | Required JSON and escaped HTML export, including messages, embeds, timestamps, author IDs, and attachment metadata | Preserves a usable record independently of the deleted channel |
+| Attachment handling | Copy available ticket attachments into protected archive storage; failed required copies block cleanup | Discord URLs alone do not provide a durable archive |
+| Archive retention | 90 days after closure, configurable; any extended hold must be explicitly recorded | Provides a bounded support-history window for future querying |
+| Reopening | Staff-only initially; clear deletion due time and restore permissions atomically | Prevents cleanup racing with an active support conversation |
+| Open category selection | First configured category with capacity; fail with an actionable response when both are full | Supports the two observed categories without creating unapproved categories |
+| Existing Ticket Tool channels | Let Ticket Tool finish them; new bot starts with new tickets | Avoids claiming old channels or deleting them based on names |
+| Future AI | Disabled; archive tickets only, with no general-chat indexing | Keeps launch focused on replacement features |
+
+A reopened ticket's later closure starts a new deletion and archive-retention window. Before final export, acquire the ticket lock, transition to Deleting, and freeze ordinary participant/support-role writes using the closed permission profile. Export staff follow-up after closure and record the final message ID and export status. Recheck for new messages before deletion; any change invalidates the export and retries it. Administrators retain platform access, so the cutover procedure must also tell staff to stop posting to tickets marked for deletion. An archive hold blocks both channel cleanup and archive expiration. Backup expiration must respect the chosen retention policy; a restore reapplies expiration and holds before serving archived data. Missing archive storage or a failed export suspends deletion while ordinary ticket operations remain usable.
+
+### Configuration validation and deployment
+
+- Validate stable guild/channel/category/role IDs and their types against the intended guild. Name matching is a discovery aid only; never guess between duplicate names. The stale `~ Deleted ~` exemption is excluded.
+- Each feature has an independent activation flag. An enabled feature with null required fields fails validation; disabled features can remain incomplete. The validator reports all missing fields together. Support roles, permission profiles, limit-exemption scopes, templates, and archive policy must be explicit for enabled ticketing; faction semantics and role IDs must be explicit for enabled ranks; every enabled answer requires imported content and options.
+- Preserve separate member, panel, and guild limits. Serialize reservation across those scopes so concurrent opens cannot exceed them. Configure exemption scopes explicitly after verification; the observed bypass role names do not establish which limits they bypass.
+- Keep the bot token and database credentials in mounted host secrets. Tracked configuration contains references, not values. Limit the bot to the guild and relevant channels; request the permissions needed for channel management, role assignment, messages, and exports, without granting Administrator. Verify effective access and role hierarchy before activation.
+- Package a worker image and a PostgreSQL service in an independent Compose project. Persist database and protected archive storage; publish no database port or public bot endpoint. Run the worker as a non-root user, configure graceful shutdown and bounded logs, and use a database health check plus application retries. Pin image and package versions during implementation.
+- Acquire a database-backed active-worker lease before handling mutations. Treat readiness as database reachable, lease held, configuration valid, and Gateway connected; a process being alive alone is insufficient. Use durable retries for cleanup and a recurring reconciliation pass for interrupted operations.
+- Back up the database, archive, and non-secret configuration consistently. Record the last successful backup and periodically test restoration. Actual host storage, resources, backup destination, and deployment credentials are deployment inputs still to be inspected.
+- Cut over one feature at a time with a configuration revision and a recorded comparison result. Keep Ticket Tool operational for existing tickets. Dyno stays installed until its enabled-module inventory has been reconciled; disable only a verified replaced handler to prevent duplicate output.
+
+### Focused verification plan
+
+| Area | Required evidence |
+| --- | --- |
+| Ticket access | Ordinary member, requester, each support role, removed staff member, and forged/stale control; compare open and closed access |
+| Creation and limits | Concurrent opens by the same and different members; all three caps; explicit exemption scopes; full categories; crash after Discord channel creation |
+| Close and cleanup | Duplicate close, restart, failed export/copy, post-close follow-up, reopen versus deletion, archive hold, manually removed channel, and unrelated legacy channel |
+| Dyno compatibility | An imported fixture for each of the 24 commands, exact output/options, unsupported macros, spaces in faction names, role hierarchy, join/leave/exclusivity, and duplicate member events |
+| Operations | Gateway reconnect, database interruption, rate limits, loss of permissions, graceful shutdown, competing-worker lease, backup restore, and per-feature rollback |
+
+Do not test against the production guild by posting tickets or commands during discovery. Domain/adapter tests can use fixtures independently; a dedicated development guild supplies the final permission and interaction checks. Exact parity is accepted only after the missing live responses, switches, IDs, and deployed controls have been read and compared.
 
 ## Reference documentation
 

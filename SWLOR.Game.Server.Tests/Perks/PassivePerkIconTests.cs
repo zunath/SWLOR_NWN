@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.VisualBasic.FileIO;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.PerkService;
@@ -9,6 +10,30 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class PassivePerkIconTests
 {
     private const int CustomTlkOffset = 16777216;
+
+    [Test]
+    public void DoublehandTrait_IsManifestedAsAPassiveFeat()
+    {
+        var root = FindRepositoryRoot();
+        using var parser = new TextFieldParser(Path.Combine(root.FullName,
+            "SWLOR.Game.Server", "Readmes", "GameplayIconManifest.csv"));
+        parser.SetDelimiters(",");
+        var headers = parser.ReadFields()!;
+        var typeColumn = Array.IndexOf(headers, "Type");
+        var keyColumn = Array.IndexOf(headers, "Key");
+        var semanticColumn = Array.IndexOf(headers, "SemanticCategory");
+        var traits = 0;
+        while (!parser.EndOfData)
+        {
+            var row = parser.ReadFields()!;
+            if (row[keyColumn] != nameof(FeatType.DoublehandTrait))
+                continue;
+            traits++;
+            row[typeColumn].Should().Be("Feat", $"{row[keyColumn]} is passive and must not require ability cooldown icons");
+            row[semanticColumn].Should().Be("Passive");
+        }
+        traits.Should().Be(1);
+    }
 
     [Test]
     public void ActivePerks_ResolveAnIconFromGrantedFeatsOrExplicitMetadata()

@@ -92,10 +92,6 @@ public static partial class ConfigurationValidator
                 ValidateUniqueIds(answer.AllowedRoleIds, $"answers[{i}].allowedRoleIds", errors);
                 ValidateUniqueIds(answer.AllowedChannelIds, $"answers[{i}].allowedChannelIds", errors);
             }
-            if (configuration.Factions?.Enabled == true)
-                foreach (var answer in configuration.Answers.Where(x => x is not null && x.Enabled))
-                    if (configuration.Factions.Roles?.Any(x => x is not null && string.Equals(x.Name, answer.Name, StringComparison.OrdinalIgnoreCase)) == true)
-                        errors.Add($"Command '{answer.Name}' is configured as both a faction and a quick answer.");
         }
         return errors;
     }
@@ -161,7 +157,12 @@ public static partial class ConfigurationValidator
         if (factions.Roles is null || factions.Roles.Length == 0) errors.Add("factions.roles must contain at least one role when factions are enabled.");
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var ids = new HashSet<ulong>();
-        var staff = (config.AdministratorRoleIds ?? []).Concat(config.Tickets?.SupportRoleIds ?? []).ToHashSet();
+        var protectedRoles = (config.AdministratorRoleIds ?? []).ToHashSet();
+        if (config.Tickets?.Enabled == true)
+        {
+            protectedRoles.UnionWith(config.Tickets.SupportRoleIds ?? []);
+            protectedRoles.UnionWith(config.Tickets.BypassRoleIds ?? []);
+        }
         if (factions.Roles is not null)
             for (var i = 0; i < factions.Roles.Length; i++)
             {
@@ -171,7 +172,7 @@ public static partial class ConfigurationValidator
                 else if (!names.Add(role.Name.Trim())) errors.Add($"Duplicate faction command '{role.Name}'.");
                 RequireId(role.RoleId, $"factions.roles[{i}].roleId", errors);
                 if (role.RoleId != 0 && !ids.Add(role.RoleId)) errors.Add($"Duplicate faction role ID {role.RoleId}.");
-                if (role.RoleId != 0 && staff.Contains(role.RoleId)) errors.Add($"Faction role '{role.Name}' overlaps an administrator or ticket support role.");
+                if (role.RoleId != 0 && protectedRoles.Contains(role.RoleId)) errors.Add($"Faction role '{role.Name}' overlaps an administrator or ticket support role, or a ticket bypass role.");
             }
         if (factions.Exclusive is null) errors.Add("factions.exclusive must be set when factions are enabled.");
         if (factions.Behavior is null || !(factions.Behavior.Equals("toggle", StringComparison.OrdinalIgnoreCase) || factions.Behavior.Equals("join", StringComparison.OrdinalIgnoreCase))) errors.Add("factions.behavior must be 'toggle' or 'join'.");

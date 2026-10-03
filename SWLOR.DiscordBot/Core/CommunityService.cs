@@ -52,9 +52,9 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         if (userId == 0 || channelId == 0 || messageId == 0 || string.IsNullOrWhiteSpace(content)) return;
         var member = await discord.GetMemberAsync(userId, ct);
         if (member is null || member.IsBot || member.IsWebhook) return;
-        var body = content.Trim();
+        var body = content.TrimStart();
         if (!body.StartsWith(configuration.Prefix, StringComparison.Ordinal)) return;
-        var command = body[configuration.Prefix.Length..].Trim();
+        var command = body[configuration.Prefix.Length..].TrimStart();
         if (command.Length == 0) return;
 
         var faction = FindFaction(command);
@@ -64,18 +64,21 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             return;
         }
 
-        var words = command.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
-        if (words.Length == 0) return;
-        var answer = (configuration.Answers ?? []).FirstOrDefault(x => x.Enabled && x.Name.Equals(words[0], StringComparison.OrdinalIgnoreCase));
+        var tokenLength = 0;
+        while (tokenLength < command.Length && !char.IsWhiteSpace(command[tokenLength])) tokenLength++;
+        var commandName = command[..tokenLength];
+        // Consume only the token separator; preserve the argument tail exactly for {args}.
+        var rawArguments = tokenLength < command.Length ? command[(tokenLength + 1)..] : "";
+        var answer = (configuration.Answers ?? []).FirstOrDefault(x => x.Enabled && x.Name.Equals(commandName, StringComparison.OrdinalIgnoreCase));
         if (answer is null || answer.AllowedChannelIds.Length > 0 && !answer.AllowedChannelIds.Contains(channelId) ||
             answer.AllowedRoleIds.Length > 0 && !answer.AllowedRoleIds.Any(member.RoleIds.Contains)) return;
 
-        var arguments = words.Skip(1).ToArray();
+        var arguments = rawArguments.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var deliveryKey = $"answer:{channelId}:{messageId}";
         var cooldownKey = $"answer-cooldown:{answer.Name.ToLowerInvariant()}:{userId}";
         var texts = answer.Responses ?? [];
-        var response = texts.Length == 0 ? "" : TemplateRenderer.RenderAnswer(texts[Random.Shared.Next(texts.Length)], userId, discord.ServerName, arguments);
-        var embeds = (answer.Embeds ?? []).Select(embed => TemplateRenderer.RenderEmbed(embed, userId, discord.ServerName, arguments)).ToArray();
+        var response = texts.Length == 0 ? "" : TemplateRenderer.RenderAnswer(texts[Random.Shared.Next(texts.Length)], userId, discord.ServerName, arguments, rawArguments);
+        var embeds = (answer.Embeds ?? []).Select(embed => TemplateRenderer.RenderEmbed(embed, userId, discord.ServerName, arguments, rawArguments)).ToArray();
         var candidate = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(response, embeds, answer.DeleteResponseAfter, deliveryKey));
         await using (var session = await store.LockAsync(ct))
         {

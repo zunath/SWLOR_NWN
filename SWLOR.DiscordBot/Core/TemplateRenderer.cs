@@ -17,16 +17,17 @@ public static partial class TemplateRenderer
         });
     }
 
-    public static string RenderAnswer(string template, ulong userId, string serverName, IReadOnlyList<string> arguments)
+    public static string RenderAnswer(string template, ulong userId, string serverName, IReadOnlyList<string> arguments, string? rawArguments = null)
     {
         ArgumentNullException.ThrowIfNull(template);
         ArgumentNullException.ThrowIfNull(arguments);
-        var rendered = template.Replace("{user}", $"<@{userId}>", StringComparison.Ordinal)
-            .Replace("{server}", serverName ?? "", StringComparison.Ordinal)
-            .Replace("{args}", string.Join(' ', arguments), StringComparison.Ordinal);
-        return AnswerMacroRegex().Replace(rendered, match =>
+        return AnswerMacroRegex().Replace(template, match =>
         {
-            var index = match.Groups[1].Value[0] - '1';
+            var macro = match.Groups[1].Value;
+            if (macro == "user") return $"<@{userId}>";
+            if (macro == "server") return serverName ?? "";
+            if (macro == "args") return rawArguments ?? string.Join(' ', arguments);
+            var index = macro[0] - '1';
             return index >= 0 && index < arguments.Count ? arguments[index] : "";
         });
     }
@@ -56,19 +57,19 @@ public static partial class TemplateRenderer
         return message with { Content = content, Embeds = embeds };
     }
 
-    public static CommunityEmbed RenderEmbed(AnswerEmbed embed, ulong userId, string serverName, IReadOnlyList<string> arguments) =>
+    public static CommunityEmbed RenderEmbed(AnswerEmbed embed, ulong userId, string serverName, IReadOnlyList<string> arguments, string? rawArguments = null) =>
         new(
-            RenderOptional(embed.Title, userId, serverName, arguments),
-            RenderOptional(embed.Description, userId, serverName, arguments),
+            RenderOptional(embed.Title, userId, serverName, arguments, rawArguments),
+            RenderOptional(embed.Description, userId, serverName, arguments, rawArguments),
             embed.Url,
             embed.Color,
             (embed.Fields ?? []).Select(field => new CommunityEmbedField(
-                RenderAnswer(field.Name, userId, serverName, arguments),
-                RenderAnswer(field.Value, userId, serverName, arguments),
+                RenderAnswer(field.Name, userId, serverName, arguments, rawArguments),
+                RenderAnswer(field.Value, userId, serverName, arguments, rawArguments),
                 field.Inline)).ToArray());
 
-    private static string? RenderOptional(string? value, ulong userId, string serverName, IReadOnlyList<string> arguments) =>
-        value is null ? null : RenderAnswer(value, userId, serverName, arguments);
+    private static string? RenderOptional(string? value, ulong userId, string serverName, IReadOnlyList<string> arguments, string? rawArguments = null) =>
+        value is null ? null : RenderAnswer(value, userId, serverName, arguments, rawArguments);
 
     private static string? Take(string? value, int maxLength, ref int remaining)
     {
@@ -88,6 +89,6 @@ public static partial class TemplateRenderer
 
     [GeneratedRegex(@"\{#([A-Za-z0-9_-]+)\}", RegexOptions.CultureInvariant)]
     private static partial Regex ChannelMacroRegex();
-    [GeneratedRegex(@"\{([1-9])\}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"\{(user|server|args|[1-9])\}", RegexOptions.CultureInvariant)]
     private static partial Regex AnswerMacroRegex();
 }

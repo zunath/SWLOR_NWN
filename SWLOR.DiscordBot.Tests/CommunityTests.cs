@@ -159,6 +159,45 @@ public sealed class CommunityTests
         Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 301UL) }));
     }
 
+    [TestCase("alpha   beta  ", "alpha", "beta")]
+    [TestCase("alpha\tbeta\n gamma", "alpha", "beta")]
+    [TestCase("  alpha beta", "alpha", "beta")]
+    [TestCase("{1} {user}", "{1}", "{user}")]
+    [TestCase("", "", "")]
+    public async Task ExecuteAsync_PreservesRawArgumentsInContentAndEmbeds(string rawArguments, string first, string second)
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1,
+            Prefix = "?",
+            Answers = [new QuickAnswerOptions
+            {
+                Name = "guide",
+                Responses = ["[{args}] / {1} / {2}"],
+                Embeds = [new AnswerEmbed
+                {
+                    Title = "[{args}]",
+                    Description = "{1} / {2}",
+                    Fields = [new EmbedField { Name = "[{args}]", Value = "[{args}] / {1}" }]
+                }]
+            }]
+        };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []) };
+        var service = new CommunityService(config, new FakeTicketStore(), discord);
+
+        await service.ExecuteAsync(7, 100, 301, "?guide " + rawArguments, CancellationToken.None);
+
+        var message = discord.Sent.Single().Message;
+        Assert.Multiple(() =>
+        {
+            Assert.That(message.Content, Is.EqualTo($"[{rawArguments}] / {first} / {second}"));
+            Assert.That(message.Embeds.Single().Title, Is.EqualTo($"[{rawArguments}]"));
+            Assert.That(message.Embeds.Single().Description, Is.EqualTo($"{first} / {second}"));
+            Assert.That(message.Embeds.Single().Fields.Single().Name, Is.EqualTo($"[{rawArguments}]"));
+            Assert.That(message.Embeds.Single().Fields.Single().Value, Is.EqualTo($"[{rawArguments}] / {first}"));
+        });
+    }
+
     [Test]
     public async Task ExecuteAsync_EnforcesPersistentCooldownAtItsExactBoundary()
     {

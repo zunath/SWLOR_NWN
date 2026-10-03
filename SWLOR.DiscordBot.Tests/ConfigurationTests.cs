@@ -185,6 +185,74 @@ public sealed class ConfigurationTests
         Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
     }
 
+    [TestCase(true, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(false, false, true)]
+    [TestCase(true, true, true)]
+    [TestCase(false, false, false)]
+    public void Factions_RejectTicketBypassRolesRegardlessOfExemptionScope(bool member, bool panel, bool guild)
+    {
+        var configuration = new BotConfiguration
+        {
+            GuildId = 1,
+            Tickets = new TicketOptions
+            {
+                Enabled = true,
+                Panels = [new TicketPanelOptions { ChannelId = 2, OpenCategoryIds = [3], PanelMessage = "Open ticket" }],
+                ClosedCategoryId = 4, LogChannelId = 5, SupportRoleIds = [6], BypassRoleIds = [10],
+                BypassMemberLimit = member, BypassPanelLimit = panel, BypassGuildLimit = guild,
+                ArchiveDirectory = Path.GetTempPath()
+            },
+            Factions = new FactionOptions
+            {
+                Enabled = true, Exclusive = true, Behavior = "join",
+                Roles = [new FactionRole { Name = "Jedi", RoleId = 10 }]
+            }
+        };
+        var errors = ConfigurationValidator.Validate(configuration);
+        Assert.That(errors, Has.Count.EqualTo(1));
+        Assert.That(errors[0], Does.Contain("ticket bypass role"));
+        configuration.Factions.Roles[0].RoleId = 11;
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+        configuration.Factions.Roles[0].RoleId = 6;
+        Assert.That(ConfigurationValidator.Validate(configuration), Has.Some.Contains("ticket support role"));
+    }
+
+    [Test]
+    public void Factions_DisabledTicketsDoNotProtectUnusedSupportOrBypassRoles()
+    {
+        var configuration = new BotConfiguration
+        {
+            GuildId = 1, AdministratorRoleIds = [12],
+            Tickets = new TicketOptions { Enabled = false, SupportRoleIds = [10], BypassRoleIds = [11] },
+            Factions = new FactionOptions
+            {
+                Enabled = true, Exclusive = true, Behavior = "join",
+                Roles = [new FactionRole { Name = "Jedi", RoleId = 10 }, new FactionRole { Name = "Sith", RoleId = 11 }]
+            }
+        };
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+        configuration.Factions.Roles[0].RoleId = 12;
+        Assert.That(ConfigurationValidator.Validate(configuration), Has.Some.Contains("administrator"));
+    }
+
+    [Test]
+    public void Answers_MayMatchFactionDisplayNamesButRankRemainsReserved()
+    {
+        var configuration = ConfigurationLoader.Parse("""
+            {
+                "GuildId":1,
+                "Factions":{"Enabled":true,"Exclusive":true,"Behavior":"join","Roles":[{"Name":"Jedi","RoleId":10}]},
+                "Answers":[{"Name":"jedi","Responses":["Use ?rank Jedi to join."]}]
+            }
+            """);
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+        configuration.Answers[0].Name = "RANK";
+        Assert.That(ConfigurationValidator.Validate(configuration), Has.Some.Contains("reserved for faction role selection"));
+        configuration.Factions.Enabled = false;
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+    }
+
     [Test]
     public void Validate_RejectsUnknownJsonProperties()
     {

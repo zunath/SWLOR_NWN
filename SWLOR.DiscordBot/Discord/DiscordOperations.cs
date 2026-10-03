@@ -286,6 +286,18 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             throw new DiscordValidationException("Enable Message Content Intent for the Discord application to preserve ticket transcripts.");
     }
 
+    internal static void ValidateTextChannelPermissions(ulong id, ChannelPermissions permissions,
+        bool deleteCommand = false, bool requireEmbeds = false)
+    {
+        // Deleting our own response does not require Manage Messages.
+        if (!permissions.ViewChannel || !permissions.SendMessages)
+            throw new DiscordValidationException($"The bot requires View Channel and Send Messages in text channel {id}.");
+        if (requireEmbeds && !permissions.EmbedLinks)
+            throw new DiscordValidationException($"The bot requires Embed Links in text channel {id}.");
+        if (deleteCommand && !permissions.ManageMessages)
+            throw new DiscordValidationException($"Command deletion requires Manage Messages in text channel {id}.");
+    }
+
     internal static void ValidateCommunityChannels(BotConfiguration configuration,
         IReadOnlyCollection<(ulong Id, ChannelType Type, ChannelPermissions Permissions)> channels)
     {
@@ -293,14 +305,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         {
             var channel = channels.SingleOrDefault(x => x.Id == id && x.Type == ChannelType.Text);
             if (channel.Id == 0) throw new DiscordValidationException($"Configured text channel {id} is unavailable.");
-            var permissions = channel.Permissions;
-            // Deleting our own response does not require Manage Messages.
-            if (!permissions.ViewChannel || !permissions.SendMessages)
-                throw new DiscordValidationException($"The bot requires View Channel and Send Messages in text channel {id}.");
-            if (requireEmbeds && !permissions.EmbedLinks)
-                throw new DiscordValidationException($"The bot requires Embed Links in text channel {id}.");
-            if (deleteCommand && !permissions.ManageMessages)
-                throw new DiscordValidationException($"Command deletion requires Manage Messages in text channel {id}.");
+            ValidateTextChannelPermissions(id, channel.Permissions, deleteCommand, requireEmbeds);
         }
 
         if (configuration.Welcome.Enabled)
@@ -366,9 +371,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         {
             var channel = channels.OfType<RestTextChannel>().SingleOrDefault(x => x.Id == id && x.ChannelType == ChannelType.Text)
                 ?? throw new DiscordValidationException($"Configured text channel {id} is unavailable.");
-            var permissions = bot.GetPermissions(channel);
-            if (!permissions.ViewChannel || !permissions.SendMessages || !permissions.EmbedLinks)
-                throw new DiscordValidationException($"The bot lacks required permissions in text channel {id}.");
+            ValidateTextChannelPermissions(id, bot.GetPermissions(channel));
         }
         if (configuration.Tickets.Enabled)
         {

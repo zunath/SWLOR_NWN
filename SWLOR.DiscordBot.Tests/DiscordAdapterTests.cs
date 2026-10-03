@@ -212,6 +212,22 @@ public sealed class DiscordAdapterTests
             [(10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
     }
 
+    [Test]
+    public void TicketTextChannels_PlainMessagesAndControlsDoNotRequireEmbedLinks()
+    {
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTextChannelPermissions(10,
+            new ChannelPermissions(viewChannel: true, sendMessages: true)));
+    }
+
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public void TicketTextChannels_RequireVisibilityAndSendPermissions(bool view, bool send)
+    {
+        Assert.That(() => DiscordOperations.ValidateTextChannelPermissions(10,
+            new ChannelPermissions(viewChannel: view, sendMessages: send)),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("View Channel and Send Messages"));
+    }
+
     [TestCase(ApplicationFlags.GatewayMessageContent)]
     [TestCase(ApplicationFlags.GatewayMessageContentLimited)]
     public void TicketTranscripts_RequireApplicationMessageContentCapability(ApplicationFlags flags)

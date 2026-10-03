@@ -165,7 +165,8 @@ internal static class FullShellAreaPaletteCapture
 
                 palette.PresentationState.EnsurePreview(palette.PresentationState.Tiles[0]);
                 provider.GetRequiredService<EditorService>().TryOpenEditor(ResourceType.Area, AreaResRef);
-                await CaptureWhenReadyAsync(window, desktop, palette, output, runRoot, started);
+                var areaContents = provider.GetRequiredService<AreaContentsViewModel>();
+                await CaptureWhenReadyAsync(window, desktop, palette, areaContents, output, runRoot, started);
             }
             catch (Exception exception)
             {
@@ -179,6 +180,7 @@ internal static class FullShellAreaPaletteCapture
         MainWindow window,
         IClassicDesktopStyleApplicationLifetime desktop,
         PaletteViewModel palette,
+        AreaContentsViewModel areaContents,
         string sceneOutput,
         string runRoot,
         System.Diagnostics.Stopwatch started)
@@ -195,7 +197,8 @@ internal static class FullShellAreaPaletteCapture
                 || paletteView is null
                 || !paletteView.IsEffectivelyVisible
                 || palette.PresentationState.Tiles.Count == 0
-                || !palette.PresentationState.Tiles[0].HasPreview)
+                || !palette.PresentationState.Tiles[0].HasPreview
+                || !AreaContentsIsMounted(window, areaContents, viewModel))
             {
                 await Task.Delay(100);
                 continue;
@@ -203,6 +206,8 @@ internal static class FullShellAreaPaletteCapture
 
             var scene = viewModel.AreaScene
                 ?? throw new InvalidOperationException("The Area Editor lost its native scene during capture.");
+            var expectedInstanceCount = viewModel.Sections.Sum(section => section.Rows.Count);
+            VerifyAreaContentsMount(window, areaContents, viewModel, expectedInstanceCount);
             if (scene.Diagnostics.MissingModels.Count > 0)
             {
                 throw new InvalidDataException(
@@ -531,6 +536,56 @@ internal static class FullShellAreaPaletteCapture
         return remaining > TimeSpan.Zero
             ? remaining
             : throw new TimeoutException("The full-shell capture exceeded its 60-second deadline.");
+    }
+
+    private static bool AreaContentsIsMounted(
+        MainWindow window,
+        AreaContentsViewModel hostModel,
+        AreaEditorViewModel editor)
+    {
+        var hostView = window.GetVisualDescendants()
+            .OfType<SWLOR.Toolset.Shell.Views.AreaContentsView>()
+            .FirstOrDefault();
+        var sharedView = window.GetVisualDescendants()
+            .OfType<Nwn.Toolset.Avalonia.Areas.Contents.Views.AreaContentsView>()
+            .FirstOrDefault();
+        return hostModel.HasArea
+            && string.Equals(hostModel.Contents.AreaResRef, editor.AreaResRef, StringComparison.OrdinalIgnoreCase)
+            && hostModel.Contents.HasArea
+            && hostModel.Contents.Rows.Count > 0
+            && hostView?.DataContext == hostModel
+            && sharedView?.Contents == hostModel.Contents
+            && sharedView.DataContext == hostModel.Contents;
+    }
+
+    private static void VerifyAreaContentsMount(
+        MainWindow window,
+        AreaContentsViewModel hostModel,
+        AreaEditorViewModel editor,
+        int expectedInstanceCount)
+    {
+        var hostView = window.GetVisualDescendants()
+            .OfType<SWLOR.Toolset.Shell.Views.AreaContentsView>()
+            .FirstOrDefault();
+        var sharedView = window.GetVisualDescendants()
+            .OfType<Nwn.Toolset.Avalonia.Areas.Contents.Views.AreaContentsView>()
+            .FirstOrDefault();
+        var actualArea = hostModel.Contents.AreaResRef;
+        var actualRows = hostModel.Contents.Rows.Count;
+        if (!hostModel.HasArea
+            || !hostModel.Contents.HasArea
+            || !string.Equals(actualArea, editor.AreaResRef, StringComparison.OrdinalIgnoreCase)
+            || actualRows == 0
+            || hostView?.DataContext != hostModel
+            || sharedView?.Contents != hostModel.Contents
+            || sharedView.DataContext != hostModel.Contents)
+        {
+            throw new InvalidDataException(
+                $"The mounted SWLOR Area Contents wrapper is not bound to its populated host model: hostHasArea={hostModel.HasArea}, hostArea={actualArea}, editorArea={editor.AreaResRef}, rootRows={actualRows}, expectedInstances={expectedInstanceCount}, hostDataContextMatches={hostView?.DataContext == hostModel}, sharedContentsMatches={sharedView?.Contents == hostModel.Contents}, sharedDataContextMatches={sharedView?.DataContext == hostModel.Contents}.");
+        }
+
+        Console.WriteLine(
+            $"Area Contents wrapper verified: area={actualArea}, sections={editor.Sections.Count}, instances={expectedInstanceCount}, rootRows={actualRows}, hostHasArea={hostModel.HasArea}, sharedHasArea={hostModel.Contents.HasArea}.");
     }
 
     private static void EnsureWithinDeadline(System.Diagnostics.Stopwatch started, string operation) =>

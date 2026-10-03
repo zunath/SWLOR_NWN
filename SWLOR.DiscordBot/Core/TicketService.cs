@@ -12,7 +12,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     // One worker owns the guild; in-flight exports protect only their ticket's archive from cleanup.
     private readonly ConcurrentDictionary<Guid, byte> _exports = new();
     private Guid? _lastMaintenanceTicketId;
-    private static readonly TimeSpan TicketMaintenanceTimeout = TimeSpan.FromMinutes(4);
+    private static readonly TimeSpan TicketMaintenanceInactivityTimeout = TimeSpan.FromMinutes(4);
     private TicketOptions Options => configuration.Tickets;
     public bool CanSupport(Actor actor) => actor.IsGuildOwner || actor.RoleIds.Intersect(Options.SupportRoleIds).Any();
     private bool Bypasses(Actor actor, bool? scope) => scope == true && actor.RoleIds.Intersect(Options.BypassRoleIds).Any();
@@ -156,7 +156,13 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 await saveSession.SaveAsync(current, "exported", actor.UserId, ct);
             }
             // Keep this ticket's files protected through delivery without blocking unrelated mutations.
-            if (deliver is not null) await deliver(current, ct);
+            if (deliver is not null)
+            {
+                var currentActor = await discord.ActorAsync(actor.UserId, ct);
+                if (!CanSupport(currentActor)) return new(false, "Support access changed; transcript delivery was denied.", current);
+                ct.ThrowIfCancellationRequested();
+                await deliver(current, ct);
+            }
             return new(true, "Transcript archived.", current);
         }
         finally { if (exportId is { } id) _exports.TryRemove(id, out _); }
@@ -184,9 +190,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         {
             ct.ThrowIfCancellationRequested();
             _lastMaintenanceTicketId = id;
-            using var timeout = new CancellationTokenSource(TicketMaintenanceTimeout, clock);
-            using var perTicket = CancellationTokenSource.CreateLinkedTokenSource(ct, timeout.Token);
-            try { await MaintainTicketAsync(id, perTicket.Token); }
+            using var progressTimeout = new MaintenanceProgressTimeout(clock, ct);
+            try { await MaintainTicketAsync(id, progressTimeout.Token, progressTimeout.ReportProgress); }
             catch (Exception ex) when (!ct.IsCancellationRequested)
             {
                 await RecordMaintenanceFailureAsync(id, ex, ct);
@@ -232,7 +237,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             await session.SaveAsync(durable with { LastError = "Maintenance failed; retry scheduled. Check worker logs." }, "maintenance-failed", null, ct);
     }
 
-    private async Task MaintainTicketAsync(Guid id, CancellationToken ct)
+    private async Task MaintainTicketAsync(Guid id, CancellationToken ct, Action progress)
     {
         var exporting = false;
         try
@@ -245,7 +250,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 var found = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
                 if (found is null) return;
                 ticket = found;
-                if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await discord.ExistsAsync(ticket, ct))
+                if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await WithProgressAsync(discord.ExistsAsync(ticket, ct), progress))
                 {
                     var now = clock.GetUtcNow();
                     ticket = ticket with { State = TicketState.Deleted, ClosedAt = ticket.ClosedAt ?? now, DeleteAfter = null,
@@ -257,13 +262,13 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct); return; }
                 if (ticket.State == TicketState.Closing)
                 {
-                    await discord.CloseAsync(ticket, ct);
+                    await WithProgressAsync(discord.CloseAsync(ticket, ct), progress);
                     ticket = ticket with { State = TicketState.Closed, LastError = null };
                     await session.SaveAsync(ticket, "close-reconciled", null, ct);
                 }
                 if (ticket.State == TicketState.Reopening)
                 {
-                    await discord.OpenAsync(ticket, false, ct);
+                    await WithProgressAsync(discord.OpenAsync(ticket, false, ct), progress);
                     ticket = ticket with { State = TicketState.Open, LastError = null };
                     await session.SaveAsync(ticket, "reopen-reconciled", null, ct);
                 }
@@ -272,7 +277,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 {
                     if (ticket.ArchivePath is not null && ticket.ArchiveExpiresAt <= clock.GetUtcNow())
                     {
-                        await archive.DeleteAsync(ticket.ArchivePath, ct);
+                        await WithProgressAsync(archive.DeleteAsync(ticket.ArchivePath, ct), progress);
                         await session.SaveAsync(ticket with { ArchivePath = null, ArchiveComplete = false }, "archive-expired", null, ct);
                     }
                     return;
@@ -283,7 +288,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await session.SaveAsync(ticket, "deleting", null, ct);
                 }
                 if (ticket.State != TicketState.Deleting) return;
-                await discord.FreezeAsync(ticket, ct);
+                await WithProgressAsync(discord.FreezeAsync(ticket, ct), progress);
                 if (!_exports.TryAdd(id, 0)) return;
                 exporting = true;
                 // Include partial/completed files in retention even if the final export save never commits.
@@ -291,29 +296,95 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 await session.SaveAsync(ticket, "archive-pending", null, ct);
             }
             // Pagination and attachment downloads can take minutes; do not hold the guild ticket lock.
-            var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
-            var archivePath = await archive.ExportAsync(ticket, snapshot, ct);
+            var snapshot = await WithProgressAsync(discord.ReadTranscriptAsync(ticket, ct, progress), progress);
+            var archivePath = await WithProgressAsync(archive.ExportAsync(ticket, snapshot, ct, progress), progress);
             await using (var saveSession = await store.LockAsync(ct))
             {
                 var current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == id);
                 await saveSession.SaveAsync(current with { ArchivePath = archivePath, ArchiveComplete = true, LastError = null }, "cleanup-exported", null, ct);
             }
             // A stable head alone misses edits/deletions of older messages during pagination or downloads.
-            var verified = await discord.ReadTranscriptAsync(ticket, ct);
+            var verified = await WithProgressAsync(discord.ReadTranscriptAsync(ticket, ct, progress), progress);
             if (!SameTranscript(snapshot, verified))
                 throw new InvalidOperationException("Ticket transcript changed during archival; retrying before deletion.");
             await using var deleteSession = await store.LockAsync(ct);
             var latest = (await deleteSession.GetTicketsAsync(ct)).Single(t => t.Id == id);
             if (latest.State != TicketState.Deleting || latest.Hold) return;
-            if (await discord.LastMessageIdAsync(latest, ct) != verified.LastMessageId)
+            if (await WithProgressAsync(discord.LastMessageIdAsync(latest, ct), progress) != verified.LastMessageId)
                 throw new InvalidOperationException("Ticket received new messages during archival; retrying before deletion.");
-            await discord.DeleteAsync(latest, ct);
+            ct.ThrowIfCancellationRequested();
+            await WithProgressAsync(discord.DeleteAsync(latest, ct), progress);
             await deleteSession.SaveAsync(latest with { State = TicketState.Deleted }, "deleted", null, ct);
             await NotifyAsync($"Ticket {latest.Number} archived and deleted.", ct);
         }
         finally { if (exporting) _exports.TryRemove(id, out _); }
     }
 
+    private static async Task<T> WithProgressAsync<T>(Task<T> operation, Action progress)
+    {
+        var result = await operation;
+        progress();
+        return result;
+    }
+
+    private static async Task WithProgressAsync(Task operation, Action progress)
+    {
+        await operation;
+        progress();
+    }
+
+    // Slow, advancing scans can exceed a total deadline; only stalled work should release the sweep.
+    private sealed class MaintenanceProgressTimeout : IDisposable
+    {
+        private readonly object _gate = new();
+        private readonly TimeProvider _clock;
+        private readonly CancellationTokenSource _inactivity = new();
+        private readonly CancellationTokenSource _linked;
+        private readonly ITimer _timer;
+        private DateTimeOffset _lastProgress;
+        private bool _disposed;
+        public CancellationToken Token => _linked.Token;
+
+        public MaintenanceProgressTimeout(TimeProvider clock, CancellationToken caller)
+        {
+            _clock = clock;
+            _lastProgress = clock.GetUtcNow();
+            _linked = CancellationTokenSource.CreateLinkedTokenSource(caller, _inactivity.Token);
+            _timer = clock.CreateTimer(CheckInactivity, null, TicketMaintenanceInactivityTimeout, Timeout.InfiniteTimeSpan);
+        }
+
+        public void ReportProgress()
+        {
+            lock (_gate)
+            {
+                if (_disposed || _inactivity.IsCancellationRequested) return;
+                _lastProgress = _clock.GetUtcNow();
+                _timer.Change(TicketMaintenanceInactivityTimeout, Timeout.InfiniteTimeSpan);
+            }
+        }
+
+        private void CheckInactivity(object? _)
+        {
+            lock (_gate)
+            {
+                if (_disposed || _inactivity.IsCancellationRequested) return;
+                var remaining = TicketMaintenanceInactivityTimeout - (_clock.GetUtcNow() - _lastProgress);
+                if (remaining <= TimeSpan.Zero) _inactivity.Cancel();
+                else _timer.Change(remaining, Timeout.InfiniteTimeSpan);
+            }
+        }
+
+        public void Dispose()
+        {
+            lock (_gate)
+            {
+                _disposed = true;
+                _timer.Dispose();
+                _linked.Dispose();
+                _inactivity.Dispose();
+            }
+        }
+    }
     private static bool SameTranscript(TranscriptSnapshot archived, TranscriptSnapshot current)
     {
         if (archived.LastMessageId != current.LastMessageId || archived.Messages.Count != current.Messages.Count) return false;

@@ -345,7 +345,7 @@ These are design recommendations for behavior the existing audit did not establi
 | Setting | Proposed value | Reason |
 | --- | --- | --- |
 | Cleanup eligibility | Seven days after explicit closure; never delete an open ticket for inactivity | Provides a staff review window and meets the requested periodic cleanup |
-| Cleanup polling | Every five minutes, with a persisted due time and a bounded maintenance pass | Restarts do not reset the delay or lose work |
+| Cleanup polling | Every five minutes, with a persisted due time and a four-minute inactivity bound per ticket | Restarts do not reset the delay or lose work |
 | Close confirmation | One confirmation; no mandatory reason | Avoids accidental closure without adding a required form |
 | Requester after closure | Read-only until deletion | Allows reviewing the outcome during the cleanup window |
 | Archive before deletion | Required JSON and escaped HTML export, including messages, embeds, timestamps, author IDs, and attachment metadata | Preserves a usable record independently of the deleted channel |
@@ -393,7 +393,9 @@ Implemented behavior:
 - A persisted Creating/Closing/Reopening/Deleting state reconciles interrupted ticket operations. Channel identity combines the database record with an exact ticket GUID in its topic; names alone never establish ownership. The bot does not import or delete Ticket Tool channels.
 - JSON and escaped HTML transcripts, paginated message history, copied CDN attachments with size checks, archive expiration, and a final-message check before channel deletion. Export failures retain the channel. Archives live on the protected data volume; `/ticket transcript` returns the HTML to authorized support staff. Copied attachments and JSON remain in the archive directory and are not embedded into that uploaded HTML.
 - Configurable channel or DM welcomes; exact `?rank <full faction role name>` joins/toggles and optional exclusivity; canned `?` answers with text, embeds, role/channel restrictions, cooldowns, and command/response deletion options. Unsupported macros fail configuration validation.
-- Current REST member/role authorization, guild/category/channel checks, faction role hierarchy checks, bounded queues/retries, rate-limit handling, a single active-worker database lease, and readiness health checks.
+- Current REST member/role authorization, guild/category/channel checks, faction role hierarchy checks, bounded queues/retries, rate-limit handling, a single active-worker database lease, and readiness health checks. Transcript download authorization is refreshed after export and before each upload, including multipart deliveries.
+- Cleanup keeps advancing through large transcripts while completed pages and copied attachment chunks reset its four-minute inactivity timer; a stalled ticket yields to later tickets. Individual remote requests remain bounded.
+- Completed community delivery intents, deduplication keys, expired cooldowns, and source-message deletion tombstones are pruned after 30 days in indexed batches, independently of Gateway readiness and ticket activation. Pending delivery/deletion work is retained. Repeated completion does not extend the replay window; old deletion tombstones receive a full window when schema version 3 is installed.
 - Independent Docker Compose packaging with pinned .NET/PostgreSQL images, a non-root worker, one shared mounted JSON secrets file, a read-only worker filesystem, persistent PostgreSQL/archive volumes, bounded logs, and no published database port.
 
 ### Fill the runtime configuration

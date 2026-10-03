@@ -8,7 +8,8 @@ internal static class TranscriptDelivery
     private const int BufferSize = 65536;
 
     internal static async Task SendAsync(string transcriptPath, ulong attachmentSizeLimit,
-        Func<Stream, string, string, CancellationToken, Task> upload, CancellationToken ct)
+        Func<Stream, string, string, CancellationToken, Task> upload, CancellationToken ct,
+        Func<CancellationToken, Task>? authorize = null)
     {
         ct.ThrowIfCancellationRequested();
         if (attachmentSizeLimit == 0)
@@ -17,8 +18,17 @@ internal static class TranscriptDelivery
         await using var source = new FileStream(transcriptPath, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize, true);
         if (source.Length <= limit)
         {
-            await upload(source, "transcript.html", "Ticket transcript", ct);
+            await UploadAsync(source, "transcript.html", "Ticket transcript");
             return;
+        }
+
+        async Task UploadAsync(Stream stream, string name, string text)
+        {
+            ct.ThrowIfCancellationRequested();
+            // Preparation and earlier parts can take minutes; authorize at each publication boundary.
+            if (authorize is not null) await authorize(ct);
+            ct.ThrowIfCancellationRequested();
+            await upload(stream, name, text, ct);
         }
 
         // Use the tracked archive volume: the worker's /tmp is a small tmpfs, while tickets can
@@ -30,8 +40,8 @@ internal static class TranscriptDelivery
         compressed.Position = 0;
         if (compressed.Length <= limit)
         {
-            await upload(compressed, "transcript.html.gz",
-                "Ticket transcript (gzip). Decompress transcript.html.gz to transcript.html to read the complete transcript.", ct);
+            await UploadAsync(compressed, "transcript.html.gz",
+                "Ticket transcript (gzip). Decompress transcript.html.gz to transcript.html to read the complete transcript.");
             return;
         }
 
@@ -55,7 +65,7 @@ internal static class TranscriptDelivery
             var instructions = $"Ticket transcript part {index} of {total}. Download all {total} parts into an empty folder with filenames unchanged. Concatenate them as binary bytes in filename order into transcript.html.gz, then decompress that gzip file to transcript.html. Do not join them as text.\n" +
                 "Linux/macOS:\n```sh\ncat transcript.html.gz.part* > transcript.html.gz && gzip -d transcript.html.gz\n```\n" +
                 "Windows PowerShell:\n```powershell\n$out=[IO.File]::Create('transcript.html.gz')\nGet-ChildItem -File 'transcript.html.gz.part*' | Sort-Object Name | ForEach-Object { $part=[IO.File]::OpenRead($_.FullName); $part.CopyTo($out); $part.Dispose() }\n$out.Dispose()\n```\nThen extract transcript.html.gz with a gzip-compatible archive tool.";
-            await upload(part, name, instructions, ct);
+            await UploadAsync(part, name, instructions);
         }
     }
 

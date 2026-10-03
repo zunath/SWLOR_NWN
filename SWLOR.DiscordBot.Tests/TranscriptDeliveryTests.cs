@@ -135,6 +135,67 @@ public sealed class TranscriptDeliveryTests
         Assert.That(TemporaryPaths().Except(before), Is.Empty);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task RevokedAccessBeforeHtmlOrPreparedGzipPreventsPublication(bool compress)
+    {
+        var bytes = compress ? Encoding.UTF8.GetBytes(new string('z', 50000)) : RandomBytes(128);
+        await File.WriteAllBytesAsync(sourcePath, bytes);
+        var authorizations = 0;
+        var uploads = 0;
+        Assert.ThrowsAsync<DiscordValidationException>(() => TranscriptDelivery.SendAsync(sourcePath, 1024,
+            (_, _, _, _) => { uploads++; return Task.CompletedTask; }, default, _ =>
+            {
+                authorizations++;
+                Assert.That(TemporaryPaths().Count, Is.EqualTo(compress ? 1 : 0),
+                    "Authorization must follow any gzip preparation and immediately precede publication.");
+                throw new DiscordValidationException("Support access changed.");
+            }));
+        Assert.That(authorizations, Is.EqualTo(1));
+        Assert.That(uploads, Is.Zero);
+        Assert.That(TemporaryPaths(), Is.Empty);
+        Assert.That(await File.ReadAllBytesAsync(sourcePath), Is.EqualTo(bytes));
+    }
+
+    [Test]
+    public async Task RevokedAccessBetweenPartsStopsFurtherPublicationAndCleansTemporaryFiles()
+    {
+        var bytes = RandomBytes(4096);
+        await File.WriteAllBytesAsync(sourcePath, bytes);
+        var support = true;
+        var authorizations = 0;
+        var uploads = 0;
+        Stream? firstPart = null;
+        Assert.ThrowsAsync<DiscordValidationException>(() => TranscriptDelivery.SendAsync(sourcePath, 256,
+            (stream, _, _, _) =>
+            {
+                firstPart = stream;
+                uploads++;
+                support = false;
+                return Task.CompletedTask;
+            }, default, _ =>
+            {
+                authorizations++;
+                if (!support) throw new DiscordValidationException("Support access changed.");
+                return Task.CompletedTask;
+            }));
+        Assert.That(authorizations, Is.EqualTo(2));
+        Assert.That(uploads, Is.EqualTo(1), "Already published parts cannot authorize later parts.");
+        Assert.That(firstPart!.CanRead, Is.False);
+        Assert.That(TemporaryPaths(), Is.Empty);
+        Assert.That(await File.ReadAllBytesAsync(sourcePath), Is.EqualTo(bytes));
+    }
+
+    [Test]
+    public async Task FailedMembershipRefreshPreventsTranscriptPublication()
+    {
+        await File.WriteAllBytesAsync(sourcePath, RandomBytes(128));
+        Assert.ThrowsAsync<IOException>(() => TranscriptDelivery.SendAsync(sourcePath, 1024,
+            (_, _, _, _) => throw new AssertionException("A failed authorization lookup must fail closed."),
+            default, _ => Task.FromException(new IOException("Membership unavailable."))));
+        Assert.That(TemporaryPaths(), Is.Empty);
+    }
+
     private async Task<List<(string Name, string Text, byte[] Bytes)>> DeliverAsync(ulong limit)
     {
         var before = TemporaryPaths();

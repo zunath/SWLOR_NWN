@@ -254,7 +254,10 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         var channel = await RequireManagedAsync(ticket, ct);
         return (await channel.GetMessagesAsync(1, Options(ct)).FlattenAsync()).SingleOrDefault()?.Id;
     }
-    public async Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct)
+    public Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct) =>
+        ReadTranscriptAsync(ticket, ct, static () => { });
+
+    public async Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct, Action progress)
     {
         var channel = await RequireManagedAsync(ticket, ct);
         var messages = new List<TranscriptMessage>();
@@ -263,7 +266,8 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         {
             var page = await (before.HasValue ? channel.GetMessagesAsync(before.Value, Direction.Before, 100, Options(ct)) :
                 channel.GetMessagesAsync(100, Options(ct))).FlattenAsync();
-            if (!page.Any()) break;
+            ct.ThrowIfCancellationRequested();
+            if (!page.Any()) { progress(); break; }
             foreach (var message in page)
                 messages.Add(new(message.Id, message.Author.Id, message.Author.Username, message.Content, message.Timestamp,
                     message.Attachments.Select(x => new TranscriptAttachment(x.Id, x.Filename, x.Url, x.Size)).ToArray(),
@@ -271,6 +275,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             var oldest = page.Min(x => x.Id);
             if (before.HasValue && oldest >= before.Value) throw new InvalidOperationException("Discord transcript pagination did not advance.");
             before = oldest;
+            progress();
         }
         messages.Sort((left, right) => left.Id.CompareTo(right.Id));
         return new(messages, messages.Count == 0 ? null : messages[^1].Id);

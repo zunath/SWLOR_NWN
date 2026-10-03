@@ -29,6 +29,7 @@ public interface ITicketSession : IAsyncDisposable
 public interface ITicketStore
 {
     Task InitializeAsync(CancellationToken ct);
+    Task PruneCompletedDeliveriesAsync(DateTimeOffset now, CancellationToken ct) => Task.CompletedTask;
     // The database lock spans Discord mutations so two processes cannot mutate a ticket concurrently.
     Task<ITicketSession> LockAsync(CancellationToken ct);
     // Community posts serialize independently of ticket exports and channel mutations.
@@ -56,6 +57,7 @@ public interface IDiscordTickets
     Task<bool> ExistsAsync(Ticket ticket, CancellationToken ct);
     Task FreezeAsync(Ticket ticket, CancellationToken ct);
     Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct);
+    Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct, Action progress) => ReadTranscriptAsync(ticket, ct);
     Task<ulong?> LastMessageIdAsync(Ticket ticket, CancellationToken ct);
     Task DeleteAsync(Ticket ticket, CancellationToken ct);
     Task LogAsync(string message, CancellationToken ct);
@@ -65,5 +67,6 @@ public interface ITranscriptArchive
     // Plan a managed directory without writing files, so ownership can commit before publication.
     string GetArchivePath(Ticket ticket);
     Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct);
+    Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct, Action progress) => ExportAsync(ticket, snapshot, ct);
     Task DeleteAsync(string path, CancellationToken ct);
 }

@@ -17,7 +17,10 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
 
     public string GetArchivePath(Ticket ticket) => TicketDirectory(ticket.Id);
 
-    public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct)
+    public Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct) =>
+        ExportAsync(ticket, snapshot, ct, static () => { });
+
+    public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct, Action progress)
     {
         EnsurePrivateDirectory(Root);
         var directory = TicketDirectory(ticket.Id);
@@ -42,6 +45,8 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                     if (new FileInfo(target).Length != attachment.Size)
                         throw new InvalidDataException("Cached attachment size does not match its Discord metadata; cleanup is suspended.");
                     files[attachment.Id] = relative;
+                    ct.ThrowIfCancellationRequested();
+                    progress();
                     continue;
                 }
                 if (!Uri.TryCreate(attachment.Url, UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps ||
@@ -51,6 +56,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 timeout.CancelAfter(TimeSpan.FromMinutes(2));
                 using var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
                 response.EnsureSuccessStatusCode();
+                progress();
                 if (response.RequestMessage?.RequestUri != url)
                     throw new InvalidDataException("Attachment redirects are not supported.");
                 if (response.Content.Headers.ContentLength > configuration.Tickets.MaxAttachmentBytes)
@@ -70,10 +76,12 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                             bytes += read;
                             if (bytes > configuration.Tickets.MaxAttachmentBytes) throw new InvalidDataException("Attachment is larger than allowed.");
                             await output.WriteAsync(buffer.AsMemory(0, read), timeout.Token);
+                            progress();
                         }
                         if (bytes != attachment.Size) throw new InvalidDataException("Attachment size does not match its Discord metadata.");
                     }
                     File.Move(temporary, target, true);
+                    progress();
                 }
                 finally { if (File.Exists(temporary)) File.Delete(temporary); }
                 files[attachment.Id] = relative;
@@ -95,10 +103,14 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 else html.Append("<p>Attachment metadata: ").Append(WebUtility.HtmlEncode(attachment.FileName)).Append(" (not copied)</p>");
             }
             html.Append("</article>");
+            ct.ThrowIfCancellationRequested();
+            progress();
         }
         html.Append("</html>");
         await AtomicWriteAsync(Path.Combine(directory, "transcript.json"), json, ct);
+        progress();
         await AtomicWriteAsync(Path.Combine(directory, "transcript.html"), html.ToString(), ct);
+        progress();
         return directory;
     }
 

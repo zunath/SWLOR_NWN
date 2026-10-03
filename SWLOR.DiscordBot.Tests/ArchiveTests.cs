@@ -301,6 +301,56 @@ public sealed class ArchiveTests
         Assert.That(await File.ReadAllTextAsync(outside), Is.EqualTo("preserve"));
         File.Delete(linked);
     }
+    [Test]
+    public async Task AttachmentCopyReportsForwardProgressBeforePublishingAndPreservesBytes()
+    {
+        var payload = Enumerable.Range(0, 200000).Select(index => (byte)(index % 251)).ToArray();
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(payload) });
+        var archive = new FileTranscriptArchive(CreateConfiguration(copyAttachments: true, maxAttachmentBytes: payload.Length), client);
+        var ticket = CreateTicket();
+        var directory = archive.GetArchivePath(ticket);
+        var target = Path.Combine(directory, "attachments", "88.bin");
+        var observedPartialLengths = new List<long>();
+        var completedTranscriptWasReported = false;
+        var attachment = new TranscriptAttachment(88, "payload.bin", "https://cdn.discordapp.com/attachments/1/88/payload.bin", payload.Length);
+        var snapshot = new TranscriptSnapshot(
+        [new TranscriptMessage(10, 55, "member", "attachment", DateTimeOffset.UnixEpoch, [attachment])], 10);
+
+        await archive.ExportAsync(ticket, snapshot, default, () =>
+        {
+            if (File.Exists(target + ".part")) observedPartialLengths.Add(new FileInfo(target + ".part").Length);
+            completedTranscriptWasReported |= File.Exists(Path.Combine(directory, "transcript.html"));
+        });
+
+        Assert.That(observedPartialLengths.Any(length => length > 0 && length < payload.Length), Is.True,
+            "The watchdog needs progress while a multi-chunk attachment is still copying.");
+        Assert.That(completedTranscriptWasReported, Is.True);
+        Assert.That(await File.ReadAllBytesAsync(target), Is.EqualTo(payload));
+    }
+
+    [Test]
+    public void CancellationDuringReportedAttachmentProgressRemovesPartialFile()
+    {
+        var payload = new byte[200000];
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(payload) });
+        var archive = new FileTranscriptArchive(CreateConfiguration(copyAttachments: true, maxAttachmentBytes: payload.Length), client);
+        var ticket = CreateTicket();
+        var directory = archive.GetArchivePath(ticket);
+        var target = Path.Combine(directory, "attachments", "88.bin");
+        var attachment = new TranscriptAttachment(88, "payload.bin", "https://cdn.discordapp.com/attachments/1/88/payload.bin", payload.Length);
+        var snapshot = new TranscriptSnapshot(
+        [new TranscriptMessage(10, 55, "member", "attachment", DateTimeOffset.UnixEpoch, [attachment])], 10);
+        using var cancellation = new CancellationTokenSource();
+
+        Assert.CatchAsync<OperationCanceledException>(() => archive.ExportAsync(ticket, snapshot, cancellation.Token, () =>
+        {
+            if (File.Exists(target + ".part") && new FileInfo(target + ".part").Length > 0) cancellation.Cancel();
+        }));
+
+        Assert.That(File.Exists(target), Is.False);
+        Assert.That(Directory.GetFiles(directory, "*.part", SearchOption.AllDirectories), Is.Empty);
+        Assert.That(File.Exists(Path.Combine(directory, "transcript.html")), Is.False);
+    }
     private static UnixFileMode ReadUnixMode(string path)
     {
         if (OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Unix mode verification requires Unix.");

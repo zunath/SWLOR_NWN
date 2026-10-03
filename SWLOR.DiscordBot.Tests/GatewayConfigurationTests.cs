@@ -22,6 +22,25 @@ public sealed class GatewayConfigurationTests
         Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, permissions, 10, "?help"), Is.False);
     }
 
+    [TestCase("  ?help")]
+    [TestCase("\t\r\n?help details")]
+    [TestCase("\u2003?help")]
+    [TestCase("?help")]
+    public void CommunityDispatchPermissionGateAcceptsNormalizedPrefixesWithoutRelaxingChannelAccess(string content)
+    {
+        var config = new BotConfiguration
+        {
+            Answers = [new QuickAnswerOptions { Name = "help", Responses = ["answer"], AllowedChannelIds = [10] }]
+        };
+        var writable = new ChannelPermissions(viewChannel: true, sendMessages: true);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, writable, 10, content), Is.True);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, writable, 11, content), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config,
+            new ChannelPermissions(viewChannel: true), 10, content), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, writable, 10, "  ordinary text ?help"), Is.False);
+        Assert.That(DiscordGateway.CanExecuteCommunityCommand(config, writable, 10, "  ?missing"), Is.False);
+    }
+
     [Test]
     public void RuntimePermissionChangesBlockFactionMutationAndCommandDeletion()
     {

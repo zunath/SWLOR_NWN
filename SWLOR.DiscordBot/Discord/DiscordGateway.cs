@@ -159,7 +159,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
     private Task OnMessageAsync(SocketMessage message)
     {
         if (!Ready || message.Author.IsBot || message.Author.IsWebhook || message.Channel is not SocketTextChannel channel ||
-            channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId || !message.Content.StartsWith(configuration.Prefix, StringComparison.Ordinal)) return Task.CompletedTask;
+            channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId) return Task.CompletedTask;
         bool CanExecute() => channel.Guild.CurrentUser is { } bot &&
             CanExecuteCommunityCommand(configuration, bot.GetPermissions(channel), channel.Id, message.Content);
         if (!CanExecute()) return Task.CompletedTask;
@@ -256,7 +256,12 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
                     {
                         await command.FollowupWithFileAsync(stream, name, text: text,
                             ephemeral: true, allowedMentions: AllowedMentions.None, options: DiscordOperations.Options(uploadToken));
-                    }, token);
+                    }, token, async authorizationToken =>
+                    {
+                        var currentActor = await discord.ActorAsync(actor.UserId, authorizationToken);
+                        if (!tickets.CanSupport(currentActor))
+                            throw new DiscordValidationException("Support access changed; transcript delivery was denied.");
+                    });
             }),
             "hold" => await tickets.SetHoldAsync(channelId, actor, true, ct),
             "release" => await tickets.SetHoldAsync(channelId, actor, false, ct),

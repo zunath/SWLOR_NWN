@@ -24,6 +24,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         Task? maintenance = null;
         Task? archiveExpiration = null;
         Task? responseCleanup = null;
+        Task? deliveryRetention = null;
         var disposingLease = false;
         try
         {
@@ -52,6 +53,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
                 foreach (var error in maintenanceErrors) logger.LogCritical("Ticket maintenance configuration invalid: {ConfigurationError}", error);
                 throw new InvalidOperationException("Persisted ticket maintenance requires retained configuration.");
             }
+            deliveryRetention = PruneDeliveriesAsync(ct);
             gateway.Attach(ct);
             consumers = Enumerable.Range(0, 4).Select(_ => gateway.ProcessAsync(ct)).ToArray();
             await client.LoginAsync(TokenType.Bot, secrets.Token);
@@ -85,7 +87,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
             gateway.Detach();
             try { await client.StopAsync(); await client.LogoutAsync(); }
             catch (Exception ex) { logger.LogWarning("Discord shutdown failed: {ErrorKind}.", DiscordGateway.SafeError(ex)); }
-            try { await Task.WhenAll(consumers.Concat(new[] { maintenance, archiveExpiration, responseCleanup }.OfType<Task>())); }
+            try { await Task.WhenAll(consumers.Concat(new[] { maintenance, archiveExpiration, responseCleanup, deliveryRetention }.OfType<Task>())); }
             catch (OperationCanceledException) { }
             disposingLease = true;
             if (lease is not null) await lease.DisposeAsync();
@@ -95,6 +97,21 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
     {
         await using var session = await store.LockAsync(ct);
         return ConfigurationValidator.ValidatePersistedTickets(config, await session.GetTicketsAsync(ct));
+    }
+
+    private async Task PruneDeliveriesAsync(CancellationToken ct)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5), clock);
+        do
+        {
+            // Local database retention continues during Discord outages and when ticketing is disabled.
+            try { await store.PruneCompletedDeliveriesAsync(clock.GetUtcNow(), ct); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+            catch (Exception ex)
+            {
+                logger.LogWarning("Completed delivery retention failed; cleanup will retry: {ErrorKind}.", DiscordGateway.SafeError(ex));
+            }
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     private async Task DeleteResponsesAsync(CancellationToken ct)
@@ -117,7 +134,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         do
         {
             if (!gateway.Ready) continue;
-            try { await RetryMaintenanceAsync("Ticket maintenance", tickets.MaintainAsync, ct); }
+            try { await RetryMaintenanceAsync("Ticket maintenance", tickets.MaintainAsync, ct, boundWholePass: false); }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
             catch (Exception ex)
             {
@@ -144,12 +161,13 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         ? configuration.Tickets.CleanupInterval
         : TimeSpan.FromMinutes(5);
 
-    private async Task RetryMaintenanceAsync(string operationName, Func<CancellationToken, Task> operation, CancellationToken ct)
+    private async Task RetryMaintenanceAsync(string operationName, Func<CancellationToken, Task> operation, CancellationToken ct, bool boundWholePass = true)
     {
         for (var attempt = 0; attempt < 3; attempt++)
         {
             using var operationTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            operationTimeout.CancelAfter(TimeSpan.FromMinutes(10));
+            // Per-ticket inactivity and per-request network limits cover progressing transcript exports.
+            if (boundWholePass) operationTimeout.CancelAfter(TimeSpan.FromMinutes(10));
             try { await operation(operationTimeout.Token); return; }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
             catch (Exception ex)

@@ -41,6 +41,7 @@ public sealed class TicketServiceTests
         };
         _store = new MemoryTicketStore();
         _discord = new FakeDiscordTickets();
+        _discord.CurrentActors[Support.UserId] = Support;
         _archive = new FakeArchive();
         _clock = new MutableTimeProvider(new DateTimeOffset(2026, 10, 3, 12, 0, 0, TimeSpan.Zero));
         _service = new TicketService(_configuration, _store, _discord, _archive, _clock);
@@ -950,7 +951,7 @@ public sealed class TicketServiceTests
 
     [TestCase(false)]
     [TestCase(true)]
-    public async Task FourMinuteTicketTimeoutReconcilesLaterTicketsAndReleasesGuardForRetry(bool blockArchive)
+    public async Task FourMinuteInactivityTimeoutReconcilesLaterTicketsAndReleasesGuardForRetry(bool blockArchive)
     {
         await Open("first", new Actor(1, []), "bounded-first");
         await Open("second", new Actor(2, []), "bounded-second");
@@ -1147,6 +1148,125 @@ public sealed class TicketServiceTests
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     }
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ForwardProgressAllowsLargeCleanupAndVerificationBeyondTwelveMinutes(bool slowArchive)
+    {
+        await Open("first", new Actor(1, []), "large-progressing");
+        await Open("second", new Actor(2, []), "later-missing");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _discord.MissingChannels.Add(ChannelOne + 1);
+        var before = _clock.GetUtcNow();
+        var progressReports = 0;
+        async Task AdvanceWithProgress(Ticket ticket, Action progress, CancellationToken ct)
+        {
+            if (ticket.ChannelId != ChannelOne) return;
+            for (var page = 0; page < 4; page++)
+            {
+                _clock.Advance(TimeSpan.FromMinutes(3));
+                ct.ThrowIfCancellationRequested();
+                progress();
+                progressReports++;
+                await Task.Yield();
+            }
+        }
+        if (slowArchive) _archive.BeforeProgressExportAsync = AdvanceWithProgress;
+        else _discord.BeforeProgressTranscriptAsync = AdvanceWithProgress;
+
+        await _service.MaintainAsync();
+
+        Assert.That(_clock.GetUtcNow() - before, Is.GreaterThanOrEqualTo(TimeSpan.FromMinutes(12)));
+        Assert.That(progressReports, Is.EqualTo(slowArchive ? 4 : 8), "Both initial and verification scans must report progress.");
+        Assert.That(_store.Tickets.All(ticket => ticket.State == TicketState.Deleted), Is.True);
+        Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).LastError, Is.Null);
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+    }
+
+    [Test]
+    public async Task ProgressThenStallStillTimesOutAndAllowsLaterCleanup()
+    {
+        await Open("first", new Actor(1, []), "progress-stalls");
+        await Open("second", new Actor(2, []), "later-cleanup");
+        await _service.CloseAsync(ChannelOne, Support);
+        await _service.CloseAsync(ChannelOne + 1, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeProgressTranscriptAsync = async (ticket, progress, ct) =>
+        {
+            if (ticket.ChannelId != ChannelOne) return;
+            _clock.Advance(TimeSpan.FromMinutes(3));
+            progress();
+            started.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        };
+        using var safety = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var cleanup = _service.MaintainAsync(safety.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            _clock.Advance(TimeSpan.FromMinutes(4) - TimeSpan.FromSeconds(1));
+            Assert.That(cleanup.IsCompleted, Is.False);
+            _clock.Advance(TimeSpan.FromSeconds(1));
+            await cleanup.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Deleting));
+            Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).LastError, Is.Not.Null);
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne + 1 }));
+            _discord.BeforeProgressTranscriptAsync = null;
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeletedChannels, Is.EquivalentTo(new[] { ChannelOne, ChannelOne + 1 }));
+        }
+        finally { safety.Cancel(); try { await cleanup; } catch (OperationCanceledException) { } }
+    }
+
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task TranscriptDeliveryRefreshesSupportAccessAfterExport(bool blockArchive, bool departed)
+    {
+        await Open("first", new Actor(1, []), "delivery-revoked");
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Block(Ticket ticket, CancellationToken ct)
+        {
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+        }
+        if (blockArchive) _archive.BeforeExportAsync = Block;
+        else _discord.BeforeTranscriptAsync = Block;
+        var delivered = 0;
+        var export = _service.ExportAsync(ChannelOne, Support, deliver: (_, _) =>
+        {
+            delivered++;
+            return Task.CompletedTask;
+        });
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            if (departed) _discord.MissingMembers.Add(Support.UserId);
+            else _discord.CurrentActors[Support.UserId] = new Actor(Support.UserId, []);
+            release.SetResult();
+            if (departed) Assert.ThrowsAsync<InvalidOperationException>(async () => await export);
+            else Assert.That((await export).Success, Is.False);
+            Assert.That(delivered, Is.Zero, "A stale support actor must not authorize private attachment delivery.");
+            Assert.That(_discord.ActorLookups, Is.EqualTo(new[] { Support.UserId }));
+            Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True, "The owned archive remains usable by authorized staff.");
+            _discord.MissingMembers.Remove(Support.UserId);
+            _discord.CurrentActors[Support.UserId] = Support;
+            Assert.That((await _service.ExportAsync(ChannelOne, Support, deliver: (_, _) =>
+            {
+                delivered++;
+                return Task.CompletedTask;
+            })).Success, Is.True, "Authorization failure must release the export guard.");
+            Assert.That(delivered, Is.EqualTo(1));
+        }
+        finally
+        {
+            release.TrySetResult();
+            try { await export; } catch (InvalidOperationException) when (departed) { }
+        }
+    }
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -1313,6 +1433,7 @@ public sealed class TicketServiceTests
         public bool FailNextOpen { get; set; }
         public bool FailNextClose { get; set; }
         public Func<Ticket, CancellationToken, Task>? BeforeTranscriptAsync { get; set; }
+        public Func<Ticket, Action, CancellationToken, Task>? BeforeProgressTranscriptAsync { get; set; }
         public TranscriptSnapshot Snapshot { get; set; } = new([], 101);
         public ulong? LastMessageIdAfterRead { get; set; }
 
@@ -1392,6 +1513,11 @@ public sealed class TicketServiceTests
             return Snapshot;
         }
 
+        public async Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct, Action progress)
+        {
+            if (BeforeProgressTranscriptAsync is not null) await BeforeProgressTranscriptAsync(ticket, progress, ct);
+            return await ReadTranscriptAsync(ticket, ct);
+        }
         public Task<ulong?> LastMessageIdAsync(Ticket ticket, CancellationToken ct) =>
             Task.FromResult(LastMessageIdAfterRead ?? Snapshot.LastMessageId);
 
@@ -1410,6 +1536,7 @@ public sealed class TicketServiceTests
         public bool FailExports { get; set; }
         public int ExportCalls { get; private set; }
         public Func<Ticket, CancellationToken, Task>? BeforeExportAsync { get; set; }
+        public Func<Ticket, Action, CancellationToken, Task>? BeforeProgressExportAsync { get; set; }
         public List<string> DeletedPaths { get; } = [];
 
         public string GetArchivePath(Ticket ticket) => $"/archives/{ticket.Id:N}.json";
@@ -1422,6 +1549,11 @@ public sealed class TicketServiceTests
             return $"/archives/{ticket.Id:N}.json";
         }
 
+        public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct, Action progress)
+        {
+            if (BeforeProgressExportAsync is not null) await BeforeProgressExportAsync(ticket, progress, ct);
+            return await ExportAsync(ticket, snapshot, ct);
+        }
         public Task DeleteAsync(string path, CancellationToken ct)
         {
             DeletedPaths.Add(path);

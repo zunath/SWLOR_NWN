@@ -7,6 +7,9 @@ namespace SWLOR.DiscordBot.Persistence;
 
 public sealed class PostgresTicketStore(string connectionString) : ITicketStore, IResponseDeletionStore, IAsyncDisposable
 {
+    // Gateway retries/resume and REST nonce deduplication are much shorter than this replay window.
+    // Thirty days also covers the longest permitted quick-answer cooldown.
+    internal static readonly TimeSpan CompletedDeliveryRetention = TimeSpan.FromDays(30);
     private const long MutationLock = 7821653091;
     private const long CommunityLock = 7821653092;
     private readonly NpgsqlDataSource _source = NpgsqlDataSource.Create(connectionString);
@@ -37,7 +40,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
         await using var command = new NpgsqlCommand(schema, session.Connection);
         await command.ExecuteNonQueryAsync(ct);
         await using var versionCommand = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", session.Connection);
-        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 2)
+        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 3)
             throw new InvalidOperationException("The bot database schema is newer than this application.");
         await using var transaction = await session.Connection.BeginTransactionAsync(ct);
         const string upgrade = """
@@ -48,6 +51,16 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
             CREATE INDEX IF NOT EXISTS swlor_bot_response_deletions_due
                 ON swlor_bot_response_deletions(due_at) WHERE NOT completed;
             INSERT INTO swlor_bot_schema(version) VALUES (2) ON CONFLICT DO NOTHING;
+            ALTER TABLE swlor_bot_response_deletions ADD COLUMN IF NOT EXISTS completed_at timestamptz;
+            -- Older tombstones have no completion timestamp. Start their full replay window on upgrade.
+            UPDATE swlor_bot_response_deletions SET completed_at=now() WHERE completed AND completed_at IS NULL;
+            CREATE INDEX IF NOT EXISTS swlor_bot_response_deletions_completed
+                ON swlor_bot_response_deletions(completed_at) WHERE completed;
+            CREATE INDEX IF NOT EXISTS swlor_bot_delivery_operations_completed
+                ON swlor_bot_delivery_operations(updated_at) WHERE completed;
+            CREATE INDEX IF NOT EXISTS swlor_bot_deliveries_at ON swlor_bot_deliveries(at);
+            CREATE INDEX IF NOT EXISTS swlor_bot_cooldowns_at ON swlor_bot_cooldowns(at);
+            INSERT INTO swlor_bot_schema(version) VALUES (3) ON CONFLICT DO NOTHING;
             """;
         await using var upgradeCommand = new NpgsqlCommand(upgrade, session.Connection, transaction);
         await upgradeCommand.ExecuteNonQueryAsync(ct);
@@ -108,7 +121,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
     public async Task CompleteDeletionAsync(ulong channelId, ulong messageId, CancellationToken ct)
     {
         await using var connection = await _source.OpenConnectionAsync(ct);
-        await using var command = new NpgsqlCommand("UPDATE swlor_bot_response_deletions SET completed=true,last_error=NULL WHERE channel_id=@channel AND message_id=@message", connection);
+        await using var command = new NpgsqlCommand("UPDATE swlor_bot_response_deletions SET completed=true,completed_at=COALESCE(completed_at,now()),last_error=NULL WHERE channel_id=@channel AND message_id=@message", connection);
         command.Parameters.AddWithValue("channel", Snowflake(channelId));
         command.Parameters.AddWithValue("message", Snowflake(messageId));
         await command.ExecuteNonQueryAsync(ct);
@@ -123,6 +136,32 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
         command.Parameters.AddWithValue("due", dueAt.ToUniversalTime());
         command.Parameters.AddWithValue("error", error);
         await command.ExecuteNonQueryAsync(ct);
+    }
+
+    public async Task PruneCompletedDeliveriesAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        // Bounded, indexed deletes avoid holding guild advisory locks or monopolizing the database.
+        // Unfinished intentions are never age-expired; retention starts only at confirmed completion.
+        await using var connection = await _source.OpenConnectionAsync(ct);
+        const string prune = """
+            DELETE FROM swlor_bot_delivery_operations WHERE completed AND updated_at<@cutoff AND key IN (
+                SELECT key FROM swlor_bot_delivery_operations WHERE completed AND updated_at<@cutoff ORDER BY updated_at LIMIT 1000);
+            DELETE FROM swlor_bot_response_deletions WHERE completed AND completed_at<@cutoff AND (channel_id,message_id) IN (
+                SELECT channel_id,message_id FROM swlor_bot_response_deletions
+                WHERE completed AND completed_at<@cutoff ORDER BY completed_at LIMIT 1000);
+            DELETE FROM swlor_bot_deliveries WHERE at<@cutoff AND key IN (
+                SELECT key FROM swlor_bot_deliveries WHERE at<@cutoff ORDER BY at LIMIT 1000);
+            DELETE FROM swlor_bot_cooldowns WHERE at<@cutoff AND key IN (
+                SELECT key FROM swlor_bot_cooldowns WHERE at<@cutoff ORDER BY at LIMIT 1000);
+            """;
+        await using var command = new NpgsqlCommand(prune, connection);
+        command.Parameters.AddWithValue("cutoff", (now - CompletedDeliveryRetention).ToUniversalTime());
+        int removed;
+        do
+        {
+            ct.ThrowIfCancellationRequested();
+            removed = await command.ExecuteNonQueryAsync(ct);
+        } while (removed > 0);
     }
 
     public ValueTask DisposeAsync() => _source.DisposeAsync();
@@ -211,7 +250,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
 
         public async Task CompleteDeliveryAsync(string key, CancellationToken ct)
         {
-            await using var command = new NpgsqlCommand("UPDATE swlor_bot_delivery_operations SET completed=true,updated_at=now() WHERE key=@key", connection);
+            await using var command = new NpgsqlCommand("UPDATE swlor_bot_delivery_operations SET completed=true,updated_at=CASE WHEN completed THEN updated_at ELSE now() END WHERE key=@key", connection);
             command.Parameters.AddWithValue("key", key);
             if (await command.ExecuteNonQueryAsync(ct) != 1) throw new InvalidOperationException("Delivery record disappeared.");
         }

@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static IReadOnlyList<PlayerGuideTopic> BuildTopics()
         {
-            return new List<PlayerGuideTopic>
+            var topics = new List<PlayerGuideTopic>
             {
                 new(
                     "Common Questions",
@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("When can I buy?", "When the next rank exists, requirements pass, and you have enough SP."),
                         new QuestionAnswer("What are beast perks?", "A Perks window mode that uses the active beast's SP and level.")
                     },
-                    new[] { "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay" }),
+                    new[] { "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay", "Lightsaber Combat Styles", "Pistol Combat Styles" }),
 
                 new(
                     "Force Affinity",
@@ -708,7 +708,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage, healing, and temporary HP.")
                     },
-                    new[] { "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Useful Windows" }),
+                    new[] { "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Lightsaber Combat Styles", "Force Combat Styles", "Useful Windows" }),
 
                 new(
                     "Espionage",
@@ -1158,9 +1158,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[] { "Common Questions", "Skills", "Perks", "Mimicry & Techniques", "Training Store", "Quests & Key Items", "Communication", "Disguises" })
             };
+
+            topics.AddRange(CombatStyleGuideTopics.Create());
+            return topics;
         }
 
-        private sealed class PlayerGuideTopic
+        internal sealed class PlayerGuideTopic
         {
             public string Name { get; }
             public string Category { get; }
@@ -1189,7 +1192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private sealed class ArticleBlock
+        internal sealed class ArticleBlock
         {
             public string Title { get; }
             public string Body { get; }
@@ -1201,7 +1204,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private sealed class QuestionAnswer
+        internal sealed class QuestionAnswer
         {
             public string Question { get; }
             public string Answer { get; }

@@ -2,11 +2,13 @@ using System.Collections;
 using System.Globalization;
 using System.Reflection;
 using FluentAssertions;
+using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -85,6 +87,63 @@ public class PlayerGuideContentTests
             relatedTopics.Should().NotContain(topicName, $"{topicName} should not link to itself");
             relatedTopics.Where(related => !topicNameSet.Contains(related))
                 .Should().BeEmpty($"every related link from {topicName} should resolve");
+        }
+    }
+
+    [Test]
+    public void CombatStyleTopics_CoverAndSearchEverySelectableCombatTree()
+    {
+        var root = FindRepositoryRoot();
+        var manifest = ReadCombatManifest(root);
+        var combatPerkNames = manifest
+            .Where(IsCombatManifestEntry)
+            .Select(row => row["PerkName"])
+            .ToHashSet(StringComparer.Ordinal);
+        var allPerks = (PerkDetail[])typeof(AnimationPlanningTests)
+            .GetMethod("AllPerks", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, null)!;
+
+        var expectedTrees = allPerks
+            .Where(perk => perk.IsActive && perk.GroupType is PerkGroupType.Player or PerkGroupType.Beast)
+            .Where(perk => combatPerkNames.Contains(perk.Name))
+            .Select(perk => typeof(PerkCategoryType).GetField(perk.Category.ToString())!
+                .GetCustomAttribute<PerkCategoryAttribute>()!)
+            .Where(category => category.IsActive)
+            .Select(category => category.Name)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        var combatTopics = GetTopics()
+            .Where(topic => GetString(topic, "Category") == "Combat Styles")
+            .ToArray();
+
+        combatTopics.SelectMany(GetAllText)
+            .SelectMany(text => text)
+            .Where(character => character > 127)
+            .Should().BeEmpty("new Player Guide combat-style text must use ASCII punctuation");
+        combatTopics.Should().NotBeEmpty();
+        combatTopics.Length.Should().BeLessThan(expectedTrees.Length,
+            "combat styles should be grouped by weapon or family instead of getting one topic per tree");
+
+        var matchesSearch = typeof(PlayerGuideViewModel).GetMethod(
+            "MatchesSearch",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        matchesSearch.Should().NotBeNull();
+
+        foreach (var tree in expectedTrees)
+        {
+            var matchingTopics = combatTopics
+                .Where(topic => (bool)matchesSearch!.Invoke(null, new[] { topic, tree })!)
+                .ToArray();
+
+            matchingTopics.Should().ContainSingle(
+                $"searching the guide for the exact selectable combat tree '{tree}' should find its family topic");
+
+            var blocks = GetItems(matchingTopics[0], "Blocks");
+            blocks.Should().Contain(block =>
+                GetString(block, "Title").Equals(tree, StringComparison.Ordinal) ||
+                GetString(block, "Body").Contains(tree, StringComparison.Ordinal),
+                $"the searchable family topic should state the exact current category label '{tree}'");
         }
     }
 
@@ -210,6 +269,54 @@ public class PlayerGuideContentTests
             loadHints.Should().Contain((customTlkOffset + tlkId).ToString());
             entries!.Should().ContainKey(tlkId).WhoseValue.Should().Contain(expectedText);
         }
+    }
+
+    private static bool IsCombatManifestEntry(IReadOnlyDictionary<string, string> row)
+    {
+        if (row["Type"] is "Combat" or "Stance" or "Aura" or "Toggle" or "Capstone")
+            return true;
+
+        if (row["Type"] != "Trait")
+            return false;
+
+        return new[]
+        {
+            "attack",
+            "damage",
+            "defense",
+            "evasion",
+            "Force",
+            "heal",
+            "enmity",
+            "critical",
+            "Guard"
+        }.Any(term => row["Description"].Contains(term, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static List<Dictionary<string, string>> ReadCombatManifest(DirectoryInfo root)
+    {
+        using var parser = new TextFieldParser(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Readmes",
+            "CombatUpgradeBiblePerkManifest.csv"));
+        parser.SetDelimiters(",");
+        parser.HasFieldsEnclosedInQuotes = true;
+        var headers = parser.ReadFields()!;
+        var rows = new List<Dictionary<string, string>>();
+
+        while (!parser.EndOfData)
+        {
+            var fields = parser.ReadFields();
+            if (fields == null || fields.Length == 0)
+                continue;
+
+            fields.Should().HaveCount(headers.Length);
+            rows.Add(headers.Select((header, index) => (header, fields[index]))
+                .ToDictionary(pair => pair.header, pair => pair.Item2));
+        }
+
+        return rows;
     }
 
     private static List<object> GetTopics()

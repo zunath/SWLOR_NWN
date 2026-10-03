@@ -56515,7 +56515,7 @@
           "id": 68853,
           "type": "cexolocstring",
           "value": {
-            "0": "Surface Access"
+            "0": "Sealed Surface Access"
           }
         },
         "OnClick": {
@@ -56572,7 +56572,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "teleport"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -56636,7 +56636,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "VarTable": {
           "type": "list",
@@ -57346,7 +57346,7 @@
           "id": 68853,
           "type": "cexolocstring",
           "value": {
-            "0": "Surface Access"
+            "0": "Sealed Surface Access"
           }
         },
         "OnClick": {
@@ -57403,7 +57403,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "teleport"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -57467,7 +57467,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "VarTable": {
           "type": "list",
@@ -57623,7 +57623,7 @@
           "id": 68853,
           "type": "cexolocstring",
           "value": {
-            "0": "Surface Access"
+            "0": "Sealed Surface Access"
           }
         },
         "OnClick": {
@@ -57680,7 +57680,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "teleport"
+          "value": ""
         },
         "OnUserDefined": {
           "type": "resref",
@@ -57744,7 +57744,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "VarTable": {
           "type": "list",

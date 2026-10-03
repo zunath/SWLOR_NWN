@@ -120,7 +120,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         return new(true, hold ? "Cleanup and archive expiration are on hold." : "Hold released.", ticket);
     }, ct);
 
-    public async Task<TicketResult> ExportAsync(ulong channelId, Actor actor, CancellationToken ct = default)
+    public async Task<TicketResult> ExportAsync(ulong channelId, Actor actor, CancellationToken ct = default,
+        Func<Ticket, CancellationToken, Task>? deliver = null)
     {
         if (!Options.Enabled) return new(false, "Ticketing is disabled.");
         if (!CanSupport(actor)) return new(false, "Only support staff can export transcripts.");
@@ -136,15 +137,22 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (ticket.State is not (TicketState.Open or TicketState.Closed)) return new(false, "This ticket is busy; try again shortly.");
                 if (!_exports.TryAdd(ticket.Id, 0)) return new(false, "A transcript export is already in progress for this ticket.");
                 exportId = ticket.Id;
+                ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket), ArchiveComplete = false };
+                await session.SaveAsync(ticket, "archive-pending", actor.UserId, ct);
             }
             // Discord pagination and attachment downloads must not hold the shared database lock.
             var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
             var path = await archive.ExportAsync(ticket, snapshot, ct);
-            await using var saveSession = await store.LockAsync(ct);
-            var current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == ticket.Id);
-            // Preserve closes, reopens, holds, and deadlines changed while the snapshot was written.
-            current = current with { ArchivePath = path };
-            await saveSession.SaveAsync(current, "exported", actor.UserId, ct);
+            Ticket current;
+            await using (var saveSession = await store.LockAsync(ct))
+            {
+                current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == ticket.Id);
+                // Preserve closes, reopens, holds, and deadlines changed while the snapshot was written.
+                current = current with { ArchivePath = path, ArchiveComplete = true };
+                await saveSession.SaveAsync(current, "exported", actor.UserId, ct);
+            }
+            // Keep this ticket's files protected through delivery without blocking unrelated mutations.
+            if (deliver is not null) await deliver(current, ct);
             return new(true, "Transcript archived.", current);
         }
         finally { if (exportId is { } id) _exports.TryRemove(id, out _); }
@@ -223,7 +231,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     if (ticket.ArchivePath is not null && ticket.ArchiveExpiresAt <= clock.GetUtcNow())
                     {
                         await archive.DeleteAsync(ticket.ArchivePath, ct);
-                        await session.SaveAsync(ticket with { ArchivePath = null }, "archive-expired", null, ct);
+                        await session.SaveAsync(ticket with { ArchivePath = null, ArchiveComplete = false }, "archive-expired", null, ct);
                     }
                     return;
                 }
@@ -236,6 +244,9 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 await discord.FreezeAsync(ticket, ct);
                 if (!_exports.TryAdd(id, 0)) return;
                 exporting = true;
+                // Include partial/completed files in retention even if the final export save never commits.
+                ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket), ArchiveComplete = false };
+                await session.SaveAsync(ticket, "archive-pending", null, ct);
             }
             // Pagination and attachment downloads can take minutes; do not hold the guild ticket lock.
             var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
@@ -243,7 +254,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             await using (var saveSession = await store.LockAsync(ct))
             {
                 var current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == id);
-                await saveSession.SaveAsync(current with { ArchivePath = archivePath, LastError = null }, "cleanup-exported", null, ct);
+                await saveSession.SaveAsync(current with { ArchivePath = archivePath, ArchiveComplete = true, LastError = null }, "cleanup-exported", null, ct);
             }
             // A stable head alone misses edits/deletions of older messages during pagination or downloads.
             var verified = await discord.ReadTranscriptAsync(ticket, ct);

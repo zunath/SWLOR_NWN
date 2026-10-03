@@ -5,7 +5,7 @@ public sealed record Actor(ulong UserId, IReadOnlyCollection<ulong> RoleIds, boo
 public sealed record Ticket(Guid Id, string PanelId, ulong RequesterId, ulong? ChannelId,
     TicketState State, long Number, DateTimeOffset CreatedAt, DateTimeOffset? ClosedAt = null,
     DateTimeOffset? DeleteAfter = null, bool Hold = false, string? ArchivePath = null,
-    DateTimeOffset? ArchiveExpiresAt = null, string? LastError = null);
+    DateTimeOffset? ArchiveExpiresAt = null, string? LastError = null, bool ArchiveComplete = false);
 public sealed record TicketResult(bool Success, string Message, Ticket? Ticket = null);
 public sealed record TranscriptAttachment(ulong Id, string FileName, string Url, long Size);
 public sealed record TranscriptMessage(ulong Id, ulong AuthorId, string AuthorName, string Content,
@@ -61,6 +61,8 @@ public interface IDiscordTickets
 }
 public interface ITranscriptArchive
 {
+    // Plan a managed directory without writing files, so ownership can commit before publication.
+    string GetArchivePath(Ticket ticket);
     Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct);
     Task DeleteAsync(string path, CancellationToken ct);
 }

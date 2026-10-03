@@ -88,6 +88,25 @@ public sealed class PostgresStoreTests
     }
 
     [Test]
+    public async Task DeletedTicketWithPendingArchiveOwnershipSurvivesRestartAndRemainsInRetentionQuery()
+    {
+        Ticket pending;
+        await using (var first = new PostgresTicketStore(ConnectionString))
+        {
+            await first.InitializeAsync(default);
+            await using var session = await first.LockAsync(default);
+            var reserved = await session.ReserveAsync("support", 7, Guid.NewGuid().ToString("N"), DateTimeOffset.UtcNow, default);
+            pending = reserved with { State = TicketState.Deleted, ArchivePath = "/data/archives/" + reserved.Id.ToString("N"),
+                ArchiveComplete = false, ArchiveExpiresAt = DateTimeOffset.UtcNow.AddDays(90) };
+            await session.SaveAsync(pending, "archive-pending", null, default);
+        }
+        await using var restarted = new PostgresTicketStore(ConnectionString);
+        await restarted.InitializeAsync(default);
+        await using var recovered = await restarted.LockAsync(default);
+        Assert.That((await recovered.GetTicketsAsync(default)).Single(), Is.EqualTo(pending));
+    }
+
+    [Test]
     public async Task ResponseDeletionDueRetryAndCompletionSurviveRestartWithoutGlobalLock()
     {
         var channel = ulong.MaxValue;

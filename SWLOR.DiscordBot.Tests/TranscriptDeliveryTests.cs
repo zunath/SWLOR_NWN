@@ -11,10 +11,19 @@ public sealed class TranscriptDeliveryTests
     private string sourcePath = null!;
 
     [SetUp]
-    public void SetUp() => sourcePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
+    public void SetUp()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "swlor-transcript-delivery-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        sourcePath = Path.Combine(directory, "transcript.html");
+    }
 
     [TearDown]
-    public void TearDown() { if (File.Exists(sourcePath)) File.Delete(sourcePath); }
+    public void TearDown()
+    {
+        var directory = Path.GetDirectoryName(sourcePath)!;
+        if (Directory.Exists(directory)) Directory.Delete(directory, true);
+    }
 
     [TestCase(2048UL)]
     [TestCase(2049UL)]
@@ -61,6 +70,23 @@ public sealed class TranscriptDeliveryTests
         }
         Assert.That(await DecompressAsync(uploads.SelectMany(x => x.Bytes).ToArray()), Is.EqualTo(bytes));
         Assert.That(await File.ReadAllBytesAsync(sourcePath), Is.EqualTo(bytes));
+    }
+
+    [Test]
+    public async Task LargeTranscriptTemporaryFilesStayInsideTrackedArchiveDirectory()
+    {
+        await File.WriteAllBytesAsync(sourcePath, RandomBytes(4096));
+        var uploads = 0;
+        await TranscriptDelivery.SendAsync(sourcePath, 256, (stream, _, _, _) =>
+        {
+            uploads++;
+            Assert.That(stream, Is.TypeOf<FileStream>());
+            Assert.That(Path.GetDirectoryName(((FileStream)stream).Name), Is.EqualTo(Path.GetDirectoryName(sourcePath)));
+            Assert.That(TemporaryPaths(), Has.Count.EqualTo(2), "gzip and one part use the owned archive volume, not the small /tmp tmpfs");
+            return Task.CompletedTask;
+        }, default);
+        Assert.That(uploads, Is.GreaterThan(1));
+        Assert.That(TemporaryPaths(), Is.Empty);
     }
 
     [Test]
@@ -131,8 +157,8 @@ public sealed class TranscriptDeliveryTests
         return uploads;
     }
 
-    private static HashSet<string> TemporaryPaths() =>
-        Directory.GetFiles(Path.GetTempPath(), "swlor-transcript-*.tmp").ToHashSet(StringComparer.Ordinal);
+    private HashSet<string> TemporaryPaths() =>
+        Directory.GetFiles(Path.GetDirectoryName(sourcePath)!, "swlor-transcript-*.tmp").ToHashSet(StringComparer.Ordinal);
 
     private static byte[] RandomBytes(int length)
     {

@@ -13,6 +13,8 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
     private static readonly HashSet<string> AttachmentHosts = new(StringComparer.OrdinalIgnoreCase)
         { "cdn.discordapp.com", "media.discordapp.net", "cdn.discordapp.net" };
 
+    public string GetArchivePath(Ticket ticket) => TicketDirectory(ticket.Id);
+
     public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct)
     {
         Directory.CreateDirectory(Root);

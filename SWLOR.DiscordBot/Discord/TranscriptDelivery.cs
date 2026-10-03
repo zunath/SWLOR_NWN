@@ -21,7 +21,10 @@ internal static class TranscriptDelivery
             return;
         }
 
-        await using var compressed = TemporaryFile();
+        // Use the tracked archive volume: the worker's /tmp is a small tmpfs, while tickets can
+        // exceed its capacity. An interrupted temporary file remains inside retention ownership.
+        var temporaryDirectory = Path.GetDirectoryName(source.Name)!;
+        await using var compressed = TemporaryFile(temporaryDirectory);
         await using (var gzip = new GZipStream(compressed, CompressionLevel.Fastest, leaveOpen: true))
             await source.CopyToAsync(gzip, BufferSize, ct);
         compressed.Position = 0;
@@ -38,7 +41,7 @@ internal static class TranscriptDelivery
         for (long index = 1; index <= total; index++)
         {
             ct.ThrowIfCancellationRequested();
-            await using var part = TemporaryFile();
+            await using var part = TemporaryFile(temporaryDirectory);
             var remaining = Math.Min(limit, compressed.Length - compressed.Position);
             while (remaining > 0)
             {
@@ -56,7 +59,7 @@ internal static class TranscriptDelivery
         }
     }
 
-    private static FileStream TemporaryFile()
+    private static FileStream TemporaryFile(string directory)
     {
         var options = new FileStreamOptions
         {
@@ -64,6 +67,6 @@ internal static class TranscriptDelivery
             Options = FileOptions.Asynchronous | FileOptions.DeleteOnClose
         };
         if (!OperatingSystem.IsWindows()) options.UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite;
-        return new FileStream(Path.Combine(Path.GetTempPath(), "swlor-transcript-" + Guid.NewGuid().ToString("N") + ".tmp"), options);
+        return new FileStream(Path.Combine(directory, "swlor-transcript-" + Guid.NewGuid().ToString("N") + ".tmp"), options);
     }
 }

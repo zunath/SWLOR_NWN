@@ -27,6 +27,18 @@ public sealed class ArchiveTests
     }
 
     [Test]
+    public async Task PlanningArchiveOwnershipDoesNotPublishFilesAndMatchesExportDirectory()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachments should be downloaded."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var planned = archive.GetArchivePath(ticket);
+        Assert.That(planned, Is.EqualTo(Path.Combine(_root, ticket.Id.ToString("N"))));
+        Assert.That(Directory.Exists(planned), Is.False);
+        Assert.That(await archive.ExportAsync(ticket, EmptySnapshot(), default), Is.EqualTo(planned));
+    }
+
+    [Test]
     public async Task ExportEscapesUntrustedMessageAuthorAndEmbedContentInHtml()
     {
         using var client = CreateClient(_ => throw new AssertionException("No attachment should be downloaded."));

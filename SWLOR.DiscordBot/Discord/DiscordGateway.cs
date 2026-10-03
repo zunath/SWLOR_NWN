@@ -248,23 +248,23 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             "close" => await tickets.CloseAsync(channelId, actor, ct),
             "reopen" => await tickets.ReopenAsync(channelId, actor, ct),
             "rename" => await tickets.RenameAsync(channelId, actor, (string)option.Options.Single(x => x.Name == "name").Value, ct),
-            "transcript" => await tickets.ExportAsync(channelId, actor, ct),
+            "transcript" => await tickets.ExportAsync(channelId, actor, ct, async (ticket, token) =>
+            {
+                await ReplyAsync(command, "Transcript archived; preparing download.", token);
+                await TranscriptDelivery.SendAsync(Path.Combine(ticket.ArchivePath!, "transcript.html"), command.AttachmentSizeLimit,
+                    async (stream, name, text, uploadToken) =>
+                    {
+                        await command.FollowupWithFileAsync(stream, name, text: text,
+                            ephemeral: true, allowedMentions: AllowedMentions.None, options: DiscordOperations.Options(uploadToken));
+                    }, token);
+            }),
             "hold" => await tickets.SetHoldAsync(channelId, actor, true, ct),
             "release" => await tickets.SetHoldAsync(channelId, actor, false, ct),
             _ => new TicketResult(false, "Unknown ticket action.")
         };
         await ReplyAsync(command, result.Message, ct);
-        if (option.Name == "transcript" && result.Success && result.Ticket?.ArchivePath is { } archive)
-        {
-            var path = Path.Combine(archive, "transcript.html");
-            await TranscriptDelivery.SendAsync(path, command.AttachmentSizeLimit,
-                async (stream, name, text, token) =>
-                {
-                    await command.FollowupWithFileAsync(stream, name, text: text,
-                        ephemeral: true, allowedMentions: AllowedMentions.None, options: DiscordOperations.Options(token));
-                }, ct);
-        }
     }
+
     private async Task<Ticket?> AuthorizedCloseTicketAsync(ulong channelId, Actor actor, Guid? ticketId, CancellationToken ct)
     {
         await using var session = await store.LockAsync(ct);

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
+using SWLOR.DiscordBot.Persistence;
 
 namespace SWLOR.DiscordBot.Tests;
 
@@ -717,6 +718,100 @@ public sealed class TicketServiceTests
         Assert.That(_discord.CreateCalls, Is.EqualTo(1));
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ArchiveOwnershipMustCommitBeforeAnyTranscriptWork(bool cleanup)
+    {
+        await Open("first", new Actor(1, []), "ownership-save-failure");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _store.FailNextSaveAction = "archive-pending";
+        _discord.BeforeTranscriptAsync = (_, _) => throw new AssertionException("No remote transcript work before durable ownership.");
+        if (cleanup) await _service.MaintainAsync();
+        else Assert.ThrowsAsync<InvalidOperationException>(() => _service.ExportAsync(ChannelOne, Support));
+        Assert.That(_archive.ExportCalls, Is.Zero);
+        Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
+        _discord.BeforeTranscriptAsync = null;
+        if (cleanup) await _service.MaintainAsync();
+        else Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
+        Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True);
+    }
+
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public async Task PublishedArchiveRemainsTrackedAfterFailedCompletionSaveAndExternalChannelRemoval(bool cleanup, bool hold)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-retention-tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            _configuration.Tickets.ArchiveDirectory = root;
+            _configuration.Tickets.CopyAttachments = false;
+            using var http = new HttpClient();
+            var files = new FileTranscriptArchive(_configuration, http);
+            _service = new TicketService(_configuration, _store, _discord, files, _clock);
+            await Open("first", new Actor(1, []), "published-before-save");
+            await _service.CloseAsync(ChannelOne, Support);
+            if (hold) await _service.SetHoldAsync(ChannelOne, Support, true);
+            _clock.Advance(TimeSpan.FromDays(8));
+            _store.FailNextSaveAction = cleanup ? "cleanup-exported" : "exported";
+            if (cleanup) await _service.MaintainAsync();
+            else Assert.ThrowsAsync<InvalidOperationException>(() => _service.ExportAsync(ChannelOne, Support));
+            var pending = _store.Tickets.Single();
+            Assert.That(pending.ArchivePath, Is.EqualTo(files.GetArchivePath(pending)));
+            Assert.That(File.Exists(Path.Combine(pending.ArchivePath!, "transcript.html")), Is.True);
+            Assert.That(pending.ArchiveComplete, Is.False, "publication and its successful completion commit are distinct");
+            _discord.MissingChannels.Add(ChannelOne);
+            // Restart loses the in-process guard but preserves the committed ownership record.
+            _service = new TicketService(_configuration, _store, _discord, files, _clock);
+            await _service.MaintainAsync();
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+            _clock.Advance(TimeSpan.FromDays(91));
+            await _service.MaintainAsync();
+            Assert.That(Directory.Exists(pending.ArchivePath!), Is.EqualTo(hold));
+            Assert.That(_store.Tickets.Single().ArchivePath, hold ? Is.Not.Null : Is.Null);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+
+    [Test]
+    public async Task TranscriptDeliveryKeepsArchiveProtectedWithoutHoldingTheTicketStoreLock()
+    {
+        await Open("first", new Actor(1, []), "protected-download");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var export = _service.ExportAsync(ChannelOne, Support, deliver: async (ticket, ct) =>
+        {
+            Assert.That(ticket.ArchiveComplete, Is.True);
+            started.SetResult();
+            await release.Task.WaitAsync(ct);
+        });
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That((await Open("second", new Actor(2, []), "other-during-download").WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.DeleteCalls, Is.Zero, "cleanup must retain the archive while files are uploaded");
+            release.SetResult();
+            Assert.That((await export.WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        }
+        finally { release.TrySetResult(); await export; }
+    }
+
+    [Test]
+    public async Task FailedTranscriptDeliveryReleasesGuardButPreservesCompleteOwnedArchive()
+    {
+        await Open("first", new Actor(1, []), "failed-download");
+        Assert.ThrowsAsync<IOException>(() => _service.ExportAsync(ChannelOne, Support,
+            deliver: (_, _) => Task.FromException(new IOException("Upload failed."))));
+        Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True);
+        Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
+    }
+
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -926,6 +1021,8 @@ public sealed class TicketServiceTests
         public int ExportCalls { get; private set; }
         public Func<Ticket, CancellationToken, Task>? BeforeExportAsync { get; set; }
         public List<string> DeletedPaths { get; } = [];
+
+        public string GetArchivePath(Ticket ticket) => $"/archives/{ticket.Id:N}.json";
 
         public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct)
         {

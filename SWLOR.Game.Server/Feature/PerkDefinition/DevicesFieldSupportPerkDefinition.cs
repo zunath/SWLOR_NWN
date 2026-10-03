@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 10% of maximum STM to one ally and increases physical and Force ability Accuracy by 4% for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Devices, 12)
+                .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.PowerCell1)
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PowerSurgeTrait)
                 .Description("Power Cell's initial target also gains Power Surge for 30 seconds: +6% physical and Force ability Accuracy, +6% critical chance, and 1 STM every 4 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Devices, 5)
+                .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.PowerCellInitialTargetPowerSurge, 1);
         }

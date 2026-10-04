@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.API.NWScript.Enum;
 using System.Text.Json;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -70,6 +71,26 @@ public class CapstoneEnemyAppearanceTests
 
         grunt.Distinct().Should().HaveCountGreaterThanOrEqualTo(10,
             "packages should not all share one grunt appearance");
+    }
+
+    [TestCase("lightstand")]
+    [TestCase("darkhung")]
+    [TestCase("eclipse")]
+    public void SithCryptForceUsers_AreNotMechanical(string line)
+    {
+        var root = FindRepositoryRoot();
+        var mechanicalRaces = new[] { RacialType.Construct, RacialType.Robot, RacialType.Droid };
+
+        foreach (var tier in Tiers)
+        {
+            var resref = $"cp_{line}_{tier}";
+            using var doc = JsonDocument.Parse(File.ReadAllText(
+                Path.Combine(root.FullName, "Module", "utc", $"{resref}.utc.json")));
+            var race = (RacialType)doc.RootElement.GetProperty("Race").GetProperty("value").GetInt32();
+
+            mechanicalRaces.Should().NotContain(race,
+                $"{resref} is an organic Sith Force user and must be eligible for Mind Trick targeting");
+        }
     }
 
     private static IEnumerable<string> AllEnemies() =>

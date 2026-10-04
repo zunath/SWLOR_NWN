@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             Provoke();
             DualWield();
+            Doublehand();
             Alertness();
 
             return _builder.Build();
@@ -62,6 +63,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Armor, 40)
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 30 : 0);
+        }
+
+        private void Doublehand()
+        {
+            _builder.Create(PerkCategoryType.General, PerkType.Doublehand)
+                .Name("Doublehand")
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoublehandTrait)
+                .Description("Adds +10% weapon DMG when wielding one eligible one-handed melee or throwing weapon with an empty off hand. Stacks with the natural +20% Single Weapon bonus, for +30% total.")
+                .Price(2)
+                .RequirementSkill(SkillType.Armor, 5)
+                .IncreasesStat(StatType.SingleWeaponDamagePercentAdjustment, 10)
+                .AddPerkLevel()
+                .Description("Adds +25% total weapon DMG when wielding one eligible one-handed melee or throwing weapon with an empty off hand. Stacks with the natural +20% Single Weapon bonus, for +45% total.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 25)
+                .IncreasesStat(StatType.SingleWeaponDamagePercentAdjustment, 25)
+                .AddPerkLevel()
+                .Description("Adds +40% total weapon DMG when wielding one eligible one-handed melee or throwing weapon with an empty off hand. Stacks with the natural +20% Single Weapon bonus, for +60% total.")
+                .Price(4)
+                .RequirementSkill(SkillType.Armor, 40)
+                .IncreasesStat(StatType.SingleWeaponDamagePercentAdjustment, 40);
         }
 
         private void Alertness()

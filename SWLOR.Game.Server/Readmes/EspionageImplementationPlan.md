@@ -55,7 +55,7 @@ Perk-only adjustments such as flat Stealth rating, stealthed movement speed, ste
 
 ## Infiltrator behavior
 
-- Back Attack applies only to melee weapon attacks made from behind: +3/+5/+8% damage, with +3/+5% Critical Rate at ranks II/III.
+- Back Attack applies to attacks with any weapon made from behind: +3/+5/+8% damage, with +3/+5% Critical Rate at ranks II/III.
 - Slicing I-V unlock tier 1-5 portable lockboxes and shared world terminals. Mandalorian Facility quest terminals and ordinary world locks remain outside this system.
 - Slicing is a turn-based NUI circuit puzzle with no timers or heartbeat work. Players rotate circuit tiles or swap adjacent tiles to connect the fixed entry node to the fixed core before exhausting trace. Runtime sessions select from a checked-in catalog of 100 pre-generated, guaranteed-solvable boards per tier; catalog generation rejects boards that begin solved or can be solved by one ordinary rotation or swap. The help view displays the stable tier-and-board ID for reproduction and bug reports.
 - Boards scale from 3x3 at tier 1 to 5x5 at tier 5. Slicing III-V grant +1/+2/+3 trace. Every five points of combined Lockpicking and positive Perception modifier grants another trace, capped at +5.
@@ -68,7 +68,7 @@ Perk-only adjustments such as flat Stealth rating, stealthed movement speed, ste
 
 ## Saboteur behavior
 
-- Poisoncraft I-V unlock the five Venom Coating recipes at the Espionage Workbench. Anyone may apply a crafted coating to an eligible melee or thrown weapon; energy blades are rejected.
+- Poisoncraft I-V unlock the five Venom Coating recipes at the Espionage Workbench. Anyone may apply a crafted coating to any weapon family, including pistols, rifles, lightsabers, and saberstaffs.
 - A coating has 20 charges. Lasting Coatings increases this by 50%, to 30 charges.
 - Venom duration is tier-based: 12/18/24/30/36 seconds. Venom Expertise I/II increases direct Venom damage by 10/20%; Master Saboteur adds another 10%. These bonuses do not extend duration or charges.
 - Razor Trap I/II and Shock Trap are visible zoning abilities. They arm after 3 seconds and affect enemies in a 3m blast.
@@ -96,6 +96,6 @@ The progression and item-activation repair requires deploying both the server as
 1. On separate Standard characters at Espionage rank 0, purchase only Poisoncraft I, Trapcraft I, or Slicing I. Confirm none requires Stealth or another profession.
 2. Find the Espionage Workbench map marker in Veles Shops. With the listed starter materials, confirm the level-3 coating and snare recipes show required rank 0 and can be crafted. Verify XP still arrives past rank 7 and stops only at the next profession unlock.
 3. Right-click a new and an older saved Snare Kit, choose Activate Item, and remain still. One kit should deploy at your feet and be consumed after successful placement. Moving or failing the spacing check must preserve the stack. Trigger it with a hostile NPC after arming. Also log in with legacy kits and coatings inside carried bags, and acquire a bag containing them: contained items must gain their activation without changing their stacks or adding duplicate properties.
-4. Right-click ordinary and concentrated venom, choose Activate Item, and select an owned melee or thrown weapon. Verify one vial is consumed after application. Reject energy blades, someone else's weapon, and invalid targets without consumption.
+4. Right-click ordinary and concentrated venom, choose Activate Item, and select an owned weapon of any family. Verify melee, thrown, pistol, rifle, lightsaber, and saberstaff weapons accept the coating and consume one vial. Reject someone else's weapon and invalid targets without consumption.
 5. Buy basic assistance at the Veles General Store and find a tier-1 world terminal. Complete attempts with and without assistance. Confirm tools appear inside the slicing window, XP reaches Slicing II at 22, and old tier-1 targets then stop awarding XP.
 6. At higher ranks, verify each next profession perk and recipe can continue training through 50. With Master Saboteur, verify tier-5 placement, detection, and disarming use the same access rule. Player trap disarms and dismantling must not provide a repeatable XP source.

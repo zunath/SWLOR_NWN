@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastWord1)
                 .DroidAISlots(1)
-                .Description("Deals weapon DMG + 35. For 45 seconds, evading an attack refreshes Snap Roll and quickens your next shot.")
+                .Description("Deals weapon DMG + 35. For 45 seconds, evading an attack refreshes Snap Roll and quickens your next auto-attack with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.Pistol, 50)
                 .RequirementQuest(PistolCapstoneQuestDefinition.LastWordMasteryQuestId);
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LuckyChamberTrait)
-                .Description("Every fourth ranged attack gains +10% Critical Rate.")
+                .Description("Every fourth auto-attack with any weapon gains +10% Critical Rate.")
                 .IncreasesStat(StatType.RangedAutoAttackCycleCriticalRateRequiredCount, 4)
                 .IncreasesStat(StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment, 10)
                 .IncreasesStat(StatType.RangedAutoAttackCycleCriticalRateTrackerEffectIconType, (int)EffectIconType.LuckyChamberStatusEffect)
@@ -422,8 +422,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReloadTempoTrait)
-                .Description("After a critical hit with a Pistol attack or hostile Pistol ability, gain +20% Haste for your next two attacks. Expires after 30 seconds.")
-                .IncreasesStat(StatType.CriticalHitLimitedHasteTriggerSkillType, (int)SkillType.Pistol)
+                .Description("After a critical hit, gain +20% Haste for your next two attacks with any weapon. Expires after 30 seconds.")
+                .IncreasesStat(StatType.CriticalHitLimitedHasteTriggerSkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.CriticalHitLimitedHastePercentAdjustment, 20)
                 .IncreasesStat(StatType.CriticalHitLimitedHasteDurationSeconds, 30)
                 .IncreasesStat(StatType.CriticalHitLimitedHasteAttackCount, 2)
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadMansHand1)
                 .DroidAISlots(1)
-                .Description("Deals weapon DMG + 30. If this critically hits, your next three ranged attacks have +20% Critical Rate and no extra attack delay.")
+                .Description("Deals weapon DMG + 30. If this critically hits, your next three weapon attacks, regardless of weapon family, have +20% Critical Rate and no extra attack delay.")
                 .Price(6)
                 .RequirementSkill(SkillType.Pistol, 50)
                 .RequirementQuest(PistolCapstoneQuestDefinition.DeadMansHandMasteryQuestId);

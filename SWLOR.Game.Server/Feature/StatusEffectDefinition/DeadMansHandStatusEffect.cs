@@ -34,13 +34,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private DeadMansHandStatusEffect(LimitedAttackCounter attackCounter)
         {
             _attackCounter = attackCounter;
-            StatGroup.Stats[StatType.RangedCriticalRatePercentAdjustment] = CriticalRatePercent;
-            StatGroup.Stats[StatType.RangedAttackNoDelay] = 1;
+            StatGroup.Stats[StatType.WeaponCriticalRatePercentAdjustment] = CriticalRatePercent;
+            StatGroup.Stats[StatType.WeaponAttackNoDelay] = 1;
         }
 
         public bool AppliesToSkill(SkillType skillType)
         {
-            return Combat.IsRangedWeaponSkill(skillType);
+            return Combat.IsWeaponSkillType(skillType);
         }
 
         public void OnAttackAttemptedEffect(

@@ -421,8 +421,8 @@ def make_foods_and_concentrates() -> None:
     for resref, name, tier in CONCENTRATES:
         description = (
             f"A concentrated tier {tier} venom formula. One vial applies 10 charges and snapshots an additional "
-            f"{tier * 10}% Poison Bonus potency when applied to a melee or thrown weapon."
-            " Right-click this item in your inventory and choose Activate Item and select a melee or thrown weapon in your own inventory."
+            f"{tier * 10}% Poison Bonus potency when applied to a weapon of any family."
+            " Right-click this item in your inventory and choose Activate Item and select a weapon of any family in your own inventory."
             " One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
         )
         item = configure_item(poison_template, resref, name, description)

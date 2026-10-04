@@ -13,6 +13,11 @@ swlor_compose_init() {
         return 1
     fi
 
+    if ! command -v jq >/dev/null 2>&1; then
+        printf '%s\n' 'jq is required on the host to run Compose commands and rotate the database password.' >&2
+        return 1
+    fi
+
     if ! SWLOR_BOT_DATABASE_SECRETS="$(jq -cser '
         if length != 1 then error("invalid secrets JSON")
         elif (.[0] | type) != "object" then error("invalid secrets JSON")

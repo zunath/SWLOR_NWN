@@ -56,6 +56,18 @@ public sealed class ComposeSecretProjectionTests
         Assert.That(result.Output, Does.Not.Contain(DummyToken).And.Not.Contain(DummyPassword));
     }
 
+    [TestCase("compose.sh")]
+    [TestCase("rotate-database-password.sh")]
+    public async Task MissingJqFailsClearlyBeforeCallingComposeWithoutPrintingSecrets(string script)
+    {
+        await WriteSecretsAsync(JsonSerializer.Serialize(new { discordToken = DummyToken, databasePassword = DummyPassword }));
+        var result = await DockerAsync(MissingJqDockerStub.Replace("__SCRIPT__", script), script);
+        Assert.That(result.ExitCode, Is.Not.Zero);
+        Assert.That(result.Output, Does.Contain("jq is required on the host"));
+        Assert.That(result.Output, Does.Not.Contain("compose-was-called"));
+        Assert.That(result.Output, Does.Not.Contain(DummyToken).And.Not.Contain(DummyPassword));
+    }
+
     [TestCase("""{"discordToken":"dummy-discord-token","databasePassword":null}""")]
     [TestCase("""{"discordToken":"dummy-discord-token","databasePassword":"   \t "}""")]
     [TestCase("""{"discordToken":"dummy-discord-token","databasePassword":"bad\npassword"}""")]
@@ -91,6 +103,20 @@ public sealed class ComposeSecretProjectionTests
         PATH=/tmp/docker-stub:$PATH sh /harness/compose.sh probe --safe
         """;
 
+    private const string MissingJqDockerStub = """
+        mkdir -p /tmp/no-jq
+        cat > /tmp/no-jq/dirname <<'STUB'
+        #!/bin/sh
+        printf '%s\n' /harness
+        STUB
+        cat > /tmp/no-jq/docker <<'STUB'
+        #!/bin/sh
+        printf '%s\n' compose-was-called
+        exit 99
+        STUB
+        chmod 755 /tmp/no-jq/dirname /tmp/no-jq/docker
+        PATH=/tmp/no-jq /bin/sh /harness/__SCRIPT__ probe
+        """;
     private const string RotationDockerStub = """
         mkdir -p /tmp/docker-stub
         cat > /tmp/docker-stub/docker <<'STUB'

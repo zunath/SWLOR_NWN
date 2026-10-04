@@ -748,6 +748,50 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Reconciles the equipment cache after login or a completed equipment change.
+        /// Keep this outside ability calculations: one scan can serve every target.
+        /// </summary>
+        public static void RefreshCombatReadinessEquipment(uint creature)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsPC(creature) ||
+                GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            var amount = GetEquippedCombatReadiness(creature);
+            if (dbPlayer.CombatReadiness == amount)
+                return;
+
+            // Store the uncapped equipment contribution. Perks and food are stat
+            // adjustments, and the combined cap belongs to the read calculation.
+            dbPlayer.CombatReadiness = amount;
+            DB.Set(dbPlayer);
+        }
+
+        public static int GetEquippedCombatReadiness(uint creature)
+        {
+            var amount = 0;
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (!GetIsObjectValid(item))
+                    continue;
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.CombatReadiness)
+                        amount += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return amount;
+        }
+
+        /// <summary>
         /// Modifies a player's HP Regen by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>

@@ -22,6 +22,71 @@ namespace SWLOR.Game.Server.Tests.Feature;
 [TestFixture]
 public class TintMapReviewTests
 {
+    private static bool UpdatePlayerTintOverrides(
+        SWLOR.Game.Server.Entity.Player player, IReadOnlyDictionary<string, int> colors) =>
+        (bool)typeof(TintMapService).GetMethod("UpdatePlayerTintOverrides",
+            BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, new object[] { player, colors })!;
+
+    [Test]
+    public void PlayerCreatureColorsSurviveRecordReloadAndIndependentChannelReset()
+    {
+        var hairState = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Hair);
+        var hairMaterial = TintMapVariable.GetName("headmat", TintMapLayerType.Hair);
+        var skinState = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
+        var colors = new Dictionary<string, int>
+        {
+            [hairState] = new TintMapColor(12, 34, 56).ToStoredValue(),
+            [hairMaterial] = new TintMapColor(12, 34, 56).ToStoredValue(),
+            [skinState] = new TintMapColor(78, 90, 123).ToStoredValue()
+        };
+        var player = new SWLOR.Game.Server.Entity.Player("player-id");
+        UpdatePlayerTintOverrides(player, colors).Should().BeTrue();
+        var restored = JsonConvert.DeserializeObject<SWLOR.Game.Server.Entity.Player>(
+            JsonConvert.SerializeObject(player))!;
+        restored.CreatureTintOverrides.Should().BeEquivalentTo(colors);
+        UpdatePlayerTintOverrides(restored, colors).Should().BeFalse(
+            "ordinary equipment refreshes must not rewrite an unchanged player record");
+
+        colors.Remove(hairState);
+        colors.Remove(hairMaterial);
+        // Editing the live locals must not mutate the previous durable snapshot.
+        restored.CreatureTintOverrides.Should().HaveCount(3);
+        UpdatePlayerTintOverrides(restored, colors).Should().BeTrue();
+        restored = JsonConvert.DeserializeObject<SWLOR.Game.Server.Entity.Player>(
+            JsonConvert.SerializeObject(restored))!;
+        restored.CreatureTintOverrides.Should().ContainSingle()
+            .Which.Should().Be(new KeyValuePair<string, int>(skinState, colors[skinState]));
+    }
+
+    [Test]
+    public void PlayerTintSnapshotDistinguishesLegacyRecordsFromExplicitlyClearedColors()
+    {
+        var player = JsonConvert.DeserializeObject<SWLOR.Game.Server.Entity.Player>("{\"Id\":\"legacy\"}")!;
+        player.CreatureTintOverrides.Should().BeNull();
+        UpdatePlayerTintOverrides(player, new Dictionary<string, int>()).Should().BeTrue();
+        var restored = JsonConvert.DeserializeObject<SWLOR.Game.Server.Entity.Player>(
+            JsonConvert.SerializeObject(player))!;
+        restored.CreatureTintOverrides.Should().NotBeNull().And.BeEmpty();
+        UpdatePlayerTintOverrides(restored, new Dictionary<string, int>()).Should().BeFalse();
+    }
+
+    [Test]
+    public void PlayerTintPersistenceRunsForEditsAndResetsBeforeLoginRefresh()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "TintMapService.cs");
+        FindMethod(source, nameof(TintMapService.SetCreatureCustomColor)).ToString()
+            .Should().Contain("SavePlayerOverrides(creature)");
+        FindMethod(source, nameof(TintMapService.ResetCreatureCustomColor)).ToString()
+            .Should().Contain("SavePlayerOverrides(creature)");
+        var enter = FindMethod(source, nameof(TintMapService.OnModuleEnter)).ToString();
+        enter.IndexOf("RestorePlayerOverrides(player)", StringComparison.Ordinal).Should().BeLessThan(
+            enter.IndexOf("DelayCommand", StringComparison.Ordinal));
+        var restore = FindMethod(source, "RestorePlayerOverrides").ToString();
+        restore.Should().Contain("player?.CreatureTintOverrides == null");
+        restore.Should().Contain("DeleteLocalInt(creature, name)");
+        restore.Should().Contain("SetLocalInt(creature, name, value)");
+    }
+
     [TestCase(Gender.Male, "m")]
     [TestCase(Gender.Female, "f")]
     [TestCase(Gender.Both, "m")]

@@ -42,12 +42,12 @@ public static class AreaSceneBuilder
         TileModelCache modelCache, PlaceableAppearanceService? placeableAppearances = null,
         DoorTypeService? doorTypes = null, WaypointAppearanceService? waypointAppearances = null,
         Func<JsonGffStruct, RenderModel?>? resolveCreatureModel = null,
-        IReadOnlyList<TilePlacement>? tiles = null)
+        IReadOnlyList<TilePlacement>? tiles = null, int listIndex = -1)
     {
         ArgumentNullException.ThrowIfNull(modelCache);
         return Nwn.Preview.Areas.AreaSceneComposer.BuildInstanceMarker(type, instance,
             CreateResolvers(modelCache, placeableAppearances, doorTypes, null, waypointAppearances,
-                resolveCreatureModel), tiles);
+                resolveCreatureModel), listIndex: listIndex, tiles: tiles);
     }
 
     private static AreaSceneResolvers CreateResolvers(TileModelCache modelCache,

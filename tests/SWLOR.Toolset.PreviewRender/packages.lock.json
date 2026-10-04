@@ -406,17 +406,17 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.36",
-        "contentHash": "wTfdHxRuM3MOeSsGkqmfQpOVbskn2dSlaehk2kIpZ8qKX5LPx206AvcIysoEHSd4V5Gjl6DSRyEVTcxWxU/I1A==",
+        "resolved": "0.1.0-dev.37",
+        "contentHash": "Xtnws6JL7xS3B77b9nuH3SALU39n+ZHF6KoLMYpprmGr9BmnXxTi9tM7s1mv3rZtGHybWF6fXS2d3uI6Y5LnHA==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.32",
+          "Nwn.Authoring": "0.1.0-dev.36",
           "Nwn.Formats": "0.1.0-dev.26"
         }
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.44",
-        "contentHash": "QsRZvxBEpqzw9TPbPMvctNiZM2ZViHouWQn16ALu1bsT54Uwww/5pxbLQD/NjOfYTCjHpsknfjyQ4KDae4Znsg==",
+        "resolved": "0.1.0-dev.45",
+        "contentHash": "xBGBf4Q7Ay94rEto7tTE5uXYp6DjI3B4bOKp8glj6in/P3qMpDuCofHh/sENqiYm2XezHoR6TsPOSl9BDcsshQ==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",
@@ -425,7 +425,7 @@
           "Dock.Avalonia.Themes.Fluent": "11.3.12.1",
           "Dock.Model.Mvvm": "11.3.12.1",
           "Nwn.Authoring": "0.1.0-dev.36",
-          "Nwn.Preview": "0.1.0-dev.36",
+          "Nwn.Preview": "0.1.0-dev.37",
           "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
@@ -581,7 +581,7 @@
           "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NAudio": "[2.3.0, )",
           "Nwn.Authoring": "[0.1.0-dev.36, )",
-          "Nwn.Toolset.Avalonia": "[0.1.0-dev.44, )",
+          "Nwn.Toolset.Avalonia": "[0.1.0-dev.45, )",
           "SWLOR.Toolset.Domain": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.File": "[7.0.0, )"
@@ -592,7 +592,7 @@
         "dependencies": {
           "Nwn.Authoring": "[0.1.0-dev.36, )",
           "Nwn.Formats": "[0.1.0-dev.26, )",
-          "Nwn.Preview": "[0.1.0-dev.36, )",
+          "Nwn.Preview": "[0.1.0-dev.37, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

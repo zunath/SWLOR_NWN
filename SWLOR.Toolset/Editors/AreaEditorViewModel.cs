@@ -1191,7 +1191,8 @@ namespace SWLOR.Toolset.Editors
                     _doorTypes,
                     _waypointAppearances,
                     ResolveCreatureModel,
-                    scene.Tiles);
+                    scene.Tiles,
+                    index);
             }
             catch (Exception ex)
             {

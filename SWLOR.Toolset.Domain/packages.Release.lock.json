@@ -19,11 +19,11 @@
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.36, )",
-        "resolved": "0.1.0-dev.36",
-        "contentHash": "wTfdHxRuM3MOeSsGkqmfQpOVbskn2dSlaehk2kIpZ8qKX5LPx206AvcIysoEHSd4V5Gjl6DSRyEVTcxWxU/I1A==",
+        "requested": "[0.1.0-dev.37, )",
+        "resolved": "0.1.0-dev.37",
+        "contentHash": "Xtnws6JL7xS3B77b9nuH3SALU39n+ZHF6KoLMYpprmGr9BmnXxTi9tM7s1mv3rZtGHybWF6fXS2d3uI6Y5LnHA==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.32",
+          "Nwn.Authoring": "0.1.0-dev.36",
           "Nwn.Formats": "0.1.0-dev.26"
         }
       },

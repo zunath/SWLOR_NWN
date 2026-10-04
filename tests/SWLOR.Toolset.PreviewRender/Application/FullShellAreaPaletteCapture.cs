@@ -28,7 +28,7 @@ namespace SWLOR.Toolset.PreviewRender.Application;
 
 internal static class FullShellAreaPaletteCapture
 {
-    private const string AreaResRef = "veles_exterior";
+    private static string AreaResRef => Environment.GetEnvironmentVariable("SWLOR_AREA_EDITOR_CAPTURE_AREA_RESREF") is { Length: > 0 } value ? value : "veles_exterior";
     private static readonly TimeSpan Deadline = TimeSpan.FromSeconds(60);
 
     public static void Start(IClassicDesktopStyleApplicationLifetime desktop, App application)
@@ -39,14 +39,19 @@ internal static class FullShellAreaPaletteCapture
         var packedHakRoot = RequireDirectory("SWLOR_PACKED_HAK_ROOT");
         var packedTlkRoot = RequireDirectory("SWLOR_PACKED_TLK_ROOT");
         var installRoot = RequireDirectory("SWLOR_NWN_INSTALL_ROOT");
-        var artifactRoot = Path.GetFullPath(Path.Combine(repositoryRoot, "artifacts"));
+        var artifactRoot = Environment.GetEnvironmentVariable("SWLOR_AREA_EDITOR_CAPTURE_ARTIFACT_ROOT") is { Length: > 0 } artifactRootValue
+            ? Path.GetFullPath(artifactRootValue)
+            : Path.GetFullPath(Path.Combine(repositoryRoot, "artifacts"));
         var runRoot = Path.GetFullPath(RequireValue("SWLOR_AREA_EDITOR_CAPTURE_RUN_ROOT"));
         var output = Path.GetFullPath(RequireValue("SWLOR_AREA_EDITOR_CAPTURE_OUTPUT"));
         EnsureContainedPath(artifactRoot, runRoot);
         EnsureContainedPath(artifactRoot, output);
         EnsureNoReparsePointAncestors(artifactRoot, runRoot);
         EnsureNoReparsePointAncestors(artifactRoot, Path.GetDirectoryName(output)!);
-        var moduleSource = Path.Combine(repositoryRoot, "Module");
+        var moduleSource = Environment.GetEnvironmentVariable("SWLOR_AREA_EDITOR_CAPTURE_MODULE_SOURCE") is { Length: > 0 } moduleSourceValue
+            ? Path.GetFullPath(moduleSourceValue)
+            : Path.Combine(repositoryRoot, "Module");
+        if (!Directory.Exists(moduleSource)) throw new DirectoryNotFoundException("The explicit module source does not exist: " + moduleSource);
         var moduleRoot = Path.Combine(runRoot, "Module");
         var iniPath = Path.Combine(runRoot, "nwn.ini");
 
@@ -55,9 +60,10 @@ internal static class FullShellAreaPaletteCapture
             throw new FileNotFoundException("The selected SWLOR checkout must contain Build/hakbuilder.json.");
         }
 
-        if (!File.Exists(Path.Combine(moduleSource, "are", AreaResRef + ".are.json")))
+        var acceptanceStage = Environment.GetEnvironmentVariable("SWLOR_AREA_EDITOR_CAPTURE_STAGE") ?? "capture";
+        if (acceptanceStage != "edit" && !File.Exists(Path.Combine(moduleSource, "are", AreaResRef + ".are.json")))
         {
-            throw new FileNotFoundException("The selected SWLOR module must contain the veles_exterior area fixture.");
+            throw new FileNotFoundException($"The selected SWLOR module must contain the {AreaResRef} area fixture.");
         }
 
         if (Directory.Exists(runRoot) || File.Exists(runRoot))
@@ -82,6 +88,7 @@ internal static class FullShellAreaPaletteCapture
         settings.PaletteSelection = "utp";
 
         var configPath = Path.Combine(repositoryRoot, "Build", "hakbuilder.json");
+        var resourceIndexWatch = System.Diagnostics.Stopwatch.StartNew();
         var resourceIndex = ResourceIndex.FromHakBuilderConfig(
             configPath,
             haksRoot,
@@ -90,6 +97,7 @@ internal static class FullShellAreaPaletteCapture
         {
             throw new TimeoutException("The real SWLOR HAK and base-game resource index exceeded the 60-second capture deadline.");
         }
+        var resourceIndexMilliseconds = resourceIndexWatch.ElapsedMilliseconds;
 
         var services = new ServiceCollection();
         typeof(App).GetMethod("ConfigureServices", BindingFlags.NonPublic | BindingFlags.Static)!
@@ -153,20 +161,46 @@ internal static class FullShellAreaPaletteCapture
                 EnsureWithinDeadline(started, "indexing the copied module");
 
                 var palette = provider.GetRequiredService<PaletteViewModel>();
-                if (palette.PresentationState.SelectedRow is null && palette.PresentationState.Rows.Count > 0)
+                if (acceptanceStage is "edit" or "reopen")
                 {
-                    palette.PresentationState.SelectedRow = palette.PresentationState.Rows[0];
+                    var presentation = palette.PresentationState;
+                    presentation.ShowStandardCommand.Execute(null);
+                    presentation.SelectTypeCommand.Execute(presentation.Types.Single(type => type.Option.Type is null));
+                    presentation.UseManualTilePaintCommand.Execute(null);
+                    if (presentation.Rows.SingleOrDefault(row => row.Name == "All tiles") is { } allTiles)
+                        presentation.SelectedRow = allTiles;
                 }
-
-                if (palette.PresentationState.Tiles.Count == 0)
+                if (acceptanceStage == "edit")
                 {
-                    throw new InvalidOperationException("The real shared Palette projection has no entries to display.");
+                    var explorer = provider.GetRequiredService<ModuleExplorerViewModel>();
+                    explorer.SelectedType = ResourceType.Area;
+                    explorer.NewItemCommand.Execute(null);
+                    var form = explorer.ActiveNewArea
+                        ?? throw new InvalidOperationException("The production Module Contents did not open its New Area form.");
+                    form.ResRef = AreaResRef;
+                    form.DisplayName = "SW shared area acceptance";
+                    form.SelectedTileset = form.Tilesets.SingleOrDefault(item => item.ResRef.Equals("ttr01", StringComparison.OrdinalIgnoreCase))
+                        ?? throw new InvalidOperationException("The licensed native TTR01 tileset is not available in the production New Area form.");
+                    form.Width = 4;
+                    form.Height = 4;
+                    form.CreateCommand.Execute(null);
+                    var areaStem = Path.Combine(moduleRoot, "are", AreaResRef + ".are.json");
+                    var gitStem = Path.Combine(moduleRoot, "git", AreaResRef + ".git.json");
+                    var gicStem = Path.Combine(moduleRoot, "gic", AreaResRef + ".gic.json");
+                    if (!File.Exists(areaStem) || !File.Exists(gitStem) || !File.Exists(gicStem))
+                    {
+                        throw new InvalidOperationException(
+                            $"Production New Area did not create its full resource triplet: are={File.Exists(areaStem)}, git={File.Exists(gitStem)}, gic={File.Exists(gicStem)}, formStatus='{form.StatusMessage}', explorerStatus='{explorer.StatusMessage}'.");
+                    }
                 }
-
-                palette.PresentationState.EnsurePreview(palette.PresentationState.Tiles[0]);
-                provider.GetRequiredService<EditorService>().TryOpenEditor(ResourceType.Area, AreaResRef);
+                else
+                {
+                    provider.GetRequiredService<EditorService>().TryOpenEditor(ResourceType.Area, AreaResRef);
+                }
                 var areaContents = provider.GetRequiredService<AreaContentsViewModel>();
-                await CaptureWhenReadyAsync(window, desktop, palette, areaContents, output, runRoot, started);
+                var sceneLoadWatch = System.Diagnostics.Stopwatch.StartNew();
+                await CaptureWhenReadyAsync(window, desktop, palette, areaContents, workspaceContext, output, runRoot, started,
+                    acceptanceStage, resourceIndexMilliseconds, sceneLoadWatch);
             }
             catch (Exception exception)
             {
@@ -181,15 +215,21 @@ internal static class FullShellAreaPaletteCapture
         IClassicDesktopStyleApplicationLifetime desktop,
         PaletteViewModel palette,
         AreaContentsViewModel areaContents,
+        WorkspaceContext workspaceContext,
         string sceneOutput,
         string runRoot,
-        System.Diagnostics.Stopwatch started)
+        System.Diagnostics.Stopwatch started,
+        string acceptanceStage,
+        long resourceIndexMilliseconds,
+        System.Diagnostics.Stopwatch sceneLoadWatch)
     {
         while (true)
         {
             EnsureWithinDeadline(started, "loading the real area editor and shared Palette");
             await Dispatcher.UIThread.InvokeAsync(() => { });
             var areaView = window.GetVisualDescendants().OfType<AreaEditorView>().FirstOrDefault();
+            if (palette.PresentationState.Tiles.Count > 0 && !palette.PresentationState.Tiles[0].PreviewRequested)
+                palette.PresentationState.EnsurePreview(palette.PresentationState.Tiles[0]);
             var paletteView = window.GetVisualDescendants().OfType<PaletteView>().FirstOrDefault();
             if (areaView?.DataContext is not AreaEditorViewModel viewModel
                 || viewModel.IsBuildingScene
@@ -225,6 +265,32 @@ internal static class FullShellAreaPaletteCapture
                 || !palette.PresentationState.Tiles[0].HasPreview)
             {
                 throw new InvalidOperationException("The mounted shared Palette did not complete a real preview callback.");
+            }
+
+            var editor = areaView.DataContext as AreaEditorViewModel
+                ?? throw new InvalidOperationException("The opened area view has no production AreaEditorViewModel.");
+            long? firstQualifiedWindowFrameMilliseconds = null;
+            if (acceptanceStage is "edit" or "reopen")
+            {
+                var firstFramePath = Path.Combine(runRoot, "first-area-window-frame.png");
+                var firstFrameWatch = System.Diagnostics.Stopwatch.StartNew();
+                var firstFrame = NativeWindowScreenshot.Capture(window, firstFramePath);
+                firstQualifiedWindowFrameMilliseconds = started.ElapsedMilliseconds;
+                Console.WriteLine($"First qualified rendered-area window frame: {firstFrame.Width}x{firstFrame.Height}, {firstFrame.BytesWritten} bytes, elapsed={firstQualifiedWindowFrameMilliseconds}ms, captureCall={firstFrameWatch.ElapsedMilliseconds}ms.");
+            }
+            if (acceptanceStage == "edit")
+            {
+                await SharedAreaNativeAcceptance.RunAsync(window, editor, palette, workspaceContext, Path.Combine(runRoot, "Module"), runRoot,
+                    resourceIndexMilliseconds, sceneLoadWatch.ElapsedMilliseconds, firstQualifiedWindowFrameMilliseconds);
+            }
+            else if (acceptanceStage == "reopen")
+            {
+                await SharedAreaNativeAcceptance.VerifyReopenAsync(editor, Path.Combine(runRoot, "Module"), runRoot,
+                    resourceIndexMilliseconds, sceneLoadWatch.ElapsedMilliseconds, firstQualifiedWindowFrameMilliseconds);
+            }
+            else if (acceptanceStage != "capture")
+            {
+                throw new InvalidOperationException("Unknown SWLOR area acceptance stage: " + acceptanceStage);
             }
 
             WriteLoadedAssemblyEvidence(runRoot);
@@ -339,7 +405,7 @@ internal static class FullShellAreaPaletteCapture
 
     private static void WriteLoadedAssemblyEvidence(string runRoot)
     {
-        var requiredAssemblies = new[] { "Nwn.Preview", "Nwn.Toolset.Avalonia" };
+        var requiredAssemblies = new[] { "Nwn.Authoring", "Nwn.Formats", "Nwn.Preview", "Nwn.Toolset.Avalonia" };
         var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
             .Where(assembly => !assembly.IsDynamic)
             .ToArray();
